@@ -1,5 +1,5 @@
 export function isSlippageError(tx: any): boolean {
-  if (tx && isSlipageErrorMessage(tx.log)) {
+  if (tx && isSlippageErrorMessage(tx.log)) {
     return true;
   }
   return false;
@@ -13,11 +13,11 @@ export function isError(tx: any) {
   return false;
 }
 
-// isSlipageErrorMessage checks if the error message is related to slippage
+// isSlippageErrorMessage checks if the error message is related to slippage
 // Returns true if so, false otherwise.
 // Returns false if the message is empty.
 // Does simple string matching against chain errors.
-export function isSlipageErrorMessage(msg: string) {
+export function isSlippageErrorMessage(msg: string) {
   if (!msg) {
     return false;
   }

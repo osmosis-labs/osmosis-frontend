@@ -1,12 +1,12 @@
-import { z } from "zod";
-
 import {
   getStrategies,
   getStrategyAnnualPercentages,
   getStrategyBalance,
   getStrategyTVL,
-} from "../queries/complex/earn/strategies";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+} from "@osmosis-labs/server";
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "./api";
 
 export const earnRouter = createTRPCRouter({
   getStrategyBalance: publicProcedure

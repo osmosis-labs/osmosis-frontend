@@ -1,4 +1,6 @@
+import { superjson } from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { Errors, timeout } from "@osmosis-labs/utils";
 import {
   httpBatchLink,
   httpLink,
@@ -11,10 +13,7 @@ import { type AnyRouter, initTRPC } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import { ZodError } from "zod";
 
-import { trpcMiddleware } from "./utils";
-import { timeout } from "./utils/async";
-import { Errors } from "./utils/errors";
-import { superjson } from "./utils/superjson";
+import { trpcMiddleware } from "./middleware";
 
 /**
  * Pass asset lists and chain list to be used cas context in backend service.
@@ -142,7 +141,10 @@ export function localLink<TRouter extends AnyRouter>({
       );
 }
 
-/** Provides ability to skip batching given a new custom query option context: `skipBatch: boolean` */
+/**
+ * Provides ability to skip batching for a specific query.
+ * This is useful for preventing expensive queries from blocking less expensive queries.
+ */
 export const makeSkipBatchLink = (url: string) =>
   splitLink({
     condition(op) {

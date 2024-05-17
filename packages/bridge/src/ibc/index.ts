@@ -6,10 +6,9 @@ import {
   GetBridgeQuoteParams,
 } from "../interface";
 
-export const ibcProviderId = "IBC";
-
 export class IbcBridgeProvider implements BridgeProvider {
-  readonly providerName = ibcProviderId;
+  static readonly ID = "IBC";
+  readonly providerName = IbcBridgeProvider.ID;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 

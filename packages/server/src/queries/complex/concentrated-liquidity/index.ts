@@ -8,7 +8,7 @@ import {
 } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { aggregateCoinsByDenom } from "@osmosis-labs/utils";
+import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -36,7 +36,6 @@ import {
   queryAccountDelegatedPositions,
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
-import { timeout } from "../../../utils/async";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { queryPositionPerformance } from "../../data-services";

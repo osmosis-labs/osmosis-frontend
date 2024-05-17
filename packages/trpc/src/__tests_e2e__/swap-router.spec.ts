@@ -5,25 +5,24 @@
  * functionality and stability.
  */
 import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+import {
+  getAssetPrice,
+  getCachedPoolMarketMetricsMap,
+  getPools,
+  superjson,
+} from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNumeric,
   makeMinimalAsset,
+  sort,
 } from "@osmosis-labs/utils";
 import { inferRouterInputs, inferRouterOutputs, initTRPC } from "@trpc/server";
 
-import {
-  getCachedPoolMarketMetricsMap,
-  getPoolsFromIndexer,
-} from "../../queries";
-import { AssetLists } from "../../queries/__tests__/mock-asset-lists";
-import { MockChains } from "../../queries/__tests__/mock-chains";
-import { getPriceFromSidecar } from "../../queries/complex/assets/price/providers/sidecar";
-import { createInnerTRPCContext } from "../../trpc";
-import { sort } from "../../utils";
-import { superjson } from "../../utils/superjson";
-import { swapRouter } from "../swap-router";
+import { createInnerTRPCContext, swapRouter } from "..";
+import { AssetLists } from "./mock-asset-lists";
+import { MockChains } from "./mock-chains";
 
 const { createCallerFactory, router: createTRPCRouter } = initTRPC
   .context<typeof createInnerTRPCContext>()
@@ -454,7 +453,7 @@ it.skip("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", 
  */
 async function getSortedPoolsWithVolume() {
   const [pools, marketMetrics] = await Promise.all([
-    getPoolsFromIndexer({
+    getPools({
       assetLists: AssetLists,
       chainList: MockChains,
     }),
@@ -501,11 +500,11 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     assetLists: AssetLists,
   })!.rawAsset;
 
-  const tokenPrice = await getPriceFromSidecar(
-    AssetLists,
-    MockChains,
-    tokenInAsset
-  );
+  const tokenPrice = await getAssetPrice({
+    assetLists: AssetLists,
+    chainList: MockChains,
+    asset: tokenInAsset,
+  });
 
   // Desired price is 10% of the total fiat value locked in the pool
   const desiredPrice = mediumVolumePool.totalFiatValueLocked
@@ -561,11 +560,11 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     assetLists: AssetLists,
   })!.rawAsset;
 
-  const tokenPrice = await getPriceFromSidecar(
-    AssetLists,
-    MockChains,
-    tokenInAsset
-  );
+  const tokenPrice = await getAssetPrice({
+    assetLists: AssetLists,
+    chainList: MockChains,
+    asset: tokenInAsset,
+  });
 
   // Desired price is 10% of the total fiat value locked in the pool
   const desiredPrice = lowVolumeTokenPool.totalFiatValueLocked

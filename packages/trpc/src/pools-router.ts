@@ -1,23 +1,27 @@
-import { z } from "zod";
-
-import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
-import { getPool, getPools, PoolFilterSchema } from "../queries/complex/pools";
-import { getSharePoolBondDurations } from "../queries/complex/pools/bonding";
 import {
+  createSortSchema,
+  CursorPaginationSchema,
   getCachedPoolIncentivesMap,
+  getCachedPoolMarketMetricsMap,
+  getPool,
+  getPools,
+  getSharePool,
+  getSharePoolBondDurations,
+  getSuperfluidPoolIds,
+  getUserPools,
+  getUserSharePools,
   IncentivePoolFilterSchema,
   isIncentivePoolFiltered,
-} from "../queries/complex/pools/incentives";
-import { getCachedPoolMarketMetricsMap } from "../queries/complex/pools/market";
-import { getSharePool } from "../queries/complex/pools/share";
-import { getSuperfluidPoolIds } from "../queries/complex/pools/superfluid";
-import { getUserPools, getUserSharePools } from "../queries/complex/pools/user";
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { maybeCachePaginatedItems } from "../utils/pagination";
-import { createSortSchema, sort } from "../utils/sort";
-import { InfiniteQuerySchema } from "../utils/zod-types";
+  maybeCachePaginatedItems,
+  PoolFilterSchema,
+} from "@osmosis-labs/server";
+import { sort } from "@osmosis-labs/utils";
+import { z } from "zod";
 
-const GetInfinitePoolsSchema = InfiniteQuerySchema.and(PoolFilterSchema).and(
+import { createTRPCRouter, publicProcedure } from "./api";
+import { UserOsmoAddressSchema } from "./parameter-types";
+
+const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
   IncentivePoolFilterSchema
 );
 

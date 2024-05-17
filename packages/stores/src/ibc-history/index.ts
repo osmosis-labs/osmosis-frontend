@@ -1,13 +1,13 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { TxTracer } from "@osmosis-labs/tx";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import { action, computed, flow, makeObservable, observable, toJS } from "mobx";
 import { keepAlive } from "mobx-utils";
 import { computedFn } from "mobx-utils";
 
-import { TxTracer } from "../tx/tracer";
 import { PollingStatusSubscription } from "./polling-status-subscription";
 import {
   IBCTransferHistory,

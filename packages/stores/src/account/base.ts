@@ -44,6 +44,7 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import { TxTracer } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -69,7 +70,6 @@ import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,

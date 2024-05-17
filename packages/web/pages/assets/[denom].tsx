@@ -7,11 +7,10 @@ import {
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
-  sort,
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";

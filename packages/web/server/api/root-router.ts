@@ -2,7 +2,7 @@ import {
   concentratedLiquidityRouter,
   createTRPCRouter,
   swapRouter,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/trpc";
 
 import { edgeRouter } from "~/server/api/edge-router";
 import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";

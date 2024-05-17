@@ -1,14 +1,14 @@
-import { z } from "zod";
-
 import {
   getPositionHistoricalPerformance,
   mapGetUserPositionDetails,
   mapGetUserPositions,
-} from "../queries/complex/concentrated-liquidity";
-import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
-import { queryPositionById } from "../queries/osmosis/concentratedliquidity";
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { sort } from "../utils/sort";
+  queryPositionById,
+} from "@osmosis-labs/server";
+import { sort } from "@osmosis-labs/utils";
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "./api";
+import { UserOsmoAddressSchema } from "./parameter-types";
 
 export const concentratedLiquidityRouter = createTRPCRouter({
   getUserPositions: publicProcedure

@@ -1,7 +1,7 @@
+import { getTransactions } from "@osmosis-labs/server";
 import { z } from "zod";
 
-import { getTransactions } from "../queries/complex/transactions/transactions";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from ".";
 
 export const transactionsRouter = createTRPCRouter({
   getTransactions: publicProcedure

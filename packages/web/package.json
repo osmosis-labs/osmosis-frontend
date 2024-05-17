@@ -56,6 +56,8 @@
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/stores": "^5.1.0",
+    "@osmosis-labs/trpc": "^1.0.0",
+    "@osmosis-labs/tx": "^1.0.0",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.0.4",

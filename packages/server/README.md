@@ -29,7 +29,6 @@ Various utils for working queries and tRPC. All utils are compatible with popula
 - Batching queries
 - Utils for common Osmosis types:
   - Superjson transformers
-  - Sorting & comparing
 - Async utils, such as timeouts
 - Remote cache client for Vercel KV
 - Search

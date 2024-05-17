@@ -35,10 +35,9 @@ import {
   CosmosChainIds_AxelarChainIds,
 } from "./types";
 
-export const axelarProviderId = "Axelar" as const;
-
 export class AxelarBridgeProvider implements BridgeProvider {
-  readonly providerName = axelarProviderId;
+  static readonly ID = "Axelar";
+  readonly providerName = AxelarBridgeProvider.ID;
 
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
@@ -72,7 +71,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: axelarProviderId,
+        id: AxelarBridgeProvider.ID,
         fromAmount,
         fromAsset,
         fromChain,

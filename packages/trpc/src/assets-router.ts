@@ -1,8 +1,12 @@
 import { PricePretty } from "@keplr-wallet/unit";
-import { z } from "zod";
-
 import {
   AssetFilterSchema,
+  AvailableRangeValues,
+  AvailableTimeDurations,
+  captureErrorAndReturn,
+  createSortSchema,
+  CursorPaginationSchema,
+  DEFAULT_VS_CURRENCY,
   getAsset,
   getAssetHistoricalPrice,
   getAssetListingDate,
@@ -10,35 +14,26 @@ import {
   getAssetPrice,
   getAssets,
   getAssetWithUserBalance,
+  getBridgeAsset,
+  getCoinGeckoCoinMarketChart,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
   getUpcomingAssets,
   getUserAssetsTotal,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
-} from "../queries/complex/assets";
-import { getBridgeAsset } from "../queries/complex/assets/bridge";
-import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
-import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
-import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
-import {
-  AvailableRangeValues,
-  AvailableTimeDurations,
+  maybeCachePaginatedItems,
   TimeDuration,
   TimeFrame,
-} from "../queries/data-services";
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import {
-  captureErrorAndReturn,
-  compareCommon,
-  createSortSchema,
-  InfiniteQuerySchema,
-  maybeCachePaginatedItems,
-  sort,
-} from "../utils";
+} from "@osmosis-labs/server";
+import { compareCommon, sort } from "@osmosis-labs/utils";
+import { z } from "zod";
+
+import { createTRPCRouter, publicProcedure } from "./api";
+import { UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
-  InfiniteQuerySchema.merge(AssetFilterSchema);
+  CursorPaginationSchema.merge(AssetFilterSchema);
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure

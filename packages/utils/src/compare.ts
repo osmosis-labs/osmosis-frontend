@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import { isNil } from "@osmosis-labs/utils";
+
+import { isNil } from "./common-utils";
 
 export type CommonCompareType =
   | number

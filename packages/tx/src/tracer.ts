@@ -1,6 +1,20 @@
 import { Buffer } from "buffer";
 
-import { TxEventMap, WsReadyState } from "./types";
+enum WsReadyState {
+  CONNECTING,
+  OPEN,
+  CLOSING,
+  CLOSED,
+  // WS is not initialized or the ready state of WS is unknown
+  NONE,
+}
+
+interface TxEventMap {
+  close: (e: CloseEvent) => void;
+  error: (e: ErrorEvent) => void;
+  message: (e: MessageEvent) => void;
+  open: (e: Event) => void;
+}
 
 type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];

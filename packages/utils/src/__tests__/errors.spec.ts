@@ -1,4 +1,4 @@
-import { Errors } from "../errors";
+import { Errors } from "../error";
 
 describe("Errors", () => {
   it("should correctly construct an Errors object", () => {
