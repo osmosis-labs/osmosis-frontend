@@ -12,3 +12,5 @@ src/styles/index.scss
 .turbo
 
 lerna-debug.log
+
+tsconfig.tsbuildinfo
