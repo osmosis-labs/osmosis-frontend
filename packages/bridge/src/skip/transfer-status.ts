@@ -30,14 +30,14 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
         : "https://testnet.axelarscan.io";
   }
 
-  trackTxStatus(serializedParams: string): void {
+  async trackTxStatus(serializedParams: string): Promise<void> {
     const { sendTxHash, fromChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
     const snapshotKey = `${this.keyPrefix}${serializedParams}`;
 
-    poll({
+    await poll({
       fn: async () => {
         try {
           const txStatus = await this.skipClient.transactionStatus({
