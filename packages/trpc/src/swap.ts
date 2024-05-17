@@ -11,7 +11,7 @@ import {
 import { AssetList } from "@osmosis-labs/types";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from ".";
+import { createTRPCRouter, publicProcedure } from "./api";
 
 export const swapRouter = createTRPCRouter({
   routeTokenOutGivenIn: publicProcedure
