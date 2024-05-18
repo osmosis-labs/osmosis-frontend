@@ -231,9 +231,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
       repo.wallets.forEach((wallet) => {
         wallet.setActions({
-          data: () => this.refresh(),
-          state: () => this.refresh(),
-          message: () => this.refresh(),
+          data: () => {
+            this.refresh();
+          },
         });
       });
     });
