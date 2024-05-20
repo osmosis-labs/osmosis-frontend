@@ -111,6 +111,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   private _refreshRequests = 0;
 
+  @observable
+  private _refreshing = false;
+
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
@@ -245,7 +248,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @action
   private refresh() {
-    this._refreshRequests++;
+    /**
+     * We make sure this method is idempotent to avoid spam
+     */
+    if (!this._refreshing) {
+      this._refreshing = true;
+      this._refreshRequests++;
+
+      /**
+       * Here we add some debounce
+       */
+      setTimeout(() => {
+        this._refreshing = false;
+      }, 100);
+    }
   }
 
   async addWallet(wallet: MainWalletBase) {
