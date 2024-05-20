@@ -464,8 +464,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=planq_7070-2&chainTo=osmosis-1&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
   },
   PICA: {
-    depositUrlOverride: "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   "WBTC.grv": {
     depositUrlOverride:
@@ -651,8 +653,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000&token1=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
   },
   TNKR: {
-    depositUrlOverride: "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   SAYVE: {
     depositUrlOverride:
