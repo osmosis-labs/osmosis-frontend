@@ -126,8 +126,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
   },
   DOT: {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
@@ -339,8 +338,7 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
   KSM: {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
@@ -682,50 +680,42 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.evmos.org/assets",
   },
   "ETH.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "DAI.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "FXS.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "FRAX.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "USDT.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "sFRAX.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "frxETH.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "sfrxETH.pica": {
-    depositUrlOverride:
-      "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
