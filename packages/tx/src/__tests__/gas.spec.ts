@@ -41,10 +41,10 @@ describe("simulateMsgs", () => {
   it("should return gasUsed on successful simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "1" },
-    });
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
-    });
+    } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
     const result = await simulateMsgs({
       chainId,
@@ -70,7 +70,7 @@ describe("simulateMsgs", () => {
   it("should throw an error if sequence number is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "invalid" },
-    });
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
       simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
@@ -80,7 +80,7 @@ describe("simulateMsgs", () => {
   it("should throw SimulateNotAvailableError if chain does not support tx simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "1" },
-    });
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
         response: { status: 400 },
@@ -96,10 +96,10 @@ describe("simulateMsgs", () => {
   it("should throw an error if gas used is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "1" },
-    });
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "invalid" },
-    });
+    } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
     await expect(
       simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
@@ -109,7 +109,7 @@ describe("simulateMsgs", () => {
   it("should forward ApiClientError message if code is present", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "1" },
-    });
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
         response: { status: 400 },
@@ -147,7 +147,7 @@ describe("getGasFeeAmount", () => {
           amount: "1000000",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
 
     const expectedGasAmount =
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -188,10 +188,10 @@ describe("getGasFeeAmount", () => {
           amount: "1000000",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     // fee tokens from registry are ignored, and queried instead
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
@@ -206,14 +206,14 @@ describe("getGasFeeAmount", () => {
           poolID: 2,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       pool_id: "1",
       spot_price: spotPrice.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const gasMultiplier = 1.2;
 
@@ -261,10 +261,10 @@ describe("getGasFeeAmount", () => {
           amount: "1000000",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -277,14 +277,14 @@ describe("getGasFeeAmount", () => {
           poolID: 2,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       pool_id: "1",
       spot_price: spotPrice.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const gasMultiplier = 1.5;
 
@@ -330,10 +330,10 @@ describe("getGasFeeAmount", () => {
           amount: "1000000",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -346,14 +346,14 @@ describe("getGasFeeAmount", () => {
           poolID: 2,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       pool_id: "1",
       spot_price: spotPrice.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const gasMultiplier = 1.5;
 
@@ -402,10 +402,10 @@ describe("getGasFeeAmount", () => {
           amount: "1000000",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -418,14 +418,14 @@ describe("getGasFeeAmount", () => {
           poolID: 2,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       pool_id: "1",
       spot_price: spotPrice.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const gasMultiplier = 1.5;
 
@@ -459,7 +459,7 @@ describe("getGasFeeAmount", () => {
 
     (queryBalances as jest.Mock).mockResolvedValue({
       balances: [],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
 
     await expect(
       getGasFeeAmount({
@@ -483,7 +483,7 @@ describe("getGasFeeAmount", () => {
           amount: "1",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
 
     await expect(
       getGasFeeAmount({
@@ -508,10 +508,10 @@ describe("getGasFeeAmount", () => {
           amount: "1",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -520,10 +520,10 @@ describe("getGasFeeAmount", () => {
           poolID: 1,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
 
     await expect(
       getGasFeeAmount({
@@ -547,10 +547,10 @@ describe("getGasFeeAmount", () => {
 
     (queryBalances as jest.Mock).mockResolvedValue({
       balances: [],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -559,10 +559,10 @@ describe("getGasFeeAmount", () => {
           poolID: 1,
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
 
     await expect(
       getGasFeeAmount({
@@ -591,17 +591,16 @@ describe("getGasFeeAmount", () => {
           amount: "1",
         },
       ],
-    });
+    } as Awaited<ReturnType<typeof queryBalances>>);
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [],
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
-    });
-
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     await expect(
       getGasFeeAmount({
         chainId,
@@ -636,9 +635,10 @@ describe("getGasPrice", () => {
 
   it("should return the correct gas price with fee market module", async () => {
     const baseFee = 0.01;
+
     (queryGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    });
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
 
     const gasMultiplier = 1.5;
     const result = await getGasPrice({
@@ -688,7 +688,9 @@ describe("getGasPrice", () => {
   });
 
   it("should throw an error if base fee is invalid", async () => {
-    (queryGasPrice as jest.Mock).mockResolvedValue({ base_fee: "invalid" });
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: "invalid",
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
 
     await expect(
       getGasPrice({
@@ -736,7 +738,7 @@ describe("getGasPriceByFeeDenom", () => {
   it("should return the correct gas price", async () => {
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: "0.5",
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const result = await getGasPriceByFeeDenom({
       chainId,
@@ -753,7 +755,7 @@ describe("getGasPriceByFeeDenom", () => {
   it("should throw an error if spot price is zero", async () => {
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: "0",
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     await expect(
       getGasPriceByFeeDenom({
@@ -768,7 +770,7 @@ describe("getGasPriceByFeeDenom", () => {
   it("should throw an error if spot price is negative", async () => {
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: "-1",
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     await expect(
       getGasPriceByFeeDenom({
@@ -783,7 +785,7 @@ describe("getGasPriceByFeeDenom", () => {
   it("should use DefaultGasPriceStep.average if baseFee is undefined", async () => {
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: "0.5",
-    });
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     const result = await getGasPriceByFeeDenom({
       chainId,
