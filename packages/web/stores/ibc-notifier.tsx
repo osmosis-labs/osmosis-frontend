@@ -31,7 +31,6 @@ export const IbcNotifier: FunctionComponent = observer(() => {
           ChainIdHelper.parse(history.destChainId).identifier;
 
         if (history.status === "complete") {
-          console.log("complete", history);
           displayToast(
             {
               message: "IBC Transfer Complete",
