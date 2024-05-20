@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { createNodeQuery } from "../base-utils";
+import { createNodeQuery } from "../create-node-query";
 import { MockChains } from "./mock-chains";
 
 jest.mock("@osmosis-labs/utils", () => ({
@@ -84,6 +84,33 @@ describe("createNodeQuery", () => {
 
     expect(apiClient).toHaveBeenCalledWith(
       `https://lcd-cosmoshub.keplr.app${path(params)}`
+    );
+    expect(result).toEqual(mockResult);
+  });
+
+  it("should allow the user to pass apiClient options and call RPC with HTTP body", async () => {
+    const mockResult = { data: "test" };
+    (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+    const [path, params] = [
+      ({ address }: { address: string }) => `/test/${address}`,
+      {
+        address: "testAddress",
+        chainId: MockChains[1].chain_id,
+        body: "stringBody",
+      },
+    ];
+
+    const query = createNodeQuery<{ data: string }, typeof params>({
+      path,
+      options: ({ body }) => ({ body }),
+    });
+    const result = await query({ chainList: MockChains, ...params });
+
+    expect(apiClient).toHaveBeenCalledWith(
+      // SEE: rpc endpoint is called because body is included
+      `https://rpc-cosmoshub.keplr.app${path(params)}`,
+      { body: "stringBody" }
     );
     expect(result).toEqual(mockResult);
   });

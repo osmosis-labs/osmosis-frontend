@@ -18,6 +18,7 @@ module.exports = {
       },
     ],
   },
+  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",

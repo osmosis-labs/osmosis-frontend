@@ -31,7 +31,7 @@ export class ApiClientError<Data = unknown> extends Error {
   }
 }
 
-interface ClientOptions extends RequestInit {
+export interface ClientOptions extends RequestInit {
   data?: Record<string, any>;
 }
 

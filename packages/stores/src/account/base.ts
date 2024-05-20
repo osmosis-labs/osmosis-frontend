@@ -1342,7 +1342,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     if (chainHasOsmosisFeeModule || chainId === this.osmosisChainId) {
       try {
-        const result = await this.queryOsmosisGasPrice({ chainId });
+        const result = await this.queryGasPrice({ chainId });
 
         /**
          * The gas amount is multiplied by a specific factor to provide additional
@@ -1394,7 +1394,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     feeDenom: string;
     /**
      * The osmosis fee module current base fee token to use for
-     * the gas price calculation. It can be fetched with this.queryOsmosisGasPrice
+     * the gas price calculation. It can be fetched with this.queryGasPrice
      */
     baseFee: string | undefined;
   }): Promise<{ gasPrice: Dec }> {
@@ -1533,7 +1533,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   // TODO: Get this query from the server package once it exists.
-  private async queryOsmosisGasPrice({ chainId }: { chainId: string }) {
+  private async queryGasPrice({ chainId }: { chainId: string }) {
     return cachified({
       key: "osmosis-gas-price",
       cache: this._cache,

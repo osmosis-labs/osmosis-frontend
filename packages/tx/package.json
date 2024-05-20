@@ -25,7 +25,15 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "buffer": "^6.0.3"
+    "@cosmjs/stargate": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/server": "^1.0.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0",
+    "buffer": "^6.0.3",
+    "cosmjs-types": "^0.5.2",
+    "utility-types": "^3.10.0"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
