@@ -220,6 +220,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           );
 
           const asset = getAssetFromAssetList({
+            symbol: currency?.coinDenom,
             coinMinimalDenom: currency?.coinMinimalDenom,
             assetLists: AssetLists,
           });
@@ -331,6 +332,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
 
     // User toggles for showing 10+ pools and assets with > 0 fiat value
     const [showAllAssets, setShowAllAssets] = useState(false);
+    // const [showAllAssets, setShowAllAssets] = useState(false);
     const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
       "assets_hide_zero_balances",
       false
@@ -343,12 +345,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     let setHideBalancesPrivacy = (hideBalances: boolean) => {
       hideBalancesSetting?.setState({ hideBalances: hideBalances });
     };
-
-    console.log("sortedCells", sortedCells);
-    console.log(
-      "wormhole",
-      sortedCells.filter((cell) => cell.coinDenom === "W")
-    );
 
     // Filter data based on user's input in the search box.
     const [query, _setQuery, filteredSortedCells] = useFilteredData(
@@ -365,7 +361,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         "fiatValue",
         "queryTags",
       ]
-      // [{"coinDenom", weight: 5}, "chainName", "chainId", "amount", "fiatValue", "queryTags"]
     );
 
     const setQuery = (term: string) => {
