@@ -48,7 +48,7 @@ export const PoolFilterSchema = z.object({
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "coinDenoms"];
+const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
 
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
@@ -96,15 +96,16 @@ export async function getPools(
   }
 
   // add denoms so user can search them
-  let denomPools = pools.map((pool) => {
-    return {
-      ...pool,
-      coinDenoms: pool.reserveCoins.flatMap((coin) => [
-        coin.denom,
-        coin.currency.coinMinimalDenom,
-      ]),
-    };
-  });
+  let denomPools = pools.map((pool) => ({
+    ...pool,
+    coinDenoms: pool.reserveCoins.flatMap((coin) => [
+      coin.denom,
+      coin.currency.coinMinimalDenom,
+    ]),
+    poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
+  }));
+
+  console.log("denomPools[0]: ", denomPools[0]);
 
   if (params?.search) {
     denomPools = search(denomPools, searchablePoolKeys, params.search);
