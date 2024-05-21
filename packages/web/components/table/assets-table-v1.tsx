@@ -344,12 +344,28 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       hideBalancesSetting?.setState({ hideBalances: hideBalances });
     };
 
+    console.log("sortedCells", sortedCells);
+    console.log(
+      "wormhole",
+      sortedCells.filter((cell) => cell.coinDenom === "W")
+    );
+
     // Filter data based on user's input in the search box.
     const [query, _setQuery, filteredSortedCells] = useFilteredData(
       hideZeroBalances
         ? sortedCells.filter((cell) => cell.amount !== "0")
         : sortedCells,
-      ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
+      [
+        // Weighted keys should have the { name: string; weight: number } format
+        { name: "assetName", weight: 3 },
+        { name: "coinDenom", weight: 2 },
+        "chainName",
+        "chainId",
+        "amount",
+        "fiatValue",
+        "queryTags",
+      ]
+      // [{"coinDenom", weight: 5}, "chainName", "chainId", "amount", "fiatValue", "queryTags"]
     );
 
     const setQuery = (term: string) => {
