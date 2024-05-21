@@ -498,7 +498,7 @@ export const AssetsInfoTable: FunctionComponent<{
       >
         <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="top-0 z-50">
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => (
                 <th
                   className={classNames(

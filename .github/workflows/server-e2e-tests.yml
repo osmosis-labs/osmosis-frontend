@@ -1,6 +1,10 @@
 name: Server E2E Workflow
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: "*/30 * * * *"
 
 jobs:
   setup-matrix:
@@ -66,13 +70,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 Frontend Server E2E Tests Failure Alert 🚨",
+              "text": "🚨 Server to SQS E2E Tests Failure Alert 🚨",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Frontend Server E2E Tests Failure"
+                    "text": "Server to SQS E2E Tests Failure"
                   }
                 },
                 {

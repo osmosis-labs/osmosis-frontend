@@ -11,7 +11,7 @@ import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPoolAprs } from "../../data-services/pool-aprs";
-import { Gauge, queryGauges, queryLockableDurations } from "../../osmosis";
+import { Gauge, queryGauges } from "../../osmosis";
 import { Epochs } from "../../osmosis/epochs";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
 import { getEpochs } from "../osmosis";
@@ -181,25 +181,17 @@ function maybeMakeRatePretty(value: number): RatePretty | undefined {
 
 const incentivesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-export function getLockableDurations({ chainList }: { chainList: Chain[] }) {
-  return cachified({
-    cache: incentivesCache,
-    key: "lockable-durations",
-    ttl: 1000 * 60 * 10, // 10 mins
-    getFreshValue: async () => {
-      const { lockable_durations } = await queryLockableDurations({
-        chainList,
-      });
+export function getLockableDurations() {
+  // see: https://linear.app/osmosis/issue/FE-302/hardcode-lockable-durations-query-response
+  const lockable_durations = ["86400s", "604800s", "1209600s"];
 
-      return lockable_durations
-        .map((durationStr: string) => {
-          return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
-        })
-        .sort((v1, v2) => {
-          return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
-        });
-    },
-  });
+  return lockable_durations
+    .map((durationStr: string) => {
+      return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
+    })
+    .sort((v1, v2) => {
+      return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
+    });
 }
 
 /** Gets internally incentivized pools with gauges that distribute minted staking tokens. */

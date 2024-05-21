@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useCallback } from "react";
 import { ReactElement, useMemo } from "react";
 
+import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
@@ -223,15 +224,15 @@ const YourBalance = observer(
         <div className="flex flex-col gap-6 self-stretch">
           <header>
             <h6 className="text-lg font-h6 leading-6 tracking-wide">
-              {t("tokenInfos.earnWith", { denom })}
+              {t("tokenInfos.earnWith", { denom })}{" "}
             </h6>
           </header>
-          <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
-            {details?.stakingURL && (
+          <div className="flex gap-6 self-stretch 1.5xl:flex-col">
+            {(details?.stakingURL || isOsmo) && (
               <Link
-                href={isOsmo ? "/stake" : details?.stakingURL}
+                href={details?.stakingURL ?? "/stake"}
                 target={isOsmo ? undefined : "_blank"}
-                className="flex flex-[0.5]"
+                className="w-full grow"
                 passHref
                 onClick={() =>
                   logEvent([
@@ -279,7 +280,7 @@ const YourBalance = observer(
             <Link
               href={`/pools?searchQuery=${encodeURIComponent(denom)}`}
               passHref
-              className="flex flex-[0.5]"
+              className="w-full grow"
               onClick={() =>
                 logEvent([
                   EventName.TokenInfo.cardClicked,
@@ -330,15 +331,6 @@ const YourBalance = observer(
 
 export default YourBalance;
 
-interface ActionButtonProps {
-  title: string;
-  sub: string;
-  image: ReactElement;
-  needsPadding?: boolean;
-  largeTitle?: string;
-  shrinkTitle?: boolean;
-}
-
 const ActionButton = ({
   title,
   sub,
@@ -346,38 +338,52 @@ const ActionButton = ({
   needsPadding,
   largeTitle,
   shrinkTitle,
-}: ActionButtonProps) => {
-  return (
-    <div className="relative flex flex-1 flex-row justify-between overflow-hidden rounded-2xl bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6">
-      <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
-        {largeTitle && <p className="font-subtitle1">{title}</p>}
-        {largeTitle ? (
-          <h4
-            className={classNames("text-osmoverse-100", {
-              "text-h5 font-h5": shrinkTitle,
-            })}
-          >
-            {largeTitle}
-          </h4>
-        ) : (
-          <h6 className="text-osmoverse-100">{title}</h6>
-        )}
-        {!shrinkTitle && (
-          <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
-            {sub}
-          </p>
-        )}
-      </div>
-      <div
-        className={`z-0 flex h-full overflow-hidden 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
-          needsPadding ? "mt-auto pr-5 2xl:pr-0" : ""
-        }`}
-      >
-        {image}
-      </div>
+}: {
+  title: string;
+  sub: string;
+  image: ReactElement;
+  needsPadding?: boolean;
+  largeTitle?: string;
+  shrinkTitle?: boolean;
+}) => (
+  <div className="relative flex flex-1 flex-row justify-between overflow-hidden rounded-2xl bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6">
+    <div className="z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
+      {largeTitle && (
+        <p className="font-subtitle1">
+          {title}{" "}
+          <Icon
+            id="arrow-right"
+            className="ml-1 inline h-4 w-4 text-wosmongton-400"
+          />
+        </p>
+      )}
+      {largeTitle ? (
+        <h4
+          className={classNames("text-osmoverse-100", {
+            "text-h5 font-h5": shrinkTitle,
+          })}
+        >
+          {largeTitle}
+        </h4>
+      ) : (
+        <h6 className="text-osmoverse-100">{title}</h6>
+      )}
+      {!shrinkTitle && (
+        <p className="max-w-[165px] text-sm font-body2 font-medium leading-5 tracking-[0.25px] text-osmoverse-200">
+          {sub}
+        </p>
+      )}
     </div>
-  );
-};
+    <div
+      className={classNames(
+        "flex h-full overflow-hidden 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6",
+        needsPadding ? "mt-auto pr-5 2xl:pr-0" : ""
+      )}
+    >
+      {image}
+    </div>
+  </div>
+);
 
 const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const { t } = useTranslation();

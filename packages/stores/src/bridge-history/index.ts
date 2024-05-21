@@ -1,4 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
+import {
+  TransferFailureReason,
+  TransferStatus,
+  TransferStatusProvider,
+  TransferStatusReceiver,
+} from "@osmosis-labs/bridge";
 import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   action,
@@ -10,17 +16,14 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { TxReason, TxStatus } from "./types";
-import { ITxStatusReceiver, ITxStatusSource } from "./types";
-
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
   /** From Date.getTime(). Assumed local timezone. */
   createdAtMs: number;
   prefixedKey: string;
   amount: string;
-  status: TxStatus;
-  reason?: TxReason;
+  status: TransferStatus;
+  reason?: TransferFailureReason;
   isWithdraw: boolean;
   accountAddress: string;
 };
@@ -31,7 +34,7 @@ const STORE_KEY = "nonibc_history_tx_snapshots";
  *  Supports querying state from arbitrary remote chains via dependency injection.
  *  NOTE: source keyPrefix values must be unique.
  */
-export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
+export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
   /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
   @observable
   protected snapshots: TxSnapshot[] = [];
@@ -42,7 +45,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
     protected readonly chainId: string,
     protected readonly kvStore: KVStore,
-    protected readonly txStatusSources: ITxStatusSource[] = [],
+    protected readonly txStatusSources: TransferStatusProvider[] = [],
     protected readonly historyExpireDays = 3
   ) {
     this.txStatusSources.forEach(
@@ -61,7 +64,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     this.restoreSnapshots();
   }
 
-  addStatusSource(source: ITxStatusSource) {
+  addStatusSource(source: TransferStatusProvider) {
     this.txStatusSources.push(source);
   }
 
@@ -70,9 +73,9 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       key: string;
       createdAt: Date;
       sourceName?: string;
-      status: TxStatus;
+      status: TransferStatus;
       amount: string;
-      reason?: TxReason;
+      reason?: TransferFailureReason;
       explorerUrl: string;
       isWithdraw: boolean;
     }[] = [];
@@ -135,8 +138,8 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   @action
   receiveNewTxStatus(
     prefixedKey: string,
-    status: TxStatus,
-    reason: TxReason | undefined
+    status: TransferStatus,
+    reason: TransferFailureReason | undefined
   ) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.prefixedKey === prefixedKey
@@ -194,5 +197,3 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
     return Date.now() - snapshot.createdAtMs > expiryMs;
   }
 }
-
-export * from "./types";

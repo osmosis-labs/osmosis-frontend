@@ -1,5 +1,6 @@
+import type { SourceChain } from "@osmosis-labs/bridge";
+
 import { t } from "~/hooks/language/context";
-import { SourceChain } from "~/integrations/bridge-info";
 
 /**
  * @deprecated
