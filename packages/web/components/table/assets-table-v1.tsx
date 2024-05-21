@@ -332,7 +332,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
 
     // User toggles for showing 10+ pools and assets with > 0 fiat value
     const [showAllAssets, setShowAllAssets] = useState(false);
-    // const [showAllAssets, setShowAllAssets] = useState(false);
     const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
       "assets_hide_zero_balances",
       false
