@@ -48,7 +48,7 @@ export const PoolFilterSchema = z.object({
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
+// const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
 
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
@@ -105,10 +105,27 @@ export async function getPools(
     poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
   }));
 
-  console.log("denomPools[0]: ", denomPools[0]);
-
   if (params?.search) {
-    denomPools = search(denomPools, searchablePoolKeys, params.search);
+    // search for an exact match of coinMinimalDenom or pool ID
+    const coinMinimalDemonMatches = search(
+      denomPools,
+      ["coinDenoms", "id"],
+      params.search,
+      0.0 // Exact match
+    );
+
+    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC)
+    if (coinMinimalDemonMatches.length > 0) {
+      denomPools = coinMinimalDemonMatches;
+    } else {
+      const poolNameByDenomMatches = search(
+        denomPools,
+        ["poolNameByDenom"],
+        params.search
+      );
+
+      denomPools = poolNameByDenomMatches;
+    }
   }
 
   return denomPools;

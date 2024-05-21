@@ -109,8 +109,6 @@ export const AllPoolsTable: FunctionComponent<{
 
   const { filters, sortParams, setSortParams } = useAllPoolsTable();
 
-  console.log("filters: ", filters);
-
   /** Won't sort when searching is happening. */
   const sortKey = useMemo(
     () => (Boolean(filters.searchQuery) ? undefined : sortParams.allPoolsSort),
