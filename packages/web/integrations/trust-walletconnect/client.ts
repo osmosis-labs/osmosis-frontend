@@ -4,39 +4,12 @@ import { DirectSignDoc, SignOptions, Wallet } from "@cosmos-kit/core";
 
 import {
   WCClient,
-  WCSignDirectRequest,
   WCSignDirectResponse,
 } from "~/integrations/core-walletconnect";
 
 export class TrustClient extends WCClient {
   constructor(walletInfo: Wallet) {
     super(walletInfo);
-  }
-
-  protected async _signAmino(
-    chainId: string,
-    signer: string,
-    signDoc: StdSignDoc,
-    _signOptions?: SignOptions
-  ) {
-    const session = this.getSession("cosmos", chainId);
-    if (!session) {
-      throw new Error(`Session for ${chainId} not established yet.`);
-    }
-
-    const resp = await this.signClient?.request<AminoSignResponse>({
-      topic: session.topic,
-      chainId: `cosmos:${chainId}`,
-      request: {
-        method: "cosmos_signAmino",
-        params: {
-          signerAddress: signer,
-          signDoc,
-        },
-      },
-    });
-    this.logger?.debug(`Response of cosmos_signAmino`, resp);
-    return resp;
   }
 
   async signAmino(
@@ -52,51 +25,6 @@ export class TrustClient extends WCClient {
       signOptions
     )) as AminoSignResponse;
     return result;
-  }
-
-  protected async _signDirect(
-    chainId: string,
-    signer: string,
-    signDoc: DirectSignDoc,
-    _signOptions?: SignOptions
-  ) {
-    const session = this.getSession("cosmos", chainId);
-
-    if (!session) {
-      throw new Error(`Session for ${chainId} not established yet.`);
-    }
-
-    if (
-      !signDoc.accountNumber ||
-      !signDoc.chainId ||
-      !signDoc.authInfoBytes ||
-      !signDoc.bodyBytes
-    ) {
-      throw new Error(`Malformed signDoc`);
-    }
-
-    const signDocValue: WCSignDirectRequest = {
-      signerAddress: signer,
-      signDoc: {
-        chainId: signDoc.chainId,
-        bodyBytes: Buffer.from(signDoc.bodyBytes).toString(this.wcEncoding),
-        authInfoBytes: Buffer.from(signDoc.authInfoBytes).toString(
-          this.wcEncoding
-        ),
-        accountNumber: signDoc.accountNumber.toString(),
-      },
-    };
-
-    const resp = await this.signClient?.request({
-      topic: session.topic,
-      chainId: `cosmos:${chainId}`,
-      request: {
-        method: "cosmos_signDirect",
-        params: signDocValue,
-      },
-    });
-    this.logger?.debug(`Response of cosmos_signDirect`, resp);
-    return resp;
   }
 
   async signDirect(
