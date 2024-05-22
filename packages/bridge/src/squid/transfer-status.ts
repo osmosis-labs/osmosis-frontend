@@ -17,11 +17,11 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
-  readonly apiURL: string;
+  readonly apiUrl: string;
   readonly squidScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
-    this.apiURL =
+    this.apiUrl =
       env === "mainnet"
         ? "https://api.0xsquid.com"
         : "https://testnet.api.squidrouter.com";
@@ -40,7 +40,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     await poll({
       fn: async () => {
         try {
-          const url = new URL(`${this.apiURL}/v1/status`);
+          const url = new URL(`${this.apiUrl}/v1/status`);
           url.searchParams.append("transactionId", sendTxHash);
           if (fromChainId) {
             url.searchParams.append("fromChainId", fromChainId.toString());
