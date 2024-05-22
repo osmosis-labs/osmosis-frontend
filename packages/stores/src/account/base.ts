@@ -5,6 +5,7 @@ import {
   OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
+import { StdFee } from "@cosmjs/launchpad";
 import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -56,13 +57,7 @@ import axios from "axios";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import Long from "long";
 import { LRUCache } from "lru-cache";
 import { action, makeObservable, observable, runInAction } from "mobx";
@@ -528,7 +523,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           wallet,
           messages: msgs,
           initialFee: fee ?? { amount: [] },
-          memo,
           signOptions: mergedSignOptions,
         });
       } else {
@@ -1043,100 +1037,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet,
     messages,
     initialFee = { amount: [] },
-    memo = "",
-    signOptions = {},
     excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     initialFee?: Optional<TxFee, "gas">;
-    memo?: string;
     signOptions?: SignOptions;
     excludedFeeMinimalDenoms?: string[];
-  }): Promise<TxFee> {
+  }): Promise<StdFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-    const { sequence } = await this.getSequence(wallet);
 
-    const unsignedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode(
-        TxBody.fromPartial({
-          messages: encodedMessages,
-          memo: memo,
-        })
-      ).finish(),
-      authInfoBytes: AuthInfo.encode({
-        signerInfos: [
-          SignerInfo.fromPartial({
-            // Pub key is ignored.
-            // It is fine to ignore the pub key when simulating tx.
-            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
-            modeInfo: {
-              single: {
-                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
-              },
-              multi: undefined,
-            },
-            sequence,
-          }),
-        ],
-        fee: Fee.fromPartial({
-          amount: initialFee.amount.map((amount) => {
-            return { amount: amount.amount, denom: amount.denom };
-          }),
-        }),
-      }).finish(),
-      // Because of the validation of tx itself, the signature must exist.
-      // However, since they do not actually verify the signature, it is okay to use any value.
-      signatures: [new Uint8Array(64)],
-    }).finish();
-
-    const restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
+    if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const result = await apiClient<{
-        gas_info: {
-          gas_used: string;
-        };
-      }>(this.options?.simulateUrl ?? "/api/simulate-transaction", {
+      return await apiClient<StdFee>("/api/estimate-gas-fee", {
         data: {
-          restEndpoint: removeLastSlash(restEndpoint),
-          tx_bytes: Buffer.from(unsignedTx).toString("base64"),
+          chainId: wallet.chainId,
+          protobufAnysBase64: encodedMessages.map(({ typeUrl, value }) => ({
+            // convert protobufAny to base64 to send over the interwebs
+            typeUrl,
+            value: Buffer.from(value).toString("base64"),
+          })),
+          bech32Address: wallet.address,
+          excludedFeeMinimalDenoms,
         },
       });
-
-      const gasUsed = Number(result.gas_info.gas_used);
-      if (Number.isNaN(gasUsed)) {
-        throw new Error(`Invalid integer gas: ${result.gas_info.gas_used}`);
-      }
-
-      /**
-       * The gas amount is multiplied by a specific factor to provide additional
-       * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-       *  */
-      const gasLimit = String(Math.round(gasUsed * GasMultiplier));
-
-      /**
-       * Compute the fee amount based on the gas limit and the gas price rather than on the wallet.
-       * This is useful for wallets that do not support fee estimation.
-       */
-      if (signOptions.preferNoSetFee) {
-        return {
-          gas: gasLimit,
-          amount: [
-            await this.getFeeAmount({
-              gasLimit,
-              chainId: wallet.chainId,
-              address: wallet.address,
-              excludedFeeMinimalDenoms,
-            }),
-          ],
-        };
-      }
-
-      return {
-        gas: gasLimit,
-        amount: [],
-      };
     } catch (e) {
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{

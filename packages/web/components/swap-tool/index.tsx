@@ -469,11 +469,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           : "bg-transparent"
                       )}
                       disabled={
+                        isLoadingMaxButton ||
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
                         swapState.inAmountInput.notEnoughBalanceForMax
                       }
-                      isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
                       classes={{
                         spinner: "!h-3 !w-3",
@@ -926,6 +926,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <Button
               disabled={
                 isWalletLoading ||
+                swapState.isLoadingNetworkFee ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||

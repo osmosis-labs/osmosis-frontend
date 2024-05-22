@@ -42,6 +42,7 @@ export async function estimateGasFee({
   encodedMessages,
   bech32Address,
   gasMultiplier = 1.5,
+  excludedFeeDenoms,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -52,6 +53,8 @@ export async function estimateGasFee({
   /** A multiplier to handle variable gas
    *  or to account for slippage in price in gas markets. */
   gasMultiplier?: number;
+  /** Base denoms of fee tokens to exclude. */
+  excludedFeeDenoms?: string[];
 }): Promise<StdFee> {
   const { gasUsed } = await simulateMsgs({
     chainId,
@@ -71,6 +74,7 @@ export async function estimateGasFee({
         gasLimit,
         bech32Address,
         gasMultiplier,
+        excludedFeeDenoms,
       }),
     ],
   };
@@ -182,7 +186,7 @@ export class InsufficientFeeError extends Error {}
 /**
  * Gets the gas fee payment asset amounts for the given chain.
  * If an address is provided, it will attempt to provide amounts from the available fee token balances
- * at that account address.
+ * at that account address. Otherwise it will use the default fee token amount(s).
  *
  * Can be expanded to handle paying with multiple fee tokens in the future.
  *
@@ -198,8 +202,7 @@ export async function getGasFeeAmount({
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-
-  bech32Address: string;
+  bech32Address?: string;
   gasLimit: string;
   /** Base denoms */
   excludedFeeDenoms?: string[];
@@ -209,6 +212,18 @@ export async function getGasFeeAmount({
     (chain) => chainId && chain.chain_id === chainId
   );
   if (!chain) throw new Error("Chain not found: " + chainId);
+
+  if (!bech32Address) {
+    // use defaults and not available fee token balances
+    const { feeDenom, gasPrice } = await getGasPrice({
+      chainId,
+      chainList,
+    });
+    return {
+      amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+      denom: feeDenom,
+    };
+  }
 
   const [{ gasPrice: chainGasPrice, feeDenom }, { balances }] =
     await Promise.all([

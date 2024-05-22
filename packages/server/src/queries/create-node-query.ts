@@ -49,20 +49,12 @@ export const createNodeQuery =
 
     const opts = options?.(...(params as [PathParameters]));
 
-    // If a body is included, assume it's a POST request to RPC endpoint since this is
-    // a query to the node and we know requesty bodies won't be sent to rest URLs at LCD endpoint.
-    // Reminder: apiClient similarly changes the HTTP request to POST if there's a body included
-    const baseUrl =
-      Boolean(opts?.body) || Boolean(opts?.data)
-        ? chain.apis.rpc[0].address
-        : chain.apis.rest[0].address;
-
     const url = new URL(
       runIfFn(
         path,
         ...((params as [PathParameters & { chainId?: string }]) ?? [])
       ),
-      baseUrl
+      chain.apis.rest[0].address
     );
     if (opts) return apiClient<Result>(url.toString(), opts);
     else return apiClient<Result>(url.toString());

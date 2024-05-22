@@ -23,7 +23,6 @@ import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -281,7 +280,6 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
-  console.log(api.edge.staking.getApr);
   const { stakingAPR, isLoadingApr } = useGetApr();
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
