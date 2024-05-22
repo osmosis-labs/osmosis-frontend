@@ -106,8 +106,11 @@ export async function apiClient<T>(
 
       console.error("Fetch Error. Info:", {
         endpoint,
-        config,
-        data,
+        config: {
+          ...config,
+          customHeaders: null,
+          headers: null,
+        },
         status: response.status,
         exception: e,
       });

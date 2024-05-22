@@ -32,9 +32,9 @@ export class IBCTransferHistoryStore {
   @observable
   protected _histories: IBCTransferHistory[] = [];
 
-  protected onHistoryChangedHandlers: ((
-    history: IBCTransferHistory
-  ) => void)[] = [];
+  protected onHistoryChangedHandler:
+    | ((history: IBCTransferHistory) => void)
+    | null = null;
 
   // Key is chain id.
   // No need to be observable
@@ -54,7 +54,7 @@ export class IBCTransferHistoryStore {
   }
 
   addHistoryChangedHandler(handler: (history: IBCTransferHistory) => void) {
-    this.onHistoryChangedHandlers.push(handler);
+    this.onHistoryChangedHandler = handler;
   }
 
   get histories(): IBCTransferHistory[] {
@@ -460,9 +460,7 @@ export class IBCTransferHistoryStore {
     if (history.status !== status) {
       history.status = status;
 
-      for (const handler of this.onHistoryChangedHandlers) {
-        handler(history);
-      }
+      this.onHistoryChangedHandler?.(history);
 
       yield this.save();
 

@@ -126,8 +126,9 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
   },
   DOT: {
-    depositUrlOverride: "https://games.mantis.app/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
   MATIC: {
     sourceChainNameOverride: "Polygon",
@@ -337,8 +338,9 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
   KSM: {
-    depositUrlOverride: "https://games.mantis.app/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
   LUNC: {
     depositUrlOverride: "https://bridge.terra.money",
@@ -464,8 +466,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=planq_7070-2&chainTo=osmosis-1&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
   },
   PICA: {
-    depositUrlOverride: "https://games.mantis.app/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   "WBTC.grv": {
     depositUrlOverride:
@@ -651,8 +655,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000&token1=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
   },
   TNKR: {
-    depositUrlOverride: "https://games.mantis.app/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   SAYVE: {
     depositUrlOverride:
@@ -674,36 +680,44 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.evmos.org/assets",
   },
   "ETH.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "DAI.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "FXS.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "FRAX.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "USDT.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "sFRAX.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "frxETH.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "sfrxETH.pica": {
-    depositUrlOverride: "https://games.mantis.app/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride: "https://games.mantis.app/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
 };
 
