@@ -448,7 +448,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SHD: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=shd",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=shd",
   },
   MNTA: {
     depositUrlOverride:
@@ -499,26 +500,32 @@ const MainnetIBCAdditionalData: Partial<
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
   SILK: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=silk",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=silk",
   },
   SIENNA: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=sienna",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=sienna",
   },
   ECH: {
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
   },
   ALTER: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=alter",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=alter",
   },
   BUTT: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=butt",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=butt",
   },
   "stkd-SCRT": {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=stkd-scrt",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=stkd-scrt",
   },
   AMBER: {
-    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=amber",
+    depositUrlOverride:
+      "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=amber",
   },
   arUSD: {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
