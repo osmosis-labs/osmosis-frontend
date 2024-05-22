@@ -230,7 +230,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
     const buttonText = swapState.error
       ? t(...tError(swapState.error))
@@ -242,13 +245,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
       .toDec()
       .gte(new Dec(0.01));
-
-    const isLoadingMaxButton =
-      featureFlags.swapToolSimulateFee &&
-      !isNil(account?.address) &&
-      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-      !swapState.inAmountInput?.balance?.toDec().isZero() &&
-      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
@@ -469,7 +465,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           : "bg-transparent"
                       )}
                       disabled={
-                        isLoadingMaxButton ||
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
                         swapState.inAmountInput.notEnoughBalanceForMax
@@ -720,7 +715,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 !swapState.isSpotPriceQuoteLoading
               }
             >
-              {/* TODO - move this custom button to our own button component */}
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -926,12 +920,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <Button
               disabled={
                 isWalletLoading ||
-                swapState.isLoadingNetworkFee ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
+                    account?.txTypeInProgress !== "" ||
+                    swapState.isLoadingNetworkFee))
               }
               onClick={sendSwapTx}
             >

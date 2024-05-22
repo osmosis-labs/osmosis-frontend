@@ -183,10 +183,14 @@ export function useSwap(
     inAmountInput.isEmpty,
   ]);
 
+  const networkFeeQueryEnabled =
+    !inAmountInput.isEmpty &&
+    !precedentError &&
+    featureFlags.swapToolSimulateFee;
   const {
     data: networkFee,
     error: estimateTxError,
-    isLoading: isLoadingNetworkFee,
+    isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
@@ -197,11 +201,12 @@ export function useSwap(
             balance: inAmountInput.balance,
           }
         : undefined,
-    enabled:
-      !inAmountInput.isEmpty &&
-      !precedentError &&
-      featureFlags.swapToolSimulateFee,
+    enabled: networkFeeQueryEnabled,
   });
+  const isLoadingNetworkFee =
+    featureFlags.swapToolSimulateFee &&
+    isLoadingNetworkFee_ &&
+    networkFeeQueryEnabled;
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -392,8 +397,6 @@ export function useSwap(
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
     isQuoteLoading,
-    /** Spot price or user input quote. */
-    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
     estimateTxError,
   };
