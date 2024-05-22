@@ -12,7 +12,7 @@
     ]
   },
   "scripts": {
-    "dev": "turbo dev --concurrency 11",
+    "dev": "turbo dev --concurrency 12",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
@@ -45,8 +45,8 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
-    "@babel/core": "^7.24.3",
-    "@babel/preset-env": "^7.24.3",
+    "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.5",
     "@inlang/cli": "^2.11.0",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
@@ -69,7 +69,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.2",
-    "turbo": "^1.13.0",
+    "turbo": "^1.13.3",
     "typescript": "5.4.3"
   },
   "packageManager": "yarn@1.22.22",
@@ -80,7 +80,6 @@
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "@axelar-network/axelar-cgp-solidity": "^6.2.1"
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix"
   }
 }

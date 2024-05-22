@@ -87,9 +87,6 @@ export async function getSharePoolBondDurations({
   const isSuperfluidPromise = getSuperfluidPoolIds(params).then((ids) =>
     ids.includes(poolId)
   );
-  const longestDurationPromise = getLockableDurations(params).then(
-    (durations) => durations[durations.length - 1]
-  );
   const internalIncentivesPromise = getIncentivizedPools(params).then(
     (incentivizedPools) => incentivizedPools.find((p) => p.pool_id === poolId)
   );
@@ -107,17 +104,18 @@ export async function getSharePoolBondDurations({
     poolGauges,
     poolIncentives,
     isSuperfluid,
-    longestDuration,
     internalIncentives,
     userPoolLocks,
   ] = await Promise.all([
     activeGaugesPromise,
     poolIncentivesPromise,
     isSuperfluidPromise,
-    longestDurationPromise,
     internalIncentivesPromise,
     userPoolLocksPromise,
   ]);
+
+  const lockableDurations = getLockableDurations();
+  const longestDuration = lockableDurations[lockableDurations.length - 1];
 
   /** Set of all available durations. */
   const durationsMsSet = new Set<number>();

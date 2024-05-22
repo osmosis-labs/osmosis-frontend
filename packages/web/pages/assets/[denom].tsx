@@ -1,10 +1,13 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
   CoingeckoCoin,
+  getActiveCoingeckoCoins,
   getAsset,
+  getAssetMarketActivity,
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
+  sort,
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
@@ -41,7 +44,7 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
-  useUserFavoriteAssetDenoms,
+  useUserWatchlist,
   useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
@@ -192,6 +195,17 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       return asset?.rawAsset.name;
     }, [denom, details]);
 
+    const SwapTool_ = (
+      <SwapTool
+        fixedWidth
+        useQueryParams={false}
+        useOtherCurrencies={true}
+        initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+        initialOutTokenDenom={denom}
+        page="Token Info Page"
+      />
+    );
+
     return (
       <AssetInfoViewProvider value={contextValue}>
         <NextSeo
@@ -222,10 +236,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
-              <YourBalance
-                denom={denom}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-              />
+              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
+                  {SwapTool_}
+                </div>
+                <YourBalance
+                  className="xl:flex-grow"
+                  denom={denom}
+                  tokenDetailsByLanguage={tokenDetailsByLanguage}
+                />
+              </div>
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
@@ -235,16 +255,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="xl:hidden">
-                <SwapTool
-                  fixedWidth
-                  useQueryParams={false}
-                  useOtherCurrencies={true}
-                  initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  initialOutTokenDenom={denom}
-                  page="Token Info Page"
-                />
-              </div>
+              <div className="xl:hidden">{SwapTool_}</div>
 
               {/* {routablePools && (
                 <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
@@ -268,7 +279,7 @@ const Navigation = observer((props: NavigationProps) => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
-  const { favoritesList, toggleFavoriteDenom } = useUserFavoriteAssetDenoms();
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -276,26 +287,24 @@ const Navigation = observer((props: NavigationProps) => {
       : undefined;
   }, [language, tokenDetailsByLanguage]);
 
-  const isFavorite = useMemo(
-    () => favoritesList.includes(denom),
-    [denom, favoritesList]
-  );
-
   const chain = useMemo(
     () => chainStore.getChainFromCurrency(denom),
     [denom, chainStore]
   );
 
-  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
+  const currencies = useMemo(
+    () => chain?.currencies ?? [],
+    [chain?.currencies]
+  );
 
   const coinGeckoId = useMemo(
     () =>
       details?.coingeckoID
         ? details?.coingeckoID
-        : balances.find(
+        : currencies.find(
             (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
           )?.coinGeckoId,
-    [balances, details?.coingeckoID, denom]
+    [currencies, details?.coingeckoID, denom]
   );
 
   const title = useMemo(() => {
@@ -369,12 +378,14 @@ const Navigation = observer((props: NavigationProps) => {
           variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={() => toggleFavoriteDenom(denom)}
+          onClick={() => toggleWatchAssetDenom(denom)}
         >
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              isFavorite ? "" : "opacity-30 group-hover:opacity-100"
+              watchListDenoms.includes(denom)
+                ? ""
+                : "opacity-30 group-hover:opacity-100"
             } `}
           />
           {t("tokenInfos.watchlist")}
@@ -560,23 +571,49 @@ const TokenChart = observer(() => {
 
 export default AssetInfoPage;
 
+/** Number of assets, sorted by volume, to generate static paths for. */
+const TOP_VOLUME_ASSETS_COUNT = 50;
+
 /**
- * Prerender all the denoms, we can also filter this value to reduce
- * build time
+ * Prerender important denoms. See function body for what we consider "important".
  */
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
   let paths: { params: { denom: string } }[] = [];
 
-  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
-    (a, b) => [...a, ...b]
+  const assets = AssetLists.flatMap((list) => list.assets);
+  const activeCoinGeckoIds = await getActiveCoingeckoCoins();
+
+  const importantAssets = assets.filter(
+    (asset) =>
+      asset.verified &&
+      !asset.unstable &&
+      !asset.preview &&
+      // Prevent repeated "coin not found" errors from CoinGecko coin query downsteram
+      asset.coingeckoId &&
+      activeCoinGeckoIds.has(asset.coingeckoId)
   );
 
+  const marketAssets = (
+    await Promise.all(
+      importantAssets.map((asset) =>
+        getAssetMarketActivity(asset).then((activity) => ({
+          ...activity,
+          ...asset,
+        }))
+      )
+    )
+  ).filter((asset): asset is NonNullable<typeof asset> => asset !== undefined);
+
+  const topVolumeAssets = sort(marketAssets, "volume7d").slice(
+    0,
+    TOP_VOLUME_ASSETS_COUNT
+  );
   /**
    * Add cache for all available currencies
    */
-  paths = currencies.map((currency) => ({
+  paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: currency.coinDenom,
+      denom: asset.symbol,
     },
   }));
 

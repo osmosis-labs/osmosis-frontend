@@ -27,6 +27,7 @@ import {
   useAmplitudeAnalytics,
   useDimension,
   useTranslation,
+  useUserWatchlist,
   useWindowSize,
 } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
@@ -49,9 +50,11 @@ import { SortHeader } from "./headers/sort";
 
 type AssetRow =
   RouterOutputs["edge"]["assets"]["getMarketAssets"]["items"][number];
-type SortKey = NonNullable<
-  RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
->["keyPath"];
+type SortKey =
+  | NonNullable<
+      RouterInputs["edge"]["assets"]["getMarketAssets"]["sort"]
+    >["keyPath"]
+  | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -68,12 +71,13 @@ export const AssetsInfoTable: FunctionComponent<{
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
   const selectCategory = useCallback(
-    (category: string) => {
+    (category: string, highlight?: string) => {
       setCategory(category);
       logEvent([
         EventName.Assets.categorySelected,
         {
           assetCategory: category,
+          highlight,
         },
       ]);
     },
@@ -83,7 +87,7 @@ export const AssetsInfoTable: FunctionComponent<{
     setCategory(undefined);
   }, []);
   const onSelectTopGainers = useCallback(() => {
-    selectCategory("topGainers");
+    selectCategory("topGainers", "topGainers");
   }, [selectCategory]);
   const categories = useMemo(
     () =>
@@ -100,7 +104,7 @@ export const AssetsInfoTable: FunctionComponent<{
   }, []);
 
   // sorting
-  const [sortKey_, setSortKey_] = useState<SortKey>("volume24h");
+  const [sortKey_, setSortKey_] = useState<SortKey>(undefined);
   const sortKey = useMemo(() => {
     // handle topGainers category on client, but other categories can still sort
     if (selectedCategory === "topGainers") return "priceChange24h";
@@ -114,8 +118,8 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [selectedCategory, sortDirection_]);
   const setSortKey = useCallback(
     (key: SortKey | undefined) => {
+      setSortKey_(key);
       if (key !== undefined) {
-        setSortKey_(key);
         logEvent([
           EventName.Assets.assetsListSorted,
           {
@@ -130,7 +134,7 @@ export const AssetsInfoTable: FunctionComponent<{
   const sort = useMemo(
     () =>
       // disable sorting while searching on client to remove sort UI while searching
-      !Boolean(searchQuery)
+      !Boolean(searchQuery) && sortKey
         ? {
             keyPath: sortKey,
             direction: sortDirection,
@@ -152,6 +156,8 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const { showPreviewAssets: includePreview } = useShowPreviewAssets();
 
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   // Query
   const {
     data: assetPagesData,
@@ -168,6 +174,7 @@ export const AssetsInfoTable: FunctionComponent<{
       onlyVerified: showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
+      watchListDenoms,
       categories,
     },
     {
@@ -211,12 +218,12 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: t("assets.table.asset"),
-        cell: (cell) => (
+        cell: ({ row: { original } }) => (
           <AssetCell
-            {...cell.row.original}
-            warnUnverified={
-              showUnverifiedAssets && !cell.row.original.isVerified
-            }
+            {...original}
+            warnUnverified={showUnverifiedAssets && !original.isVerified}
+            isInUserWatchlist={watchListDenoms.includes(original.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetDenom(original.coinDenom)}
           />
         ),
       }),
@@ -245,6 +252,27 @@ export const AssetsInfoTable: FunctionComponent<{
           ),
       }),
       columnHelper.accessor((row) => row, {
+        id: "priceChange1h",
+        header: () => (
+          <SortHeader
+            label="1h"
+            sortKey="priceChange1h"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange1h },
+          },
+        }) =>
+          priceChange1h && (
+            <PriceChange className="justify-end" priceChange={priceChange1h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
         id: "priceChange24h",
         header: () => (
           <SortHeader
@@ -263,6 +291,27 @@ export const AssetsInfoTable: FunctionComponent<{
         }) =>
           priceChange24h && (
             <PriceChange className="justify-end" priceChange={priceChange24h} />
+          ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "priceChange7d",
+        header: () => (
+          <SortHeader
+            label="7d"
+            sortKey="priceChange7d"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: ({
+          row: {
+            original: { priceChange7d },
+          },
+        }) =>
+          priceChange7d && (
+            <PriceChange className="justify-end" priceChange={priceChange7d} />
           ),
       }),
       columnHelper.accessor(
@@ -309,11 +358,21 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    watchListDenoms,
+    toggleWatchAssetDenom,
+    setSortKey,
+    t,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl) collapsedColIds.push("priceChange7d");
+    if (width < Breakpoint.xlhalf) collapsedColIds.push("priceChange1h");
     if (width < Breakpoint.xl) collapsedColIds.push("marketCap");
     if (width < Breakpoint.xlg) collapsedColIds.push("priceChart");
     if (width < Breakpoint.lg) collapsedColIds.push("priceChange24h");
@@ -439,7 +498,7 @@ export const AssetsInfoTable: FunctionComponent<{
       >
         <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="top-0 z-50">
+            <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => (
                 <th
                   className={classNames(
@@ -447,7 +506,7 @@ export const AssetsInfoTable: FunctionComponent<{
                     "sm:w-fit ",
                     {
                       // defines column widths after first column
-                      "w-36 xl:w-28": index !== 0,
+                      "w-28": index !== 0,
                     }
                   )}
                   key={header.id}

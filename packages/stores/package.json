@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rm -rf node_modules; rm -rf build; rm tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -62,6 +62,7 @@
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
@@ -74,7 +75,7 @@
     "long": "^5.2.3",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "protobufjs": "^6.11.2",
+    "protobufjs": "^7.2.6",
     "sha.js": "^2.4.11",
     "utility-types": "^3.10.0",
     "@osmosis-labs/types": "^1.0.0",

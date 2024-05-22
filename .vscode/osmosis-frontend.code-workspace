@@ -16,6 +16,9 @@
       "path": "../packages/proto-codecs/"
     },
     {
+      "path": "../packages/bridge/"
+    },
+    {
       "path": "../packages/server/"
     },
     {

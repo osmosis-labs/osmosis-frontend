@@ -12,7 +12,7 @@ export * from "./wallet-registry";
 export * from "./feature-flag";
 
 /** Config for displaying IBC assets in a human-friendly way. */
+export * from "./analytics-events";
 export * from "./env";
 export * from "./ibc-overrides";
 export * from "./initial-assets-sort";
-export * from "./user-analytics-v2";

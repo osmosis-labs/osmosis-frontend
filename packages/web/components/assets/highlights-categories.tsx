@@ -5,7 +5,13 @@ import { FunctionComponent, ReactNode } from "react";
 
 import { PriceChange } from "~/components/assets/price";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  Breakpoint,
+  useAmplitudeAnalytics,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { CustomClasses } from "../types";
@@ -17,9 +23,11 @@ type PriceChange24hAsset =
 type UpcomingReleaseAsset =
   RouterOutputs["edge"]["assets"]["getTopUpcomingAssets"][number];
 
+type Highlight = "new" | "topGainers" | "upcoming";
+
 type HighlightsProps = {
   isCategorySelected: boolean;
-  onSelectCategory: (category: string) => void;
+  onSelectCategory: (category: string, highlight: Highlight) => void;
   onSelectAllTopGainers: () => void;
 } & CustomClasses;
 
@@ -66,20 +74,24 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-        onClickSeeAll={() => onSelectCategory("new")}
+        onClickSeeAll={() => onSelectCategory("new", "new")}
+        highlight="new"
       />
       <AssetHighlights
         className="xl:row-span-2 lg:row-auto lg:w-[80%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.topGainers")}
+        subtitle="24h"
         isLoading={isTopGainerAssetsLoading}
         assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
         onClickSeeAll={onSelectAllTopGainers}
+        highlight="topGainers"
       />
       <AssetHighlights
         className="lg:w-[80%] lg:shrink-0 lg:snap-center"
         title={t("assets.highlights.upcoming")}
         isLoading={isTopUpcomingAssetsLoading}
         assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
+        highlight="upcoming"
       />
     </div>
   );
@@ -122,6 +134,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
 export const AssetHighlights: FunctionComponent<
   {
     title: string;
+    subtitle?: string;
     onClickSeeAll?: () => void;
     assets: {
       asset: {
@@ -133,8 +146,17 @@ export const AssetHighlights: FunctionComponent<
     }[];
     isLoading?: boolean;
     disableLinking?: boolean;
+    highlight: Highlight;
   } & CustomClasses
-> = ({ title, onClickSeeAll, assets, isLoading = false, className }) => {
+> = ({
+  title,
+  subtitle,
+  onClickSeeAll,
+  assets,
+  isLoading = false,
+  className,
+  highlight,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -145,7 +167,12 @@ export const AssetHighlights: FunctionComponent<
       )}
     >
       <div className="flex place-content-between pt-1 pb-3">
-        <h6>{title}</h6>
+        <h6>
+          {title}{" "}
+          {subtitle && (
+            <span className="body1 text-osmoverse-400">{subtitle}</span>
+          )}
+        </h6>
         {onClickSeeAll && (
           <button className="body2 text-wosmongton-300" onClick={onClickSeeAll}>
             {t("assets.seeAll")}
@@ -166,6 +193,7 @@ export const AssetHighlights: FunctionComponent<
                 key={asset.coinDenom}
                 asset={asset}
                 extraInfo={extraInfo}
+                highlight={highlight}
               />
             ))}
           </>
@@ -184,10 +212,14 @@ const AssetHighlightRow: FunctionComponent<{
     externalLink?: boolean;
   };
   extraInfo: ReactNode;
+  highlight: Highlight;
 }> = ({
   asset: { coinDenom, coinName, coinImageUrl, href, externalLink },
   extraInfo,
+  highlight,
 }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const AssetContent = (
     <>
       <div className="flex items-center gap-2">
@@ -213,6 +245,9 @@ const AssetHighlightRow: FunctionComponent<{
       passHref
       target={externalLink ? "_blank" : "_self"}
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+      onClick={() => {
+        logEvent([EventName.Assets.assetClicked, { coinDenom, highlight }]);
+      }}
     >
       {AssetContent}
     </Link>

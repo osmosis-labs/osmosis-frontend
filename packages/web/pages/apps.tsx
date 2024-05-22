@@ -55,6 +55,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   useEffect(() => {
     const options = {
       keys: ["title"],
+      threshold: 0.3,
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
@@ -108,6 +109,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             onInput={handleSearchInput}
             className="self-end"
             size={searchBoxSize || "long"}
+            debounce={100}
           />
         </div>
       </div>

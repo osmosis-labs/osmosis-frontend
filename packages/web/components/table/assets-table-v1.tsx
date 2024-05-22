@@ -22,10 +22,9 @@ import { SortDirection } from "~/components/types";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import { initialAssetsSort } from "~/config";
+import { EventName, initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -221,6 +220,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           );
 
           const asset = getAssetFromAssetList({
+            symbol: currency?.coinDenom,
             coinMinimalDenom: currency?.coinMinimalDenom,
             assetLists: AssetLists,
           });
@@ -350,7 +350,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       hideZeroBalances
         ? sortedCells.filter((cell) => cell.amount !== "0")
         : sortedCells,
-      ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
+      [
+        // Weighted keys should have the { name: string; weight: number } format
+        { name: "assetName", weight: 3 },
+        { name: "coinDenom", weight: 2 },
+        "chainName",
+        "chainId",
+        "amount",
+        "fiatValue",
+        "queryTags",
+      ]
     );
 
     const setQuery = (term: string) => {

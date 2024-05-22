@@ -50,7 +50,7 @@ export function calcAmount0Delta(
     // the case where we want to round up to favor the pool.
     // Examples include:
     // - calculating amountIn during swap
-    // - adding liquidity (request user to provide more tokens in in favor of the pool)
+    // - adding liquidity (request user to provide more tokens in favor of the pool)
     // The denominator is truncated to get a higher final amount.
     const denom = sqrtPriceA.mulTruncate(sqrtPriceB);
     return liquidity.mul(diff).quo(denom).roundUpDec();
@@ -95,7 +95,7 @@ export function calcAmount1Delta(
     // the case where we want to round up to favor the pool.
     // Examples include:
     // - calculating amountIn during swap
-    // - adding liquidity (request user to provide more tokens in in favor of the pool)
+    // - adding liquidity (request user to provide more tokens in favor of the pool)
     const _liquidity = liquidity;
     const _diff = diff;
     return _liquidity.mul(_diff).roundUpDec();
