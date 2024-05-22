@@ -76,6 +76,8 @@ const MainnetIBCAdditionalData: Partial<
         },
       ],
     },
+    depositUrlOverride: "https://app.nomic.io/bitcoin",
+    withdrawUrlOverride: "https://app.nomic.io/bitcoin",
   },
   "WBTC.axl": {
     sourceChainNameOverride: "Ethereum",
