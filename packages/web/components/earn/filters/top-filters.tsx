@@ -219,19 +219,24 @@ export const TopFilters = ({
       </div>
       {/** 512 - 1024 */}
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5xs:hidden">
-        <RadioWithOptions
-          disabled={tokenHolderSwitchDisabled}
-          mode="primary"
-          variant="large"
-          value={tokenHolder}
-          onChange={(value) => setFilter("tokenHolder", value)}
-          options={tokenFilterOptions}
-        />
+        {!tokenHolderSwitchDisabled ? (
+          <RadioWithOptions
+            disabled={tokenHolderSwitchDisabled}
+            mode="primary"
+            variant="large"
+            value={tokenHolder}
+            onChange={(value) => setFilter("tokenHolder", value)}
+            options={tokenFilterOptions}
+          />
+        ) : (
+          false
+        )}
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
           placeholder={t("store.searchPlaceholder")}
-          size={"full"}
+          size="full"
+          variant="outline"
         />
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
@@ -288,7 +293,8 @@ export const TopFilters = ({
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
           placeholder={t("store.searchPlaceholder")}
-          size={"full"}
+          size="full"
+          variant="outline"
         />
         <Button onClick={() => setIsModalOpen(true)} className="max-w-[110px]">
           {t("earnPage.filters")}
