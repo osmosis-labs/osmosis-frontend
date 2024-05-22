@@ -448,10 +448,7 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   SHD: {
-    depositUrlOverride: "https://dash.scrt.network/ibc",
-  },
-  "SHD(old)": {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=shd",
   },
   MNTA: {
     depositUrlOverride:
@@ -502,26 +499,26 @@ const MainnetIBCAdditionalData: Partial<
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
   SILK: {
-    depositUrlOverride: "https://dash.scrt.network/ibc",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=silk",
   },
   SIENNA: {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=sienna",
   },
   ECH: {
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
   },
   ALTER: {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=alter",
   },
   BUTT: {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=butt",
   },
   "stkd-SCRT": {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=stkd-scrt",
   },
   AMBER: {
-    depositUrlOverride: "https://wrap.scrt.network",
+    depositUrlOverride: "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=amber",
   },
   arUSD: {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
@@ -613,7 +610,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7&token1=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
   },
-  ASTRO: {
+  "ASTRO.cw20": {
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26&token1=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
     withdrawUrlOverride:
