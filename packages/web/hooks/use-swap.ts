@@ -679,7 +679,7 @@ function useSwapAmountInput({
       : undefined,
     enabled:
       featureFlags.swapToolSimulateFee &&
-      !!inAmountInput.balance &&
+      Boolean(inAmountInput.balance) &&
       !isQuoteForCurrentBalanceLoading,
   });
 

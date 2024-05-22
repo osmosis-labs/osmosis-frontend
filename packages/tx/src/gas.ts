@@ -168,7 +168,7 @@ export async function simulateMsgs({
       // If the error message includes "invalid empty tx", it means that the chain does not
       // support tx simulation. In this case, just return a specific error type.
       if (message.includes("invalid empty tx")) {
-        throw new SimulateNotAvailableError(e?.data?.message);
+        throw new SimulateNotAvailableError(message);
       }
 
       // If there is a code, it's a simulate tx error and we should forward its message.
