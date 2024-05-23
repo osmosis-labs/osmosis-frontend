@@ -754,7 +754,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    fee: TxFee | undefined;
+    fee: TxFee;
     memo: string;
     signOptions?: SignOptions;
   }): Promise<TxRaw> {
