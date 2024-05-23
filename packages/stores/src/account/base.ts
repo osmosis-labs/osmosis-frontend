@@ -1261,13 +1261,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signOptions?: SignOptions;
     excludedFeeMinimalDenoms?: string[];
   }): Promise<StdFee> {
-    const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
+      const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
       const getGasAmount =
         signOptions.preferNoSetFee || signOptions.useOneClickTrading;
+
       return await apiClient<StdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
@@ -1277,8 +1277,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           bech32Address: wallet.address,
           // make sure signoptions is integrated into estimategas
           excludedFeeMinimalDenoms,
-          getGasAmount,
           onlyDefaultFeeDenom: signOptions.useOneClickTrading,
+          getGasAmount,
+          gasMultiplier: GasMultiplier,
         },
       });
 

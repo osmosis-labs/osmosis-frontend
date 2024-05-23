@@ -34,6 +34,7 @@ export default async function handler(
     excludedFeeMinimalDenoms,
     onlyDefaultFeeDenom,
     getGasAmount,
+    gasMultiplier,
   } = req.body as {
     chainId: string;
     messages: { typeUrl: string; value: string }[];
@@ -42,6 +43,7 @@ export default async function handler(
     excludedFeeMinimalDenoms?: string[];
     onlyDefaultFeeDenom: boolean;
     getGasAmount: boolean;
+    gasMultiplier: number;
   };
 
   try {
@@ -54,12 +56,10 @@ export default async function handler(
         nonCriticalExtensionOptions:
           nonCriticalExtensionOptions.map(decodeAnyBase64),
       },
-      excludedFeeDenoms: onlyDefaultFeeDenom
-        ? undefined
-        : excludedFeeMinimalDenoms,
-      onlyDefaultFeeDenom:
-        excludedFeeMinimalDenoms && !onlyDefaultFeeDenom ? undefined : true,
+      excludedFeeDenoms: excludedFeeMinimalDenoms,
+      onlyDefaultFeeDenom,
       getGasAmount,
+      gasMultiplier,
     });
     return res.status(200).json(gasFee);
   } catch (e) {

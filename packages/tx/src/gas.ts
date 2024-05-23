@@ -33,16 +33,13 @@ export type EstimationOpts = {
    *  or to account for slippage in price in gas markets.
    *  Default: `1.5` */
   gasMultiplier?: number;
-} & (
-  | {
-      /** Base denoms of fee tokens to exclude. */
-      excludedFeeDenoms?: string[];
-    }
-  | {
-      /** Force the use of fee token returned by default from `getGasPrice` */
-      onlyDefaultFeeDenom: true;
-    }
-);
+
+  /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
+  onlyDefaultFeeDenom?: boolean;
+
+  /** Base denoms of fee tokens to exclude. */
+  excludedFeeDenoms?: string[];
+};
 
 /**
  * Estimates the full gas fee payment for the given encoded messages on the chain specified by given chain ID.
@@ -65,7 +62,7 @@ export async function estimateGasFee({
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  body: Partial<TxBody>;
+  body: SimBody;
   bech32Address: string;
 } & EstimationOpts): Promise<StdFee> {
   const { gasUsed } = await simulate({
@@ -96,6 +93,7 @@ export async function estimateGasFee({
         : bech32Address,
     excludedFeeDenoms:
       "excludedFeeDenoms" in opts ? opts.excludedFeeDenoms : [],
+    gasMultiplier,
   });
 
   return {
@@ -105,7 +103,7 @@ export async function estimateGasFee({
 }
 
 export class SimulateNotAvailableError extends Error {}
-/** Tx body portions relevant to simulating */
+/** Tx body portions relevant for simulation */
 export type SimBody = Partial<
   Pick<
     TxBody,
