@@ -754,7 +754,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: TxFee | undefined;
     memo: string;
     signOptions?: SignOptions;
   }): Promise<TxRaw> {
@@ -785,8 +785,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const isWithinNetworkFeeLimit =
       oneClickTradingInfo &&
-      fee.amount.length === 1 &&
-      fee.amount[0].denom === "uosmo" &&
+      fee?.amount.length === 1 &&
+      fee?.amount[0].denom === "uosmo" &&
       new Dec(fee.amount[0].amount).lte(
         new Dec(oneClickTradingInfo.networkFeeLimit.amount)
       );
