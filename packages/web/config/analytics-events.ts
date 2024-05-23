@@ -58,6 +58,7 @@ export type EventProperties = {
   router: string;
   errorMessage: string | undefined;
   valueUsd: number;
+  feeValueUsd: number;
   assetCategory: string;
   highlight: string;
 };
@@ -84,6 +85,7 @@ export const EventName = {
     slippageToleranceSet: "Swap: Slippage tolerance set",
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
+    swapFailed: "Swap: Swap failed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",
   },
   // Events in Sidebar UI

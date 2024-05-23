@@ -179,7 +179,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount),
+        tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
         toToken: swapState.toAsset?.coinDenom,
         isOnHome: page === "Swap Page",
         isMultiHop: swapState.quote?.split.some(
@@ -187,18 +187,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
         valueUsd: Number(
-          swapState.tokenOutFiatValue?.toDec().toString() ?? "0"
+          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
         ),
+        feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
+        quoteTimeMilliseconds: swapState.quote?.timeMs,
+        router: swapState.quote?.name,
       };
-      logEvent([
-        EventName.Swap.swapStarted,
-        {
-          ...baseEvent,
-          quoteTimeMilliseconds: swapState.quote?.timeMs,
-          router: swapState.quote?.name,
-        },
-      ]);
+      logEvent([EventName.Swap.swapStarted, baseEvent]);
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
@@ -208,8 +204,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             {
               ...baseEvent,
               isMultiHop: result === "multihop",
-              quoteTimeMilliseconds: swapState.quote?.timeMs,
-              router: swapState.quote?.name,
             },
           ]);
 
@@ -221,9 +215,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           }
         })
         .catch((error) => {
-          // failed broadcast txs are handled elsewhere
-          // this is likely a signature rejection
-          console.error("swap error", error);
+          console.error("swap failed", error);
+          if (error instanceof Error && error.message === "Request rejected") {
+            // don't log when the user rejects in wallet
+            return;
+          }
+          logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
           onRequestModalClose?.();
