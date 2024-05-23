@@ -210,7 +210,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return quote.transactionRequest!;
   }
 
-  private async createTransaction(
+  async createTransaction(
     chainID: string,
     address: string,
     messages: SkipMsg[]
@@ -230,7 +230,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
-  private async createCosmosTransaction(
+  async createCosmosTransaction(
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest> {
     const messageData = JSON.parse(message.msg);
@@ -261,7 +261,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     };
   }
 
-  private async createEvmTransaction(
+  async createEvmTransaction(
     chainID: string,
     sender: string,
     message: SkipEvmTx
@@ -300,7 +300,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return provider;
   }
 
-  private async getApprovalTransactionRequest(
+  async getApprovalTransactionRequest(
     chainID: string,
     tokenAddress: string,
     owner: string,
@@ -338,7 +338,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     };
   }
 
-  private async getSkipAsset(chain: BridgeChain, asset: BridgeAsset) {
+  async getSkipAsset(chain: BridgeChain, asset: BridgeAsset) {
     const chainID = chain.chainId.toString();
 
     const chainAssets = await this.getSkipAssets(chainID);
@@ -368,7 +368,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
-  private async getSkipAssets(chainID: string) {
+  async getSkipAssets(chainID: string) {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
@@ -384,7 +384,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     });
   }
 
-  private async getChains() {
+  async getChains() {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
@@ -397,7 +397,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     });
   }
 
-  private async getAddressList(
+  async getAddressList(
     chainIDs: string[],
     fromAddress: string,
     toAddress: string,
