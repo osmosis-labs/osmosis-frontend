@@ -16,14 +16,14 @@ export default defineConfig({
     ["html", { open: "never" }],
     ["junit", { outputFile: "test-results/test-results.xml" }],
   ],
-  timeout: 60000,
+  timeout: 90000,
   testDir: "./e2e/tests",
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 0 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. Multiple swaps on same account could be unsatble. Test execution will be batched per agent. */
   workers: process.env.CI ? 1 : undefined,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

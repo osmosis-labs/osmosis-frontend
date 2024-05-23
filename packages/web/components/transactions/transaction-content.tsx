@@ -16,7 +16,8 @@ import { TransactionRows } from "~/components/transactions/transaction-rows";
 import { useTranslation } from "~/hooks";
 
 export const TransactionContent = ({
-  setSelectedTransaction,
+  setSelectedTransactionHash,
+  selectedTransactionHash,
   transactions = [],
   setOpen,
   open,
@@ -27,7 +28,8 @@ export const TransactionContent = ({
   hasNextPage,
   wallet,
 }: {
-  setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  setSelectedTransactionHash: (hash: string) => void;
+  selectedTransactionHash?: string;
   transactions?: FormattedTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
@@ -72,7 +74,8 @@ export const TransactionContent = ({
         ) : showTransactionContent ? (
           <TransactionRows
             transactions={transactions}
-            setSelectedTransaction={setSelectedTransaction}
+            setSelectedTransactionHash={setSelectedTransactionHash}
+            selectedTransactionHash={selectedTransactionHash}
             setOpen={setOpen}
             open={open}
           />

@@ -111,10 +111,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
-        swapState.tokenOutAmountMinusSwapFee && swapState.toAsset
-          ? new IntPretty(
-              swapState.tokenOutAmountMinusSwapFee.toDec().mul(oneMinusSlippage)
-            )
+        swapState.quote && swapState.toAsset
+          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
           : undefined;
 
       // Compute out fiat amount less slippage
@@ -127,9 +125,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       return { outAmountLessSlippage, outFiatAmountLessSlippage };
     }, [
-      slippageConfig.slippage,
-      swapState.tokenOutAmountMinusSwapFee,
+      swapState.quote,
       swapState.toAsset,
+      slippageConfig.slippage,
       swapState.tokenOutFiatValue,
     ]);
 
@@ -556,7 +554,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setFromAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "to" token, switch the assets
+                      if (tokenDenom === swapState.toAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setFromAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                       fromAmountInputEl.current?.focus();
                     },
@@ -673,7 +677,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   swapState={swapState}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setToAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "from" token, switch the assets
+                      if (tokenDenom === swapState.fromAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setToAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                     },
                     [swapState, closeTokenSelectDropdowns]
@@ -695,9 +705,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <h5
                     className={classNames(
                       "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.tokenOutAmountMinusSwapFee
-                        ?.toDec()
-                        .isPositive() &&
+                      swapState.quote?.amount.toDec().isPositive() &&
                         !swapState.inAmountInput.isTyping &&
                         !swapState.isQuoteLoading
                         ? "text-white-full"
@@ -711,8 +719,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {`≈ ${formatPretty(
-                      swapState.tokenOutAmountMinusSwapFee
-                        ? swapState.tokenOutAmountMinusSwapFee.toDec()
+                      swapState.quote?.amount
+                        ? swapState.quote.amount.toDec()
                         : new Dec(0),
                       {
                         maxDecimals: 8,
@@ -916,8 +924,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     <span className="caption whitespace-nowrap text-osmoverse-200">
                       {`≈ ${
-                        swapState.tokenOutAmountMinusSwapFee
-                          ? formatPretty(swapState.tokenOutAmountMinusSwapFee, {
+                        swapState.quote?.amount
+                          ? formatPretty(swapState.quote.amount, {
                               maxDecimals: 8,
                             })
                           : ""

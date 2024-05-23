@@ -10,12 +10,14 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export const TransactionRows = ({
   transactions,
-  setSelectedTransaction,
+  selectedTransactionHash,
+  setSelectedTransactionHash,
   setOpen,
   open,
 }: {
   transactions: FormattedTransaction[];
-  setSelectedTransaction: (selectedTransaction: FormattedTransaction) => void;
+  selectedTransactionHash?: string;
+  setSelectedTransactionHash: (hash: string) => void;
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
@@ -34,9 +36,11 @@ export const TransactionRows = ({
             <hr className="mb-3 text-osmoverse-700" />
             {transactions
               .map((transaction) => {
+                const isSelected = selectedTransactionHash === transaction.hash;
                 return (
                   <TransactionRow
                     key={transaction.id}
+                    isSelected={isSelected}
                     title={{
                       pending: t("transactions.swapping"),
                       success: t("transactions.swapped"),
@@ -58,7 +62,7 @@ export const TransactionRows = ({
                         },
                       ]);
 
-                      setSelectedTransaction(transaction);
+                      setSelectedTransactionHash(transaction.hash);
 
                       // delay to ensure the slide over transitions smoothly
                       if (!open) {

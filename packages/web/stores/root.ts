@@ -1,4 +1,9 @@
 import {
+  AxelarTransferStatusProvider,
+  SkipTransferStatusProvider,
+  SquidTransferStatusProvider,
+} from "@osmosis-labs/bridge";
+import {
   CosmosQueries,
   CosmwasmQueries,
   QueriesStore,
@@ -40,9 +45,6 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
-import { SkipTransferStatusSource } from "~/integrations/bridges/skip/skip-transfer-status-source";
-import { SquidTransferStatusSource } from "~/integrations/bridges/squid/squid-transfer-status-source";
 import { ObservableAssets } from "~/stores/assets";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
@@ -251,9 +253,9 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
       [
-        new AxelarTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
-        new SquidTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
-        new SkipTransferStatusSource(IS_TESTNET ? "testnet" : "mainnet"),
+        new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
       ]
     );
 

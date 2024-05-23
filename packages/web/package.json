@@ -52,6 +52,7 @@
     "@notifi-network/notifi-react-card": "0.87.0",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",

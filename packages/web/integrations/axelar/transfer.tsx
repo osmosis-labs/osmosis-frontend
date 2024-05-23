@@ -1,6 +1,7 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -27,14 +28,6 @@ import {
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
 import {
-  EthClientChainIds_SourceChainMap,
-  SourceChain,
-} from "~/integrations/bridge-info";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-} from "~/integrations/bridges/axelar";
-import {
   ChainNames,
   EthWallet,
   send,
@@ -48,6 +41,12 @@ import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
+
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+  EthClientChainIds_SourceChainMap,
+} from "./types";
 
 /** Axelar-specific bridge transfer integration UI. */
 /**

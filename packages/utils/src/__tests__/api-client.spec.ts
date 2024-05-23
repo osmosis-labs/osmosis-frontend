@@ -1,8 +1,11 @@
 import { apiClient, ApiClientError, HTTPMethod } from "../api-client";
 
 describe("apiClient", () => {
+  let consoleSpy: jest.SpyInstance;
+
   beforeEach(() => {
     global.fetch = jest.fn();
+    consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("should make a GET request when no data is provided", async () => {
@@ -67,6 +70,30 @@ describe("apiClient", () => {
       );
       expect(error.status).toEqual(200);
       expect(error.data).toEqual({ code: 123, message: "Bad Request" });
+    });
+  });
+
+  it("should omit HTTP headers from being logged to console", async () => {
+    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ code: 123, message: "Bad Request" }))
+    );
+
+    await apiClient("http://example.com", {
+      headers: { MyHeader: "ABCD" },
+    }).catch((error) => {
+      expect(error).toBeInstanceOf(ApiClientError);
+      // no header content in console log
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining("MyHeader")
+      );
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining("ABCD")
+      );
+
+      // but there is a log with the message
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining("Bad Request")
+      );
     });
   });
 });

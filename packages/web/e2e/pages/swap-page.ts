@@ -94,13 +94,22 @@ export class SwapPage {
     return { msgContentAmount };
   }
 
-  async swap(amount: string) {
+  async enterAmount(amount: string) {
+    // Just enter an amount for the swap and wait for a quote
     await this.swapInput.fill(amount, { timeout: 4000 });
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(3000);
     await expect(this.swapInput).toHaveValue(amount);
-    await expect(this.swapBtn).toBeEnabled();
     const exchangeRate = await this.getExchangeRate();
     console.log("Swap " + amount + " with rate: " + exchangeRate);
+  }
+
+  async swap() {
+    // Make sure to have sufficient balance and swap button is enabled
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
     await this.swapBtn.click();
   }
 
@@ -174,6 +183,33 @@ export class SwapPage {
   async isTransactionBroadcasted(delay: number = 5) {
     console.log("Wait for a transaction broadcasting for 5 seconds.");
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
+  }
+
+  async isInsufficientBalance() {
+    const issufBalanceBtn = this.page.locator(
+      '//button[.="Insufficient balance"]'
+    );
+    return await issufBalanceBtn.isVisible({ timeout: 2000 });
+  }
+
+  async isError() {
+    const errorBtn = this.page.locator('//button[.="Error"]');
+    return await errorBtn.isVisible({ timeout: 2000 });
+  }
+
+  async showSwapInfo() {
+    const swapInfo = this.page.locator(
+      '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
+    );
+    await swapInfo.click();
+    console.log("Price Impact: " + (await this.getPriceInpact()));
+  }
+
+  async getPriceInpact() {
+    const priceInpactSpan = this.page.locator(
+      '//span[.="Price Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+    );
+    return await priceInpactSpan.textContent();
   }
 
   async takeScreenshot(name: string) {

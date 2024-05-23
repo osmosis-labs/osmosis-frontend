@@ -1,10 +1,4 @@
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  PricePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -74,6 +68,14 @@ type SwapOptions = {
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
 };
+
+// Note: For computing spot price between token in and out, we use this multiplier
+// for dividing 1 unit of amount in and then multiplying output amount.
+// The reason is that high-value tokens such as WBTC cause price impact and
+// spot price to be very off when swapping 1 unit of token in.
+// This is a temporary hack to bypass the issue with high-value tokens.
+// Long-term, we should allow custom quotes in SQS /tokens/prices query.
+const spotPriceQuoteMultiplier = new Dec(10);
 
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
  *
@@ -149,6 +151,7 @@ export function useSwap(
       tokenInAmount: DecUtils.getTenExponentN(
         swapAssets.fromAsset?.coinDecimals ?? 0
       )
+        .quoRoundUp(spotPriceQuoteMultiplier)
         .truncate()
         .toString(),
       tokenOut: swapAssets.toAsset,
@@ -449,24 +452,11 @@ export function useSwap(
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
-    return quoteBaseOutSpotPrice ?? spotPriceQuote?.amount;
+    return (
+      quoteBaseOutSpotPrice ??
+      spotPriceQuote?.amount.mul(spotPriceQuoteMultiplier)
+    );
   }, [quoteBaseOutSpotPrice, spotPriceQuote?.amount]);
-
-  const tokenOutAmountMinusSwapFee = useMemo(
-    () =>
-      getTokenOutMinusSwapFee({
-        tokenOut: quote?.amount,
-        tokenInAsset: swapAssets.fromAsset,
-        tokenInFeeAmount: quote?.tokenInFeeAmount,
-        quoteBaseOutSpotPrice,
-      }),
-    [
-      quote?.amount,
-      quote?.tokenInFeeAmount,
-      quoteBaseOutSpotPrice,
-      swapAssets.fromAsset,
-    ]
-  );
 
   // Calculate token in fee amount fiat value from token in fee amount returned by quote and token in price
   // queried above from the same source.
@@ -512,7 +502,6 @@ export function useSwap(
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
-    tokenOutAmountMinusSwapFee,
     totalFee: sum([
       tokenInFeeAmountFiatValue,
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
@@ -534,64 +523,6 @@ export function useSwap(
 }
 
 const DefaultDenoms = ["ATOM", "OSMO"];
-
-// getTokenOutAmountMinusSwapFee calculates the token out amount after subtracting the swap fee.
-// If the token out is undefined, it returns undefined.
-// If any of the input values are undefined, it return the token out.
-// This function is used to determine the net amount of tokens received after accounting for the swap fee.
-//
-// - outToken: the token being output from the swap
-// - tokenInAsset: the input token asset
-// - tokenInFeeAmount: the fee amount in the input token
-// - quoteBaseOutSpotPrice: the spot price of the output token in terms of the base token
-//
-// Returns the output token amount minus the calculated swap fee.
-export function getTokenOutMinusSwapFee({
-  tokenOut,
-  tokenInAsset,
-  tokenInFeeAmount,
-  quoteBaseOutSpotPrice,
-}: {
-  tokenOut: CoinPretty | undefined;
-  tokenInAsset: Currency | undefined;
-  tokenInFeeAmount: Int | undefined;
-  quoteBaseOutSpotPrice: CoinPretty | undefined;
-}) {
-  if (!tokenOut) return undefined;
-  if (!tokenInFeeAmount || !quoteBaseOutSpotPrice || !tokenInAsset)
-    return tokenOut;
-
-  // Get precision exponent.
-  const coinDecimals = tokenInAsset.coinDecimals;
-  const precisionExponent = DecUtils.getTenExponentN(coinDecimals);
-
-  // Prevent division by zero
-  if (precisionExponent.isZero()) {
-    return tokenOut;
-  }
-
-  /**
-   * Swap Fee calculation = (Token In Fee Amount / Precision Exponent) × Quote Base Out Spot Price × 10^Coin Decimals
-   */
-  const outTokenSwapFee = tokenInFeeAmount
-    .toDec()
-    .quo(precisionExponent)
-    .mul(quoteBaseOutSpotPrice.toDec())
-    .mul(DecUtils.getTenExponentN(quoteBaseOutSpotPrice.currency.coinDecimals));
-
-  /**
-   *  Formula
-   *  Token Out Minus Swap Fee = Token Out − Swap Fee
-   */
-  const outTokenMinusSwapFee = tokenOut.sub(outTokenSwapFee);
-
-  // If the swap fee is greater than the output token amount, return 0
-  if (outTokenMinusSwapFee.toDec().isNegative()) {
-    return tokenOut;
-  }
-
-  return outTokenMinusSwapFee;
-}
 
 /**
  * Determines the next fallback denom for `fromAssetDenom` based on the
@@ -740,7 +671,7 @@ export function useSwapAssets({
     }
   );
 
-  const allSelectableAssets = useMemo(
+  const selectableAssets = useMemo(
     () =>
       useOtherCurrencies
         ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
@@ -750,14 +681,12 @@ export function useSwapAssets({
 
   const { asset: fromAsset } = useSwapAsset({
     minDenomOrSymbol: fromAssetDenom,
-
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
 
   const { asset: toAsset } = useSwapAsset({
     minDenomOrSymbol: toAssetDenom,
-
-    existingAssets: allSelectableAssets,
+    existingAssets: selectableAssets,
   });
 
   /**
@@ -807,22 +736,11 @@ export function useSwapAssets({
     toAsset?.coinMinimalDenom
   );
 
-  /** Remove to and from assets from assets that can be selected. */
-  const filteredSelectableAssets = useMemo(
-    () =>
-      allSelectableAssets.filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [],
-    [allSelectableAssets, fromAsset, toAsset]
-  );
-
   return {
     fromAsset,
     toAsset,
     assetsQueryInput,
-    selectableAssets: filteredSelectableAssets,
+    selectableAssets,
     isLoadingSelectAssets,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,

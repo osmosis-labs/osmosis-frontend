@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 
-import { WalletRegistry } from "~/config";
+import { WalletRegistry } from "~/config/wallet-registry";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
