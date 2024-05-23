@@ -26,7 +26,7 @@ export const DropdownWithMultiSelect = <T,>({
     <div className={classNames(containerClassName)}>
       <Listbox value={options} onChange={() => {}} multiple>
         <div className="relative w-full">
-          <Listbox.Button className="relative z-50 inline-flex w-full min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
+          <Listbox.Button className="relative z-50 inline-flex w-full min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 px-5 py-3">
             {stateValues.length === 0 ? (
               <span
                 className={classNames(
@@ -78,7 +78,7 @@ export const DropdownWithMultiSelect = <T,>({
             >
               {options.map(({ icon, label, tooltip, value }) => (
                 <Listbox.Option
-                  className="relative cursor-default select-none py-3 px-4"
+                  className="relative cursor-default select-none px-4 py-3"
                   key={value as unknown as string}
                   value={value}
                 >

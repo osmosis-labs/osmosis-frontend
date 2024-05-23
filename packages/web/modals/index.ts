@@ -10,6 +10,7 @@ export * from "./fiat-ramps";
 export * from "./ibc-transfer";
 export * from "./lock-tokens";
 export * from "./menu-options";
+export * from "./one-click-trading-intro-modal";
 export * from "./pre-transfer";
 export * from "./remove-liquidity";
 export * from "./select-asset-source";

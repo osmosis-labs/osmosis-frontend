@@ -44,12 +44,18 @@ const Step: FunctionComponent<{
    */
   __TYPE?: string;
 }> = (props) => {
-  const { activeStep } = useStepperContext();
+  const { activeStep, totalSteps, setActiveStep } = useStepperContext();
   const { index } = useStepContext();
 
   const isActive = activeStep === index;
 
   const { __TYPE, ...rest } = props;
+
+  useEffect(() => {
+    if (index + 1 > totalSteps) {
+      setActiveStep(0);
+    }
+  }, [index, setActiveStep, totalSteps]);
 
   return (
     <div

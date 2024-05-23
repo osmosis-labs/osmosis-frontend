@@ -19,12 +19,30 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { Any } from "cosmjs-types/google/protobuf/any";
-import type { Optional } from "utility-types";
 
 /** Extends the standard chain type with
  *  a list of features that the chain supports. */
 type ChainWithFeatures = Chain & { features?: string[] };
+
+export type EstimationOpts = {
+  /** Flag to also get the gas amounts while accounting for account balances.
+   *  Default: `true` */
+  getGasAmount?: boolean;
+
+  /** A multiplier to handle variable gas
+   *  or to account for slippage in price in gas markets.
+   *  Default: `1.5` */
+  gasMultiplier?: number;
+} & (
+  | {
+      /** Base denoms of fee tokens to exclude. */
+      excludedFeeDenoms?: string[];
+    }
+  | {
+      /** Force the use of fee token returned by default from `getGasPrice` */
+      onlyDefaultFeeDenom: true;
+    }
+);
 
 /**
  * Estimates the full gas fee payment for the given encoded messages on the chain specified by given chain ID.
@@ -39,48 +57,61 @@ type ChainWithFeatures = Chain & { features?: string[] };
 export async function estimateGasFee({
   chainId,
   chainList,
-  encodedMessages,
+  body,
   bech32Address,
   gasMultiplier = 1.5,
-  excludedFeeDenoms,
+  getGasAmount = true,
+  ...opts
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  encodedMessages: Any[];
+  body: Partial<TxBody>;
   bech32Address: string;
-
-  initialFee?: Optional<StdFee, "gas">;
-  /** A multiplier to handle variable gas
-   *  or to account for slippage in price in gas markets. */
-  gasMultiplier?: number;
-  /** Base denoms of fee tokens to exclude. */
-  excludedFeeDenoms?: string[];
-}): Promise<StdFee> {
-  const { gasUsed } = await simulateMsgs({
+} & EstimationOpts): Promise<StdFee> {
+  const { gasUsed } = await simulate({
     chainId,
     chainList,
-    encodedMessages,
+    body,
     bech32Address,
   });
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
 
+  if (!getGasAmount) {
+    return {
+      gas: gasLimit,
+      amount: [],
+    };
+  }
+
+  const amount = await getGasFeeAmount({
+    chainId,
+    chainList,
+    gasLimit,
+    bech32Address:
+      // excluding the address will force the use of the default fee token
+      // since user balances will not be taken into account for deciding on the fee token
+      "onlyDefaultFeeDenom" in opts && Boolean(opts.onlyDefaultFeeDenom)
+        ? undefined
+        : bech32Address,
+    excludedFeeDenoms:
+      "excludedFeeDenoms" in opts ? opts.excludedFeeDenoms : [],
+  });
+
   return {
     gas: gasLimit,
-    amount: [
-      await getGasFeeAmount({
-        chainId,
-        chainList,
-        gasLimit,
-        bech32Address,
-        gasMultiplier,
-        excludedFeeDenoms,
-      }),
-    ],
+    amount,
   };
 }
 
 export class SimulateNotAvailableError extends Error {}
+/** Tx body portions relevant to simulating */
+export type SimBody = Partial<
+  Pick<
+    TxBody,
+    "messages" | "memo" | "extensionOptions" | "nonCriticalExtensionOptions"
+  >
+>;
 
 /**
  * Attempts to estimate gas amount of the given messages in a tx via a POST to the
@@ -88,15 +119,15 @@ export class SimulateNotAvailableError extends Error {}
  *
  * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
  */
-export async function simulateMsgs({
+export async function simulate({
   chainId,
   chainList,
-  encodedMessages,
+  body,
   bech32Address,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  encodedMessages: Any[];
+  body: SimBody;
   bech32Address: string;
 }): Promise<{ gasUsed: number }> {
   const chain = chainList.find(
@@ -114,12 +145,7 @@ export async function simulateMsgs({
 
   // create placeholder transaction document
   const unsignedTx = TxRaw.encode({
-    bodyBytes: TxBody.encode(
-      TxBody.fromPartial({
-        messages: encodedMessages,
-        memo: "",
-      })
-    ).finish(),
+    bodyBytes: TxBody.encode(TxBody.fromPartial(body)).finish(),
     authInfoBytes: AuthInfo.encode({
       signerInfos: [
         SignerInfo.fromPartial({
@@ -207,7 +233,7 @@ export async function getGasFeeAmount({
   /** Base denoms */
   excludedFeeDenoms?: string[];
   gasMultiplier?: number;
-}): Promise<{ denom: string; amount: string }> {
+}): Promise<{ denom: string; amount: string }[]> {
   const chain = chainList.find(
     (chain) => chainId && chain.chain_id === chainId
   );
@@ -218,11 +244,14 @@ export async function getGasFeeAmount({
     const { feeDenom, gasPrice } = await getGasPrice({
       chainId,
       chainList,
+      gasMultiplier,
     });
-    return {
-      amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-      denom: feeDenom,
-    };
+    return [
+      {
+        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+        denom: feeDenom,
+      },
+    ];
   }
 
   const [{ gasPrice: chainGasPrice, feeDenom }, { balances }] =
@@ -325,7 +354,7 @@ export async function getGasFeeAmount({
     );
   }
 
-  return fee;
+  return [fee];
 }
 
 /** Gets gas price from a dynamic fee module in the chain at the given chain ID,

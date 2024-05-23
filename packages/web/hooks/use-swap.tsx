@@ -1,14 +1,14 @@
-import { SignOptions } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import { type Asset, type RouterKey } from "@osmosis-labs/server";
+import type { Asset, RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
+  SignOptions,
   TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
@@ -25,13 +25,19 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
+import { displayToast, ToastType } from "~/components/alert";
+import { isOverspendErrorMessage } from "~/components/alert/prettify";
+import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
+import { useTranslation } from "~/hooks/language";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -93,6 +99,9 @@ export function useSwap(
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
+  const { isOneClickTradingEnabled, oneClickTradingInfo } =
+    useOneClickTradingSession();
+  const { t } = useTranslation();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -107,7 +116,6 @@ export function useSwap(
     maxSlippage,
     swapAssets,
   });
-
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
@@ -129,7 +137,6 @@ export function useSwap(
     },
     canLoadQuote
   );
-
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
@@ -185,7 +192,7 @@ export function useSwap(
 
   const networkFeeQueryEnabled =
     !inAmountInput.isEmpty &&
-    !precedentError &&
+    !Boolean(precedentError) &&
     featureFlags.swapToolSimulateFee;
   const {
     data: networkFee,
@@ -202,11 +209,62 @@ export function useSwap(
           }
         : undefined,
     enabled: networkFeeQueryEnabled,
+    signOptions: {
+      useOneClickTrading: isOneClickTradingEnabled,
+    },
   });
   const isLoadingNetworkFee =
     featureFlags.swapToolSimulateFee &&
     isLoadingNetworkFee_ &&
     networkFeeQueryEnabled;
+
+  const hasExceededOneClickTradingGasLimit = useMemo(() => {
+    if (
+      !isOneClickTradingEnabled ||
+      !oneClickTradingInfo ||
+      inAmountInput.isEmpty
+    ) {
+      return false;
+    }
+
+    const networkFeeLimit = new CoinPretty(
+      oneClickTradingInfo.networkFeeLimit,
+      oneClickTradingInfo.networkFeeLimit.amount
+    );
+
+    if (
+      networkFee?.gasAmount.denom === networkFeeLimit.denom &&
+      networkFee?.gasAmount.toDec().gt(networkFeeLimit.toDec())
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [
+    inAmountInput.isEmpty,
+    isOneClickTradingEnabled,
+    networkFee,
+    oneClickTradingInfo,
+  ]);
+
+  const hasOverSpendLimitError = useMemo(() => {
+    if (
+      !estimateTxError?.message ||
+      !isOneClickTradingEnabled ||
+      inAmountInput.isEmpty ||
+      inAmountInput.inputAmount == "0" ||
+      !isOverspendErrorMessage({ message: estimateTxError?.message })
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [
+    estimateTxError,
+    inAmountInput.inputAmount,
+    inAmountInput.isEmpty,
+    isOneClickTradingEnabled,
+  ]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -234,7 +292,64 @@ export function useSwap(
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
+          const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
+            ? isOneClickTradingEnabled &&
+              (await accountStore.shouldBeSignedWithOneClickTrading({
+                messages: quote.messages,
+              }))
+            : false;
+
+          const shouldBeSignedWithOneClickTrading =
+            messageCanBeSignedWithOneClickTrading &&
+            !hasOverSpendLimitError &&
+            !hasExceededOneClickTradingGasLimit &&
+            !estimateTxError;
+
+          if (
+            messageCanBeSignedWithOneClickTrading &&
+            !hasOverSpendLimitError &&
+            !hasExceededOneClickTradingGasLimit &&
+            estimateTxError
+          ) {
+            try {
+              const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
+              await new Promise((continueTx, reject) => {
+                displayToast(
+                  {
+                    titleTranslationKey:
+                      "oneClickTrading.toast.currentlyUnavailable",
+                    captionElement: (
+                      <Button
+                        variant="link"
+                        className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
+                        onClick={() => {
+                          toast.dismiss(ONE_CLICK_UNAVAILABLE_TOAST_ID);
+                          continueTx(void 0);
+                        }}
+                      >
+                        {t("oneClickTrading.toast.approveManually", {
+                          walletName: account.walletInfo?.prettyName ?? "",
+                        })}
+                      </Button>
+                    ),
+                  },
+                  ToastType.ONE_CLICK_TRADING,
+                  {
+                    toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
+                    onClose: () => {
+                      reject();
+                    },
+                    autoClose: false,
+                  }
+                );
+              });
+            } catch (e) {
+              return reject("Rejected manual approval");
+            }
+          }
+
           const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
+            useOneClickTrading: shouldBeSignedWithOneClickTrading,
             ...(featureFlags.swapToolSimulateFee && networkFee
               ? {
                   preferNoSetFee: true,
@@ -298,10 +413,16 @@ export function useSwap(
       inAmountInput,
       account,
       quote,
+      isOneClickTradingEnabled,
+      accountStore,
+      hasOverSpendLimitError,
+      hasExceededOneClickTradingGasLimit,
+      estimateTxError,
       featureFlags.swapToolSimulateFee,
       networkFee,
       swapAssets.fromAsset,
       swapAssets.toAsset,
+      t,
       queryClient,
     ]
   );
@@ -398,6 +519,8 @@ export function useSwap(
     spotPriceQuoteError,
     isQuoteLoading,
     sendTradeTokenInTx,
+    hasOverSpendLimitError,
+    hasExceededOneClickTradingGasLimit,
     estimateTxError,
   };
 }
@@ -407,7 +530,6 @@ const DefaultDenoms = ["ATOM", "OSMO"];
 /**
  * Determines the next fallback denom for `fromAssetDenom` based on the
  * current asset denoms and defaults.
- *
  * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is not the first default,
  *   set `fromAssetDenom` to the first default denom.
  * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is the first default,
@@ -444,7 +566,6 @@ export function determineNextFallbackFromDenom(params: {
 /**
  * Determines the next fallback denom for `toAssetDenom` based on the
  * current asset denoms and defaults.
- *
  * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is not the second default,
  *   it sets `toAssetDenom` to the second default denomination.
  * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is the second default,
@@ -452,6 +573,7 @@ export function determineNextFallbackFromDenom(params: {
  * - If the `initialToDenom` is the same as `fromAssetDenom`, it sets `toAssetDenom` to `initialFromDenom`.
  * - Otherwise, it resets `toAssetDenom` to `initialToDenom`.
  */
+
 export function determineNextFallbackToDenom(params: {
   toAssetDenom: string;
   fromAssetDenom: string | undefined;
@@ -564,6 +686,7 @@ export function useSwapAssets({
     minDenomOrSymbol: fromAssetDenom,
     existingAssets: selectableAssets,
   });
+
   const { asset: toAsset } = useSwapAsset({
     minDenomOrSymbol: toAssetDenom,
     existingAssets: selectableAssets,
@@ -572,8 +695,8 @@ export function useSwapAssets({
   /**
    * This effect handles the scenario where the selected asset denoms do not correspond to any available
    * assets (`fromAsset` or `toAsset` are undefined). It attempts to set a default based on
-   * predefined DefaultDenoms or initial denoms.
    *
+   * predefined DefaultDenoms or initial denoms.
    * This ensures that the denoms are reset to valid defaults when the currently selected assets are not available.
    */
   useEffect(() => {
@@ -585,6 +708,7 @@ export function useSwapAssets({
         initialToDenom,
         DefaultDenoms,
       });
+
       setFromAssetDenom(nextFromDenom);
     }
 
@@ -596,6 +720,7 @@ export function useSwapAssets({
         initialFromDenom,
         DefaultDenoms,
       });
+
       setToAssetDenom(nextToDenom);
     }
   }, [
@@ -622,6 +747,7 @@ export function useSwapAssets({
     isLoadingSelectAssets,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
+    /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,
@@ -641,11 +767,14 @@ function useSwapAmountInput({
   maxSlippage: Dec | undefined;
 }) {
   const { chainStore } = useStore();
+
   const featureFlags = useFeatureFlags();
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
+
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
+
     gasAmount: gasAmount,
   });
 
@@ -661,12 +790,15 @@ function useSwapAmountInput({
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
+
     !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
   );
 
   const {
     data: currentBalanceNetworkFee,
+
     isLoading: isLoadingCurrentBalanceNetworkFee,
+
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
@@ -703,6 +835,7 @@ function useSwapAmountInput({
 
   useEffect(() => {
     if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
+
     setGasAmount(
       currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
     );
@@ -809,6 +942,7 @@ function useSwapAsset<TAsset extends Asset>({
       asset.coinDenom === minDenomOrSymbol ||
       asset.coinMinimalDenom === minDenomOrSymbol
   );
+
   const asset = useMemo(() => {
     if (existingAsset) return existingAsset;
 

@@ -109,7 +109,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           <MyPositionStatus className="xs:px-0" status={status} negative />
         </div>
-        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
             {baseCoin.currency.coinImageUrl && (
               <Image
@@ -182,7 +182,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 />
               </div>
               <div className="flex h-full flex-col">
-                <div className="absolute right-0 mt-[25px] mr-[8px] flex h-6 gap-1">
+                <div className="absolute right-0 mr-[8px] mt-[25px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
                     icon="refresh-ccw"
@@ -202,7 +202,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     onClick={zoomIn}
                   />
                 </div>
-                <div className="mr-[8px] mt-[55px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
+                <div className="mb-4 mr-[8px] mt-[55px] flex h-full flex-col items-end justify-between py-4 ">
                   <PriceBox
                     currentValue={formatPretty(upperPrice).toString()}
                     label={t("clPositions.maxPrice")}

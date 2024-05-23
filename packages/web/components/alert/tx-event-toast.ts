@@ -2,6 +2,7 @@ import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { isSlippageError } from "@osmosis-labs/tx";
 import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
+import { toast } from "react-toastify";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
@@ -11,6 +12,8 @@ import { prettifyTxError } from "./prettify";
 // Error code for timeout height reached in Cosmos SDK.
 // https://github.com/cosmos/cosmos-sdk/blob/8f6a94cd1f9f1c6bf1ad83a751da86270db92e02/types/errors/errors.go#L129
 const txTimeoutHeightReachedErrorCode = 30;
+
+const BROADCASTING_TOAST_ID = "broadcast-failed";
 
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
@@ -25,8 +28,8 @@ export function toastOnBroadcastFailed(
 
     displayToast(
       {
-        message: "transactionFailed",
-        caption:
+        titleTranslationKey: "transactionFailed",
+        captionTranslationKey:
           prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
       ToastType.ERROR
@@ -38,10 +41,13 @@ export function toastOnBroadcast() {
   return () => {
     displayToast(
       {
-        message: "transactionBroadcasting",
-        caption: "waitingForTransaction",
+        titleTranslationKey: "transactionBroadcasting",
+        captionTranslationKey: "waitingForTransaction",
       },
-      ToastType.LOADING
+      ToastType.LOADING,
+      {
+        toastId: BROADCASTING_TOAST_ID,
+      }
     );
   };
 }
@@ -51,18 +57,19 @@ export function toastOnFulfill(
 ) {
   return (chainId: string, tx: DeliverTxResponse) => {
     const chainInfo = getChain(chainId);
+    toast.dismiss(BROADCASTING_TOAST_ID);
     if (tx.code) {
       displayToast(
         {
-          message: "transactionFailed",
-          caption: getErrorMessage(tx, chainInfo.currencies),
+          titleTranslationKey: "transactionFailed",
+          captionTranslationKey: getErrorMessage(tx, chainInfo.currencies),
         },
         ToastType.ERROR
       );
     } else {
       displayToast(
         {
-          message: "transactionSuccessful",
+          titleTranslationKey: "transactionSuccessful",
           learnMoreUrl: chainInfo.raw.explorerUrlToTx.replace(
             "{txHash}",
             tx.transactionHash.toUpperCase()

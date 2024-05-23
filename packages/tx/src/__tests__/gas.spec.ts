@@ -17,7 +17,7 @@ import {
   getGasPrice,
   getGasPriceByFeeDenom,
   InsufficientFeeError,
-  simulateMsgs,
+  simulate,
   SimulateNotAvailableError,
 } from "../gas";
 import { MockChains } from "./mock-chains";
@@ -46,10 +46,10 @@ describe("simulateMsgs", () => {
       gas_info: { gas_used: "200000" },
     } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
-    const result = await simulateMsgs({
+    const result = await simulate({
       chainId,
       chainList,
-      encodedMessages,
+      body: { messages: encodedMessages },
       bech32Address,
     });
 
@@ -58,10 +58,10 @@ describe("simulateMsgs", () => {
 
   it("should throw an error if chain is not found", async () => {
     await expect(
-      simulateMsgs({
+      simulate({
         chainId: "unknown-chain",
         chainList,
-        encodedMessages,
+        body: { messages: encodedMessages },
         bech32Address,
       })
     ).rejects.toThrow("Chain not found: unknown-chain");
@@ -73,7 +73,12 @@ describe("simulateMsgs", () => {
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
-      simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
+      simulate({
+        chainId,
+        chainList,
+        body: { messages: encodedMessages },
+        bech32Address,
+      })
     ).rejects.toThrow("Invalid sequence number: NaN");
   });
 
@@ -89,7 +94,12 @@ describe("simulateMsgs", () => {
     );
 
     await expect(
-      simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
+      simulate({
+        chainId,
+        chainList,
+        body: { messages: encodedMessages },
+        bech32Address,
+      })
     ).rejects.toThrow(SimulateNotAvailableError);
   });
 
@@ -102,7 +112,12 @@ describe("simulateMsgs", () => {
     } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
     await expect(
-      simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
+      simulate({
+        chainId,
+        chainList,
+        body: { messages: encodedMessages },
+        bech32Address,
+      })
     ).rejects.toThrow("Gas used is NaN");
   });
 
@@ -118,7 +133,12 @@ describe("simulateMsgs", () => {
     );
 
     await expect(
-      simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
+      simulate({
+        chainId,
+        chainList,
+        body: { messages: encodedMessages },
+        bech32Address,
+      })
     ).rejects.toThrow("Simulate tx error");
   });
 
@@ -129,7 +149,12 @@ describe("simulateMsgs", () => {
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 
     await expect(
-      simulateMsgs({ chainId, chainList, encodedMessages, bech32Address })
+      simulate({
+        chainId,
+        chainList,
+        body: { messages: encodedMessages },
+        bech32Address,
+      })
     ).rejects.toThrow("Other error");
   });
 });
@@ -154,12 +179,14 @@ describe("getGasFeeAmount", () => {
       MockChains.find(({ chain_id }) => chain_id === chainId)!.fees
         .fee_tokens[0].average_gas_price! * gasLimit;
 
-    const gasAmount = await getGasFeeAmount({
-      gasLimit: gasLimit.toString(),
-      chainId,
-      chainList: MockChains,
-      bech32Address: address,
-    });
+    const gasAmount = (
+      await getGasFeeAmount({
+        gasLimit: gasLimit.toString(),
+        chainId,
+        chainList: MockChains,
+        bech32Address: address,
+      })
+    )[0];
 
     expect(gasAmount.amount).toBe(expectedGasAmount.toString());
     expect(gasAmount.denom).toBe("uatom");
@@ -217,13 +244,15 @@ describe("getGasFeeAmount", () => {
 
     const gasMultiplier = 1.2;
 
-    const gasAmount = await getGasFeeAmount({
-      chainId,
-      chainList: MockChains,
-      gasLimit: gasLimit.toString(),
-      bech32Address: address,
-      gasMultiplier,
-    });
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        gasMultiplier,
+      })
+    )[0];
 
     const expectedGasAmount = new Dec(baseFee * gasMultiplier)
       .quo(new Dec(spotPrice))
@@ -288,13 +317,15 @@ describe("getGasFeeAmount", () => {
 
     const gasMultiplier = 1.5;
 
-    const gasAmount = await getGasFeeAmount({
-      chainId,
-      chainList: MockChains,
-      gasLimit: gasLimit.toString(),
-      bech32Address: address,
-      gasMultiplier,
-    });
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        gasMultiplier,
+      })
+    )[0];
 
     const expectedGasAmount = new Dec(baseFee * gasMultiplier)
       .quo(new Dec(spotPrice))
@@ -357,14 +388,16 @@ describe("getGasFeeAmount", () => {
 
     const gasMultiplier = 1.5;
 
-    const gasAmount = await getGasFeeAmount({
-      chainId,
-      chainList: MockChains,
-      gasLimit: gasLimit.toString(),
-      bech32Address: address,
-      excludedFeeDenoms: ["uosmo"],
-      gasMultiplier,
-    });
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        excludedFeeDenoms: ["uosmo"],
+        gasMultiplier,
+      })
+    )[0];
 
     const expectedGasAmount = new Dec(baseFee * gasMultiplier)
       .quo(new Dec(spotPrice))
@@ -429,17 +462,19 @@ describe("getGasFeeAmount", () => {
 
     const gasMultiplier = 1.5;
 
-    const gasAmount = await getGasFeeAmount({
-      chainId,
-      chainList: MockChains,
-      gasLimit: gasLimit.toString(),
-      bech32Address: address,
-      excludedFeeDenoms: [
-        "uosmo",
-        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-      ],
-      gasMultiplier,
-    });
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        excludedFeeDenoms: [
+          "uosmo",
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        ],
+        gasMultiplier,
+      })
+    )[0];
 
     const expectedGasAmount = new Dec(baseFee * gasMultiplier)
       .quo(new Dec(spotPrice))

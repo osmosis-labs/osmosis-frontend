@@ -90,7 +90,7 @@ export const PoolsOverview: FunctionComponent<
           {timeRemaining}
         </h2>
       </div>
-      <div className="absolute right-0 -bottom-[0.025rem] h-[212px] overflow-clip rounded-br-[32px] 1.5xl:h-[200px] xl:h-[188px] md:h-[100px] xs:hidden">
+      <div className="absolute -bottom-[0.025rem] right-0 h-[212px] overflow-clip rounded-br-[32px] 1.5xl:h-[200px] xl:h-[188px] md:h-[100px] xs:hidden">
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
@@ -115,7 +115,7 @@ export const PoolsOverview: FunctionComponent<
           }
         />
       </div>
-      <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
+      <div className="absolute bottom-7 right-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
           onClick={setIsCreatingPool}
           // TODO - ideally we shouldn't use overrides, reconsider this one off design

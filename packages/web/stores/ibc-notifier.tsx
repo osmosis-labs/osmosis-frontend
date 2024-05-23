@@ -33,8 +33,8 @@ export const IbcNotifier: FunctionComponent = observer(() => {
         if (history.status === "complete") {
           displayToast(
             {
-              message: "IBC Transfer Complete",
-              caption: isWithdraw
+              titleTranslationKey: "IBC Transfer Complete",
+              captionTranslationKey: isWithdraw
                 ? `${transferAmount
                     .maxDecimals(6)
                     .trim(true)
@@ -49,8 +49,8 @@ export const IbcNotifier: FunctionComponent = observer(() => {
         } else if (history.status === "timeout") {
           displayToast(
             {
-              message: "IBC Transfer Timeout",
-              caption: isWithdraw
+              titleTranslationKey: "IBC Transfer Timeout",
+              captionTranslationKey: isWithdraw
                 ? `${transferAmount
                     .maxDecimals(6)
                     .trim(true)
@@ -65,8 +65,8 @@ export const IbcNotifier: FunctionComponent = observer(() => {
         } else if (history.status === "refunded") {
           displayToast(
             {
-              message: "IBC Transfer Refunded",
-              caption: `${transferAmount
+              titleTranslationKey: "IBC Transfer Refunded",
+              captionTranslationKey: `${transferAmount
                 .maxDecimals(6)
                 .trim(true)
                 .shrink(true)} has been successfully refunded`,

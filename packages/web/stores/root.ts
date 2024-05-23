@@ -23,6 +23,10 @@ import {
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
+import {
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
+} from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
@@ -42,7 +46,6 @@ import {
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { ObservableAssets } from "~/stores/assets";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -183,6 +186,7 @@ export class RootStore {
           },
         },
         preTxEvents: {
+          ...txEvents,
           onBroadcastFailed: (string, e) => {
             txEvents?.onBroadcastFailed?.(string, e);
             return toastOnBroadcastFailed((chainId) =>

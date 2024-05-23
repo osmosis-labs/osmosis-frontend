@@ -22,6 +22,27 @@ const regexFailedSwapSlippage =
 const regexInsufficientFeeError =
   /Insufficient balance for transaction fees. Please add funds to continue./;
 
+const regexRejectedTx = /Request rejected/;
+
+const regexOverspendError =
+  /Spend limit error: Overspend: remaining q(?:uo|ou)ta (\d+), requested (\d+)/;
+
+export function isOverspendErrorMessage({
+  message,
+}: {
+  message: string;
+}): boolean {
+  return regexOverspendError.test(message);
+}
+
+export function isRejectedTxErrorMessage({
+  message,
+}: {
+  message: string;
+}): boolean {
+  return regexRejectedTx.test(message);
+}
+
 /** Uses regex matching to map less readable chain errors to a less technical user-friendly string.
  *  @param message Error message from chain.
  *  @param currencies Currencies used to map to human-readable coin denoms (e.g. ATOM)
@@ -96,6 +117,10 @@ export function prettifyTxError(
     const matchInsufficientFeeError = message.match(regexInsufficientFeeError);
     if (matchInsufficientFeeError) {
       return ["errors.insufficientFee"];
+    }
+
+    if (isRejectedTxErrorMessage({ message })) {
+      return ["requestRejected"];
     }
 
     const currencyMap: Record<string, AppCurrency> = {};

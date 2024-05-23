@@ -23,7 +23,7 @@ export const Tooltip: FunctionComponent<
 }) => (
   <Tippy
     className={classNames(
-      "body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5",
+      "body2 rounded-lg bg-osmoverse-700 px-3 py-2.5 md:px-2 md:py-1.5",
       rootClassNames
     )}
     content={content}

@@ -13,8 +13,8 @@ export const Info: FunctionComponent<
     MobileProps
 > = ({
   size = "large",
-  message,
-  caption,
+  titleTranslationKey: message,
+  captionTranslationKey: caption,
   data,
   borderClassName,
   textClassName,

@@ -1,5 +1,8 @@
-import { estimateGasFee, SimulateNotAvailableError } from "@osmosis-labs/tx";
-import { Buffer } from "buffer/";
+import {
+  decodeAnyBase64,
+  estimateGasFee,
+  SimulateNotAvailableError,
+} from "@osmosis-labs/tx";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -25,14 +28,20 @@ export default async function handler(
 
   const {
     chainId,
-    protobufAnysBase64,
+    messages,
+    nonCriticalExtensionOptions,
     bech32Address,
     excludedFeeMinimalDenoms,
+    onlyDefaultFeeDenom,
+    getGasAmount,
   } = req.body as {
     chainId: string;
-    protobufAnysBase64: { typeUrl: string; value: string }[];
+    messages: { typeUrl: string; value: string }[];
+    nonCriticalExtensionOptions: { typeUrl: string; value: string }[];
     bech32Address: string;
     excludedFeeMinimalDenoms?: string[];
+    onlyDefaultFeeDenom: boolean;
+    getGasAmount: boolean;
   };
 
   try {
@@ -40,11 +49,17 @@ export default async function handler(
       chainId,
       chainList: ChainList,
       bech32Address,
-      encodedMessages: protobufAnysBase64.map(({ typeUrl, value }) => ({
-        typeUrl,
-        value: Buffer.from(value, "base64"),
-      })),
-      excludedFeeDenoms: excludedFeeMinimalDenoms,
+      body: {
+        messages: messages.map(decodeAnyBase64),
+        nonCriticalExtensionOptions:
+          nonCriticalExtensionOptions.map(decodeAnyBase64),
+      },
+      excludedFeeDenoms: onlyDefaultFeeDenom
+        ? undefined
+        : excludedFeeMinimalDenoms,
+      onlyDefaultFeeDenom:
+        excludedFeeMinimalDenoms && !onlyDefaultFeeDenom ? undefined : true,
+      getGasAmount,
     });
     return res.status(200).json(gasFee);
   } catch (e) {
