@@ -126,13 +126,11 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { coinMinimalDenom }, ctx }) => {
-      const [asset, price] = await Promise.all([
-        getAsset({ ...ctx, anyDenom: coinMinimalDenom }),
-        getAssetPrice({
-          ...ctx,
-          asset: { coinMinimalDenom },
-        }),
-      ]);
+      const asset = getAsset({ ...ctx, anyDenom: coinMinimalDenom });
+      const price = await getAssetPrice({
+        ...ctx,
+        asset,
+      });
 
       return {
         ...asset,

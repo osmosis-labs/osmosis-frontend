@@ -40,7 +40,7 @@ async function estimateTxFeesQueryFn({
   };
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
-  if (!messages) throw new Error("No messages");
+  if (!messages.length) throw new Error("No messages");
 
   const shouldBeSignedWithOneClickTrading =
     signOptions?.useOneClickTrading &&

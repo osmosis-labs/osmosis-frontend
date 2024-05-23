@@ -28,11 +28,7 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
-import {
-  useFeatureFlags,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -83,7 +79,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useWalletSelect();
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-    const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
 
     const account = accountStore.getWallet(chainId);
@@ -987,15 +982,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     swapState.isLoadingNetworkFee))
               }
               isLoading={
-                /**
-                 * While 1-Click is enabled, display a loading spinner when simulation
-                 * is in progress since we don't have a wallet to compute the fee for
-                 * us. We need the network fee to be calculated before we can proceed
-                 * with the trade.
-                 */
-                isOneClickTradingEnabled &&
-                swapState.isLoadingNetworkFee &&
-                !swapState.inAmountInput.isEmpty
+                swapState.isLoadingNetworkFee || swapState.isQuoteLoading
               }
               loadingText={buttonText}
               onClick={sendSwapTx}
