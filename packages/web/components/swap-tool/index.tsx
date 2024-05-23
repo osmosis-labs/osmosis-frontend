@@ -187,7 +187,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
         valueUsd: Number(
-          swapState.tokenOutFiatValue?.toDec().toString() ?? "0"
+          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
         ),
         page,
       };
