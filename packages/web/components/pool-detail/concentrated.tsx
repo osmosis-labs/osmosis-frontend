@@ -422,7 +422,13 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+  const {
+    historicalChartData,
+    yRange,
+    setHoverPrice,
+    lastChartData,
+    currentPrice,
+  } = config;
 
   return (
     <HistoricalPriceChart
@@ -432,7 +438,7 @@ const Chart: FunctionComponent<{
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
         if (lastChartData) {
-          setHoverPrice(Number(lastChartData.close));
+          setHoverPrice(Number(currentPrice.toString()));
         }
       }}
     />
