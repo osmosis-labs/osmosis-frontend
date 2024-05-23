@@ -98,7 +98,7 @@ export function getPoolAssetPairHistoricalPrice({
   return cachified({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
-    ttl: 1000 * 10, // 10 seconds
+    ttl: 1000 * 60 * 3, // 3 minutes
     getFreshValue: () =>
       queryTokenPairHistoricalChart(
         poolId,
