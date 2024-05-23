@@ -430,8 +430,6 @@ const Chart: FunctionComponent<{
     currentPrice,
   } = config;
 
-  console.log({ currentPrice: Number(currentPrice.toString()) });
-
   return (
     <HistoricalPriceChart
       data={historicalChartData}
