@@ -237,5 +237,7 @@ export const EventName = {
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
   },
-  QueryError: "Query error",
+  Wormhole: {
+    pageViewed: "Wormhole: Page viewed",
+  },
 };
