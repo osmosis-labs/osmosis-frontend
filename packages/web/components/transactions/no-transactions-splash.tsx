@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 export const NoTransactionsSplash: FunctionComponent<{

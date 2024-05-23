@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 
-import { WalletRegistry } from "~/config/wallet-registry";
+import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -81,7 +81,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
             return;
           }
 
-          const walletInfo = WalletRegistry.find(
+          const walletInfo = CosmosWalletRegistry.find(
             ({ name }) => name === currentWallet
           );
           const WalletClass = await walletInfo?.lazyInstall();

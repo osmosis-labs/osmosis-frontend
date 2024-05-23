@@ -10,7 +10,7 @@ import {
 } from "~/components/stepper";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({

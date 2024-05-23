@@ -10,7 +10,7 @@ import {
   useConnectWalletModalRedirect,
   useIbcTransfer,
 } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
 

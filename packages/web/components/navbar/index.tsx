@@ -35,7 +35,7 @@ import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import {
   NotifiContextProvider,
   NotifiModal,

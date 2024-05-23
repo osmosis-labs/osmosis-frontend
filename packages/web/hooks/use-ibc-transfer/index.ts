@@ -16,7 +16,7 @@ import {
   IbcTransfer,
 } from "~/hooks/use-ibc-transfer";
 import { useCustomBech32Address } from "~/hooks/use-ibc-transfer/use-custom-bech32address";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 /**
