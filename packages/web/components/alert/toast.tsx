@@ -46,7 +46,7 @@ export function displayToast(
       toast(<ErrorToast {...alert} />, toastOptions);
       break;
     case ToastType.LOADING:
-      toast(<LoadingToast {...alert} />, toastOptions);
+      toast(<LoadingToast {...alert} />, { ...toastOptions, autoClose: 2000 });
       break;
   }
 }
