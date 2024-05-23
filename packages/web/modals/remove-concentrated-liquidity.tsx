@@ -110,7 +110,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </div>
             <MyPositionStatus className="xs:px-0" status={status} negative />
           </div>
-          <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+          <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
             <AssetAmount amount={positionBaseAsset} />
             <AssetAmount amount={positionQuoteAsset} />
           </div>

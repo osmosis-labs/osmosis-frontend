@@ -27,7 +27,8 @@ export type AvailableFlags =
   | "portfolioPageAndNewAssetsPage"
   | "displayDailyEarn"
   | "newAssetsPage"
-  | "newDepositWithdrawFlow";
+  | "newDepositWithdrawFlow"
+  | "oneClickTrading";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -57,6 +58,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newAssetsPage: false,
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
+  oneClickTrading: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
@@ -91,6 +93,10 @@ export const useFeatureFlags = () => {
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
+    oneClickTrading:
+      !isMobile &&
+      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+      launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;

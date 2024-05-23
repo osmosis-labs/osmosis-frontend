@@ -125,7 +125,7 @@ export const BridgeFromToNetwork = <
                       />
                     </Menu.Button>
 
-                    <Menu.Items className="absolute top-1/3 -right-px mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-700">
+                    <Menu.Items className="absolute -right-px top-1/3 mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-700">
                       {filteredBridgeProviders.map((provider, index) => (
                         <Menu.Item key={provider.id}>
                           {({ active }) => (

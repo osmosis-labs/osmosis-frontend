@@ -490,6 +490,111 @@
     "discardButton": "Descartar mudanças",
     "clearAllHistory": "Limpar tudo"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Negociação em 1 Clique ativa",
+      "oneClickTradingExpired": "A negociação em 1 clique expirou",
+      "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
+      "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
+      "networkFeeTooHigh": "Taxa de rede muito alta",
+      "enableOneClickTrading": "Habilite a negociação em 1 clique",
+      "increaseFeeLimit": "Aumentar o limite de taxa de rede",
+      "approveManually": "Aprovar manualmente em {walletName}",
+      "continueWithWallet": "Continuar com carteira",
+      "sessionEnded": "A sessão terminou neste dispositivo",
+      "errorEndingSession": "Erro ao encerrar sessão",
+      "pleaseTryAgain": "Erro inesperado. Por favor, tente novamente."
+    },
+    "introduction": {
+      "newFeature": "Novo recurso",
+      "introducingTitle": "Apresentando a negociação em 1 clique",
+      "introducingSubtitle": "Faça negociações mais rápidas e fáceis sem o incômodo de múltiplas aprovações de carteira.",
+      "learnMore": "Saber mais",
+      "startTradingButton": "Comece a negociação com 1 clique",
+      "defaultParameters": "A negociação em 1 clique ficará ativa por 1 hora neste dispositivo com um limite de gastos de US$ 5.000.",
+      "changeButton": "Mudar"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Negocie de forma mais rápida e fácil",
+      "startOneClickTradingNow": "Comece a negociação com 1 clique agora",
+      "iconAlt": "Logotipo pequeno de negociação em 1 clique"
+    },
+    "floatingBanner": {
+      "newPill": "Novo",
+      "title": "Negociação em 1 clique",
+      "tradeFasterButton": "Negocie mais rápido"
+    },
+    "settings": {
+      "header": "Negociação em 1 clique",
+      "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
+      "enableTitle": "Habilite a negociação em 1 clique",
+      "spendLimitTitle": "Limite de gastos",
+      "networkFeeLimitTitle": "Limite de taxa de rede",
+      "sessionPeriodTitle": "Período da sessão",
+      "resetPeriodTitle": "Período de redefinição",
+      "startButton": "Comece a negociação com 1 clique",
+      "editSessionButton": "Salvar alterações",
+      "endingSession": "Encerrando sessão",
+      "feeToDisable": "Taxa para desativar a negociação em 1 clique:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Defina o valor máximo que você pode gastar em um período de sessão de negociação com 1 clique.",
+        "fixedAmount": "Quantia fixa",
+        "shareOfBalance": "Participação no saldo",
+        "shareOfBalanceDescription": "{shareOfBalance} do seu saldo total no Osmosis vale atualmente",
+        "fluctuationNotice": "Esteja ciente de que o valor em dólares do seu limite de gastos é baseado no valor dos seus ativos, que pode flutuar."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Limite de taxa de rede",
+        "description": "Defina o valor máximo que você pode gastar em taxas de rede para qualquer transação durante sua sessão de negociação com 1 clique.",
+        "info": "Se uma taxa exceder esse valor, você poderá assinar manualmente as transações em sua carteira.",
+        "low": "Baixo",
+        "average": "Média",
+        "high": "Alto",
+        "recommended": "Recomendado"
+      },
+      "sessionPeriodScreen": {
+        "title": "Período da sessão",
+        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
+        "periods": {
+          "10min": "10 minutos",
+          "30min": "30 minutos",
+          "1hour": "1 hora",
+          "3hours": "3 horas",
+          "12hours": "12 horas"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Período de redefinição",
+        "description": "Defina uma duração para redefinir a cota de limite de gastos.",
+        "periods": {
+          "day": "Dia",
+          "week": "Semana",
+          "month": "Mês",
+          "year": "Ano"
+        }
+      },
+      "discardChanges": {
+        "title": "Descartar mudanças?",
+        "message": "Deseja manter suas configurações existentes de negociação em 1 clique?",
+        "cancelButton": "Cancelar",
+        "discardButton": "Descartar"
+      }
+    },
+    "welcomeBack": {
+      "title": "bem vindo de volta",
+      "description": "Depois de conectar sua carteira, você será solicitado a aprovar uma transação para iniciar sua sessão de negociação com 1 clique.",
+      "toggleLabel": "Negociação em 1 clique",
+      "editParamsAriaLabel": "Alterar parâmetros 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Gráfico de negociação com um clique",
+      "header": "Conecte uma carteira para continuar",
+      "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
+    },
+    "profile": {
+      "sessionExpired": "Sessão expirada"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
     "amountDaysUnbonding": "{numDays} dias destravando",
@@ -606,7 +711,8 @@
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos os ativos",
     "wallet": "Carteira",
-    "transactions": "Transações"
+    "transactions": "Transações",
+    "oneClickTrading": "Negociação em 1 Clique"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",
@@ -748,6 +854,13 @@
     "priceImpact": "Impacto sobre o preço",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Fator de propagação",
+    "continueAnyway": "Continue de qualquer maneira",
+    "warning": {
+      "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
+      "exceedsNetworkFeeLimit": "Esta troca excede o limite de taxa de rede para negociação com 1 clique.",
+      "increaseSpendLimit": "Aumentar o limite de gastos",
+      "increaseNetworkFeeLimit": "Aumentar o limite de taxa de rede"
+    },
     "settings": {
       "slippage": "Tolerância de spread",
       "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",
@@ -773,6 +886,12 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando carteira",
     "approveWalletConnect": "Aprovar solicitação de conexão {walletName} em seu dispositivo móvel.",
+    "enablingOneClickTrading": "Habilitando a negociação em 1 clique.",
+    "approveOneClickTradingSession": "Aprove a negociação com 1 clique em {walletName} .",
+    "errorInitializingOneClickTradingSession": "A negociação em 1 clique não pôde ser ativada.",
+    "retryInWalletOrContinue": "Tente novamente em {walletName} ou continue sem negociação em 1 clique.",
+    "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
+    "retry": "Tentar novamente",
     "openExtension": "Abra a extensão do navegador {walletName} para conectar sua carteira.",
     "initializingWallet": "Inicializando cliente de carteira",
     "clickToRefresh": "Clique para atualizar.",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "Isenção de responsabilidade",
+  "remaining": "restante",
+  "timeUnits": {
+    "second": "segundo",
+    "seconds": "segundos",
+    "minute": "minuto",
+    "minutes": "minutos",
+    "hour": "hora",
+    "hours": "horas"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} depósitos instáveis",
     "titleWithdraw": "{coinDenom} saques instáveis",

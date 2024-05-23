@@ -96,7 +96,7 @@ const RelatedAssets: FunctionComponent<RelatedAssetsProps> = observer(
 
     return relatedAssets.length > 0 ? (
       <section
-        className={`flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:p-6 ${className}`}
+        className={`flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 px-8 py-10 md:p-6 ${className}`}
       >
         <header>
           <h6 className="text-lg font-h6 leading-6">

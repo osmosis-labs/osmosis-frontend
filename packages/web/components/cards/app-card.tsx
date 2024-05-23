@@ -57,7 +57,7 @@ export const AppCard: FunctionComponent<{
             alt={`${title} image`}
           ></img>
         </div>
-        <div className="flex flex-col px-6 pt-4 pb-8 sm:px-3">
+        <div className="flex flex-col px-6 pb-8 pt-4 sm:px-3">
           <div className="flex flex-wrap items-center gap-3">
             <h1
               className={classNames(

@@ -490,6 +490,111 @@
     "discardButton": "परिवर्तनों को निरस्त करें",
     "clearAllHistory": "सभी साफ करें"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
+      "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
+      "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
+      "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
+      "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
+      "enableOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करें",
+      "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
+      "approveManually": "{walletName} में मैन्युअल रूप से स्वीकृत करें",
+      "continueWithWallet": "बटुए के साथ जारी रखें",
+      "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया",
+      "errorEndingSession": "सत्र समाप्त करने में त्रुटि",
+      "pleaseTryAgain": "अप्रत्याशित त्रुटि। कृपया पुन: प्रयास करें।"
+    },
+    "introduction": {
+      "newFeature": "नयी विशेषता",
+      "introducingTitle": "1-क्लिक ट्रेडिंग का परिचय",
+      "introducingSubtitle": "एकाधिक वॉलेट अनुमोदन की परेशानी के बिना त्वरित, आसान व्यापार करें।",
+      "learnMore": "और अधिक जानें",
+      "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
+      "defaultParameters": "1-क्लिक ट्रेडिंग इस डिवाइस पर $5,000 USD की खर्च सीमा के साथ 1 घंटे के लिए सक्रिय रहेगी",
+      "changeButton": "परिवर्तन"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "जल्दी और आसानी से व्यापार करें",
+      "startOneClickTradingNow": "अभी 1-क्लिक ट्रेडिंग शुरू करें",
+      "iconAlt": "1-क्लिक ट्रेडिंग छोटा लोगो"
+    },
+    "floatingBanner": {
+      "newPill": "नया",
+      "title": "1-ट्रेडिंग पर क्लिक करें",
+      "tradeFasterButton": "तेजी से व्यापार करें"
+    },
+    "settings": {
+      "header": "1-ट्रेडिंग पर क्लिक करें",
+      "description": "1-क्लिक ट्रेडिंग आपको अपने वॉलेट में प्रत्येक लेनदेन पर हस्ताक्षर करने की परेशानी के बिना इस डिवाइस पर सुरक्षित रूप से व्यापार करने की सुविधा देता है।",
+      "enableTitle": "1-क्लिक ट्रेडिंग सक्षम करें",
+      "spendLimitTitle": "खर्च सीमा",
+      "networkFeeLimitTitle": "नेटवर्क शुल्क सीमा",
+      "sessionPeriodTitle": "सत्र अवधि",
+      "resetPeriodTitle": "रीसेट अवधि",
+      "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
+      "editSessionButton": "परिवर्तनों को सुरक्षित करें",
+      "endingSession": "समापन सत्र",
+      "feeToDisable": "1-क्लिक ट्रेडिंग को अक्षम करने का शुल्क:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "वह अधिकतम राशि निर्धारित करें जिसे आप 1-क्लिक ट्रेडिंग सत्र अवधि के भीतर खर्च कर सकते हैं।",
+        "fixedAmount": "निश्चित राशि",
+        "shareOfBalance": "शेष राशि का हिस्सा",
+        "shareOfBalanceDescription": "ऑस्मोसिस पर आपके कुल शेष {shareOfBalance} वर्तमान में मूल्य है",
+        "fluctuationNotice": "सावधान रहें कि आपकी खर्च सीमा का USD मूल्य आपकी संपत्ति के मूल्य पर आधारित है जिसमें उतार-चढ़ाव हो सकता है।"
+      },
+      "networkFeeLimitScreen": {
+        "title": "नेटवर्क शुल्क सीमा",
+        "description": "अपने 1-क्लिक ट्रेडिंग सत्र के दौरान किसी एकल लेनदेन के लिए नेटवर्क शुल्क पर खर्च की जाने वाली अधिकतम राशि निर्धारित करें।",
+        "info": "यदि शुल्क इस राशि से अधिक है, तो आप अपने वॉलेट में लेनदेन पर मैन्युअल रूप से हस्ताक्षर करके आगे बढ़ सकते हैं।",
+        "low": "कम",
+        "average": "औसत",
+        "high": "उच्च",
+        "recommended": "अनुशंसित"
+      },
+      "sessionPeriodScreen": {
+        "title": "सत्र अवधि",
+        "description": "इस डिवाइस पर 1-क्लिक ट्रेडिंग की अनुमति देने के लिए एक अवधि निर्धारित करें।",
+        "periods": {
+          "10min": "10 मिनटों",
+          "30min": "30 मिनट",
+          "1hour": "1 घंटा",
+          "3hours": "3 घंटे",
+          "12hours": "12 घंटे"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "रीसेट अवधि",
+        "description": "व्यय सीमा कोटा रीसेट करने के लिए एक अवधि निर्धारित करें।",
+        "periods": {
+          "day": "दिन",
+          "week": "सप्ताह",
+          "month": "महीना",
+          "year": "वर्ष"
+        }
+      },
+      "discardChanges": {
+        "title": "परिवर्तनों को निरस्त करें?",
+        "message": "क्या आप अपनी मौजूदा 1-क्लिक ट्रेडिंग सेटिंग बनाए रखना चाहते हैं?",
+        "cancelButton": "रद्द करना",
+        "discardButton": "खारिज करना"
+      }
+    },
+    "welcomeBack": {
+      "title": "वापसी पर स्वागत है",
+      "description": "एक बार जब आप अपना वॉलेट कनेक्ट कर लेते हैं, तो आपको अपना 1-क्लिक ट्रेडिंग सत्र शुरू करने के लिए लेनदेन को मंजूरी देने के लिए कहा जाएगा।",
+      "toggleLabel": "1-ट्रेडिंग पर क्लिक करें",
+      "editParamsAriaLabel": "1CT पैरामीटर बदलें"
+    },
+    "connectToContinue": {
+      "altText": "एक क्लिक ट्रेडिंग ग्राफ़िक",
+      "header": "जारी रखने के लिए वॉलेट कनेक्ट करें",
+      "description": "आपका 1-क्लिक ट्रेडिंग सत्र तब शुरू होगा जब आप अपने चुने हुए वॉलेट में लेनदेन को मंजूरी देंगे।"
+    },
+    "profile": {
+      "sessionExpired": "सत्र समाप्त हुआ"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24 घंटे ट्रेडिंग वॉल्यूम",
     "amountDaysUnbonding": "{numDays} दिन अनबॉन्डिंग",
@@ -606,7 +711,8 @@
     "modalTitle": "प्रोफ़ाइल",
     "viewAllAssets": "सभी संपत्तियां देखें",
     "wallet": "बटुआ",
-    "transactions": "लेनदेन"
+    "transactions": "लेनदेन",
+    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",
@@ -748,6 +854,13 @@
     "priceImpact": "मूल्य प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
+    "continueAnyway": "फिर भी जारी रखें",
+    "warning": {
+      "exceedsSpendLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी शेष खर्च सीमा से अधिक है।",
+      "exceedsNetworkFeeLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी नेटवर्क शुल्क सीमा से अधिक है।",
+      "increaseSpendLimit": "खर्च सीमा बढ़ाएँ",
+      "increaseNetworkFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ"
+    },
     "settings": {
       "slippage": "फिसलन सहनशीलता",
       "slippageInfo": "यदि कीमत में इस प्रतिशत से अधिक प्रतिकूल परिवर्तन होता है तो आपका लेनदेन वापस कर दिया जाएगा।",
@@ -773,6 +886,12 @@
     "reconnect": "रिकनेक्ट",
     "connectingWallet": "कनेक्टिंग वॉलेट",
     "approveWalletConnect": "अपने मोबाइल पर {walletName} कनेक्शन अनुरोध स्वीकृत करें।",
+    "enablingOneClickTrading": "1-क्लिक ट्रेडिंग सक्षम करना।",
+    "approveOneClickTradingSession": "{walletName} में 1-क्लिक ट्रेडिंग को मंजूरी दें।",
+    "errorInitializingOneClickTradingSession": "1-क्लिक ट्रेडिंग सक्षम नहीं की जा सकी।",
+    "retryInWalletOrContinue": "{walletName} में पुनः प्रयास करें, या 1-क्लिक ट्रेडिंग के बिना जारी रखें।",
+    "continueWithoutOneClickTrading": "1-क्लिक ट्रेडिंग के बिना जारी रखें",
+    "retry": "पुन: प्रयास करें",
     "openExtension": "अपने वॉलेट को कनेक्ट करने के लिए {walletName} ब्राउज़र एक्सटेंशन खोलें।",
     "initializingWallet": "वॉलेट क्लाइंट प्रारंभ करना",
     "clickToRefresh": "ताज़ा करने के लिए क्लिक करें.",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "अस्वीकरण",
+  "remaining": "शेष",
+  "timeUnits": {
+    "second": "दूसरा",
+    "seconds": "सेकंड",
+    "minute": "मिनट",
+    "minutes": "मिनट",
+    "hour": "घंटा",
+    "hours": "घंटे"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} जमा अस्थिर है",
     "titleWithdraw": "{coinDenom} निकासी अस्थिर",

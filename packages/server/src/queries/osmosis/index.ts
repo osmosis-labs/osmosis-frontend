@@ -6,3 +6,4 @@ export * from "./lockup";
 export * from "./mint";
 export * from "./poolmanager";
 export * from "./superfluid";
+export * from "./txfees";

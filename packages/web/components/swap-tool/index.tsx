@@ -5,7 +5,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
@@ -28,7 +28,11 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {
+  useFeatureFlags,
+  useOneClickTradingSession,
+  useTranslation,
+} from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -37,6 +41,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
@@ -77,10 +82,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
+    const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+    const { isOneClickTradingEnabled } = useOneClickTradingSession();
+    const [isSendingTx, setIsSendingTx] = useState(false);
 
     const account = accountStore.getWallet(chainId);
-
     const slippageConfig = useSlippageConfig();
+
     const swapState = useSwap({
       initialFromDenom: initialSendTokenDenom,
       initialToDenom: initialOutTokenDenom,
@@ -195,6 +203,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         router: swapState.quote?.name,
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
+      setIsSendingTx(true);
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
@@ -223,17 +232,59 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
+          setIsSendingTx(false);
           onRequestModalClose?.();
         });
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
-    const buttonText = swapState.error
-      ? t(...tError(swapState.error))
-      : showPriceImpactWarning
-      ? t("swap.buttonError")
-      : t("swap.button");
+    let buttonText: string;
+    if (swapState.error) {
+      buttonText = t(...tError(swapState.error));
+    } else if (showPriceImpactWarning) {
+      buttonText = t("swap.buttonError");
+    } else if (
+      swapState.hasOverSpendLimitError ||
+      swapState.hasExceededOneClickTradingGasLimit
+    ) {
+      buttonText = t("swap.continueAnyway");
+    } else {
+      buttonText = t("swap.button");
+    }
+
+    let warningText: string | ReactNode;
+    if (swapState.hasOverSpendLimitError) {
+      warningText = (
+        <span>
+          {t("swap.warning.exceedsSpendLimit")}{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            {t("swap.warning.increaseSpendLimit")}
+          </Button>
+        </span>
+      );
+    } else if (swapState.hasExceededOneClickTradingGasLimit) {
+      warningText = (
+        <span>
+          {t("swap.warning.exceedsNetworkFeeLimit")}{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            {t("swap.warning.increaseNetworkFeeLimit")}
+          </Button>
+        </span>
+      );
+    }
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
@@ -252,7 +303,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     return (
       <>
-        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
           <Popover>
             {({ open, close }) => (
               <>
@@ -262,7 +313,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <Popover.Button as={Fragment}>
                     <IconButton
                       aria-label="Open swap settings"
-                      className="absolute top-0 right-3 z-40 w-fit py-0"
+                      className="absolute right-3 top-0 z-40 w-fit py-0"
                       size="unstyled"
                       mode="unstyled"
                       onClick={(e) => {
@@ -919,9 +970,20 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </div>
             </SkeletonLoader>
           </div>
+          {!isNil(warningText) && (
+            <div
+              className={classNames(
+                "body2 flex animate-[fadeIn_0.3s_ease-in-out_0s] items-center justify-center rounded-xl border border-rust-600 px-3 py-2 text-center text-rust-500",
+                swapState.isLoadingNetworkFee && "animate-pulse"
+              )}
+            >
+              {warningText}
+            </div>
+          )}
           {swapButton ?? (
             <Button
               disabled={
+                isSendingTx ||
                 isWalletLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
@@ -929,6 +991,18 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
+              isLoading={
+                /**
+                 * While 1-Click is enabled, display a loading spinner when simulation
+                 * is in progress since we don't have a wallet to compute the fee for
+                 * us. We need the network fee to be calculated before we can proceed
+                 * with the trade.
+                 */
+                isOneClickTradingEnabled &&
+                swapState.isLoadingNetworkFee &&
+                !swapState.inAmountInput.isEmpty
+              }
+              loadingText={buttonText}
               onClick={sendSwapTx}
             >
               {account?.walletStatus === WalletStatus.Connected ||
