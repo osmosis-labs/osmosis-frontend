@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -9,7 +10,6 @@ import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
   SignOptions,
-  TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import {
@@ -348,7 +348,7 @@ export function useSwap(
             }
           }
 
-          const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
+          const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
             useOneClickTrading: shouldBeSignedWithOneClickTrading,
             ...(featureFlags.swapToolSimulateFee && networkFee
               ? {

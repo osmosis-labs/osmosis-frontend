@@ -90,7 +90,6 @@ import {
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
-  TxFee,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -505,7 +504,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee?: TxFee,
+    fee?: StdFee,
     signOptions?: SignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
@@ -561,9 +560,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      let usedFee: TxFee;
-      // TODO: remove fee.force, and after TxFee > StdFee
-      if (typeof fee === "undefined" || fee?.force === false) {
+      let usedFee: StdFee;
+      if (typeof fee === "undefined") {
         usedFee = await this.estimateFee({
           wallet,
           messages: msgs,
@@ -574,7 +572,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
                 oneClickTradingInfo: await this.getOneClickTradingInfo(),
               })
             : undefined,
-          memo,
           signOptions: mergedSignOptions,
         });
       } else {
@@ -737,7 +734,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signOptions?: SignOptions;
   }): Promise<TxRaw> {
@@ -858,7 +855,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
   }): Promise<TxRaw> {
@@ -906,8 +903,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
-      fee.granter,
-      fee.payer
+      undefined,
+      undefined
     );
     const signDoc = makeSignDoc(
       txBodyBytes,
@@ -953,7 +950,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
@@ -1092,7 +1089,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
@@ -1140,8 +1137,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
-      fee.granter,
-      fee.payer
+      undefined,
+      undefined
     );
     const signDoc = makeSignDoc(
       txBodyBytes,
@@ -1255,7 +1252,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    initialFee?: Optional<TxFee, "gas">;
+    initialFee?: Optional<StdFee, "gas">;
     nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
     memo?: string;
     signOptions?: SignOptions;
@@ -1282,44 +1279,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           gasMultiplier: GasMultiplier,
         },
       });
-
-      // const gasUsed = Number(result.gas_info.gas_used);
-      // if (Number.isNaN(gasUsed)) {
-      //   throw new Error(`Invalid integer gas: ${result.gas_info.gas_used}`);
-      // }
-
-      // /**
-      //  * The gas amount is multiplied by a specific factor to provide additional
-      //  * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-      //  *  */
-      // const gasLimit = String(Math.round(gasUsed * GasMultiplier));
-
-      // /**
-      //  * Compute the fee amount based on the gas limit and the gas price rather than on the wallet.
-      //  * This is useful for wallets that do not support fee estimation.
-      //  */
-      // if (signOptions.preferNoSetFee || signOptions.useOneClickTrading) {
-      //   return {
-      //     gas: gasLimit,
-      //     amount: [
-      //       await this.getFeeAmount({
-      //         gasLimit,
-      //         chainId: wallet.chainId,
-      //         address: wallet.address,
-      //         excludedFeeMinimalDenoms,
-      //         // why are other fee tokens not used with 1ct
-      //         checkOtherFeeTokens: signOptions.useOneClickTrading
-      //           ? false
-      //           : true,
-      //       }),
-      //     ],
-      //   };
-      // }
-
-      // return {
-      //   gas: gasLimit,
-      //   amount: [],
-      // };
     } catch (e) {
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{
@@ -1337,7 +1296,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
          * support tx simulation. In this case, just return the backup fee if available.
          */
         if (message.includes("invalid empty tx") && initialFee.gas) {
-          return initialFee as TxFee;
+          return initialFee as StdFee;
         }
 
         // If there is a code, it's a simulate tx error and we should forward its message.

@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
@@ -13,12 +14,7 @@ import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
 
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  TxFee,
-} from "../../account";
+import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse, SignOptions } from "../types";
@@ -1090,7 +1086,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency },
     tokenOutMinAmount: string,
     memo: string = "",
-    signOptions?: SignOptions & { fee?: TxFee },
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
@@ -1162,7 +1158,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     tokenOutMinAmount: string,
     memo: string = "",
-    signOptions?: SignOptions & { fee?: TxFee },
+    signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.swapExactAmountIn.messageComposer({

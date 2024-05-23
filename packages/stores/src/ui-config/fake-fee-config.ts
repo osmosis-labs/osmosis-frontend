@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import {
@@ -8,8 +9,6 @@ import {
 import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { TxFee } from "../account";
 
 /**
  * Currencies that can be used for fees.
@@ -132,7 +131,7 @@ export class FakeFeeConfig implements IFeeConfig {
     // noop
   }
 
-  toStdFee(): TxFee {
+  toStdFee(): StdFee {
     return {
       gas: this.gas.toString(),
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
