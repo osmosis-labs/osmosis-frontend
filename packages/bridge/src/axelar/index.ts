@@ -259,7 +259,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       if (transactionData.type === "evm") {
         const evmChain = Object.values(EthereumChainInfo).find(
-          ({ chainId }) => chainId === params.fromChain.chainId
+          ({ chainId }) => String(chainId) === String(params.fromChain.chainId)
         );
 
         if (!evmChain) throw new Error("Could not find EVM chain");
@@ -525,8 +525,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
     });
   }
 
-  isNativeAsset(fromAsset: BridgeAsset) {
-    return fromAsset.address === NativeEVMTokenConstantAddress;
+  isNativeAsset(asset: BridgeAsset) {
+    return asset.address === NativeEVMTokenConstantAddress;
   }
 
   getWaitTime(sourceChain: string) {
@@ -545,7 +545,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
-      ({ chainId }) => chainId === chain.chainId
+      ({ chainId }) => String(chainId) === String(chain.chainId)
     )?.chainName;
 
     if (!ethereumChainName) return undefined;

@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 
 import { Spinner } from "~/components/loaders";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
 const WormholeConnect = dynamic(
@@ -63,6 +65,8 @@ const customTheme: WormholeConnectPartialTheme = {
 
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
+
+  useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
 
   const fromNetwork = router.query.from as string;
   const toNetwork = router.query.to as string;

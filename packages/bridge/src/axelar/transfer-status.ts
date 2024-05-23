@@ -14,8 +14,7 @@ import { getTransferStatus } from "./queries";
 export class AxelarTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = AxelarBridgeProvider.ID;
   readonly sourceDisplayName = "Axelar Bridge";
-
-  statusReceiverDelegate?: TransferStatusReceiver;
+  public statusReceiverDelegate?: TransferStatusReceiver;
 
   readonly axelarScanBaseUrl: string;
   readonly axelarApiBaseUrl: string;
@@ -32,7 +31,7 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(serializedParamsOrHash: string): void {
+  async trackTxStatus(serializedParamsOrHash: string): Promise<void> {
     const sendTxHash = serializedParamsOrHash.startsWith("{")
       ? (JSON.parse(serializedParamsOrHash) as GetTransferStatusParams)
           .sendTxHash
@@ -40,7 +39,7 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
 
     const snapshotKey = `${this.keyPrefix}${serializedParamsOrHash}`;
 
-    poll({
+    await poll({
       fn: async () => {
         const transferStatus = await getTransferStatus(
           sendTxHash,
@@ -71,13 +70,6 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
             } as BridgeTransferStatus;
           }
 
-          if (data.status === "executed") {
-            return {
-              id: idWithoutSourceChain,
-              status: "success",
-            } as BridgeTransferStatus;
-          }
-
           if (
             // any of all complete stages does not return success
             data.send &&
@@ -93,6 +85,13 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
               status: "failed",
             } as BridgeTransferStatus;
           }
+
+          if (data.status === "executed") {
+            return {
+              id: idWithoutSourceChain,
+              status: "success",
+            } as BridgeTransferStatus;
+          }
         } catch {
           return undefined;
         }
@@ -101,10 +100,10 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .catch((e) => console.error(`Polling Axelar has failed`, e))
       .then((s) => {
         if (s) this.receiveConclusiveStatus(snapshotKey, s);
-      });
+      })
+      .catch((e) => console.error(`Polling Axelar has failed`, e));
   }
 
   receiveConclusiveStatus(

@@ -16,7 +16,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = SkipBridgeProvider.ID;
   readonly sourceDisplayName = "Skip Bridge";
 
-  statusReceiverDelegate?: TransferStatusReceiver;
+  statusReceiverDelegate?: TransferStatusReceiver | undefined;
 
   readonly skipClient: SkipApiClient;
   readonly axelarScanBaseUrl: string;
@@ -30,14 +30,14 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
         : "https://testnet.axelarscan.io";
   }
 
-  trackTxStatus(serializedParams: string): void {
+  async trackTxStatus(serializedParams: string): Promise<void> {
     const { sendTxHash, fromChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
     const snapshotKey = `${this.keyPrefix}${serializedParams}`;
 
-    poll({
+    await poll({
       fn: async () => {
         try {
           const txStatus = await this.skipClient.transactionStatus({

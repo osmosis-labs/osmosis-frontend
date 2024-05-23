@@ -248,7 +248,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
-  private async createEvmTransaction({
+  async createEvmTransaction({
     fromAsset,
     fromChain,
     fromAddress,
@@ -326,7 +326,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   }
 
   /** TODO: Handle WASM transactions */
-  private async createCosmosTransaction(
+  async createCosmosTransaction(
     data: string
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
@@ -431,7 +431,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
-  private async getApprovalTx({
+  async getApprovalTx({
     fromTokenContract,
     fromAmount,
     isFromAssetNative,
