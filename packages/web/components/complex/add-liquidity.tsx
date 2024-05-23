@@ -29,7 +29,7 @@ export const AddLiquidity: FunctionComponent<
     <div className={classNames("flex flex-col gap-8", className)}>
       {addLiquidityConfig.supportsSingleAmountIn && (
         <div className="flex flex-col gap-4 text-center">
-          <div className="mx-auto">
+          <div className="mx-auto w-full max-w-[40%]">
             <MenuToggle
               selectedOptionId={
                 addLiquidityConfig.isSingleAmountIn ? "single" : "all"

@@ -58,7 +58,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           disabled={disabled}
         ></input>
         <span
-          className={classNames("subtitle2 relative z-10", {
+          className={classNames("subtitle2 relative z-10 whitespace-nowrap", {
             "text-osmoverse-300": id !== selectedOptionId,
           })}
         >
