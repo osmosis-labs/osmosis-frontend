@@ -25,18 +25,24 @@ import { getSumTotalSpenderCoinsSpent } from "./events";
  *  a list of features that the chain supports. */
 type ChainWithFeatures = Chain & { features?: string[] };
 
-export type EstimationOpts = {
-  /** Flag to also get the gas amounts while accounting for account balances.
-   *  Default: `true` */
-  getGasAmount?: boolean;
+/**
+ * A StdFee-conforming fee quoted from simulating a transaction.
+ * This includes the gas limit and the amount of fee tokens needed to pay the fee.
+ * Accounts for fee tokens available on chain, the fee tokens spent during tx simulation,
+ * as well the edge case of the last available fee balance being spent during simulation.
+ */
+export type QuoteStdFee = {
+  gas: string;
+  amount: readonly {
+    denom: string;
+    amount: string;
 
-  /** A multiplier to handle variable gas
-   *  or to account for slippage in price in gas markets.
-   *  Default: `1.5` */
-  gasMultiplier?: number;
-
-  /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
-  onlyDefaultFeeDenom?: boolean;
+    /**
+     * Indicates that the simulated transaction spends the account's balance required for the fee.
+     * Likely, the input spent amount needs to be adjusted by subtracting this amount.
+     */
+    isSpent?: boolean;
+  }[];
 };
 
 /**
@@ -55,14 +61,21 @@ export async function estimateGasFee({
   body,
   bech32Address,
   gasMultiplier = 1.5,
-  getGasAmount = true,
   ...opts
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
   body: SimBody;
   bech32Address: string;
-} & EstimationOpts) {
+
+  /** A multiplier to handle variable gas
+   *  or to account for slippage in price in gas markets.
+   *  Default: `1.5` */
+  gasMultiplier?: number;
+
+  /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
+  onlyDefaultFeeDenom?: boolean;
+}): Promise<QuoteStdFee> {
   const { gasUsed, coinsSpent } = await simulate({
     chainId,
     chainList,
@@ -72,25 +85,21 @@ export async function estimateGasFee({
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
 
-  if (!getGasAmount) {
-    return {
-      gas: gasLimit,
-      amount: [],
-    };
-  }
-
   if (opts.onlyDefaultFeeDenom) {
     const { feeDenom, gasPrice } = await getDefaultGasPrice({
       chainId,
       chainList,
       gasMultiplier,
     });
-    return [
-      {
-        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-        denom: feeDenom,
-      },
-    ];
+    return {
+      gas: gasLimit,
+      amount: [
+        {
+          amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+          denom: feeDenom,
+        },
+      ],
+    };
   }
 
   const amount = await getGasFeeAmount({

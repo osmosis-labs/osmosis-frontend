@@ -981,9 +981,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     account?.txTypeInProgress !== "" ||
                     swapState.isLoadingNetworkFee))
               }
-              isLoading={
-                swapState.isLoadingNetworkFee || swapState.isQuoteLoading
-              }
               loadingText={buttonText}
               onClick={sendSwapTx}
             >

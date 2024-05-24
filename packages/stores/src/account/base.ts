@@ -49,7 +49,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
-import { encodeAnyBase64, TxTracer } from "@osmosis-labs/tx";
+import { encodeAnyBase64, QuoteStdFee, TxTracer } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -60,7 +60,7 @@ import {
 import axios from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import { TxBody, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
 import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
@@ -565,13 +565,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = await this.estimateFee({
           wallet,
           messages: msgs,
-          initialFee: fee ?? { amount: [] },
-          // this will be included in txbody object that will be accepted by function
-          nonCriticalExtensionOptions: signOptions?.useOneClickTrading
-            ? await this.getOneClickTradingExtensionOptions({
-                oneClickTradingInfo: await this.getOneClickTradingInfo(),
-              })
-            : undefined,
           signOptions: mergedSignOptions,
         });
       } else {
@@ -1220,10 +1213,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *
    * @param wallet - The wallet object containing information about the blockchain wallet.
    * @param messages - An array of message objects to be encoded and included in the transaction.
-   * @param initialFee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
-   * @param memo - A string used as a memo or note with the transaction.
    * @param signOptions - Optional options for customizing the sign process.
-   * @param excludedFeeMinimalDenoms - An array of minimal denoms to exclude from the fee calculation.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -1245,40 +1235,51 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   public async estimateFee({
     wallet,
     messages,
-    initialFee = { amount: [] },
-    nonCriticalExtensionOptions,
     signOptions = {},
-    excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     initialFee?: Optional<StdFee, "gas">;
-    nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
-    memo?: string;
     signOptions?: SignOptions;
-    excludedFeeMinimalDenoms?: string[];
-  }): Promise<StdFee> {
+  }): Promise<QuoteStdFee> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
       const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-      const getGasAmount =
-        signOptions.preferNoSetFee || signOptions.useOneClickTrading;
 
-      return await apiClient<StdFee>("/api/estimate-gas-fee", {
+      // check for one click trading tx options
+      const shouldBeSignedWithOneClickTrading =
+        signOptions?.useOneClickTrading &&
+        (await this.shouldBeSignedWithOneClickTrading({ messages }));
+      const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
+        ? await this.getOneClickTradingExtensionOptions({
+            oneClickTradingInfo: await this.getOneClickTradingInfo(),
+          })
+        : undefined;
+
+      const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
           messages: encodedMessages.map(encodeAnyBase64),
           nonCriticalExtensionOptions:
-            nonCriticalExtensionOptions?.map(encodeAnyBase64) ?? [],
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
-          // make sure signoptions is integrated into estimategas
-          excludedFeeMinimalDenoms,
           onlyDefaultFeeDenom: signOptions.useOneClickTrading,
-          getGasAmount,
           gasMultiplier: GasMultiplier,
         },
       });
+
+      const getGasAmount =
+        signOptions.preferNoSetFee || signOptions.useOneClickTrading;
+
+      if (!getGasAmount) {
+        return {
+          gas: estimate.gas,
+          amount: [],
+        };
+      }
+
+      return estimate;
     } catch (e) {
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{
@@ -1290,14 +1291,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         const message = apiClientError.data?.message;
 
         if (status !== 400 || !message || typeof message !== "string") throw e;
-
-        /**
-         * If the error message includes "invalid empty tx", it means that the chain does not
-         * support tx simulation. In this case, just return the backup fee if available.
-         */
-        if (message.includes("invalid empty tx") && initialFee.gas) {
-          return initialFee as StdFee;
-        }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
         if (apiClientError?.data?.code) {

@@ -31,18 +31,15 @@ export default async function handler(
     messages,
     nonCriticalExtensionOptions,
     bech32Address,
-    excludedFeeMinimalDenoms,
     onlyDefaultFeeDenom,
-    getGasAmount,
     gasMultiplier,
   } = req.body as {
     chainId: string;
     messages: { typeUrl: string; value: string }[];
-    nonCriticalExtensionOptions: { typeUrl: string; value: string }[];
+    nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
     bech32Address: string;
     excludedFeeMinimalDenoms?: string[];
     onlyDefaultFeeDenom: boolean;
-    getGasAmount: boolean;
     gasMultiplier: number;
   };
 
@@ -54,11 +51,9 @@ export default async function handler(
       body: {
         messages: messages.map(decodeAnyBase64),
         nonCriticalExtensionOptions:
-          nonCriticalExtensionOptions.map(decodeAnyBase64),
+          nonCriticalExtensionOptions?.map(decodeAnyBase64),
       },
-      excludedFeeDenoms: excludedFeeMinimalDenoms,
       onlyDefaultFeeDenom,
-      getGasAmount,
       gasMultiplier,
     });
     return res.status(200).json(gasFee);
