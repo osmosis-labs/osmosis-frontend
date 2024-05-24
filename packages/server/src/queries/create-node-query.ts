@@ -56,6 +56,14 @@ export const createNodeQuery =
       ),
       chain.apis.rest[0].address
     );
-    if (opts) return apiClient<Result>(url.toString(), opts);
+    if (opts)
+      return apiClient<Result>(url.toString(), opts).then((r) => {
+        console.log({
+          r: (r as any).result.events.map((e: any) =>
+            e.attributes.map((o: any) => `${o.key} ${o.value}`)
+          ),
+        });
+        return r;
+      });
     else return apiClient<Result>(url.toString());
   };

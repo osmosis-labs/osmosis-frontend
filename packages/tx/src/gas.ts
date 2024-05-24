@@ -1,4 +1,3 @@
-import type { StdFee } from "@cosmjs/stargate";
 import { Dec } from "@keplr-wallet/unit";
 import {
   queryBalances,
@@ -19,6 +18,8 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+
+import { getSumTotalSpenderCoinsSpent } from "./events";
 
 /** Extends the standard chain type with
  *  a list of features that the chain supports. */
@@ -64,7 +65,7 @@ export async function estimateGasFee({
   chainList: ChainWithFeatures[];
   body: SimBody;
   bech32Address: string;
-} & EstimationOpts): Promise<StdFee> {
+} & EstimationOpts) {
   const { gasUsed } = await simulate({
     chainId,
     chainList,
@@ -81,14 +82,25 @@ export async function estimateGasFee({
     };
   }
 
+  if (opts.onlyDefaultFeeDenom) {
+    const { feeDenom, gasPrice } = await getDefaultGasPrice({
+      chainId,
+      chainList,
+      gasMultiplier,
+    });
+    return [
+      {
+        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
+        denom: feeDenom,
+      },
+    ];
+  }
+
   const amount = await getGasFeeAmount({
     chainId,
     chainList,
     gasLimit,
-    bech32Address:
-      // excluding the address will force the use of the default fee token
-      // since user balances will not be taken into account for deciding on the fee token
-      Boolean(opts.onlyDefaultFeeDenom) ? undefined : bech32Address,
+    bech32Address,
     excludedFeeDenoms: opts.excludedFeeDenoms,
     gasMultiplier,
   });
@@ -96,6 +108,7 @@ export async function estimateGasFee({
   return {
     gas: gasLimit,
     amount,
+    // also return max last send token balance if the send token is the only available fee token balance
   };
 }
 
@@ -124,7 +137,12 @@ export async function simulate({
   chainList: ChainWithFeatures[];
   body: SimBody;
   bech32Address: string;
-}): Promise<{ gasUsed: number }> {
+}): Promise<{
+  gasUsed: number;
+  /** Coins that left the account at the given address.
+   *  Useful for subtracting from amount input if it gas tokens are included. */
+  coinsSpent: { denom: string; amount: string }[];
+}> {
   const chain = chainList.find(
     (chain) => chainId && chain.chain_id === chainId
   );
@@ -167,13 +185,21 @@ export async function simulate({
 
   // Include custom error handling to catch specific error scenarios.
   try {
-    // Try to send simulate query to chain consensus layer.
-    const gasUsed = await sendTxSimulate({
+    // Try to send simulate query to chain if available
+    const simulation = await sendTxSimulate({
       chainList,
       txBytes: Buffer.from(unsignedTx).toString("base64"),
-    }).then((result) => Number(result.gas_info.gas_used));
-    if (isNaN(gasUsed)) throw new Error("Gas used is NaN");
-    return { gasUsed };
+    });
+    const gasUsed = Number(simulation.gas_info?.gas_used ?? NaN);
+    if (isNaN(gasUsed)) throw new Error("Gas used is missing or NaN");
+
+    // extract sum total of all coins spent in simulation
+    const coinsSpent = getSumTotalSpenderCoinsSpent(
+      bech32Address,
+      simulation.result?.events ?? []
+    );
+
+    return { gasUsed, coinsSpent };
   } catch (e) {
     if (e instanceof ApiClientError) {
       const apiClientError = e as ApiClientError<{
@@ -206,174 +232,211 @@ export class InsufficientFeeError extends Error {}
 
 /**
  * Gets the gas fee payment asset amounts for the given chain.
- * If an address is provided, it will attempt to provide amounts from the available fee token balances
- * at that account address. Otherwise it will use the default fee token amount(s).
+ * If an address is provided, it will attempt to provide amounts from the available fee coin balances
+ * at that account address. Otherwise it will use the default fee coin amount(s).
+ *
+ * If `coinsSpent` are provided, the fee token selection process will account for any spent fee coins.
+ * Note: partial fee amounts are not currently supported (mainly by wallet UIs) so for now only single full fee amounts are returned.
  *
  * Can be expanded to handle paying with multiple fee tokens in the future.
  *
- * @throws `InsufficientFeeError` if the user does not have enough balance to pay the fee.
+ * @throws `InsufficientFeeError` if the user does not have enough balance with any gas token to pay the fee.
+ * @throws If chain not found.
  */
 export async function getGasFeeAmount({
   chainId,
   chainList,
   gasLimit,
   bech32Address,
-  excludedFeeDenoms = [],
   gasMultiplier = 1.5,
+  coinsSpent,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  bech32Address?: string;
+  bech32Address: string;
   gasLimit: string;
-  /** Base denoms */
-  excludedFeeDenoms?: string[];
   gasMultiplier?: number;
-}): Promise<{ denom: string; amount: string }[]> {
+  /** Coins being spent in applicable transaction.
+   *  Will be cross checked with available fee coins on chain and from account if given. */
+  coinsSpent?: { denom: string; amount: string }[];
+}): Promise<
+  {
+    denom: string;
+    amount: string;
+    /** Returns `true` if this fee applies to the edge case where the amount was
+     *  spent by the given spent coins list.
+     *  Likely, the spent amount needs to be adjusted by subtracting this amount.
+     */
+    isSpent?: boolean;
+  }[]
+> {
   const chain = chainList.find(
     (chain) => chainId && chain.chain_id === chainId
   );
   if (!chain) throw new Error("Chain not found: " + chainId);
 
-  if (!bech32Address) {
-    // use defaults and not available fee token balances
-    const { feeDenom, gasPrice } = await getGasPrice({
-      chainId,
-      chainList,
-      gasMultiplier,
-    });
-    return [
-      {
-        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-        denom: feeDenom,
-      },
-    ];
-  }
+  // Need to reconcile
+  // * Available fee tokens
+  // * Account fee token balances
+  // * Spent fee tokens
 
-  const [{ gasPrice: chainGasPrice, feeDenom }, { balances }] =
-    await Promise.all([
-      getGasPrice({
-        chainId,
-        chainList,
-        gasMultiplier,
-      }),
-      queryBalances({
-        bech32Address,
-        chainId,
-        chainList,
-      }),
-    ]);
+  // availabe chain fee denoms
+  const chainFeeDenoms = await getChainSupportedFeeDenoms({
+    chainId,
+    chainList,
+  });
 
-  let fee = {
-    amount: chainGasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-    denom: feeDenom,
-  };
-
-  const feeBalance = balances.find((balance) => balance.denom === fee.denom);
-
-  const chainHasFeeMarketModule = Boolean(
-    chain?.features?.includes("osmosis-txfees")
+  // account fee denoms with amounts
+  const { balances } = await queryBalances({
+    bech32Address,
+    chainId,
+    chainList,
+  });
+  const feeBalances = balances.filter((balance) =>
+    chainFeeDenoms.some((denom) => denom === balance.denom)
   );
 
-  const isBalanceInsufficientForBaseFee =
-    (feeBalance && new Dec(fee.amount).gt(new Dec(feeBalance.amount))) ||
-    !feeBalance;
-
-  // If the chain doesn't support the Osmosis chain fee module, check that the user has enough balance
-  // to pay the fee denom, otherwise throw an error.
-  if (!chainHasFeeMarketModule && isBalanceInsufficientForBaseFee) {
+  if (!feeBalances.length) {
     throw new InsufficientFeeError(
-      "Insufficient balance for transaction fees. Please add funds to continue: " +
+      "No fee tokens found with sufficient balance on account. Please add funds to continue: " +
         bech32Address
     );
   }
 
-  // If the chain supports the Osmosis chain fee module, check that the user has enough balance
-  // to pay the fee denom, otherwise find another fee token to use.
-  if (
-    chainHasFeeMarketModule &&
-    (isBalanceInsufficientForBaseFee || excludedFeeDenoms.includes(fee.denom))
-  ) {
-    const { fee_tokens } = await queryFeeTokens({ chainId, chainList });
+  let foundFee:
+    | { denom: string; amount: string; isSpent?: boolean }
+    | undefined;
+  // loop to find the applicable fee amongst account balances
+  for (const feeTokenBalance of feeBalances) {
+    const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
+      chainId: chainId,
+      chainList,
+      feeDenom: feeTokenBalance.denom,
+      gasMultiplier,
+    });
+    const feeAmount = feeDenomGasPrice
+      .mul(new Dec(gasLimit))
+      .truncate()
+      .toString();
 
-    const feeTokenBalances = balances.filter(
-      (balance) =>
-        fee_tokens.some(({ denom }) => denom === balance.denom) &&
-        !excludedFeeDenoms.includes(balance.denom)
-    );
+    if (new Dec(feeAmount).gt(new Dec(feeTokenBalance.amount))) continue;
 
-    if (!feeTokenBalances.length) {
-      throw new InsufficientFeeError(
-        "No fee tokens found with sufficient balance on account. Please add funds to continue: " +
-          bech32Address
-      );
-    }
+    const isLastToken = feeBalances.length === 1;
+    const spentAmount =
+      coinsSpent?.find(({ denom }) => denom === feeTokenBalance.denom)
+        ?.amount || "0";
+    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
 
-    let alternateFee: { denom: string; amount: string } | undefined;
-    for (const feeTokenBalance of feeTokenBalances) {
-      const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
-        chainId: chainId,
-        chainList,
-        feeDenom: feeTokenBalance.denom,
-        // Here chain gas price is the osmosis eip base fee since the osmosis fee module is enabled.
-        baseFee: chainGasPrice.toString(),
-      });
-      const feeAmount = feeDenomGasPrice
-        .mul(new Dec(gasLimit))
-        .truncate()
-        .toString();
-
-      // If the fee is greater than the user's balance, continue to the next fee token.
-      if (new Dec(feeAmount).gt(new Dec(feeTokenBalance.amount))) continue;
-
-      alternateFee = {
+    if (isLastToken && totalSpent.gt(new Dec(feeTokenBalance.amount))) {
+      // the coins spent in this transaction exceeds the amount needed for fee
+      foundFee = {
+        amount: feeAmount,
+        denom: feeTokenBalance.denom,
+        isSpent: true,
+      };
+    } else {
+      foundFee = {
         amount: feeAmount,
         denom: feeTokenBalance.denom,
       };
-      break;
     }
-
-    if (!alternateFee) {
-      throw new InsufficientFeeError(
-        "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-          bech32Address
-      );
-    }
-
-    fee = alternateFee;
+    break;
   }
 
-  if (!fee) {
+  if (!foundFee) {
     throw new InsufficientFeeError(
-      "Insufficient balance for transaction fees. Please add funds to continue: " +
+      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
         bech32Address
     );
   }
 
-  return [fee];
+  return [foundFee];
+}
+
+/**
+ * For chains that support multiple fee tokens, this function will return the gas price.
+ *
+ * For tokens with a fee market module, the gas price is calculated by dividing the base fee by the queried spot price of the fee token.
+ *
+ * @throws If chain not found.
+ */
+export async function getGasPriceByFeeDenom({
+  chainId,
+  chainList,
+  feeDenom,
+  gasMultiplier = 1.5,
+}: {
+  /**
+   * Chain to fetch the fee token spot price from.
+   * This requires the chain to have the Osmosis fee module.
+   */
+  chainId: string;
+  chainList: Chain[];
+  feeDenom: string;
+  gasMultiplier?: number;
+}): Promise<{ gasPrice: Dec }> {
+  const chain = chainList.find(
+    (chain) => chainId && chain.chain_id === chainId
+  );
+  if (!chain) throw new Error("Chain not found: " + chainId);
+
+  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L110
+  const chainHasFeeMarketModule = Boolean(
+    chain.features?.includes("osmosis-txfees")
+  );
+
+  const defaultGasPrice = await getDefaultGasPrice({
+    chainId,
+    chainList,
+    gasMultiplier,
+  });
+
+  if (chainHasFeeMarketModule) {
+    const spotPriceDec = await queryFeeTokenSpotPrice({
+      chainId,
+      chainList,
+      denom: feeDenom,
+    }).then(({ spot_price }) => new Dec(spot_price));
+
+    if (spotPriceDec.isZero() || spotPriceDec.isNegative()) {
+      throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
+    }
+
+    return {
+      gasPrice: defaultGasPrice.gasPrice.quo(spotPriceDec).mul(new Dec(1.01)),
+    };
+  }
+
+  return defaultGasPrice;
 }
 
 /** Gets gas price from a dynamic fee module in the chain at the given chain ID,
  *  or the average price specified in the chain's fees object in the registry.
  *
  *  Gas multiplier is used for chains with fee modules to account for gas price slippage (default: `1.5`).
+ *
+ *  @throws If chain not found.
  */
-export async function getGasPrice({
+export async function getDefaultGasPrice({
   chainId,
   chainList,
   gasMultiplier = 1.5,
+  defaultGasPrice = 0.025,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
   gasMultiplier?: number;
+  defaultGasPrice?: number;
 }) {
   const chain = chainList.find(({ chain_id }) => chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // Could eventually be a cosmos-wide fee module, like Skip's incoming fee market module
+  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L110
   const chainHasFeeMarketModule = Boolean(
     chain.features?.includes("osmosis-txfees")
   );
-  const feeCurrency = chain.fees.fee_tokens[0];
+  const defaultFeeCurrency = chain.fees.fee_tokens[0];
 
   let gasPrice: number | undefined;
 
@@ -384,63 +447,39 @@ export async function getGasPrice({
     }).then(({ base_fee }) => Number(base_fee));
     if (isNaN(baseFee)) throw new Error("Invalid base fee: " + baseFee);
 
-    // Add slippage multiplier
+    // Add slippage multiplier to account for shifting gas prices in gas market
     gasPrice = baseFee * gasMultiplier;
   } else {
-    gasPrice = feeCurrency.average_gas_price || DefaultGasPriceStep.average;
+    gasPrice = defaultFeeCurrency.average_gas_price || defaultGasPrice;
   }
 
-  return { gasPrice: new Dec(gasPrice), feeDenom: feeCurrency.denom };
+  return { gasPrice: new Dec(gasPrice), feeDenom: defaultFeeCurrency.denom };
 }
 
 /**
- * For chains that support multiple fee tokens, the gas price is calculated from the
- * base fee token's price relative to the alternative fee token price.
+ * Gets the available denoms for paying gas for a given chain ID.
  *
- * @throws if an invalid spot price is supplied
+ * @throws If chain not found
  */
-export async function getGasPriceByFeeDenom({
+export async function getChainSupportedFeeDenoms({
   chainId,
   chainList,
-  feeDenom,
-  baseFee,
 }: {
-  /**
-   * Chain to fetch the fee token spot price from.
-   * This requires the chain to have the Osmosis fee module.
-   */
   chainId: string;
-  chainList: Chain[];
-  feeDenom: string;
-  /**
-   * The osmosis fee module current base fee token to use for
-   * the gas price calculation. It can be fetched with this.queryGasPrice
-   */
-  baseFee: string | undefined;
-}): Promise<{ gasPrice: Dec }> {
-  const spotPriceDec = await queryFeeTokenSpotPrice({
-    chainId,
-    chainList,
-    denom: feeDenom,
-  }).then(({ spot_price }) => new Dec(spot_price));
+  chainList: ChainWithFeatures[];
+}) {
+  const chain = chainList.find(
+    (chain) => chainId && chain.chain_id === chainId
+  );
+  if (!chain) throw new Error("Chain not found: " + chainId);
 
-  if (spotPriceDec.isZero() || spotPriceDec.isNegative()) {
-    throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
-  }
+  const chainHasFeeMarketModule = Boolean(
+    chain.features?.includes("osmosis-txfees")
+  );
 
-  const gasPrice = new Dec(baseFee ?? DefaultGasPriceStep.average)
-    .quo(spotPriceDec)
-    .mul(new Dec(1.01));
-
-  return { gasPrice };
+  return chainHasFeeMarketModule
+    ? await queryFeeTokens({ chainId, chainList }).then(({ fee_tokens }) =>
+        fee_tokens.map((ft) => ft.denom)
+      )
+    : chain.fees.fee_tokens.map(({ denom }) => denom);
 }
-
-export const DefaultGasPriceStep: {
-  low: number;
-  average: number;
-  high: number;
-} = {
-  low: 0.01,
-  average: 0.025,
-  high: 0.04,
-};

@@ -1,14 +1,27 @@
 import { createNodeQuery } from "../../create-node-query";
 
-export type GasInfo = {
-  gas_info: {
+export type TxEvent = {
+  type: string;
+  attributes: {
+    key: string;
+    value: string;
+  }[];
+};
+
+export type SimulationResult = {
+  gas_info?: {
     /** Int */
     gas_used: string;
+  };
+  result?: {
+    data: string;
+    log: string;
+    events: TxEvent[];
   };
 };
 
 export const sendTxSimulate = createNodeQuery<
-  GasInfo,
+  SimulationResult,
   {
     /** Likely from a `Uint8Array` buffer,
      *  like `Buffer.from(unsignedTx).toString("base64")` */

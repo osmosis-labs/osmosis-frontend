@@ -13,9 +13,9 @@ import { Any } from "cosmjs-types/google/protobuf/any";
 
 import {
   DefaultGasPriceStep,
+  getDefaultGasPrice,
+  getDefaultGasPriceByFeeDenom,
   getGasFeeAmount,
-  getGasPrice,
-  getGasPriceByFeeDenom,
   InsufficientFeeError,
   simulate,
   SimulateNotAvailableError,
@@ -53,7 +53,7 @@ describe("simulateMsgs", () => {
       bech32Address,
     });
 
-    expect(result).toEqual({ gasUsed: 200000 });
+    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
   });
 
   it("should throw an error if chain is not found", async () => {
@@ -487,6 +487,36 @@ describe("getGasFeeAmount", () => {
     expect(gasAmount.amount).toBe(expectedGasAmount);
   });
 
+  it("should return the correct gas price if no address is given", async () => {
+    const chainId = "osmosis-1";
+    const gasLimit = "1000";
+    const baseFee = 0.01;
+    const gasMultiplier = 1.5;
+
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+
+    const result = await getGasFeeAmount({
+      chainId,
+      chainList: MockChains,
+      gasLimit,
+      gasMultiplier,
+    });
+
+    const expectedGasPrice = new Dec(baseFee * gasMultiplier)
+      .mul(new Dec(gasLimit))
+      .roundUp()
+      .toString();
+
+    expect(result).toEqual([
+      {
+        amount: expectedGasPrice,
+        denom: "uosmo",
+      },
+    ]);
+  });
+
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {
     const gasLimit = 1000;
     const chainId = "cosmoshub-4";
@@ -519,6 +549,18 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uatom",
+          poolID: 1,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      pool_id: "1",
+      spot_price: "1000",
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     await expect(
       getGasFeeAmount({
@@ -651,7 +693,7 @@ describe("getGasFeeAmount", () => {
   });
 });
 
-describe("getGasPrice", () => {
+describe("getDefaultGasPrice", () => {
   const chainId = "osmosis-1";
   const chainList = [
     {
@@ -676,7 +718,7 @@ describe("getGasPrice", () => {
     } as Awaited<ReturnType<typeof queryGasPrice>>);
 
     const gasMultiplier = 1.5;
-    const result = await getGasPrice({
+    const result = await getDefaultGasPrice({
       chainId,
       chainList,
       gasMultiplier,
@@ -704,7 +746,7 @@ describe("getGasPrice", () => {
       },
     ] as any;
 
-    const result = await getGasPrice({
+    const result = await getDefaultGasPrice({
       chainId,
       chainList: chainListWithoutFeeMarket,
     });
@@ -715,7 +757,7 @@ describe("getGasPrice", () => {
 
   it("should throw an error if chain is not found", async () => {
     await expect(
-      getGasPrice({
+      getDefaultGasPrice({
         chainId: "non-existent-chain",
         chainList,
       })
@@ -728,7 +770,7 @@ describe("getGasPrice", () => {
     } as Awaited<ReturnType<typeof queryGasPrice>>);
 
     await expect(
-      getGasPrice({
+      getDefaultGasPrice({
         chainId,
         chainList,
       })
@@ -751,7 +793,7 @@ describe("getGasPrice", () => {
       },
     ] as any;
 
-    const result = await getGasPrice({
+    const result = await getDefaultGasPrice({
       chainId,
       chainList: chainListWithoutAverageGasPrice,
     });
@@ -763,7 +805,7 @@ describe("getGasPrice", () => {
   });
 });
 
-describe("getGasPriceByFeeDenom", () => {
+describe("getDefaultGasPriceByFeeDenom", () => {
   // params
   const chainId = "osmosis-1";
   const chainList = MockChains;
@@ -775,7 +817,7 @@ describe("getGasPriceByFeeDenom", () => {
       spot_price: "0.5",
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
-    const result = await getGasPriceByFeeDenom({
+    const result = await getDefaultGasPriceByFeeDenom({
       chainId,
       chainList,
       feeDenom,
@@ -793,7 +835,7 @@ describe("getGasPriceByFeeDenom", () => {
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     await expect(
-      getGasPriceByFeeDenom({
+      getDefaultGasPriceByFeeDenom({
         chainId,
         chainList,
         feeDenom,
@@ -808,7 +850,7 @@ describe("getGasPriceByFeeDenom", () => {
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
     await expect(
-      getGasPriceByFeeDenom({
+      getDefaultGasPriceByFeeDenom({
         chainId,
         chainList,
         feeDenom,
@@ -822,7 +864,7 @@ describe("getGasPriceByFeeDenom", () => {
       spot_price: "0.5",
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
 
-    const result = await getGasPriceByFeeDenom({
+    const result = await getDefaultGasPriceByFeeDenom({
       chainId,
       chainList,
       feeDenom,
