@@ -24,13 +24,13 @@ let testRootStore: RootStore;
 const queryClient = new QueryClient();
 export const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
-    <StoreProvider>
-      <storeContext.Consumer>
-        {(rootStore) => {
-          testRootStore = rootStore!;
-          return (
-            <WalletSelectProvider>
-              <MultiLanguageProvider defaultLanguage="en">
+    <MultiLanguageProvider defaultLanguage="en">
+      <StoreProvider>
+        <storeContext.Consumer>
+          {(rootStore) => {
+            testRootStore = rootStore!;
+            return (
+              <WalletSelectProvider>
                 <trpcReact.Provider
                   client={trpcReact.createClient({
                     transformer: superjson,
@@ -46,12 +46,12 @@ export const withTRPC = ({ children }: { children?: ReactNode }) => {
                     {children}
                   </QueryClientProvider>
                 </trpcReact.Provider>
-              </MultiLanguageProvider>
-            </WalletSelectProvider>
-          );
-        }}
-      </storeContext.Consumer>
-    </StoreProvider>
+              </WalletSelectProvider>
+            );
+          }}
+        </storeContext.Consumer>
+      </StoreProvider>
+    </MultiLanguageProvider>
   );
 };
 

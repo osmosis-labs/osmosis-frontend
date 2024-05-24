@@ -490,6 +490,111 @@
     "discardButton": "変更を破棄",
     "clearAllHistory": "すべてクリア"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click取引が有効です",
+      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
+      "oneClickTradingDisabled": "1-Click 取引が無効になっています",
+      "currentlyUnavailable": "1クリック取引は現在利用できません",
+      "networkFeeTooHigh": "ネットワーク料金が高すぎる",
+      "enableOneClickTrading": "1-Click取引を有効にする",
+      "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
+      "approveManually": "{walletName}で手動で承認する",
+      "continueWithWallet": "ウォレットを続ける",
+      "sessionEnded": "このデバイスでセッションが終了しました",
+      "errorEndingSession": "セッション終了時のエラー",
+      "pleaseTryAgain": "予期しないエラー。もう一度試してください。"
+    },
+    "introduction": {
+      "newFeature": "新機能",
+      "introducingTitle": "1-Click取引の導入",
+      "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
+      "learnMore": "もっと詳しく知る",
+      "startTradingButton": "1-Click取引を開始する",
+      "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
+      "changeButton": "変化"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "取引をより迅速かつ簡単に",
+      "startOneClickTradingNow": "今すぐ1-Click取引を始めましょう",
+      "iconAlt": "1-Click 取引の小さなロゴ"
+    },
+    "floatingBanner": {
+      "newPill": "新しい",
+      "title": "1クリック取引",
+      "tradeFasterButton": "より迅速な取引"
+    },
+    "settings": {
+      "header": "1クリック取引",
+      "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
+      "enableTitle": "1-Click取引を有効にする",
+      "spendLimitTitle": "支出制限",
+      "networkFeeLimitTitle": "ネットワーク料金の制限",
+      "sessionPeriodTitle": "会期",
+      "resetPeriodTitle": "リセット期間",
+      "startButton": "1-Click取引を開始する",
+      "editSessionButton": "変更内容を保存",
+      "endingSession": "セッションの終了",
+      "feeToDisable": "1-Click 取引を無効にする料金:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
+        "fixedAmount": "定額",
+        "shareOfBalance": "残高のシェア",
+        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
+        "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
+      },
+      "networkFeeLimitScreen": {
+        "title": "ネットワーク料金の制限",
+        "description": "1-Click 取引セッション中の単一取引のネットワーク手数料に費やすことができる最大金額を設定します。",
+        "info": "手数料がこの金額を超える場合は、ウォレット内で手動でトランザクションに署名して続行できます。",
+        "low": "低い",
+        "average": "平均",
+        "high": "高い",
+        "recommended": "推奨"
+      },
+      "sessionPeriodScreen": {
+        "title": "会期",
+        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
+        "periods": {
+          "10min": "10分",
+          "30min": "30分",
+          "1hour": "1時間",
+          "3hours": "3時間",
+          "12hours": "12時間"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "リセット期間",
+        "description": "支出制限割り当てをリセットする期間を設定します。",
+        "periods": {
+          "day": "日",
+          "week": "週",
+          "month": "月",
+          "year": "年"
+        }
+      },
+      "discardChanges": {
+        "title": "変更を破棄？",
+        "message": "既存の 1-Click 取引設定を維持しますか?",
+        "cancelButton": "キャンセル",
+        "discardButton": "破棄"
+      }
+    },
+    "welcomeBack": {
+      "title": "おかえり",
+      "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
+      "toggleLabel": "1クリック取引",
+      "editParamsAriaLabel": "1CTパラメータの変更"
+    },
+    "connectToContinue": {
+      "altText": "ワンクリック取引グラフィック",
+      "header": "続行するにはウォレットに接続してください",
+      "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
+    },
+    "profile": {
+      "sessionExpired": "セッションの有効期限が切れ"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24時間取引高",
     "amountDaysUnbonding": "{numDays}日の結合解除",
@@ -606,7 +711,8 @@
     "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
     "wallet": "財布",
-    "transactions": "取引"
+    "transactions": "取引",
+    "oneClickTrading": "1クリック取引"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",
@@ -748,6 +854,13 @@
     "priceImpact": "価格への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
+    "continueAnyway": "とにかく続けます",
+    "warning": {
+      "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
+      "exceedsNetworkFeeLimit": "このスワップは、1 クリック取引のネットワーク手数料制限を超えています。",
+      "increaseSpendLimit": "支出制限を増やす",
+      "increaseNetworkFeeLimit": "ネットワーク料金の上限を引き上げる"
+    },
     "settings": {
       "slippage": "滑り許容差",
       "slippageInfo": "価格がこのパーセンテージを超えて不利に変化した場合、トランザクションは元に戻ります。",
@@ -773,6 +886,12 @@
     "reconnect": "再接続",
     "connectingWallet": "ウォレットを接続する",
     "approveWalletConnect": "モバイルで{walletName}接続リクエストを承認します。",
+    "enablingOneClickTrading": "1-Click 取引の有効化。",
+    "approveOneClickTradingSession": "{walletName}での 1-Click 取引を承認します。",
+    "errorInitializingOneClickTradingSession": "1-Click 取引を有効にできませんでした。",
+    "retryInWalletOrContinue": "{walletName}で再試行するか、1-Click 取引を行わずに続行してください。",
+    "continueWithoutOneClickTrading": "1-Click 取引を行わずに続行する",
+    "retry": "リトライ",
     "openExtension": "{walletName}ブラウザ拡張機能を開いてウォレットに接続します。",
     "initializingWallet": "ウォレットクライアントを初期化しています",
     "clickToRefresh": "クリックして更新します。",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "免責事項",
+  "remaining": "残り",
+  "timeUnits": {
+    "second": "2番",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom}預金は不安定です",
     "titleWithdraw": "{coinDenom}出金が不安定",

@@ -100,7 +100,7 @@ export const TransactionDetailsContent = ({
             />
           </div>
         )}
-        <div className="flex flex-col items-center gap-4 pt-2 pb-6">
+        <div className="flex flex-col items-center gap-4 pb-6 pt-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
             <Icon id="swap" width={24} height={24} aria-label="swap icon" />
           </div>

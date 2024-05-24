@@ -104,7 +104,7 @@ export const AprBreakdown: FunctionComponent<
       {total && (
         <div
           className={classNames(
-            "subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3",
+            "subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 px-3 py-1",
             {
               "text-bullish-500": Boolean(boost),
             }

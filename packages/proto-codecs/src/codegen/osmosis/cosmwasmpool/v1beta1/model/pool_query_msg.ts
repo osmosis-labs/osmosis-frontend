@@ -9,7 +9,7 @@ import {
 } from "../../../../cosmos/base/v1beta1/coin";
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsg {
-  /** get_swap_fee is the query strcuture to get swap fee. */
+  /** get_swap_fee is the query structure to get swap fee. */
   getSwapFee: EmptyStruct;
 }
 export interface GetSwapFeeQueryMsgProtoMsg {
@@ -18,7 +18,7 @@ export interface GetSwapFeeQueryMsgProtoMsg {
 }
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsgAmino {
-  /** get_swap_fee is the query strcuture to get swap fee. */
+  /** get_swap_fee is the query structure to get swap fee. */
   get_swap_fee?: EmptyStructAmino;
 }
 export interface GetSwapFeeQueryMsgAminoMsg {

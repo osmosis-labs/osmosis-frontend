@@ -1,5 +1,7 @@
 // Osmosis node
 export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+export const SPEND_LIMIT_CONTRACT_ADDRESS =
+  process.env.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS;
 
 // twitter
 export const TWITTER_API_URL = process.env.TWITTER_API_URL;

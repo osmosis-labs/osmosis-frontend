@@ -490,6 +490,111 @@
     "discardButton": "لغو تغییرات",
     "clearAllHistory": "همه را پاک کن"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
+      "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
+      "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
+      "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
+      "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
+      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
+      "approveManually": "تأیید دستی در {walletName}",
+      "continueWithWallet": "با کیف پول ادامه دهید",
+      "sessionEnded": "جلسه در این دستگاه به پایان رسید",
+      "errorEndingSession": "خطا در پایان جلسه",
+      "pleaseTryAgain": "خطای غیرمنتظره لطفا دوباره تلاش کنید."
+    },
+    "introduction": {
+      "newFeature": "خصوصیت جدید",
+      "introducingTitle": "معرفی تجارت 1 کلیک",
+      "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
+      "learnMore": "بیشتر بدانید",
+      "startTradingButton": "شروع تجارت با 1 کلیک",
+      "defaultParameters": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
+      "changeButton": "تغییر دادن"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "تجارت سریعتر و آسان تر",
+      "startOneClickTradingNow": "اکنون تجارت 1-کلیک کنید",
+      "iconAlt": "1-روی نماد تجاری کوچک کلیک کنید"
+    },
+    "floatingBanner": {
+      "newPill": "جدید",
+      "title": "1- روی تجارت کلیک کنید",
+      "tradeFasterButton": "تجارت سریعتر"
+    },
+    "settings": {
+      "header": "1- روی تجارت کلیک کنید",
+      "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
+      "enableTitle": "تجارت 1 کلیکی را فعال کنید",
+      "spendLimitTitle": "محدودیت هزینه",
+      "networkFeeLimitTitle": "محدودیت هزینه شبکه",
+      "sessionPeriodTitle": "دوره جلسه",
+      "resetPeriodTitle": "بازنشانی دوره",
+      "startButton": "شروع تجارت با 1 کلیک",
+      "editSessionButton": "ذخیره تغییرات",
+      "endingSession": "پایان جلسه",
+      "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "fixedAmount": "مقدار ثابت",
+        "shareOfBalance": "سهم تعادل",
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
+        "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
+      },
+      "networkFeeLimitScreen": {
+        "title": "محدودیت هزینه شبکه",
+        "description": "حداکثر مبلغی را که می‌توانید برای کارمزد شبکه برای هر تراکنش منفرد در طول جلسه تجارت 1 کلیک خود خرج کنید، تنظیم کنید.",
+        "info": "اگر کارمزد بیش از این مقدار باشد، می‌توانید با امضای دستی تراکنش‌ها در کیف پول خود اقدام کنید.",
+        "low": "کم",
+        "average": "میانگین",
+        "high": "بالا",
+        "recommended": "توصیه شده"
+      },
+      "sessionPeriodScreen": {
+        "title": "دوره جلسه",
+        "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
+        "periods": {
+          "10min": "10 دقیقه",
+          "30min": "30 دقیقه",
+          "1hour": "1 ساعت",
+          "3hours": "3 ساعت",
+          "12hours": "12 ساعت"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "بازنشانی دوره",
+        "description": "مدت زمانی را برای بازنشانی سهمیه محدودیت هزینه تنظیم کنید.",
+        "periods": {
+          "day": "روز",
+          "week": "هفته",
+          "month": "ماه",
+          "year": "سال"
+        }
+      },
+      "discardChanges": {
+        "title": "لغو تغییرات؟",
+        "message": "آیا مایلید تنظیمات تجارت 1-کلیک موجود خود را حفظ کنید؟",
+        "cancelButton": "لغو کنید",
+        "discardButton": "دور انداختن"
+      }
+    },
+    "welcomeBack": {
+      "title": "خوش برگشتی",
+      "description": "هنگامی که کیف پول خود را وصل کردید، از شما خواسته می شود تا یک تراکنش را تأیید کنید تا جلسه تجارت 1-Click خود را شروع کنید.",
+      "toggleLabel": "1- روی تجارت کلیک کنید",
+      "editParamsAriaLabel": "پارامترهای 1CT را تغییر دهید"
+    },
+    "connectToContinue": {
+      "altText": "گرافیک معاملاتی با یک کلیک",
+      "header": "برای ادامه یک کیف پول وصل کنید",
+      "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
+    },
+    "profile": {
+      "sessionExpired": "جلسه تمام شده"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
     "amountDaysUnbonding": "{numDays} روز تا باز شدن",
@@ -606,7 +711,8 @@
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
     "wallet": "کیف پول",
-    "transactions": "معاملات"
+    "transactions": "معاملات",
+    "oneClickTrading": "1- روی تجارت کلیک کنید"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
@@ -748,6 +854,13 @@
     "priceImpact": "تاثیر قیمت",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
+    "continueAnyway": "ادامه دادن به هر طریق",
+    "warning": {
+      "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
+      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
+      "increaseSpendLimit": "افزایش سقف هزینه",
+      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+    },
     "settings": {
       "slippage": "تغیرات قابل قبول",
       "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
@@ -773,6 +886,12 @@
     "reconnect": "دوباره وصل شوید",
     "connectingWallet": "اتصال کیف پول",
     "approveWalletConnect": "تایید",
+    "enablingOneClickTrading": "فعال کردن تجارت 1 کلیک.",
+    "approveOneClickTradingSession": "تأیید معامله 1-کلیک در {walletName} .",
+    "errorInitializingOneClickTradingSession": "1-Click Trading را نمی توان فعال کرد.",
+    "retryInWalletOrContinue": "در {walletName} دوباره امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
+    "continueWithoutOneClickTrading": "بدون 1-Click Trading ادامه دهید",
+    "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
     "initializingWallet": "راه اندازی سرویس گیرنده کیف پول",
     "clickToRefresh": "برای بازخوانی کلیک کنید.",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "سلب مسئولیت",
+  "remaining": "باقی مانده است",
+  "timeUnits": {
+    "second": "دومین",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقایق",
+    "hour": "ساعت",
+    "hours": "ساعت ها"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} سپرده های ناپایدار",
     "titleWithdraw": "{coinDenom} برداشت‌های ناپایدار",

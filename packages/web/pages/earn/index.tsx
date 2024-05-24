@@ -113,7 +113,7 @@ function Earn() {
 
       {isWalletConnected ? (
         <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
-          <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
+          <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pb-4 pt-7 2xl:justify-between 1.5md:bg-none">
             <EarnPosition
               setTabIdx={setTabIdx}
               totalBalance={totalBalance.toString()}
@@ -234,7 +234,7 @@ function Earn() {
           </TabHeader>
           <TabPanels>
             <TabPanel
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              className="flex-col rounded-bl-5xl rounded-br-5xl"
               displayMode="flex"
             >
               <StrategiesTable
@@ -247,7 +247,7 @@ function Earn() {
               />
             </TabPanel>
             <TabPanel
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              className="flex-col rounded-bl-5xl rounded-br-5xl"
               displayMode="flex"
             >
               <StrategiesTable
