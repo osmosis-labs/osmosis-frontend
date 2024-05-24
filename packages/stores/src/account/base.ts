@@ -49,7 +49,12 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
-import { encodeAnyBase64, QuoteStdFee, TxTracer } from "@osmosis-labs/tx";
+import {
+  encodeAnyBase64,
+  QuoteStdFee,
+  SimulateNotAvailableError,
+  TxTracer,
+} from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -562,11 +567,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let usedFee: StdFee;
       if (typeof fee === "undefined") {
-        usedFee = await this.estimateFee({
-          wallet,
-          messages: msgs,
-          signOptions: mergedSignOptions,
-        });
+        try {
+          usedFee = await this.estimateFee({
+            wallet,
+            messages: msgs,
+            signOptions: mergedSignOptions,
+          });
+        } catch (e) {
+          if (e instanceof SimulateNotAvailableError) {
+            console.warn(
+              "Gas simulation not supported for chain ID:",
+              chainNameOrId
+            );
+          }
+
+          throw e;
+        }
       } else {
         usedFee = fee;
       }
@@ -1229,8 +1245,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
    * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
    *
-   * If the chain does not support transaction simulation, the function may
-   * fall back to using the provided fee parameter.
+   * @throws `SimulateNotAvailableError` if simulation is not available
    */
   public async estimateFee({
     wallet,
@@ -1247,7 +1262,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     try {
       const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
 
-      // check for one click trading tx options
+      // check for one click trading tx decoration
       const shouldBeSignedWithOneClickTrading =
         signOptions?.useOneClickTrading &&
         (await this.shouldBeSignedWithOneClickTrading({ messages }));
@@ -1291,6 +1306,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         const message = apiClientError.data?.message;
 
         if (status !== 400 || !message || typeof message !== "string") throw e;
+
+        if (message.includes("invalid empty tx")) {
+          throw new SimulateNotAvailableError(message);
+        }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
         if (apiClientError?.data?.code) {
