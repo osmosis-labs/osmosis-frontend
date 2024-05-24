@@ -61,6 +61,16 @@ export const StepBase = observer(
                   step: step.toString(),
                   nbStep: "3",
                 })
+            : step === 2
+            ? t("pools.createPool.step.two", {
+                step: step.toString(),
+                nbStep: "3",
+              })
+            : step === 3
+            ? t("pools.createPool.step.three", {
+                step: step.toString(),
+                nbStep: "3",
+              })
             : null}{" "}
         </span>
         <div>{children}</div>
