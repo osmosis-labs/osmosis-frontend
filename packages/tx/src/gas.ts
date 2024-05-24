@@ -66,7 +66,7 @@ export async function estimateGasFee({
   body: SimBody;
   bech32Address: string;
 } & EstimationOpts) {
-  const { gasUsed } = await simulate({
+  const { gasUsed, coinsSpent } = await simulate({
     chainId,
     chainList,
     body,
@@ -100,8 +100,8 @@ export async function estimateGasFee({
     chainId,
     chainList,
     gasLimit,
+    coinsSpent,
     bech32Address,
-    excludedFeeDenoms: opts.excludedFeeDenoms,
     gasMultiplier,
   });
 
