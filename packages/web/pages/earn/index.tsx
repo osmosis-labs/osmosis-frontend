@@ -152,7 +152,12 @@ function Earn() {
                   mode={"primary"}
                   className="max-h-11 max-w-[260px] xl:max-w-none"
                   onClick={() =>
-                    onOpenWalletSelect(accountStore.osmosisChainId)
+                    onOpenWalletSelect([
+                      {
+                        walletType: "cosmos",
+                        chainId: accountStore.osmosisChainId,
+                      },
+                    ])
                   }
                 >
                   {t("connectWallet")}

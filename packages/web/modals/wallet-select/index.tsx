@@ -11,6 +11,7 @@ import {
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, {
@@ -23,7 +24,7 @@ import React, {
   useState,
 } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { useConnect } from "wagmi";
+import { Connector, useAccount, useConnect } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import ClientOnly from "~/components/client-only";
@@ -37,14 +38,14 @@ import { Button } from "~/components/ui/button";
 import ConnectingWalletState from "~/components/wallet-states/connecting-wallet-state";
 import ErrorWalletState from "~/components/wallet-states/error-wallet-state";
 import { AvailableWallets, CosmosWalletRegistry } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation, WalletSelectOptions } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import {
   CreateOneClickSessionError,
   useCreateOneClickTradingSession,
 } from "~/hooks/mutations/one-click-trading";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
-import { useHasInstalledWallets } from "~/hooks/use-has-installed-wallets";
+import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -105,333 +106,420 @@ export function getModalView({
   return "list";
 }
 
-export const WalletSelectModal: FunctionComponent<
-  ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
-> = observer((props) => {
-  const {
-    isOpen,
-    onRequestClose,
-    walletRepo: walletRepoProp,
-    onConnect: onConnectProp,
-  } = props;
-  const { isMobile } = useWindowSize();
-  const { accountStore, chainStore } = useStore();
-  const featureFlags = useFeatureFlags();
-  const hasInstalledWallets = useHasInstalledWallets();
-  const [show1CTEditParams, setShow1CTEditParams] = useState(false);
-  const [hasBroadcastedTx, setHasBroadcastedTx] = useState(false);
+type OnConnectWallet = (
+  params:
+    | {
+        walletType: "cosmos";
+        wallet: CosmosRegistryWallet | ChainWalletBase | undefined;
+      }
+    | {
+        walletType: "evm";
+        wallet: Connector;
+      }
+) => void;
 
-  const create1CTSession = useCreateOneClickTradingSession({
-    onBroadcasted: () => {
-      setHasBroadcastedTx(true);
-    },
-    queryOptions: {
-      onSuccess: () => {
-        onRequestClose();
+const WalletConnectType = "walletConnect";
+
+interface WalletSelectModalProps extends ModalBaseProps {
+  options: WalletSelectOptions[];
+  onConnect?: (params: { walletType: "evm" | "cosmos" }) => void;
+}
+
+export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
+  observer((props) => {
+    const { isOpen, onRequestClose, options, onConnect: onConnectProp } = props;
+    const { isMobile } = useWindowSize();
+    const { accountStore, chainStore } = useStore();
+    const featureFlags = useFeatureFlags();
+    const hasInstalledWallets = useHasInstalledCosmosWallets();
+    const [show1CTEditParams, setShow1CTEditParams] = useState(false);
+    const [hasBroadcastedTx, setHasBroadcastedTx] = useState(false);
+    const { connect: connectEvmWallet } = useConnect();
+
+    const create1CTSession = useCreateOneClickTradingSession({
+      onBroadcasted: () => {
+        setHasBroadcastedTx(true);
       },
-      onSettled: () => {
-        setIsInitializingOneClickTrading(false);
-        setHasBroadcastedTx(false);
+      queryOptions: {
+        onSuccess: () => {
+          onRequestClose();
+        },
+        onSettled: () => {
+          setIsInitializingOneClickTrading(false);
+          setHasBroadcastedTx(false);
+        },
       },
-    },
-  });
-
-  const [qrState, setQRState] = useState<State>(State.Init);
-  const [qrMessage, setQRMessage] = useState<string>("");
-  const [modalView, setModalView] = useState<ModalView>("list");
-  const [isInitializingOneClickTrading, setIsInitializingOneClickTrading] =
-    useState(false);
-  const [lazyWalletInfo, setLazyWalletInfo] =
-    useState<(typeof CosmosWalletRegistry)[number]>();
-  const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
-
-  const hasOneClickTradingError = !!create1CTSession.error;
-
-  const {
-    transaction1CTParams,
-    setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
-    spendLimitTokenDecimals,
-    reset: reset1CTParams,
-  } = useOneClickTradingParams();
-
-  const current = walletRepoProp?.current;
-  const walletStatus = current?.walletStatus;
-  const chainName = walletRepoProp?.chainRecord.chain?.chain_name!;
-
-  useEffect(() => {
-    if (isOpen) {
-      setModalView(
-        getModalView({
-          qrState,
-          walletStatus,
-          isInitializingOneClickTrading,
-          hasOneClickTradingError,
-          hasBroadcastedTx,
-        })
-      );
-    }
-  }, [
-    qrState,
-    walletStatus,
-    isOpen,
-    qrMessage,
-    isInitializingOneClickTrading,
-    hasOneClickTradingError,
-    hasBroadcastedTx,
-  ]);
-
-  useUpdateEffect(() => {
-    if (!isOpen) {
-      setIsInitializingOneClickTrading(false);
-    }
-  }, [isOpen]);
-
-  (current?.client as any)?.setActions?.({
-    qrUrl: {
-      state: setQRState,
-      /**
-       * We need this function to avoid crashing the Cosmoskit library.
-       * A PR is open with a fix for this issue.
-       * @see https://github.com/cosmology-tech/cosmos-kit/pull/176
-       *  */
-      message: setQRMessage,
-    },
-  });
-
-  const onClose = () => {
-    onRequestClose();
-    if (
-      walletStatus === WalletStatus.Connecting ||
-      walletStatus === WalletStatus.Rejected ||
-      walletStatus === WalletStatus.Error
-    ) {
-      walletRepoProp?.disconnect();
-    }
-  };
-
-  const onCreate1CTSession = async ({
-    walletRepo,
-    transaction1CTParams,
-  }: {
-    walletRepo: WalletRepo;
-    transaction1CTParams: OneClickTradingTransactionParams | undefined;
-  }) => {
-    create1CTSession.reset();
-    setIsInitializingOneClickTrading(true);
-    return create1CTSession.mutate({
-      walletRepo,
-      transaction1CTParams,
-      spendLimitTokenDecimals: spendLimitTokenDecimals,
     });
-  };
 
-  const onConnect = async (
-    sync: boolean,
-    wallet?: ChainWalletBase | (typeof CosmosWalletRegistry)[number]
-  ) => {
-    if (!wallet) return;
+    const [qrState, setQRState] = useState<State>(State.Init);
+    const [qrMessage, setQRMessage] = useState<string>("");
+    const [modalView, setModalView] = useState<ModalView>("list");
+    const [isInitializingOneClickTrading, setIsInitializingOneClickTrading] =
+      useState(false);
+    const [lazyWalletInfo, setLazyWalletInfo] =
+      useState<(typeof CosmosWalletRegistry)[number]>();
+    const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
 
-    if (current) {
-      await current?.disconnect(true);
-    }
+    const hasOneClickTradingError = !!create1CTSession.error;
 
-    const handleConnectError = (e: Error) => {
-      console.error("Error while connecting to wallet. Details: ", e);
-      localStorage.removeItem(CosmosKitWalletLocalStorageKey);
-      localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+    const {
+      transaction1CTParams,
+      setTransaction1CTParams,
+      isLoading: isLoading1CTParams,
+      spendLimitTokenDecimals,
+      reset: reset1CTParams,
+    } = useOneClickTradingParams();
+
+    const cosmosOption = options.find(
+      (
+        option
+      ): option is Extract<WalletSelectOptions, { walletType: "cosmos" }> =>
+        option.walletType === "cosmos"
+    );
+
+    // const evmOption = options.find(
+    //   (option): option is Extract<WalletSelectOptions, { walletType: "evm" }> =>
+    //     option.walletType === "evm"
+    // );
+
+    const cosmosChainId = cosmosOption?.chainId;
+    const rootWalletRepo = cosmosChainId
+      ? accountStore.getWalletRepo(cosmosChainId)
+      : undefined;
+    const current = rootWalletRepo?.current;
+    const walletStatus = current?.walletStatus;
+    const cosmosChainName = rootWalletRepo?.chainRecord.chain?.chain_name!;
+
+    useEffect(() => {
+      if (isOpen) {
+        setModalView(
+          getModalView({
+            qrState,
+            walletStatus,
+            isInitializingOneClickTrading,
+            hasOneClickTradingError,
+            hasBroadcastedTx,
+          })
+        );
+      }
+    }, [
+      qrState,
+      walletStatus,
+      isOpen,
+      qrMessage,
+      isInitializingOneClickTrading,
+      hasOneClickTradingError,
+      hasBroadcastedTx,
+    ]);
+
+    useUpdateEffect(() => {
+      if (!isOpen) {
+        setIsInitializingOneClickTrading(false);
+      }
+    }, [isOpen]);
+
+    (current?.client as any)?.setActions?.({
+      qrUrl: {
+        state: setQRState,
+        /**
+         * We need this function to avoid crashing the Cosmoskit library.
+         * A PR is open with a fix for this issue.
+         * @see https://github.com/cosmology-tech/cosmos-kit/pull/176
+         *  */
+        message: setQRMessage,
+      },
+    });
+
+    const onClose = () => {
+      onRequestClose();
+      if (
+        walletStatus === WalletStatus.Connecting ||
+        walletStatus === WalletStatus.Rejected ||
+        walletStatus === WalletStatus.Error
+      ) {
+        rootWalletRepo?.disconnect();
+      }
     };
 
-    if (!("lazyInstall" in wallet)) {
-      wallet
-        .connect(sync)
-        .then(() => {
-          onConnectProp?.();
-        })
-        .catch(handleConnectError);
-      return;
-    }
+    const onCreate1CTSession = async ({
+      walletRepo,
+      transaction1CTParams,
+    }: {
+      walletRepo: WalletRepo;
+      transaction1CTParams: OneClickTradingTransactionParams | undefined;
+    }) => {
+      create1CTSession.reset();
+      setIsInitializingOneClickTrading(true);
+      return create1CTSession.mutate({
+        walletRepo,
+        transaction1CTParams,
+        spendLimitTokenDecimals: spendLimitTokenDecimals,
+      });
+    };
 
-    const isWalletInstalled = walletRepoProp?.wallets.some(
-      ({ walletName }) => walletName === wallet.name
-    );
+    const onConnectCosmosWallet = async ({
+      wallet,
+      walletRepo: walletRepoParam,
+    }: {
+      wallet: CosmosRegistryWallet | ChainWalletBase;
+      walletRepo: WalletRepo;
+    }) => {
+      if (current) {
+        await current?.disconnect(true);
+      }
 
-    let walletRepo: WalletRepo;
+      const handleConnectError = (e: Error) => {
+        console.error("Error while connecting to wallet. Details: ", e);
+        localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+        localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+      };
 
-    // if wallet is not installed, install it
-    if (!isWalletInstalled && "lazyInstall" in wallet) {
-      setLazyWalletInfo(wallet);
-      setModalView("connecting");
+      if (!("lazyInstall" in wallet)) {
+        wallet
+          .connect(false)
+          .then(() => {
+            onConnectProp?.({ walletType: "cosmos" });
+          })
+          .catch(handleConnectError);
+        return;
+      }
 
-      // wallet is now walletInfo
-      const walletInfo = wallet;
-      const WalletClass = await wallet.lazyInstall();
-
-      const walletManager = await accountStore.addWallet(
-        new WalletClass(walletInfo)
+      const isWalletInstalled = rootWalletRepo?.wallets.some(
+        ({ walletName }) => walletName === wallet.name
       );
-      await walletManager.onMounted().catch(handleConnectError);
-      setLazyWalletInfo(undefined);
 
-      walletRepo = walletManager.getWalletRepo(chainName);
-    } else {
-      walletRepo = walletRepoProp;
-    }
+      let walletRepo: WalletRepo;
 
-    const isOsmosisConnection = chainStore.osmosis.chainName === chainName;
-    const osmosisWalletRepo = accountStore.getWalletRepo(
-      chainStore.osmosis.chainName
-    );
+      // if wallet is not installed, install it
+      if (!isWalletInstalled && "lazyInstall" in wallet) {
+        setLazyWalletInfo(wallet);
+        setModalView("connecting");
 
-    if (
-      !isOsmosisConnection &&
-      osmosisWalletRepo.walletStatus !== WalletStatus.Connected
-    ) {
-      await osmosisWalletRepo
-        .connect(wallet.name, sync)
-        .catch(handleConnectError);
-    }
+        // wallet is now walletInfo
+        const walletInfo = wallet;
+        const WalletClass = await wallet.lazyInstall();
 
-    return walletRepo
-      .connect(wallet.name, sync)
-      .then(async () => {
-        onConnectProp?.();
+        const walletManager = await accountStore.addWallet(
+          new WalletClass(walletInfo)
+        );
+        await walletManager.onMounted().catch(handleConnectError);
+        setLazyWalletInfo(undefined);
 
-        if (transaction1CTParams?.isOneClickEnabled) {
-          try {
-            await onCreate1CTSession({ walletRepo, transaction1CTParams });
-          } catch (e) {
-            const error = e as CreateOneClickSessionError | Error;
+        walletRepo = walletManager.getWalletRepo(cosmosChainName!);
+      } else {
+        walletRepo = walletRepoParam;
+      }
 
-            if (error instanceof Error) {
-              throw new CreateOneClickSessionError(error.message);
+      const isOsmosisConnection =
+        chainStore.osmosis.chainName === cosmosChainName!;
+      const osmosisWalletRepo = accountStore.getWalletRepo(
+        chainStore.osmosis.chainName
+      );
+
+      if (
+        !isOsmosisConnection &&
+        osmosisWalletRepo.walletStatus !== WalletStatus.Connected
+      ) {
+        await osmosisWalletRepo
+          .connect(wallet.name, false)
+          .catch(handleConnectError);
+      }
+
+      return walletRepo
+        .connect(wallet.name, false)
+        .then(async () => {
+          onConnectProp?.({ walletType: "cosmos" });
+
+          if (transaction1CTParams?.isOneClickEnabled) {
+            try {
+              await onCreate1CTSession({ walletRepo, transaction1CTParams });
+            } catch (e) {
+              const error = e as CreateOneClickSessionError | Error;
+
+              if (error instanceof Error) {
+                throw new CreateOneClickSessionError(error.message);
+              }
+
+              throw e;
             }
-
-            throw e;
           }
-        }
-      })
-      .catch((e: Error | unknown) => {
-        if (e instanceof CreateOneClickSessionError) throw e;
-        handleConnectError(
-          e instanceof Error ? e : new Error("Unknown error.")
+        })
+        .catch((e: Error | unknown) => {
+          if (e instanceof CreateOneClickSessionError) throw e;
+          handleConnectError(
+            e instanceof Error ? e : new Error("Unknown error.")
+          );
+        });
+    };
+
+    const onConnectEvmWallet = async ({ wallet }: { wallet: Connector }) => {
+      return new Promise<void>((resolve, reject) => {
+        // Close modal to show WalletConnect QR code modal
+        if (wallet.type === WalletConnectType) onRequestClose();
+        connectEvmWallet(
+          { connector: wallet },
+          {
+            onSuccess: () => {
+              onConnectProp?.({ walletType: "evm" });
+              resolve();
+            },
+            onError: (e) => {
+              console.error("Error while connecting to wallet. Details: ", e);
+              reject(e);
+            },
+          }
         );
       });
-  };
+    };
 
-  const onRequestBack =
-    modalView !== "list"
-      ? () => {
-          if (
-            walletStatus === WalletStatus.Connecting ||
-            walletStatus === WalletStatus.Rejected ||
-            walletStatus === WalletStatus.Error ||
-            walletStatus === WalletStatus.Connected
-          ) {
-            walletRepoProp?.disconnect();
-            walletRepoProp?.activate();
+    const onConnect: OnConnectWallet = async ({ wallet, walletType }) => {
+      if (!wallet) return;
+
+      if (walletType === "cosmos" && rootWalletRepo) {
+        return onConnectCosmosWallet({ wallet, walletRepo: rootWalletRepo });
+      }
+
+      if (walletType === "evm") {
+        return onConnectEvmWallet({ wallet }).catch(noop);
+      }
+    };
+
+    const onRequestBack =
+      modalView !== "list"
+        ? () => {
+            if (
+              walletStatus === WalletStatus.Connecting ||
+              walletStatus === WalletStatus.Rejected ||
+              walletStatus === WalletStatus.Error ||
+              walletStatus === WalletStatus.Connected
+            ) {
+              rootWalletRepo?.disconnect();
+              rootWalletRepo?.activate();
+            }
+
+            if (
+              modalView === "initializeOneClickTradingError" ||
+              modalView === "initializingOneClickTrading"
+            ) {
+              reset1CTParams();
+              // Clear the errors and loading states
+              create1CTSession.reset();
+              setIsInitializingOneClickTrading(false);
+              setShow1CTConnectAWallet(false);
+            }
+
+            setModalView("list");
           }
+        : undefined;
 
-          if (
-            modalView === "initializeOneClickTradingError" ||
-            modalView === "initializingOneClickTrading"
-          ) {
-            reset1CTParams();
-            create1CTSession.reset();
-            setIsInitializingOneClickTrading(false);
-            setShow1CTConnectAWallet(false);
-          }
-
-          setModalView("list");
-        }
-      : undefined;
-
-  return (
-    <ModalBase
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      hideCloseButton
-      className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0 sm:max-h-[80vh]"
-    >
-      <div
-        className={classNames(
-          "flex overflow-auto sm:max-h-full sm:flex-col",
-          modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]",
-          hasInstalledWallets && featureFlags.oneClickTrading
-            ? "min-h-[73vh]"
-            : "min-h-[50vh]"
-        )}
+    return (
+      <ModalBase
+        isOpen={isOpen}
+        onRequestClose={onClose}
+        hideCloseButton
+        className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0 sm:max-h-[80vh]"
       >
-        <ClientOnly
+        <div
           className={classNames(
-            "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
-            "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
+            "flex overflow-auto sm:max-h-full sm:flex-col",
+            modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]",
+            hasInstalledWallets && featureFlags.oneClickTrading
+              ? "min-h-[73vh]"
+              : "min-h-[50vh]"
           )}
         >
-          <WalletList
-            onConnect={onConnect}
-            walletRepo={walletRepoProp}
-            isMobile={isMobile}
-            modalView={modalView}
-          />
-        </ClientOnly>
-        <div className="relative w-full overflow-auto py-8 sm:static">
-          {onRequestBack && (
-            <Button
-              aria-label="Go Back"
-              size="icon"
-              variant="ghost"
-              className="absolute left-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
-              onClick={onClose}
-            >
-              <Icon id="chevron-left" width={16} height={16} />
-            </Button>
-          )}
-          <CosmosWalletState
-            {...props}
-            onRequestClose={onClose}
-            modalView={modalView}
-            onConnect={onConnect}
-            lazyWalletInfo={lazyWalletInfo}
-            transaction1CTParams={transaction1CTParams}
-            setTransaction1CTParams={setTransaction1CTParams}
-            isLoading1CTParams={isLoading1CTParams}
-            onCreate1CTSession={() =>
-              onCreate1CTSession({
-                walletRepo: walletRepoProp,
-                transaction1CTParams,
-              })
-            }
-            show1CTConnectAWallet={show1CTConnectAWallet}
-            setShow1CTConnectAWallet={setShow1CTConnectAWallet}
-            show1CTEditParams={show1CTEditParams}
-            setShow1CTEditParams={setShow1CTEditParams}
-          />
+          <ClientOnly
+            className={classNames(
+              "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
+              "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
+            )}
+          >
+            <WalletList
+              onConnect={onConnect}
+              walletRepo={rootWalletRepo}
+              isMobile={isMobile}
+              modalView={modalView}
+            />
+          </ClientOnly>
+          <div className="relative w-full overflow-auto py-8 sm:static">
+            {onRequestBack && (
+              <Button
+                aria-label="Go Back"
+                size="icon"
+                variant="ghost"
+                className="absolute left-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
+                onClick={onClose}
+              >
+                <Icon id="chevron-left" width={16} height={16} />
+              </Button>
+            )}
+            <CosmosWalletState
+              {...props}
+              onRequestClose={onClose}
+              modalView={modalView}
+              onConnect={onConnect}
+              lazyWalletInfo={lazyWalletInfo}
+              transaction1CTParams={transaction1CTParams}
+              setTransaction1CTParams={setTransaction1CTParams}
+              isLoading1CTParams={isLoading1CTParams}
+              walletRepo={rootWalletRepo}
+              onCreate1CTSession={() =>
+                onCreate1CTSession({
+                  walletRepo: rootWalletRepo!,
+                  transaction1CTParams,
+                })
+              }
+              show1CTConnectAWallet={show1CTConnectAWallet}
+              setShow1CTConnectAWallet={setShow1CTConnectAWallet}
+              show1CTEditParams={show1CTEditParams}
+              setShow1CTEditParams={setShow1CTEditParams}
+            />
 
-          {/* Hide close button since 1CT edit params will include it */}
-          {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
+            {/* Hide close button since 1CT edit params will include it */}
+            {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
+          </div>
         </div>
-      </div>
-    </ModalBase>
-  );
-});
+      </ModalBase>
+    );
+  });
 
-const WalletList: FunctionComponent<
-  Pick<ComponentPropsWithoutRef<typeof WalletSelectModal>, "walletRepo"> & {
-    onConnect: (
-      sync: boolean,
-      wallet?: ChainWalletBase | (typeof CosmosWalletRegistry)[number]
-    ) => void;
-    isMobile: boolean;
-    modalView: ModalView;
-  }
-> = observer(({ walletRepo, onConnect, isMobile, modalView }) => {
+const WalletList: FunctionComponent<{
+  walletRepo: WalletRepo | undefined;
+  onConnect: OnConnectWallet;
+  isMobile: boolean;
+  modalView: ModalView;
+}> = observer(({ walletRepo, onConnect, isMobile, modalView }) => {
   const { t } = useTranslation();
-  const { connectors: evmWallets } = useConnect();
+  const { connectors } = useConnect();
+  const account = useAccount();
+
+  const evmWallets = useMemo(
+    () =>
+      connectors
+        .filter((wallet) => {
+          // Always show WalletConnect
+          if (wallet.type === WalletConnectType) return true;
+          // Only display injected wallets on desktop.
+          return isMobile ? true : wallet.type === "injected";
+        })
+        .map((wallet) => {
+          return {
+            ...wallet,
+            icon:
+              wallet.type === WalletConnectType
+                ? "/icons/walletconnect.svg"
+                : wallet.icon,
+            walletType: "evm" as const,
+          };
+        }),
+    [connectors, isMobile]
+  );
+
+  console.log(evmWallets, account);
 
   const cosmosWallets = useMemo(
     () =>
-      [...CosmosWalletRegistry]
+      CosmosWalletRegistry
         // If mobile, filter out browser wallets
         .reduce((acc, wallet, _index, array) => {
           if (isMobile) {
@@ -475,7 +563,11 @@ const WalletList: FunctionComponent<
           }
 
           return [...acc, wallet];
-        }, [] as (typeof CosmosWalletRegistry)[number][]),
+        }, [] as (typeof CosmosWalletRegistry)[number][])
+        .map((wallet) => ({
+          ...wallet,
+          walletType: "cosmos" as const,
+        })),
     [isMobile]
   );
 
@@ -489,45 +581,46 @@ const WalletList: FunctionComponent<
    */
   const categories = useMemo(
     () =>
-      Object.entries({ cosmos: cosmosWallets, evm: evmWallets }).reduce(
-        (acc, [type, walletArray]) => {
-          if (type === "evm") {
-            (walletArray as typeof evmWallets).forEach((wallet) => {
-              console.log(wallet);
-              acc["walletSelect.installedWallets"].push(wallet);
-              return;
-            });
+      [...cosmosWallets, ...evmWallets].reduce(
+        (acc, wallet) => {
+          if (wallet.walletType === "evm") {
+            acc["walletSelect.installedWallets"].push(wallet);
+            return acc;
           }
 
-          if (type === "cosmos") {
-            (walletArray as CosmosRegistryWallet[]).forEach((wallet) => {
-              if (wallet.mode === "wallet-connect") {
-                acc["walletSelect.mobileWallets"].push(wallet);
-                return;
-              }
+          if (wallet.walletType === "cosmos") {
+            if (wallet.mode === "wallet-connect") {
+              acc["walletSelect.mobileWallets"].push(wallet);
+              return acc;
+            }
 
-              if (
-                wallet.windowPropertyName &&
-                wallet.windowPropertyName in window
-              ) {
-                acc["walletSelect.installedWallets"].push(wallet);
-                return;
-              }
+            if (
+              wallet.windowPropertyName &&
+              wallet.windowPropertyName in window
+            ) {
+              acc["walletSelect.installedWallets"].push(wallet);
+              return acc;
+            }
 
-              acc["walletSelect.otherWallets"].push(wallet);
-              return;
-            });
+            acc["walletSelect.otherWallets"].push(wallet);
+            return acc;
           }
 
           return acc;
         },
         {
-          "walletSelect.installedWallets":
-            [] as (typeof CosmosWalletRegistry)[number][],
-          "walletSelect.mobileWallets":
-            [] as (typeof CosmosWalletRegistry)[number][],
-          "walletSelect.otherWallets":
-            [] as (typeof CosmosWalletRegistry)[number][],
+          "walletSelect.installedWallets": [] as (
+            | typeof cosmosWallets
+            | typeof evmWallets
+          )[number][],
+          "walletSelect.mobileWallets": [] as (
+            | typeof cosmosWallets
+            | typeof evmWallets
+          )[number][],
+          "walletSelect.otherWallets": [] as (
+            | typeof cosmosWallets
+            | typeof evmWallets
+          )[number][],
         }
       ),
     [cosmosWallets, evmWallets]
@@ -555,31 +648,65 @@ const WalletList: FunctionComponent<
                 </h2>
 
                 <div className="flex flex-col sm:flex-row sm:overflow-x-auto">
-                  {wallets.map((wallet) => (
-                    <button
-                      className={classNames(
-                        "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
-                        "col-span-2 py-3 font-normal",
-                        "sm:w-fit sm:flex-col",
-                        walletRepo?.current?.walletName === wallet.name &&
-                          "bg-osmoverse-700",
-                        "disabled:opacity-70"
-                      )}
-                      key={wallet.name}
-                      onClick={() => onConnect(false, wallet)}
-                      disabled={isDisabled}
-                    >
-                      {typeof wallet.logo === "string" && (
-                        <img
-                          src={wallet.logo}
-                          width={40}
-                          height={40}
-                          alt="Wallet logo"
-                        />
-                      )}
-                      <span>{wallet.prettyName}</span>
-                    </button>
-                  ))}
+                  {wallets.map((wallet) => {
+                    if (wallet.walletType === "evm") {
+                      return (
+                        <button
+                          className={classNames(
+                            "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                            "col-span-2 py-3 font-normal",
+                            "sm:w-fit sm:flex-col",
+                            walletRepo?.current?.walletName === wallet.name &&
+                              "bg-osmoverse-700",
+                            "disabled:opacity-70"
+                          )}
+                          key={wallet.id}
+                          onClick={() =>
+                            onConnect({ walletType: "evm", wallet })
+                          }
+                          disabled={isDisabled}
+                        >
+                          {typeof wallet.icon === "string" && (
+                            <img
+                              src={wallet.icon}
+                              width={40}
+                              height={40}
+                              alt="Wallet logo"
+                            />
+                          )}
+                          <span>{wallet.name}</span>
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <button
+                        className={classNames(
+                          "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                          "col-span-2 py-3 font-normal",
+                          "sm:w-fit sm:flex-col",
+                          walletRepo?.current?.walletName === wallet.name &&
+                            "bg-osmoverse-700",
+                          "disabled:opacity-70"
+                        )}
+                        key={wallet.name}
+                        onClick={() =>
+                          onConnect({ walletType: "cosmos", wallet })
+                        }
+                        disabled={isDisabled}
+                      >
+                        {typeof wallet.logo === "string" && (
+                          <img
+                            src={wallet.logo}
+                            width={40}
+                            height={40}
+                            alt="Wallet logo"
+                          />
+                        )}
+                        <span>{wallet.prettyName}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -597,10 +724,8 @@ enum WalletSelect1CTScreens {
 }
 
 const CosmosWalletState: FunctionComponent<
-  Pick<
-    ComponentPropsWithoutRef<typeof WalletSelectModal>,
-    "walletRepo" | "onRequestClose"
-  > & {
+  Pick<ComponentPropsWithoutRef<typeof WalletSelectModal>, "onRequestClose"> & {
+    walletRepo: WalletRepo | undefined;
     transaction1CTParams: OneClickTradingTransactionParams | undefined;
     setTransaction1CTParams: Dispatch<
       SetStateAction<OneClickTradingTransactionParams | undefined>
@@ -608,10 +733,7 @@ const CosmosWalletState: FunctionComponent<
     isLoading1CTParams?: boolean;
     modalView: ModalView;
     lazyWalletInfo?: (typeof CosmosWalletRegistry)[number];
-    onConnect: (
-      sync: boolean,
-      wallet?: ChainWalletBase | (typeof CosmosWalletRegistry)[number]
-    ) => void;
+    onConnect: OnConnectWallet;
     onCreate1CTSession: () => void;
     show1CTConnectAWallet: boolean;
     setShow1CTConnectAWallet: Dispatch<SetStateAction<boolean>>;
@@ -637,7 +759,7 @@ const CosmosWalletState: FunctionComponent<
     const { t } = useTranslation();
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
-    const hasInstalledWallets = useHasInstalledWallets();
+    const hasInstalledWallets = useHasInstalledCosmosWallets();
     const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
       OneClickFloatingBannerDoNotShowKey
     );
@@ -682,7 +804,11 @@ const CosmosWalletState: FunctionComponent<
           title={t("walletSelect.somethingWentWrong")}
           desc={message}
           actions={
-            <Button onClick={() => onConnect(false, currentWallet)}>
+            <Button
+              onClick={() =>
+                onConnect({ wallet: currentWallet, walletType: "cosmos" })
+              }
+            >
               {t("walletSelect.reconnect")}
             </Button>
           }
@@ -736,7 +862,11 @@ const CosmosWalletState: FunctionComponent<
             t("walletSelect.connectionDenied")
           }
           actions={
-            <Button onClick={() => onConnect(false, currentWallet)}>
+            <Button
+              onClick={() =>
+                onConnect({ wallet: currentWallet, walletType: "cosmos" })
+              }
+            >
               {t("walletSelect.reconnect")}
             </Button>
           }

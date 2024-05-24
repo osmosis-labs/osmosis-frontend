@@ -44,7 +44,14 @@ export const wagmiConfig = createConfig({
     [arbitrum.id]: http(),
   },
   connectors: [
-    metaMask(),
+    metaMask({
+      dappMetadata: {
+        name: "Osmosis",
+        url: "https://osmosis.zone",
+        iconUrl: "https://osmosis.zone/favicon.ico",
+      },
+      injectProvider: false,
+    }),
     walletConnect({ projectId: WALLETCONNECT_PROJECT_KEY ?? "" }),
   ],
 });

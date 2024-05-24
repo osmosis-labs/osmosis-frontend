@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
 
-export const useHasInstalledWallets = () => {
+export const useHasInstalledCosmosWallets = () => {
   return useMemo(() => {
     const wallets = CosmosWalletRegistry.filter(
       (wallet) =>

@@ -43,7 +43,14 @@ export const NoTransactionsSplash: FunctionComponent<{
       </div>
       {variant === "connect" && (
         <div className="max-w-56">
-          <Button onClick={() => onOpenWalletSelect(osmosisChainId)} size="md">
+          <Button
+            onClick={() =>
+              onOpenWalletSelect([
+                { walletType: "cosmos", chainId: osmosisChainId },
+              ])
+            }
+            size="md"
+          >
             {t("transactions.connectWallet")}
           </Button>
         </div>

@@ -106,12 +106,18 @@ export function useIbcTransfer({
      * feedback is given by the extension itself.
      **/
     if (account?.walletInfo.mode === "wallet-connect") {
-      onOpenWalletSelect(counterpartyChainId);
+      onOpenWalletSelect([
+        { walletType: "cosmos", chainId: counterpartyChainId },
+      ]);
     }
 
     counterpartyAccountRepo
       ?.connect(account?.walletName)
-      .catch(() => onOpenWalletSelect(counterpartyChainId));
+      .catch(() =>
+        onOpenWalletSelect([
+          { walletType: "cosmos", chainId: counterpartyChainId },
+        ])
+      );
   });
 
   /**
@@ -127,7 +133,11 @@ export function useIbcTransfer({
     ) {
       counterpartyAccountRepo
         ?.connect(account?.walletName)
-        .catch(() => onOpenWalletSelect(counterpartyChainId));
+        .catch(() =>
+          onOpenWalletSelect([
+            { walletType: "cosmos", chainId: counterpartyChainId },
+          ])
+        );
     }
   }, [
     account?.walletName,

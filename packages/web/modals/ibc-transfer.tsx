@@ -261,10 +261,17 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               onRequestSwitchWallet={async (source) => {
                 if (source === "account") {
                   await account?.disconnect(true);
-                  onOpenWalletSelect(osmosisChainId);
+                  onOpenWalletSelect([
+                    { walletType: "cosmos", chainId: osmosisChainId },
+                  ]);
                 } else if (source === "counterpartyAccount") {
                   await counterpartyAccount?.disconnect(true);
-                  onOpenWalletSelect(props.counterpartyChainId);
+                  onOpenWalletSelect([
+                    {
+                      walletType: "cosmos",
+                      chainId: props.counterpartyChainId,
+                    },
+                  ]);
                 }
                 resetState();
               }}

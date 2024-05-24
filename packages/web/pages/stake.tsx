@@ -253,7 +253,7 @@ export const Staking: React.FC = observer(() => {
 
   const onStakeButtonClick = useCallback(() => {
     if (!isWalletConnected) {
-      onOpenWalletSelect(osmosisChainId);
+      onOpenWalletSelect([{ walletType: "cosmos", chainId: osmosisChainId }]);
       return;
     }
 

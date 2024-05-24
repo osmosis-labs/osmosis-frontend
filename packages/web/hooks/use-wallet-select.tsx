@@ -2,6 +2,7 @@ import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
 } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -18,7 +19,7 @@ import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
-  onOpenWalletSelect: (chainName: string) => void;
+  onOpenWalletSelect: (params: WalletSelectOptions[]) => void;
   isOpen: boolean;
   isLoading: boolean;
 }>({
@@ -27,6 +28,10 @@ const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
 });
 
 export { useWalletSelect };
+
+export type WalletSelectOptions =
+  | { walletType: "cosmos"; chainId: string }
+  | { walletType: "evm"; chainId?: number };
 
 export const WalletSelectProvider: FunctionComponent = observer(
   ({ children }) => {
@@ -37,7 +42,9 @@ export const WalletSelectProvider: FunctionComponent = observer(
       },
     } = useStore();
 
-    const [chainName, setChainName] = useState<string | null>(null);
+    const [walletSelectParams, setWalletSelectParams] = useState<
+      WalletSelectOptions[] | null
+    >(null);
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -107,9 +114,9 @@ export const WalletSelectProvider: FunctionComponent = observer(
       };
     }, [accountStore, setUserAmplitudeProperties]);
 
-    const onOpenWalletSelect = useCallback((chainName: string) => {
+    const onOpenWalletSelect = useCallback((params: WalletSelectOptions[]) => {
       setIsWalletSelectOpen(true);
-      setChainName(chainName);
+      setWalletSelectParams(params);
     }, []);
 
     const context = useMemo(
@@ -119,16 +126,16 @@ export const WalletSelectProvider: FunctionComponent = observer(
 
     return (
       <WalletSelectInnerProvider value={context}>
-        {Boolean(chainName) && (
+        {!isNil(walletSelectParams) && walletSelectParams.length > 0 && (
           <WalletSelectModal
-            walletRepo={accountStore.getWalletRepo(chainName!)}
+            options={walletSelectParams}
             onConnect={() => {
               setUserAmplitudeProperties();
             }}
             isOpen={isWalletSelectOpen}
             onRequestClose={() => {
               setIsWalletSelectOpen(false);
-              setChainName(null);
+              setWalletSelectParams(null);
             }}
           />
         )}
