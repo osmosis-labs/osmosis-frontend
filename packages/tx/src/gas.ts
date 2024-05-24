@@ -88,11 +88,8 @@ export async function estimateGasFee({
     bech32Address:
       // excluding the address will force the use of the default fee token
       // since user balances will not be taken into account for deciding on the fee token
-      "onlyDefaultFeeDenom" in opts && Boolean(opts.onlyDefaultFeeDenom)
-        ? undefined
-        : bech32Address,
-    excludedFeeDenoms:
-      "excludedFeeDenoms" in opts ? opts.excludedFeeDenoms : [],
+      Boolean(opts.onlyDefaultFeeDenom) ? undefined : bech32Address,
+    excludedFeeDenoms: opts.excludedFeeDenoms,
     gasMultiplier,
   });
 

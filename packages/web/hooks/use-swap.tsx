@@ -193,7 +193,9 @@ export function useSwap(
   const networkFeeQueryEnabled =
     !inAmountInput.isEmpty &&
     !Boolean(precedentError) &&
-    featureFlags.swapToolSimulateFee;
+    featureFlags.swapToolSimulateFee &&
+    inAmountInput.balance?.toDec().isPositive() &&
+    canLoadQuote;
   const {
     data: networkFee,
     error: estimateTxError,
@@ -440,12 +442,7 @@ export function useSwap(
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
-    if (
-      inAmountInput.amount &&
-      quote &&
-      swapAssets.toAsset &&
-      !inAmountInput.isTyping
-    ) {
+    if (inAmountInput.amount && quote && swapAssets.toAsset) {
       return new CoinPretty(
         swapAssets.toAsset,
         quote.amount
@@ -456,7 +453,7 @@ export function useSwap(
           )
       );
     }
-  }, [inAmountInput.amount, inAmountInput.isTyping, quote, swapAssets.toAsset]);
+  }, [inAmountInput.amount, quote, swapAssets.toAsset]);
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
@@ -777,7 +774,6 @@ function useSwapAmountInput({
 
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
-
     gasAmount: gasAmount,
   });
 
@@ -793,15 +789,12 @@ function useSwapAmountInput({
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-
     !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
   );
 
   const {
     data: currentBalanceNetworkFee,
-
     isLoading: isLoadingCurrentBalanceNetworkFee,
-
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
@@ -814,8 +807,8 @@ function useSwapAmountInput({
       : undefined,
     enabled:
       featureFlags.swapToolSimulateFee &&
-      Boolean(inAmountInput.balance) &&
-      !isQuoteForCurrentBalanceLoading,
+      !isQuoteForCurrentBalanceLoading &&
+      Boolean(quoteForCurrentBalance),
   });
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {

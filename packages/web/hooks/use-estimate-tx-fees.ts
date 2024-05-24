@@ -1,5 +1,11 @@
 import { Coin, EncodeObject } from "@cosmjs/proto-signing";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
@@ -75,30 +81,45 @@ async function estimateTxFeesQueryFn({
   gasLimit = gas;
   feeAmount = amount;
 
-  /**
-   * If the send token is provided and send token does not have enough balance to pay for the fee, it will
-   * try to prevent the fee token to be the same as the send token.
-   */
-  if (
-    sendToken &&
-    feeCoin.denom === sendToken.balance.toCoin().denom &&
-    new Dec(sendToken.amount.toCoin().amount).gt(
-      new Dec(sendToken.balance.toCoin().amount).sub(new Dec(feeCoin.amount))
-    )
-  ) {
-    try {
-      const { amount, gas } = await accountStore.estimateFee({
-        ...baseEstimateFeeOptions,
-        excludedFeeMinimalDenoms: [sendToken.balance.currency.coinMinimalDenom],
-      });
-      feeCoin = amount[0];
-      gasLimit = gas;
-      feeAmount = amount;
-    } catch (error) {
-      console.warn(
-        "Failed to estimate fees with excluded fee minimal denom. Using the original fee.",
-        error
-      );
+  if (sendToken) {
+    const sendAmount = sendToken.amount;
+    const sendBalance = sendToken.balance;
+
+    const isFeeTokenSameAsSendToken =
+      feeCoin.denom === sendAmount?.currency.coinMinimalDenom;
+
+    if (
+      sendAmount.currency.coinMinimalDenom !==
+      sendBalance.currency.coinMinimalDenom
+    ) {
+      throw new Error("Send token amount and balance are not the same denom");
+    }
+
+    /**
+     * If the send token is provided and send token does not have enough balance to pay for the fee, it will
+     * try to prevent the fee token to be the same as the send token.
+     */
+    if (
+      sendToken &&
+      isFeeTokenSameAsSendToken &&
+      new Int(sendAmount.toCoin().amount).gt(
+        new Int(sendBalance.toCoin().amount).sub(new Int(feeCoin.amount))
+      )
+    ) {
+      try {
+        const { amount, gas } = await accountStore.estimateFee({
+          ...baseEstimateFeeOptions,
+          excludedFeeMinimalDenoms: [sendAmount.currency.coinMinimalDenom],
+        });
+        feeCoin = amount[0];
+        gasLimit = gas;
+        feeAmount = amount;
+      } catch (error) {
+        console.warn(
+          "Failed to estimate fees with excluded fee minimal denom. Using the original fee.",
+          error
+        );
+      }
     }
   }
 
@@ -138,7 +159,9 @@ export function useEstimateTxFees({
    * try to prevent the fee token to be the same as the send token.
    */
   sendToken?: {
+    /** Total balance */
     balance: CoinPretty;
+    /** Amount to send in tx */
     amount: CoinPretty;
   };
   enabled?: boolean;
