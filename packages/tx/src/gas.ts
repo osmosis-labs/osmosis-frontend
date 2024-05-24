@@ -61,7 +61,7 @@ export async function estimateGasFee({
   body,
   bech32Address,
   gasMultiplier = 1.5,
-  ...opts
+  onlyDefaultFeeDenom,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -85,7 +85,7 @@ export async function estimateGasFee({
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
 
-  if (opts.onlyDefaultFeeDenom) {
+  if (onlyDefaultFeeDenom) {
     const { feeDenom, gasPrice } = await getDefaultGasPrice({
       chainId,
       chainList,

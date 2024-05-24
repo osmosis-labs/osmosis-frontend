@@ -14,6 +14,7 @@ import { Any } from "cosmjs-types/google/protobuf/any";
 import {
   getDefaultGasPrice,
   getGasFeeAmount,
+  getGasPriceByFeeDenom,
   InsufficientFeeError,
   simulate,
   SimulateNotAvailableError,
@@ -336,6 +337,133 @@ describe("getGasFeeAmount", () => {
     expect(gasAmount.amount).toBe(expectedGasAmount);
   });
 
+  it("should return the correct gas amount with an alternative fee token when one is spent in coinsSpent", async () => {
+    const gasLimit = 1000;
+    const chainId = "osmosis-1";
+    const address = "osmo1...";
+    const baseFee = 0.04655;
+    const spotPrice = 8;
+
+    (queryBalances as jest.Mock).mockResolvedValue({
+      balances: [
+        {
+          denom: "uosmo",
+          amount: "1",
+        },
+        {
+          denom: "uion",
+          amount: "1000000",
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uion",
+          poolID: 2,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      pool_id: "2",
+      spot_price: spotPrice.toString(),
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+
+    const gasMultiplier = 1.5;
+    const coinsSpent = [{ denom: "uosmo", amount: "1" }];
+
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        gasMultiplier,
+        coinsSpent,
+      })
+    )[0];
+
+    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+      .quo(new Dec(spotPrice))
+      .mul(new Dec(1.01))
+      .mul(new Dec(gasLimit))
+      .truncate()
+      .toString();
+
+    expect(gasAmount.denom).toBe("uion");
+    expect(gasAmount.amount).toBe(expectedGasAmount);
+  });
+
+  it("should return the correct gas amount with an alternative fee token when the last available fee token is fully spent", async () => {
+    const gasLimit = 1000;
+    const chainId = "osmosis-1";
+    const address = "osmo1...";
+    const baseFee = 0.04655;
+    const spotPrice = 8;
+
+    (queryBalances as jest.Mock).mockResolvedValue({
+      balances: [
+        {
+          denom: "uosmo",
+          amount: "1",
+        },
+        {
+          denom: "uion",
+          amount: "1000000",
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uion",
+          poolID: 2,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      pool_id: "2",
+      spot_price: spotPrice.toString(),
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+
+    const gasMultiplier = 1.5;
+    const coinsSpent = [{ denom: "uion", amount: "1000000" }];
+
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        gasMultiplier,
+        coinsSpent,
+      })
+    )[0];
+
+    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+      .quo(new Dec(spotPrice))
+      .mul(new Dec(1.01))
+      .mul(new Dec(gasLimit))
+      .truncate()
+      .toString();
+
+    expect(gasAmount.denom).toBe("uion");
+    expect(gasAmount.amount).toBe(expectedGasAmount);
+    expect(gasAmount.isSpent).toBe(true);
+  });
+
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {
     const gasLimit = 1000;
     const chainId = "cosmoshub-4";
@@ -512,6 +640,103 @@ describe("getGasFeeAmount", () => {
   });
 });
 
+describe("getGasPriceByFeeDenom", () => {
+  const chainId = "osmosis-1";
+  const chainList = MockChains;
+  const feeDenom = "uion";
+  const gasMultiplier = 1.5;
+
+  it("should return the correct gas price with fee market module", async () => {
+    const baseFee = 0.01;
+    const spotPrice = 8;
+
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      spot_price: spotPrice.toString(),
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+
+    const result = await getGasPriceByFeeDenom({
+      chainId,
+      chainList,
+      feeDenom,
+      gasMultiplier,
+    });
+
+    const expectedGasPrice = new Dec(baseFee)
+      .quo(new Dec(spotPrice))
+      .mul(new Dec(1.01))
+      .mul(new Dec(gasMultiplier));
+
+    expect(result.gasPrice.toString()).toBe(expectedGasPrice.toString());
+  });
+
+  it("should return the default gas price if fee market module is not available", async () => {
+    const chainListWithoutFeeMarket = chainList.map((chain) => ({
+      ...chain,
+      features: [],
+    }));
+
+    const defaultGasPrice = new Dec(0.025);
+
+    const result = await getGasPriceByFeeDenom({
+      chainId,
+      chainList: chainListWithoutFeeMarket,
+      feeDenom,
+      gasMultiplier,
+    });
+
+    expect(result.gasPrice.toString()).toBe(defaultGasPrice.toString());
+  });
+
+  it("should throw an error if chain is not found", async () => {
+    await expect(
+      getGasPriceByFeeDenom({
+        chainId: "non-existent-chain",
+        chainList,
+        feeDenom,
+        gasMultiplier,
+      })
+    ).rejects.toThrow("Chain not found: non-existent-chain");
+  });
+
+  it("should throw an error if spot price is zero or negative", async () => {
+    const baseFee = 0.01;
+
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      spot_price: "0",
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+
+    await expect(
+      getGasPriceByFeeDenom({
+        chainId,
+        chainList,
+        feeDenom,
+        gasMultiplier,
+      })
+    ).rejects.toThrow(`Failed to fetch spot price for fee token ${feeDenom}.`);
+  });
+
+  it("should throw an error if base fee is invalid", async () => {
+    (queryGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: "invalid",
+    } as Awaited<ReturnType<typeof queryGasPrice>>);
+
+    await expect(
+      getGasPriceByFeeDenom({
+        chainId,
+        chainList,
+        feeDenom,
+        gasMultiplier,
+      })
+    ).rejects.toThrow("Invalid base fee: NaN");
+  });
+});
+
 describe("getDefaultGasPrice", () => {
   const chainId = "osmosis-1";
   const chainList = [
@@ -596,116 +821,31 @@ describe("getDefaultGasPrice", () => {
     ).rejects.toThrow("Invalid base fee: NaN");
   });
 
-  describe("getDefaultGasPrice", () => {
-    const chainId = "osmosis-1";
-    const chainList = [
+  it("should use default gas price if average_gas_price is not defined", async () => {
+    const chainListWithoutAverageGasPrice = [
       {
         chain_id: chainId,
-        features: ["osmosis-txfees"],
+        features: [],
         fees: {
           fee_tokens: [
             {
               denom: "uosmo",
-              average_gas_price: 0.025,
+              // no average_gas_price
             },
           ],
         },
       },
     ] as any;
 
-    it("should return the correct gas price with fee market module", async () => {
-      const baseFee = 0.01;
+    const default_ = 0.025;
 
-      (queryGasPrice as jest.Mock).mockResolvedValue({
-        base_fee: baseFee.toString(),
-      } as Awaited<ReturnType<typeof queryGasPrice>>);
-
-      const gasMultiplier = 1.5;
-      const result = await getDefaultGasPrice({
-        chainId,
-        chainList,
-        gasMultiplier,
-      });
-
-      expect(result.gasPrice.toString()).toBe(
-        new Dec(baseFee * gasMultiplier).toString()
-      );
-      expect(result.feeDenom).toBe("uosmo");
+    const result = await getDefaultGasPrice({
+      chainId,
+      chainList: chainListWithoutAverageGasPrice,
+      defaultGasPrice: default_,
     });
 
-    it("should return the correct gas price without fee market module", async () => {
-      const chainListWithoutFeeMarket = [
-        {
-          chain_id: chainId,
-          features: [],
-          fees: {
-            fee_tokens: [
-              {
-                denom: "uosmo",
-                average_gas_price: 0.025,
-              },
-            ],
-          },
-        },
-      ] as any;
-
-      const result = await getDefaultGasPrice({
-        chainId,
-        chainList: chainListWithoutFeeMarket,
-      });
-
-      expect(result.gasPrice.toString()).toBe(new Dec(0.025).toString());
-      expect(result.feeDenom).toBe("uosmo");
-    });
-
-    it("should throw an error if chain is not found", async () => {
-      await expect(
-        getDefaultGasPrice({
-          chainId: "non-existent-chain",
-          chainList,
-        })
-      ).rejects.toThrow("Chain not found: non-existent-chain");
-    });
-
-    it("should throw an error if base fee is invalid", async () => {
-      (queryGasPrice as jest.Mock).mockResolvedValue({
-        base_fee: "invalid",
-      } as Awaited<ReturnType<typeof queryGasPrice>>);
-
-      await expect(
-        getDefaultGasPrice({
-          chainId,
-          chainList,
-        })
-      ).rejects.toThrow("Invalid base fee: NaN");
-    });
-
-    it("should use default gas price if average_gas_price is not defined", async () => {
-      const chainListWithoutAverageGasPrice = [
-        {
-          chain_id: chainId,
-          features: [],
-          fees: {
-            fee_tokens: [
-              {
-                denom: "uosmo",
-                // no average_gas_price
-              },
-            ],
-          },
-        },
-      ] as any;
-
-      const default_ = 0.025;
-
-      const result = await getDefaultGasPrice({
-        chainId,
-        chainList: chainListWithoutAverageGasPrice,
-        defaultGasPrice: default_,
-      });
-
-      expect(result.gasPrice.toString()).toBe(new Dec(default_).toString());
-      expect(result.feeDenom).toBe("uosmo");
-    });
+    expect(result.gasPrice.toString()).toBe(new Dec(default_).toString());
+    expect(result.feeDenom).toBe("uosmo");
   });
 });
