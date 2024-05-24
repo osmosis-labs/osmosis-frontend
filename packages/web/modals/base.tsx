@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { FunctionComponent } from "react";
+import React, { PropsWithChildren } from "react";
 import { ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import { useUnmount } from "react-use";
@@ -26,7 +26,7 @@ export interface ModalBaseProps {
   hideCloseButton?: boolean;
 }
 
-export const ModalBase: FunctionComponent<ModalBaseProps> = ({
+export const ModalBase = ({
   isOpen,
   onRequestClose,
   onRequestBack,
@@ -38,7 +38,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   overlayClassName,
   hideCloseButton,
   children,
-}) => {
+}: PropsWithChildren<ModalBaseProps>) => {
   const { isMobile } = useWindowSize();
 
   const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);

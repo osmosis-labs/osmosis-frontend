@@ -58,13 +58,13 @@ export const PortfolioPage: FunctionComponent = () => {
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
   const onDeposit = useCallback(
-    (coinMinimalDenom) => {
+    (coinMinimalDenom: string) => {
       bridgeAsset(coinMinimalDenom, "deposit");
     },
     [bridgeAsset]
   );
   const onWithdraw = useCallback(
-    (coinMinimalDenom) => {
+    (coinMinimalDenom: string) => {
       bridgeAsset(coinMinimalDenom, "withdraw");
     },
     [bridgeAsset]

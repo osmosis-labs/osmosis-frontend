@@ -11,7 +11,6 @@ export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({
       <img // don't use next/image because we may not know what origin the image is on, next.config.js requires listed origins
         className="rounded-full"
         alt=""
-        placeholder=""
         src={imgSrc ?? "/icons/profile.svg"}
       />
     </div>
