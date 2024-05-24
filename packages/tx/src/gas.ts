@@ -37,9 +37,6 @@ export type EstimationOpts = {
 
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
-
-  /** Base denoms of fee tokens to exclude. */
-  excludedFeeDenoms?: string[];
 };
 
 /**
@@ -380,7 +377,7 @@ export async function getGasPriceByFeeDenom({
   );
   if (!chain) throw new Error("Chain not found: " + chainId);
 
-  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L110
+  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L111
   const chainHasFeeMarketModule = Boolean(
     chain.features?.includes("osmosis-txfees")
   );
@@ -432,7 +429,7 @@ export async function getDefaultGasPrice({
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // Could eventually be a cosmos-wide fee module, like Skip's incoming fee market module
-  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L110
+  // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L111
   const chainHasFeeMarketModule = Boolean(
     chain.features?.includes("osmosis-txfees")
   );
