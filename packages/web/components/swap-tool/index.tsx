@@ -463,7 +463,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           </Popover>
 
           <div className="flex flex-col gap-3">
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
                   <span className="caption text-xs text-white-full">
@@ -540,7 +540,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   dropdownOpen={showFromTokenSelectDropdown}
                   swapState={swapState}
                   setDropdownState={useCallback(
-                    (isOpen) => {
+                    (isOpen: boolean) => {
                       if (isOpen) {
                         setOneTokenSelectOpen("from");
                       } else {
@@ -666,7 +666,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </button>
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
               <div className="flex place-content-between items-center transition-transform">
                 <TokenSelectWithDrawer
                   isFromSelect={false}
@@ -686,7 +686,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     [swapState, closeTokenSelectDropdowns]
                   )}
                   setDropdownState={useCallback(
-                    (isOpen) => {
+                    (isOpen: boolean) => {
                       if (isOpen) {
                         setOneTokenSelectOpen("to");
                       } else {

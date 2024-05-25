@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
   ComponentProps,
-  FunctionComponent,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useState,
@@ -39,8 +39,8 @@ const TransactionTypeQueryParamKey = "transaction_type";
 const DenomQueryParamKey = "denom";
 
 /** Legacy deposit/withdraw flow to be replaced by immersive flow. */
-export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
-  ({ Provider, children }) => {
+export const LegacyBridgeFlow = observer(
+  ({ Provider, children }: PropsWithChildren<BridgeFlowProvider>) => {
     const { assetsStore, userSettings } = useStore();
     const router = useRouter();
     const transferConfig = useTransferConfig();

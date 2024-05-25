@@ -85,7 +85,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               newestOnTop
             />
             <MainLayoutWrapper>
-              <ErrorBoundary fallback={ErrorFallback}>
+              <ErrorBoundary fallback={<ErrorFallback />}>
                 {Component && <Component {...pageProps} />}
               </ErrorBoundary>
             </MainLayoutWrapper>

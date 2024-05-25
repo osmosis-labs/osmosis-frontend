@@ -14,7 +14,7 @@ import { NotifiConfigContext } from "~/integrations/notifi/notifi-config-context
 import { NotifiModalContextProvider } from "~/integrations/notifi/notifi-modal-context";
 import { useStore } from "~/stores";
 
-const NotifiContext = dynamic<NotifiParams>(
+const NotifiContext = dynamic<PropsWithChildren<NotifiParams>>(
   () =>
     import("@notifi-network/notifi-react-card").then(
       (mod) => mod.NotifiContext

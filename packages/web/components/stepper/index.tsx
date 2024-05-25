@@ -2,6 +2,7 @@ import classNames from "classnames";
 import {
   Children,
   FunctionComponent,
+  PropsWithChildren,
   ReactElement,
   useEffect,
   useMemo,
@@ -36,14 +37,16 @@ const [StepContextProvider, useStepContext] = createContext<{
   name: "Step",
 });
 
-const Step: FunctionComponent<{
-  className?: string;
-  /**
-   * Do not overwrite this property without modifying Stepper.
-   * It's needed to filter step elements in Stepper.
-   */
-  __TYPE?: string;
-}> = (props) => {
+const Step = (
+  props: PropsWithChildren<{
+    className?: string;
+    /**
+     * Do not overwrite this property without modifying Stepper.
+     * It's needed to filter step elements in Stepper.
+     */
+    __TYPE?: string;
+  }>
+) => {
   const { activeStep, totalSteps, setActiveStep } = useStepperContext();
   const { index } = useStepContext();
 
@@ -224,7 +227,7 @@ export const StepperLeftChevronNavigation: FunctionComponent<{
  *  <StepsIndicator />
  * </Stepper>
  */
-const Stepper: FunctionComponent<StepsProps> = (props) => {
+const Stepper = (props: PropsWithChildren<StepsProps>) => {
   const { children, autoplay } = props;
 
   const stepElements = Children.toArray(children).filter((child) => {
