@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, { PropsWithChildren } from "react";
+import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
 import IconButton from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";

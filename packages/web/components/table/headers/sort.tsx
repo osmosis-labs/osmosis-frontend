@@ -1,6 +1,6 @@
 import type { SortDirection } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable } from "~/components/types";

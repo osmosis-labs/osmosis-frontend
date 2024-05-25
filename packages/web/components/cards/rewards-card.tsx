@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, ReactElement, useState } from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
 import { Tooltip } from "~/components/tooltip";
@@ -23,7 +23,7 @@ export const RewardsCard: React.FC<{
   const ConditionalTooltip = ({ children }: PropsWithChildren) =>
     disabled ? (
       <Tooltip content={disabledTooltipContent} className="h-full w-full">
-        {children as any}
+        {children as ReactElement}
       </Tooltip>
     ) : (
       <>{children}</>
