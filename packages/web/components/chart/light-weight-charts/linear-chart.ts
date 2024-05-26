@@ -54,7 +54,7 @@ export class LinearChartController extends AreaChartController {
       const [_, secondSeriesData] = dataSeries;
 
       const content = dataSeries
-        .map((series, index) => {
+        .map((series) => {
           const seriesData = series.value as AreaData;
 
           return `
