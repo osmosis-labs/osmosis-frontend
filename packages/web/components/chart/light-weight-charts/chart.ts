@@ -1,13 +1,13 @@
 import EventEmitter from "eventemitter3";
 import {
   createChart,
-  type DeepPartial,
-  type IChartApi,
-  type MouseEventParams,
-  type SeriesDataItemTypeMap,
-  type SeriesOptionsMap,
-  type Time,
-  type TimeChartOptions,
+  DeepPartial,
+  IChartApi,
+  MouseEventParams,
+  SeriesDataItemTypeMap,
+  SeriesOptionsMap,
+  Time,
+  TimeChartOptions,
 } from "lightweight-charts";
 
 export interface Series {

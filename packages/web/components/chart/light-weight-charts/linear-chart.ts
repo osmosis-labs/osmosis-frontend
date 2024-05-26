@@ -6,7 +6,7 @@ import {
 } from "lightweight-charts";
 
 import { AreaChartController } from "./area-chart";
-import { type ChartControllerParams } from "./chart";
+import { ChartControllerParams } from "./chart";
 
 export class LinearChartController extends AreaChartController {
   tooltip: HTMLDivElement;
