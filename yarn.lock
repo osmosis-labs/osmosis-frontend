@@ -7212,6 +7212,11 @@
     mitt "^3.0.0"
     tronweb "^5.1.0"
 
+"@opentelemetry/api@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.8.0.tgz#5aa7abb48f23f693068ed2999ae627d2f7d902ec"
+  integrity sha512-I/s6F7yKUDdtMsoBWXJe8Qz40Tui5vsuKCWJEWVL+5q9sSWRzzx6v2KeNsOBEwd94j0eWkpWCH4yB6rZg9Mf0w==
+
 "@osmonauts/helpers@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@osmonauts/helpers/-/helpers-0.6.0.tgz#86324110ba1ec76637836ef6ec12ce263e1a7a97"
@@ -10185,6 +10190,11 @@
   integrity sha512-Wq1+EsRBQmvLlcqCZeYVg1MAARWrnETgLe3Sy3UCqG+zg7LThpkt0YHZe1NN3Aj4IRmCKQamotWrLDdEx+ZB3w==
   dependencies:
     "@upstash/redis" "1.22.0"
+
+"@vercel/otel@^1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@vercel/otel/-/otel-1.8.3.tgz#b0703e8659afb7c20df0a16dd29074c54636e7a3"
+  integrity sha512-cyTpXDMeTSb56XS4+DnoHwZVDGgOzZbIizKBJN9JA/1jhw7VzygmLUD8iwPyJVB3YNWVrIXgSq1TM9OMrpbAxQ==
 
 "@virtuoso.dev/react-urx@^0.2.12":
   version "0.2.13"

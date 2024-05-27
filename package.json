@@ -81,5 +81,9 @@
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.8.0",
+    "@vercel/otel": "^1.8.3"
   }
 }
