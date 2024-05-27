@@ -5,6 +5,9 @@ const path = require("path");
  * @type {import('next').NextConfig}
  **/
 const config = {
+  experimental: {
+    instrumentationHook: true,
+  },
   reactStrictMode: true,
   images: {
     domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
