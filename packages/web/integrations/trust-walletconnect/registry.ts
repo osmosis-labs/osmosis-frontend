@@ -1,4 +1,4 @@
-import { Wallet } from "@cosmos-kit/core";
+import type { Wallet } from "@cosmos-kit/core";
 
 export const trustMobileInfo: Wallet = {
   name: "trust-mobile",

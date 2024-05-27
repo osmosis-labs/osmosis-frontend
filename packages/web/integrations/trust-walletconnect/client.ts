@@ -1,6 +1,6 @@
-import { AminoSignResponse, StdSignDoc } from "@cosmjs/amino";
-import { DirectSignResponse } from "@cosmjs/proto-signing";
-import { DirectSignDoc, SignOptions, Wallet } from "@cosmos-kit/core";
+import type { AminoSignResponse, StdSignDoc } from "@cosmjs/amino";
+import type { DirectSignResponse } from "@cosmjs/proto-signing";
+import type { DirectSignDoc, SignOptions } from "@cosmos-kit/core";
 
 import {
   WCClient,
@@ -8,11 +8,6 @@ import {
 } from "~/integrations/core-walletconnect";
 
 export class TrustClient extends WCClient {
-  constructor(walletInfo: Wallet) {
-    super(walletInfo);
-  }
-
-  getOfflineSignerAmino: any;
   async signAmino(
     chainId: string,
     signer: string,

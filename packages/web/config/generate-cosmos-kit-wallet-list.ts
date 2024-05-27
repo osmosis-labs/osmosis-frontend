@@ -1,4 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import * as fs from "node:fs";
+import path from "node:path";
+
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
@@ -10,8 +13,6 @@ import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
-import * as fs from "fs";
-import path from "path";
 import * as prettier from "prettier";
 
 import { trustMobileInfo } from "~/integrations/trust-walletconnect";
