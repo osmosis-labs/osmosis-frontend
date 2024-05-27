@@ -12,6 +12,8 @@ import {
 import { QuoteStdFee } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -53,9 +55,7 @@ async function estimateTxFeesQueryFn({
   });
 
   const fee = amount[0];
-  const asset = await apiUtils.edge.assets.getAssetWithPrice.fetch({
-    coinMinimalDenom: fee.denom,
-  });
+  const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
 
   if (!fee || !asset?.currentPrice) {
     throw new Error("Failed to estimate fees");
@@ -116,4 +116,20 @@ export function useEstimateTxFees({
   });
 
   return queryResult;
+}
+
+const getAssetCache = new LRUCache<string, CacheEntry>({ max: 50 });
+function getCachedAssetWithPrice(
+  apiUtils: ReturnType<typeof api.useUtils>,
+  coinMinimalDenom: string
+) {
+  return cachified({
+    cache: getAssetCache,
+    key: coinMinimalDenom,
+    ttl: 1000 * 10, // 10 seconds
+    getFreshValue: () =>
+      apiUtils.edge.assets.getAssetWithPrice.fetch({
+        coinMinimalDenom,
+      }),
+  });
 }

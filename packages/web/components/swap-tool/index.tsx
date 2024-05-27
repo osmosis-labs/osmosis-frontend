@@ -510,7 +510,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       disabled={
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
-                        swapState.inAmountInput.notEnoughBalanceForMax
+                        swapState.inAmountInput.notEnoughBalanceForMax ||
+                        swapState.inAmountInput
+                          .isLoadingCurrentBalanceNetworkFee
                       }
                       loadingText={t("swap.MAX")}
                       classes={{

@@ -149,9 +149,7 @@ export async function simulate({
    *  Useful for subtracting from amount input if it gas tokens are included. */
   coinsSpent: { denom: string; amount: string }[];
 }> {
-  const chain = chainList.find(
-    (chain) => chainId && chain.chain_id === chainId
-  );
+  const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // get needed account and message data for a valid tx
@@ -276,9 +274,7 @@ export async function getGasFeeAmount({
     isSpent?: boolean;
   }[]
 > {
-  const chain = chainList.find(
-    (chain) => chainId && chain.chain_id === chainId
-  );
+  const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // Need to reconcile
@@ -381,9 +377,7 @@ export async function getGasPriceByFeeDenom({
   feeDenom: string;
   gasMultiplier?: number;
 }): Promise<{ gasPrice: Dec }> {
-  const chain = chainList.find(
-    (chain) => chainId && chain.chain_id === chainId
-  );
+  const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // TODO use reflection call from rpc clients to see if it's available: https://github.com/osmosis-labs/osmosis-frontend/blob/stage/packages/proto-codecs/scripts/codegen.ts#L111
@@ -474,9 +468,7 @@ export async function getChainSupportedFeeDenoms({
   chainId: string;
   chainList: ChainWithFeatures[];
 }) {
-  const chain = chainList.find(
-    (chain) => chainId && chain.chain_id === chainId
-  );
+  const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   const chainHasFeeMarketModule = Boolean(

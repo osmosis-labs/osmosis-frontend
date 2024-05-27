@@ -121,7 +121,11 @@ export function useSwap(
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
   const canLoadQuote =
     isToFromAssets &&
-    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive());
+    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+    // since input is debounced there could be the wrong asset associated
+    // with the input amount when switching assets
+    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom;
 
   const {
     data: quote,
@@ -129,8 +133,8 @@ export function useSwap(
     error: quoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
@@ -147,14 +151,14 @@ export function useSwap(
     error: spotPriceQuoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: DecUtils.getTenExponentN(
         swapAssets.fromAsset?.coinDecimals ?? 0
       )
         .quoRoundUp(spotPriceQuoteMultiplier)
         .truncate()
         .toString(),
-      tokenOut: swapAssets.toAsset,
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
@@ -191,11 +195,10 @@ export function useSwap(
   ]);
 
   const networkFeeQueryEnabled =
-    !inAmountInput.isEmpty &&
-    !Boolean(precedentError) &&
     featureFlags.swapToolSimulateFee &&
-    inAmountInput.balance?.toDec().isPositive() &&
-    canLoadQuote;
+    !Boolean(precedentError) &&
+    !isQuoteLoading &&
+    Boolean(quote);
   const {
     data: networkFee,
     error: estimateTxError,
@@ -269,6 +272,8 @@ export function useSwap(
           if (!maxSlippage) return reject("No max slippage");
           if (!inAmountInput.amount) return reject("No input amount");
           if (!account) return reject("No account");
+          if (!swapAssets.fromAsset) return reject("No from asset");
+          if (!swapAssets.toAsset) return reject("No to asset");
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
 
@@ -664,6 +669,13 @@ export function useSwapAssets({
       enabled: canLoadAssets,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      // avoid blocking
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
 
@@ -776,13 +788,16 @@ function useSwapAmountInput({
     error: quoteForCurrentBalanceError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: inAmountInput.balance?.toCoin().amount!,
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
+    !!inAmountInput.balance &&
+      !inAmountInput.balance?.toDec().isZero() &&
+      Boolean(swapAssets.fromAsset) &&
+      Boolean(swapAssets.toAsset)
   );
 
   const {
@@ -941,7 +956,7 @@ function useSwapAsset<TAsset extends Asset>({
   }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? (asset as TAsset),
+    asset: existingAsset ?? (asset as TAsset | undefined),
   };
 }
 
