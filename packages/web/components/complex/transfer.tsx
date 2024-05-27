@@ -268,7 +268,7 @@ export const Transfer = observer(
             onSelectBridgeProvider={onSelectBridgeProvider}
             selectedBridgeProvidersId={selectedBridgeProvidersId}
           />
-          <div className="z-10 flex w-full gap-4 pr-7 pl-6 text-center md:pr-9 sm:pr-0 sm:pl-0">
+          <div className="z-10 flex w-full gap-4 pl-6 pr-7 text-center md:pr-9 sm:pl-0 sm:pr-0">
             {/* From Address */}
             <div
               className={classNames(
@@ -341,7 +341,7 @@ export const Transfer = observer(
                         mode="unstyled"
                       />
                       <MenuDropdown
-                        className="top-full right-0"
+                        className="right-0 top-full"
                         isOpen={isOptionsDropdownOpen}
                         options={[
                           {

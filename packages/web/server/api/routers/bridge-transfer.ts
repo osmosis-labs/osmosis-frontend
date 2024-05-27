@@ -1,5 +1,18 @@
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  Bridge,
+  BridgeCoin,
+  BridgeError,
+  BridgeProviders,
+  BridgeQuoteError,
+  Errors,
+  getBridgeQuoteSchema,
+} from "@osmosis-labs/bridge";
 import {
   createTRPCRouter,
+  DEFAULT_VS_CURRENCY,
+  getAssetPrice,
+  getTimeoutHeight,
   publicProcedure,
   timeout,
 } from "@osmosis-labs/server";
@@ -9,188 +22,39 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import {
-  AvailableBridges,
-  BridgeManager,
-} from "~/integrations/bridges/bridge-manager";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
-import {
-  type BridgeQuote,
-  getBridgeQuoteSchema,
-} from "~/integrations/bridges/types";
-import { Errors } from "~/server/api/errors";
-import { ErrorTypes } from "~/utils/error-types";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
+const BridgeLogoUrls: Record<Bridge, string> = {
+  Skip: "/bridge/skip.svg",
+  Squid: "/bridge/squid.svg",
+  Axelar: "/bridge/axelar.svg",
+};
+
 export const bridgeTransferRouter = createTRPCRouter({
-  /**
-   * Provide the quotes for a given bridge transfer. Elements are descending by total fiat value.
-   * The first element is the best quote.
-   */
-  getQuotes: publicProcedure
-    .input(getBridgeQuoteSchema)
-    .query(async ({ input }) => {
-      try {
-        const bridgeManager = new BridgeManager(
-          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
-        );
-
-        interface BridgeQuoteInPromise {
-          providerId: AvailableBridges;
-          logoUrl: string;
-          quote: BridgeQuote;
-        }
-
-        const bridges = Object.values(bridgeManager.bridges);
-        const quotes = await Promise.allSettled(
-          bridges.map(async (bridgeProvider) => {
-            const quoteFn: () => Promise<BridgeQuoteInPromise> = () =>
-              bridgeProvider.getQuote(input).then(
-                (quote): BridgeQuoteInPromise => ({
-                  providerId: bridgeProvider.providerName,
-                  logoUrl: bridgeProvider.logoUrl,
-                  quote,
-                })
-              );
-
-            /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-            const twentySecondsInMs = 20 * 1000;
-            return await timeout(quoteFn, twentySecondsInMs)();
-          })
-        );
-
-        const successfulQuotes = quotes
-          .filter(
-            (
-              quote,
-              index
-            ): quote is PromiseFulfilledResult<BridgeQuoteInPromise> => {
-              if (quote.status === "rejected") {
-                console.error(
-                  `Quote for ${bridges[index].providerName} failed. Reason: `,
-                  quote.reason
-                );
-                return false;
-              }
-
-              // If the quote is missing any of the required fields, we should ignore it.
-              if (
-                quote.value.quote.expectedOutput.fiatValue?.amount === undefined
-              ) {
-                return false;
-              }
-
-              return true;
-            }
-          )
-          .sort((a, b) => {
-            if (!a.value.quote.expectedOutput.fiatValue?.amount) {
-              return 1;
-            }
-
-            if (!b.value.quote.expectedOutput?.fiatValue?.amount) {
-              return 0;
-            }
-
-            const aTotalFiat = Number(
-              a.value.quote.expectedOutput.fiatValue?.amount ?? 0
-            );
-            const bTotalFiat = Number(
-              b.value.quote.expectedOutput.fiatValue?.amount ?? 0
-            );
-
-            /**
-             * Move the quote with the highest total fiat value to the top of the list.
-             */
-            if (aTotalFiat < bTotalFiat) {
-              return 1;
-            }
-
-            return -1;
-          });
-
-        if (!successfulQuotes.length) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "No successful quotes found",
-            cause: new Errors([
-              {
-                errorType: ErrorTypes.NoQuotesError,
-                message: "No successful quotes found",
-              },
-            ]),
-          });
-        }
-
-        return {
-          quotes: successfulQuotes.map(
-            ({ value: { quote, providerId, logoUrl } }) => ({
-              provider: {
-                id: providerId,
-                logoUrl,
-              },
-              ...quote,
-            })
-          ),
-        };
-      } catch (e) {
-        const error = e as BridgeQuoteError | Error | TRPCError | unknown;
-        console.error(e);
-
-        if (error instanceof BridgeQuoteError) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Bridge quote error",
-            cause: error.errors,
-          });
-        }
-
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Unexpected Error",
-            cause: [
-              {
-                error: ErrorTypes.UnexpectedError,
-                message: error?.message ?? "Unexpected Error",
-              },
-            ],
-          });
-        }
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
-        });
-      }
-    }),
-
   /**
    * Provide the quote for a given bridge transfer.
    */
   getQuoteByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const bridgeManager = new BridgeManager(
+        const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
+          {
+            ...ctx,
+            env: IS_TESTNET ? "testnet" : "mainnet",
+            cache: lruCache,
+            getTimeoutHeight: ({ destinationAddress }) =>
+              getTimeoutHeight({ ...ctx, destinationAddress }),
+          }
         );
 
         const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
+          bridgeProviders.bridges[
+            input.bridge as keyof typeof bridgeProviders.bridges
           ];
 
         if (!bridgeProvider) {
@@ -206,20 +70,107 @@ export const bridgeTransferRouter = createTRPCRouter({
         const twentySecondsInMs = 10 * 1000;
         const quote = await timeout(quoteFn, twentySecondsInMs)();
 
-        if (quote.expectedOutput.fiatValue?.amount === undefined) {
+        // Get fiat value of:
+        // 1. Expected output
+        // 2. Transfer fee
+        // 3. Estimated gas fee
+        //
+        // Getting the fiat value from quotes here
+        // results in more accurate fiat prices
+        // and fair competition amongst bridge providers.
+        const [toAssetPrice, feeAssetPrice, gasFeeAssetPrice] =
+          await Promise.all([
+            getAssetPrice({
+              ...ctx,
+              asset: {
+                coinDenom: input.toAsset.denom,
+                coinMinimalDenom: input.toAsset.denom,
+                sourceDenom: input.toAsset.sourceDenom,
+              },
+            }),
+            getAssetPrice({
+              ...ctx,
+              asset: {
+                coinDenom: quote.transferFee.denom,
+                coinMinimalDenom: quote.transferFee.denom,
+                sourceDenom: quote.transferFee.sourceDenom,
+              },
+            }).catch(
+              () =>
+                // it's common for bridge providers to not provide correct denoms
+                undefined
+            ),
+            quote.estimatedGasFee
+              ? getAssetPrice({
+                  ...ctx,
+                  asset: {
+                    coinDenom: quote.estimatedGasFee.denom,
+                    coinMinimalDenom: quote.estimatedGasFee.denom,
+                    sourceDenom: quote.estimatedGasFee.sourceDenom,
+                  },
+                }).catch(
+                  () =>
+                    // it's common for bridge providers to not provide correct denoms
+                    undefined
+                )
+              : Promise.resolve(undefined),
+          ]);
+
+        if (!toAssetPrice) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Invalid quote",
           });
         }
 
+        /** Include decimals with decimal-included price. */
+        // TODO: can move somewhere else
+        const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {
+          return new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            new Dec(coin.amount)
+              .quo(DecUtils.getTenExponentN(coin.decimals))
+              .mul(price)
+          );
+        };
+
         return {
           quote: {
             provider: {
               id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
+              logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
             },
             ...quote,
+            input: {
+              ...quote.input,
+              fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
+            },
+            expectedOutput: {
+              ...quote.expectedOutput,
+              fiatValue: priceFromBridgeCoin(
+                quote.expectedOutput,
+                // output is same token as input
+                toAssetPrice
+              ),
+            },
+            transferFee: {
+              ...quote.transferFee,
+              fiatValue: feeAssetPrice
+                ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
+                : undefined,
+            },
+            estimatedGasFee: quote.estimatedGasFee
+              ? {
+                  ...quote.estimatedGasFee,
+                  fiatValue:
+                    gasFeeAssetPrice && quote.estimatedGasFee
+                      ? priceFromBridgeCoin(
+                          quote.estimatedGasFee,
+                          gasFeeAssetPrice
+                        )
+                      : undefined,
+                }
+              : undefined,
           },
         };
       } catch (e) {
@@ -240,7 +191,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "Unexpected Error",
             cause: new Errors([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error?.message ?? "Unexpected Error",
               },
             ]),
@@ -250,7 +201,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
+          cause: [{ errorType: BridgeError.UnexpectedError }],
         });
       }
     }),
@@ -260,17 +211,23 @@ export const bridgeTransferRouter = createTRPCRouter({
    */
   getTransactionRequestByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        const bridgeManager = new BridgeManager(
+        const bridgeProviders = new BridgeProviders(
           process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
+          {
+            ...ctx,
+            env: IS_TESTNET ? "testnet" : "mainnet",
+            cache: lruCache,
+            getTimeoutHeight: ({ destinationAddress }) =>
+              // passes testnet chains if IS_TESTNET
+              getTimeoutHeight({ ...ctx, destinationAddress }),
+          }
         );
 
         const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
+          bridgeProviders.bridges[
+            input.bridge as keyof typeof bridgeProviders.bridges
           ];
 
         if (!bridgeProvider) {
@@ -286,7 +243,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           transactionRequest: {
             provider: {
               id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
+              logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
             },
             ...quote,
           },
@@ -309,7 +266,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             message: "Unexpected Error",
             cause: new Errors([
               {
-                errorType: ErrorTypes.UnexpectedError,
+                errorType: BridgeError.UnexpectedError,
                 message: error?.message ?? "Unexpected Error",
               },
             ]),
@@ -321,7 +278,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           message: "Unexpected Error",
           cause: new Errors([
             {
-              errorType: ErrorTypes.UnexpectedError,
+              errorType: BridgeError.UnexpectedError,
               message: "Unexpected Error",
             },
           ]),

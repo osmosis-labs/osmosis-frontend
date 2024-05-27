@@ -28,7 +28,7 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
   return (
     <>
       {!isMobile && (
-        <div className="mt-[2rem] mb-[1rem] flex place-content-between items-center py-[0.625rem]">
+        <div className="mb-[1rem] mt-[2rem] flex place-content-between items-center py-[0.625rem]">
           {onRequestBack && (
             <IconButton
               aria-label="Back"

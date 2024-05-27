@@ -13,7 +13,7 @@ export const AlertBanner: React.FC<
   return (
     <div
       className={classNames(
-        "relative z-50 flex h-[5rem] w-full items-center gap-8 overflow-hidden rounded-3xl bg-gradient-alert py-2 px-10",
+        "relative z-50 flex h-[5rem] w-full items-center gap-8 overflow-hidden rounded-3xl bg-gradient-alert px-10 py-2",
         className
       )}
     >

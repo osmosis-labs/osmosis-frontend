@@ -4,14 +4,14 @@ import {
 } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import {
-  FunctionComponent,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
 
-import { WalletRegistry } from "~/config";
+import { WalletRegistry } from "~/config/wallet-registry";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -28,8 +28,8 @@ const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
 
 export { useWalletSelect };
 
-export const WalletSelectProvider: FunctionComponent = observer(
-  ({ children }) => {
+export const WalletSelectProvider = observer(
+  ({ children }: PropsWithChildren) => {
     const {
       accountStore,
       chainStore: {

@@ -69,11 +69,7 @@ export default async function handler(req: Request) {
       throw new Error("Response is not ok");
     }
 
-    const result: {
-      gas_info: {
-        gas_used: string;
-      };
-    } = await response.json();
+    const result = await response.json();
 
     return new Response(JSON.stringify(result));
   } catch (e) {

@@ -184,7 +184,8 @@ async function batchFetchCoingeckoCoins(keys: readonly string[]) {
 }
 const coingeckoCoinBatchLoader = new EdgeDataLoader(batchFetchCoingeckoCoins);
 
-async function getActiveCoingeckoCoins() {
+/** Set of active CoinGecko IDs that CoinGecko has data for (is "active"). */
+export async function getActiveCoingeckoCoins() {
   return await cachified({
     cache: assetMarketCache,
     ttl: 1000 * 60 * 60, // 1 hour

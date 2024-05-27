@@ -11,9 +11,9 @@ import { when } from "mobx";
 import { ReactNode } from "react";
 
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
-import { WalletSelectProvider } from "~/hooks";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { AppRouter } from "~/server/api/root-router";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
@@ -24,13 +24,13 @@ let testRootStore: RootStore;
 const queryClient = new QueryClient();
 export const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
-    <StoreProvider>
-      <storeContext.Consumer>
-        {(rootStore) => {
-          testRootStore = rootStore!;
-          return (
-            <WalletSelectProvider>
-              <MultiLanguageProvider defaultLanguage="en">
+    <MultiLanguageProvider defaultLanguage="en">
+      <StoreProvider>
+        <storeContext.Consumer>
+          {(rootStore) => {
+            testRootStore = rootStore!;
+            return (
+              <WalletSelectProvider>
                 <trpcReact.Provider
                   client={trpcReact.createClient({
                     transformer: superjson,
@@ -46,12 +46,12 @@ export const withTRPC = ({ children }: { children?: ReactNode }) => {
                     {children}
                   </QueryClientProvider>
                 </trpcReact.Provider>
-              </MultiLanguageProvider>
-            </WalletSelectProvider>
-          );
-        }}
-      </storeContext.Consumer>
-    </StoreProvider>
+              </WalletSelectProvider>
+            );
+          }}
+        </storeContext.Consumer>
+      </StoreProvider>
+    </MultiLanguageProvider>
   );
 };
 

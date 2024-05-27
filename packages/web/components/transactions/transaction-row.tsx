@@ -15,6 +15,7 @@ export type TransactionStatus = "pending" | "success" | "failed";
 type Effect = "swap" | "deposit" | "withdraw";
 
 interface Transaction {
+  isSelected?: boolean;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
   effect: Effect;
@@ -41,6 +42,7 @@ interface Transaction {
 }
 
 export const TransactionRow: FunctionComponent<Transaction> = ({
+  isSelected = false,
   status,
   effect,
   title,
@@ -53,11 +55,16 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 
   return (
     <div
-      // update padding on mobile
       className={classNames(
         "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
+        // Highlight the selected transaction
         {
-          "cursor-pointer hover:bg-osmoverse-825": Boolean(onClick),
+          "bg-osmoverse-825 transition-colors duration-100 ease-in-out":
+            isSelected,
+        },
+        // Highlight the hovered transaction
+        {
+          "cursor-pointer hover:bg-osmoverse-850": Boolean(onClick),
         }
       )}
       onClick={() => onClick?.()}

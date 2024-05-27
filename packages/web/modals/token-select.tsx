@@ -73,7 +73,7 @@ export const TokenSelectModal: FunctionComponent<
           return (
             <li
               key={currency.coinDenom}
-              className="my-1 mx-3 flex cursor-pointer items-center justify-between rounded-2xl py-2.5 px-4 hover:bg-osmoverse-900"
+              className="mx-3 my-1 flex cursor-pointer items-center justify-between rounded-2xl px-4 py-2.5 hover:bg-osmoverse-900"
               onClick={(e) => {
                 e.stopPropagation();
                 props.onSelect(coinDenom);

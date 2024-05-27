@@ -20,7 +20,7 @@ const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
 
   return tweets.length ? (
     <section
-      className={`flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:py-6 md:px-4 ${className}`}
+      className={`flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 px-8 py-10 md:px-4 md:py-6 ${className}`}
     >
       <header>
         <h6 className="text-lg font-h6 leading-6">
@@ -90,7 +90,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
                 href={user.url ?? `${TWITTER_PUBLIC_URL}/${user.username}`}
                 passHref
                 target="_blank"
-                className="text-sm text-body2 font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
+                className="text-body2 text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
                 onClick={onTweetLinkClick}
               >
                 @{user.username}

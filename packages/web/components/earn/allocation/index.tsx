@@ -68,7 +68,7 @@ export const EarnAllocation = () => {
         <div
           ref={containerRef}
           className={classNames(
-            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll before:pointer-events-none before:absolute before:inset-x-0 before:top-9 before:bottom-0 before:bg-gradient-scrollable-allocation-list-reverse before:transition-opacity before:duration-200 before:ease-in-out after:pointer-events-none after:absolute after:inset-x-0 after:-bottom-0.25 after:top-56 after:bg-gradient-scrollable-allocation-list after:transition-opacity after:duration-200 after:ease-in-out",
+            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll before:pointer-events-none before:absolute before:inset-x-0 before:bottom-0 before:top-9 before:bg-gradient-scrollable-allocation-list-reverse before:transition-opacity before:duration-200 before:ease-in-out after:pointer-events-none after:absolute after:inset-x-0 after:-bottom-0.25 after:top-56 after:bg-gradient-scrollable-allocation-list after:transition-opacity after:duration-200 after:ease-in-out",
             {
               "before:opacity-100": y > 10,
               "before:opacity-0": y < 10,

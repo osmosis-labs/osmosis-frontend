@@ -8,12 +8,15 @@ import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 export function useCoinFiatValue(
   coin?: CoinPretty,
   vsCurrency = DEFAULT_VS_CURRENCY
-): PricePretty | undefined {
-  const { price } = useCoinPrice(coin);
-  return useMemo(
-    () => mulPrice(coin, price, vsCurrency),
-    [coin, price, vsCurrency]
-  );
+): { fiatValue: PricePretty | undefined; isLoading: boolean } {
+  const { price, isLoading } = useCoinPrice(coin);
+  return {
+    fiatValue: useMemo(
+      () => mulPrice(coin, price, vsCurrency),
+      [coin, price, vsCurrency]
+    ),
+    isLoading,
+  };
 }
 
 // mulPrice multiplies the amount of a coin by its price to get the final value.

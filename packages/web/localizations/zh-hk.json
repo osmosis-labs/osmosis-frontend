@@ -490,6 +490,111 @@
     "discardButton": "放棄更改",
     "clearAllHistory": "全部清除"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "一鍵交易活躍",
+      "oneClickTradingExpired": "一鍵交易已過期",
+      "oneClickTradingDisabled": "一鍵交易已停用",
+      "currentlyUnavailable": "一鍵交易目前無法使用",
+      "networkFeeTooHigh": "網路費太高",
+      "enableOneClickTrading": "啟用一鍵交易",
+      "increaseFeeLimit": "提高網路費用限額",
+      "approveManually": "在{walletName}中手動核准",
+      "continueWithWallet": "繼續使用錢包",
+      "sessionEnded": "會話在此裝置上結束",
+      "errorEndingSession": "結束會話時出錯",
+      "pleaseTryAgain": "意外的錯誤。請再試一次。"
+    },
+    "introduction": {
+      "newFeature": "新功能",
+      "introducingTitle": "一鍵交易簡介",
+      "introducingSubtitle": "進行更快、更輕鬆的交易，無需多個錢包批准的麻煩。",
+      "learnMore": "了解更多",
+      "startTradingButton": "開始一鍵交易",
+      "defaultParameters": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
+      "changeButton": "改變"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "交易更快、更輕鬆",
+      "startOneClickTradingNow": "立即開始一鍵交易",
+      "iconAlt": "一鍵交易小徽標"
+    },
+    "floatingBanner": {
+      "newPill": "新的",
+      "title": "一鍵交易",
+      "tradeFasterButton": "交易更快"
+    },
+    "settings": {
+      "header": "一鍵交易",
+      "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
+      "enableTitle": "啟用一鍵交易",
+      "spendLimitTitle": "消費限額",
+      "networkFeeLimitTitle": "網路費用限額",
+      "sessionPeriodTitle": "會議期間",
+      "resetPeriodTitle": "重置期",
+      "startButton": "開始一鍵交易",
+      "editSessionButton": "儲存變更",
+      "endingSession": "結束會議",
+      "feeToDisable": "停用一鍵交易的費用：",
+      "spendLimitScreen": {
+        "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
+        "fixedAmount": "固定值",
+        "shareOfBalance": "餘額份額",
+        "shareOfBalanceDescription": "您在 Osmosis 上的總餘額的{shareOfBalance}目前價值",
+        "fluctuationNotice": "請注意，您的支出限額的美元價值取決於您的資產價值，該價值可能會波動。"
+      },
+      "networkFeeLimitScreen": {
+        "title": "網路費用限額",
+        "description": "設定一鍵交易會話期間任何單筆交易的網路費用最高金額。",
+        "info": "如果費用超過此金額，您可以透過在錢包中手動簽署交易來繼續。",
+        "low": "低的",
+        "average": "平均的",
+        "high": "高的",
+        "recommended": "受到推崇的"
+      },
+      "sessionPeriodScreen": {
+        "title": "會議期間",
+        "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
+        "periods": {
+          "10min": "10分鐘",
+          "30min": "30分鐘",
+          "1hour": "1小時",
+          "3hours": "3小時",
+          "12hours": "12小時"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "重置期",
+        "description": "設定重置支出限額配額的持續時間。",
+        "periods": {
+          "day": "天",
+          "week": "星期",
+          "month": "月",
+          "year": "年"
+        }
+      },
+      "discardChanges": {
+        "title": "放棄更改？",
+        "message": "您希望保留現有的一鍵交易設定嗎？",
+        "cancelButton": "取消",
+        "discardButton": "丟棄"
+      }
+    },
+    "welcomeBack": {
+      "title": "歡迎回來",
+      "description": "連接錢包後，系統將提示您批准交易以開始一鍵交易會話。",
+      "toggleLabel": "一鍵交易",
+      "editParamsAriaLabel": "更改1CT參數"
+    },
+    "connectToContinue": {
+      "altText": "一鍵交易圖形",
+      "header": "連接錢包以繼續",
+      "description": "當您在所選錢包中批准交易時，您的一鍵交易會話將開始。"
+    },
+    "profile": {
+      "sessionExpired": "會話已過期"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
     "amountDaysUnbonding": "{numDays} 天解綁",
@@ -606,7 +711,8 @@
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有資產",
     "wallet": "钱包",
-    "transactions": "交易"
+    "transactions": "交易",
+    "oneClickTrading": "一鍵交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
@@ -748,6 +854,13 @@
     "priceImpact": "價格影響",
     "routerTooltipFee": "費",
     "routerTooltipSpreadFactor": "擴頻因子",
+    "continueAnyway": "無論如何繼續",
+    "warning": {
+      "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
+      "exceedsNetworkFeeLimit": "此交換超出了一鍵交易的網路費用限制。",
+      "increaseSpendLimit": "提高支出限額",
+      "increaseNetworkFeeLimit": "提高網路費用限額"
+    },
     "settings": {
       "slippage": "允許嘅滑價",
       "slippageInfo": "你嘅交易在價格嘅不利變動超過此百份比時會被取消",
@@ -773,6 +886,12 @@
     "reconnect": "重新連接",
     "connectingWallet": "連接錢包中",
     "approveWalletConnect": "在您的手機上批准 {walletName} 的連接請求。",
+    "enablingOneClickTrading": "啟用一鍵交易。",
+    "approveOneClickTradingSession": "批准{walletName}中的一鍵交易。",
+    "errorInitializingOneClickTradingSession": "無法啟用一鍵交易。",
+    "retryInWalletOrContinue": "在{walletName}中重試，或繼續而不進行一鍵交易。",
+    "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
+    "retry": "重試",
     "openExtension": "打開 {walletName} 瀏覽器擴展程序來連接您的錢包。",
     "initializingWallet": "初始化錢包客戶端",
     "clickToRefresh": "點擊刷新。",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "免責聲明",
+  "remaining": "其餘的",
+  "timeUnits": {
+    "second": "第二",
+    "seconds": "秒",
+    "minute": "分分鐘",
+    "minutes": "分分鐘",
+    "hour": "小時",
+    "hours": "小時"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom}存款不穩定",
     "titleWithdraw": "{coinDenom}提款不穩定",

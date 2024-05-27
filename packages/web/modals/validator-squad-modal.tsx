@@ -168,7 +168,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const getFormattedMyStake = useCallback(
-        (myStake) =>
+        (myStake: Dec) =>
           new CoinPretty(totalStakePool.currency, myStake)
             .maxDecimals(2)
             .hideDenom(true)
@@ -514,7 +514,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           className="flex !max-w-[1168px] flex-col"
         >
           <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
-            <div className="mt-7 mb-3 font-medium">
+            <div className="mb-3 mt-7 font-medium">
               {t("stake.validatorSquad.description")}
             </div>
             <SearchBox

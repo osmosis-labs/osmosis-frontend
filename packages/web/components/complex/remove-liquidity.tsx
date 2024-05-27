@@ -61,7 +61,7 @@ export const RemoveLiquidity: FunctionComponent<
               })}
             </h5>
           </div>
-          <div className="flex flex-wrap place-content-around items-center gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
+          <div className="flex flex-wrap place-content-around items-center gap-4 rounded-xl border border-osmoverse-600 px-3 py-2 text-osmoverse-300">
             {underlyingCoins.map((asset) => (
               <div
                 className="flex items-center gap-2"

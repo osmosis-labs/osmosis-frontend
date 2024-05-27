@@ -57,8 +57,8 @@ export class ObservableAssets {
       ) {
         displayToast(
           {
-            message: "previewAssetsEnabled",
-            caption: "previewAssetsEnabledForSession",
+            titleTranslationKey: "previewAssetsEnabled",
+            captionTranslationKey: "previewAssetsEnabledForSession",
           },
           ToastType.SUCCESS
         );
@@ -71,7 +71,7 @@ export class ObservableAssets {
       ) {
         displayToast(
           {
-            message: "previewAssetsDisabled",
+            titleTranslationKey: "previewAssetsDisabled",
           },
           ToastType.SUCCESS
         );

@@ -116,7 +116,7 @@ export const EarnRewards = ({
   ]);
 
   return (
-    <div className="flex flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-6 pt-7 pb-6">
+    <div className="flex flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-6 pb-6 pt-7">
       <h5 className="text-lg font-semibold text-osmoverse-100">
         {t("earnPage.rewards")}
       </h5>

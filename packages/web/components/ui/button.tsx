@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
+import { PropsWithChildren } from "react";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -55,12 +56,6 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
-}
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
   isLoading?: boolean;
   loadingText?: string;
   classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
@@ -108,11 +103,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 // TODO - ideally remove this button, rarely used, will need design review
-const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
+const ShowMoreButton = ({
   isOn,
   onToggle,
   className,
-}) => {
+}: PropsWithChildren<ToggleProps & CustomClasses>) => {
   const { t } = useTranslation();
   return (
     <Button
@@ -249,5 +244,45 @@ export const ChartButton: FunctionComponent<{
 };
 
 ChartButton.displayName = "ChartButton";
+
+/**
+ * Renders an icon within a button.
+ */
+export const IconButton = forwardRef<
+  HTMLButtonElement,
+  {
+    icon?: ReactNode;
+    "aria-label": string;
+  } & React.ComponentProps<typeof Button>
+>((props, ref) => {
+  const {
+    icon,
+    children,
+    variant = "ghost",
+    size = "icon",
+    "aria-label": ariaLabel,
+    ...rest
+  } = props;
+
+  const element = icon || children;
+  const _children = isValidElement(element)
+    ? cloneElement(element as any, {
+        "aria-hidden": true,
+        focusable: false,
+      })
+    : null;
+
+  return (
+    <Button
+      ref={ref}
+      variant={variant}
+      size={size}
+      aria-label={ariaLabel}
+      {...rest}
+    >
+      {_children}
+    </Button>
+  );
+});
 
 export { ArrowButton, Button, buttonVariants, LinkIconButton, ShowMoreButton };

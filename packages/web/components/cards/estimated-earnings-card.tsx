@@ -70,7 +70,7 @@ export const EstimatedEarningCard: FunctionComponent<{
             <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </Tooltip>
         </span>
-        <div className="mt-5 mb-2 flex items-center gap-2">
+        <div className="mb-2 mt-5 flex items-center gap-2">
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}
