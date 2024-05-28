@@ -180,7 +180,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const sendSwapTx = () => {
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
-        return onOpenWalletSelect([{ walletType: "cosmos", chainId: chainId }]);
+        return onOpenWalletSelect({
+          walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+        });
       }
 
       if (!swapState.inAmountInput.amount) return;

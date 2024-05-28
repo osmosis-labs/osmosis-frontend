@@ -10,7 +10,12 @@ import {
   polygon,
   sepolia,
 } from "wagmi/chains";
-import { metaMask, walletConnect } from "wagmi/connectors";
+import {
+  coinbaseWallet,
+  metaMask,
+  safe,
+  walletConnect,
+} from "wagmi/connectors";
 
 import { WALLETCONNECT_PROJECT_KEY } from "~/config/env";
 
@@ -53,5 +58,12 @@ export const wagmiConfig = createConfig({
       injectProvider: false,
     }),
     walletConnect({ projectId: WALLETCONNECT_PROJECT_KEY ?? "" }),
+    coinbaseWallet({
+      appLogoUrl: "https://osmosis.zone/favicon.ico",
+      appName: "Osmosis",
+    }),
+    safe(),
   ],
 });
+
+export type EthereumChainIds = (typeof wagmiConfig)["chains"][number]["id"];

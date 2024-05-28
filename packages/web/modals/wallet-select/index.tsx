@@ -24,7 +24,7 @@ import React, {
   useState,
 } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { Connector, useAccount, useConnect } from "wagmi";
+import { Connector } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import ClientOnly from "~/components/client-only";
@@ -38,8 +38,15 @@ import { Button } from "~/components/ui/button";
 import ConnectingWalletState from "~/components/wallet-states/connecting-wallet-state";
 import ErrorWalletState from "~/components/wallet-states/error-wallet-state";
 import { AvailableWallets, CosmosWalletRegistry } from "~/config";
-import { useFeatureFlags, useTranslation, WalletSelectOptions } from "~/hooks";
+import { EthereumChainIds } from "~/config/wagmi";
+import {
+  useFeatureFlags,
+  useTranslation,
+  WalletSelectOption,
+  WalletSelectParams,
+} from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 import {
   CreateOneClickSessionError,
   useCreateOneClickTradingSession,
@@ -115,26 +122,37 @@ type OnConnectWallet = (
     | {
         walletType: "evm";
         wallet: Connector;
+        chainId?: EthereumChainIds;
       }
 ) => void;
 
 const WalletConnectType = "walletConnect";
 
 interface WalletSelectModalProps extends ModalBaseProps {
-  options: WalletSelectOptions[];
+  /**
+   * Defines what wallets to show in the modal.
+   */
+  walletOptions: WalletSelectParams["walletOptions"];
+  layout?: WalletSelectParams["layout"];
   onConnect?: (params: { walletType: "evm" | "cosmos" }) => void;
 }
 
 export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
   observer((props) => {
-    const { isOpen, onRequestClose, options, onConnect: onConnectProp } = props;
+    const {
+      isOpen,
+      onRequestClose,
+      walletOptions,
+      onConnect: onConnectProp,
+      layout = "full",
+    } = props;
     const { isMobile } = useWindowSize();
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
     const [show1CTEditParams, setShow1CTEditParams] = useState(false);
     const [hasBroadcastedTx, setHasBroadcastedTx] = useState(false);
-    const { connect: connectEvmWallet } = useConnect();
+    const { connect: connectEvmWallet } = useConnectEvmWallet();
 
     const create1CTSession = useCreateOneClickTradingSession({
       onBroadcasted: () => {
@@ -170,17 +188,12 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       reset: reset1CTParams,
     } = useOneClickTradingParams();
 
-    const cosmosOption = options.find(
+    const cosmosOption = walletOptions.find(
       (
         option
-      ): option is Extract<WalletSelectOptions, { walletType: "cosmos" }> =>
+      ): option is Extract<WalletSelectOption, { walletType: "cosmos" }> =>
         option.walletType === "cosmos"
     );
-
-    // const evmOption = options.find(
-    //   (option): option is Extract<WalletSelectOptions, { walletType: "evm" }> =>
-    //     option.walletType === "evm"
-    // );
 
     const cosmosChainId = cosmosOption?.chainId;
     const rootWalletRepo = cosmosChainId
@@ -352,12 +365,18 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
         });
     };
 
-    const onConnectEvmWallet = async ({ wallet }: { wallet: Connector }) => {
+    const onConnectEvmWallet = async ({
+      wallet,
+      chainId,
+    }: {
+      wallet: Connector;
+      chainId: EthereumChainIds | undefined;
+    }) => {
       return new Promise<void>((resolve, reject) => {
         // Close modal to show WalletConnect QR code modal
         if (wallet.type === WalletConnectType) onRequestClose();
         connectEvmWallet(
-          { connector: wallet },
+          { connector: wallet, chainId: chainId },
           {
             onSuccess: () => {
               onConnectProp?.({ walletType: "evm" });
@@ -372,15 +391,21 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       });
     };
 
-    const onConnect: OnConnectWallet = async ({ wallet, walletType }) => {
-      if (!wallet) return;
+    const onConnect: OnConnectWallet = async (param) => {
+      if (!param.wallet) return;
 
-      if (walletType === "cosmos" && rootWalletRepo) {
-        return onConnectCosmosWallet({ wallet, walletRepo: rootWalletRepo });
+      if (param.walletType === "cosmos" && rootWalletRepo) {
+        return onConnectCosmosWallet({
+          wallet: param.wallet,
+          walletRepo: rootWalletRepo,
+        });
       }
 
-      if (walletType === "evm") {
-        return onConnectEvmWallet({ wallet }).catch(noop);
+      if (param.walletType === "evm") {
+        return onConnectEvmWallet({
+          wallet: param.wallet,
+          chainId: param.chainId,
+        }).catch(noop);
       }
     };
 
@@ -417,68 +442,90 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
         isOpen={isOpen}
         onRequestClose={onClose}
         hideCloseButton
-        className="max-h-[90vh] w-full max-w-[800px] overflow-hidden !px-0 py-0 sm:max-h-[80vh]"
+        className={classNames(
+          "max-h-[90vh] w-full overflow-hidden !px-0 py-0 sm:max-h-[80vh]",
+          {
+            "max-w-[800px]": layout === "full",
+            "max-w-[450px]": layout === "list",
+          }
+        )}
       >
-        <div
-          className={classNames(
-            "flex overflow-auto sm:max-h-full sm:flex-col",
-            modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]",
-            hasInstalledWallets && featureFlags.oneClickTrading
-              ? "min-h-[73vh]"
-              : "min-h-[50vh]"
-          )}
-        >
-          <ClientOnly
-            className={classNames(
-              "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
-              "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
-            )}
-          >
-            <WalletList
-              onConnect={onConnect}
-              walletRepo={rootWalletRepo}
-              isMobile={isMobile}
-              modalView={modalView}
-            />
-          </ClientOnly>
-          <div className="relative w-full overflow-auto py-8 sm:static">
-            {onRequestBack && (
-              <Button
-                aria-label="Go Back"
-                size="icon"
-                variant="ghost"
-                className="absolute left-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
-                onClick={onClose}
-              >
-                <Icon id="chevron-left" width={16} height={16} />
-              </Button>
-            )}
-            <CosmosWalletState
-              {...props}
-              onRequestClose={onClose}
-              modalView={modalView}
-              onConnect={onConnect}
-              lazyWalletInfo={lazyWalletInfo}
-              transaction1CTParams={transaction1CTParams}
-              setTransaction1CTParams={setTransaction1CTParams}
-              isLoading1CTParams={isLoading1CTParams}
-              walletRepo={rootWalletRepo}
-              onCreate1CTSession={() =>
-                onCreate1CTSession({
-                  walletRepo: rootWalletRepo!,
-                  transaction1CTParams,
-                })
-              }
-              show1CTConnectAWallet={show1CTConnectAWallet}
-              setShow1CTConnectAWallet={setShow1CTConnectAWallet}
-              show1CTEditParams={show1CTEditParams}
-              setShow1CTEditParams={setShow1CTEditParams}
-            />
+        {layout === "list" && (
+          <WalletList
+            onConnect={onConnect}
+            walletRepo={rootWalletRepo}
+            isMobile={isMobile}
+            modalView={modalView}
+            walletOptions={walletOptions}
+          />
+        )}
 
-            {/* Hide close button since 1CT edit params will include it */}
-            {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
-          </div>
-        </div>
+        {layout === "full" && (
+          <>
+            <div
+              className={classNames(
+                "flex overflow-auto sm:max-h-full sm:flex-col",
+                modalView === "qrCode" ? "max-h-[600px]" : "max-h-[530px]",
+                hasInstalledWallets && featureFlags.oneClickTrading
+                  ? "min-h-[73vh]"
+                  : "min-h-[50vh]"
+              )}
+            >
+              <ClientOnly
+                className={classNames(
+                  "w-full max-w-[284px] overflow-auto sm:max-w-none sm:shrink-0 sm:bg-[rgba(20,15,52,0.2)]",
+                  "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
+                )}
+              >
+                <WalletList
+                  onConnect={onConnect}
+                  walletRepo={rootWalletRepo}
+                  isMobile={isMobile}
+                  modalView={modalView}
+                  walletOptions={walletOptions}
+                />
+              </ClientOnly>
+              <div className="relative w-full overflow-auto py-8 sm:static">
+                {onRequestBack && (
+                  <Button
+                    aria-label="Go Back"
+                    size="icon"
+                    variant="ghost"
+                    className="absolute left-6 top-6 z-50 w-fit text-osmoverse-400 hover:text-white-full"
+                    onClick={onClose}
+                  >
+                    <Icon id="chevron-left" width={16} height={16} />
+                  </Button>
+                )}
+                <CosmosWalletState
+                  {...props}
+                  onRequestClose={onClose}
+                  modalView={modalView}
+                  onConnect={onConnect}
+                  lazyWalletInfo={lazyWalletInfo}
+                  transaction1CTParams={transaction1CTParams}
+                  setTransaction1CTParams={setTransaction1CTParams}
+                  isLoading1CTParams={isLoading1CTParams}
+                  walletRepo={rootWalletRepo}
+                  onCreate1CTSession={() =>
+                    onCreate1CTSession({
+                      walletRepo: rootWalletRepo!,
+                      transaction1CTParams,
+                    })
+                  }
+                  show1CTConnectAWallet={show1CTConnectAWallet}
+                  setShow1CTConnectAWallet={setShow1CTConnectAWallet}
+                  show1CTEditParams={show1CTEditParams}
+                  setShow1CTEditParams={setShow1CTEditParams}
+                  walletOptions={walletOptions}
+                />
+
+                {/* Hide close button since 1CT edit params will include it */}
+                {!show1CTEditParams && <ModalCloseButton onClick={onClose} />}
+              </div>
+            </div>
+          </>
+        )}
       </ModalBase>
     );
   });
@@ -488,168 +535,214 @@ const WalletList: FunctionComponent<{
   onConnect: OnConnectWallet;
   isMobile: boolean;
   modalView: ModalView;
-}> = observer(({ walletRepo, onConnect, isMobile, modalView }) => {
-  const { t } = useTranslation();
-  const { connectors } = useConnect();
-  const account = useAccount();
+  walletOptions: WalletSelectOption[];
+}> = observer(
+  ({ walletRepo, onConnect, isMobile, modalView, walletOptions }) => {
+    const { t } = useTranslation();
+    const { connectors } = useConnectEvmWallet();
 
-  const evmWallets = useMemo(
-    () =>
-      connectors
+    const evmOption = useMemo(
+      () =>
+        walletOptions.find(
+          (
+            option
+          ): option is Extract<WalletSelectOption, { walletType: "evm" }> =>
+            option.walletType === "evm"
+        ),
+      [walletOptions]
+    );
+
+    const evmWallets = useMemo(() => {
+      if (!evmOption) return [];
+
+      return connectors
         .filter((wallet) => {
           // Always show WalletConnect
           if (wallet.type === WalletConnectType) return true;
           // Only display injected wallets on desktop.
           return isMobile ? true : wallet.type === "injected";
         })
-        .map((wallet) => {
-          return {
-            ...wallet,
-            icon:
-              wallet.type === WalletConnectType
-                ? "/icons/walletconnect.svg"
-                : wallet.icon,
-            walletType: "evm" as const,
-          };
-        }),
-    [connectors, isMobile]
-  );
-
-  console.log(evmWallets, account);
-
-  const cosmosWallets = useMemo(
-    () =>
-      CosmosWalletRegistry
-        // If mobile, filter out browser wallets
-        .reduce((acc, wallet, _index, array) => {
-          if (isMobile) {
-            /**
-             * If an extension wallet is found in mobile, this means that we are inside an app browser.
-             * Therefore, we should only show that compatible extension wallet.
-             * */
-            if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
-              return acc;
-            }
-
-            const _window = window as Record<string, any>;
-            const mobileWebModeName = "mobile-web";
-
-            /**
-             * If on mobile and `leap` is in `window`, it means that the user enters
-             * the frontend from Leap's app in app browser. So, there is no need
-             * to use wallet connect, as it resembles the extension's usage.
-             */
-            if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
-              return array
-                .filter((wallet) => wallet.name === AvailableWallets.Leap)
-                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-            }
-
-            /**
-             * If on mobile and `keplr` is in `window`, it means that the user enters
-             * the frontend from Keplr's app in app browser. So, there is no need
-             * to use wallet connect, as it resembles the extension's usage.
-             */
-            if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
-              return array
-                .filter((wallet) => wallet.name === AvailableWallets.Keplr)
-                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-            }
-
-            /**
-             * If user is in a normal mobile browser, show only wallet connect
-             */
-            return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
-          }
-
-          return [...acc, wallet];
-        }, [] as (typeof CosmosWalletRegistry)[number][])
         .map((wallet) => ({
           ...wallet,
-          walletType: "cosmos" as const,
-        })),
-    [isMobile]
-  );
+          icon:
+            wallet.type === WalletConnectType
+              ? "/icons/walletconnect.svg"
+              : wallet.icon,
+          walletType: "evm" as const,
+        }));
+    }, [connectors, evmOption, isMobile]);
 
-  /**
-   * Categorizes wallets into three distinct categories:
-   * 1. Mobile Wallets: Wallets that use the "wallet-connect" mode.
-   * 2. Installed Wallets: Wallets that have a defined window property present in the current window.
-   * 3. Other Wallets: Wallets that do not fall into the above two categories.
-   *
-   * Note: The object keys are the translation keys for the category name.
-   */
-  const categories = useMemo(
-    () =>
-      [...cosmosWallets, ...evmWallets].reduce(
-        (acc, wallet) => {
-          if (wallet.walletType === "evm") {
-            acc["walletSelect.installedWallets"].push(wallet);
-            return acc;
-          }
+    const cosmosWallets = useMemo(() => {
+      if (!walletOptions.some((option) => option.walletType === "cosmos"))
+        return [];
+      return (
+        CosmosWalletRegistry
+          // If mobile, filter out browser wallets
+          .reduce((acc, wallet, _index, array) => {
+            if (isMobile) {
+              /**
+               * If an extension wallet is found in mobile, this means that we are inside an app browser.
+               * Therefore, we should only show that compatible extension wallet.
+               * */
+              if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+                return acc;
+              }
 
-          if (wallet.walletType === "cosmos") {
-            if (wallet.mode === "wallet-connect") {
-              acc["walletSelect.mobileWallets"].push(wallet);
-              return acc;
+              const _window = window as Record<string, any>;
+              const mobileWebModeName = "mobile-web";
+
+              /**
+               * If on mobile and `leap` is in `window`, it means that the user enters
+               * the frontend from Leap's app in app browser. So, there is no need
+               * to use wallet connect, as it resembles the extension's usage.
+               */
+              if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
+                return array
+                  .filter((wallet) => wallet.name === AvailableWallets.Leap)
+                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+              }
+
+              /**
+               * If on mobile and `keplr` is in `window`, it means that the user enters
+               * the frontend from Keplr's app in app browser. So, there is no need
+               * to use wallet connect, as it resembles the extension's usage.
+               */
+              if (
+                _window?.keplr &&
+                _window?.keplr?.mode === mobileWebModeName
+              ) {
+                return array
+                  .filter((wallet) => wallet.name === AvailableWallets.Keplr)
+                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+              }
+
+              /**
+               * If user is in a normal mobile browser, show only wallet connect
+               */
+              return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
             }
 
-            if (
-              wallet.windowPropertyName &&
-              wallet.windowPropertyName in window
-            ) {
+            return [...acc, wallet];
+          }, [] as (typeof CosmosWalletRegistry)[number][])
+          .map((wallet) => ({
+            ...wallet,
+            walletType: "cosmos" as const,
+          }))
+      );
+    }, [isMobile, walletOptions]);
+
+    /**
+     * Categorizes wallets into three distinct categories:
+     * 1. Mobile Wallets: Wallets that use the "wallet-connect" mode.
+     * 2. Installed Wallets: Wallets that have a defined window property present in the current window.
+     * 3. Other Wallets: Wallets that do not fall into the above two categories.
+     *
+     * Note: The object keys are the translation keys for the category name.
+     */
+    const categories = useMemo(
+      () =>
+        [...cosmosWallets, ...evmWallets].reduce(
+          (acc, wallet) => {
+            if (wallet.walletType === "evm") {
               acc["walletSelect.installedWallets"].push(wallet);
               return acc;
             }
 
-            acc["walletSelect.otherWallets"].push(wallet);
+            if (wallet.walletType === "cosmos") {
+              if (wallet.mode === "wallet-connect") {
+                acc["walletSelect.mobileWallets"].push(wallet);
+                return acc;
+              }
+
+              if (
+                wallet.windowPropertyName &&
+                wallet.windowPropertyName in window
+              ) {
+                acc["walletSelect.installedWallets"].push(wallet);
+                return acc;
+              }
+
+              acc["walletSelect.otherWallets"].push(wallet);
+              return acc;
+            }
+
             return acc;
+          },
+          {
+            "walletSelect.installedWallets": [] as (
+              | typeof cosmosWallets
+              | typeof evmWallets
+            )[number][],
+            "walletSelect.mobileWallets": [] as (
+              | typeof cosmosWallets
+              | typeof evmWallets
+            )[number][],
+            "walletSelect.otherWallets": [] as (
+              | typeof cosmosWallets
+              | typeof evmWallets
+            )[number][],
           }
+        ),
+      [cosmosWallets, evmWallets]
+    );
 
-          return acc;
-        },
-        {
-          "walletSelect.installedWallets": [] as (
-            | typeof cosmosWallets
-            | typeof evmWallets
-          )[number][],
-          "walletSelect.mobileWallets": [] as (
-            | typeof cosmosWallets
-            | typeof evmWallets
-          )[number][],
-          "walletSelect.otherWallets": [] as (
-            | typeof cosmosWallets
-            | typeof evmWallets
-          )[number][],
-        }
-      ),
-    [cosmosWallets, evmWallets]
-  );
+    return (
+      <section className="flex flex-col gap-8 py-8 pl-8 sm:pl-3">
+        <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
+          {t("connectWallet")}
+        </h1>
+        <div className="z-10 flex flex-col gap-8 overflow-auto pr-5">
+          {Object.entries(categories)
+            .filter(([_, wallets]) => wallets.length > 0)
+            .map(([categoryName, wallets]) => {
+              const isDisabled = modalView === "initializingOneClickTrading";
+              return (
+                <div key={categoryName} className="flex flex-col">
+                  <h2
+                    className={classNames(
+                      "subtitle1 text-osmoverse-100 sm:hidden",
+                      isDisabled && "opacity-70"
+                    )}
+                  >
+                    {t(categoryName)}
+                  </h2>
 
-  return (
-    <section className="flex flex-col gap-8 py-8 pl-8  sm:pl-3">
-      <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
-        {t("connectWallet")}
-      </h1>
-      <div className="z-10 flex flex-col gap-8 overflow-auto pr-5">
-        {Object.entries(categories)
-          .filter(([_, wallets]) => wallets.length > 0)
-          .map(([categoryName, wallets]) => {
-            const isDisabled = modalView === "initializingOneClickTrading";
-            return (
-              <div key={categoryName} className="flex flex-col">
-                <h2
-                  className={classNames(
-                    "subtitle1 text-osmoverse-100 sm:hidden",
-                    isDisabled && "opacity-70"
-                  )}
-                >
-                  {t(categoryName)}
-                </h2>
+                  <div className="flex flex-col sm:flex-row sm:overflow-x-auto">
+                    {wallets.map((wallet) => {
+                      if (wallet.walletType === "evm") {
+                        return (
+                          <button
+                            className={classNames(
+                              "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                              "col-span-2 py-3 font-normal",
+                              "sm:w-fit sm:flex-col",
+                              walletRepo?.current?.walletName === wallet.name &&
+                                "bg-osmoverse-700",
+                              "disabled:opacity-70"
+                            )}
+                            key={wallet.id}
+                            onClick={() =>
+                              onConnect({
+                                walletType: "evm",
+                                wallet,
+                                chainId: evmOption?.chainId,
+                              })
+                            }
+                            disabled={isDisabled}
+                          >
+                            {typeof wallet.icon === "string" && (
+                              <img
+                                src={wallet.icon}
+                                width={40}
+                                height={40}
+                                alt="Wallet logo"
+                              />
+                            )}
+                            <span>{wallet.name}</span>
+                          </button>
+                        );
+                      }
 
-                <div className="flex flex-col sm:flex-row sm:overflow-x-auto">
-                  {wallets.map((wallet) => {
-                    if (wallet.walletType === "evm") {
                       return (
                         <button
                           className={classNames(
@@ -660,61 +753,33 @@ const WalletList: FunctionComponent<{
                               "bg-osmoverse-700",
                             "disabled:opacity-70"
                           )}
-                          key={wallet.id}
+                          key={wallet.name}
                           onClick={() =>
-                            onConnect({ walletType: "evm", wallet })
+                            onConnect({ walletType: "cosmos", wallet })
                           }
                           disabled={isDisabled}
                         >
-                          {typeof wallet.icon === "string" && (
+                          {typeof wallet.logo === "string" && (
                             <img
-                              src={wallet.icon}
+                              src={wallet.logo}
                               width={40}
                               height={40}
                               alt="Wallet logo"
                             />
                           )}
-                          <span>{wallet.name}</span>
+                          <span>{wallet.prettyName}</span>
                         </button>
                       );
-                    }
-
-                    return (
-                      <button
-                        className={classNames(
-                          "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
-                          "col-span-2 py-3 font-normal",
-                          "sm:w-fit sm:flex-col",
-                          walletRepo?.current?.walletName === wallet.name &&
-                            "bg-osmoverse-700",
-                          "disabled:opacity-70"
-                        )}
-                        key={wallet.name}
-                        onClick={() =>
-                          onConnect({ walletType: "cosmos", wallet })
-                        }
-                        disabled={isDisabled}
-                      >
-                        {typeof wallet.logo === "string" && (
-                          <img
-                            src={wallet.logo}
-                            width={40}
-                            height={40}
-                            alt="Wallet logo"
-                          />
-                        )}
-                        <span>{wallet.prettyName}</span>
-                      </button>
-                    );
-                  })}
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-      </div>
-    </section>
-  );
-});
+              );
+            })}
+        </div>
+      </section>
+    );
+  }
+);
 
 enum WalletSelect1CTScreens {
   Introduction = "Introduction",
@@ -739,6 +804,7 @@ const CosmosWalletState: FunctionComponent<
     setShow1CTConnectAWallet: Dispatch<SetStateAction<boolean>>;
     show1CTEditParams: boolean;
     setShow1CTEditParams: Dispatch<SetStateAction<boolean>>;
+    walletOptions: WalletSelectOption[];
   }
 > = observer(
   ({

@@ -394,7 +394,9 @@ const WalletInfo: FunctionComponent<
           size="md"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
-            onOpenWalletSelect([{ walletType: "cosmos", chainId: chainId }]);
+            onOpenWalletSelect({
+              walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+            });
           }}
         >
           <span className="button mx-auto">{t("connectWallet")}</span>

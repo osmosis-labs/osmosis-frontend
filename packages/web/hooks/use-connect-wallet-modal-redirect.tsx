@@ -62,7 +62,9 @@ export function useConnectWalletModalRedirect(
           {...actionButtonProps}
           disabled={false}
           onClick={() => {
-            onOpenWalletSelect(chainId); // show select connect modal
+            onOpenWalletSelect({
+              walletOptions: [{ walletType: "cosmos", chainId }],
+            }); // show select connect modal
             setShowSelf(false);
           }}
         >

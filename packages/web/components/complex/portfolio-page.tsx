@@ -329,9 +329,11 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
       <Button
         className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
         onClick={() => {
-          onOpenWalletSelect([
-            { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
-          ]);
+          onOpenWalletSelect({
+            walletOptions: [
+              { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
+            ],
+          });
         }}
       >
         {t("connectWallet")}

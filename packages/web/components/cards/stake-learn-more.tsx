@@ -26,7 +26,9 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
     if (isWalletConnected) {
       setShowValidatorModal();
     } else {
-      onOpenWalletSelect([{ walletType: "cosmos", chainId: osmosisChainId }]);
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: osmosisChainId }],
+      });
     }
   }, [
     isWalletConnected,

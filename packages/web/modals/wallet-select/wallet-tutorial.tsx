@@ -40,7 +40,6 @@ const WalletTutorial = () => {
         className="relative flex flex-col gap-2"
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
       >
-        <StepsIndicator className="order-1 mt-16" />
         <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
         {OnboardingSteps(t).map(({ title, content }) => (
           <Step key={title}>

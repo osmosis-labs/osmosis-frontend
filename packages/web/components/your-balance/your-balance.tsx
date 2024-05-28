@@ -465,7 +465,9 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
         ) : (
           <button
             onClick={() =>
-              onOpenWalletSelect([{ walletType: "cosmos", chainId: chainId! }])
+              onOpenWalletSelect({
+                walletOptions: [{ walletType: "cosmos", chainId: chainId! }],
+              })
             }
             className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
