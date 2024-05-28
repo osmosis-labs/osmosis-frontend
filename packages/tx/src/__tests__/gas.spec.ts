@@ -461,7 +461,7 @@ describe("getGasFeeAmount", () => {
 
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
-    expect(gasAmount.isSpent).toBe(true);
+    expect(gasAmount.isNeededForTx).toBe(true);
   });
 
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {

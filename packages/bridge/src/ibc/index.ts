@@ -23,6 +23,8 @@ export class IbcBridgeProvider implements BridgeProvider {
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
+    this.validate(params);
+
     const fromChainId = params.fromChain.chainId;
 
     if (
@@ -60,7 +62,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       .find((asset) => asset.coinMinimalDenom === gasFee.denom);
 
     /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount = gasFee.isSpent
+    const toAmount = gasFee.isNeededForTx
       ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
       : params.fromAmount;
 
@@ -95,11 +97,16 @@ export class IbcBridgeProvider implements BridgeProvider {
 
   /**
    * Gets cosmos tx for for signing.
+   *
+   * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
    */
   async getTransactionData(
     params: GetBridgeQuoteParams
   ): Promise<CosmosBridgeTransactionRequest> {
-    const { fromAsset } = this.getIbcAssets(params);
+    this.validate(params);
+
+    const { sourceChannel, sourcePort, sourceDenom } =
+      this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
       destinationAddress: params.toAddress,
@@ -108,14 +115,14 @@ export class IbcBridgeProvider implements BridgeProvider {
     const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
       receiver: params.toAddress,
       sender: params.fromAddress,
-      sourceChannel: fromAsset.chain.channelId,
-      sourcePort: fromAsset.chain.port,
+      sourceChannel,
+      sourcePort,
       timeoutTimestamp: "0" as any,
       // @ts-ignore
       timeoutHeight,
       token: {
         amount: params.fromAmount,
-        denom: fromAsset.address,
+        denom: sourceDenom,
       },
     });
 
@@ -127,21 +134,69 @@ export class IbcBridgeProvider implements BridgeProvider {
   }
 
   /**
-   * Gets to/from assets from quote params and appends asset & IBC info from asset list.
+   * Gets IBC channel and port info from asset list
    *
-   *  @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
+   * @throws `BridgeQuoteError` if asset not found in asset list or transfer method not found.
    */
-  getIbcAssets(params: GetBridgeQuoteParams) {
-    const fromAsset = this.ctx.assetLists
+  protected getIbcSource({ fromAsset, toAsset }: GetBridgeQuoteParams): {
+    sourceChannel: string;
+    sourcePort: string;
+    sourceDenom: string;
+  } {
+    const transferAsset = this.ctx.assetLists
       .flatMap((list) => list.assets)
-      .find((asset) => asset.coinMinimalDenom === params.fromAsset.sourceDenom);
-    const toAsset = this.ctx.assetLists
-      .flatMap((list) => list.assets)
-      .find((asset) => asset.coinMinimalDenom === params.fromAsset.sourceDenom);
+      .find(
+        (asset) =>
+          asset.coinMinimalDenom === toAsset.sourceDenom ||
+          asset.sourceDenom === toAsset.sourceDenom ||
+          asset.coinMinimalDenom === fromAsset.sourceDenom ||
+          asset.sourceDenom === fromAsset.sourceDenom
+      );
 
+    if (!transferAsset)
+      throw new BridgeQuoteError([
+        {
+          errorType: BridgeError.UnsupportedQuoteError,
+          message: "IBC asset not found in asset list",
+        },
+      ]);
+
+    const transferMethod = transferAsset.transferMethods.find(
+      ({ type }) => type === "ibc"
+    ) as IbcTransferMethod;
+
+    if (!transferMethod)
+      throw new BridgeQuoteError([
+        {
+          errorType: BridgeError.UnsupportedQuoteError,
+          message: "IBC transfer method not found",
+        },
+      ]);
+
+    if (fromAsset.sourceDenom === transferMethod.counterparty.sourceDenom) {
+      // transfer from counterparty
+      const { channelId, port, sourceDenom } = transferMethod.counterparty;
+      return {
+        sourceChannel: channelId,
+        sourcePort: port,
+        sourceDenom,
+      };
+    } else {
+      // transfer from source
+      const { channelId, port } = transferMethod.chain;
+      return {
+        sourceChannel: channelId,
+        sourcePort: port,
+        sourceDenom: fromAsset.address,
+      };
+    }
+  }
+
+  /** @throws `BridgeQuoteError` if any errors found in params. */
+  protected validate(params: GetBridgeQuoteParams) {
     if (
-      fromAsset?.coinMinimalDenom.startsWith("cw20") ||
-      toAsset?.coinMinimalDenom.startsWith("cw20")
+      params.fromAsset.address.startsWith("cw20") ||
+      params.toAsset.address.startsWith("cw20")
     ) {
       throw new BridgeQuoteError([
         {
@@ -151,25 +206,16 @@ export class IbcBridgeProvider implements BridgeProvider {
       ]);
     }
 
-    const fromIbcInfo = fromAsset?.transferMethods.find(
-      ({ type }) => type === "ibc"
-    ) as IbcTransferMethod;
-    const toIbcInfo = toAsset?.transferMethods.find(
-      ({ type }) => type === "ibc"
-    ) as IbcTransferMethod;
-
-    if (!fromIbcInfo || !toIbcInfo) {
+    if (
+      params.fromChain.chainType !== "cosmos" ||
+      params.toChain.chainType !== "cosmos"
+    ) {
       throw new BridgeQuoteError([
         {
           errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC Bridge doesn't support give assets",
+          message: "IBC Bridge only supports cosmos chains",
         },
       ]);
     }
-
-    return {
-      fromAsset: { ...params.fromAsset, ...fromAsset, ...fromIbcInfo },
-      toAsset: { ...params.toAsset, ...toAsset, ...toIbcInfo },
-    };
   }
 }

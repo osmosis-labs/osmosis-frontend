@@ -41,7 +41,7 @@ export type QuoteStdFee = {
      * Indicates that the simulated transaction spends the account's balance required for the fee.
      * Likely, the input spent amount needs to be adjusted by subtracting this amount.
      */
-    isSpent?: boolean;
+    isNeededForTx?: boolean;
   }[];
 };
 
@@ -271,7 +271,7 @@ export async function getGasFeeAmount({
      *  spent by the given spent coins list.
      *  Likely, the spent amount needs to be adjusted by subtracting this amount.
      */
-    isSpent?: boolean;
+    isNeededForTx?: boolean;
   }[]
 > {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
@@ -306,7 +306,7 @@ export async function getGasFeeAmount({
   }
 
   let foundFee:
-    | { denom: string; amount: string; isSpent?: boolean }
+    | { denom: string; amount: string; isNeededForTx?: boolean }
     | undefined;
   // loop to find the applicable fee amongst account balances
   for (const feeTokenBalance of feeBalances) {
@@ -334,7 +334,7 @@ export async function getGasFeeAmount({
       foundFee = {
         amount: feeAmount,
         denom: feeTokenBalance.denom,
-        isSpent: true,
+        isNeededForTx: true,
       };
     } else {
       foundFee = {
