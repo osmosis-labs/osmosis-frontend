@@ -1,19 +1,29 @@
 import {
+  ColorType,
   DeepPartial,
+  isBusinessDay,
+  LineStyle,
   MouseEventParams,
+  TickMarkType,
   Time,
   TimeChartOptions,
 } from "lightweight-charts";
 import React, {
   memo,
-  ReactNode,
+  PropsWithChildren,
   useEffect,
   useRef,
   useState,
   useSyncExternalStore,
 } from "react";
 
-import { ChartController, ChartControllerParams, Series } from "./chart";
+import { theme } from "~/tailwind.config";
+
+import {
+  ChartController,
+  ChartControllerParams,
+  Series,
+} from "./chart-controller";
 
 function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   window.addEventListener("resize", callback);
@@ -23,21 +33,127 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
+export const defaultOptions: DeepPartial<TimeChartOptions> = {
+  layout: {
+    fontFamily: theme.fontFamily.subtitle1.join(","),
+    background: {
+      type: ColorType.Solid,
+      color: theme.colors.osmoverse[850],
+    },
+    textColor: theme.colors.wosmongton[200],
+    fontSize: 14,
+  },
+  grid: { horzLines: { visible: false }, vertLines: { visible: false } },
+  rightPriceScale: { visible: false },
+  leftPriceScale: { visible: false },
+  crosshair: {
+    horzLine: { visible: false },
+    vertLine: {
+      labelBackgroundColor: theme.colors.osmoverse[850],
+      style: LineStyle.LargeDashed,
+      width: 2,
+      color: `${theme.colors.osmoverse[300]}33`,
+    },
+  },
+  handleScroll: false,
+  handleScale: false,
+  kineticScroll: {
+    touch: false,
+    mouse: false,
+  },
+  timeScale: {
+    timeVisible: true,
+    secondsVisible: false,
+    lockVisibleTimeRangeOnResize: true,
+    allowBoldLabels: false,
+    borderVisible: false,
+    tickMarkFormatter: (
+      timePoint: Time,
+      tickMarkType: TickMarkType,
+      locale: string
+    ) => {
+      const formatOptions: Intl.DateTimeFormatOptions = {};
+
+      switch (tickMarkType) {
+        case TickMarkType.Year:
+          formatOptions.year = "numeric";
+          break;
+
+        case TickMarkType.Month:
+          formatOptions.month = "short";
+          break;
+
+        case TickMarkType.DayOfMonth:
+          formatOptions.day = "numeric";
+          formatOptions.month = "short";
+          break;
+
+        case TickMarkType.Time:
+          formatOptions.hour12 = false;
+          formatOptions.hour = "2-digit";
+          formatOptions.minute = "2-digit";
+          break;
+
+        case TickMarkType.TimeWithSeconds:
+          formatOptions.hour12 = false;
+          formatOptions.hour = "2-digit";
+          formatOptions.minute = "2-digit";
+          formatOptions.second = "2-digit";
+          break;
+      }
+
+      let date = new Date();
+
+      if (typeof timePoint === "string") {
+        date = new Date(timePoint);
+      } else if (!isBusinessDay(timePoint)) {
+        date = new Date((timePoint as number) * 1000);
+      } else {
+        date = new Date(
+          Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
+        );
+      }
+
+      // from given date we should use only as UTC date or timestamp
+      // but to format as locale date we can convert UTC date to local date
+      const localDateFromUtc = new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds(),
+        date.getUTCMilliseconds()
+      );
+
+      return localDateFromUtc.toLocaleString(locale, formatOptions);
+    },
+  },
+  autoSize: true,
+};
+
 export interface ChartProps<T = TimeChartOptions, K = Time> {
-  options: DeepPartial<T>;
+  options?: DeepPartial<T>;
   series?: Series[];
-  children?: ReactNode | ((params?: MouseEventParams<K>) => ReactNode);
   Controller: new (params: ChartControllerParams<T, K>) => ChartController<
     T,
     K
   >;
+  onCrosshairMove?: (params: MouseEventParams<K>) => void;
 }
 
 export const Chart = memo(
-  <T extends TimeChartOptions, K extends Time>(props: ChartProps<T, K>) => {
-    const { options, children, series, Controller } = props;
+  <T extends TimeChartOptions, K extends Time>(
+    props: PropsWithChildren<ChartProps<T, K>>
+  ) => {
+    const {
+      options = { height: undefined },
+      children,
+      series,
+      onCrosshairMove,
+      Controller,
+    } = props;
     const [container, setContainer] = useState<HTMLDivElement | null>(null);
-    const [hoverParam, setHoverParam] = useState<MouseEventParams<K>>();
     const chart = useRef<ChartController<T, K>>();
 
     useSyncExternalStore(
@@ -50,10 +166,13 @@ export const Chart = memo(
 
     if (container && chart.current === undefined) {
       chart.current = new Controller({
-        options,
+        options: {
+          ...defaultOptions,
+          ...options,
+        },
         series,
         container,
-        onCrosshairMove: setHoverParam,
+        onCrosshairMove,
       });
     }
 
@@ -69,8 +188,8 @@ export const Chart = memo(
     }, []);
 
     return (
-      <div ref={setContainer}>
-        {typeof children === "function" ? children(hoverParam) : children}
+      <div className="relative h-full" ref={setContainer}>
+        {children}
       </div>
     );
   }

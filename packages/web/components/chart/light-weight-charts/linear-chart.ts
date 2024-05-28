@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import {
   AreaData,
   MouseEventParams,
@@ -5,8 +6,11 @@ import {
   TimeChartOptions,
 } from "lightweight-charts";
 
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { getDecimalCount } from "~/utils/number";
+
 import { AreaChartController } from "./area-chart";
-import { ChartControllerParams } from "./chart";
+import { ChartControllerParams } from "./chart-controller";
 
 export class LinearChartController extends AreaChartController {
   tooltip: HTMLDivElement;
@@ -15,14 +19,8 @@ export class LinearChartController extends AreaChartController {
     super(params);
 
     this.tooltip = document.createElement("div");
-    this.tooltip.style.borderRadius = "20px";
-    this.tooltip.style.background = "black";
-    this.tooltip.style.color = "white";
-    this.tooltip.style.padding = "20px";
-    this.tooltip.style.position = "absolute";
-    this.tooltip.style.display = "none";
-    this.tooltip.style.pointerEvents = "none";
-    this.tooltip.style.zIndex = "9999";
+    this.tooltip.className =
+      "rounded-xl bg-osmoverse-1000 absolute hidden p-3 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
 
     params.container.appendChild(this.tooltip);
 
@@ -51,31 +49,39 @@ export class LinearChartController extends AreaChartController {
         value,
       }));
 
-      const [_, secondSeriesData] = dataSeries;
-
       const content = dataSeries
         .map((series) => {
           const seriesData = series.value as AreaData;
+          const close = seriesData.value;
+
+          const minimumDecimals = 2;
+          const maxDecimals = Math.max(getDecimalCount(close), minimumDecimals);
+
+          const closeDec = new Dec(close);
+
+          const formatOpts = getPriceExtendedFormatOptions(closeDec);
 
           return `
-            <div>
-              <h6>
-                <span>${secondSeriesData ? "$" : ""}</span>
-                <span>${seriesData.value}</span>
+            <div class="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
+              <h6 class="text-h6 font-semibold text-white-full">
+                $
+                ${
+                  formatPretty(closeDec, {
+                    maxDecimals,
+                    ...formatOpts,
+                  }) || ""
+                }
               </h6>
             </div>
           `;
         })
         .join("");
 
-      const toolTipWidth = secondSeriesData ? 180 : 90;
+      const toolTipWidth = 90;
       const toolTipHeight = 64;
       const toolTipMargin = 15;
 
-      this.tooltip.innerHTML = `<div>
-          ${content}
-        </div>
-        `;
+      this.tooltip.innerHTML = `<div class="flex flex-row gap-6">${content}</div>`;
 
       const y = param.point.y;
       let left = param.point.x + toolTipMargin;

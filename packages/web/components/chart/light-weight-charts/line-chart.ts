@@ -10,7 +10,7 @@ import {
   WhitespaceData,
 } from "lightweight-charts";
 
-import { ChartController, ChartControllerParams } from "./chart";
+import { ChartController, ChartControllerParams } from "./chart-controller";
 
 export class LineChartController<
   T = TimeChartOptions,

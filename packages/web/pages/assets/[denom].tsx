@@ -25,10 +25,11 @@ import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import LinkButton from "~/components/buttons/link-button";
-import HistoricalPriceChart, {
+import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
+import HistoricalPriceChartV2 from "~/components/chart/price-historical-v2";
 import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
@@ -537,7 +538,6 @@ const useNumTicks = () => {
 
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
-  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
@@ -547,15 +547,8 @@ const TokenChart = observer(() => {
         </div>
       ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <HistoricalPriceChart
-            minimal
-            showTooltip
-            showGradient
-            xNumTicks={xNumTicks}
+          <HistoricalPriceChartV2
             data={assetInfoConfig.historicalChartData}
-            fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
-            annotations={[]}
-            domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
               assetInfoConfig.setHoverPrice(0);
