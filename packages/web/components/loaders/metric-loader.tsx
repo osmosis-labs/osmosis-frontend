@@ -1,16 +1,16 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { PropsWithChildren } from "react";
 
 interface Props {
   isLoading?: boolean;
   className?: string;
 }
 
-export const MetricLoader: FunctionComponent<Props> = ({
+export const MetricLoader = ({
   isLoading,
   className,
   children,
-}) => {
+}: PropsWithChildren<Props>) => {
   return isLoading ? (
     <div
       className={classNames(

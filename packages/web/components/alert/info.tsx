@@ -13,8 +13,8 @@ export const Info: FunctionComponent<
     MobileProps
 > = ({
   size = "large",
-  message,
-  caption,
+  titleTranslationKey: message,
+  captionTranslationKey: caption,
   data,
   borderClassName,
   textClassName,
@@ -66,7 +66,7 @@ export const Info: FunctionComponent<
               {message}
             </span>
           )}
-          {caption && (
+          {caption && typeof caption === "string" && (
             <span
               className={classNames(
                 "body2 md:caption text-wosmongton-100",

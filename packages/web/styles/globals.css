@@ -23,7 +23,7 @@
     background: rgba(0, 0, 0, 0);
   }
   .tokendetailshadow::after {
-    @apply absolute top-0 bottom-0 -left-4 -right-4 bg-gradient-token-details-shadow content-[""];
+    @apply absolute -left-4 -right-4 bottom-0 top-0 bg-gradient-token-details-shadow content-[""];
   }
 }
 
@@ -115,7 +115,7 @@
   }
 
   thead > tr > th {
-    @apply py-3 px-4;
+    @apply px-4 py-3;
   }
 
   tbody > tr {
@@ -327,6 +327,15 @@
   }
   50% {
     opacity: 0.2;
+  }
+}
+
+@keyframes slideInRightExtreme {
+  from {
+    transform: translateX(120%);
+  }
+  to {
+    transform: translateY(0);
   }
 }
 

@@ -7,6 +7,7 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
+  SignOptions,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -27,6 +28,7 @@ async function estimateTxFeesQueryFn({
   apiUtils,
   accountStore,
   sendToken,
+  signOptions,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
@@ -36,8 +38,14 @@ async function estimateTxFeesQueryFn({
     balance: CoinPretty;
     amount: CoinPretty;
   };
+  signOptions?: SignOptions;
 }): Promise<QueryResult> {
   if (!messages) throw new Error("No messages");
+
+  const shouldBeSignedWithOneClickTrading =
+    signOptions?.useOneClickTrading &&
+    (await accountStore.shouldBeSignedWithOneClickTrading({ messages }));
+  const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
 
   let feeCoin: Coin;
   let feeAmount: readonly Coin[];
@@ -46,9 +54,15 @@ async function estimateTxFeesQueryFn({
   const baseEstimateFeeOptions: Parameters<typeof accountStore.estimateFee>[0] =
     {
       wallet,
-      messages: messages!,
+      messages,
+      nonCriticalExtensionOptions: shouldBeSignedWithOneClickTrading
+        ? await accountStore.getOneClickTradingExtensionOptions({
+            oneClickTradingInfo,
+          })
+        : undefined,
       signOptions: {
         ...wallet.walletInfo?.signOptions,
+        ...signOptions,
         preferNoSetFee: true, // this will automatically calculate the amount as well.
       },
     };
@@ -114,6 +128,7 @@ export function useEstimateTxFees({
   messages,
   chainId,
   sendToken,
+  signOptions,
   enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
@@ -127,6 +142,7 @@ export function useEstimateTxFees({
     amount: CoinPretty;
   };
   enabled?: boolean;
+  signOptions?: SignOptions;
 }) {
   const { accountStore } = useStore();
   const apiUtils = api.useUtils();
@@ -145,6 +161,7 @@ export function useEstimateTxFees({
         accountStore,
         messages: messages!,
         apiUtils,
+        signOptions,
         sendToken,
       });
     },

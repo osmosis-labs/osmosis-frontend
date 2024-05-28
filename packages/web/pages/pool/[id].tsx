@@ -81,7 +81,7 @@ const Pool: FunctionComponent<Props> = ({
         />
       )}
       {!pool ? (
-        <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
+        <div className="mx-auto flex max-w-container flex-col gap-10 px-6 py-6">
           <SkeletonLoader className="h-[30rem] !rounded-3xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
           <SkeletonLoader className="h-8 !rounded-xl" />

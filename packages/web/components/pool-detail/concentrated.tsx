@@ -288,7 +288,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {currentPrice && (
                   <h6
                     className={classNames(
-                      "absolute top-[51%] right-0 max-w-[2rem] text-right",
+                      "absolute right-0 top-[51%] max-w-[2rem] text-right",
                       {
                         caption: currentPrice.lt(new Dec(0.01)),
                       }
@@ -422,7 +422,13 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+  const {
+    historicalChartData,
+    yRange,
+    setHoverPrice,
+    lastChartData,
+    currentPrice,
+  } = config;
 
   return (
     <HistoricalPriceChart
@@ -432,7 +438,7 @@ const Chart: FunctionComponent<{
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
         if (lastChartData) {
-          setHoverPrice(Number(lastChartData.close));
+          setHoverPrice(Number(currentPrice.toString()));
         }
       }}
     />

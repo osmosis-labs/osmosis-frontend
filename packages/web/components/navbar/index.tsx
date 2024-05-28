@@ -1,16 +1,25 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
 import { queryOsmosisCMS } from "@osmosis-labs/server";
-import { getDeepValue } from "@osmosis-labs/utils";
-import { formatICNSName, getShortAddress } from "@osmosis-labs/utils";
-import { noop } from "@osmosis-labs/utils";
+import {
+  formatICNSName,
+  getDeepValue,
+  getShortAddress,
+  noop,
+} from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -23,6 +32,7 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -39,6 +49,7 @@ import {
 import { ProfileModal } from "~/modals/profile";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -354,6 +365,8 @@ const WalletInfo: FunctionComponent<
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+  const flags = useFeatureFlags();
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -395,22 +408,43 @@ const WalletInfo: FunctionComponent<
             }}
             className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-md bg-osmoverse-700 group-hover:bg-gradient-positive">
-              {profileStore.currentAvatar === "ammelia" ? (
-                <Image
-                  alt="Wosmongton profile"
-                  src="/images/profile-ammelia.png"
-                  height={32}
-                  width={32}
-                />
-              ) : (
-                <Image
-                  alt="Wosmongton profile"
-                  src="/images/profile-woz.png"
-                  height={32}
-                  width={32}
-                />
+            <div className="relative">
+              {isOneClickTradingEnabled && flags.oneClickTrading && (
+                <>
+                  <OneClickTradingRadialProgress />
+                  <div className="absolute -bottom-0.5 -right-1">
+                    <Image
+                      src="/images/1ct-small-icon.svg"
+                      alt="1-Click Trading Small Icon"
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                </>
               )}
+
+              <div
+                className={classNames(
+                  " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
+                  isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
+                )}
+              >
+                {profileStore.currentAvatar === "ammelia" ? (
+                  <Image
+                    alt="Wosmongton profile"
+                    src="/images/profile-ammelia.png"
+                    height={32}
+                    width={32}
+                  />
+                ) : (
+                  <Image
+                    alt="Wosmongton profile"
+                    src="/images/profile-woz.png"
+                    height={32}
+                    width={32}
+                  />
+                )}
+              </div>
             </div>
 
             <div className="flex w-full  flex-col truncate text-right leading-tight">
@@ -432,6 +466,71 @@ const WalletInfo: FunctionComponent<
         </SkeletonLoader>
       )}
     </div>
+  );
+});
+
+const OneClickTradingRadialProgress = observer(() => {
+  const { oneClickTradingInfo, getTimeRemaining, getTotalSessionTime } =
+    useOneClickTradingSession();
+  const [percentage, setPercentage] = useState(100);
+
+  useEffect(() => {
+    if (!oneClickTradingInfo) return;
+    const updatePercentage = () => {
+      const totalSessionTime = getTotalSessionTime();
+      const timeRemaining = getTimeRemaining();
+
+      const percentage = Math.max((timeRemaining / totalSessionTime) * 100, 0);
+
+      setPercentage(percentage);
+    };
+
+    updatePercentage();
+
+    // Update every 5 seconds
+    const intervalId = setInterval(() => {
+      updatePercentage();
+    }, 5_000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [getTimeRemaining, getTotalSessionTime, oneClickTradingInfo]);
+
+  return (
+    <>
+      <div className="absolute h-full w-full scale-[1.35] transform">
+        <svg className="h-full w-full" viewBox="0 0 100 100">
+          <circle
+            className="origin-[50%_50%] rotate-45 transform transition-[stroke-dashoffset] duration-[0.35s]"
+            strokeWidth="5"
+            strokeLinecap="round"
+            stroke="url(#grad1)"
+            cx="50"
+            cy="50"
+            r="40"
+            fill="transparent"
+            /**
+             * Should be the circumference times the percentage
+             * circumference × ((100 - progress)/100)
+             */
+            strokeDashoffset={`calc(251.2 * ((100 - ${percentage})/100))`}
+            /**
+             * Should be the circumference of the circle
+             * circumference = 2πr = 2 * 3.14 * 40 = 251.2
+             */
+            strokeDasharray="251.2"
+          ></circle>
+
+          <defs>
+            <linearGradient id="grad1" gradientTransform="rotate(90)">
+              <stop offset="0.04%" stopColor={theme.colors.superfluid} />
+              <stop offset="99.5%" stopColor={theme.colors.ammelia["600"]} />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </>
   );
 });
 
