@@ -28,6 +28,7 @@ import { Connector } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import ClientOnly from "~/components/client-only";
+import { SearchBox } from "~/components/input";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
@@ -37,7 +38,7 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import ConnectingWalletState from "~/components/wallet-states/connecting-wallet-state";
 import ErrorWalletState from "~/components/wallet-states/error-wallet-state";
-import { AvailableWallets, CosmosWalletRegistry } from "~/config";
+import { CosmosWalletRegistry } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
   useFeatureFlags,
@@ -54,6 +55,10 @@ import {
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
+import {
+  useSelectableWallets,
+  WagmiWalletConnectType,
+} from "~/modals/wallet-select/use-selectable-wallets";
 import { useStore } from "~/stores";
 
 import QRCodeView from "./qr-code-view";
@@ -125,8 +130,6 @@ type OnConnectWallet = (
         chainId?: EthereumChainIds;
       }
 ) => void;
-
-const WalletConnectType = "walletConnect";
 
 interface WalletSelectModalProps extends ModalBaseProps {
   /**
@@ -374,7 +377,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
     }) => {
       return new Promise<void>((resolve, reject) => {
         // Close modal to show WalletConnect QR code modal
-        if (wallet.type === WalletConnectType) onRequestClose();
+        if (wallet.type === WagmiWalletConnectType) onRequestClose();
         connectEvmWallet(
           { connector: wallet, chainId: chainId },
           {
@@ -451,13 +454,14 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
         )}
       >
         {layout === "list" && (
-          <WalletList
-            onConnect={onConnect}
-            walletRepo={rootWalletRepo}
-            isMobile={isMobile}
-            modalView={modalView}
-            walletOptions={walletOptions}
-          />
+          <>
+            <SimpleWalletList
+              onConnect={onConnect}
+              isMobile={isMobile}
+              walletOptions={walletOptions}
+            />
+            <ModalCloseButton onClick={onClose} />
+          </>
         )}
 
         {layout === "full" && (
@@ -477,7 +481,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
                   "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
                 )}
               >
-                <WalletList
+                <FullWalletList
                   onConnect={onConnect}
                   walletRepo={rootWalletRepo}
                   isMobile={isMobile}
@@ -530,7 +534,96 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
     );
   });
 
-const WalletList: FunctionComponent<{
+const SimpleWalletList: FunctionComponent<{
+  onConnect: OnConnectWallet;
+  isMobile: boolean;
+  walletOptions: WalletSelectOption[];
+}> = observer(({ onConnect, isMobile, walletOptions }) => {
+  const [search, setSearch] = useState("");
+
+  const { t } = useTranslation();
+  const { cosmosWallets, evmWallets } = useSelectableWallets({
+    includedWallets: walletOptions.map((option) => option.walletType),
+    isMobile,
+  });
+
+  const evmOption = useMemo(
+    () =>
+      walletOptions.find(
+        (
+          option
+        ): option is Extract<WalletSelectOption, { walletType: "evm" }> =>
+          option.walletType === "evm"
+      ),
+    [walletOptions]
+  );
+
+  if (cosmosWallets.length > 0) {
+    throw new Error(
+      "Cosmos wallets are not supported in 'simple' view layout yet."
+    );
+  }
+
+  return (
+    <section className="flex flex-col gap-8 py-8 px-3">
+      <h1 className="z-10 self-center text-h6 font-h6 tracking-wider sm:text-center">
+        {t("connectWallet")}
+      </h1>
+
+      <div className="flex w-full flex-col gap-3">
+        <SearchBox
+          className="!w-full"
+          size="medium"
+          placeholder="Search wallets"
+          onInput={(nextValue) => {
+            setSearch(nextValue);
+          }}
+          currentValue={search}
+        />
+
+        <div className="flex flex-col sm:flex-row sm:overflow-x-auto">
+          {evmWallets
+            .filter((wallet) => {
+              if (!search) return true;
+              return wallet.name.toLowerCase().includes(search.toLowerCase());
+            })
+            .map((wallet) => {
+              return (
+                <button
+                  className={classNames(
+                    "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                    "col-span-2 py-3 font-normal",
+                    "sm:w-fit sm:flex-col",
+                    "disabled:opacity-70"
+                  )}
+                  key={wallet.id}
+                  onClick={() =>
+                    onConnect({
+                      walletType: "evm",
+                      wallet,
+                      chainId: evmOption?.chainId,
+                    })
+                  }
+                >
+                  {typeof wallet.icon === "string" && (
+                    <img
+                      src={wallet.icon}
+                      width={40}
+                      height={40}
+                      alt="Wallet logo"
+                    />
+                  )}
+                  <span>{wallet.name}</span>
+                </button>
+              );
+            })}
+        </div>
+      </div>
+    </section>
+  );
+});
+
+const FullWalletList: FunctionComponent<{
   walletRepo: WalletRepo | undefined;
   onConnect: OnConnectWallet;
   isMobile: boolean;
@@ -539,7 +632,10 @@ const WalletList: FunctionComponent<{
 }> = observer(
   ({ walletRepo, onConnect, isMobile, modalView, walletOptions }) => {
     const { t } = useTranslation();
-    const { connectors } = useConnectEvmWallet();
+    const { cosmosWallets, evmWallets } = useSelectableWallets({
+      includedWallets: walletOptions.map((option) => option.walletType),
+      isMobile,
+    });
 
     const evmOption = useMemo(
       () =>
@@ -551,85 +647,6 @@ const WalletList: FunctionComponent<{
         ),
       [walletOptions]
     );
-
-    const evmWallets = useMemo(() => {
-      if (!evmOption) return [];
-
-      return connectors
-        .filter((wallet) => {
-          // Always show WalletConnect
-          if (wallet.type === WalletConnectType) return true;
-          // Only display injected wallets on desktop.
-          return isMobile ? true : wallet.type === "injected";
-        })
-        .map((wallet) => ({
-          ...wallet,
-          icon:
-            wallet.type === WalletConnectType
-              ? "/icons/walletconnect.svg"
-              : wallet.icon,
-          walletType: "evm" as const,
-        }));
-    }, [connectors, evmOption, isMobile]);
-
-    const cosmosWallets = useMemo(() => {
-      if (!walletOptions.some((option) => option.walletType === "cosmos"))
-        return [];
-      return (
-        CosmosWalletRegistry
-          // If mobile, filter out browser wallets
-          .reduce((acc, wallet, _index, array) => {
-            if (isMobile) {
-              /**
-               * If an extension wallet is found in mobile, this means that we are inside an app browser.
-               * Therefore, we should only show that compatible extension wallet.
-               * */
-              if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
-                return acc;
-              }
-
-              const _window = window as Record<string, any>;
-              const mobileWebModeName = "mobile-web";
-
-              /**
-               * If on mobile and `leap` is in `window`, it means that the user enters
-               * the frontend from Leap's app in app browser. So, there is no need
-               * to use wallet connect, as it resembles the extension's usage.
-               */
-              if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
-                return array
-                  .filter((wallet) => wallet.name === AvailableWallets.Leap)
-                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-              }
-
-              /**
-               * If on mobile and `keplr` is in `window`, it means that the user enters
-               * the frontend from Keplr's app in app browser. So, there is no need
-               * to use wallet connect, as it resembles the extension's usage.
-               */
-              if (
-                _window?.keplr &&
-                _window?.keplr?.mode === mobileWebModeName
-              ) {
-                return array
-                  .filter((wallet) => wallet.name === AvailableWallets.Keplr)
-                  .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-              }
-
-              /**
-               * If user is in a normal mobile browser, show only wallet connect
-               */
-              return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
-            }
-
-            return [...acc, wallet];
-          }, [] as (typeof CosmosWalletRegistry)[number][])
-          .map((wallet) => ({
-            ...wallet,
-            walletType: "cosmos" as const,
-          }))
-      );
-    }, [isMobile, walletOptions]);
 
     /**
      * Categorizes wallets into three distinct categories:
@@ -685,6 +702,12 @@ const WalletList: FunctionComponent<{
         ),
       [cosmosWallets, evmWallets]
     );
+
+    if (evmWallets.length > 0) {
+      throw new Error(
+        "Evm wallets are not supported in 'full' view layout yet."
+      );
+    }
 
     return (
       <section className="flex flex-col gap-8 py-8 pl-8 sm:pl-3">

@@ -10,14 +10,10 @@ import {
   polygon,
   sepolia,
 } from "wagmi/chains";
-import {
-  coinbaseWallet,
-  metaMask,
-  safe,
-  walletConnect,
-} from "wagmi/connectors";
+import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 
 import { WALLETCONNECT_PROJECT_KEY } from "~/config/env";
+import { theme } from "~/tailwind.config";
 
 declare module "wagmi" {
   interface Register {
@@ -57,12 +53,21 @@ export const wagmiConfig = createConfig({
       },
       injectProvider: false,
     }),
-    walletConnect({ projectId: WALLETCONNECT_PROJECT_KEY ?? "" }),
+    walletConnect({
+      projectId: WALLETCONNECT_PROJECT_KEY ?? "",
+      qrModalOptions: {
+        themeVariables: {
+          "--wcm-accent-color": theme.colors.wosmongton[300],
+          "--wcm-background-color": theme.colors.osmoverse[700],
+          "--wcm-font-family": "Inter, ui-sans-serif, system-ui",
+          "--wcm-z-index": "9999",
+        },
+      },
+    }),
     coinbaseWallet({
       appLogoUrl: "https://osmosis.zone/favicon.ico",
       appName: "Osmosis",
     }),
-    safe(),
   ],
 });
 
