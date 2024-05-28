@@ -20,7 +20,7 @@ export class LinearChartController extends AreaChartController {
 
     this.tooltip = document.createElement("div");
     this.tooltip.className =
-      "rounded-xl bg-osmoverse-1000 absolute hidden p-3 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
+      "rounded-xl bg-osmoverse-1000 absolute hidden p-2 left-3 top-3 pointer-events-none z-[1000] drop-shadow-xl";
 
     params.container.appendChild(this.tooltip);
 
@@ -62,17 +62,15 @@ export class LinearChartController extends AreaChartController {
           const formatOpts = getPriceExtendedFormatOptions(closeDec);
 
           return `
-            <div class="relative flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
-              <h6 class="text-h6 font-semibold text-white-full">
-                $
-                ${
-                  formatPretty(closeDec, {
-                    maxDecimals,
-                    ...formatOpts,
-                  }) || ""
-                }
-              </h6>
-            </div>
+            <h6 class="text-h6 font-semibold text-white-full whitespace-nowrap">
+              $
+              ${
+                formatPretty(closeDec, {
+                  maxDecimals,
+                  ...formatOpts,
+                }) || ""
+              }
+            </h6>
           `;
         })
         .join("");
