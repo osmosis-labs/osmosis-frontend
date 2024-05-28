@@ -173,7 +173,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         },
       ]);
 
-    if (fromAsset.sourceDenom === transferMethod.counterparty.sourceDenom) {
+    if (fromAsset.address === transferMethod.counterparty.sourceDenom) {
       // transfer from counterparty
       const { channelId, port, sourceDenom } = transferMethod.counterparty;
       return {
