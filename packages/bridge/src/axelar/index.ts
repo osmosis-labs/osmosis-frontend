@@ -105,12 +105,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const queryClient = await this.getQueryClient();
-          const transferFeeRes = await queryClient.getTransferFee(
-            fromChainAxelarId,
-            toChainAxelarId,
-            fromAsset.sourceDenom,
-            amount as any
-          );
+          const [transferFeeRes, gasCost] = await Promise.all([
+            queryClient.getTransferFee(
+              fromChainAxelarId,
+              toChainAxelarId,
+              fromAsset.sourceDenom,
+              amount as any
+            ),
+            this.estimateGasCost(params),
+          ]);
 
           let transferLimitAmount: string | undefined;
           try {
@@ -123,8 +126,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
           } catch (e) {
             console.warn("Failed to get transfer limit. reason: ", e);
           }
-
-          const gasCost = await this.estimateGasCost(params);
 
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
