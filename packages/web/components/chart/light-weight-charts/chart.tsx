@@ -61,12 +61,17 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     touch: false,
     mouse: false,
   },
+  localization: {
+    dateFormat: "MM/dd/yyyy",
+  },
   timeScale: {
     timeVisible: true,
     secondsVisible: false,
     lockVisibleTimeRangeOnResize: true,
     allowBoldLabels: false,
     borderVisible: false,
+    fixLeftEdge: true,
+    fixRightEdge: true,
     tickMarkFormatter: (
       timePoint: Time,
       tickMarkType: TickMarkType,
@@ -81,6 +86,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
 
         case TickMarkType.Month:
           formatOptions.month = "short";
+          formatOptions.year = "numeric";
           break;
 
         case TickMarkType.DayOfMonth:
@@ -89,15 +95,13 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
           break;
 
         case TickMarkType.Time:
-          formatOptions.hour12 = false;
-          formatOptions.hour = "2-digit";
-          formatOptions.minute = "2-digit";
+          formatOptions.hour = "numeric";
+          formatOptions.minute = "numeric";
           break;
 
         case TickMarkType.TimeWithSeconds:
-          formatOptions.hour12 = false;
-          formatOptions.hour = "2-digit";
-          formatOptions.minute = "2-digit";
+          formatOptions.hour = "numeric";
+          formatOptions.minute = "numeric";
           formatOptions.second = "2-digit";
           break;
       }
