@@ -1,6 +1,6 @@
 import { State, WalletStatus } from "@cosmos-kit/core";
 
-import { getModalView } from "../index";
+import { getModalView } from "../utils";
 
 describe("getModalView", () => {
   it('should return "connecting" when walletStatus is Connecting and qrState is Init', () => {
