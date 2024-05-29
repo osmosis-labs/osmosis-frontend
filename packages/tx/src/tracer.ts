@@ -21,8 +21,10 @@ type Listeners = {
 };
 
 /**
- * TxTracer is almost same with the `TendermintTxTracer` in the @keplr-wallet/cosmos library.
- * Changes for some mistake on the original `TendermintTxTracer` and this would be remove if the changes are merged to the original library.
+ * Subscribes to new blocks and transactions by attaching a WebSocket connection to the
+ * chain's RPC endpoint. This allows for real-time updates on the chain's state.
+ *
+ * Create one instance per block or tx suscription.
  */
 export class TxTracer {
   protected ws!: WebSocket;
@@ -215,7 +217,7 @@ export class TxTracer {
 
   /**
    * SubscribeBlock receives the handler for the block.
-   * The handelrs shares the subscription of block.
+   * The handlers shares the subscription of block.
    * @param handler
    * @return unsubscriber
    */
@@ -248,7 +250,7 @@ export class TxTracer {
     }
   }
 
-  // Query the tx and subscribe the tx.
+  /** Query and subscribe to tx with the given event query */
   traceTx(
     query: Uint8Array | Record<string, string | number | boolean>
   ): Promise<any> {

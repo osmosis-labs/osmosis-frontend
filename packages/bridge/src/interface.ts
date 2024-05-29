@@ -269,7 +269,12 @@ export interface TransferStatusReceiver {
 }
 
 /** A simplified transfer status. */
-export type TransferStatus = "success" | "pending" | "failed";
+export type TransferStatus =
+  | "success"
+  | "pending"
+  | "failed"
+  | "refunded"
+  | "connection-error";
 
 /** A simplified reason for transfer failure. */
 export type TransferFailureReason = "insufficientFee";
