@@ -85,7 +85,7 @@ async function generateCosmosKitWalletList() {
       export enum AvailableCosmosWallets {${CosmosKitWalletList.map(
         (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
       ).join(",")}}
-      export const CosmosKitWalletList: Record<AvailableWallets, Wallet> = ${getStringifiedWallet(
+      export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet> = ${getStringifiedWallet(
         registryObject
       )}     
     `;
