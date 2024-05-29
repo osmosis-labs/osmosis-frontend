@@ -24,7 +24,7 @@ type Listeners = {
  * Subscribes to new blocks and transactions by attaching a WebSocket connection to the
  * chain's RPC endpoint. This allows for real-time updates on the chain's state.
  *
- * Create one instance per block or tx suscription.
+ * Create one instance per block or tx subscription.
  */
 export class TxTracer {
   protected ws!: WebSocket;
