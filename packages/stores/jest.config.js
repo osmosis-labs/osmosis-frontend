@@ -24,7 +24,7 @@ module.exports = {
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
-  transformIgnorePatterns: ["node_modules/(?!(@osmosis-labs/tx)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(@osmosis-labs/tx|superjson)/)"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
