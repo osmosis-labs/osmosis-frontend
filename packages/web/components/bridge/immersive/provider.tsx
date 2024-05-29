@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { FunctionComponent, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button } from "~/components/ui/button";
@@ -12,10 +12,10 @@ import { FiatRampKey } from "~/integrations";
 
 import { BridgeFlowProvider } from "../flow";
 
-export const ImmersiveBridgeFlow: FunctionComponent<BridgeFlowProvider> = ({
+export const ImmersiveBridgeFlow = ({
   Provider,
   children,
-}) => {
+}: PropsWithChildren<BridgeFlowProvider>) => {
   // TODO: state will be encapsulated in a state hook
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);

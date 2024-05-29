@@ -566,7 +566,9 @@ const Chart: FunctionComponent<{
 });
 
 const SuperfluidPositionInfo: FunctionComponent<
-  RouterOutputs["local"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
+  NonNullable<
+    RouterOutputs["local"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
+  >
 > = (props) => {
   const {
     validatorName,

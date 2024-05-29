@@ -269,15 +269,16 @@ const Drawer: FunctionComponent<{
   );
 };
 
-const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
+const SuperfluidBreakdownRow = ({
   apr,
   commission,
   delegated,
   undelegating,
   validatorMoniker,
   validatorLogoUrl,
-}) => {
+}: NonNullable<BondDuration["superfluid"]>) => {
   const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">

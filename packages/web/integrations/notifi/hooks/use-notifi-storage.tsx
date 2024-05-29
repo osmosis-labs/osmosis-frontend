@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createContext } from "react";
 import { useContext } from "react";
-import { FC } from "react";
+import { PropsWithChildren } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ type NotifiLocalStorageContext = {
 const notifiLocalStorageContext =
   createContext<NotifiLocalStorageContext | null>(null);
 
-export const NotifiLocalStorageProvider: FC = ({ children }) => {
+export const NotifiLocalStorageProvider = ({ children }: PropsWithChildren) => {
   const {
     chainStore: {
       osmosis: { chainId },
