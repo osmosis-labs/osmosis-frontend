@@ -36,10 +36,10 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
       const isActive = activeTab === tab.value;
       return (
         <button
-          key={tab.value}
+          key={`swap-tab-${tab.value}`}
           onClick={() => setTab(tab.value)}
           className={classNames(
-            "text-subtitle6 flex flex-row items-center justify-center rounded-[16px] border-2 py-[12px] text-center text-sm font-subtitle1 transition-opacity",
+            "text-subtitle6 justify-center rounded-[16px] border-2 py-[12px] text-center font-subtitle1",
             {
               "border-bullish-600 bg-osmoverse-850 text-bullish-300": isActive,
               "border-osmoverse-900 text-osmoverse-400": !isActive,
@@ -52,7 +52,7 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
     });
   }, [setTab, activeTab]);
   return (
-    <div className="grid grid-cols-3 items-center gap-0 rounded-[16px] bg-osmoverse-900 transition-opacity">
+    <div className="grid grid-cols-3 rounded-[16px] bg-osmoverse-900 transition-opacity">
       {Tabs}
     </div>
   );
