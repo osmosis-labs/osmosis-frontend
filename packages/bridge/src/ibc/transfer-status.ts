@@ -117,12 +117,12 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
         );
         timeoutUnsubscriber = unsubscriber;
         promise
-          .then(() => {
+          .then((avgBlockTimeMs) => {
             // Even though the block is reached to the timeout height,
             // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
             // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
-            // To reduce this problem, just wait 10 second more even if the block is reached to the timeout height.
-            setTimeout(() => resolve("timeout"), 10000);
+            // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
+            setTimeout(() => resolve("timeout"), avgBlockTimeMs);
           })
           .catch(reject);
       });
@@ -178,36 +178,40 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     this.pushNewStatus(serializedParamsOrHash, "refunded");
   }
 
-  /** Wraps events coming from a block subscriber in a promise that resolves
-   *  when the timeout height is met (or, if the version has upgraded).
+  /**
+   * Wraps events coming from a block subscriber in a promise that resolves
+   * when the timeout height is met (or, if the version has upgraded).
    *
    * `timeoutHeight` should be formatted as `{chain_version}-{block_height}`
    *
-   *  @returns A promise that resolves when the timeout height is met. An unsubscriber that is required to stop the polling.
+   * @returns A promise that resolves to the average block time if the timeout height is met. Also an unsubscriber that is required to stop the polling when called.
    */
   protected pollTimeoutHeight(
     statusSubscriber: PollingStatusSubscription,
     timeoutHeight: string
   ): {
     unsubscriber: () => void;
-    promise: Promise<void>;
+    promise: Promise<number>;
   } {
     const chainVersion = parseInt(timeoutHeight.split("-")[0]);
     const timeoutBlockHeight = parseInt(timeoutHeight.split("-")[1]);
 
-    let resolver: (value: PromiseLike<void> | void) => void;
-    const promise = new Promise<void>((resolve) => {
+    let resolver: (value: number) => void;
+    const promise = new Promise<number>((resolve) => {
       resolver = resolve;
     });
-    const unsubscriber = statusSubscriber.subscribe((data) => {
+    const unsubscriber = statusSubscriber.subscribe((data, avgBlockTimeMs) => {
       const chainId = data?.result?.node_info?.network;
       if (chainId && ChainIdHelper.parse(chainId).version > chainVersion) {
-        resolver();
+        resolver(avgBlockTimeMs);
         return;
       }
+      // timeout reached
       const blockHeight = data?.result?.sync_info?.latest_block_height;
-      if (blockHeight && parseInt(blockHeight) > timeoutBlockHeight) {
-        resolver();
+      const timeoutReached =
+        blockHeight && parseInt(blockHeight) > timeoutBlockHeight;
+      if (timeoutReached) {
+        resolver(avgBlockTimeMs);
         return;
       }
     });
@@ -222,7 +226,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     if (!this.blockSubscriberMap.has(chainId)) {
       this.blockSubscriberMap.set(
         chainId,
-        new PollingStatusSubscription(chainId, this.chainList)
+        new PollingStatusSubscription(this.getChainRpcUrl(chainId))
       );
     }
 

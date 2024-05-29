@@ -1,6 +1,9 @@
 import { queryRPCStatus, QueryStatusResponse } from "@osmosis-labs/server";
 
-export type StatusHandler = (status: QueryStatusResponse) => void;
+export type StatusHandler = (
+  status: QueryStatusResponse,
+  avgBlockTimeMs: number
+) => void;
 
 /** Polls a `/status` endpoint publishes to an arbitrary set of subscribers. */
 export class PollingStatusSubscription {
@@ -36,8 +39,8 @@ export class PollingStatusSubscription {
     while (this._subscriptionCount > 0) {
       try {
         const status = await queryRPCStatus({ restUrl: this.rpc });
-        const blockTime = await this.getAverageBlockTimeMs(status);
-        this._handlers.forEach((handler) => handler(status));
+        const blockTime = this.calcAverageBlockTimeMs(status);
+        this._handlers.forEach((handler) => handler(status, blockTime));
         await new Promise((resolve) => {
           setTimeout(resolve, blockTime);
         });
@@ -61,45 +64,52 @@ export class PollingStatusSubscription {
   }
 
   /**
-   * Estimate block height by query the average UTC time difference of the lateset blocks in sync info.
+   * Estimate block height by the average UTC time difference of the latest blocks in sync info.
    * The estimate is a rough estimate from the latest and earliest block times in sync info, so it may
    * not be fully up to date if block time changes.
+   *
+   * Returns the default block time if the calculated block time is unexpected or unreasonable.
    */
-  protected async getAverageBlockTimeMs(
-    givenStatus?: QueryStatusResponse
-  ): Promise<number> {
-    const status = givenStatus ?? (await queryRPCStatus({ restUrl: this.rpc }));
-
+  protected calcAverageBlockTimeMs(status: QueryStatusResponse): number {
     if (status.result.sync_info.catching_up) {
       return this.defaultBlockTimeMs;
     }
 
-    const latestBlockHeight = parseInt(
-      status.result.sync_info.latest_block_height
-    );
-    const earliestBlockHeight = parseInt(
-      status.result.sync_info.earliest_block_height
-    );
-    const latestBlockTime = new Date(
-      status.result.sync_info.latest_block_time
-    ).getTime();
-    const earliestBlockTime = new Date(
-      status.result.sync_info.earliest_block_time
-    ).getTime();
+    try {
+      const latestBlockHeight = parseInt(
+        status.result.sync_info.latest_block_height
+      );
+      const earliestBlockHeight = parseInt(
+        status.result.sync_info.earliest_block_height
+      );
 
-    if (latestBlockHeight <= earliestBlockHeight) {
+      if (isNaN(latestBlockHeight) || isNaN(earliestBlockHeight)) {
+        return this.defaultBlockTimeMs;
+      }
+
+      const latestBlockTime = new Date(
+        status.result.sync_info.latest_block_time
+      ).getTime();
+      const earliestBlockTime = new Date(
+        status.result.sync_info.earliest_block_time
+      ).getTime();
+
+      if (latestBlockHeight <= earliestBlockHeight) {
+        return this.defaultBlockTimeMs;
+      }
+
+      const avg = Math.ceil(
+        (latestBlockTime - earliestBlockTime) /
+          (latestBlockHeight - earliestBlockHeight)
+      );
+
+      // validate block time if for some reason a large or small block time is calculated
+      if (avg < 200 || avg > 15_000) {
+        return this.defaultBlockTimeMs;
+      }
+      return avg;
+    } catch {
       return this.defaultBlockTimeMs;
     }
-
-    const avg = Math.ceil(
-      (latestBlockTime - earliestBlockTime) /
-        (latestBlockHeight - earliestBlockHeight)
-    );
-
-    // validate block time if for some reason a large or small block time is calculated
-    if (avg < 200 || avg > 15_000) {
-      return this.defaultBlockTimeMs;
-    }
-    return avg;
   }
 }
