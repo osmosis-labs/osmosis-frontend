@@ -1,14 +1,12 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-
 import { api } from "~/utils/trpc";
 
-export function useCoinPrice(coin?: CoinPretty) {
+export function usePrice(currency?: { coinMinimalDenom: string }) {
   const { data: price, ...otherUtils } = api.edge.assets.getAssetPrice.useQuery(
     {
-      coinMinimalDenom: coin?.currency?.coinMinimalDenom ?? "",
+      coinMinimalDenom: currency?.coinMinimalDenom ?? "",
     },
     {
-      enabled: Boolean(coin?.currency),
+      enabled: Boolean(currency),
       cacheTime: 1000 * 3, // 3 second
       staleTime: 1000 * 3, // 3 second
     }

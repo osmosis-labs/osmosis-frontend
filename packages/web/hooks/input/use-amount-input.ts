@@ -16,7 +16,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
@@ -95,7 +95,12 @@ export function useAmountInput({
       gasAmount?.currency.coinMinimalDenom === currency?.coinMinimalDenom &&
       gasAmount
     ) {
-      maxValue = balance.sub(gasAmount);
+      const valueWithGas = balance.sub(gasAmount);
+      if (valueWithGas.toDec().gte(new Dec(0))) {
+        maxValue = valueWithGas;
+      } else {
+        maxValue = new CoinPretty(currency, 0);
+      }
     }
 
     return maxValue;
@@ -163,20 +168,7 @@ export function useAmountInput({
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  /**
-   * When the `amount` is `undefined` due to the absence of valid input,
-   * we should create a CoinPretty object using the currency. This allows
-   * us to fetch the price before generating a quote, displaying results
-   * faster on slow networks.
-   */
-  let coinForPrice: CoinPretty | undefined;
-  if (!isNil(amount)) {
-    coinForPrice = amount;
-  } else if (!isNil(currency)) {
-    coinForPrice = new CoinPretty(currency, 0);
-  }
-
-  const { price } = useCoinPrice(coinForPrice);
+  const { price } = usePrice(currency);
   const fiatValue = useMemo(
     () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
     [amount, price]

@@ -27,10 +27,10 @@ const lruCache = new LRUCache<string, CacheEntry>({
 
 // TODO: this should be in view layer
 const BridgeLogoUrls: Record<Bridge, string> = {
-  Skip: "/bridge/skip.svg",
-  Squid: "/bridge/squid.svg",
-  Axelar: "/bridge/axelar.svg",
-  IBC: "/bridge/ibc.svg",
+  Skip: "/bridges/skip.svg",
+  Squid: "/bridges/squid.svg",
+  Axelar: "/bridges/axelar.svg",
+  IBC: "/bridges/ibc.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({

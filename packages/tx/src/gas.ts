@@ -2,9 +2,10 @@ import { Dec } from "@keplr-wallet/unit";
 import {
   queryBalances,
   queryBaseAccount,
+  queryFeesBaseDenom,
+  queryFeesBaseGasPrice,
   queryFeeTokens,
   queryFeeTokenSpotPrice,
-  queryGasPrice,
   sendTxSimulate,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
@@ -76,7 +77,7 @@ export async function estimateGasFee({
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
 }): Promise<QuoteStdFee> {
-  const { gasUsed, coinsSpent } = await simulate({
+  const { gasUsed, coinsSpent } = await simulateCosmosTxBody({
     chainId,
     chainList,
     body,
@@ -133,7 +134,7 @@ export type SimBody = Partial<
  *
  * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
  */
-export async function simulate({
+export async function simulateCosmosTxBody({
   chainId,
   chainList,
   body,
@@ -154,7 +155,7 @@ export async function simulate({
 
   // get needed account and message data for a valid tx
   const sequence = await queryBaseAccount({
-    chainId: chain.chain_id,
+    chainId,
     chainList,
     bech32Address,
   }).then(({ account }) => Number(account.sequence));
@@ -191,6 +192,7 @@ export async function simulate({
   try {
     // Try to send simulate query to chain if available
     const simulation = await sendTxSimulate({
+      chainId,
       chainList,
       txBytes: Buffer.from(unsignedTx).toString("base64"),
     });
@@ -282,18 +284,17 @@ export async function getGasFeeAmount({
   // * Account fee token balances
   // * Spent fee tokens
 
-  // availabe chain fee denoms
-  const chainFeeDenoms = await getChainSupportedFeeDenoms({
-    chainId,
-    chainList,
-  });
-
-  // account fee denoms with amounts
-  const { balances } = await queryBalances({
-    bech32Address,
-    chainId,
-    chainList,
-  });
+  const [chainFeeDenoms, { balances }] = await Promise.all([
+    getChainSupportedFeeDenoms({
+      chainId,
+      chainList,
+    }),
+    queryBalances({
+      chainId,
+      chainList,
+      bech32Address,
+    }),
+  ]);
   const feeBalances = balances.filter((balance) =>
     chainFeeDenoms.some((denom) => denom === balance.denom)
   );
@@ -309,11 +310,11 @@ export async function getGasFeeAmount({
     | { denom: string; amount: string; isNeededForTx?: boolean }
     | undefined;
   // loop to find the applicable fee amongst account balances
-  for (const feeTokenBalance of feeBalances) {
+  for (const feeBalance of feeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
-      chainId: chainId,
+      chainId,
       chainList,
-      feeDenom: feeTokenBalance.denom,
+      feeDenom: feeBalance.denom,
       gasMultiplier,
     });
     const feeAmount = feeDenomGasPrice
@@ -321,25 +322,25 @@ export async function getGasFeeAmount({
       .truncate()
       .toString();
 
-    if (new Dec(feeAmount).gt(new Dec(feeTokenBalance.amount))) continue;
+    if (new Dec(feeAmount).gt(new Dec(feeBalance.amount))) continue;
 
     const isLastToken = feeBalances.length === 1;
     const spentAmount =
-      coinsSpent?.find(({ denom }) => denom === feeTokenBalance.denom)
-        ?.amount || "0";
+      coinsSpent?.find(({ denom }) => denom === feeBalance.denom)?.amount ||
+      "0";
     const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
 
-    if (isLastToken && totalSpent.gt(new Dec(feeTokenBalance.amount))) {
+    if (isLastToken && totalSpent.gt(new Dec(feeBalance.amount))) {
       // the coins spent in this transaction exceeds the amount needed for fee
       foundFee = {
         amount: feeAmount,
-        denom: feeTokenBalance.denom,
+        denom: feeBalance.denom,
         isNeededForTx: true,
       };
     } else {
       foundFee = {
         amount: feeAmount,
-        denom: feeTokenBalance.denom,
+        denom: feeBalance.denom,
       };
     }
     break;
@@ -385,18 +386,19 @@ export async function getGasPriceByFeeDenom({
     chain.features?.includes("osmosis-txfees")
   );
 
-  const defaultGasPrice = await getDefaultGasPrice({
-    chainId,
-    chainList,
-    gasMultiplier,
-  });
-
   if (chainHasFeeMarketModule) {
-    const spotPriceDec = await queryFeeTokenSpotPrice({
-      chainId,
-      chainList,
-      denom: feeDenom,
-    }).then(({ spot_price }) => new Dec(spot_price));
+    const [defaultGasPrice, spotPriceDec] = await Promise.all([
+      getDefaultGasPrice({
+        chainId,
+        chainList,
+        gasMultiplier,
+      }),
+      queryFeeTokenSpotPrice({
+        chainId,
+        chainList,
+        denom: feeDenom,
+      }).then(({ spot_price }) => new Dec(spot_price)),
+    ]);
 
     if (spotPriceDec.isZero() || spotPriceDec.isNegative()) {
       throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
@@ -407,7 +409,11 @@ export async function getGasPriceByFeeDenom({
     };
   }
 
-  return defaultGasPrice;
+  return await getDefaultGasPrice({
+    chainId,
+    chainList,
+    gasMultiplier,
+  });
 }
 
 /** Gets gas price from a dynamic fee module in the chain at the given chain ID,
@@ -436,24 +442,39 @@ export async function getDefaultGasPrice({
   const chainHasFeeMarketModule = Boolean(
     chain.features?.includes("osmosis-txfees")
   );
-  const defaultFeeCurrency = chain.fees.fee_tokens[0];
 
-  let gasPrice: number | undefined;
+  let feeDenom: string;
+  let gasPrice: number;
 
   if (chainHasFeeMarketModule) {
-    const baseFee = await queryGasPrice({
-      chainId,
-      chainList,
-    }).then(({ base_fee }) => Number(base_fee));
+    // fee market
+
+    const [baseDenom, baseFeePrice] = await Promise.all([
+      queryFeesBaseDenom({
+        chainId,
+        chainList,
+      }),
+      queryFeesBaseGasPrice({
+        chainId,
+        chainList,
+      }),
+    ]);
+
+    feeDenom = baseDenom.base_denom;
+
+    const baseFee = Number(baseFeePrice.base_fee);
     if (isNaN(baseFee)) throw new Error("Invalid base fee: " + baseFee);
 
     // Add slippage multiplier to account for shifting gas prices in gas market
     gasPrice = baseFee * gasMultiplier;
   } else {
-    gasPrice = defaultFeeCurrency.average_gas_price || defaultGasPrice;
+    // registry
+
+    feeDenom = chain.fees.fee_tokens[0].denom;
+    gasPrice = chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice;
   }
 
-  return { gasPrice: new Dec(gasPrice), feeDenom: defaultFeeCurrency.denom };
+  return { gasPrice: new Dec(gasPrice), feeDenom };
 }
 
 /**

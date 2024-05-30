@@ -1,4 +1,4 @@
-export * from "./coding";
+export * from "./codec";
 export * from "./error";
 export * from "./gas";
 export * from "./poll-status";

@@ -3,9 +3,9 @@ import {
   queryBalances,
   queryBaseAccount,
   queryFeesBaseDenom,
+  queryFeesBaseGasPrice,
   queryFeeTokens,
   queryFeeTokenSpotPrice,
-  queryGasPrice,
   sendTxSimulate,
 } from "@osmosis-labs/server";
 import { ApiClientError } from "@osmosis-labs/utils";
@@ -16,14 +16,18 @@ import {
   getGasFeeAmount,
   getGasPriceByFeeDenom,
   InsufficientFeeError,
-  simulate,
+  simulateCosmosTxBody,
   SimulateNotAvailableError,
 } from "../gas";
 import { MockChains } from "./mock-chains";
 
 jest.mock("@osmosis-labs/server");
 
-describe("simulateMsgs", () => {
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+describe("simulateCosmosTxBody", () => {
   const chainId = "osmosis-1";
   const chainList = [
     { chain_id: chainId, features: ["osmosis-txfees"] },
@@ -33,10 +37,6 @@ describe("simulateMsgs", () => {
   const encodedMessages: Any[] = [];
   const bech32Address = "osmo1address";
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should return gasUsed on successful simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: { sequence: "1" },
@@ -45,19 +45,29 @@ describe("simulateMsgs", () => {
       gas_info: { gas_used: "200000" },
     } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
-    const result = await simulate({
+    const result = await simulateCosmosTxBody({
       chainId,
       chainList,
       body: { messages: encodedMessages },
       bech32Address,
     });
 
+    expect(queryBaseAccount).toBeCalledWith({
+      chainId,
+      chainList,
+      bech32Address,
+    });
+    expect(sendTxSimulate).toBeCalledWith({
+      chainId,
+      chainList,
+      txBytes: expect.any(String),
+    });
     expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
   });
 
   it("should throw an error if chain is not found", async () => {
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId: "unknown-chain",
         chainList,
         body: { messages: encodedMessages },
@@ -72,7 +82,7 @@ describe("simulateMsgs", () => {
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId,
         chainList,
         body: { messages: encodedMessages },
@@ -93,7 +103,7 @@ describe("simulateMsgs", () => {
     );
 
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId,
         chainList,
         body: { messages: encodedMessages },
@@ -111,7 +121,7 @@ describe("simulateMsgs", () => {
     } as Awaited<ReturnType<typeof sendTxSimulate>>);
 
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId,
         chainList,
         body: { messages: encodedMessages },
@@ -132,7 +142,7 @@ describe("simulateMsgs", () => {
     );
 
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId,
         chainList,
         body: { messages: encodedMessages },
@@ -148,7 +158,7 @@ describe("simulateMsgs", () => {
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 
     await expect(
-      simulate({
+      simulateCosmosTxBody({
         chainId,
         chainList,
         body: { messages: encodedMessages },
@@ -187,6 +197,11 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
+    expect(queryBalances).toHaveBeenCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
     expect(gasAmount.amount).toBe(expectedGasAmount.toString());
     expect(gasAmount.denom).toBe("uatom");
   });
@@ -215,9 +230,12 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     // fee tokens from registry are ignored, and queried instead
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
@@ -233,9 +251,6 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryFeeTokens>>);
-    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
-      base_denom: "uosmo",
-    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       pool_id: "1",
       spot_price: spotPrice.toString(),
@@ -259,6 +274,30 @@ describe("getGasFeeAmount", () => {
       .mul(new Dec(gasLimit))
       .truncate()
       .toString();
+
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseGasPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+      denom:
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    });
 
     expect(gasAmount.denom).toBe(
       "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
@@ -290,9 +329,9 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -333,6 +372,30 @@ describe("getGasFeeAmount", () => {
       .truncate()
       .toString();
 
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseGasPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+      denom:
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    });
+
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
   });
@@ -356,9 +419,9 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -396,6 +459,29 @@ describe("getGasFeeAmount", () => {
       .truncate()
       .toString();
 
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseGasPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+      denom: "uion",
+    });
+
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
   });
@@ -419,9 +505,9 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -459,6 +545,29 @@ describe("getGasFeeAmount", () => {
       .truncate()
       .toString();
 
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseGasPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+      denom: "uion",
+    });
+
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
     expect(gasAmount.isNeededForTx).toBe(true);
@@ -481,6 +590,12 @@ describe("getGasFeeAmount", () => {
         bech32Address: address,
       })
     ).rejects.toThrow(InsufficientFeeError);
+
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
   });
 
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — not enough amount", async () => {
@@ -496,6 +611,8 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
+
+    // sanity check to make sure a non fee market chain is not calling fee market queries
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -517,6 +634,16 @@ describe("getGasFeeAmount", () => {
         bech32Address: address,
       })
     ).rejects.toThrow(InsufficientFeeError);
+
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+
+    // sanity check to make sure a non fee market chain is not calling fee market queries
+    expect(queryFeeTokens).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
   it("should throw InsufficientFeeError when no alternative fee tokens are available in user's balance — chain has fee tokens", async () => {
@@ -533,9 +660,9 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -572,9 +699,6 @@ describe("getGasFeeAmount", () => {
     (queryBalances as jest.Mock).mockResolvedValue({
       balances: [],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
-      base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [
         {
@@ -587,6 +711,9 @@ describe("getGasFeeAmount", () => {
     (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
       base_denom: "uosmo",
     } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
 
     await expect(
       getGasFeeAmount({
@@ -600,6 +727,20 @@ describe("getGasFeeAmount", () => {
         "No fee tokens found with sufficient balance on account. Please add funds to continue: osmo1..."
       )
     );
+
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+
+    // would be called but exception is thrown before
+    expect(queryFeesBaseDenom).not.toHaveBeenCalled();
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
   });
 
   it("should throw InsufficientFeeError when no alternative fee tokens are available in user's balance — no chain fee tokens", async () => {
@@ -616,9 +757,9 @@ describe("getGasFeeAmount", () => {
         },
       ],
     } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokens as jest.Mock).mockResolvedValue({
       fee_tokens: [],
     } as Awaited<ReturnType<typeof queryFeeTokens>>);
@@ -650,9 +791,9 @@ describe("getGasPriceByFeeDenom", () => {
     const baseFee = 0.01;
     const spotPrice = 8;
 
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: spotPrice.toString(),
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
@@ -670,6 +811,16 @@ describe("getGasPriceByFeeDenom", () => {
       .mul(new Dec(gasMultiplier));
 
     expect(result.gasPrice.toString()).toBe(expectedGasPrice.toString());
+
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+      denom: feeDenom,
+    });
   });
 
   it("should return the default gas price if fee market module is not available", async () => {
@@ -688,6 +839,9 @@ describe("getGasPriceByFeeDenom", () => {
     });
 
     expect(result.gasPrice.toString()).toBe(defaultGasPrice.toString());
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
   it("should throw an error if chain is not found", async () => {
@@ -699,14 +853,17 @@ describe("getGasPriceByFeeDenom", () => {
         gasMultiplier,
       })
     ).rejects.toThrow("Chain not found: non-existent-chain");
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
   it("should throw an error if spot price is zero or negative", async () => {
     const baseFee = 0.01;
 
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
       spot_price: "0",
     } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
@@ -719,12 +876,22 @@ describe("getGasPriceByFeeDenom", () => {
         gasMultiplier,
       })
     ).rejects.toThrow(`Failed to fetch spot price for fee token ${feeDenom}.`);
+
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
+    expect(queryFeeTokenSpotPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+      denom: feeDenom,
+    });
   });
 
   it("should throw an error if base fee is invalid", async () => {
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: "invalid",
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
 
     await expect(
       getGasPriceByFeeDenom({
@@ -735,6 +902,9 @@ describe("getGasPriceByFeeDenom", () => {
       })
     ).rejects.toThrow("Invalid base fee: NaN");
   });
+
+  expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+  expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
 });
 
 describe("getDefaultGasPrice", () => {
@@ -757,9 +927,12 @@ describe("getDefaultGasPrice", () => {
   it("should return the correct gas price with fee market module", async () => {
     const baseFee = 0.01;
 
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
 
     const gasMultiplier = 1.5;
     const result = await getDefaultGasPrice({
@@ -772,6 +945,15 @@ describe("getDefaultGasPrice", () => {
       new Dec(baseFee * gasMultiplier).toString()
     );
     expect(result.feeDenom).toBe("uosmo");
+
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
   });
 
   it("should return the correct gas price without fee market module", async () => {
@@ -797,6 +979,9 @@ describe("getDefaultGasPrice", () => {
 
     expect(result.gasPrice.toString()).toBe(new Dec(0.025).toString());
     expect(result.feeDenom).toBe("uosmo");
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
   it("should throw an error if chain is not found", async () => {
@@ -806,12 +991,18 @@ describe("getDefaultGasPrice", () => {
         chainList,
       })
     ).rejects.toThrow("Chain not found: non-existent-chain");
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
   it("should throw an error if base fee is invalid", async () => {
-    (queryGasPrice as jest.Mock).mockResolvedValue({
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
       base_fee: "invalid",
-    } as Awaited<ReturnType<typeof queryGasPrice>>);
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
 
     await expect(
       getDefaultGasPrice({
@@ -819,12 +1010,22 @@ describe("getDefaultGasPrice", () => {
         chainList,
       })
     ).rejects.toThrow("Invalid base fee: NaN");
+
+    expect(queryFeesBaseDenom).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
+    expect(queryFeesBaseGasPrice).toHaveBeenCalledWith({
+      chainId,
+      chainList,
+    });
   });
 
   it("should use default gas price if average_gas_price is not defined", async () => {
     const chainListWithoutAverageGasPrice = [
       {
         chain_id: chainId,
+        // no fee market
         features: [],
         fees: {
           fee_tokens: [
@@ -847,5 +1048,8 @@ describe("getDefaultGasPrice", () => {
 
     expect(result.gasPrice.toString()).toBe(new Dec(default_).toString());
     expect(result.feeDenom).toBe("uosmo");
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 });

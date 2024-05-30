@@ -1,7 +1,7 @@
 import { Chain } from "@osmosis-labs/types";
 import { DefaultGasPriceStep } from "@osmosis-labs/utils";
 
-import { queryGasPrice } from "../../osmosis/txfees";
+import { queryFeesBaseGasPrice } from "../../osmosis/txfees";
 
 export async function getFeeTokenGasPriceStep({
   chainId,
@@ -13,7 +13,7 @@ export async function getFeeTokenGasPriceStep({
   const osmosisChainId = chainList[0].chain_id;
 
   if (chainId === osmosisChainId) {
-    const result = await queryGasPrice({
+    const result = await queryFeesBaseGasPrice({
       chainList,
     });
     const osmosisGasPrice = Number(result.base_fee);

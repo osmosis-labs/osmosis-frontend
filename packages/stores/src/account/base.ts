@@ -1296,6 +1296,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       return estimate;
     } catch (e) {
+      console.log({ e });
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{
           code?: number;

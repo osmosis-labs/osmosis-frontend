@@ -58,6 +58,7 @@ export default async function handler(
     });
     return res.status(200).json(gasFee);
   } catch (e) {
+    console.log({ e });
     if (e instanceof SimulateNotAvailableError) {
       return res.status(400).json({ message: e.message });
     }
