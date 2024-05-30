@@ -78,9 +78,9 @@ import { InsufficientBalanceForFeeError } from "../ui-config";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
+  CosmosRegistryWallet,
   DeliverTxResponse,
   OneClickTradingInfo,
-  RegistryWallet,
   SignOptions,
   TxEvent,
   TxEvents,
@@ -360,7 +360,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
-      const walletInfo = wallet.walletInfo as RegistryWallet;
+      const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
@@ -469,7 +469,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // If the wallet isn't found, return the error
     if (!wallet) return new Error(errorMessage);
 
-    const walletInfo = wallet.walletInfo as RegistryWallet;
+    const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
     // If the wallet has a custom error matcher, use it
     if (walletInfo?.matchError) {

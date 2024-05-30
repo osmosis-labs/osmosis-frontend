@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
-  FunctionComponent,
+  PropsWithChildren,
   PropsWithoutRef,
   useCallback,
   useState,
@@ -211,9 +211,10 @@ export const Table = <TCell extends BaseCell>({
 };
 
 /** Wrap non-link non-visual content in a button for accessibility users. */
-const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
+const ClickableContent = ({
   isButton = false,
   children,
-}) => (isButton ? <button>{children}</button> : <>{children}</>);
+}: PropsWithChildren<{ isButton?: boolean }>) =>
+  isButton ? <button>{children}</button> : <>{children}</>;
 
 export * from "./types";

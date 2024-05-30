@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { PropsWithChildren } from "react";
 
 import { ImmersiveBridgeFlow } from "~/components/bridge/immersive";
 import { LegacyBridgeFlow } from "~/components/bridge/legacy";
@@ -23,7 +23,7 @@ const [BridgeInnerProvider, useBridge] = createContext<BridgeContext>();
 export { useBridge };
 
 /** Provides a globally accessible bridge UX that is initiated via the `useBridge` hook. */
-export const BridgeProvider: FunctionComponent = ({ children }) => {
+export const BridgeProvider = ({ children }: PropsWithChildren) => {
   const featureFlags = useFeatureFlags();
 
   if (!featureFlags._isInitialized)
@@ -43,7 +43,7 @@ export const BridgeProvider: FunctionComponent = ({ children }) => {
 };
 
 /** Context that provides no actions or state in bridge context while context is loading. */
-export const LoadingContext: FunctionComponent = ({ children }) => {
+export const LoadingContext = ({ children }: PropsWithChildren) => {
   const warn = (action: string) => () =>
     console.warn("Bridge context not loaded yet.", action);
 

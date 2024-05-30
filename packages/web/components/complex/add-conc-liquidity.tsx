@@ -29,7 +29,7 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config";
+import { EventName } from "~/config/analytics-events";
 import {
   ObservableAddConcentratedLiquidityConfig,
   useAmplitudeAnalytics,

@@ -291,7 +291,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       [bondDurations, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
-      (validatorAddress) => {
+      (validatorAddress: string) => {
         if (!baseEventInfo.isSuperfluidPool || !pool.id) return;
 
         const poolInfo = {

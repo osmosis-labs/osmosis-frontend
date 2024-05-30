@@ -6,6 +6,7 @@ import {
   Fragment,
   FunctionComponent,
   HTMLProps,
+  PropsWithChildren,
   useEffect,
   useMemo,
   useState,
@@ -67,8 +68,8 @@ export const Drawer: FunctionComponent<{
   );
 };
 
-export const DrawerButton: FunctionComponent<{ className?: string }> = (
-  props
+export const DrawerButton = (
+  props: PropsWithChildren<{ className?: string }>
 ) => {
   const { onOpen, isOpen } = useDrawerProps();
   const Component = typeof props.children === "string" ? "button" : "div";
@@ -84,8 +85,8 @@ export const DrawerButton: FunctionComponent<{ className?: string }> = (
 /**
  * Container for the content of the drawer. It's necessary to lock focus in the content.
  */
-export const DrawerContent: FunctionComponent<{ className?: string }> = (
-  props
+export const DrawerContent = (
+  props: PropsWithChildren<{ className?: string }>
 ) => {
   const { isAnimationComplete, isOpen } = useDrawerProps();
 
@@ -122,9 +123,9 @@ export const DrawerOverlay: FunctionComponent<
   );
 };
 
-export const DrawerPanel: FunctionComponent<
-  Parameters<typeof Disclosure.Panel>[0]
-> = (props) => {
+export const DrawerPanel = (
+  props: PropsWithChildren<Parameters<typeof Disclosure.Panel>[0]>
+) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
   return (
     <Transition

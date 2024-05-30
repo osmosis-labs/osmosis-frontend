@@ -16,7 +16,9 @@ import { WalletDisplay, WalletKey } from "~/integrations/wallets";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";
-
+/**
+ * @deprecated
+ */
 export class ObservableWalletConnect implements EthWallet {
   readonly key: WalletKey = "walletconnect";
   readonly mobileEnabled = false;

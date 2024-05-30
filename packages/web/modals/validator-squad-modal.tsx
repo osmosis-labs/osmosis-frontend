@@ -168,7 +168,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const getFormattedMyStake = useCallback(
-        (myStake) =>
+        (myStake: Dec) =>
           new CoinPretty(totalStakePool.currency, myStake)
             .maxDecimals(2)
             .hideDenom(true)

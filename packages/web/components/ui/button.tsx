@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
+import { PropsWithChildren } from "react";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -102,11 +103,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 // TODO - ideally remove this button, rarely used, will need design review
-const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
+const ShowMoreButton = ({
   isOn,
   onToggle,
   className,
-}) => {
+}: PropsWithChildren<ToggleProps & CustomClasses>) => {
   const { t } = useTranslation();
   return (
     <Button
