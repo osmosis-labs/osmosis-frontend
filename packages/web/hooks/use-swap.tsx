@@ -167,10 +167,8 @@ export function useSwap(
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
-    | NoRouteError
-    | NotEnoughLiquidityError
-    | Error
-    | undefined = useMemo(() => {
+    | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
+    | typeof inAmountInput.error = useMemo(() => {
     let error = quoteError;
 
     // only show spot price error if there's no quote
@@ -211,6 +209,7 @@ export function useSwap(
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
+  console.log({ estimateTxError });
   const isLoadingNetworkFee =
     featureFlags.swapToolSimulateFee &&
     isLoadingNetworkFee_ &&
@@ -817,19 +816,22 @@ function useSwapAmountInput({
     return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
   }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
 
-  const notEnoughBalanceForMax = useMemo(() => {
-    return (
+  const notEnoughBalanceForMax = useMemo(
+    () =>
       currentBalanceNetworkFeeError?.message.includes(
         "min out amount or max in amount should be positive"
       ) ||
+      currentBalanceNetworkFeeError?.message.includes(
+        "No fee tokens found with sufficient balance on account"
+      ) ||
       quoteForCurrentBalanceError?.message.includes(
         "Not enough quoted. Try increasing amount."
-      )
-    );
-  }, [
-    currentBalanceNetworkFeeError?.message,
-    quoteForCurrentBalanceError?.message,
-  ]);
+      ),
+    [
+      currentBalanceNetworkFeeError?.message,
+      quoteForCurrentBalanceError?.message,
+    ]
+  );
 
   useEffect(() => {
     if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
