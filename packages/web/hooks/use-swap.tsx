@@ -209,7 +209,6 @@ export function useSwap(
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
-  console.log({ estimateTxError });
   const isLoadingNetworkFee =
     featureFlags.swapToolSimulateFee &&
     isLoadingNetworkFee_ &&
