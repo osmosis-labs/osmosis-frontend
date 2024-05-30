@@ -75,6 +75,10 @@ export abstract class ChartController<T = TimeChartOptions, K = Time> {
   }
 
   remove() {
+    this.api.unsubscribeCrosshairMove((param) => {
+      this.onCrosshairMove?.(param as never);
+      this.events.emit("crosshairMove", param as never);
+    });
     this.api.remove();
     this.events.emit("remove", this.params);
   }
