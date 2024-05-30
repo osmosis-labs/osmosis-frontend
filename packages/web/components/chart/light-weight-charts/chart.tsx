@@ -33,6 +33,38 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
+const timepointToString = (
+  timePoint: Time,
+  formatOptions: Intl.DateTimeFormatOptions,
+  locale?: string
+) => {
+  let date = new Date();
+
+  if (typeof timePoint === "string") {
+    date = new Date(timePoint);
+  } else if (!isBusinessDay(timePoint)) {
+    date = new Date((timePoint as number) * 1000);
+  } else {
+    date = new Date(
+      Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
+    );
+  }
+
+  // from given date we should use only as UTC date or timestamp
+  // but to format as locale date we can convert UTC date to local date
+  const localDateFromUtc = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+    date.getUTCMilliseconds()
+  );
+
+  return localDateFromUtc.toLocaleString(locale, formatOptions);
+};
+
 export const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
     fontFamily: theme.fontFamily.subtitle1.join(","),
@@ -62,7 +94,17 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     mouse: false,
   },
   localization: {
-    dateFormat: "dd MMM, yyyy,",
+    timeFormatter: (timePoint: Time) => {
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      };
+
+      return timepointToString(timePoint, formatOptions, "en-US");
+    },
   },
   timeScale: {
     timeVisible: true,
@@ -72,14 +114,8 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     borderVisible: false,
     fixLeftEdge: true,
     fixRightEdge: true,
-    tickMarkFormatter: (
-      timePoint: Time,
-      tickMarkType: TickMarkType,
-      locale: string
-    ) => {
-      const formatOptions: Intl.DateTimeFormatOptions = {
-        hour12: false,
-      };
+    tickMarkFormatter: (timePoint: Time, tickMarkType: TickMarkType) => {
+      const formatOptions: Intl.DateTimeFormatOptions = {};
 
       switch (tickMarkType) {
         case TickMarkType.Year:
@@ -108,31 +144,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
           break;
       }
 
-      let date = new Date();
-
-      if (typeof timePoint === "string") {
-        date = new Date(timePoint);
-      } else if (!isBusinessDay(timePoint)) {
-        date = new Date((timePoint as number) * 1000);
-      } else {
-        date = new Date(
-          Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
-        );
-      }
-
-      // from given date we should use only as UTC date or timestamp
-      // but to format as locale date we can convert UTC date to local date
-      const localDateFromUtc = new Date(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate(),
-        date.getUTCHours(),
-        date.getUTCMinutes(),
-        date.getUTCSeconds(),
-        date.getUTCMilliseconds()
-      );
-
-      return localDateFromUtc.toLocaleString(locale, formatOptions);
+      return timepointToString(timePoint, formatOptions, "en-US");
     },
   },
   autoSize: true,
