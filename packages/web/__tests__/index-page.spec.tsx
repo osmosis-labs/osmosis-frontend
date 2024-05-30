@@ -118,8 +118,7 @@ it("If the previous trade is not available, swap tool should select default toke
     });
   });
 
-  //TODO: Readd this test
-  // screen.getByRole("heading", { name: "Swap" });
+  screen.getByRole("heading", { name: "Swap" });
 
   screen.getByRole("heading", { name: atomAsset.symbol });
   screen.getByText(atomAsset.rawAsset.name);
