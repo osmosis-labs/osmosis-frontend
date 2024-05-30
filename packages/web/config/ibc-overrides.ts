@@ -720,24 +720,24 @@ const MainnetIBCAdditionalData: Partial<
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
   "solana.USDT.pica": {
-    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
   "edgeSOL.pica": {
-    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
   "LST.pica": {
-    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
   "jitoSOL.pica": {
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
-    withdrawUrlOverride:
-      "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  "wSOL.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
 };
 
