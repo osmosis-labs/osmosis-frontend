@@ -62,7 +62,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     mouse: false,
   },
   localization: {
-    dateFormat: "MM/dd/yyyy",
+    dateFormat: "dd MMM, yyyy,",
   },
   timeScale: {
     timeVisible: true,
@@ -77,7 +77,9 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
       tickMarkType: TickMarkType,
       locale: string
     ) => {
-      const formatOptions: Intl.DateTimeFormatOptions = {};
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        hour12: false,
+      };
 
       switch (tickMarkType) {
         case TickMarkType.Year:
