@@ -16,16 +16,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          bun --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Select Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -57,12 +59,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          bun --cwd packages/web install --frozen-lockfile && bunx playwright install --with-deps chromium
       - name: Run Select Swap Pair tests on Stage
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
