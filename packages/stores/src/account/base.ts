@@ -74,6 +74,7 @@ import { Optional, UnionToIntersection } from "utility-types";
 
 import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
+import { InsufficientBalanceForFeeError } from "../ui-config";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
@@ -1296,7 +1297,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       return estimate;
     } catch (e) {
-      console.log({ e });
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{
           code?: number;
@@ -1310,6 +1310,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
         if (message.includes("invalid empty tx")) {
           throw new SimulateNotAvailableError(message);
+        }
+
+        if (
+          message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new InsufficientBalanceForFeeError(
+            "Insufficient balance for transaction fees. Please add funds to continue."
+          );
         }
 
         // If there is a code, it's a simulate tx error and we should forward its message.

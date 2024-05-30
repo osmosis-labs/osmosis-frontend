@@ -96,7 +96,7 @@ export async function apiClient<T>(
         return data;
       } else {
         throw new ApiClientError({
-          message: getErrorMessage({ message: data?.message }),
+          message: getErrorMessage({ message: data?.message ?? data.error }),
           data,
           response,
         });
