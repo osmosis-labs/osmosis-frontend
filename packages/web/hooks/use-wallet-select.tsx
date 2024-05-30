@@ -6,6 +6,7 @@ import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -42,8 +43,8 @@ export interface WalletSelectParams {
   layout?: "list" | "full";
 }
 
-export const WalletSelectProvider: FunctionComponent = observer(
-  ({ children }) => {
+export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
+  observer(({ children }) => {
     const {
       accountStore,
       chainStore: {
@@ -152,5 +153,4 @@ export const WalletSelectProvider: FunctionComponent = observer(
         {children}
       </WalletSelectInnerProvider>
     );
-  }
-);
+  });
