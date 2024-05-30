@@ -20,6 +20,7 @@ import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
+import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
@@ -29,6 +30,7 @@ import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
 import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
 import { AmplitudeEvent, EventName } from "~/config";
+import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
   useDisclosure,
@@ -39,7 +41,7 @@ import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
 import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
@@ -68,31 +70,33 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <MultiLanguageProvider
-      defaultLanguage={DEFAULT_LANGUAGE}
-      defaultTranslations={{ en }}
-    >
-      <StoreProvider>
-        <WalletSelectProvider>
-          <BridgeProvider>
-            <DefaultSeo />
-            <IbcNotifier />
-            <ToastContainer
-              toastStyle={{
-                backgroundColor: "#2d2755",
-              }}
-              transition={Bounce}
-              newestOnTop
-            />
-            <MainLayoutWrapper>
-              <ErrorBoundary fallback={<ErrorFallback />}>
-                {Component && <Component {...pageProps} />}
-              </ErrorBoundary>
-            </MainLayoutWrapper>
-          </BridgeProvider>
-        </WalletSelectProvider>
-      </StoreProvider>
-    </MultiLanguageProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <MultiLanguageProvider
+        defaultLanguage={DEFAULT_LANGUAGE}
+        defaultTranslations={{ en }}
+      >
+        <StoreProvider>
+          <WalletSelectProvider>
+            <BridgeProvider>
+              <DefaultSeo />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                <ErrorBoundary fallback={<ErrorFallback />}>
+                  {Component && <Component {...pageProps} />}
+                </ErrorBoundary>
+              </MainLayoutWrapper>
+            </BridgeProvider>
+          </WalletSelectProvider>
+        </StoreProvider>
+      </MultiLanguageProvider>
+    </WagmiProvider>
   );
 }
 

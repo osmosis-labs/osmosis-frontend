@@ -13,7 +13,7 @@ import { ReactNode } from "react";
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { MultiLanguageProvider } from "~/hooks/language/context";
 import { AvailableFlags } from "~/hooks/use-feature-flags";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { AppRouter } from "~/server/api/root-router";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";

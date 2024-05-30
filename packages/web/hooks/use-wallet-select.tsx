@@ -2,23 +2,26 @@ import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
 } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
-  PropsWithChildren,
+  FunctionComponent,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
 
-import { WalletRegistry } from "~/config/wallet-registry";
+import { EthereumChainIds } from "~/config/wagmi";
+import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
-  onOpenWalletSelect: (chainName: string) => void;
+  onOpenWalletSelect: (params: WalletSelectParams) => void;
   isOpen: boolean;
   isLoading: boolean;
 }>({
@@ -28,8 +31,20 @@ const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
 
 export { useWalletSelect };
 
-export const WalletSelectProvider = observer(
-  ({ children }: PropsWithChildren) => {
+export type WalletSelectOption =
+  | { walletType: "cosmos"; chainId: string }
+  | { walletType: "evm"; chainId?: EthereumChainIds };
+
+export interface WalletSelectParams {
+  walletOptions: WalletSelectOption[];
+  /**
+   * @default "full"
+   */
+  layout?: "list" | "full";
+}
+
+export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
+  observer(({ children }) => {
     const {
       accountStore,
       chainStore: {
@@ -37,7 +52,8 @@ export const WalletSelectProvider = observer(
       },
     } = useStore();
 
-    const [chainName, setChainName] = useState<string | null>(null);
+    const [walletSelectParams, setWalletSelectParams] =
+      useState<WalletSelectParams | null>(null);
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -81,7 +97,7 @@ export const WalletSelectProvider = observer(
             return;
           }
 
-          const walletInfo = WalletRegistry.find(
+          const walletInfo = CosmosWalletRegistry.find(
             ({ name }) => name === currentWallet
           );
           const WalletClass = await walletInfo?.lazyInstall();
@@ -107,9 +123,9 @@ export const WalletSelectProvider = observer(
       };
     }, [accountStore, setUserAmplitudeProperties]);
 
-    const onOpenWalletSelect = useCallback((chainName: string) => {
+    const onOpenWalletSelect = useCallback((params: WalletSelectParams) => {
       setIsWalletSelectOpen(true);
-      setChainName(chainName);
+      setWalletSelectParams(params);
     }, []);
 
     const context = useMemo(
@@ -119,21 +135,22 @@ export const WalletSelectProvider = observer(
 
     return (
       <WalletSelectInnerProvider value={context}>
-        {Boolean(chainName) && (
-          <WalletSelectModal
-            walletRepo={accountStore.getWalletRepo(chainName!)}
-            onConnect={() => {
-              setUserAmplitudeProperties();
-            }}
-            isOpen={isWalletSelectOpen}
-            onRequestClose={() => {
-              setIsWalletSelectOpen(false);
-              setChainName(null);
-            }}
-          />
-        )}
+        {!isNil(walletSelectParams) &&
+          walletSelectParams.walletOptions.length > 0 && (
+            <WalletSelectModal
+              walletOptions={walletSelectParams.walletOptions}
+              onConnect={() => {
+                setUserAmplitudeProperties();
+              }}
+              isOpen={isWalletSelectOpen}
+              onRequestClose={() => {
+                setIsWalletSelectOpen(false);
+                setWalletSelectParams(null);
+              }}
+              layout={walletSelectParams?.layout}
+            />
+          )}
         {children}
       </WalletSelectInnerProvider>
     );
-  }
-);
+  });
