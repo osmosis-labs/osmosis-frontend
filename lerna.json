@@ -1,9 +1,7 @@
 {
   "version": "5.1.0",
-  "npmClient": "yarn",
-  "packages": [
-    "packages/*"
-  ],
+  "npmClient": "bun",
+  "packages": ["packages/*"],
   "registry": "https://registry.npmjs.org",
   "command": {
     "create": {

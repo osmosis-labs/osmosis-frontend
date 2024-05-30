@@ -215,12 +215,29 @@ export const AllPoolsTable: FunctionComponent<{
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Pool>();
 
-    let allColumns = [
+    let allColumns: any[] = [
       columnHelper.accessor((row) => row, {
         id: "pool",
         header: t("pools.allPools.sort.poolName"),
         cell: PoolCompositionCell,
       }),
+      columnHelper.accessor(
+        (row) => row.totalFiatValueLocked?.toString() ?? "0",
+        {
+          id: "totalFiatValueLocked",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.liquidity")}
+              sortKey="totalFiatValueLocked"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ),
     ];
 
     // Only show volume if more than half of the pools have volume data.
@@ -239,7 +256,7 @@ export const AllPoolsTable: FunctionComponent<{
               setSortKey={setSortKey}
             />
           ),
-        }) as (typeof allColumns)[number]
+        })
       );
     }
 
@@ -260,7 +277,7 @@ export const AllPoolsTable: FunctionComponent<{
             />
           ),
         }
-      ) as (typeof allColumns)[number]
+      )
     );
 
     // Only show fees if more than half of the pools have fees data.
@@ -282,7 +299,7 @@ export const AllPoolsTable: FunctionComponent<{
               />
             ),
           }
-        ) as (typeof allColumns)[number]
+        )
       );
     }
 

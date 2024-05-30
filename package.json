@@ -13,13 +13,13 @@
   },
   "scripts": {
     "dev": "turbo dev --concurrency 12",
-    "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
+    "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- bun dev",
     "start": "turbo start",
-    "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
+    "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- bun start",
     "build": "turbo build",
-    "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
+    "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- bun run build",
     "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/pools --filter @osmosis-labs/stores",
-    "build:clean": "yarn clean && yarn install --frozen-lockfile && yarn build",
+    "build:clean": "bun clean && bun install --frozen-lockfile && bun run build",
     "clean": "turbo clean --parallel; rm -rf node_modules",
     "analyze": "turbo analyze",
     "test": "turbo test",
@@ -28,9 +28,9 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
-    "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores",
-    "postinstall": "yarn lint:workspace"
+    "machine-translate": "inlang machine translate -f --project ./project.inlang && bun lint:fix",
+    "lint:workspace": "bunx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores -r root-package-manager-field",
+    "postinstall": "bun lint:workspace"
   },
   "pre-commit": [
     "pre-commit"
@@ -48,6 +48,7 @@
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
     "@inlang/cli": "^2.11.0",
+    "@octokit/rest": "^20.1.1",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "babel-jest": "^29.7.0",
@@ -68,11 +69,11 @@
     "node-gyp": "^10.1.0",
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.8",
+    "semver": "^7.6.2",
     "ts-jest": "^29.1.2",
     "turbo": "^1.13.3",
     "typescript": "5.4.3"
   },
-  "packageManager": "yarn@1.22.22",
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
@@ -80,6 +81,11 @@
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@chain-registry/types": "^0.18.5"
   }
 }

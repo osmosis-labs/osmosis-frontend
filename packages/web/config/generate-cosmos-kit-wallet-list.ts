@@ -76,6 +76,7 @@ async function generateCosmosKitWalletList() {
    */
   const registryObject = CosmosKitWalletList.reduce((acc, w) => {
     w.logo = ""; // We'll override the logos in wallet-registry.ts
+    // @ts-ignore
     acc[w.name] = w;
     return acc;
   }, {} as Record<string, Wallet>);

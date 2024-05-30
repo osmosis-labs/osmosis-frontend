@@ -1,4 +1,3 @@
-import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
@@ -190,7 +189,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ],
         display: asset.symbol,
       })),
-    })) as CosmologyAssetList[];
+    }));
   }
 
   constructor(

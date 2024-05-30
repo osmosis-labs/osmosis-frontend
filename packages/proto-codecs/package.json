@@ -28,12 +28,12 @@
     "test:regression": "jest --passWithNoTests --runInBand",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "pre-commit": "lint-staged",
-    "prepare": "yarn build",
-    "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
+    "pre-commit": "lint-staged --verbose",
+    "prepare": "bun run build",
+    "generate": "bun generate:proto && bun generate:packages && bun generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
     "generate:packages": "tsx scripts/gen-package-types.ts",
-    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
+    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && tsx scripts/codegen.ts && bun lint:fix"
   },
   "lint-staged": {
     "*": [

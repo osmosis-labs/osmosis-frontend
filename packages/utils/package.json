@@ -11,7 +11,7 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "yarn build"
+    "prepare": "bun run build"
   },
   "dependencies": {
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",

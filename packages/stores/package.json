@@ -29,7 +29,7 @@
     "test:e2e": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --runInBand --globalSetup './src/tests/global-setup.ts' --globalTeardown './src/tests/global-teardown.ts' --testTimeout 100000",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "yarn build",
+    "prepare": "bun run build",
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
@@ -39,7 +39,7 @@
     ]
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.17.0",
+    "@chain-registry/types": "^0.18.5",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
     "chain-registry": "^1.20.0",
