@@ -1,4 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -8,11 +9,7 @@ import { TokenSelect } from "~/components/control";
 import { CustomClasses } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
-import type { SourceChain } from "~/integrations";
-import type {
-  OriginBridgeInfo,
-  SourceChainKey,
-} from "~/integrations/bridge-info";
+import type { OriginBridgeInfo } from "~/integrations/bridge";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -29,7 +26,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     onSelectAsset: (
       denom: string,
       /** `undefined` if IBC asset. */
-      sourceChainKey?: SourceChainKey
+      sourceChainKey?: SourceChain
     ) => void;
   }
 > = observer((props) => {
@@ -150,7 +147,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               {isSourceChainDropdownOpen && (
                 <div
                   style={{ borderTopStyle: "dashed" }}
-                  className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+                  className="absolute -right-[1px] top-[100%] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
                 >
                   {selectedToken.originBridgeInfo.sourceChainTokens
                     .filter(({ id }) => id !== selectedNetwork.id)

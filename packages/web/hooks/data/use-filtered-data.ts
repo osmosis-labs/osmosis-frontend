@@ -1,3 +1,4 @@
+import Fuse from "fuse.js";
 import { useMemo } from "react";
 
 import { DataFilter } from "~/hooks/data/data-filter";
@@ -14,7 +15,7 @@ import { useUserProcessedData } from "~/hooks/data/use-user-processed-data";
  */
 export function useFilteredData<TData>(
   data: TData[],
-  memoedKeys?: string[],
+  memoedKeys?: Fuse.FuseOptionKey<TData>[],
   filter?: DataProcessor<TData[]>,
   initialQuery?: string
 ): [string, (terms: string) => void, TData[]] {

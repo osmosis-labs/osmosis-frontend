@@ -6,6 +6,7 @@ import {
   getNumberMagnitude,
   leadingZerosCount,
   toScientificNotation,
+  trimPlaceholderZeros,
 } from "~/utils/number";
 
 cases(
@@ -215,6 +216,55 @@ cases(
       name: "should return correct count of zeros when input has no leading zeros",
       val: "0.3171758547",
       result: 0,
+    },
+  ]
+);
+
+cases(
+  "trimPlaceholderZeros(value)",
+  (opts) => {
+    expect(trimPlaceholderZeros(opts.val)).toEqual(opts.result);
+  },
+  [
+    {
+      name: "should trim trailing zeros after decimal point",
+      val: "123.45000",
+      result: "123.45",
+    },
+    {
+      name: "should remove decimal point if no digits after trimming",
+      val: "1000.",
+      result: "1000",
+    },
+    {
+      name: "should return original string if no trailing zeros",
+      val: "123.456",
+      result: "123.456",
+    },
+    {
+      name: "should handle negative numbers correctly",
+      val: "-123.45000",
+      result: "-123.45",
+    },
+    {
+      name: "should return original string if no decimal point",
+      val: "12345",
+      result: "12345",
+    },
+    {
+      name: "should handle zero correctly",
+      val: "0.00000",
+      result: "0",
+    },
+    {
+      name: "should handle small numbers correctly",
+      val: "0.00001",
+      result: "0.00001",
+    },
+    {
+      name: "should handle negative small numbers correctly",
+      val: "-0.00001000",
+      result: "-0.00001",
     },
   ]
 );

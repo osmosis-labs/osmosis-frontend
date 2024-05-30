@@ -1,8 +1,6 @@
-import type {
-  FiatRampKey,
-  OriginBridgeInfo,
-} from "../integrations/bridge-info";
-import { AxelarSourceChainTokenConfigs } from "../integrations/bridges/axelar/axelar-source-chain-token-config";
+import { AxelarSourceChainTokenConfigs } from "@osmosis-labs/bridge";
+
+import type { FiatRampKey, OriginBridgeInfo } from "../integrations";
 import { IS_TESTNET } from "./env";
 import type {
   MainnetAssetSymbols,
@@ -28,6 +26,7 @@ type AdditionalData = Partial<
   Record<MainnetAssetSymbols | TestnetAssetSymbols, AdditionalDataValue>
 >;
 
+const environment = IS_TESTNET ? "testnet" : "mainnet";
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
@@ -38,12 +37,12 @@ const TestnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.usdc.ethereum,
-        AxelarSourceChainTokenConfigs.usdc.binance,
-        AxelarSourceChainTokenConfigs.usdc.moonbeam,
-        AxelarSourceChainTokenConfigs.usdc.polygon,
-        AxelarSourceChainTokenConfigs.usdc.avalanche,
-        AxelarSourceChainTokenConfigs.usdc.fantom,
+        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
+        AxelarSourceChainTokenConfigs(environment).usdc.binance,
+        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
+        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
+        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
       ],
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
@@ -54,7 +53,9 @@ const TestnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
+      ],
     },
   },
 };
@@ -82,7 +83,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wbtc.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wbtc.ethereum,
+      ],
     },
   },
   ETH: {
@@ -91,7 +94,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
+      ],
     },
   },
   BNB: {
@@ -100,7 +105,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wbnb.binance],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wbnb.binance,
+      ],
     },
   },
   "wstETH.axl": {
@@ -109,7 +116,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wsteth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wsteth.ethereum,
+      ],
     },
   },
   SOL: {
@@ -117,8 +126,9 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
   },
   DOT: {
-    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
   MATIC: {
     sourceChainNameOverride: "Polygon",
@@ -126,7 +136,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wmatic.polygon],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wmatic.polygon,
+      ],
     },
   },
   SHIB: {
@@ -135,7 +147,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.shib.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).shib.ethereum,
+      ],
     },
   },
   DAI: {
@@ -144,7 +158,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.dai.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).dai.ethereum,
+      ],
     },
   },
   AVAX: {
@@ -153,7 +169,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wavax.avalanche],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wavax.avalanche,
+      ],
     },
   },
   LINK: {
@@ -162,7 +180,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).link.ethereum,
+      ],
     },
   },
   BUSD: {
@@ -171,7 +191,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.busd.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).busd.ethereum,
+      ],
     },
   },
   FIL: {
@@ -180,7 +202,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wfil.filecoin],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wfil.filecoin,
+      ],
     },
   },
   APT: {
@@ -193,7 +217,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.arb.arbitrum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).arb.arbitrum,
+      ],
     },
   },
   MKR: {
@@ -202,7 +228,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.mkr.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).mkr.ethereum,
+      ],
     },
   },
   rETH: {
@@ -211,7 +239,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.reth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).reth.ethereum,
+      ],
     },
   },
   AAVE: {
@@ -220,7 +250,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.aave.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).aave.ethereum,
+      ],
     },
   },
   FRAX: {
@@ -229,7 +261,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).frax.ethereum,
+      ],
     },
   },
   INJ: {
@@ -244,7 +278,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wftm.fantom],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wftm.fantom,
+      ],
     },
   },
   APE: {
@@ -253,7 +289,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.ape.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).ape.ethereum,
+      ],
     },
   },
   SUI: {
@@ -266,7 +304,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.cbeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).cbeth.ethereum,
+      ],
     },
   },
   PEPE: {
@@ -275,7 +315,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.pepe.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).pepe.ethereum,
+      ],
     },
   },
   sfrxETH: {
@@ -284,7 +326,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.sfrxeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).sfrxeth.ethereum,
+      ],
     },
   },
   SEI: {
@@ -294,8 +338,9 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
   },
   KSM: {
-    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
   LUNC: {
     depositUrlOverride: "https://bridge.terra.money",
@@ -307,7 +352,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.usdt.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).usdt.ethereum,
+      ],
     },
   },
   "USDC.axl": {
@@ -317,12 +364,12 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.usdc.ethereum,
-        AxelarSourceChainTokenConfigs.usdc.binance,
-        AxelarSourceChainTokenConfigs.usdc.moonbeam,
-        AxelarSourceChainTokenConfigs.usdc.polygon,
-        AxelarSourceChainTokenConfigs.usdc.avalanche,
-        AxelarSourceChainTokenConfigs.usdc.fantom,
+        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
+        AxelarSourceChainTokenConfigs(environment).usdc.binance,
+        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
+        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
+        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
       ],
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
@@ -333,7 +380,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.polygonusdc.polygon],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).polygonusdc.polygon,
+      ],
     },
   },
   "avalanche.USDC.axl": {
@@ -343,7 +392,7 @@ const MainnetIBCAdditionalData: Partial<
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChainTokens: [
-        AxelarSourceChainTokenConfigs.avalancheusdc.avalanche,
+        AxelarSourceChainTokenConfigs(environment).avalancheusdc.avalanche,
       ],
     },
   },
@@ -353,7 +402,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.dot.moonbeam],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).dot.moonbeam,
+      ],
     },
   },
   GLMR: {
@@ -362,7 +413,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wglmr.moonbeam],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).wglmr.moonbeam,
+      ],
     },
   },
   KUJI: {
@@ -389,7 +442,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.rai.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).rai.ethereum,
+      ],
     },
   },
   SHD: {
@@ -411,8 +466,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=planq_7070-2&chainTo=osmosis-1&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
   },
   PICA: {
-    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   "WBTC.grv": {
     depositUrlOverride:
@@ -518,7 +575,9 @@ const MainnetIBCAdditionalData: Partial<
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.yieldeth.ethereum],
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).yieldeth.ethereum,
+      ],
     },
   },
   XPLA: {
@@ -596,8 +655,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000&token1=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
   },
   TNKR: {
-    depositUrlOverride: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-    withdrawUrlOverride: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+    depositUrlOverride:
+      "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
   SAYVE: {
     depositUrlOverride:
@@ -617,6 +678,46 @@ const MainnetIBCAdditionalData: Partial<
   },
   CROWDP: {
     depositUrlOverride: "https://app.evmos.org/assets",
+  },
+  "ETH.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "DAI.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "FXS.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "FRAX.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "USDT.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "sFRAX.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "frxETH.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+  },
+  "sfrxETH.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+    withdrawUrlOverride:
+      "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
 };
 

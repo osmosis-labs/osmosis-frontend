@@ -10,10 +10,7 @@ yarn-error.log
 src/styles/index.scss
 .vercel
 .turbo
-.repos
 
 lerna-debug.log
 
-packages/web/playwright-report/index.html
-packages/web/playwright-report/data/*
-packages/web/test-results/*
+tsconfig.tsbuildinfo

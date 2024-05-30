@@ -490,6 +490,111 @@
     "discardButton": "Discard changes",
     "clearAllHistory": "Clear all"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1-Click Trading active",
+      "oneClickTradingExpired": "1-Click Trading expired",
+      "oneClickTradingDisabled": "1-Click Trading disabled",
+      "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "networkFeeTooHigh": "Network fee too high",
+      "enableOneClickTrading": "Enable 1-Click Trading",
+      "increaseFeeLimit": "Increase network fee limit",
+      "approveManually": "Approve manually in {walletName}",
+      "continueWithWallet": "Continue with wallet",
+      "sessionEnded": "Session ended on this device",
+      "errorEndingSession": "Error ending session",
+      "pleaseTryAgain": "Unexpected Error. Please try again."
+    },
+    "introduction": {
+      "newFeature": "New Feature",
+      "introducingTitle": "Introducing 1-Click Trading",
+      "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
+      "learnMore": "Learn more",
+      "startTradingButton": "Start 1-Click Trading",
+      "defaultParameters": "1-Click Trading will be active for 1 hour on this device with a $5,000 USD spend limit",
+      "changeButton": "Change"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Trade quicker and easier",
+      "startOneClickTradingNow": "Start 1-Click Trading now",
+      "iconAlt": "1-Click Trading Small Logo"
+    },
+    "floatingBanner": {
+      "newPill": "New",
+      "title": "1-Click Trading",
+      "tradeFasterButton": "Trade Faster"
+    },
+    "settings": {
+      "header": "1-Click Trading",
+      "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
+      "enableTitle": "Enable 1-Click Trading",
+      "spendLimitTitle": "Spend Limit",
+      "networkFeeLimitTitle": "Network fee limit",
+      "sessionPeriodTitle": "Session period",
+      "resetPeriodTitle": "Reset period",
+      "startButton": "Start 1-Click Trading",
+      "editSessionButton": "Save changes",
+      "endingSession": "Ending session",
+      "feeToDisable": "Fee to disable 1-Click Trading:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
+        "fixedAmount": "Fixed amount",
+        "shareOfBalance": "Share of balance",
+        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
+        "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Network fee limit",
+        "description": "Set the maximum amount you can spend on network fees for any single transaction during your 1-Click Trading session.",
+        "info": "If a fee exceeds this amount, you may proceed by manually signing transactions in your wallet.",
+        "low": "Low",
+        "average": "Average",
+        "high": "High",
+        "recommended": "Recommended"
+      },
+      "sessionPeriodScreen": {
+        "title": "Session period",
+        "description": "Set a duration to allow 1-Click Trading on this device.",
+        "periods": {
+          "10min": "10 minutes",
+          "30min": "30 minutes",
+          "1hour": "1 hour",
+          "3hours": "3 hours",
+          "12hours": "12 hours"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Reset period",
+        "description": "Set a duration to reset the spend limit quota.",
+        "periods": {
+          "day": "Day",
+          "week": "Week",
+          "month": "Month",
+          "year": "Year"
+        }
+      },
+      "discardChanges": {
+        "title": "Discard Changes?",
+        "message": "Do you wish to keep your existing 1-Click Trading settings?",
+        "cancelButton": "Cancel",
+        "discardButton": "Discard"
+      }
+    },
+    "welcomeBack": {
+      "title": "Welcome back",
+      "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
+      "toggleLabel": "1-Click Trading",
+      "editParamsAriaLabel": "Change 1CT params"
+    },
+    "connectToContinue": {
+      "altText": "One Click Trading Graphic",
+      "header": "Connect a wallet to continue",
+      "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
+    },
+    "profile": {
+      "sessionExpired": "Session expired"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
     "amountDaysUnbonding": "{numDays} day unbonding",
@@ -606,7 +711,8 @@
     "modalTitle": "Profile",
     "viewAllAssets": "View all assets",
     "wallet": "Wallet",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "oneClickTrading": "1-Click Trading"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
@@ -748,6 +854,13 @@
     "priceImpact": "Price Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
+    "continueAnyway": "Continue Anyway",
+    "warning": {
+      "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
+      "exceedsNetworkFeeLimit": "This swap exceeds your network fee limit for 1-Click Trading.",
+      "increaseSpendLimit": "Increase spend limit",
+      "increaseNetworkFeeLimit": "Increase network fee limit"
+    },
     "settings": {
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
@@ -773,6 +886,12 @@
     "reconnect": "Reconnect",
     "connectingWallet": "Connecting Wallet",
     "approveWalletConnect": "Approve {walletName} connection request on your mobile.",
+    "enablingOneClickTrading": "Enabling 1-Click Trading.",
+    "approveOneClickTradingSession": "Approve 1-Click Trading in {walletName}.",
+    "errorInitializingOneClickTradingSession": "1-Click Trading could not be enabled.",
+    "retryInWalletOrContinue": "Retry in {walletName}, or continue without 1-Click Trading.",
+    "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
+    "retry": "Retry",
     "openExtension": "Open the {walletName} browser extension to connect your wallet.",
     "initializingWallet": "Initializing Wallet Client",
     "clickToRefresh": "Click to refresh.",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "Disclaimer",
+  "remaining": "remaining",
+  "timeUnits": {
+    "second": "second",
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} deposits unstable",
     "titleWithdraw": "{coinDenom} withdrawals unstable",

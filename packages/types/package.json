@@ -15,7 +15,7 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rm -rf node_modules; rm -rf build; rm tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -24,7 +24,9 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "dayjs": "^1.10.7"
   },
   "lint-staged": {
     "*": [

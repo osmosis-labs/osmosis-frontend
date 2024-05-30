@@ -27,6 +27,7 @@ import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
+import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
 import { AmplitudeEvent, EventName } from "~/config";
 import {
   MultiLanguageProvider,
@@ -40,6 +41,7 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
+import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
@@ -80,9 +82,10 @@ function MyApp({ Component, pageProps }: AppProps) {
                 backgroundColor: "#2d2755",
               }}
               transition={Bounce}
+              newestOnTop
             />
             <MainLayoutWrapper>
-              <ErrorBoundary fallback={ErrorFallback}>
+              <ErrorBoundary fallback={<ErrorFallback />}>
                 {Component && <Component {...pageProps} />}
               </ErrorBoundary>
             </MainLayoutWrapper>
@@ -322,6 +325,12 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
+      {flags.oneClickTrading && (
+        <>
+          <OneClickTradingIntroModal />
+          <OneClickFloatingBanner />
+        </>
+      )}
     </MainLayout>
   );
 });

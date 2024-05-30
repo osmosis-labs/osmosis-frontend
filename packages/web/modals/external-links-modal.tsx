@@ -83,7 +83,7 @@ export const ExternalLinkModal: FunctionComponent<
             </a>
           </p>
 
-          <p className="body2 mt-4 mb-6 text-osmoverse-300">
+          <p className="body2 mb-6 mt-4 text-osmoverse-300">
             {t("app.banner.externalLinkDisclaimer")}
           </p>
         </div>

@@ -1,6 +1,8 @@
 import {
+  cmsRouter,
   concentratedLiquidityRouter,
   createTRPCRouter,
+  oneClickTradingRouter,
   swapRouter,
 } from "@osmosis-labs/server";
 
@@ -13,9 +15,10 @@ import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
 export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   concentratedLiquidity: concentratedLiquidityRouter,
+  oneClickTrading: oneClickTradingRouter,
+  cms: cmsRouter,
 });
 
-/** This is the primary lambda router for our server. */
 export const appRouter = createTRPCRouter({
   bridgeTransfer: bridgeTransferRouter,
   edge: edgeRouter,

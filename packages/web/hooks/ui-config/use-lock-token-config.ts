@@ -33,7 +33,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   );
 
   const lockToken = useCallback(
-    (lockDuration) => {
+    (lockDuration: Duration) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
           if (!config.sendCurrency.coinMinimalDenom.startsWith("gamm")) {

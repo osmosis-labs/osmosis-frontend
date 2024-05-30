@@ -82,7 +82,8 @@ export const TransactionDetailsContent = ({
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
-        "sticky top-0 ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
+        // 4.5rem is the height of the navbar
+        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
       })}
     >
@@ -99,7 +100,7 @@ export const TransactionDetailsContent = ({
             />
           </div>
         )}
-        <div className="flex flex-col items-center gap-4 pt-2 pb-6">
+        <div className="flex flex-col items-center gap-4 pb-6 pt-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
             <Icon id="swap" width={24} height={24} aria-label="swap icon" />
           </div>
@@ -185,14 +186,10 @@ export const TransactionDetailsContent = ({
             >
               {t("transactions.executionPrice")} <Icon id="left-right-arrow" />
             </div>
-            {/* // TODO - onClick={toggleConversion} whole container */}
-            <div className="body2 flex items-center gap-3 text-right">
-              <div className="text-wosmongton-300">
-                1 {conversion.denominator.denom} = {conversionRate}{" "}
-                {conversion.numerator.denom}
-              </div>
-              <CopyIconButton valueToCopy={conversionRate} />
-            </div>
+            <CopyIconButton
+              valueToCopy={conversionRate}
+              label={`1 ${conversion.denominator.denom} = ${conversionRate} ${conversion.numerator.denom}`}
+            />
           </div>
           <div className="body2 flex justify-between gap-3 py-3">
             <div>{t("transactions.totalFees")}</div>
@@ -204,12 +201,10 @@ export const TransactionDetailsContent = ({
           </div>
           <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
-            <div className="flex items-center gap-3">
-              <div className="text-wosmongton-300">
-                {getShortAddress(transaction.hash)}
-              </div>
-              <CopyIconButton valueToCopy={transaction.hash} />
-            </div>
+            <CopyIconButton
+              valueToCopy={transaction.hash}
+              label={getShortAddress(transaction.hash)}
+            />
           </div>
         </div>
         <Button
@@ -245,7 +240,7 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction: FormattedTransaction | null;
+  transaction?: FormattedTransaction;
 }) => {
   if (!transaction) return null;
   return (
@@ -268,7 +263,7 @@ export const TransactionDetailsSlideover = ({
 };
 
 export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction: FormattedTransaction | null }
+  ModalBaseProps & { transaction?: FormattedTransaction }
 > = ({ onRequestClose, isOpen, transaction }) => {
   if (!transaction) return null;
   return (

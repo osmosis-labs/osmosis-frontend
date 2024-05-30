@@ -490,6 +490,111 @@
     "discardButton": "Отменить изменения",
     "clearAllHistory": "Очистить все"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Торговля в 1 клик активна",
+      "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
+      "oneClickTradingDisabled": "Торговля в 1 клик отключена",
+      "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
+      "networkFeeTooHigh": "Плата за сеть слишком высока",
+      "enableOneClickTrading": "Включить торговлю в 1 клик",
+      "increaseFeeLimit": "Увеличить лимит комиссии сети",
+      "approveManually": "Утвердить вручную в {walletName}",
+      "continueWithWallet": "Продолжить с кошельком",
+      "sessionEnded": "Сеанс завершен на этом устройстве",
+      "errorEndingSession": "Ошибка завершения сеанса",
+      "pleaseTryAgain": "Неожиданная ошибка. Пожалуйста, попробуйте еще раз."
+    },
+    "introduction": {
+      "newFeature": "Новая особенность",
+      "introducingTitle": "Представляем торговлю в 1 клик",
+      "introducingSubtitle": "Совершайте сделки быстрее и проще без хлопот, требующих одобрения нескольких кошельков.",
+      "learnMore": "Узнать больше",
+      "startTradingButton": "Начать торговлю в 1 клик",
+      "defaultParameters": "На этом устройстве функция «1-Click Trading» будет активна в течение 1 часа с лимитом расходов в 5,000 долларов США.",
+      "changeButton": "Изменять"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Торгуйте быстрее и проще",
+      "startOneClickTradingNow": "Начните торговлю в 1 клик прямо сейчас",
+      "iconAlt": "Маленький логотип «1-Click Trading»"
+    },
+    "floatingBanner": {
+      "newPill": "Новый",
+      "title": "Торговля в 1 клик",
+      "tradeFasterButton": "Торгуйте быстрее"
+    },
+    "settings": {
+      "header": "Торговля в 1 клик",
+      "description": "1-Click Trading позволяет вам безопасно торговать на этом устройстве без необходимости подписывать каждую транзакцию в своем кошельке.",
+      "enableTitle": "Включить торговлю в 1 клик",
+      "spendLimitTitle": "Лимит расходов",
+      "networkFeeLimitTitle": "Лимит сетевой комиссии",
+      "sessionPeriodTitle": "Период сессии",
+      "resetPeriodTitle": "Период сброса",
+      "startButton": "Начать торговлю в 1 клик",
+      "editSessionButton": "Сохранить изменения",
+      "endingSession": "Завершение сеанса",
+      "feeToDisable": "Комиссия за отключение торговли в 1 клик:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Установите максимальную сумму, которую вы можете потратить в течение периода торговой сессии в 1 клик.",
+        "fixedAmount": "Фиксированное количество",
+        "shareOfBalance": "Доля баланса",
+        "shareOfBalanceDescription": "{shareOfBalance} вашего общего баланса на Osmosis в настоящее время составляет",
+        "fluctuationNotice": "Имейте в виду, что стоимость вашего лимита расходов в долларах США основана на стоимости ваших активов, которая может колебаться."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Лимит сетевой комиссии",
+        "description": "Установите максимальную сумму, которую вы можете потратить на сетевые комиссии за любую отдельную транзакцию во время торговой сессии в 1 клик.",
+        "info": "Если комиссия превышает эту сумму, вы можете продолжить, вручную подписывая транзакции в своем кошельке.",
+        "low": "Низкий",
+        "average": "Средний",
+        "high": "Высокий",
+        "recommended": "рекомендуемые"
+      },
+      "sessionPeriodScreen": {
+        "title": "Период сессии",
+        "description": "Установите продолжительность, чтобы разрешить торговлю в один клик на этом устройстве.",
+        "periods": {
+          "10min": "10 минут",
+          "30min": "30 минут",
+          "1hour": "1 час",
+          "3hours": "3 часа",
+          "12hours": "12 часов"
+        }
+      },
+      "resetPeriodScreen": {
+        "title": "Период сброса",
+        "description": "Установите продолжительность сброса квоты лимита расходов.",
+        "periods": {
+          "day": "День",
+          "week": "Неделя",
+          "month": "Месяц",
+          "year": "Год"
+        }
+      },
+      "discardChanges": {
+        "title": "Отменить изменения?",
+        "message": "Хотите ли вы сохранить существующие настройки торговли в 1 клик?",
+        "cancelButton": "Отмена",
+        "discardButton": "Отказаться"
+      }
+    },
+    "welcomeBack": {
+      "title": "Добро пожаловать",
+      "description": "Как только вы подключите свой кошелек, вам будет предложено утвердить транзакцию, чтобы начать сеанс торговли в 1 клик.",
+      "toggleLabel": "Торговля в 1 клик",
+      "editParamsAriaLabel": "Изменить параметры 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Графика торговли в один клик",
+      "header": "Подключите кошелек, чтобы продолжить",
+      "description": "Ваша сессия торговли в 1 клик начнется, когда вы одобрите транзакцию в выбранном вами кошельке."
+    },
+    "profile": {
+      "sessionExpired": "Срок сеанса истек"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Объем торгов за 24 часа",
     "amountDaysUnbonding": "{numDays} день отсоединения",
@@ -606,7 +711,8 @@
     "modalTitle": "Профиль",
     "viewAllAssets": "Посмотреть все активы",
     "wallet": "Кошелек",
-    "transactions": "Транзакции"
+    "transactions": "Транзакции",
+    "oneClickTrading": "Торговля в 1 клик"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} общие ресурсы",
@@ -748,6 +854,13 @@
     "priceImpact": "Влияние на цену",
     "routerTooltipFee": "Платеж",
     "routerTooltipSpreadFactor": "Фактор распространения",
+    "continueAnyway": "Продолжай в любом случае",
+    "warning": {
+      "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",
+      "exceedsNetworkFeeLimit": "Этот своп превышает лимит комиссии вашей сети для торговли в один клик.",
+      "increaseSpendLimit": "Увеличить лимит расходов",
+      "increaseNetworkFeeLimit": "Увеличить лимит комиссии сети"
+    },
     "settings": {
       "slippage": "Допуск проскальзывания",
       "slippageInfo": "Ваша транзакция будет отменена, если цена изменится в неблагоприятную сторону более чем на этот процент.",
@@ -773,6 +886,12 @@
     "reconnect": "Восстановить соединение",
     "connectingWallet": "Подключение кошелька",
     "approveWalletConnect": "Одобрите запрос на подключение {walletName} на своем мобильном телефоне.",
+    "enablingOneClickTrading": "Включение торговли в 1 клик.",
+    "approveOneClickTradingSession": "Одобрить торговлю в один клик в {walletName} .",
+    "errorInitializingOneClickTradingSession": "Невозможно включить торговлю в 1 клик.",
+    "retryInWalletOrContinue": "Повторите попытку через {walletName} или продолжите без торговли в один клик.",
+    "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
+    "retry": "Повторить попытку",
     "openExtension": "Откройте расширение браузера {walletName} , чтобы подключить свой кошелек.",
     "initializingWallet": "Инициализация клиента кошелька",
     "clickToRefresh": "Нажмите, чтобы обновить.",
@@ -962,6 +1081,15 @@
     }
   },
   "disclaimer": "Отказ от ответственности",
+  "remaining": "оставшийся",
+  "timeUnits": {
+    "second": "второй",
+    "seconds": "секунды",
+    "minute": "минута",
+    "minutes": "минуты",
+    "hour": "час",
+    "hours": "часы"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} депозиты нестабильны",
     "titleWithdraw": "{coinDenom} вывод средств нестабильен",

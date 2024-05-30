@@ -291,7 +291,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       [bondDurations, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
-      (validatorAddress) => {
+      (validatorAddress: string) => {
         if (!baseEventInfo.isSuperfluidPool || !pool.id) return;
 
         const poolInfo = {
@@ -584,7 +584,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
               </div>
 
               <div className="flex flex-1 gap-4 1.5md:flex-col">
-                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pt-2 pb-4">
+                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pb-4 pt-2">
                   <PriceBreakdownChart
                     prices={[
                       {

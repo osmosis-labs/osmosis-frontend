@@ -1,3 +1,4 @@
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -20,7 +21,6 @@ import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
-import { SourceChain } from "~/integrations/bridge-info";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
@@ -135,8 +135,8 @@ const NomicTransfer: FunctionComponent<
 
             displayToast(
               {
-                message: "Unknown Error",
-                caption: res.reason,
+                titleTranslationKey: "Unknown Error",
+                captionTranslationKey: res.reason,
               },
               ToastType.ERROR
             );
@@ -173,8 +173,8 @@ const NomicTransfer: FunctionComponent<
       if (!osmosisAccount || !osmosisAccount.address) {
         displayToast(
           {
-            message: "Osmosis Account Error",
-            caption: "Osmosis account not found",
+            titleTranslationKey: "Osmosis Account Error",
+            captionTranslationKey: "Osmosis account not found",
           },
           ToastType.ERROR
         );
@@ -189,8 +189,8 @@ const NomicTransfer: FunctionComponent<
       ) {
         displayToast(
           {
-            message: "Invalid Withdraw Address",
-            caption: "Please enter a valid Bitcoin address",
+            titleTranslationKey: "Invalid Withdraw Address",
+            captionTranslationKey: "Please enter a valid Bitcoin address",
           },
           ToastType.ERROR
         );
@@ -200,8 +200,8 @@ const NomicTransfer: FunctionComponent<
       if (Number(withdrawAmount) < MIN_WITHDRAW_AMOUNT / 1e8) {
         displayToast(
           {
-            message: "Invalid Withdraw Amount",
-            caption: "Minimum withdraw amount is 0.00001 nBTC",
+            titleTranslationKey: "Invalid Withdraw Amount",
+            captionTranslationKey: "Minimum withdraw amount is 0.00001 nBTC",
           },
           ToastType.ERROR
         );

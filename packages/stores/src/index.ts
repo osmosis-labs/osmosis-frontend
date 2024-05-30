@@ -4,6 +4,7 @@ export * from "./chain";
 export * from "./currency-registrar";
 export * from "./derived-data";
 export * from "./ibc-history";
+export * from "./kv-store";
 export * from "./price";
 export * from "./queries";
 export * from "./queries-external";

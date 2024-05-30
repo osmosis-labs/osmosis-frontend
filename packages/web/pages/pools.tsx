@@ -236,7 +236,7 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-8 pb-10 md:pt-4 md:pb-5" ref={poolsOverviewRef}>
+      <section className="pb-10 pt-8 md:pb-5 md:pt-4" ref={poolsOverviewRef}>
         <PoolsOverview
           className="mx-auto"
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
@@ -248,12 +248,10 @@ const Pools: NextPage = observer(function () {
           <MyPositionsSection />
         </section>
       )}
-
       <section className="pb-[3.75rem]" ref={myPoolsRef}>
         <h5 className="md:px-3">{t("pools.myPools")}</h5>
         <MyPoolsCardsGrid />
       </section>
-
       <section>
         <AllPoolsTable
           topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
