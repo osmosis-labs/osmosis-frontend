@@ -5,32 +5,42 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { ReactNode, useMemo } from "react";
 import {
+  Fragment,
   FunctionComponent,
-  ReactNode,
+  MouseEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
+import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
-import { Tooltip } from "~/components/tooltip";
+import {
+  SwapToolTab,
+  SwapToolTabs,
+} from "~/components/swap-tool/swap-tool-tabs";
+import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
-  useAmplitudeAnalytics,
-  useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
-  useSlippageConfig,
   useTranslation,
+} from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useSlippageConfig,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
@@ -38,8 +48,6 @@ import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-
-import { SwapToolTab, SwapToolTabs } from "./swap-tool-tabs";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -297,12 +305,170 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
-    const [activeTab, setActiveTab] = useState(SwapToolTab.BUY);
+    const [activeTab, setActiveTab] = useState<SwapToolTab>(SwapToolTab.BUY);
 
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
-          <SwapToolTabs setTab={setActiveTab} activeTab={activeTab} />
+          <SwapToolTabs activeTab={activeTab} setTab={setActiveTab} />
+          <Popover>
+            {({ open, close }) => (
+              <>
+                <Popover.Overlay className="absolute inset-0 z-40 !rounded-3xl bg-osmoverse-1000/80" />
+                <div className="relative flex w-full items-center justify-end">
+                  <h6 className="w-full text-center">{t("swap.title")}</h6>
+                  <Popover.Button as={Fragment}>
+                    <IconButton
+                      aria-label="Open swap settings"
+                      className="absolute right-3 top-0 z-40 w-fit py-0"
+                      size="unstyled"
+                      mode="unstyled"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        closeTokenSelectDropdowns();
+                      }}
+                      icon={
+                        <Icon
+                          id="setting"
+                          width={isMobile ? 20 : 28}
+                          height={isMobile ? 20 : 28}
+                          className={
+                            open
+                              ? "text-white"
+                              : "text-osmoverse-400 hover:text-white-full"
+                          }
+                        />
+                      }
+                    />
+                  </Popover.Button>
+
+                  <Popover.Panel
+                    className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] shadow-md md:p-5"
+                    onClick={(e: MouseEvent) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h6>{t("swap.settings.title")}</h6>
+                      <IconButton
+                        aria-label="Close"
+                        mode="unstyled"
+                        size="unstyled"
+                        className="w-fit"
+                        icon={
+                          <Icon
+                            id="close"
+                            width={32}
+                            height={32}
+                            className="text-osmoverse-400"
+                          />
+                        }
+                        onClick={() => close()}
+                      />
+                    </div>
+                    <div className="mt-2.5 flex items-center">
+                      <div className="subtitle1 mr-2 text-osmoverse-200">
+                        {t("swap.settings.slippage")}
+                      </div>
+                      <InfoTooltip content={t("swap.settings.slippageInfo")} />
+                    </div>
+
+                    <ul className="mt-3 flex w-full gap-x-3">
+                      {slippageConfig.selectableSlippages.map((slippage) => {
+                        return (
+                          <li
+                            key={slippage.index}
+                            className={classNames(
+                              "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
+                              {
+                                "border-2 border-wosmongton-200":
+                                  slippage.selected,
+                              }
+                            )}
+                            onClick={(e) => {
+                              e.preventDefault();
+
+                              slippageConfig.select(slippage.index);
+
+                              logEvent([
+                                EventName.Swap.slippageToleranceSet,
+                                {
+                                  percentage:
+                                    slippageConfig.slippage.toString(),
+                                  page,
+                                },
+                              ]);
+                            }}
+                          >
+                            <button>{slippage.slippage.toString()}</button>
+                          </li>
+                        );
+                      })}
+                      <li
+                        className={classNames(
+                          "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg",
+                          slippageConfig.isManualSlippage
+                            ? "border-2 border-wosmongton-200 text-white-high"
+                            : "text-osmoverse-500",
+                          slippageConfig.isManualSlippage
+                            ? slippageConfig.manualSlippageError
+                              ? "bg-missionError"
+                              : "bg-osmoverse-900"
+                            : "bg-osmoverse-900"
+                        )}
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          if (manualSlippageInputRef.current) {
+                            manualSlippageInputRef.current.focus();
+                          }
+                        }}
+                      >
+                        <InputBox
+                          type="number"
+                          className="w-fit bg-transparent px-0"
+                          inputClassName={`bg-transparent text-center ${
+                            !slippageConfig.isManualSlippage
+                              ? "text-osmoverse-500"
+                              : "text-white-high"
+                          }`}
+                          style="no-border"
+                          currentValue={slippageConfig.manualSlippageStr}
+                          onInput={(value) => {
+                            slippageConfig.setManualSlippage(value);
+
+                            logEvent([
+                              EventName.Swap.slippageToleranceSet,
+                              {
+                                fromToken: swapState.fromAsset?.coinDenom,
+                                toToken: swapState.toAsset?.coinDenom,
+                                isOnHome: page === "Swap Page",
+                                percentage: slippageConfig.slippage.toString(),
+                                page,
+                              },
+                            ]);
+                          }}
+                          onFocus={() =>
+                            slippageConfig.setIsManualSlippage(true)
+                          }
+                          inputRef={manualSlippageInputRef}
+                          isAutosize
+                          autoFocus={slippageConfig.isManualSlippage}
+                        />
+                        <span
+                          className={classNames("shrink-0", {
+                            "text-osmoverse-500":
+                              !slippageConfig.isManualSlippage,
+                          })}
+                        >
+                          %
+                        </span>
+                      </li>
+                    </ul>
+                  </Popover.Panel>
+                </div>
+              </>
+            )}
+          </Popover>
+
           <div className="flex flex-col gap-3">
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
               <div className="flex place-content-between items-center transition-opacity">
