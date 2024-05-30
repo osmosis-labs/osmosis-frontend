@@ -240,8 +240,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.isLoadingNetworkFee;
 
     let buttonText: string;
-    if (swapState.error) {
-      buttonText = t(...tError(swapState.error));
+    if (swapState.error || swapState.estimateTxError) {
+      buttonText = t(
+        ...tError(swapState?.error ?? swapState.estimateTxError ?? undefined)
+      );
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
     } else if (

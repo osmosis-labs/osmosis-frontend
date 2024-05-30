@@ -6,6 +6,7 @@ import {
   AccountStoreWallet,
   CosmosAccount,
   CosmwasmAccount,
+  InsufficientBalanceForFeeError,
   OsmosisAccount,
   SignOptions,
 } from "@osmosis-labs/stores";
@@ -14,6 +15,7 @@ import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
+import { useMemo } from "react";
 
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -115,7 +117,19 @@ export function useEstimateTxFees({
       typeof wallet?.address === "string",
   });
 
-  return queryResult;
+  const specificError = useMemo(() => {
+    if (
+      queryResult.error instanceof Error &&
+      queryResult.error.message.includes(
+        "No fee tokens found with sufficient balance on account"
+      )
+    ) {
+      return new InsufficientBalanceForFeeError(queryResult.error.message);
+    }
+    return queryResult.error;
+  }, [queryResult.error]);
+
+  return { ...queryResult, error: specificError };
 }
 
 const getAssetCache = new LRUCache<string, CacheEntry>({ max: 50 });
