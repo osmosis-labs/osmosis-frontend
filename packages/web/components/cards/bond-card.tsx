@@ -100,7 +100,7 @@ export const BondCard: FunctionComponent<
 
         {userUnlockingShares && (
           <div className="flex w-fit flex-wrap items-center gap-1 rounded-lg bg-osmoverse-900 p-3 md:p-1.5">
-            <span className="text-subtitle1 font-subtitle1">
+            <span className="font-subtitle1 text-subtitle1">
               ~
               {t("pool.sharesAmount", {
                 shares: userUnlockingShares.shares
@@ -110,7 +110,7 @@ export const BondCard: FunctionComponent<
                   .toString(),
               })}
             </span>
-            <span className="flex items-center gap-1 text-subtitle1 font-subtitle1 text-osmoverse-400">
+            <span className="flex items-center gap-1 font-subtitle1 text-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
                   {t("pool.sharesAvailableIn")}
@@ -421,7 +421,7 @@ const UnbondButton: FunctionComponent<
           15, // gap
       }}
     >
-      <div className="flex transform items-center gap-[10px] self-start px-[12px] py-1.5 text-base font-button text-wosmongton-200 duration-300 ease-inOutBack group-hover:-translate-x-[30px] group-hover:text-rust-300">
+      <div className="flex transform items-center gap-[10px] self-start px-[12px] py-1.5 font-button text-base text-wosmongton-200 duration-300 ease-inOutBack group-hover:-translate-x-[30px] group-hover:text-rust-300">
         <span
           ref={leftContentRef}
           className="flex flex-shrink-0 items-center gap-[10px]"

@@ -176,7 +176,7 @@ export const AssetCategoriesSelectors: FunctionComponent<{
               key={category}
               aria-label={category.replace("_", " ").replace("-", " ")}
               className={classNames(
-                "group flex max-w-full shrink-0 items-center gap-3 rounded-full border py-4 px-6 text-osmoverse-200 transition-all duration-150 md:gap-2",
+                "group flex max-w-full shrink-0 items-center gap-3 rounded-full border px-6 py-4 text-osmoverse-200 transition-all duration-150 md:gap-2",
                 "hover:border-osmoverse-200 hover:text-white-high",
                 "focus:border-wosmongton-400 focus:text-osmoverse-200",
                 "active:opacity-50",

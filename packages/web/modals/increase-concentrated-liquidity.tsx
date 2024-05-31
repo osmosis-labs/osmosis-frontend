@@ -104,13 +104,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     >
       <div className="flex flex-col gap-3 pt-8">
         <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+          <div className="pl-4 font-subtitle1 text-subtitle1 xs:pl-0">
             {t("clPositions.yourPosition")}
           </div>
           <MyPositionStatus className="xs:px-0" status={status} negative />
         </div>
         <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
-          <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
+          <div className="flex items-center gap-2 font-subtitle1 text-subtitle1 xs:text-body2">
             {baseCoin.currency.coinImageUrl && (
               <Image
                 alt="base currency"
@@ -121,7 +121,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             )}
             <span>{formatPretty(baseCoin, { maxDecimals: 2 })}</span>
           </div>
-          <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
+          <div className="flex items-center gap-2 font-subtitle1 text-subtitle1 xs:text-body2">
             {quoteCoin.currency.coinImageUrl && (
               <Image
                 alt="base currency"
@@ -135,10 +135,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 pl-4 xs:pl-1">
-            <div className="text-subtitle1 font-subtitle1">
+            <div className="font-subtitle1 text-subtitle1">
               {t("clPositions.selectedRange")}
             </div>
-            <div className="text-subtitle1 font-subtitle1 text-osmoverse-300 xs:text-body2">
+            <div className="font-subtitle1 text-subtitle1 text-osmoverse-300 xs:text-body2">
               {t("addConcentratedLiquidity.basePerQuote", {
                 base: baseCoin.denom,
                 quote: quoteCoin.denom,
@@ -221,7 +221,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-1">
+        <div className="pl-4 font-subtitle1 text-subtitle1 xs:pl-1">
           {t("clPositions.addMoreLiquidity")}
         </div>
         <div className="flex flex-col gap-1">
@@ -272,7 +272,7 @@ const PriceBox: FunctionComponent<{
   infinity?: boolean;
 }> = ({ label, currentValue, infinity }) => (
   <div className="flex max-w-[6.25rem] flex-col gap-1">
-    <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
+    <span className="pt-2 font-body2 text-body2 text-osmoverse-300">
       {label}
     </span>
     {infinity ? (
@@ -285,7 +285,7 @@ const PriceBox: FunctionComponent<{
         />
       </div>
     ) : (
-      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
+      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent font-subtitle1 text-subtitle1 leading-tight">
         {currentValue}
       </h6>
     )}

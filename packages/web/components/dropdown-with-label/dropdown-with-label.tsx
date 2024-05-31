@@ -63,7 +63,7 @@ export const DropdownWithLabel = <T,>({
                 <Listbox.Option
                   className={({ active }) =>
                     classNames(
-                      "relative inline-flex cursor-default select-none items-center gap-3 py-2 px-4",
+                      "relative inline-flex cursor-default select-none items-center gap-3 px-4 py-2",
                       {
                         "bg-osmoverse-825": active,
                       }

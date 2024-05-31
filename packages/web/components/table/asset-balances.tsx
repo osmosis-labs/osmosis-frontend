@@ -164,7 +164,7 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "balance",
         header: () => (
           <SortHeader
-            className="mr-auto ml-0"
+            className="ml-0 mr-auto"
             label={t("assets.table.balance")}
             sortKey="usdValue"
             currentSortKey={sortKey}
@@ -179,7 +179,7 @@ export const AssetBalancesTable: FunctionComponent<{
         id: "price",
         header: () => (
           <SortHeader
-            className="mr-auto ml-0"
+            className="ml-0 mr-auto"
             label={t("assets.table.price")}
             sortKey="priceChange24h"
             currentSortKey={sortKey}

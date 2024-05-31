@@ -101,7 +101,7 @@ export const EarnAllocation = () => {
         </div>
         <small
           className={classNames(
-            "absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 transition-opacity duration-200 ease-in-out",
+            "absolute bottom-0 inline-flex w-full justify-center self-center font-subtitle2 text-overline font-medium tracking-normal text-osmoverse-300 transition-opacity duration-200 ease-in-out",
             { "opacity-0": y > 10 },
             { "opacity-50": y < 10 }
           )}

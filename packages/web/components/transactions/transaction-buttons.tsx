@@ -134,7 +134,7 @@ export const TransactionButtons = ({
             &#x22EF;
           </Button>
           <MenuDropdown
-            className="top-12 right-0 !z-0"
+            className="right-0 top-12 !z-0"
             isOpen={isDropdownOpen}
             options={
               open

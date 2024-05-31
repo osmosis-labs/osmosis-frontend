@@ -166,7 +166,7 @@ export const AssetHighlights: FunctionComponent<
         className
       )}
     >
-      <div className="flex place-content-between pt-1 pb-3">
+      <div className="flex place-content-between pb-3 pt-1">
         <h6>
           {title}{" "}
           {subtitle && (

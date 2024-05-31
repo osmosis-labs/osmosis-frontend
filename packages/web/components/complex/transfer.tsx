@@ -483,7 +483,7 @@ export const Transfer = observer(
             {expectedOutput && (
               <div
                 className={
-                  "flex place-content-between items-center text-subtitle1 font-subtitle1 text-osmoverse-100"
+                  "flex place-content-between items-center font-subtitle1 text-subtitle1 text-osmoverse-100"
                 }
               >
                 <span className="inline">

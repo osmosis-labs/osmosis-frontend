@@ -52,7 +52,7 @@ export const RemoveLiquidity: FunctionComponent<
             <h2 className="mt-12 md:mt-7">
               {removableValueWithPercentage.toString()}
             </h2>
-            <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
+            <h5 className="text-osmoverse-100 md:font-h6 md:text-h6">
               {t("removeLiquidity.sharesAmount", {
                 shares: removableSharesWithPercentage
                   .trim(true)

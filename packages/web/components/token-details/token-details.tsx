@@ -176,7 +176,7 @@ const TokenDetails = ({
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
-              <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
+              <h6 className="font-h6 text-lg leading-6 text-osmoverse-100">
                 {t("tokenInfos.aboutDenom", { name })}
               </h6>
               <div className="flex items-center gap-2">
@@ -286,28 +286,28 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="font-subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.marketCapRank")}
           </p>
-          <h5 className="text-xl font-h5 leading-8">
+          <h5 className="font-h5 text-xl leading-8">
             {marketCapRank ? `#${marketCapRank}` : "-"}
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="font-subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.marketCap")}
           </p>
-          <h5 className="text-xl font-h5 leading-8">
+          <h5 className="font-h5 text-xl leading-8">
             {marketCap && usdFiat
               ? formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))
               : "-"}
           </h5>
         </li>
         <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          <p className="font-subtitle1 text-base leading-6 text-osmoverse-300">
             {t("tokenInfos.circulatingSupply")}
           </p>
-          <h5 className="text-xl font-h5 leading-8">
+          <h5 className="font-h5 text-xl leading-8">
             {circulatingSupply
               ? formatPretty(new Dec(circulatingSupply), {
                   maximumSignificantDigits: 3,

@@ -56,7 +56,7 @@ export const AlertSettingRow: FunctionComponent<Props> = ({
           <p className="font-subtitle text-subtitle1">
             {labelWithAlerts.label.name}
           </p>
-          <p className="text-caption font-caption text-osmoverse-200">
+          <p className="font-caption text-caption text-osmoverse-200">
             {labelWithAlerts.label.tooltipContent}
           </p>
           <Icon

@@ -61,7 +61,7 @@ export const AppCard: FunctionComponent<{
           <div className="flex flex-wrap items-center gap-3">
             <h1
               className={classNames(
-                "text-h6 font-h6 font-semibold",
+                "font-h6 text-h6 font-semibold",
                 title.split(" ").length === 1 &&
                   title.length >= 10 &&
                   "xs:text-body1"

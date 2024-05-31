@@ -364,9 +364,9 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom}</h1>
+        <h1 className="font-h4 text-h4">{denom}</h1>
         {title ? (
-          <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
+          <h2 className="font-h4 text-h4 text-osmoverse-300">{title}</h2>
         ) : (
           false
         )}

@@ -294,7 +294,7 @@ const StrategySelector: FunctionComponent<{
           }
         )}
       >
-        <div className="flex items-center justify-center gap-2 text-h6 font-h6">
+        <div className="flex items-center justify-center gap-2 font-h6 text-h6">
           {title}
           {isNew && (
             <Pill>
@@ -552,7 +552,7 @@ const AddConcLiqView: FunctionComponent<
                   "opacity-30": sfStakingDisabled,
                 })}
               >
-                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                <h6 className="md:font-subtitle1 md:text-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
                   {superfluidPoolDetail.superfluidApr.toDec().isPositive()
                     ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(

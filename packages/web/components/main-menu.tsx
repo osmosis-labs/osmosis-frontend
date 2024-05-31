@@ -146,7 +146,7 @@ const MorePopover: FunctionComponent<{
           <Popover.Button className="focus:outline-none">
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
-          <Popover.Panel className="absolute bottom-full -left-1 flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
+          <Popover.Panel className="absolute -left-1 bottom-full flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 px-2 py-2">
             {secondaryMenus.map((menu: MainLayoutMenu) => {
               const { link, selectionTest, secondaryLogo, showMore } = menu;
               return (
@@ -207,7 +207,7 @@ const MenuItemContent: React.FC<{
         {secondaryLogo && (
           <div
             className={classNames(
-              "absolute top-0 left-0 transition-all duration-100 ease-in-out",
+              "absolute left-0 top-0 transition-all duration-100 ease-in-out",
               showSubTitle ? "opacity-100" : "opacity-0"
             )}
           >

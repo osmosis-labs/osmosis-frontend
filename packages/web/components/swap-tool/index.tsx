@@ -463,7 +463,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           </Popover>
 
           <div className="flex flex-col gap-3">
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
                   <span className="caption text-xs text-white-full">
@@ -572,7 +572,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     type="number"
                     className={classNames(
                       "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                      "text-h5 font-h5 md:font-subtitle1"
+                      "font-h5 text-h5 md:font-subtitle1"
                     )}
                     placeholder="0"
                     onChange={(e) => {
@@ -666,7 +666,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </button>
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-transform">
                 <TokenSelectWithDrawer
                   isFromSelect={false}

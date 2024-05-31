@@ -33,7 +33,7 @@ export const BalancesMoved = forwardRef<HTMLAnchorElement, CustomClasses>(
       >
         <div className="relative 1.5lg:hidden">
           <Image
-            className="absolute left-0 -top-1/3"
+            className="absolute -top-1/3 left-0"
             alt="portfolio page screenshot"
             src="/images/new-portfolio-page.svg"
             width={526}

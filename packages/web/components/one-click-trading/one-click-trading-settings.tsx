@@ -255,7 +255,7 @@ const OneClickTradingSettings = ({
                   />
                 )}
 
-                <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
+                <h1 className="w-full text-center font-h6 text-h6 tracking-wider">
                   {t("oneClickTrading.settings.header")}
                 </h1>
 
@@ -268,13 +268,13 @@ const OneClickTradingSettings = ({
                       height={32}
                       className="self-start"
                     />
-                    <p className="text-body2 font-body2 text-osmoverse-300">
+                    <p className="font-body2 text-body2 text-osmoverse-300">
                       {t("oneClickTrading.settings.description")}{" "}
                       <a
                         className={buttonVariants({
                           variant: "link",
                           className:
-                            "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
+                            "!inline w-auto !px-0 !font-body2 !text-body2 text-wosmongton-300",
                         })}
                         // TODO: Add link
                       >
@@ -491,7 +491,7 @@ const OneClickTradingSettings = ({
                       className="h-5 self-center"
                       isLoaded={!isLoadingEstimateRemoveTx}
                     >
-                      <p className="text-center text-caption font-caption text-osmoverse-300">
+                      <p className="text-center font-caption text-caption text-osmoverse-300">
                         {t("oneClickTrading.settings.feeToDisable")} ~
                         {estimateRemoveTxData?.gasAmount.toString() ??
                           "0.000000 OSMO"}{" "}
@@ -590,7 +590,7 @@ const SettingRow = ({
       )}
       onClick={isDisabled ? noop : onClick}
     >
-      <p className="text-subtitle1 font-subtitle1">{title}</p>
+      <p className="font-subtitle1 text-subtitle1">{title}</p>
       <div>{content}</div>
     </div>
   );
@@ -612,10 +612,10 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-center text-h6 font-h6">
+          <h1 className="text-center font-h6 text-h6">
             {t("oneClickTrading.settings.discardChanges.title")}
           </h1>
-          <p className="text-center text-body2 font-body2 text-osmoverse-200">
+          <p className="text-center font-body2 text-body2 text-osmoverse-200">
             {t("oneClickTrading.settings.discardChanges.message")}
           </p>
         </div>

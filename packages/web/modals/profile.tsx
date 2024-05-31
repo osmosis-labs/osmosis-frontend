@@ -246,7 +246,7 @@ export const ProfileModal: FunctionComponent<
                           }
                         )}
                       </h6>
-                      <p className="text-h5 font-h5">
+                      <p className="font-h5 text-h5">
                         {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
                           minimumFractionDigits: 2,
                           maximumSignificantDigits: undefined,
@@ -261,7 +261,7 @@ export const ProfileModal: FunctionComponent<
                         props.onRequestClose();
                         fiatRampSelection();
                       }}
-                      className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+                      className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 px-3.5 py-[6px] hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
                     >
                       <CreditCardIcon
                         isAnimated
@@ -291,7 +291,7 @@ export const ProfileModal: FunctionComponent<
                 </div>
                 {featureFlags.transactionsPage && (
                   <Link href="/transactions" passHref>
-                    <div className="flex w-full  cursor-pointer  items-center justify-between  border-t border-osmoverse-700 py-3 px-5 align-middle">
+                    <div className="flex w-full  cursor-pointer  items-center justify-between  border-t border-osmoverse-700 px-5 py-3 align-middle">
                       <div className="flex items-center gap-2">
                         <Icon id="history" />
                         <span className="subtitle1">

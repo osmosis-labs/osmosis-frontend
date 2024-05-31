@@ -263,7 +263,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                 icon={<Icon id="chevron-left" width={16} height={16} />}
               />
 
-              <h1 className="text-h6 font-h6">
+              <h1 className="font-h6 text-h6">
                 {t("components.selectToken.title")}
               </h1>
             </div>

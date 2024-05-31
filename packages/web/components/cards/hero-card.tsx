@@ -67,7 +67,7 @@ export const HeroCard: React.FunctionComponent<{
         <div className="gradient absolute left-0 top-0 z-20 h-full w-full bg-gradient-hero-card"></div>
         <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
           <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <h4 className=" text-h4 font-h4">{title}</h4>
+            <h4 className=" font-h4 text-h4">{title}</h4>
             <div className="flex items-center gap-2">
               {!!twitterUrl && (
                 <IconLink url={twitterUrl} ariaLabel="Twitter">

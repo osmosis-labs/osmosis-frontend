@@ -137,7 +137,7 @@ export const EarnRewards = ({
         <h4 className="text-osmoverse-200">
           {formatPretty(totalUnclaimedRewards)}
         </h4>
-        <small className="max-w-[54px] text-right text-xs font-subtitle2 font-medium text-osmoverse-300">
+        <small className="max-w-[54px] text-right font-subtitle2 text-xs font-medium text-osmoverse-300">
           {t("earnPage.availableToClaim")}
         </small>
       </div>
