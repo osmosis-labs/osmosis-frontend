@@ -847,6 +847,47 @@ describe("getGasPriceByFeeDenom", () => {
     expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
   });
 
+  it("should return an alternative token gas price in registry if fee market module is not available", async () => {
+    const chainId = "juno-1";
+    const chainListWithoutFeeMarket = chainList.map((chain) => ({
+      ...chain,
+      features: [],
+    }));
+    const feeDenom =
+      "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9";
+
+    const result = await getGasPriceByFeeDenom({
+      chainId,
+      chainList: chainListWithoutFeeMarket,
+      feeDenom,
+      gasMultiplier,
+    });
+
+    expect(result.gasPrice.toString()).toBe(new Dec(0.0035).toString());
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if fee token is not in config", async () => {
+    const chainListWithoutFeeMarket = chainList.map((chain) => ({
+      ...chain,
+      features: [],
+    }));
+
+    await expect(
+      getGasPriceByFeeDenom({
+        chainId,
+        chainList: chainListWithoutFeeMarket,
+        feeDenom,
+        gasMultiplier,
+      })
+    ).rejects.toThrow("Fee token not found: uion");
+
+    expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
+    expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
+  });
+
   it("should throw an error if chain is not found", async () => {
     await expect(
       getGasPriceByFeeDenom({

@@ -418,7 +418,7 @@ export async function getGasPriceByFeeDenom({
   }
 
   const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
-  if (!feeToken) throw new Error("Fee token not found");
+  if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
   return { gasPrice: new Dec(feeToken.average_gas_price ?? defaultGasPrice) };
 }
