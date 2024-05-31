@@ -360,8 +360,6 @@ export async function getGasFeeAmount({
     // Check if this balance is not enough to pay the fee, if so skip.
     if (new Dec(feeAmount).gt(new Dec(spentFeeBalance.amount))) continue;
 
-    const isLastFeeBalance =
-      spentFeeBalance.denom === spentFeeBalances.slice(-1)[0].denom;
     const spentAmount =
       coinsSpent.find(({ denom }) => denom === spentFeeBalance.denom)?.amount ||
       "0";
@@ -370,24 +368,14 @@ export async function getGasFeeAmount({
       new Dec(spentFeeBalance.amount)
     );
 
-    if (isLastFeeBalance && isBalanceNeededForTx) {
-      // the coins spent in this transaction exceeds the amount needed for fee
-      return [
-        {
-          amount: feeAmount,
-          denom: spentFeeBalance.denom,
-          isNeededForTx: true,
-        },
-      ];
-    } else if (!isBalanceNeededForTx) {
-      return [
-        {
-          amount: feeAmount,
-          denom: spentFeeBalance.denom,
-        },
-      ];
-    }
-
+    // the coins spent in this transaction exceeds the amount needed for fee
+    return [
+      {
+        amount: feeAmount,
+        denom: spentFeeBalance.denom,
+        isNeededForTx: isBalanceNeededForTx,
+      },
+    ];
     // keep trying with other balances
   }
 
