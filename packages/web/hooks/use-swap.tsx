@@ -125,7 +125,8 @@ export function useSwap(
     // since input is debounced there could be the wrong asset associated
     // with the input amount when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset?.coinMinimalDenom;
+      swapAssets.fromAsset?.coinMinimalDenom &&
+    !Boolean(account?.txTypeInProgress);
 
   const {
     data: quote,
@@ -769,7 +770,8 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { chainStore } = useStore();
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const featureFlags = useFeatureFlags();
 
@@ -808,7 +810,8 @@ function useSwapAmountInput({
     enabled:
       featureFlags.swapToolSimulateFee &&
       !isQuoteForCurrentBalanceLoading &&
-      Boolean(quoteForCurrentBalance),
+      Boolean(quoteForCurrentBalance) &&
+      !Boolean(account?.txTypeInProgress),
   });
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {

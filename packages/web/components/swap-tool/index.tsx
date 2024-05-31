@@ -240,10 +240,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.isLoadingNetworkFee;
 
     let buttonText: string;
-    if (swapState.error || swapState.estimateTxError) {
-      buttonText = t(
-        ...tError(swapState?.error ?? swapState.estimateTxError ?? undefined)
-      );
+    if (swapState.error) {
+      buttonText = t(...tError(swapState.error));
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
     } else if (
@@ -514,9 +512,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       disabled={
                         !swapState.inAmountInput.balance ||
                         swapState.inAmountInput.balance.toDec().isZero() ||
-                        swapState.inAmountInput.notEnoughBalanceForMax ||
-                        swapState.inAmountInput
-                          .isLoadingCurrentBalanceNetworkFee
+                        swapState.inAmountInput.notEnoughBalanceForMax
                       }
                       loadingText={t("swap.MAX")}
                       classes={{
@@ -697,10 +693,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
-                      "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive() &&
-                        !swapState.inAmountInput.isTyping &&
-                        !swapState.isQuoteLoading
+                      "md:subtitle1 whitespace-nowrap text-right transition-all",
+                      swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
@@ -725,21 +719,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                       {
                         "opacity-0":
-                          !swapState.tokenOutFiatValue ||
                           swapState.tokenOutFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          (!swapState.tokenOutFiatValue?.toDec().isZero() &&
+                          (!swapState.tokenOutFiatValue.toDec().isZero() &&
                             isSwapToolLoading) ||
                           swapState.inAmountInput.isTyping,
                       }
                     )}
                   >
                     {`≈ ${
-                      swapState.tokenOutFiatValue &&
                       swapState.tokenOutFiatValue.toString().length > 15
                         ? formatPretty(swapState.tokenOutFiatValue)
-                        : swapState.tokenOutFiatValue?.toString() ?? "0"
+                        : swapState.tokenOutFiatValue.toString()
                     }`}
                   </span>
                 </div>
