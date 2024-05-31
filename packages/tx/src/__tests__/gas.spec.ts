@@ -685,7 +685,7 @@ describe("getGasFeeAmount", () => {
       })
     ).rejects.toThrow(
       new InsufficientFeeError(
-        "No fee tokens found with sufficient balance on account. Please add funds to continue: osmo1..."
+        "Insufficient alternative balance for transaction fees. Please add funds to continue: osmo1..."
       )
     );
   });
@@ -739,7 +739,10 @@ describe("getGasFeeAmount", () => {
     });
 
     // would be called but exception is thrown before
-    expect(queryFeesBaseDenom).not.toHaveBeenCalled();
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
     expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
   });
 
@@ -775,7 +778,7 @@ describe("getGasFeeAmount", () => {
       })
     ).rejects.toThrow(
       new InsufficientFeeError(
-        "No fee tokens found with sufficient balance on account. Please add funds to continue: osmo1..."
+        "Insufficient alternative balance for transaction fees. Please add funds to continue: osmo1..."
       )
     );
   });
@@ -834,7 +837,7 @@ describe("getGasPriceByFeeDenom", () => {
     const result = await getGasPriceByFeeDenom({
       chainId,
       chainList: chainListWithoutFeeMarket,
-      feeDenom,
+      feeDenom: "uosmo",
       gasMultiplier,
     });
 

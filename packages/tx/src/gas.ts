@@ -360,26 +360,24 @@ export async function getGasFeeAmount({
 }
 
 /**
- * For chains that support multiple fee tokens, this function will return the gas price.
+ * For chains that support multiple fee tokens, this function will return the gas price (either from converting from the base fee or from the chain's fees object) for the given fee token.
  *
  * For tokens with a fee market module, the gas price is calculated by dividing the base fee by the queried spot price of the fee token.
  *
- * @throws If chain not found.
+ * @throws If chain or fee denom not found.
  */
 export async function getGasPriceByFeeDenom({
   chainId,
   chainList,
   feeDenom,
   gasMultiplier = 1.5,
+  defaultGasPrice = 0.025,
 }: {
-  /**
-   * Chain to fetch the fee token spot price from.
-   * This requires the chain to have the Osmosis fee module.
-   */
   chainId: string;
   chainList: Chain[];
   feeDenom: string;
   gasMultiplier?: number;
+  defaultGasPrice?: number;
 }): Promise<{ gasPrice: Dec }> {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
@@ -389,42 +387,49 @@ export async function getGasPriceByFeeDenom({
     chain.features?.includes("osmosis-txfees")
   );
 
+  const defaultFee = await getDefaultGasPrice({
+    chainId,
+    chainList,
+    gasMultiplier,
+  });
+
+  if (defaultFee.feeDenom === feeDenom) {
+    return defaultFee;
+  }
+
   if (chainHasFeeMarketModule) {
-    const [defaultGasPrice, spotPriceDec] = await Promise.all([
-      getDefaultGasPrice({
-        chainId,
-        chainList,
-        gasMultiplier,
-      }),
-      queryFeeTokenSpotPrice({
-        chainId,
-        chainList,
-        denom: feeDenom,
-      }).then(({ spot_price }) => new Dec(spot_price)),
-    ]);
+    // convert to alternative denom by querying spot price
+    // throws if given token does not have a spot price
+    const spotPrice = await queryFeeTokenSpotPrice({
+      chainId,
+      chainList,
+      denom: feeDenom,
+    });
+
+    const spotPriceDec = new Dec(spotPrice.spot_price);
 
     if (spotPriceDec.isZero() || spotPriceDec.isNegative()) {
       throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
     }
 
     return {
-      gasPrice: defaultGasPrice.gasPrice.quo(spotPriceDec).mul(new Dec(1.01)),
+      gasPrice: defaultFee.gasPrice.quo(spotPriceDec).mul(new Dec(1.01)),
     };
   }
 
-  return await getDefaultGasPrice({
-    chainId,
-    chainList,
-    gasMultiplier,
-  });
+  const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
+  if (!feeToken) throw new Error("Fee token not found");
+
+  return { gasPrice: new Dec(feeToken.average_gas_price ?? defaultGasPrice) };
 }
 
-/** Gets gas price from a dynamic fee module in the chain at the given chain ID,
- *  or the average price specified in the chain's fees object in the registry.
+/**
+ * Gets base gas price from a dynamic fee module in the chain at the given chain ID,
+ * or the average price specified in the chain's fees object in the registry.
  *
- *  Gas multiplier is used for chains with fee modules to account for gas price slippage (default: `1.5`).
+ * Gas multiplier is used for chains with fee modules to account for gas price slippage (default: `1.5`).
  *
- *  @throws If chain not found.
+ * @throws If chain not found.
  */
 export async function getDefaultGasPrice({
   chainId,
@@ -499,9 +504,16 @@ export async function getChainSupportedFeeDenoms({
     chain.features?.includes("osmosis-txfees")
   );
 
-  return chainHasFeeMarketModule
-    ? await queryFeeTokens({ chainId, chainList }).then(({ fee_tokens }) =>
+  if (chainHasFeeMarketModule) {
+    const [{ base_denom }, alternativeFeeDenoms] = await Promise.all([
+      queryFeesBaseDenom({ chainId, chainList }),
+      queryFeeTokens({ chainId, chainList }).then(({ fee_tokens }) =>
         fee_tokens.map((ft) => ft.denom)
-      )
-    : chain.fees.fee_tokens.map(({ denom }) => denom);
+      ),
+    ]);
+
+    return [base_denom, ...alternativeFeeDenoms];
+  }
+
+  return chain.fees.fee_tokens.map(({ denom }) => denom);
 }
