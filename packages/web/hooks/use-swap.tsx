@@ -801,19 +801,22 @@ function useSwapAmountInput({
       Boolean(swapAssets.toAsset)
   );
 
+  const networkQueryEnabled =
+    featureFlags.swapToolSimulateFee &&
+    !isQuoteForCurrentBalanceLoading &&
+    Boolean(quoteForCurrentBalance) &&
+    !Boolean(account?.txTypeInProgress);
   const {
     data: currentBalanceNetworkFee,
-    isLoading: isLoadingCurrentBalanceNetworkFee,
+    isLoading: isLoadingCurrentBalanceNetworkFee_,
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
-    enabled:
-      featureFlags.swapToolSimulateFee &&
-      !isQuoteForCurrentBalanceLoading &&
-      Boolean(quoteForCurrentBalance) &&
-      !Boolean(account?.txTypeInProgress),
+    enabled: networkQueryEnabled,
   });
+  const isLoadingCurrentBalanceNetworkFee =
+    networkQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
     return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
