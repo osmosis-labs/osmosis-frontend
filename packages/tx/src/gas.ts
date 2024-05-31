@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import {
   queryBalances,
   queryBaseAccount,
@@ -345,34 +345,41 @@ export async function getGasFeeAmount({
     coinsSpent.some(({ denom }) => denom === balance.denom)
   );
 
-  for (const spentFeeBalance of spentFeeBalances) {
-    const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
-      chainId,
-      chainList,
-      feeDenom: spentFeeBalance.denom,
-      gasMultiplier,
-    });
-    const feeAmount = feeDenomGasPrice
-      .mul(new Dec(gasLimit))
-      .truncate()
-      .toString();
+  // get all fee amounts for spent balances so we can prioritize the smallest amounts
+  const spentFeesWithAmounts = await Promise.all(
+    spentFeeBalances.map((spentFeeBalance) =>
+      getGasPriceByFeeDenom({
+        chainId,
+        chainList,
+        feeDenom: spentFeeBalance.denom,
+        gasMultiplier,
+      }).then(({ gasPrice }) => ({
+        ...spentFeeBalance,
+        feeAmount: gasPrice.mul(new Dec(gasLimit)).truncate().toString(),
+      }))
+    )
+  );
 
-    // Check if this balance is not enough to pay the fee, if so skip.
-    if (new Dec(feeAmount).gt(new Dec(spentFeeBalance.amount))) continue;
+  // filter spent fees by those that are not enough to pay the fee and sort by smallest amounts
+  const spentFees = spentFeesWithAmounts
+    .filter((spentFee) =>
+      new Dec(spentFee.feeAmount).lte(new Dec(spentFee.amount))
+    )
+    .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
 
+  for (const spentFeeAmount of spentFees) {
     const spentAmount =
-      coinsSpent.find(({ denom }) => denom === spentFeeBalance.denom)?.amount ||
+      coinsSpent.find(({ denom }) => denom === spentFeeAmount.denom)?.amount ||
       "0";
-    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
-    const isBalanceNeededForTx = totalSpent.gte(
-      new Dec(spentFeeBalance.amount)
+    const totalSpent = new Dec(spentAmount).add(
+      new Dec(spentFeeAmount.feeAmount)
     );
+    const isBalanceNeededForTx = totalSpent.gte(new Dec(spentFeeAmount.amount));
 
-    // the coins spent in this transaction exceeds the amount needed for fee
     return [
       {
-        amount: feeAmount,
-        denom: spentFeeBalance.denom,
+        amount: spentFeeAmount.feeAmount,
+        denom: spentFeeAmount.denom,
         isNeededForTx: isBalanceNeededForTx,
       },
     ];
