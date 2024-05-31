@@ -823,6 +823,9 @@ function useSwapAmountInput({
       currentBalanceNetworkFeeError?.message.includes(
         "No fee tokens found with sufficient balance on account"
       ) ||
+      currentBalanceNetworkFeeError?.message.includes(
+        "Insufficient alternative balance for transaction fees"
+      ) ||
       quoteForCurrentBalanceError?.message.includes(
         "Not enough quoted. Try increasing amount."
       ),

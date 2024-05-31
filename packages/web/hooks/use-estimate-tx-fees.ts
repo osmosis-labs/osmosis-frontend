@@ -120,9 +120,12 @@ export function useEstimateTxFees({
   const specificError = useMemo(() => {
     if (
       queryResult.error instanceof Error &&
-      queryResult.error.message.includes(
+      (queryResult.error.message.includes(
         "No fee tokens found with sufficient balance on account"
-      )
+      ) ||
+        queryResult.error.message.includes(
+          "Insufficient alternative balance for transaction fees"
+        ))
     ) {
       return new InsufficientBalanceForFeeError(queryResult.error.message);
     }
