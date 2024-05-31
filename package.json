@@ -46,6 +46,7 @@
     "@babel/preset-env": "^7.24.5",
     "@inlang/cli": "^2.11.0",
     "@octokit/rest": "^20.1.1",
+    "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "babel-jest": "^29.7.0",
@@ -67,7 +68,7 @@
     "node-gyp": "^10.1.0",
     "prettier": "^2.8.8",
     "semver": "^7.6.2",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.1.4",
     "turbo": "^1.13.3",
     "typescript": "5.4.3"
   },
