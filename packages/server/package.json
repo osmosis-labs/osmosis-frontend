@@ -37,7 +37,6 @@
     "@osmosis-labs/utils": "^1.0.0",
     "@sentry/core": "^7.109.0",
     "@vercel/kv": "^0.2.3",
-    "axios": "^0.27.2",
     "cachified": "^3.5.4",
     "dataloader": "^2.2.2",
     "dayjs": "^1.10.7",

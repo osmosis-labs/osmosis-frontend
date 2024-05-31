@@ -67,3 +67,5 @@ export default async function handler(
 }
 
 // NOTE: `estimateGasFee` use of cosmjs-types makes it incompatible in edge runtime
+// extend max duration to allow for more cache hits behind estimateGasFee
+export const maxDuration = 300; // This function can run for a maximum of 300 seconds

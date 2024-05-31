@@ -1156,7 +1156,7 @@ describe("getGasPriceByFeeDenom", () => {
         feeDenom,
         gasMultiplier,
       })
-    ).rejects.toThrow("Invalid base fee: NaN");
+    ).rejects.toThrow("Invalid base fee: invalid");
   });
 
   expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
@@ -1265,7 +1265,7 @@ describe("getDefaultGasPrice", () => {
         chainId,
         chainList,
       })
-    ).rejects.toThrow("Invalid base fee: NaN");
+    ).rejects.toThrow("Invalid base fee: invalid");
 
     expect(queryFeesBaseDenom).toHaveBeenCalledWith({
       chainId,

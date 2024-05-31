@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
   queryFeesBaseDenom,
@@ -11,6 +12,7 @@ import {
 import type { Chain } from "@osmosis-labs/types";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
+import cachified, { CacheEntry } from "cachified";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import {
   AuthInfo,
@@ -19,6 +21,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { LRUCache } from "lru-cache";
 
 import { getSumTotalSpenderCoinsSpent } from "./events";
 
@@ -433,20 +436,18 @@ export async function getGasPriceByFeeDenom({
   if (chainHasFeeMarketModule) {
     // convert to alternative denom by querying spot price
     // throws if given token does not have a spot price
-    const spotPrice = await queryFeeTokenSpotPrice({
+    const spotPrice = await getFeeTokenSpotPrice({
       chainId,
       chainList,
       denom: feeDenom,
     });
 
-    const spotPriceDec = new Dec(spotPrice.spot_price);
-
-    if (spotPriceDec.isZero() || spotPriceDec.isNegative()) {
+    if (spotPrice.isZero() || spotPrice.isNegative()) {
       throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
     }
 
     return {
-      gasPrice: defaultFee.gasPrice.quo(spotPriceDec).mul(new Dec(1.01)),
+      gasPrice: defaultFee.gasPrice.quo(spotPrice).mul(new Dec(1.01)),
     };
   }
 
@@ -485,37 +486,28 @@ export async function getDefaultGasPrice({
   );
 
   let feeDenom: string;
-  let gasPrice: number;
+  let gasPrice: Dec;
 
   if (chainHasFeeMarketModule) {
     // fee market
-
     const [baseDenom, baseFeePrice] = await Promise.all([
-      queryFeesBaseDenom({
-        chainId,
-        chainList,
-      }),
-      queryFeesBaseGasPrice({
-        chainId,
-        chainList,
-      }),
+      getFeesBaseDenom({ chainId, chainList }),
+      getBaseFeeSpotPrice({ chainId, chainList }),
     ]);
 
-    feeDenom = baseDenom.base_denom;
-
-    const baseFee = Number(baseFeePrice.base_fee);
-    if (isNaN(baseFee)) throw new Error("Invalid base fee: " + baseFee);
-
+    feeDenom = baseDenom;
     // Add slippage multiplier to account for shifting gas prices in gas market
-    gasPrice = baseFee * gasMultiplier;
+    gasPrice = baseFeePrice.mul(new Dec(gasMultiplier));
   } else {
     // registry
 
     feeDenom = chain.fees.fee_tokens[0].denom;
-    gasPrice = chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice;
+    gasPrice = new Dec(
+      chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice
+    );
   }
 
-  return { gasPrice: new Dec(gasPrice), feeDenom };
+  return { gasPrice, feeDenom };
 }
 
 /**
@@ -538,15 +530,93 @@ export async function getChainSupportedFeeDenoms({
   );
 
   if (chainHasFeeMarketModule) {
-    const [{ base_denom }, alternativeFeeDenoms] = await Promise.all([
-      queryFeesBaseDenom({ chainId, chainList }),
-      queryFeeTokens({ chainId, chainList }).then(({ fee_tokens }) =>
-        fee_tokens.map((ft) => ft.denom)
-      ),
+    const [baseDenom, alternativeFeeDenoms] = await Promise.all([
+      getFeesBaseDenom({ chainId, chainList }),
+      getFeeTokenDenoms({ chainId, chainList }),
     ]);
 
-    return [base_denom, ...alternativeFeeDenoms];
+    return [baseDenom, ...alternativeFeeDenoms];
   }
 
   return chain.fees.fee_tokens.map(({ denom }) => denom);
+}
+
+// cached query functions
+
+const queryCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+export function getFeesBaseDenom({
+  chainId,
+  chainList,
+}: {
+  chainId: string;
+  chainList: Chain[];
+}) {
+  return cachified({
+    cache: queryCache,
+    key: "fees-base-denom-" + chainId,
+    ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 10, // 10 minutes since denoms don't change often
+    getFreshValue: () =>
+      queryFeesBaseDenom({ chainId, chainList }).then(
+        ({ base_denom }) => base_denom
+      ),
+  });
+}
+
+export function getFeeTokenDenoms({
+  chainId,
+  chainList,
+}: {
+  chainId: string;
+  chainList: Chain[];
+}) {
+  return cachified({
+    cache: queryCache,
+    key: "fee-token-denoms-" + chainId,
+    ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 10, // 10 minutes since denoms don't change often
+    getFreshValue: () =>
+      queryFeeTokens({ chainId, chainList }).then(({ fee_tokens }) =>
+        fee_tokens.map((ft) => ft.denom)
+      ),
+  });
+}
+
+export function getFeeTokenSpotPrice({
+  chainId,
+  chainList,
+  denom,
+}: {
+  chainId: string;
+  chainList: Chain[];
+  denom: string;
+}) {
+  return cachified({
+    cache: queryCache,
+    key: `spot-price-${chainId}-${denom}`,
+    ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 5, // 5 seconds, shorter in case of swift price changes
+    getFreshValue: () =>
+      queryFeeTokenSpotPrice({ chainId, chainList, denom }).then(
+        ({ spot_price }) => new Dec(spot_price)
+      ),
+  });
+}
+
+export function getBaseFeeSpotPrice({
+  chainId,
+  chainList,
+}: {
+  chainId: string;
+  chainList: Chain[];
+}) {
+  return cachified({
+    cache: queryCache,
+    key: "base-fee-spot-price-" + chainId,
+    ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 5, // 5 seconds, shorter in case of swift price changes
+    getFreshValue: () =>
+      queryFeesBaseGasPrice({ chainId, chainList }).then(({ base_fee }) => {
+        if (isNaN(Number(base_fee)))
+          throw new Error("Invalid base fee: " + base_fee);
+        return new Dec(base_fee);
+      }),
+  });
 }
