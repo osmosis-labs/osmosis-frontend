@@ -115,7 +115,6 @@ export async function estimateGasFee({
   return {
     gas: gasLimit,
     amount,
-    // also return max last send token balance if the send token is the only available fee token balance
   };
 }
 
@@ -296,7 +295,7 @@ export async function getGasFeeAmount({
     }),
   ]);
   const feeBalances = balances.filter((balance) =>
-    chainFeeDenoms.some((denom) => denom === balance.denom)
+    chainFeeDenoms.includes(balance.denom)
   );
 
   if (!feeBalances.length) {
@@ -306,14 +305,17 @@ export async function getGasFeeAmount({
     );
   }
 
-  // loop to find the applicable fee amongst account balances
-  for (let i = 0; i < feeBalances.length; i++) {
-    const curFeeBalance = feeBalances[i];
+  // first check unspent balances
+  const feeDenomsSpent = (coinsSpent ?? []).map(({ denom }) => denom);
+  const unspentFeeBalances = feeBalances.filter(
+    (balance) => !feeDenomsSpent.includes(balance.denom)
+  );
 
+  for (const unspentFeeBalance of unspentFeeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
-      feeDenom: curFeeBalance.denom,
+      feeDenom: unspentFeeBalance.denom,
       gasMultiplier,
     });
     const feeAmount = feeDenomGasPrice
@@ -322,22 +324,58 @@ export async function getGasFeeAmount({
       .toString();
 
     // Check if this balance is not enough to pay the fee, if so skip.
-    if (new Dec(feeAmount).gt(new Dec(curFeeBalance.amount))) continue;
+    if (new Dec(feeAmount).gt(new Dec(unspentFeeBalance.amount))) continue;
 
-    /** All other fee balances have been checked. */
-    const isLastFeeBalance = i === feeBalances.length - 1;
+    // found enough to pay the fee that is not spent
+    return [
+      {
+        amount: feeAmount,
+        denom: unspentFeeBalance.denom,
+      },
+    ];
+  }
+
+  // check spent balances last
+  if (!coinsSpent)
+    throw new InsufficientFeeError(
+      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
+        bech32Address
+    );
+  const spentFeeBalances = feeBalances.filter((balance) =>
+    coinsSpent.some(({ denom }) => denom === balance.denom)
+  );
+
+  for (const spentFeeBalance of spentFeeBalances) {
+    const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
+      chainId,
+      chainList,
+      feeDenom: spentFeeBalance.denom,
+      gasMultiplier,
+    });
+    const feeAmount = feeDenomGasPrice
+      .mul(new Dec(gasLimit))
+      .truncate()
+      .toString();
+
+    // Check if this balance is not enough to pay the fee, if so skip.
+    if (new Dec(feeAmount).gt(new Dec(spentFeeBalance.amount))) continue;
+
+    const isLastFeeBalance =
+      spentFeeBalance.denom === spentFeeBalances.slice(-1)[0].denom;
     const spentAmount =
-      coinsSpent?.find(({ denom }) => denom === curFeeBalance.denom)?.amount ||
+      coinsSpent.find(({ denom }) => denom === spentFeeBalance.denom)?.amount ||
       "0";
     const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
-    const isBalanceNeededForTx = totalSpent.gte(new Dec(curFeeBalance.amount));
+    const isBalanceNeededForTx = totalSpent.gte(
+      new Dec(spentFeeBalance.amount)
+    );
 
     if (isLastFeeBalance && isBalanceNeededForTx) {
       // the coins spent in this transaction exceeds the amount needed for fee
       return [
         {
           amount: feeAmount,
-          denom: curFeeBalance.denom,
+          denom: spentFeeBalance.denom,
           isNeededForTx: true,
         },
       ];
@@ -345,7 +383,7 @@ export async function getGasFeeAmount({
       return [
         {
           amount: feeAmount,
-          denom: curFeeBalance.denom,
+          denom: spentFeeBalance.denom,
         },
       ];
     }
