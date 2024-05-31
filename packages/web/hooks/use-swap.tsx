@@ -200,7 +200,7 @@ export function useSwap(
     Boolean(quote);
   const {
     data: networkFee,
-    error: estimateTxError,
+    error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
@@ -246,18 +246,18 @@ export function useSwap(
 
   const hasOverSpendLimitError = useMemo(() => {
     if (
-      !estimateTxError?.message ||
+      !networkFeeError?.message ||
       !isOneClickTradingEnabled ||
       inAmountInput.isEmpty ||
       inAmountInput.inputAmount == "0" ||
-      !isOverspendErrorMessage({ message: estimateTxError?.message })
+      !isOverspendErrorMessage({ message: networkFeeError?.message })
     ) {
       return false;
     }
 
     return true;
   }, [
-    estimateTxError,
+    networkFeeError,
     inAmountInput.inputAmount,
     inAmountInput.isEmpty,
     isOneClickTradingEnabled,
@@ -302,13 +302,13 @@ export function useSwap(
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
             !hasExceededOneClickTradingGasLimit &&
-            !estimateTxError;
+            !networkFeeError;
 
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
             !hasExceededOneClickTradingGasLimit &&
-            estimateTxError
+            networkFeeError
           ) {
             try {
               const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
@@ -416,7 +416,7 @@ export function useSwap(
       accountStore,
       hasOverSpendLimitError,
       hasExceededOneClickTradingGasLimit,
-      estimateTxError,
+      networkFeeError,
       featureFlags.swapToolSimulateFee,
       networkFee,
       swapAssets.fromAsset,
@@ -509,7 +509,9 @@ export function useSwap(
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
     ]),
     networkFee,
-    isLoadingNetworkFee,
+    isLoadingNetworkFee:
+      inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
+    networkFeeError,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
@@ -518,7 +520,6 @@ export function useSwap(
     sendTradeTokenInTx,
     hasOverSpendLimitError,
     hasExceededOneClickTradingGasLimit,
-    estimateTxError,
   };
 }
 

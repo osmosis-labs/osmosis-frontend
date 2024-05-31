@@ -753,7 +753,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                !swapState.isSpotPriceQuoteLoading
+                !isSwapToolLoading
               }
             >
               <button
@@ -975,10 +975,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||
+                    isSwapToolLoading ||
                     Boolean(swapState.error) ||
                     account?.txTypeInProgress !== "" ||
-                    swapState.isLoadingNetworkFee ||
-                    Boolean(swapState.estimateTxError)))
+                    Boolean(swapState.networkFeeError)))
               }
               loadingText={buttonText}
               onClick={sendSwapTx}
