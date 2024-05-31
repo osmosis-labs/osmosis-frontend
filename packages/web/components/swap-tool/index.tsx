@@ -79,9 +79,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useWalletSelect();
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-    const [isSendingTx, setIsSendingTx] = useState(false);
-
     const account = accountStore.getWallet(chainId);
+
+    const [isSendingTx_, setIsSendingTx] = useState(false);
+    const isSendingTx = isSendingTx_ || Boolean(account?.txTypeInProgress);
+
     const slippageConfig = useSlippageConfig();
 
     const swapState = useSwap({
@@ -234,6 +236,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
+    /** Indicates any of the dependent queries in swap tool are loading. */
     const isSwapToolLoading =
       isWalletLoading ||
       swapState.isQuoteLoading ||
@@ -977,7 +980,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     !Boolean(swapState.quote) ||
                     isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== "" ||
                     Boolean(swapState.networkFeeError)))
               }
               loadingText={buttonText}
