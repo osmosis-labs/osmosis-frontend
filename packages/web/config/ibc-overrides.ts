@@ -719,6 +719,26 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
+  "solana.USDT.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  "edgeSOL.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  "LST.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  "jitoSOL.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  "wSOL.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
