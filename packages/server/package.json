@@ -29,7 +29,6 @@
     "test:e2e:ci": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --ci",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "prepare": "bun run build",
     "with-env": "dotenv -e ../web/.env -c --"
   },
   "dependencies": {

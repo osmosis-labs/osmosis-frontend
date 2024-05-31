@@ -10,8 +10,7 @@
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
-    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "bun run build"
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
