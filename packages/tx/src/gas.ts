@@ -310,7 +310,8 @@ export async function getGasFeeAmount({
     | { denom: string; amount: string; isNeededForTx?: boolean }
     | undefined;
   // loop to find the applicable fee amongst account balances
-  for (const feeBalance of feeBalances) {
+  for (let i = 0; i < feeBalances.length; i++) {
+    const feeBalance = feeBalances[i];
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
@@ -322,15 +323,17 @@ export async function getGasFeeAmount({
       .truncate()
       .toString();
 
+    // Check if this balance is not enough to pay the fee, if so skip.
     if (new Dec(feeAmount).gt(new Dec(feeBalance.amount))) continue;
 
-    const isLastToken = feeBalances.length === 1;
+    /** All other fee balances have been checked. */
+    const isLastFeeBalance = i === feeBalances.length - 1;
     const spentAmount =
       coinsSpent?.find(({ denom }) => denom === feeBalance.denom)?.amount ||
       "0";
     const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
 
-    if (isLastToken && totalSpent.gt(new Dec(feeBalance.amount))) {
+    if (isLastFeeBalance && totalSpent.gt(new Dec(feeBalance.amount))) {
       // the coins spent in this transaction exceeds the amount needed for fee
       foundFee = {
         amount: feeAmount,
