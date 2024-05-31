@@ -306,16 +306,14 @@ export async function getGasFeeAmount({
     );
   }
 
-  let foundFee:
-    | { denom: string; amount: string; isNeededForTx?: boolean }
-    | undefined;
   // loop to find the applicable fee amongst account balances
   for (let i = 0; i < feeBalances.length; i++) {
-    const feeBalance = feeBalances[i];
+    const curFeeBalance = feeBalances[i];
+
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
-      feeDenom: feeBalance.denom,
+      feeDenom: curFeeBalance.denom,
       gasMultiplier,
     });
     const feeAmount = feeDenomGasPrice
@@ -324,39 +322,41 @@ export async function getGasFeeAmount({
       .toString();
 
     // Check if this balance is not enough to pay the fee, if so skip.
-    if (new Dec(feeAmount).gt(new Dec(feeBalance.amount))) continue;
+    if (new Dec(feeAmount).gt(new Dec(curFeeBalance.amount))) continue;
 
     /** All other fee balances have been checked. */
     const isLastFeeBalance = i === feeBalances.length - 1;
     const spentAmount =
-      coinsSpent?.find(({ denom }) => denom === feeBalance.denom)?.amount ||
+      coinsSpent?.find(({ denom }) => denom === curFeeBalance.denom)?.amount ||
       "0";
     const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
+    const isBalanceNeededForTx = totalSpent.gte(new Dec(curFeeBalance.amount));
 
-    if (isLastFeeBalance && totalSpent.gt(new Dec(feeBalance.amount))) {
+    if (isLastFeeBalance && isBalanceNeededForTx) {
       // the coins spent in this transaction exceeds the amount needed for fee
-      foundFee = {
-        amount: feeAmount,
-        denom: feeBalance.denom,
-        isNeededForTx: true,
-      };
-    } else {
-      foundFee = {
-        amount: feeAmount,
-        denom: feeBalance.denom,
-      };
+      return [
+        {
+          amount: feeAmount,
+          denom: curFeeBalance.denom,
+          isNeededForTx: true,
+        },
+      ];
+    } else if (!isBalanceNeededForTx) {
+      return [
+        {
+          amount: feeAmount,
+          denom: curFeeBalance.denom,
+        },
+      ];
     }
-    break;
+
+    // keep trying with other balances
   }
 
-  if (!foundFee) {
-    throw new InsufficientFeeError(
-      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-        bech32Address
-    );
-  }
-
-  return [foundFee];
+  throw new InsufficientFeeError(
+    "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
+      bech32Address
+  );
 }
 
 /**
