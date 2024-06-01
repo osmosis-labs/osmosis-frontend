@@ -166,9 +166,11 @@ export async function getSharePoolBondDurations({
           userLockedLocks.forEach((userDurationLock) => {
             userDurationLock.coins.forEach((coin) => {
               if (getShareDenomPoolId(coin.denom) === poolId) {
-                userShares = userShares.add(
-                  new CoinPretty(userShares.currency, coin.amount)
+                const lockedShares = new CoinPretty(
+                  userShares.currency,
+                  coin.amount
                 );
+                userShares = userShares.add(lockedShares);
               }
             });
             userLockedLockIds.push(userDurationLock.ID);
@@ -334,6 +336,7 @@ export async function getSharePoolBondDurations({
         return {
           duration: dayjs.duration(durationMs),
           bondable: isSuperfluid ? isLongestDuration : Boolean(durationGauges),
+          /** Locked shares */
           userShares,
           userLockedShareValue,
           userLocks: userLockedLockIds.map((lockId) => ({

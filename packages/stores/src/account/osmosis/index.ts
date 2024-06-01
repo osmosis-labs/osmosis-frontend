@@ -1392,7 +1392,7 @@ export class OsmosisAccountImpl {
    * Lock tokens for some duration into a lock. Useful for allowing the user to capture bonding incentives.
    *
    * @param duration Duration, in seconds, to lock up the tokens.
-   * @param tokens Tokens to lock. `amount`s are not in micro.
+   * @param tokens Base token amount to lock.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1406,14 +1406,8 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
-      const amount = new Dec(token.amount)
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(token.currency.coinDecimals)
-        )
-        .truncate();
-
       return {
-        amount: amount.toString(),
+        amount: token.amount,
         denom: token.currency.coinMinimalDenom,
       };
     });
@@ -1452,7 +1446,7 @@ export class OsmosisAccountImpl {
     );
   }
 
-  /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
+  /**
    * @param lockIds Ids of LP bonded locks.
    * @param validatorAddress Bech32 address of validator to delegate to.
    * @param memo Tx memo.
@@ -1464,6 +1458,8 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    if (lockIds.length === 0) throw new Error("No locks to delegate");
+
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.superfluidDelegate.messageComposer({
         sender: this.address,
@@ -1506,7 +1502,7 @@ export class OsmosisAccountImpl {
   }
 
   /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
-   * @param tokens LP tokens to delegate and lock. `amount`s are not in micro.
+   * @param tokens LP tokens to delegate and lock.
    * @param validatorAddress Validator address to delegate to.
    * @param memo Tx memo.
    * @param onFulfill Callback to handle tx fullfillment.
@@ -1521,14 +1517,8 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
-      const amount = new Dec(token.amount)
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(token.currency.coinDecimals)
-        )
-        .truncate();
-
       return {
-        amount: amount.toString(),
+        amount: token.amount,
         denom: token.currency.coinMinimalDenom,
       };
     });

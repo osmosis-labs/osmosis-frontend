@@ -20,6 +20,11 @@ function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserBridgeAssets.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
   apiUtils.local.concentratedLiquidity.getPositionDetails.invalidate();
+
+  apiUtils.edge.pools.getSharePool.invalidate();
+  apiUtils.edge.pools.getPool.invalidate();
+  apiUtils.edge.pools.getUserSharePool.invalidate();
+  apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
@@ -33,7 +38,6 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     () =>
       new RootStore({
         txEvents: {
-          onBroadcastFailed: () => invalidateQueryData(apiUtils),
           onFulfill: () => invalidateQueryData(apiUtils),
 
           /**

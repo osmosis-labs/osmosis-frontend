@@ -5,8 +5,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import type { Pool } from "@osmosis-labs/server";
-import { BondStatus } from "@osmosis-labs/types";
+import type { BondDuration, Pool } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
@@ -19,13 +18,11 @@ import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import { Disableable } from "~/components/types";
-import { ArrowButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
-  useFeatureFlags,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
@@ -47,17 +44,10 @@ const E = EventName.PoolDetail;
 
 export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
   ({ pool }) => {
-    const {
-      chainStore,
-      queriesStore,
-      accountStore,
-      queriesExternalStore: { queryAccountsPoolRewards },
-      derivedDataStore,
-    } = useStore();
+    const { accountStore } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const { isLoading: isWalletLoading } = useWalletSelect();
-    const { displayDailyEarn } = useFeatureFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -66,15 +56,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const [poolBreakdownRef, { height: poolBreakdownHeight }] =
       useMeasure<HTMLDivElement>();
 
-    const { chainId } = chainStore.osmosis;
-
-    const queryCosmos = queriesStore.get(chainId).cosmos;
-    const account = accountStore.getWallet(chainStore.osmosis.chainId);
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
     const address = account?.address ?? "";
-    const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
     // queries
-    const { data: userSharePool, isLoading: isUserSharePoolLoading } =
+    const { data: userSharePool, isLoading: isLoadingUserSharePool } =
       api.edge.pools.getUserSharePool.useQuery(
         {
           poolId: pool.id,
@@ -94,9 +80,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
       poolId: pool.id,
     });
-    const { data: superfluidPoolIds } =
-      api.edge.pools.getSuperfluidPoolIds.useQuery();
-    const isSuperfluid = superfluidPoolIds?.includes(pool.id) ?? false;
 
     const { data: poolIncentives, isLoading: isPoolIncentivesLoading } =
       api.edge.pools.getPoolIncentives.useQuery({
@@ -122,30 +105,16 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           },
         }
       );
-    const bondDurations = useMemo(() => bondDurations_ ?? [], [bondDurations_]);
-
-    const apiUtils = api.useUtils();
-    const invalidateQueries: <T>(value: T) => T = useCallback(
-      (value) => {
-        apiUtils.edge.pools.getPool.invalidate({ poolId: pool.id });
-        apiUtils.edge.pools.getSharePool.invalidate();
-
-        apiUtils.edge.pools.getUserSharePool.invalidate();
-        apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
-
-        return value;
-      },
-      [pool.id, apiUtils]
+    const bondDurations = useMemo(
+      () => bondDurations_ ?? ([] as BondDuration[]),
+      [bondDurations_]
     );
 
-    // initialize pool data stores once root pool store is loaded
-    const { superfluidPoolDetail, poolBonding } = pool.id
-      ? derivedDataStore.getForPool(pool.id as string)
-      : {
-          superfluidPoolDetail: undefined,
-          poolBonding: undefined,
-        };
-    const { delegateSharesToValidator } = useSuperfluidPool();
+    const isSuperfluid = bondDurations.some(({ superfluid }) =>
+      Boolean(superfluid)
+    );
+
+    const { delegateSharesToValidator } = useSuperfluidPool(bondDurations_);
 
     // user analytics
     const { poolName } = useMemo(
@@ -181,21 +150,15 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       useState(false);
     const [showPoolDetails, setShowPoolDetails] = useState(false);
 
-    const highestAPRBondableDuration = poolBonding?.highestBondDuration;
-
-    const highestAPRDailyPeriodicRate =
-      highestAPRBondableDuration?.aggregateApr
-        .sub(highestAPRBondableDuration?.swapFeeApr)
-        .quo(new Dec(365)) // get daily periodic rate
-        .toDec() ?? new Dec(0);
-
     /**
      * In mainnet, highestAPRBondableDuration should be superfluid as the highest gauge index.
      */
+    const superfluidBondDuration = bondDurations.find((duration) =>
+      Boolean(duration?.superfluid)
+    );
     const isSuperfluidEnabled =
-      highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
-      (Boolean(highestAPRBondableDuration?.superfluid?.delegated) ||
-        Boolean(highestAPRBondableDuration?.superfluid?.undelegating));
+      superfluidBondDuration?.superfluid?.delegated?.toDec().isPositive() ||
+      superfluidBondDuration?.superfluid?.undelegating?.toDec().isPositive();
 
     // handle user actions
     const baseEventInfo = useMemo(
@@ -217,12 +180,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         logEvent([E.addLiquidityStarted, poolInfo]);
 
         result
-          .then(invalidateQueries)
           .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
           .catch(console.error)
           .finally(() => setShowAddLiquidityModal(false));
       },
-      [baseEventInfo, isSuperfluidEnabled, logEvent, invalidateQueries]
+      [baseEventInfo, isSuperfluidEnabled, logEvent]
     );
     const onRemoveLiquidity = useCallback(
       (result: Promise<void>) => {
@@ -234,12 +196,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         logEvent([E.removeLiquidityStarted, removeLiqInfo]);
 
         result
-          .then(invalidateQueries)
           .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
           .catch(console.error)
           .finally(() => setShowRemoveLiquidityModal(false));
       },
-      [baseEventInfo, isSuperfluidEnabled, logEvent, invalidateQueries]
+      [baseEventInfo, isSuperfluidEnabled, logEvent]
     );
     const onLockToken = useCallback(
       (duration: Duration, electSuperfluid?: boolean) => {
@@ -249,6 +210,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           unbondingPeriod: duration.asDays(),
         };
 
+        console.log({ electSuperfluid });
+
         logEvent([E.bondingStarted, lockInfo]);
 
         if (electSuperfluid) {
@@ -257,12 +220,11 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
         } else {
           lockToken(duration)
-            .then(invalidateQueries)
             .then(() => logEvent([E.bondingCompleted, lockInfo]))
             .finally(() => setShowLockLPTokenModal(false));
         }
       },
-      [baseEventInfo, logEvent, lockToken, invalidateQueries]
+      [baseEventInfo, logEvent, lockToken]
     );
     const onUnlockTokens = useCallback(
       (duration: Duration) => {
@@ -282,42 +244,39 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         };
         logEvent([E.unbondAllStarted, unlockEvent]);
 
-        unlockTokens(locks)
-          .then(invalidateQueries)
-          .then(() => {
-            logEvent([E.unbondAllCompleted, unlockEvent]);
-          });
+        unlockTokens(locks).then(() => {
+          logEvent([E.unbondAllCompleted, unlockEvent]);
+        });
       },
-      [bondDurations, baseEventInfo, logEvent, unlockTokens, invalidateQueries]
+      [bondDurations, baseEventInfo, logEvent, unlockTokens]
     );
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress: string) => {
-        if (!baseEventInfo.isSuperfluidPool || !pool.id) return;
+        console.log("handleSuperfluidDelegateToValidator", {
+          validatorAddress,
+          isSuperfluid,
+        });
+        if (!isSuperfluid || !pool.id) return;
 
         const poolInfo = {
           ...baseEventInfo,
           unbondingPeriod: 14,
-          validatorName: queryCosmos.queryValidators
-            .getQueryStatus(BondStatus.Bonded)
-            .getValidator(validatorAddress)?.description.moniker,
           isSuperfluidEnabled,
         };
 
         logEvent([E.superfluidStakeStarted, poolInfo]);
 
         delegateSharesToValidator(pool.id, validatorAddress, lockLPTokensConfig)
-          .then(invalidateQueries)
           .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
           .finally(() => setShowSuperfluidValidatorsModal(false));
       },
       [
         pool,
+        isSuperfluid,
         baseEventInfo,
-        queryCosmos.queryValidators,
         isSuperfluidEnabled,
         logEvent,
         delegateSharesToValidator,
-        invalidateQueries,
         lockLPTokensConfig,
       ]
     );
@@ -334,16 +293,12 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     }, [userSharePool?.availableShares, bondDurations]);
     const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
-    const additionalRewardsByBonding = queryAccountPoolRewards
-      .getUsdRewardsForPool(pool.id)
-      ?.day.mul(highestAPRDailyPeriodicRate)
-      .maxDecimals(3)
-      .inequalitySymbol(false);
-
     const setShowModal = useCallback(
       (setter: Function, show: boolean) => () => setter(show),
       []
     );
+
+    console.log(superfluidBondDuration?.userLocks);
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -377,6 +332,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             onRequestClose={() => setShowLockLPTokenModal(false)}
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
+            bondDurations={bondDurations}
+            availableShares={userSharePool?.availableShares ?? undefined}
           />
         )}
         {isSuperfluid &&
@@ -390,12 +347,12 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   : t("superfluidValidator.title")
               }
               availableBondAmount={
-                superfluidPoolDetail?.userUpgradeableSharePoolLockIds
-                  ? superfluidPoolDetail.userUpgradeableSharePoolLockIds.amount // is delegating amount from existing lockup
+                superfluidBondDuration?.userLocks.length
+                  ? superfluidBondDuration.userShares // is delegating amount from existing lockup
                   : new CoinPretty(
                       sharePool.currency, // is delegating amount from new/pending lockup
-                      lockLPTokensConfig.amount !== ""
-                        ? lockLPTokensConfig.getAmountPrimitive().amount
+                      lockLPTokensConfig.amount
+                        ? lockLPTokensConfig.amount.toCoin().amount
                         : new Dec(0)
                     )
               }
@@ -598,46 +555,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     ]}
                   />
                 </div>
-                {displayDailyEarn && (
-                  <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
-                    <div className="flex flex-col gap-2">
-                      <span className="body2 text-osmoverse-300">
-                        {t("pool.currentDailyEarn")}
-                      </span>
-                      <h4 className="text-osmoverse-100">
-                        {t("pool.dailyEarnAmount", {
-                          amount:
-                            queryAccountPoolRewards
-                              .getUsdRewardsForPool(pool.id)
-                              ?.day.toString() ?? "$0",
-                        })}
-                      </h4>
-                    </div>
-                    {userSharePool.availableValue.toDec().isPositive() &&
-                      bondDurations.some((duration) => duration.bondable) && (
-                        <ArrowButton
-                          className="text-left"
-                          onClick={() => {
-                            logEvent([
-                              E.earnMoreByBondingClicked,
-                              baseEventInfo,
-                            ]);
-                            setShowLockLPTokenModal(true);
-                          }}
-                        >
-                          {t("pool.earnMore", {
-                            amount: additionalRewardsByBonding
-                              ?.toDec()
-                              .gte(new Dec(0.001))
-                              ? `$${additionalRewardsByBonding?.toString()}/${t(
-                                  "pool.day"
-                                )}`
-                              : "",
-                          })}
-                        </ArrowButton>
-                      )}
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -747,7 +664,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right lg:hidden">
-                  {isUserSharePoolLoading && Boolean(account) ? (
+                  {isLoadingUserSharePool && Boolean(account) ? (
                     <Spinner />
                   ) : userSharePool ? (
                     <>

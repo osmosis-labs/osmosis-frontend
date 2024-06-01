@@ -11,6 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -200,6 +201,12 @@ export function useAmountInput({
     setFraction(null);
   }, [setAmount]);
 
+  const queryClient = useQueryClient();
+  const invalidate = useCallback(() => {
+    if (account?.address)
+      useBalances.invalidateQuery({ address: account.address, queryClient });
+  }, [account?.address, queryClient]);
+
   return {
     inputAmount: inputAmountWithFraction,
     debouncedInAmount,
@@ -227,6 +234,7 @@ export function useAmountInput({
       () => setFraction(fraction === 0.5 ? null : 0.5),
       [fraction]
     ),
+    invalidate,
   };
 }
 
