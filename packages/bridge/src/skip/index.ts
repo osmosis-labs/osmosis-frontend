@@ -26,10 +26,9 @@ import { cosmosMsgOpts } from "../msg";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
-export const skipProviderId = "Skip" as const;
-
 export class SkipBridgeProvider implements BridgeProvider {
-  readonly providerName = skipProviderId;
+  static readonly ID = "Skip";
+  readonly providerName = SkipBridgeProvider.ID;
 
   protected readonly skipClient = new SkipApiClient();
 
@@ -50,7 +49,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: skipProviderId,
+        id: SkipBridgeProvider.ID,
         fromAmount,
         fromAsset,
         fromChain,
@@ -372,7 +371,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: skipProviderId,
+        id: SkipBridgeProvider.ID,
         func: "_getSkipAssets",
         chainID,
       }),
@@ -388,7 +387,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: skipProviderId,
+        id: SkipBridgeProvider.ID,
         func: "_getChains",
       }),
       getFreshValue: async () => {

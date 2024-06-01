@@ -1,5 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Bridge } from "@osmosis-labs/bridge";
 import { formatICNSName } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,7 +31,7 @@ import { useStore } from "~/stores";
 type PathSource = "counterpartyAccount" | "account";
 
 export type BaseBridgeProviderOption = {
-  id: string;
+  id: Bridge;
   logo: string;
   name: string;
 };

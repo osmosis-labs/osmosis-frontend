@@ -1,4 +1,4 @@
-import { createInnerTRPCContext } from "@osmosis-labs/server";
+import { createInnerTRPCContext } from "@osmosis-labs/trpc";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 

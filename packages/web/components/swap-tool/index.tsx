@@ -28,11 +28,7 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
-import {
-  useFeatureFlags,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -83,10 +79,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useWalletSelect();
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-    const { isOneClickTradingEnabled } = useOneClickTradingSession();
-    const [isSendingTx, setIsSendingTx] = useState(false);
-
     const account = accountStore.getWallet(chainId);
+
+    const [isSendingTx_, setIsSendingTx] = useState(false);
+    const isSendingTx = isSendingTx_ || Boolean(account?.txTypeInProgress);
+
     const slippageConfig = useSlippageConfig();
 
     const swapState = useSwap({
@@ -239,7 +236,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    /** Indicates any of the dependent queries in swap tool are loading. */
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
     let buttonText: string;
     if (swapState.error) {
@@ -292,13 +293,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
       .toDec()
       .gte(new Dec(0.01));
-
-    const isLoadingMaxButton =
-      featureFlags.swapToolSimulateFee &&
-      !isNil(account?.address) &&
-      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-      !swapState.inAmountInput?.balance?.toDec().isZero() &&
-      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
@@ -523,7 +517,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.balance.toDec().isZero() ||
                         swapState.inAmountInput.notEnoughBalanceForMax
                       }
-                      isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
                       classes={{
                         spinner: "!h-3 !w-3",
@@ -703,10 +696,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
-                      "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive() &&
-                        !swapState.inAmountInput.isTyping &&
-                        !swapState.isQuoteLoading
+                      "md:subtitle1 whitespace-nowrap text-right transition-all",
+                      swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
@@ -731,21 +722,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                       {
                         "opacity-0":
-                          !swapState.tokenOutFiatValue ||
                           swapState.tokenOutFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          (!swapState.tokenOutFiatValue?.toDec().isZero() &&
+                          (!swapState.tokenOutFiatValue.toDec().isZero() &&
                             isSwapToolLoading) ||
                           swapState.inAmountInput.isTyping,
                       }
                     )}
                   >
                     {`≈ ${
-                      swapState.tokenOutFiatValue &&
                       swapState.tokenOutFiatValue.toString().length > 15
                         ? formatPretty(swapState.tokenOutFiatValue)
-                        : swapState.tokenOutFiatValue?.toString() ?? "0"
+                        : swapState.tokenOutFiatValue.toString()
                     }`}
                   </span>
                 </div>
@@ -767,10 +756,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                !swapState.isSpotPriceQuoteLoading
+                !isSwapToolLoading
               }
             >
-              {/* TODO - move this custom button to our own button component */}
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -990,19 +978,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||
+                    isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
-              }
-              isLoading={
-                /**
-                 * While 1-Click is enabled, display a loading spinner when simulation
-                 * is in progress since we don't have a wallet to compute the fee for
-                 * us. We need the network fee to be calculated before we can proceed
-                 * with the trade.
-                 */
-                isOneClickTradingEnabled &&
-                swapState.isLoadingNetworkFee &&
-                !swapState.inAmountInput.isEmpty
+                    Boolean(swapState.networkFeeError)))
               }
               loadingText={buttonText}
               onClick={sendSwapTx}
