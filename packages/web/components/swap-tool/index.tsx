@@ -23,6 +23,7 @@ import { TokenSelectWithDrawer } from "~/components/control/token-select-with-dr
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import {
@@ -311,6 +312,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
           <SwapToolTabs activeTab={activeTab} setTab={setActiveTab} />
+          <PlaceLimitTool />
           <Popover>
             {({ open, close }) => (
               <>
