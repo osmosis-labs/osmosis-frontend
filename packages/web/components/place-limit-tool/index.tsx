@@ -21,6 +21,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       osmosisChainId: "localosmosis",
       orderbookContractAddress:
         "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w",
+      useQueryParams: false,
     });
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     const { isMobile } = useWindowSize();

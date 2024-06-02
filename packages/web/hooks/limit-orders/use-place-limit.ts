@@ -28,8 +28,8 @@ export const usePlaceLimit = ({
   osmosisChainId,
   assetIn = "OSMO",
   assetOut = "ION",
-  useQueryParams = true,
-  useOtherCurrencies = true,
+  useQueryParams = false,
+  useOtherCurrencies = false,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
   //   const [gasAmount, setGasAmount] = useState<CoinPretty>();
