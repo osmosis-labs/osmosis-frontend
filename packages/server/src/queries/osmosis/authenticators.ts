@@ -1,7 +1,7 @@
 import { RawAuthenticator } from "@osmosis-labs/types";
 
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "../../env";
-import { createNodeQuery } from "../base-utils";
+import { createNodeQuery } from "../create-node-query";
 
 export const queryAuthenticators = createNodeQuery<
   {

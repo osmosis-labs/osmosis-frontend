@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build; rm tsconfig.tsbuildinfo",
+    "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -68,6 +68,7 @@
     "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
+    "@osmosis-labs/tx": "^1.0.0",
     "@osmosis-labs/server": "^1.0.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",

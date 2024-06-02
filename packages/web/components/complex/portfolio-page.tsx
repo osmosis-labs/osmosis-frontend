@@ -58,13 +58,13 @@ export const PortfolioPage: FunctionComponent = () => {
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
   const onDeposit = useCallback(
-    (coinMinimalDenom) => {
+    (coinMinimalDenom: string) => {
       bridgeAsset(coinMinimalDenom, "deposit");
     },
     [bridgeAsset]
   );
   const onWithdraw = useCallback(
-    (coinMinimalDenom) => {
+    (coinMinimalDenom: string) => {
       bridgeAsset(coinMinimalDenom, "withdraw");
     },
     [bridgeAsset]
@@ -329,7 +329,11 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
       <Button
         className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
         onClick={() => {
-          onOpenWalletSelect(chainStore.osmosis.chainId);
+          onOpenWalletSelect({
+            walletOptions: [
+              { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
+            ],
+          });
         }}
       >
         {t("connectWallet")}

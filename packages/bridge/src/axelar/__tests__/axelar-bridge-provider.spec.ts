@@ -53,6 +53,8 @@ describe("AxelarBridgeProvider", () => {
         max: 500,
       }),
       assetLists: MockAssetLists,
+      // not used
+      chainList: [],
       getTimeoutHeight: jest.fn().mockResolvedValue({
         revisionNumber: "1",
         revisionHeight: "1000",

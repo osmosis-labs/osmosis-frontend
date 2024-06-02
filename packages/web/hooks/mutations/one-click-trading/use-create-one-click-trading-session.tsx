@@ -267,7 +267,7 @@ export const useCreateOneClickTradingSession = ({
         }
       }
 
-      let accountPubKey: string,
+      let accountPubKey: string | undefined,
         shouldAddFirstAuthenticator: boolean,
         authenticators: ParsedAuthenticator[];
       try {
@@ -365,12 +365,13 @@ export const useCreateOneClickTradingSession = ({
         authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
       }
 
-      const authenticatorsToAdd = shouldAddFirstAuthenticator
-        ? [
-            getFirstAuthenticator({ pubKey: accountPubKey }),
-            oneClickTradingAuthenticator,
-          ]
-        : [oneClickTradingAuthenticator];
+      const authenticatorsToAdd =
+        shouldAddFirstAuthenticator && accountPubKey
+          ? [
+              getFirstAuthenticator({ pubKey: accountPubKey }),
+              oneClickTradingAuthenticator,
+            ]
+          : [oneClickTradingAuthenticator];
 
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis

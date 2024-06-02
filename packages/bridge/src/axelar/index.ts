@@ -35,10 +35,9 @@ import {
   CosmosChainIds_AxelarChainIds,
 } from "./types";
 
-export const axelarProviderId = "Axelar" as const;
-
 export class AxelarBridgeProvider implements BridgeProvider {
-  readonly providerName = axelarProviderId;
+  static readonly ID = "Axelar";
+  readonly providerName = AxelarBridgeProvider.ID;
 
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
@@ -72,7 +71,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
-        id: axelarProviderId,
+        id: AxelarBridgeProvider.ID,
         fromAmount,
         fromAsset,
         fromChain,
@@ -106,12 +105,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const queryClient = await this.getQueryClient();
-          const transferFeeRes = await queryClient.getTransferFee(
-            fromChainAxelarId,
-            toChainAxelarId,
-            fromAsset.sourceDenom,
-            amount as any
-          );
+          const [transferFeeRes, gasCost] = await Promise.all([
+            queryClient.getTransferFee(
+              fromChainAxelarId,
+              toChainAxelarId,
+              fromAsset.sourceDenom,
+              amount as any
+            ),
+            this.estimateGasCost(params),
+          ]);
 
           let transferLimitAmount: string | undefined;
           try {
@@ -124,8 +126,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
           } catch (e) {
             console.warn("Failed to get transfer limit. reason: ", e);
           }
-
-          const gasCost = await this.estimateGasCost(params);
 
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([

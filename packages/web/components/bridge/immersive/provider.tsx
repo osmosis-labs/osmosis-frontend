@@ -1,45 +1,53 @@
 import { Transition } from "@headlessui/react";
-import { FunctionComponent, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button } from "~/components/ui/button";
+import { useWalletSelect } from "~/hooks";
+import {
+  useDisconnectEvmWallet,
+  useEvmWalletAccount,
+} from "~/hooks/evm-wallet";
 import { FiatRampKey } from "~/integrations";
 
 import { BridgeFlowProvider } from "../flow";
 
-export const ImmersiveBridgeFlow: FunctionComponent<BridgeFlowProvider> = ({
+export const ImmersiveBridgeFlow = ({
   Provider,
   children,
-}) => {
+}: PropsWithChildren<BridgeFlowProvider>) => {
   // TODO: state will be encapsulated in a state hook
-  const [isShowing, setIsShowing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
+  const { isConnected, address } = useEvmWalletAccount();
+  const { onOpenWalletSelect } = useWalletSelect();
+  const { disconnect } = useDisconnectEvmWallet();
 
   return (
     <Provider
       value={{
         // globally received events
         startBridge: (direction: "deposit" | "withdraw") => {
-          setIsShowing(true);
+          setIsVisible(true);
           console.log("startBridge", direction);
         },
         bridgeAsset: (anyDenom: string, direction: "deposit" | "withdraw") => {
-          setIsShowing(true);
+          setIsVisible(true);
           console.log("bridgeAsset", anyDenom, direction);
         },
         fiatRamp: (fiatRampKey: FiatRampKey, assetKey: string) => {
-          setIsShowing(true);
+          setIsVisible(true);
           console.log("fiatRamp", fiatRampKey, assetKey);
         },
         fiatRampSelection: () => {
-          setIsShowing(true);
+          setIsVisible(true);
           console.log("fiatRampSelection");
         },
       }}
     >
       {children}
       <Transition
-        show={isShowing}
+        show={isVisible}
         className="fixed inset-0 z-[999] flex items-center justify-center bg-osmoverse-900"
         enter="transition-opacity duration-300"
         enterFrom="opacity-0"
@@ -78,7 +86,29 @@ export const ImmersiveBridgeFlow: FunctionComponent<BridgeFlowProvider> = ({
             </Button>
           </div>
           <h6>I will fade in and out</h6>
-          <Button onClick={() => setIsShowing(false)}>Close</Button>
+          <Button onClick={() => setIsVisible(false)}>Close</Button>
+
+          {isConnected ? (
+            <div>
+              <p>Evm Address: {address}</p>
+              <Button onClick={() => disconnect()}>Disconnect</Button>
+            </div>
+          ) : (
+            <Button
+              onClick={() =>
+                onOpenWalletSelect({
+                  walletOptions: [
+                    {
+                      walletType: "evm",
+                    },
+                  ],
+                  layout: "list",
+                })
+              }
+            >
+              Connect EVM Wallet
+            </Button>
+          )}
         </div>
       </Transition>
     </Provider>

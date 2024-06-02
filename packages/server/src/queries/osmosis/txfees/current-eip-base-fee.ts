@@ -1,6 +1,9 @@
-import { createNodeQuery } from "../../base-utils";
+import { createNodeQuery } from "../../create-node-query";
 
-export const queryOsmosisGasPrice = createNodeQuery<{
+/** Currently an Osmosis-specific feature, but could be queried from
+ *  a common cosmos fee module, like Skip's Fee Market module.
+ */
+export const queryFeesBaseGasPrice = createNodeQuery<{
   base_fee: string;
 }>({
   path: "/osmosis/txfees/v1beta1/cur_eip_base_fee",

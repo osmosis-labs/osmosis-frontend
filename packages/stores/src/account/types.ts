@@ -35,7 +35,7 @@ export interface DeliverTxResponse {
   readonly gasWanted: string;
 }
 
-export type RegistryWallet = Omit<Wallet, "logo"> & {
+export type CosmosRegistryWallet = Omit<Wallet, "logo"> & {
   logo: string;
   lazyInstall: () => any;
   stakeUrl?: string;
@@ -84,8 +84,8 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
     UnionToIntersection<Injects[number]> & {
       txTypeInProgress: string;
       isReadyToSendTx: boolean;
-      supportsChain: Required<RegistryWallet>["supportsChain"];
-      walletInfo: RegistryWallet;
+      supportsChain: Required<CosmosRegistryWallet>["supportsChain"];
+      walletInfo: CosmosRegistryWallet;
     };
 
 export interface TxEvents {

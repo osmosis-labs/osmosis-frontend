@@ -1,4 +1,5 @@
-import { type Search, type SortDirection } from "@osmosis-labs/server";
+import { type Search } from "@osmosis-labs/server";
+import { type SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
   createColumnHelper,

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -17,12 +17,14 @@ function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
   apiUtils.edge.assets.getUserAssetsTotal.invalidate();
+  apiUtils.edge.assets.getUserBridgeAssets.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
+  apiUtils.local.concentratedLiquidity.getPositionDetails.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
 
-export const StoreProvider: FunctionComponent = ({ children }) => {
+export const StoreProvider = ({ children }: PropsWithChildren) => {
   const apiUtils = api.useUtils();
   const [_, setOneClickTradingIntroModalScreen] =
     useGlobalIs1CTIntroModalScreen();
