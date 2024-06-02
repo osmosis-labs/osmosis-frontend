@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 
 import { PlaceLimitTool } from "~/components/place-limit-tool";
+import { SwapTool } from "~/components/swap-tool";
 import {
   SwapToolTab,
   SwapToolTabs,
@@ -34,6 +35,11 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
                 tokenInDenom={tokenOutDenom}
                 tokenOutDenom={tokenInDenom}
               />
+            );
+          case SwapToolTab.SWAP:
+          default:
+            return (
+              <SwapTool useOtherCurrencies useQueryParams page="Swap Page" />
             );
         }
       }, [tab, tokenInDenom, tokenOutDenom])}
