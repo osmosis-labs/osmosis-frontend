@@ -11,16 +11,26 @@ import { usePlaceLimit } from "~/hooks/limit-orders";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
-export interface PlaceLimitToolProps {}
+export interface PlaceLimitToolProps {
+  tokenInDenom: string;
+  tokenOutDenom: string;
+  orderDirection: "ask" | "bid";
+  orderbookContractAddress?: string;
+}
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  () => {
+  ({
+    tokenInDenom,
+    tokenOutDenom,
+    orderbookContractAddress = "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w",
+  }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const swapState = usePlaceLimit({
       osmosisChainId: "localosmosis",
-      orderbookContractAddress:
-        "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w",
+      assetIn: tokenInDenom,
+      assetOut: tokenOutDenom,
+      orderbookContractAddress,
       useQueryParams: false,
     });
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
@@ -140,7 +150,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           disabled={false}
           isLoading={false}
           loadingText={"Loading..."}
-          onClick={() => swapState.placeLimit("ask")}
+          onClick={swapState.placeLimit}
         >
           {account?.walletStatus === WalletStatus.Connected ||
           isSwapToolLoading ? (
