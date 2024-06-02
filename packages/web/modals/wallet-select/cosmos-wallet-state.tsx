@@ -81,7 +81,7 @@ export const CosmosWalletState: FunctionComponent<
     const show1CT =
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
-      walletRepo?.chainRecord.chain.chain_name === chainStore.osmosis.chainName;
+      walletRepo?.chainRecord.chain?.chain_name === chainStore.osmosis.chainName;
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -143,8 +143,8 @@ export const CosmosWalletState: FunctionComponent<
           desc={
             Boolean(downloadInfo)
               ? t("walletSelect.maybeInstalled", {
-                  walletName: walletInfo?.prettyName?.toLowerCase() ?? "",
-                })
+                walletName: walletInfo?.prettyName?.toLowerCase() ?? "",
+              })
               : t("walletSelect.downloadLinkNotProvided")
           }
           actions={
@@ -227,8 +227,8 @@ export const CosmosWalletState: FunctionComponent<
         modalView === "broadcastedOneClickTrading"
           ? t("walletSelect.enablingOneClickTrading")
           : t("walletSelect.approveOneClickTradingSession", {
-              walletName: walletInfo?.prettyName ?? "",
-            });
+            walletName: walletInfo?.prettyName ?? "",
+          });
 
       return (
         <ConnectingWalletState
@@ -247,11 +247,11 @@ export const CosmosWalletState: FunctionComponent<
       let desc: string =
         walletInfo?.mode === "wallet-connect"
           ? t("walletSelect.approveWalletConnect", {
-              walletName: walletInfo?.prettyName ?? "",
-            })
+            walletName: walletInfo?.prettyName ?? "",
+          })
           : t("walletSelect.openExtension", {
-              walletName: walletInfo?.prettyName ?? "",
-            });
+            walletName: walletInfo?.prettyName ?? "",
+          });
 
       if (message === "InitClient" || Boolean(lazyWalletInfo)) {
         title = t("walletSelect.initializingWallet");
