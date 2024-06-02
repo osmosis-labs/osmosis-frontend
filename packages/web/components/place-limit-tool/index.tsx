@@ -14,7 +14,6 @@ import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 export interface PlaceLimitToolProps {
   tokenInDenom: string;
   tokenOutDenom: string;
-  orderDirection: "ask" | "bid";
   orderbookContractAddress?: string;
 }
 

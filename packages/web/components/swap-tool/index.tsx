@@ -5,13 +5,14 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
   MouseEvent,
+  ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -23,25 +24,18 @@ import { TokenSelectWithDrawer } from "~/components/control/token-select-with-dr
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
-import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
-import {
-  SwapToolTab,
-  SwapToolTabs,
-} from "~/components/swap-tool/swap-tool-tabs";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
-  useFeatureFlags,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
-import {
   useAmplitudeAnalytics,
   useDisclosure,
+  useFeatureFlags,
+  useOneClickTradingSession,
   useSlippageConfig,
+  useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
@@ -306,13 +300,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
-    const [activeTab, setActiveTab] = useState<SwapToolTab>(SwapToolTab.BUY);
-
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
-          <SwapToolTabs activeTab={activeTab} setTab={setActiveTab} />
-          <PlaceLimitTool />
           <Popover>
             {({ open, close }) => (
               <>

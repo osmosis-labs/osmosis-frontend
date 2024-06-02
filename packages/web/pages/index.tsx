@@ -1,11 +1,10 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useLocalStorage } from "react-use";
 
 import { Ad, AdBanners } from "~/components/ad-banner";
 import ErrorBoundary from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
-import { SwapTool } from "~/components/swap-tool";
+import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -24,8 +23,8 @@ export type PreviousTrade = {
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
-  const [previousTrade, setPreviousTrade] =
-    useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+  // const [previousTrade, setPreviousTrade] =
+  //   useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -64,7 +63,7 @@ const Home = () => {
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-          <SwapTool
+          {/* <SwapTool
             useQueryParams
             useOtherCurrencies
             onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
@@ -73,7 +72,8 @@ const Home = () => {
             initialSendTokenDenom={previousTrade?.sendTokenDenom}
             initialOutTokenDenom={previousTrade?.outTokenDenom}
             page="Swap Page"
-          />
+          /> */}
+          <TradeTool />
         </div>
       </div>
     </main>

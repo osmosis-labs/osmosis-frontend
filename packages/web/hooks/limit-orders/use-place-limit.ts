@@ -47,7 +47,6 @@ export const usePlaceLimit = ({
     tokenInDenom: assetIn,
     tokenOutDenom: assetOut,
   });
-
   const account = accountStore.getWallet(osmosisChainId);
 
   const placeLimit = useCallback(async () => {
@@ -65,14 +64,19 @@ export const usePlaceLimit = ({
       "executeWasm",
       orderbookContractAddress,
       msg,
-      [{ denom: assetIn, amount: inAmountInput.inputAmount }]
+      [
+        {
+          amount: inAmountInput.inputAmount,
+          denom: swapAssets.fromAsset.coinMinimalDenom,
+        },
+      ]
     );
   }, [
     orderbookContractAddress,
     account,
-    inAmountInput,
+    swapAssets,
     orderDirection,
-    assetIn,
+    inAmountInput,
   ]);
 
   return {
