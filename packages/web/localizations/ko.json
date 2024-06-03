@@ -391,7 +391,6 @@
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
-    "notInitialized": "초기화되지 않았습니다",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
     "zeroAmount": "수량이 0입니다.",

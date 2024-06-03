@@ -391,7 +391,6 @@
     "noAvailableShares": "شما موجودی برای {denom} ندارید",
     "noRoute": "هیچ مسیر برای تبدیل پیدا نشد",
     "noSendCurrency": "ارز خروجی مشخص نشده است",
-    "notInitialized": "ساخته نشده است",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
     "zeroAmount": "مقدار صفر است",

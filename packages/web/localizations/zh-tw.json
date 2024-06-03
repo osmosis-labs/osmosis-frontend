@@ -391,7 +391,6 @@
     "noAvailableShares": "沒有可用的 {denom} 份額",
     "noRoute": "此交易沒有路線",
     "noSendCurrency": "未設定要傳送的貨幣",
-    "notInitialized": "未初始化",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
     "zeroAmount": "未提供幣額",

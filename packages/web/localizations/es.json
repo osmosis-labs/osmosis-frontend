@@ -391,7 +391,6 @@
     "noAvailableShares": "No hay acciones disponibles {denom}",
     "noRoute": "No hay ruta para este cambio",
     "noSendCurrency": "Moneda para enviar no establecida",
-    "notInitialized": "No inicializado",
     "percentageSum": "La suma de porcentajes no es 100",
     "scalingFactorTooLow": "Factor de escala demasiado bajo",
     "zeroAmount": "La cantidad es cero",

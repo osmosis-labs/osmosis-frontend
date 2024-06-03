@@ -391,7 +391,6 @@
     "noAvailableShares": "Keine verfügbaren {denom} Freigaben",
     "noRoute": "Keine Route für diesen Handel",
     "noSendCurrency": "Die zu sendende Währung ist nicht festgelegt",
-    "notInitialized": "Nicht initialisiert",
     "percentageSum": "Die Summe der Prozentsätze beträgt nicht 100",
     "scalingFactorTooLow": "Skalierungsfaktor zu niedrig",
     "zeroAmount": "Betrag ist Null",

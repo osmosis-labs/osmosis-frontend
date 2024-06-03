@@ -391,7 +391,6 @@
     "noAvailableShares": "没有可用 {denom} 份额",
     "noRoute": "此交易没有路线",
     "noSendCurrency": "未设置发送货币",
-    "notInitialized": "未初始化",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
     "zeroAmount": "数量为零",

@@ -391,7 +391,6 @@
     "noAvailableShares": "कोई उपलब्ध {denom} शेयर नहीं",
     "noRoute": "इस व्यापार के लिए कोई मार्ग नहीं",
     "noSendCurrency": "भेजने की मुद्रा निर्धारित नहीं है",
-    "notInitialized": "प्रारंभ नहीं किया गया",
     "percentageSum": "प्रतिशतों का योग 100 नहीं है",
     "scalingFactorTooLow": "स्केलिंग कारक बहुत कम है",
     "zeroAmount": "राशि शून्य है",

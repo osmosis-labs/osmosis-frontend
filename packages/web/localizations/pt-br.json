@@ -391,7 +391,6 @@
     "noAvailableShares": "Não está disponivel {denom} participações",
     "noRoute": "Sem rota para esta troca",
     "noSendCurrency": "Moeda para envio não configurada",
-    "notInitialized": "Não Inicializado",
     "percentageSum": "A soma das porcentagens não é 100",
     "scalingFactorTooLow": "Fator de escalonamento muito baixo",
     "zeroAmount": "Quantia é zero",

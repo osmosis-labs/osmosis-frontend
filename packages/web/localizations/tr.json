@@ -391,7 +391,6 @@
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",
     "noRoute": "Bu ticaret için Rota yok",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
-    "notInitialized": "Başlatılmadı",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
     "zeroAmount": "Miktar sıfır",

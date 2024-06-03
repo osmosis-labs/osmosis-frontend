@@ -391,7 +391,6 @@
     "noAvailableShares": "કોઈ {denom} શેર ઉપલબ્ધ નથી",
     "noRoute": "આ વેપાર માટે કોઈ માર્ગ નથી",
     "noSendCurrency": "મોકલવાનું ચલણ સેટ નથી",
-    "notInitialized": "આરંભ કરેલ નથી",
     "percentageSum": "ટકાવારીનો સરવાળો 100 નથી",
     "scalingFactorTooLow": "સ્કેલિંગ પરિબળ ખૂબ ઓછું છે",
     "zeroAmount": "રકમ શૂન્ય છે",

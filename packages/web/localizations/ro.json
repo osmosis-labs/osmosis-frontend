@@ -391,7 +391,6 @@
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",
     "noRoute": "Nicio rută pentru acest comerț",
     "noSendCurrency": "Moneda de trimis nu este selectata",
-    "notInitialized": "Neinitializat",
     "percentageSum": "Suma procentelor nu este 100",
     "scalingFactorTooLow": "Factorul de scalare este prea mic",
     "zeroAmount": "Suma este 0",

@@ -391,7 +391,6 @@
     "noAvailableShares": "利用可能な{denom}共有がありません",
     "noRoute": "この取引にはルートがありません",
     "noSendCurrency": "送金通貨が設定されていません",
-    "notInitialized": "初期化されていません",
     "percentageSum": "パーセンテージの合計が 100 にならない",
     "scalingFactorTooLow": "倍率が低すぎる",
     "zeroAmount": "金額はゼロです",

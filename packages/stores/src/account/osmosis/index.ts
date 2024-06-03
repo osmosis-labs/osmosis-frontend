@@ -1300,75 +1300,69 @@ export class OsmosisAccountImpl {
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
+    poolTotalShares: Int,
+    poolAssets: { denom: string; amount: string }[],
+    poolExitFee: Dec,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
     const mkp = this.makeCoinPretty;
+
+    const estimated = OsmosisMath.estimateExitSwap(
+      {
+        totalShare: poolTotalShares,
+        poolAssets: poolAssets.map((asset) => ({
+          ...asset,
+          amount: new Int(asset.amount),
+        })),
+        exitFee: poolExitFee,
+      },
+      mkp,
+      shareInAmount,
+      this.msgOpts.exitPool.shareCoinDecimals
+    );
+
+    const maxSlippageDec = new Dec(maxSlippage).quo(
+      DecUtils.getTenExponentNInPrecisionRange(2)
+    );
+
+    const tokenOutMins = maxSlippageDec.equals(new Dec(0))
+      ? []
+      : estimated.tokenOuts.map((tokenOut) => {
+          return {
+            denom: tokenOut.currency.coinMinimalDenom,
+            amount: tokenOut
+              .toDec() // TODO: confirm toDec() respects token dec count
+              .mul(new Dec(1).sub(maxSlippageDec))
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  tokenOut.currency.coinDecimals
+                )
+              )
+              .truncate()
+              .toString(),
+          };
+        });
+
+    const msg = this.msgOpts.exitPool.messageComposer({
+      poolId: BigInt(poolId),
+      sender: this.address,
+      shareInAmount: new Dec(shareInAmount)
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.msgOpts.exitPool.shareCoinDecimals
+          )
+        )
+        .truncate()
+        .toString(),
+      tokenOutMins,
+    });
 
     await this.base.signAndBroadcast(
       this.chainId,
       "exitPool",
-      async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const estimated = OsmosisMath.estimateExitSwap(
-          pool,
-          mkp,
-          shareInAmount,
-          this.msgOpts.exitPool.shareCoinDecimals
-        );
-
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-
-        const tokenOutMins = maxSlippageDec.equals(new Dec(0))
-          ? []
-          : estimated.tokenOuts.map((tokenOut) => {
-              return {
-                denom: tokenOut.currency.coinMinimalDenom,
-                amount: tokenOut
-                  .toDec() // TODO: confirm toDec() respects token dec count
-                  .mul(new Dec(1).sub(maxSlippageDec))
-                  .mul(
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      tokenOut.currency.coinDecimals
-                    )
-                  )
-                  .truncate()
-                  .toString(),
-              };
-            });
-
-        const msg = this.msgOpts.exitPool.messageComposer({
-          poolId: BigInt(pool.id),
-          sender: this.address,
-          shareInAmount: new Dec(shareInAmount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                this.msgOpts.exitPool.shareCoinDecimals
-              )
-            )
-            .truncate()
-            .toString(),
-          tokenOutMins,
-        });
-
-        return [msg];
-      },
+      [msg],
       memo,
       undefined,
       undefined,

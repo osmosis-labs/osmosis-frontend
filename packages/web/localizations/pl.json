@@ -391,7 +391,6 @@
     "noAvailableShares": "Nie ma dostępnych {denom} aktyw",
     "noRoute": "Brak trasy dla tej transakcji",
     "noSendCurrency": "Nie ustawiona waluta do wysłania",
-    "notInitialized": "Nie zinicjalizowane",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
     "zeroAmount": "Ilość jest zerowa",

@@ -391,7 +391,6 @@
     "noAvailableShares": "Aucun actif {denom} disponible",
     "noRoute": "Pas d'itinéraire pour ce commerce",
     "noSendCurrency": "Devise à envoyer non définie",
-    "notInitialized": "Non initialisé",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "zeroAmount": "Le montant est zéro",

@@ -391,7 +391,7 @@
     "noAvailableShares": "No available {denom} shares",
     "noRoute": "No route for this trade",
     "noSendCurrency": "Currency to send not set",
-    "notInitialized": "Not initialized",
+    "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
