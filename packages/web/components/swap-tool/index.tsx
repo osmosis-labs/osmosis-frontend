@@ -242,8 +242,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.isQuoteLoading ||
       swapState.isLoadingNetworkFee;
 
-    console.log(swapState.isLoadingNetworkFee, swapState.isQuoteLoading);
-
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
