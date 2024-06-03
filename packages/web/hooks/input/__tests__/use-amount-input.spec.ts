@@ -178,7 +178,7 @@ describe("useAmountInput", () => {
 
   it("calculates max amount but does not consider gas if 'gasAmount' currency does not match currency", async () => {
     const mockGasAmount = new CoinPretty(
-      { ...osmoMockCurrency, coinDenom: "ATOM" },
+      { ...osmoMockCurrency, coinDenom: "ATOM", coinMinimalDenom: "uatom" },
       new Dec(1).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
     ); // 1 ATOM for gas
 

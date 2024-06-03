@@ -1,16 +1,18 @@
-import { AxelarBridgeProvider, axelarProviderId } from "./axelar";
+import { AxelarBridgeProvider } from "./axelar";
+import { IbcBridgeProvider } from "./ibc";
 import { BridgeProviderContext } from "./interface";
-import { SkipBridgeProvider, skipProviderId } from "./skip";
-import { SquidBridgeProvider, squidProviderId } from "./squid";
+import { SkipBridgeProvider } from "./skip";
+import { SquidBridgeProvider } from "./squid";
 
 export type Bridge = keyof BridgeProviders["bridges"];
 
 /** Instance of all available bridge providers. */
 export class BridgeProviders {
   public readonly bridges: {
-    [squidProviderId]: SquidBridgeProvider;
-    [axelarProviderId]: AxelarBridgeProvider;
-    [skipProviderId]: SkipBridgeProvider;
+    [SquidBridgeProvider.ID]: SquidBridgeProvider;
+    [AxelarBridgeProvider.ID]: AxelarBridgeProvider;
+    [SkipBridgeProvider.ID]: SkipBridgeProvider;
+    [IbcBridgeProvider.ID]: IbcBridgeProvider;
   };
 
   constructor(integratorId: string, commonContext: BridgeProviderContext) {
@@ -19,9 +21,13 @@ export class BridgeProviders {
     }
 
     this.bridges = {
-      [squidProviderId]: new SquidBridgeProvider(integratorId, commonContext),
-      [axelarProviderId]: new AxelarBridgeProvider(commonContext),
-      [skipProviderId]: new SkipBridgeProvider(commonContext),
+      [SquidBridgeProvider.ID]: new SquidBridgeProvider(
+        integratorId,
+        commonContext
+      ),
+      [AxelarBridgeProvider.ID]: new AxelarBridgeProvider(commonContext),
+      [SkipBridgeProvider.ID]: new SkipBridgeProvider(commonContext),
+      [IbcBridgeProvider.ID]: new IbcBridgeProvider(commonContext),
     };
   }
 }

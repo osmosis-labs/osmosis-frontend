@@ -169,6 +169,7 @@ function filterAssetList(
 export * from "./bridge";
 export * from "./categories";
 export * from "./config";
+export * from "./gas";
 export * from "./market";
 export * from "./price";
 export * from "./user";

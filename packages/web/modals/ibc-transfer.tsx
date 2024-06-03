@@ -10,7 +10,7 @@ import {
   useConnectWalletModalRedirect,
   useIbcTransfer,
 } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -261,10 +261,21 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               onRequestSwitchWallet={async (source) => {
                 if (source === "account") {
                   await account?.disconnect(true);
-                  onOpenWalletSelect(osmosisChainId);
+                  onOpenWalletSelect({
+                    walletOptions: [
+                      { walletType: "cosmos", chainId: osmosisChainId },
+                    ],
+                  });
                 } else if (source === "counterpartyAccount") {
                   await counterpartyAccount?.disconnect(true);
-                  onOpenWalletSelect(props.counterpartyChainId);
+                  onOpenWalletSelect({
+                    walletOptions: [
+                      {
+                        walletType: "cosmos",
+                        chainId: props.counterpartyChainId,
+                      },
+                    ],
+                  });
                 }
                 resetState();
               }}
