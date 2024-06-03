@@ -197,7 +197,8 @@ export function useSwap(
     featureFlags.swapToolSimulateFee &&
     !Boolean(precedentError) &&
     !isQuoteLoading &&
-    Boolean(quote);
+    Boolean(quote) &&
+    Boolean(account?.address);
   const {
     data: networkFee,
     error: networkFeeError,
@@ -783,9 +784,14 @@ function useSwapAmountInput({
     gasAmount: gasAmount,
   });
 
+  const balanceQuoteQueryEnabled =
+    !!inAmountInput.balance &&
+    !inAmountInput.balance?.toDec().isZero() &&
+    Boolean(swapAssets.fromAsset) &&
+    Boolean(swapAssets.toAsset);
   const {
     data: quoteForCurrentBalance,
-    isLoading: isQuoteForCurrentBalanceLoading,
+    isLoading: isQuoteForCurrentBalanceLoading_,
     error: quoteForCurrentBalanceError,
   } = useQueryRouterBestQuote(
     {
@@ -795,11 +801,10 @@ function useSwapAmountInput({
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    !!inAmountInput.balance &&
-      !inAmountInput.balance?.toDec().isZero() &&
-      Boolean(swapAssets.fromAsset) &&
-      Boolean(swapAssets.toAsset)
+    balanceQuoteQueryEnabled
   );
+  const isQuoteForCurrentBalanceLoading =
+    isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
   const networkQueryEnabled =
     featureFlags.swapToolSimulateFee &&
