@@ -124,17 +124,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           </div>
         </div>
-        <div className="mt-3 flex place-content-between items-center">
+        <div className="mt-3 flex place-content-between items-center text-body1">
           <div className="flex w-full flex-col">
             <div>
               <span
                 className={classNames(
-                  "w-full bg-transparent text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1"
+                  "w-full bg-transparent text-white-full focus:outline-none"
                 )}
               >{`When ${tokenOutDenom} price is at `}</span>
               <span
                 className={classNames(
-                  "w-full bg-transparent text-bullish-600 placeholder:text-white-disabled focus:outline-none md:text-subtitle1"
+                  "w-full bg-transparent text-wosmongton-300 focus:outline-none "
                 )}
               >{`$${formatPretty(swapState.priceState.price)}`}</span>
             </div>
