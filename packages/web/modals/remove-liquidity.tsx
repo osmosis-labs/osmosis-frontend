@@ -23,11 +23,10 @@ export const RemoveLiquidityModal: FunctionComponent<
     RemovableShareLiquidity
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore } = useStore();
+  const { accountStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
   const [percentage, setPercentage] = useState("50");
