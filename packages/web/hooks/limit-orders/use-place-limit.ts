@@ -51,13 +51,17 @@ export const usePlaceLimit = ({
   const account = accountStore.getWallet(osmosisChainId);
 
   const placeLimit = useCallback(async () => {
-    const tickId = priceToTick(priceState.price);
+    const quantity = inAmountInput.amount?.toCoin().amount ?? "0'";
+    if (quantity === "0") {
+      return;
+    }
 
+    const tickId = priceToTick(priceState.price);
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
         order_direction: orderDirection,
-        quantity: inAmountInput.inputAmount,
+        quantity,
         claim_bounty: CLAIM_BOUNTY,
       },
     };
@@ -67,7 +71,7 @@ export const usePlaceLimit = ({
       msg,
       [
         {
-          amount: inAmountInput.inputAmount,
+          amount: quantity,
           denom: swapAssets.fromAsset.coinMinimalDenom,
         },
       ]
@@ -118,14 +122,17 @@ const useOrderbookDenoms = () => {
 };
 
 const useLimitPrice = () => {
-  const [price, setPrice] = useState(new Dec(1));
+  const spotPrice = useMemo(() => new Dec(1), []);
+  const [percentAdjusted, setPercentAdjusted] = useState(new Dec(0));
 
-  const adjustByPercentage = useCallback(
-    (percentage: Dec) => {
-      setPrice(price.mul(new Dec(1).add(percentage)));
-    },
-    [price]
+  const adjustByPercentage = useCallback((percentage: Dec) => {
+    setPercentAdjusted(percentage);
+  }, []);
+
+  const price = useMemo(
+    () => spotPrice.mul(new Dec(1).add(percentAdjusted)),
+    [spotPrice, percentAdjusted]
   );
 
-  return { price, adjustByPercentage };
+  return { spotPrice, price, adjustByPercentage, percentAdjusted };
 };

@@ -1,7 +1,8 @@
 import { WalletStatus } from "@cosmos-kit/core";
+import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useRef } from "react";
+import { FunctionComponent, useMemo, useRef } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
@@ -16,6 +17,13 @@ export interface PlaceLimitToolProps {
   tokenOutDenom: string;
   orderbookContractAddress?: string;
 }
+
+const percentAdjustmentOptions = [
+  { value: new Dec(0), label: "0%" },
+  { value: new Dec(0.02), label: "2%" },
+  { value: new Dec(0.05), label: "5%" },
+  { value: new Dec(0.1), label: "10%" },
+];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({
@@ -143,6 +151,46 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   : swapState.inAmountInput.fiatValue?.toString() ?? "0"
               }`}</span>
             </div>
+          </div>
+        </div>
+        <div className="mt-3 flex place-content-between items-center">
+          <div className="flex w-full flex-col">
+            <div>
+              <span
+                className={classNames(
+                  "w-full bg-transparent text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1"
+                )}
+              >{`When ${tokenOutDenom} price is at `}</span>
+              <span
+                className={classNames(
+                  "w-full bg-transparent text-bullish-600 placeholder:text-white-disabled focus:outline-none md:text-subtitle1"
+                )}
+              >{`$${formatPretty(swapState.priceState.price)}`}</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex w-full flex-col">
+          <div>
+            <span>{`${formatPretty(
+              swapState.priceState.percentAdjusted.mul(new Dec(100)).neg()
+            )}% `}</span>
+            <span>below current price</span>
+          </div>
+          <div>
+            {useMemo(
+              () =>
+                percentAdjustmentOptions.map(({ label, value }) => (
+                  <Button
+                    key={`limit-price-adjust-${label}`}
+                    onClick={() =>
+                      swapState.priceState.adjustByPercentage(value.neg())
+                    }
+                  >
+                    {label}
+                  </Button>
+                )),
+              []
+            )}
           </div>
         </div>
         <Button
