@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
@@ -37,6 +37,7 @@ export const usePlaceLimit = ({
     useQueryParams,
     useOtherCurrencies,
   });
+  const priceState = useLimitPrice();
   const inAmountInput = useSwapAmountInput({
     swapAssets,
     forceSwapInPoolId: undefined,
@@ -50,11 +51,11 @@ export const usePlaceLimit = ({
   const account = accountStore.getWallet(osmosisChainId);
 
   const placeLimit = useCallback(async () => {
-    const tickId = priceToTick(new Dec(1));
+    const tickId = priceToTick(priceState.price);
 
     const msg = {
       place_limit: {
-        tick_id: parseInt(tickId.toDec().toString()),
+        tick_id: parseInt(tickId.toString()),
         order_direction: orderDirection,
         quantity: inAmountInput.inputAmount,
         claim_bounty: CLAIM_BOUNTY,
@@ -77,10 +78,12 @@ export const usePlaceLimit = ({
     swapAssets,
     orderDirection,
     inAmountInput,
+    priceState,
   ]);
 
   return {
     ...swapAssets,
+    priceState,
     inAmountInput,
     placeLimit,
   };
@@ -112,4 +115,17 @@ const useOrderDirection = ({
 const useOrderbookDenoms = () => {
   //TODO: Implement
   return ["OSMO", "ION"];
+};
+
+const useLimitPrice = () => {
+  const [price, setPrice] = useState(new Dec(1));
+
+  const adjustByPercentage = useCallback(
+    (percentage: Dec) => {
+      setPrice(price.mul(new Dec(1).add(percentage)));
+    },
+    [price]
+  );
+
+  return { price, adjustByPercentage };
 };
