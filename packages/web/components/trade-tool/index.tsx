@@ -7,15 +7,12 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
+import { OrderDirection } from "~/hooks/limit-orders";
 
 export interface TradeToolProps {}
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
   const [tab, setTab] = useState<SwapToolTab>(SwapToolTab.BUY);
-  const [[tokenInDenom, tokenOutDenom]] = useState<[string, string]>([
-    "OSMO",
-    "ION",
-  ]);
 
   return (
     <div className="relative flex flex-col gap-6 overflow-hidden px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
@@ -23,26 +20,16 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
       {useMemo(() => {
         switch (tab) {
           case SwapToolTab.BUY:
-            return (
-              <PlaceLimitTool
-                tokenInDenom={tokenInDenom}
-                tokenOutDenom={tokenOutDenom}
-              />
-            );
+            return <PlaceLimitTool orderDirection={OrderDirection.Bid} />;
           case SwapToolTab.SELL:
-            return (
-              <PlaceLimitTool
-                tokenInDenom={tokenOutDenom}
-                tokenOutDenom={tokenInDenom}
-              />
-            );
+            return <PlaceLimitTool orderDirection={OrderDirection.Ask} />;
           case SwapToolTab.SWAP:
           default:
             return (
               <SwapTool useOtherCurrencies useQueryParams page="Swap Page" />
             );
         }
-      }, [tab, tokenInDenom, tokenOutDenom])}
+      }, [tab])}
     </div>
   );
 });

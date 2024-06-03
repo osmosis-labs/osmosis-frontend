@@ -8,14 +8,12 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { usePlaceLimit } from "~/hooks/limit-orders";
+import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
-  tokenInDenom: string;
-  tokenOutDenom: string;
-  orderbookContractAddress?: string;
+  orderDirection: OrderDirection;
 }
 
 const percentAdjustmentOptions = [
@@ -26,18 +24,13 @@ const percentAdjustmentOptions = [
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({
-    tokenInDenom,
-    tokenOutDenom,
-    orderbookContractAddress = "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w",
-  }) => {
+  ({ orderDirection = OrderDirection.Bid }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const swapState = usePlaceLimit({
       osmosisChainId: "localosmosis",
-      assetIn: tokenInDenom,
-      assetOut: tokenOutDenom,
-      orderbookContractAddress,
+      poolId: "1",
+      orderDirection,
       useQueryParams: false,
     });
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
@@ -131,7 +124,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 className={classNames(
                   "w-full bg-transparent text-white-full focus:outline-none"
                 )}
-              >{`When ${tokenOutDenom} price is at `}</span>
+              >{`When ${swapState.baseDenom} price is at `}</span>
               <span
                 className={classNames(
                   "w-full bg-transparent text-wosmongton-300 focus:outline-none "
@@ -146,7 +139,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               .mul(new Dec(100))
               .round()
               .abs()}% `}</span>
-            <span className="text-osmoverse-400">below current price</span>
+            <span className="text-osmoverse-400">
+              {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
+              current price
+            </span>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {useMemo(
@@ -156,13 +152,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     className="rounded-xl border border-osmoverse-700 py-1 px-3 text-white-full text-wosmongton-200"
                     key={`limit-price-adjust-${label}`}
                     onClick={() =>
-                      swapState.priceState.adjustByPercentage(value.neg())
+                      swapState.priceState.adjustByPercentage(
+                        orderDirection == OrderDirection.Bid
+                          ? value.neg()
+                          : value
+                      )
                     }
                   >
                     {label}
                   </button>
                 )),
-              [swapState.priceState]
+              [swapState.priceState, orderDirection]
             )}
           </div>
         </div>

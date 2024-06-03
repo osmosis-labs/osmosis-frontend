@@ -2,6 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { useCallback, useMemo, useState } from "react";
 
+import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 
@@ -12,9 +13,8 @@ export enum OrderDirection {
 
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
-  orderbookContractAddress: string;
-  assetIn?: string;
-  assetOut?: string;
+  poolId: string;
+  orderDirection: OrderDirection;
   useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
 }
@@ -23,17 +23,21 @@ export interface UsePlaceLimitParams {
 const CLAIM_BOUNTY = "0.01";
 
 export const usePlaceLimit = ({
-  orderbookContractAddress,
   osmosisChainId,
-  assetIn = "OSMO",
-  assetOut = "ION",
+  poolId,
+  orderDirection,
   useQueryParams = false,
   useOtherCurrencies = false,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
+  const {
+    baseDenom,
+    quoteDenom,
+    address: orderbookContractAddress,
+  } = useOrderbook({ poolId });
   const swapAssets = useSwapAssets({
-    initialFromDenom: assetIn,
-    initialToDenom: assetOut,
+    initialFromDenom: quoteDenom,
+    initialToDenom: baseDenom,
     useQueryParams,
     useOtherCurrencies,
   });
@@ -42,11 +46,6 @@ export const usePlaceLimit = ({
     swapAssets,
     forceSwapInPoolId: undefined,
     maxSlippage: undefined,
-  });
-
-  const orderDirection = useOrderDirection({
-    tokenInDenom: assetIn,
-    tokenOutDenom: assetOut,
   });
   const account = accountStore.getWallet(osmosisChainId);
 
@@ -87,38 +86,12 @@ export const usePlaceLimit = ({
 
   return {
     ...swapAssets,
+    quoteDenom,
+    baseDenom,
     priceState,
     inAmountInput,
     placeLimit,
   };
-};
-
-const useOrderDirection = ({
-  tokenInDenom,
-  tokenOutDenom,
-}: {
-  tokenInDenom: string;
-  tokenOutDenom: string;
-}) => {
-  const [baseDenom, quoteDenom] = useOrderbookDenoms();
-  const orderDirection = useMemo(() => {
-    if (tokenInDenom === baseDenom && tokenOutDenom === quoteDenom) {
-      return OrderDirection.Bid;
-    }
-    if (tokenOutDenom === baseDenom && tokenInDenom === quoteDenom) {
-      return OrderDirection.Ask;
-    }
-
-    // TODO: Error handle state?
-    return OrderDirection.Bid;
-  }, [tokenInDenom, baseDenom, tokenOutDenom, quoteDenom]);
-
-  return orderDirection;
-};
-
-const useOrderbookDenoms = () => {
-  //TODO: Implement
-  return ["OSMO", "ION"];
 };
 
 const useLimitPrice = () => {
