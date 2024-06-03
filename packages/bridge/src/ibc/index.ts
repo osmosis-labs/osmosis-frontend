@@ -66,6 +66,15 @@ export class IbcBridgeProvider implements BridgeProvider {
       ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
       : params.fromAmount;
 
+    if (new Int(toAmount).lte(new Int(0))) {
+      throw new BridgeQuoteError([
+        {
+          errorType: BridgeError.InsufficientAmount,
+          message: "Insufficient amount for fees",
+        },
+      ]);
+    }
+
     return {
       input: {
         amount: params.fromAmount,

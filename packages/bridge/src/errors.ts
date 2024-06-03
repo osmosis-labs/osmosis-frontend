@@ -51,4 +51,5 @@ export enum BridgeError {
   CreateEVMTxError = "CreateEVMTxError",
   NoQuotesError = "NoQuotesError",
   UnsupportedQuoteError = "UnsupportedQuoteError",
+  InsufficientAmount = "InsufficientAmountError",
 }
