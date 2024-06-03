@@ -74,10 +74,19 @@ describe("Exit Pool Tx", () => {
     await expect(
       new Promise<any>((resolve, rejects) => {
         account?.osmosis
-          .sendExitPoolMsg(queryPool!.id, "50", "0", "", (tx) => {
-            if (tx.code) rejects(tx);
-            else resolve(tx);
-          })
+          .sendExitPoolMsg(
+            queryPool!.id,
+            "50",
+            queryPool!.sharePool!.totalShare,
+            queryPool!.poolAssets.map((a) => a.amount.toCoin()),
+            queryPool!.sharePool!.exitFee,
+            "0",
+            "",
+            (tx) => {
+              if (tx.code) rejects(tx);
+              else resolve(tx);
+            }
+          )
           .catch((e) => rejects(e));
       })
     ).resolves.toBeDefined();
@@ -89,10 +98,19 @@ describe("Exit Pool Tx", () => {
     await expect(
       new Promise<any>((resolve, rejects) => {
         account?.osmosis
-          .sendExitPoolMsg(queryPool!.id, "50", "1", "", (tx) => {
-            if (tx.code) rejects(tx);
-            else resolve(tx);
-          })
+          .sendExitPoolMsg(
+            queryPool!.id,
+            "50",
+            queryPool!.sharePool!.totalShare,
+            queryPool!.poolAssets.map((a) => a.amount.toCoin()),
+            queryPool!.sharePool!.exitFee,
+            "1",
+            "",
+            (tx) => {
+              if (tx.code) rejects(tx);
+              else resolve(tx);
+            }
+          )
           .catch((e) => rejects(e));
       })
     ).resolves.toBeDefined();
@@ -104,10 +122,19 @@ describe("Exit Pool Tx", () => {
     await expect(
       new Promise<any>((resolve, rejects) => {
         account?.osmosis
-          .sendExitPoolMsg(queryPool!.id, "100.1", "", "", (tx) => {
-            if (tx.code) rejects(tx);
-            else resolve(tx);
-          })
+          .sendExitPoolMsg(
+            queryPool!.id,
+            "100.1",
+            queryPool!.sharePool!.totalShare,
+            queryPool!.poolAssets.map((a) => a.amount.toCoin()),
+            queryPool!.sharePool!.exitFee,
+            "",
+            "",
+            (tx) => {
+              if (tx.code) rejects(tx);
+              else resolve(tx);
+            }
+          )
           .catch((e) => rejects(e));
       })
     ).rejects.not.toBeNull();
