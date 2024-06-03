@@ -18,7 +18,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
   ]);
 
   return (
-    <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
+    <div className="relative flex flex-col gap-6 overflow-hidden px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
       <SwapToolTabs activeTab={tab} setTab={setTab} />
       {useMemo(() => {
         switch (tab) {

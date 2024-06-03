@@ -122,6 +122,7 @@ const useOrderbookDenoms = () => {
 };
 
 const useLimitPrice = () => {
+  // TODO: Fetch spot price from SQS
   const spotPrice = useMemo(() => new Dec(1), []);
   const [percentAdjusted, setPercentAdjusted] = useState(new Dec(0));
 

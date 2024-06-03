@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { usePlaceLimit } from "~/hooks/limit-orders";
 import { useStore } from "~/stores";
-import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
+import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   tokenInDenom: string;
@@ -48,38 +48,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     return (
       <div className="flex flex-col gap-3">
-        <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
-          <div className="flex place-content-between items-center transition-opacity">
-            <div className="flex">
-              <span className="caption text-xs text-white-full">
-                {t("swap.available")}
-              </span>
-              <span className="caption ml-1.5 text-xs text-wosmongton-300">
-                {formatCoinMaxDecimalsByOne(
-                  swapState.inAmountInput?.balance,
-                  2,
-                  Math.min(swapState.fromAsset?.coinDecimals ?? 0, 8)
-                ) || "0 " + (swapState.fromAsset?.coinDenom ?? "")}
-              </span>
-            </div>
+        <div className="rounded-xl px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
+          <div className="flex place-content-end items-center transition-opacity">
             <div className="flex items-center gap-1.5">
-              <Button
-                variant="outline"
-                size="sm"
-                className={classNames(
-                  "text-wosmongton-300",
-                  swapState.inAmountInput.fraction === 0.5
-                    ? "bg-wosmongton-100/20"
-                    : "bg-transparent"
-                )}
-                disabled={
-                  !swapState.inAmountInput.balance ||
-                  swapState.inAmountInput.balance.toDec().isZero()
-                }
-                onClick={() => swapState.inAmountInput.toggleHalf()}
-              >
-                {t("swap.HALF")}
-              </Button>
               <Tooltip
                 content={
                   <div className="text-center">
@@ -119,13 +90,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           </div>
           <div className="mt-3 flex place-content-between items-center">
-            <div className="flex w-full flex-col items-end">
+            <div className="flex w-full flex-col items-center">
               <input
                 ref={fromAmountInputEl}
                 type="number"
                 className={classNames(
-                  "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                  "text-h5 font-h5 md:font-subtitle1"
+                  "w-full bg-transparent text-center text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                  "text-h2 font-h2 md:font-subtitle1"
                 )}
                 placeholder="0"
                 onChange={(e) => {
@@ -169,27 +140,29 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           </div>
         </div>
-        <div className="flex w-full flex-col">
-          <div>
-            <span>{`${formatPretty(
-              swapState.priceState.percentAdjusted.mul(new Dec(100)).neg()
-            )}% `}</span>
-            <span>below current price</span>
+        <div className="flex w-full flex-row place-content-between items-center rounded-xl border border-osmoverse-700 py-3 px-6">
+          <div className="h-full">
+            <span>{`${swapState.priceState.percentAdjusted
+              .mul(new Dec(100))
+              .round()
+              .abs()}% `}</span>
+            <span className="text-osmoverse-400">below current price</span>
           </div>
-          <div>
+          <div className="grid grid-cols-4 gap-2">
             {useMemo(
               () =>
                 percentAdjustmentOptions.map(({ label, value }) => (
-                  <Button
+                  <button
+                    className="rounded-xl border border-osmoverse-700 py-1 px-3 text-white-full text-wosmongton-200"
                     key={`limit-price-adjust-${label}`}
                     onClick={() =>
                       swapState.priceState.adjustByPercentage(value.neg())
                     }
                   >
                     {label}
-                  </Button>
+                  </button>
                 )),
-              []
+              [swapState.priceState]
             )}
           </div>
         </div>
