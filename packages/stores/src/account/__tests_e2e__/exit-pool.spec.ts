@@ -58,7 +58,13 @@ describe("Exit Pool Tx", () => {
     const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
-      account?.osmosis.sendExitPoolMsg(queryPool!.id, "0")
+      account?.osmosis.sendExitPoolMsg(
+        queryPool!.id,
+        "0",
+        queryPool!.sharePool!.totalShare,
+        queryPool!.poolAssets.map((a) => a.amount.toCoin()),
+        queryPool!.sharePool!.exitFee
+      )
     ).rejects.not.toBeNull();
   });
 
