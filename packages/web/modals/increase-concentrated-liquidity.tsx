@@ -34,7 +34,10 @@ const ConcentratedLiquidityDepthChart = dynamic(
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 

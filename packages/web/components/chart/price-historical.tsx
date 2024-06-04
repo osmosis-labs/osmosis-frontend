@@ -33,7 +33,7 @@ import {
 } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
-const HistoricalPriceChart: FunctionComponent<{
+export const HistoricalPriceChart: FunctionComponent<{
   data: { close: number; time: number }[];
   margin?: Partial<Margin>;
   annotations: Dec[];
@@ -245,8 +245,6 @@ const HistoricalPriceChart: FunctionComponent<{
     </ParentSize>
   )
 );
-
-export default HistoricalPriceChart;
 
 export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
