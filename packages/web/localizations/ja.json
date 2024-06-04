@@ -867,10 +867,6 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "promo": {
-      "newOpportunity": "{denom}で獲得する新たな機会",
-      "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    },
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {

@@ -867,10 +867,6 @@
       "title": "Transaktionseinstellungen"
     },
     "title": "Tauschen",
-    "promo": {
-      "newOpportunity": "Neue Möglichkeit, mit {denom} zu verdienen",
-      "discoverSuperchargedPools": "Entdecken Sie Supercharged Pools"
-    },
     "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {

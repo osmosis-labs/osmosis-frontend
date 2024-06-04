@@ -867,10 +867,6 @@
       "title": "Настройки транзакции"
     },
     "title": "Менять",
-    "promo": {
-      "newOpportunity": "Новая возможность заработка с помощью {denom}",
-      "discoverSuperchargedPools": "Откройте для себя бассейны с наддувом"
-    },
     "dynamicSpreadFactor": "Динамический"
   },
   "walletSelect": {

@@ -867,10 +867,6 @@
       "title": "लेन-देन सेटिंग"
     },
     "title": "बदलना",
-    "promo": {
-      "newOpportunity": "{denom} से कमाई का नया अवसर",
-      "discoverSuperchargedPools": "सुपरचार्ज्ड पूल खोजें"
-    },
     "dynamicSpreadFactor": "गतिशील"
   },
   "walletSelect": {

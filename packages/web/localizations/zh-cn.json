@@ -867,10 +867,6 @@
       "title": "交易设置"
     },
     "title": "兑换",
-    "promo": {
-      "newOpportunity": "新的赚钱机会",
-      "discoverSuperchargedPools": "探索增压泳池"
-    },
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {

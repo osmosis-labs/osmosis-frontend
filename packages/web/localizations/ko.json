@@ -867,10 +867,6 @@
       "title": "트랜잭션 설정"
     },
     "title": "거래",
-    "promo": {
-      "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
-      "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
-    },
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {

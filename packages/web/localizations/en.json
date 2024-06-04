@@ -867,10 +867,6 @@
       "title": "Transaction settings"
     },
     "title": "Swap",
-    "promo": {
-      "newOpportunity": "New opportunity to earn with {denom}",
-      "discoverSuperchargedPools": "Discover Supercharged Pools"
-    },
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
