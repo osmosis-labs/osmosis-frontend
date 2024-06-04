@@ -55,12 +55,18 @@ export const SuperfluidValidatorModal: FunctionComponent<
       }
     );
 
+  console.log(availableBondAmount?.toString());
+
   const isLoadingValidators = isLoadingAllValidators || isLoadingUserValidators;
 
   const { data: osmoEquivalent, isLoading: isLoadingOsmoEquivalent } =
-    api.edge.staking.getOsmoEquivalent.useQuery(availableBondAmount!.toCoin(), {
-      enabled: !!availableBondAmount,
-    });
+    api.edge.staking.getOsmoEquivalent.useQuery(
+      availableBondAmount?.toCoin() ?? { denom: "", amount: "" },
+      {
+        enabled:
+          !!availableBondAmount && availableBondAmount.toDec().isPositive(),
+      }
+    );
 
   // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
   const randomSortVals = useMemo(
