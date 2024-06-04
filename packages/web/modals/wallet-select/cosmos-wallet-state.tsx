@@ -26,7 +26,7 @@ import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { ModalView, OnConnectWallet } from "~/modals/wallet-select/utils";
 import { useStore } from "~/stores";
 
-import QRCodeView from "./qr-code-view";
+import { QRCodeView } from "./qr-code-view";
 import { WalletTutorial } from "./wallet-tutorial";
 
 enum WalletSelect1CTScreens {

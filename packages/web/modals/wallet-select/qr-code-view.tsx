@@ -21,7 +21,8 @@ const QRCodeLoader = () => (
 );
 
 type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
-const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
+
+export const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
 }) => {
   const { t } = useTranslation();
@@ -183,5 +184,3 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
     </Popover>
   );
 };
-
-export default QRCodeView;
