@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useRef } from "react";
 
 import { Icon } from "~/components/assets";
+import { TokenSelectWidget } from "~/components/control/token-select-widget";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
@@ -41,7 +42,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     return (
       <div className="flex flex-col gap-3">
-        <div className="rounded-xl px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
+        <TokenSelectWidget
+          dropdownOpen={false}
+          setDropdownOpen={() => {}}
+          selectableAssets={[swapState.fromAsset, swapState.fromAsset]}
+          selectedToken={swapState.toAsset}
+          paymentToken={swapState.fromAsset}
+          paymentBalance={swapState.inAmountInput.balance!}
+          onTokenSelect={() => {}}
+          disabled={false}
+        />
+        <div className="px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
           <div className="flex place-content-end items-center transition-opacity">
             <div className="flex items-center gap-1.5">
               <Tooltip
