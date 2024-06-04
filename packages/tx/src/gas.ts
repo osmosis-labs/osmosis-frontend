@@ -297,9 +297,15 @@ export async function getGasFeeAmount({
       bech32Address,
     }),
   ]);
-  const feeBalances = balances.filter((balance) =>
-    chainFeeDenoms.includes(balance.denom)
-  );
+  const feeBalances: { denom: string; amount: string }[] = [];
+
+  // iterate in order of fee denoms
+  chainFeeDenoms.forEach((denom) => {
+    const balance = balances.find((balance) => balance.denom === denom);
+    if (balance) {
+      feeBalances.push(balance);
+    }
+  });
 
   if (!feeBalances.length) {
     throw new InsufficientFeeError(

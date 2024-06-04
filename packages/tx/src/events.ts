@@ -15,7 +15,8 @@ export function getSumTotalSpenderCoinsSpent(
     if (type !== "coin_spent") return;
     if (attributes.length === 0) return;
     const spendAttribute = attributes.find((attr) => attr.key === "spender");
-    if (spendAttribute && spendAttribute.value !== spenderBech32Address) return;
+    if (!spendAttribute) return;
+    if (spendAttribute.value !== spenderBech32Address) return;
 
     // a comma separated list of coins spent
     const coinsSpentRawAttribute = attributes.find(
