@@ -18,7 +18,7 @@ interface OneClickTradingWelcomeBackProps {
   isDisabled?: boolean;
 }
 
-const OneClickTradingWelcomeBack = ({
+export const OneClickTradingWelcomeBack = ({
   transaction1CTParams,
   setTransaction1CTParams,
   onClickEditParams,
@@ -98,5 +98,3 @@ const OneClickTradingWelcomeBack = ({
     </div>
   );
 };
-
-export default OneClickTradingWelcomeBack;
