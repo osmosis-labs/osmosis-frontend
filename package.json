@@ -82,13 +82,5 @@
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix"
   },
-  "dependencies": {
-    "@opentelemetry/api": "^1.8.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.51.1",
-    "@opentelemetry/resources": "^1.24.1",
-    "@opentelemetry/sdk-node": "^0.51.1",
-    "@opentelemetry/sdk-trace-node": "^1.24.1",
-    "@opentelemetry/semantic-conventions": "^1.24.1",
-    "@vercel/otel": "^1.8.3"
-  }
+  "dependencies": {}
 }
