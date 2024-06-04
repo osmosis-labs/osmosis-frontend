@@ -30,7 +30,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
+import { useGetEarnStrategies } from "~/hooks/use-get-earn-strategies";
 import { useStore } from "~/stores";
 
 function Earn() {
