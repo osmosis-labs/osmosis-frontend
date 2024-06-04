@@ -39,7 +39,7 @@ type BridgeInfo = Omit<DepositSuccess, "code" | "reason"> & {
 };
 
 /** Nomic-specific bridge transfer integration UI. */
-const NomicTransfer: FunctionComponent<
+export const NomicTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     balanceOnOsmosis: IBCBalance;
@@ -559,5 +559,3 @@ const NomicTransfer: FunctionComponent<
     );
   }
 );
-
-export default NomicTransfer;

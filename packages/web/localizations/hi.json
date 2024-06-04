@@ -867,10 +867,6 @@
       "title": "लेन-देन सेटिंग"
     },
     "title": "बदलना",
-    "promo": {
-      "newOpportunity": "{denom} से कमाई का नया अवसर",
-      "discoverSuperchargedPools": "सुपरचार्ज्ड पूल खोजें"
-    },
     "dynamicSpreadFactor": "गतिशील"
   },
   "walletSelect": {
@@ -962,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "संबंधित संपत्ति",
     "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
     "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
@@ -984,7 +979,6 @@
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "tvl": "टी वी लाइनों",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
     "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"
@@ -998,16 +992,10 @@
   "previewAssetsEnabledForSession": "इस सत्र के लिए संपत्तियों का पूर्वावलोकन सक्षम किया गया। अक्षम करने के लिए एक नया टैब खोलें, या `show_preview_assets=false` जोड़ें।",
   "earnPage": {
     "title": "कमाना",
-    "position": "पद",
     "positions": "स्थितियां",
-    "allocation": "आवंटन",
-    "tokensCount": "{number} टोकन",
     "strategiesCount": "{number} रणनीतियाँ",
     "oneStrategy": "1 रणनीति",
     "value": "कीमत",
-    "method": "प्रकार",
-    "platform": "प्लैटफ़ॉर्म",
-    "scrollToSeeMore": "और अधिक देखने के लिए स्क्रॉल करें",
     "discoverStrategies": "रणनीतियों की खोज करें",
     "myStrategies": "आपकी रणनीतियाँ",
     "strategyPlatform": "रणनीति",
