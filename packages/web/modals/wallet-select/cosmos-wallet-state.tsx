@@ -12,7 +12,7 @@ import { useLocalStorage } from "react-use";
 
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
+import { OneClickTradingConnectToContinue } from "~/components/one-click-trading/one-click-trading-connect-to-continue";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { OneClickTradingWelcomeBack } from "~/components/one-click-trading/one-click-trading-welcome-back";
 import { Screen, ScreenManager } from "~/components/screen-manager";
