@@ -24,7 +24,7 @@ import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
-import ErrorFallback from "~/components/error/error-fallback";
+import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
