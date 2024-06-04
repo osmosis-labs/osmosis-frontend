@@ -2,7 +2,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-const PoolComposition: FunctionComponent<{
+export const PoolComposition: FunctionComponent<{
   assets: CoinPretty[];
 }> = ({ assets }) => {
   return (
@@ -28,5 +28,3 @@ const PoolComposition: FunctionComponent<{
     </ul>
   );
 };
-
-export default PoolComposition;

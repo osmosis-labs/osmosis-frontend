@@ -17,7 +17,7 @@ import { useMeasure } from "react-use";
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
-import PoolComposition from "~/components/chart/pool-composition";
+import { PoolComposition } from "~/components/chart/pool-composition";
 import { Disableable } from "~/components/types";
 import { ArrowButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
