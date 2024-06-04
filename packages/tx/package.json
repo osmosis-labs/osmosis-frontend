@@ -1,0 +1,52 @@
+{
+  "name": "@osmosis-labs/tx",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis",
+    "transaction"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@cosmjs/stargate": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
+    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/server": "^1.0.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0",
+    "buffer": "^6.0.3",
+    "cachified": "^3.5.4",
+    "cosmjs-types": "^0.5.2",
+    "lru-cache": "^10.0.1",
+    "utility-types": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/jest-in-case": "^1.0.6",
+    "jest-in-case": "^1.0.2",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.3"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  }
+}

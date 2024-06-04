@@ -7,11 +7,10 @@ import {
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
-  sort,
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
@@ -25,10 +24,11 @@ import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import LinkButton from "~/components/buttons/link-button";
-import HistoricalPriceChart, {
+import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
+import HistoricalPriceChartV2 from "~/components/chart/price-historical-v2";
 import Spinner from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
@@ -45,7 +45,6 @@ import {
   useCurrentLanguage,
   useTranslation,
   useUserWatchlist,
-  useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
@@ -493,51 +492,8 @@ const TokenChartHeader = observer(() => {
   );
 });
 
-const useNumTicks = () => {
-  const { assetInfoConfig } = useAssetInfoView();
-  const { isMobile, isLargeDesktop, isExtraLargeDesktop } = useWindowSize();
-
-  const numTicks = useMemo(() => {
-    let ticks: number | undefined = isMobile ? 3 : 6;
-
-    if (isExtraLargeDesktop) {
-      return 10;
-    }
-
-    if (isLargeDesktop) {
-      return 8;
-    }
-
-    switch (assetInfoConfig.historicalRange) {
-      case "7d":
-        ticks = isMobile ? 1 : 8;
-        break;
-      case "1mo":
-        ticks = isMobile ? 2 : 6;
-        break;
-      case "1d":
-        ticks = isMobile ? 3 : 10;
-        break;
-      case "1y":
-      case "all":
-        ticks = isMobile ? 4 : 6;
-        break;
-    }
-
-    return ticks;
-  }, [
-    assetInfoConfig.historicalRange,
-    isMobile,
-    isLargeDesktop,
-    isExtraLargeDesktop,
-  ]);
-
-  return numTicks;
-};
-
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
-  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
@@ -547,15 +503,8 @@ const TokenChart = observer(() => {
         </div>
       ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <HistoricalPriceChart
-            minimal
-            showTooltip
-            showGradient
-            xNumTicks={xNumTicks}
+          <HistoricalPriceChartV2
             data={assetInfoConfig.historicalChartData}
-            fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
-            annotations={[]}
-            domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
               assetInfoConfig.setHoverPrice(0);

@@ -23,7 +23,9 @@ import { WalletDisplay, WalletKey } from "~/integrations/wallets";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-
+/**
+ * @deprecated
+ */
 export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
   readonly mobileEnabled = false;
