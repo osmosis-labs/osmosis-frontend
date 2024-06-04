@@ -255,10 +255,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">{SwapTool_}</div>
-
-              {/* {routablePools && (
-                <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
-              )} */}
             </div>
           </div>
         </main>
