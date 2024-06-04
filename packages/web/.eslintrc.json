@@ -30,9 +30,9 @@
     // see https://stackoverflow.com/questions/44378395/how-to-configure-eslint-so-that-it-disallows-default-exports
   },
   "overrides": [
-    // Pages router
+    // Pages router, config files
     {
-      "files": ["pages/**/*"],
+      "files": ["pages/**/*", "playwright.config.ts"],
       "rules": {
         "import/no-default-export": "off"
       }
