@@ -92,8 +92,6 @@ export const LockTokensModal: FunctionComponent<
     superfluidBondDuration?.delegated || superfluidBondDuration?.undelegating
   );
 
-  console.log({ hasSuperfluidValidator });
-
   // component state
   const [selectedDurationIndex, setSelectedDurationIndex] = useState<
     number | null
@@ -126,8 +124,6 @@ export const LockTokensModal: FunctionComponent<
       ? bondDurations[selectedDurationIndex]?.aggregateApr
       : undefined;
   const superfluidInEffect = electSuperfluid && superfluidDurationSelected;
-
-  console.log({ hasSuperfluidValidator, superfluidInEffect });
 
   if (
     selectedApr &&

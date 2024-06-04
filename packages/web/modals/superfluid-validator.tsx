@@ -55,8 +55,6 @@ export const SuperfluidValidatorModal: FunctionComponent<
       }
     );
 
-  console.log(availableBondAmount?.toString());
-
   const isLoadingValidators = isLoadingAllValidators || isLoadingUserValidators;
 
   const { data: osmoEquivalent, isLoading: isLoadingOsmoEquivalent } =

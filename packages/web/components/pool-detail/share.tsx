@@ -298,8 +298,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       []
     );
 
-    console.log(superfluidBondDuration?.userLocks);
-
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         {pool && showAddLiquidityModal && (
