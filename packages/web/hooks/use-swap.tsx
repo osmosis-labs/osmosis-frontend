@@ -127,7 +127,7 @@ export function useSwap(
     // with the input amount when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    !Boolean(account?.txTypeInProgress) &&
+    !account?.txTypeInProgress &&
     !isWalletLoading;
 
   const {
@@ -789,6 +789,7 @@ function useSwapAmountInput({
     !isLoadingWallet &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
+    // since the in amount is debounced, the asset could be wrong when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset!.coinMinimalDenom &&
     !!inAmountInput.balance &&
@@ -817,7 +818,7 @@ function useSwapAmountInput({
     // includes check for balanceQuoteQueryEnabled
     !isQuoteForCurrentBalanceLoading &&
     Boolean(quoteForCurrentBalance) &&
-    !Boolean(account?.txTypeInProgress);
+    !account?.txTypeInProgress;
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
