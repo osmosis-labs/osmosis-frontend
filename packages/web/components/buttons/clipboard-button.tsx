@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
 
-import IconButton from "./icon-button";
+import { IconButton } from "./icon-button";
 
 /**
  * Renders an icon within a button.

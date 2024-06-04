@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";

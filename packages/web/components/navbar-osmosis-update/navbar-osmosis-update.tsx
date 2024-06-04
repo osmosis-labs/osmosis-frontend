@@ -4,7 +4,7 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { Spinner } from "~/components/loaders/spinner";
 import { ArrowButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";

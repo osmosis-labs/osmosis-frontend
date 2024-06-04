@@ -16,7 +16,7 @@ import React, {
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,

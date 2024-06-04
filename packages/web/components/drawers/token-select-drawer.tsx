@@ -12,7 +12,7 @@ import {
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";

@@ -12,7 +12,7 @@ import { useClickAway } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { GradientView } from "~/components/assets/gradient-view";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { MenuDropdown, MenuToggle } from "~/components/control";

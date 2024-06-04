@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { Spinner } from "~/components/loaders";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";

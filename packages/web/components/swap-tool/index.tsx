@@ -18,7 +18,7 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
