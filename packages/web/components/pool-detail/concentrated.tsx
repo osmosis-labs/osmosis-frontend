@@ -14,7 +14,7 @@ import {
 } from "~/components/chart/price-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { ChartButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";

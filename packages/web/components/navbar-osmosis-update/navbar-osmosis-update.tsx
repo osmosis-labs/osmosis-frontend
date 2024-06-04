@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { ArrowButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";

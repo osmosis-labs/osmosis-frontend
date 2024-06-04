@@ -8,7 +8,7 @@ interface ErrorWalletStateProps {
   actions?: ReactNode;
 }
 
-const ErrorWalletState = ({
+export const ErrorWalletState = ({
   walletLogo,
   title,
   desc,
@@ -37,5 +37,3 @@ const ErrorWalletState = ({
     </div>
   );
 };
-
-export default ErrorWalletState;

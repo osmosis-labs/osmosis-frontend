@@ -29,13 +29,13 @@ import {
   PriceChartHeader,
 } from "~/components/chart/price-historical";
 import HistoricalPriceChartV2 from "~/components/chart/price-historical-v2";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import TokenDetails from "~/components/token-details/token-details";
-import TwitterSection from "~/components/twitter-section/twitter-section";
+import { TokenDetailsWithObserver } from "~/components/token-details";
+import { TwitterSection } from "~/components/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
-import YourBalance from "~/components/your-balance/your-balance";
+import { YourBalance } from "~/components/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -245,7 +245,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   tokenDetailsByLanguage={tokenDetailsByLanguage}
                 />
               </div>
-              <TokenDetails
+              <TokenDetailsWithObserver
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
@@ -255,10 +255,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">{SwapTool_}</div>
-
-              {/* {routablePools && (
-                <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
-              )} */}
             </div>
           </div>
         </main>

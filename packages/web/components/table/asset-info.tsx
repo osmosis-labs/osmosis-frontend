@@ -45,7 +45,7 @@ import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
 import { SubscriptDecimal } from "../chart";
 import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 import { Button } from "../ui/button";
 import { SortHeader } from "./headers/sort";
 
