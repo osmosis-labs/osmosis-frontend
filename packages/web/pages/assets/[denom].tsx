@@ -29,7 +29,7 @@ import {
   PriceChartHeader,
 } from "~/components/chart/price-historical";
 import HistoricalPriceChartV2 from "~/components/chart/price-historical-v2";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";

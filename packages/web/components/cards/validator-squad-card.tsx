@@ -6,7 +6,7 @@ import React from "react";
 import { useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import OsmoverseCard from "~/components/cards/osmoverse-card";
+import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
