@@ -35,7 +35,7 @@ import { TokenDetailsWithObserver } from "~/components/token-details/token-detai
 import { TwitterSection } from "~/components/twitter-section/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
-import YourBalance from "~/components/your-balance/your-balance";
+import { YourBalance } from "~/components/your-balance/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";

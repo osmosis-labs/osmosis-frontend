@@ -42,7 +42,7 @@ interface YourBalanceProps {
   className?: string;
 }
 
-const YourBalance = observer(
+export const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const {
       queriesStore,
@@ -328,8 +328,6 @@ const YourBalance = observer(
     );
   }
 );
-
-export default YourBalance;
 
 const ActionButton = ({
   title,
