@@ -11,6 +11,6 @@ type PoolApr = {
 
 /** Queries numia for a breakdown of APRs per pool. */
 export function queryAstroportPoolAprs(): Promise<PoolApr[]> {
-  const url = new URL("/osmosis-pools", "https://api.astroport.fi/api");
+  const url = new URL("/api/osmosis-pools", "https://api.astroport.fi");
   return apiClient(url.toString());
 }
