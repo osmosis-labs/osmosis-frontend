@@ -3,7 +3,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
-import dayjs from "../../../utils/dayjs";
+import { dayjs } from "../../../utils/dayjs";
 import { queryUpcomingAssets } from "../../github";
 
 /** Filters an asset for whether it is included in the given list of categories. */
