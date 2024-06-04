@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import ClipboardButton from "~/components/buttons/clipboard-button";
+import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { Markdown } from "~/components/markdown";
 import { LinkIconButton } from "~/components/ui/button";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";

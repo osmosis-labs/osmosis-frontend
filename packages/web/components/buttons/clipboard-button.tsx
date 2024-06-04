@@ -10,7 +10,7 @@ import IconButton from "./icon-button";
 /**
  * Renders an icon within a button.
  */
-const ClipboardButton = forwardRef<
+export const ClipboardButton = forwardRef<
   HTMLButtonElement,
   {
     value?: string;
@@ -78,5 +78,3 @@ const ClipboardButton = forwardRef<
     </IconButton>
   );
 });
-
-export default ClipboardButton;
