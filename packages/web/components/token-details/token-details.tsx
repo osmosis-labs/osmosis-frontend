@@ -318,18 +318,6 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
               : "-"}
           </h5>
         </li>
-        {/* <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.tvl")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">
-            {totalValueLocked && usdFiat
-              ? formatPretty(
-                  new PricePretty(usdFiat, new Dec(totalValueLocked))
-                )
-              : "-"}
-          </h5>
-        </li> */}
       </ul>
     );
   }
