@@ -25953,10 +25953,10 @@ vfile@^5.0.0:
     unist-util-stringify-position "^3.0.0"
     vfile-message "^3.0.0"
 
-viem@2.12.0:
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.12.0.tgz#699ba326a1ce0df81042dc8b6f22fa751f9cefce"
-  integrity sha512-XBvORspE4x2/gfy7idH6IVFwkJiXirygFCU3lxUH6fttsj8zufLtgiokfvZF/LAZUEDvdxSgL08whSYgffM2fw==
+viem@2.13.3:
+  version "2.13.3"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.13.3.tgz#950426e4cacf5e12fab2c202a339371901712481"
+  integrity sha512-3tlwDRKHSelupFjbFMdUxF41f79ktyH2F9PAQ9Dltbs1DpdDlR1x+Ksa0th6qkyjjAbpDZP3F5nMTJv/1GVPdQ==
   dependencies:
     "@adraffy/ens-normalize" "1.10.0"
     "@noble/curves" "1.2.0"

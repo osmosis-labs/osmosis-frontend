@@ -1,4 +1,21 @@
-import { Interface } from "ethers";
+import {
+  arbitrum,
+  avalanche,
+  avalancheFuji,
+  bsc,
+  bscTestnet,
+  Chain,
+  fantom,
+  fantomTestnet,
+  filecoin,
+  filecoinHyperspace,
+  goerli,
+  mainnet,
+  moonbaseAlpha,
+  moonbeam,
+  polygon,
+  polygonMumbai,
+} from "viem/chains";
 
 import { SourceChain } from "./chain";
 
@@ -7,16 +24,9 @@ const createEthereumChainInfo = <
   Dict extends Partial<
     Record<
       SourceChain,
-      {
-        chainId: number;
+      Chain & {
         chainName: SourceChain;
         clientChainId: string;
-        rpcUrls: string[];
-        nativeCurrency: {
-          name: string;
-          symbol: string;
-          decimals: number;
-        };
       }
     >
   >
@@ -24,172 +34,96 @@ const createEthereumChainInfo = <
   dict: Dict
 ) => dict;
 
+const mapChainInfo = ({
+  chain,
+  axelarChainName: chainName,
+  clientChainId,
+}: {
+  chain: Chain;
+  axelarChainName: SourceChain;
+  clientChainId: string;
+}) => ({
+  ...chain,
+  chainName: chainName,
+  clientChainId: clientChainId,
+});
+
 export const EthereumChainInfo = createEthereumChainInfo({
-  Ethereum: {
-    chainId: 1,
-    chainName: "Ethereum",
+  Ethereum: mapChainInfo({
+    chain: mainnet,
+    axelarChainName: "Ethereum",
     clientChainId: "Ethereum Main Network",
-    rpcUrls: ["https://ethereum.publicnode.com"],
-    nativeCurrency: {
-      name: "Ether",
-      symbol: "ETH",
-      decimals: 18,
-    },
-  },
-  "Goerli Testnet": {
-    chainId: 5,
-    chainName: "Goerli Testnet",
+  }),
+  "Goerli Testnet": mapChainInfo({
+    chain: goerli,
+    axelarChainName: "Goerli Testnet",
     clientChainId: "Goerli Test Network",
-    rpcUrls: ["https://optimism-goerli.publicnode.com"],
-    nativeCurrency: {
-      name: "Goerli Ether",
-      symbol: "ETH",
-      decimals: 18,
-    },
-  },
-  "Binance Smart Chain": {
-    chainId: 56,
-    chainName: "Binance Smart Chain",
+  }),
+  "Binance Smart Chain": mapChainInfo({
+    chain: bsc,
+    axelarChainName: "Binance Smart Chain",
     clientChainId: "Binance Smart Chain Mainnet",
-    rpcUrls: ["https://bsc-dataseed.binance.org/"],
-    nativeCurrency: {
-      name: "Binance Chain Native Token",
-      symbol: "BNB",
-      decimals: 18,
-    },
-  },
-  "BSC Testnet": {
-    chainId: 97,
-    chainName: "BSC Testnet",
+  }),
+  "BSC Testnet": mapChainInfo({
+    chain: bscTestnet,
+    axelarChainName: "BSC Testnet",
     clientChainId: "Binance Smart Chain Testnet",
-    rpcUrls: ["https://binance.llamarpc.com"],
-    nativeCurrency: {
-      name: "Binance Chain Native Token",
-      symbol: "BNB",
-      decimals: 18,
-    },
-  },
-  Polygon: {
-    chainId: 137,
-    chainName: "Polygon",
+  }),
+  Polygon: mapChainInfo({
+    chain: polygon,
+    axelarChainName: "Polygon",
     clientChainId: "Polygon Mainnet",
-    rpcUrls: ["https://polygon-rpc.com/"],
-    nativeCurrency: {
-      name: "Matic",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-  },
-  Mumbai: {
-    chainId: 80001,
-    chainName: "Mumbai",
+  }),
+  Mumbai: mapChainInfo({
+    chain: polygonMumbai,
+    axelarChainName: "Mumbai",
     clientChainId: "Mumbai",
-    rpcUrls: ["https://polygon-mumbai-bor.publicnode.com"],
-    nativeCurrency: {
-      name: "Matic",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-  },
-  Moonbeam: {
-    chainId: 1284,
-    chainName: "Moonbeam",
+  }),
+  Moonbeam: mapChainInfo({
+    chain: moonbeam,
+    axelarChainName: "Moonbeam",
     clientChainId: "Moonbeam Mainnet",
-    rpcUrls: ["https://moonbeam.publicnode.com"],
-    nativeCurrency: {
-      name: "Moonbeam",
-      symbol: "GLMR",
-      decimals: 18,
-    },
-  },
-  "Moonbase Alpha": {
-    chainId: 1287,
-    chainName: "Moonbase Alpha",
+  }),
+  "Moonbase Alpha": mapChainInfo({
+    chain: moonbaseAlpha,
+    axelarChainName: "Moonbase Alpha",
     clientChainId: "Moonbase Alpha",
-    rpcUrls: ["https://moonbase-alpha.public.blastapi.io"],
-    nativeCurrency: {
-      name: "Moonbase Alpha",
-      symbol: "DEV",
-      decimals: 18,
-    },
-  },
-  Fantom: {
-    chainId: 250,
-    chainName: "Fantom",
+  }),
+  Fantom: mapChainInfo({
+    chain: fantom,
+    axelarChainName: "Fantom",
     clientChainId: "Fantom Opera",
-    rpcUrls: ["https://fantom.publicnode.com"],
-    nativeCurrency: {
-      name: "Fantom",
-      symbol: "FTM",
-      decimals: 18,
-    },
-  },
-  "Fantom Testnet": {
-    chainId: 4002,
-    chainName: "Fantom Testnet",
+  }),
+  "Fantom Testnet": mapChainInfo({
+    chain: fantomTestnet,
+    axelarChainName: "Fantom Testnet",
     clientChainId: "Fantom Testnet",
-    rpcUrls: ["https://fantom-testnet.publicnode.com"],
-    nativeCurrency: {
-      name: "Fantom",
-      symbol: "FTM",
-      decimals: 18,
-    },
-  },
-  "Avalanche Fuji Testnet": {
-    chainId: 43113,
-    chainName: "Avalanche Fuji Testnet",
+  }),
+  "Avalanche Fuji Testnet": mapChainInfo({
+    chain: avalancheFuji,
+    axelarChainName: "Avalanche Fuji Testnet",
     clientChainId: "Avalanche Fuji Testnet",
-    rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
-    nativeCurrency: {
-      name: "Avalanche",
-      symbol: "AVAX",
-      decimals: 18,
-    },
-  },
-  Avalanche: {
-    chainId: 43114,
-    chainName: "Avalanche",
+  }),
+  Avalanche: mapChainInfo({
+    chain: avalanche,
+    axelarChainName: "Avalanche",
     clientChainId: "Avalanche C-Chain",
-    rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
-    nativeCurrency: {
-      name: "Avalanche",
-      symbol: "AVAX",
-      decimals: 18,
-    },
-  },
-  Arbitrum: {
-    chainId: 42161,
-    chainName: "Arbitrum",
+  }),
+  Arbitrum: mapChainInfo({
+    chain: arbitrum,
+    axelarChainName: "Arbitrum",
     clientChainId: "Arbitrum One",
-    rpcUrls: ["https://arbitrum-one.publicnode.com"],
-    nativeCurrency: {
-      name: "Arbitrum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-  },
-  Filecoin: {
-    chainId: 461,
-    chainName: "Filecoin",
+  }),
+  Filecoin: mapChainInfo({
+    chain: filecoin,
+    axelarChainName: "Filecoin",
     clientChainId: "Filecoin - Mainnet",
-    rpcUrls: ["https://rpc.ankr.com/filecoin"],
-    nativeCurrency: {
-      name: "Filecoin",
-      symbol: "FIL",
-      decimals: 18,
-    },
-  },
-  "Filecoin Hyperspace": {
-    chainId: 3141,
-    chainName: "Filecoin Hyperspace",
+  }),
+  "Filecoin Hyperspace": mapChainInfo({
+    chain: filecoinHyperspace,
+    axelarChainName: "Filecoin Hyperspace",
     clientChainId: "Filecoin Hyperspace",
-    rpcUrls: [""],
-    nativeCurrency: {
-      name: "Filecoin",
-      symbol: "FIL",
-      decimals: 18,
-    },
-  },
+  }),
 });
 
 /**
@@ -200,7 +134,7 @@ export const NativeEVMTokenConstantAddress =
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
 /** ABI spec for interfacing with ERC20 token contracts on EVM chains. */
-export const Erc20Abi = new Interface([
+export const Erc20Abi = [
   {
     constant: true,
     inputs: [],
@@ -421,4 +355,4 @@ export const Erc20Abi = new Interface([
     name: "Transfer",
     type: "event",
   },
-]);
+] as const;

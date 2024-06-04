@@ -9,7 +9,7 @@ import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
-import { toHex } from "web3-utils";
+import { Address, toHex } from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import { Erc20Abi, NativeEVMTokenConstantAddress } from "../ethereum";
@@ -303,8 +303,8 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     return {
       type: "evm",
-      to: transactionRequest.targetAddress,
-      data: transactionRequest.data,
+      to: transactionRequest.targetAddress as Address,
+      data: transactionRequest.data as Address,
       value:
         transactionRequest.routeType !== "SEND"
           ? toHex(transactionRequest.value)
