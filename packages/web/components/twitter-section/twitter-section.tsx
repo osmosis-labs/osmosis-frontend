@@ -12,7 +12,7 @@ interface TwitterSectionProps {
   className?: string;
 }
 
-const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
+export const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
   tweets,
   className,
 }) => {
@@ -38,8 +38,6 @@ const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
     </section>
   ) : null;
 };
-
-export default TwitterSection;
 
 const Spacer = () => {
   return <div className="h-[1px] self-stretch bg-osmoverse-825" />;
