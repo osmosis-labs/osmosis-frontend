@@ -23,7 +23,7 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
 import { useConst } from "../../hooks/use-const";
-import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
