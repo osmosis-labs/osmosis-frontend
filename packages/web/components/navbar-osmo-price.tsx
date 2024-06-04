@@ -21,7 +21,7 @@ const osmoAsset = AssetLists.flatMap(({ assets }) => assets).find(
 );
 const osmoCurrency = makeMinimalAsset(osmoAsset!);
 
-const NavbarOsmoPrice = observer(() => {
+export const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const flags = useFeatureFlags();
@@ -128,5 +128,3 @@ const OsmoPriceAndChart: FunctionComponent = () => {
     </SkeletonLoader>
   );
 };
-
-export default NavbarOsmoPrice;
