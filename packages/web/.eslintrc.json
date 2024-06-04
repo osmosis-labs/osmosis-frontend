@@ -27,5 +27,15 @@
     "unused-imports/no-unused-imports": "error",
     "react/no-unescaped-entities": "off",
     "import/no-default-export": "error"
-  }
+    // see https://stackoverflow.com/questions/44378395/how-to-configure-eslint-so-that-it-disallows-default-exports
+  },
+  "overrides": [
+    // Pages router
+    {
+      "files": ["pages/**/*"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    }
+  ]
 }
