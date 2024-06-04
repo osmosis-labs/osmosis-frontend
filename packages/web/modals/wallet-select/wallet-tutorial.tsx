@@ -29,7 +29,7 @@ const OnboardingSteps = (t: MultiLanguageT) => [
   },
 ];
 
-const WalletTutorial = () => {
+export const WalletTutorial = () => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col px-8 pt-1.5">
@@ -65,5 +65,3 @@ const WalletTutorial = () => {
     </div>
   );
 };
-
-export default WalletTutorial;
