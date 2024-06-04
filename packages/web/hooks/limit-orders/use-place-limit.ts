@@ -2,7 +2,6 @@ import { Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { useCallback, useMemo, useState } from "react";
 
-import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 
@@ -17,6 +16,9 @@ export interface UsePlaceLimitParams {
   orderDirection: OrderDirection;
   useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
+  baseDenom: string;
+  quoteDenom: string;
+  orderbookContractAddress: string;
 }
 
 // TODO: adjust as necessary
@@ -24,17 +26,14 @@ const CLAIM_BOUNTY = "0.01";
 
 export const usePlaceLimit = ({
   osmosisChainId,
-  poolId,
+  quoteDenom,
+  baseDenom,
+  orderbookContractAddress,
   orderDirection,
   useQueryParams = false,
   useOtherCurrencies = false,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
-  const {
-    baseDenom,
-    quoteDenom,
-    address: orderbookContractAddress,
-  } = useOrderbook({ poolId });
   const swapAssets = useSwapAssets({
     initialFromDenom: quoteDenom,
     initialToDenom: baseDenom,

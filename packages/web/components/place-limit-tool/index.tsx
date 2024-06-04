@@ -2,14 +2,15 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useRef } from "react";
+import { FunctionComponent, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { TokenSelectWidget } from "~/components/control/token-select-widget";
+import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
+import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -28,11 +29,21 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ orderDirection = OrderDirection.Bid }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
+    const [quoteDenom, setQuoteDenom] = useState<string>("OSMO");
+    const baseDenom = "ION";
+
+    const { poolId, orderbookContractAddress } = useOrderbookPool({
+      baseDenom,
+      quoteDenom,
+    });
     const swapState = usePlaceLimit({
       osmosisChainId: "localosmosis",
-      poolId: "1",
+      poolId,
       orderDirection,
       useQueryParams: false,
+      orderbookContractAddress,
+      baseDenom,
+      quoteDenom,
     });
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     const { isMobile } = useWindowSize();
@@ -42,12 +53,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     return (
       <div className="flex flex-col gap-3">
-        <TokenSelectWidget
-          selectableAssets={[swapState.fromAsset, swapState.fromAsset]}
+        <TokenSelectLimit
+          selectableAssets={[swapState.fromAsset, swapState.toAsset]}
           selectedToken={swapState.toAsset}
           paymentToken={swapState.fromAsset}
           paymentBalance={swapState.inAmountInput.balance!}
-          onTokenSelect={() => {}}
+          onTokenSelect={(newQuoteDenom) => setQuoteDenom(newQuoteDenom)}
           disabled={false}
         />
         <div className="px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">

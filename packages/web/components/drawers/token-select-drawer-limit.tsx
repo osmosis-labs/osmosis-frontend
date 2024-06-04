@@ -81,8 +81,8 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
       keyboardSelectedIndexRef,
     ] = useStateRef(0);
 
-    const [assets, setAssets] = useState(selectableAssets);
-    const [isRequestingClose, setIsRequestingClose] = useState(false);
+    const [assets, _setAssets] = useState(selectableAssets);
+    const [_isRequestingClose, setIsRequestingClose] = useState(false);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
 
@@ -189,7 +189,8 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
       },
     });
 
-    const onSearch = (nextValue: string) => {
+    // TODO: Wire up search
+    const onSearch = (_nextValue: string) => {
       setKeyboardSelectedIndex(0);
     };
 

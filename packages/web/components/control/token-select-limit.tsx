@@ -14,7 +14,7 @@ import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useSwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
 
-export interface TokenSelectWidgetProps {
+export interface TokenSelectLimitProps {
   dropdownOpen?: boolean;
   setDropdownOpen?: (value: boolean) => void;
   // TODO: Better typing
@@ -34,8 +34,8 @@ export interface TokenSelectWidgetProps {
   canSelectTokens?: boolean;
 }
 
-export const TokenSelectWidget: FunctionComponent<
-  TokenSelectWidgetProps & Disableable
+export const TokenSelectLimit: FunctionComponent<
+  TokenSelectLimitProps & Disableable
 > = observer(
   ({
     dropdownOpen,
