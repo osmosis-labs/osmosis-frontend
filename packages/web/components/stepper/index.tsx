@@ -12,7 +12,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import useSteps, { UseStepsReturn } from "~/components/stepper/use-steps";
+import { useSteps, UseStepsReturn } from "~/components/stepper/use-steps";
 import { createContext } from "~/utils/react-context";
 
 interface StepsProps {
