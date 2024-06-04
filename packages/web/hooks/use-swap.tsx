@@ -102,6 +102,7 @@ export function useSwap(
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
   const { t } = useTranslation();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -119,14 +120,15 @@ export function useSwap(
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
-  const canLoadQuote =
+  const quoteQueryEnabled =
     isToFromAssets &&
     Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
     // since input is debounced there could be the wrong asset associated
     // with the input amount when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    !Boolean(account?.txTypeInProgress);
+    !account?.txTypeInProgress &&
+    !isWalletLoading;
 
   const {
     data: quote,
@@ -140,11 +142,11 @@ export function useSwap(
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    canLoadQuote
+    quoteQueryEnabled
   );
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
+  const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
 
   const {
     data: spotPriceQuote,
@@ -196,6 +198,7 @@ export function useSwap(
   const networkFeeQueryEnabled =
     featureFlags.swapToolSimulateFee &&
     !Boolean(precedentError) &&
+    // includes check for quoteQueryEnabled
     !isQuoteLoading &&
     Boolean(quote) &&
     Boolean(account?.address);
@@ -211,10 +214,7 @@ export function useSwap(
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
-  const isLoadingNetworkFee =
-    featureFlags.swapToolSimulateFee &&
-    isLoadingNetworkFee_ &&
-    networkFeeQueryEnabled;
+  const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
   const hasExceededOneClickTradingGasLimit = useMemo(() => {
     if (
@@ -774,6 +774,7 @@ function useSwapAmountInput({
 }) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const featureFlags = useFeatureFlags();
 
@@ -785,10 +786,16 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
-    !!inAmountInput.balance &&
-    !inAmountInput.balance?.toDec().isZero() &&
+    !isLoadingWallet &&
     Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset);
+    Boolean(swapAssets.toAsset) &&
+    // since the in amount is debounced, the asset could be wrong when switching assets
+    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    !!inAmountInput.balance &&
+    !inAmountInput.balance.toDec().isZero() &&
+    inAmountInput.balance.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom;
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
@@ -806,11 +813,12 @@ function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
-  const networkQueryEnabled =
+  const networkFeeQueryEnabled =
     featureFlags.swapToolSimulateFee &&
+    // includes check for balanceQuoteQueryEnabled
     !isQuoteForCurrentBalanceLoading &&
     Boolean(quoteForCurrentBalance) &&
-    !Boolean(account?.txTypeInProgress);
+    !account?.txTypeInProgress;
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
@@ -818,10 +826,10 @@ function useSwapAmountInput({
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
-    enabled: networkQueryEnabled,
+    enabled: networkFeeQueryEnabled,
   });
   const isLoadingCurrentBalanceNetworkFee =
-    networkQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
+    networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
     return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
