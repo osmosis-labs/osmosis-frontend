@@ -26,7 +26,7 @@ export interface TokenDetailsProps {
   className?: string;
 }
 
-const TokenDetails = ({
+const _TokenDetails = ({
   denom,
   tokenDetailsByLanguage,
   className,
@@ -270,7 +270,7 @@ const TokenDetails = ({
   );
 };
 
-export const TokenDetailsWithObserver = observer(TokenDetails);
+export const TokenDetails = observer(_TokenDetails);
 
 interface TokenStatsProps {
   usdFiat?: FiatCurrency;

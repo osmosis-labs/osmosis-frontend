@@ -12,7 +12,7 @@ import {
 import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
-import StrategiesTable from "~/components/earn/table";
+import { StrategiesTable } from "~/components/earn/table";
 import {
   TabButton,
   TabButtons,

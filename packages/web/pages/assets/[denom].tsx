@@ -31,7 +31,7 @@ import {
 import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
 import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import { TokenDetailsWithObserver } from "~/components/token-details";
+import { TokenDetails } from "~/components/token-details";
 import { TwitterSection } from "~/components/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
@@ -245,7 +245,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   tokenDetailsByLanguage={tokenDetailsByLanguage}
                 />
               </div>
-              <TokenDetailsWithObserver
+              <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
