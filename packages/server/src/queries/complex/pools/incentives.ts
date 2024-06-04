@@ -10,6 +10,7 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { queryAstroportPoolAprs } from "../../data-services/astroport-aprs";
 import { queryPoolAprs } from "../../data-services/pool-aprs";
 import { Gauge, queryGauges } from "../../osmosis";
 import { Epochs } from "../../osmosis/epochs";
@@ -96,6 +97,9 @@ export function getCachedPoolIncentivesMap(): Promise<
     ttl: 1000 * 30, // 30 seconds
     getFreshValue: async () => {
       const aprs = await queryPoolAprs();
+      const astroport_aprs = await queryAstroportPoolAprs();
+
+      aprs.push(...astroport_aprs);
 
       return aprs.reduce((map, apr) => {
         let total = maybeMakeRatePretty(apr.total_apr);
