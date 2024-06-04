@@ -51,6 +51,7 @@
     "@notifi-network/notifi-frontend-client": "0.87.0",
     "@notifi-network/notifi-react-card": "0.87.0",
     "@opentelemetry/api": "^1.8.0",
+    "@opentelemetry/api-logs": "^0.51.1",
     "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
