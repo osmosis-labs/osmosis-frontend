@@ -22,9 +22,9 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GradientView } from "~/components/assets/gradient-view";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import ClipboardButton from "~/components/buttons/clipboard-button";
-import IconButton from "~/components/buttons/icon-button";
-import LinkButton from "~/components/buttons/link-button";
+import { ClipboardButton } from "~/components/buttons/clipboard-button";
+import { IconButton } from "~/components/buttons/icon-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,

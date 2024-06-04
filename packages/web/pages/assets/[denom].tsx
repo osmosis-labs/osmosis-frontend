@@ -23,7 +23,7 @@ import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
-import LinkButton from "~/components/buttons/link-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
