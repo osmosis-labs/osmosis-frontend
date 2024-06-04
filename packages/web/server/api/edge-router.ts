@@ -1,5 +1,6 @@
 import {
   assetsRouter,
+  concentratedLiquidityRouter,
   createTRPCRouter,
   earnRouter,
   poolsRouter,
@@ -14,4 +15,5 @@ export const edgeRouter = createTRPCRouter({
   staking: stakingRouter,
   earn: earnRouter,
   transactions: transactionsRouter,
+  concentratedLiquidity: concentratedLiquidityRouter,
 });

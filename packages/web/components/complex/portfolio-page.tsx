@@ -357,7 +357,7 @@ const WalletDisconnectedSplash: FunctionComponent = () => (
 
 function useUserPositionsData(address: string | undefined) {
   const { data: positions, isLoading: isLoadingUserPositions } =
-    api.local.concentratedLiquidity.getUserPositions.useQuery(
+    api.edge.concentratedLiquidity.getUserPositions.useQuery(
       {
         userOsmoAddress: address ?? "",
       },

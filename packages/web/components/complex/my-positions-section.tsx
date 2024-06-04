@@ -20,7 +20,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
     const [viewMore, setViewMore] = useState(false);
 
     const { data: positions, isLoading } =
-      api.local.concentratedLiquidity.getUserPositions.useQuery(
+      api.edge.concentratedLiquidity.getUserPositions.useQuery(
         {
           userOsmoAddress: account?.address ?? "",
           forPoolId,

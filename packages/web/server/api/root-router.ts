@@ -1,6 +1,5 @@
 import {
   cmsRouter,
-  concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
   swapRouter,
@@ -14,7 +13,6 @@ import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
  * Caution: Ensure no sensitive data is exposed through these functions. */
 export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
-  concentratedLiquidity: concentratedLiquidityRouter,
   oneClickTrading: oneClickTradingRouter,
   cms: cmsRouter,
 });
