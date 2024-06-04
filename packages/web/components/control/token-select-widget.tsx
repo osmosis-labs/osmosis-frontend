@@ -6,15 +6,17 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useMemo, useState } from "react";
 
+import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer-limit";
 import { Disableable } from "~/components/types";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useSwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
 
 export interface TokenSelectWidgetProps {
-  dropdownOpen: boolean;
-  setDropdownOpen: (value: boolean) => void;
+  dropdownOpen?: boolean;
+  setDropdownOpen?: (value: boolean) => void;
   // TODO: Better typing
   selectableAssets: ReturnType<typeof useSwapAsset>["asset"][];
   selectedToken: ReturnType<typeof useSwapAsset>["asset"] &
@@ -63,10 +65,14 @@ export const TokenSelectWidget: FunctionComponent<
       canSelectTokens && preSortedTokens.length >= 1;
 
     const onSelect = (tokenDenom: string) => {
-      // logEvent([
-      //   EventName.Swap.dropdownAssetSelected,
-      //   { tokenName: tokenDenom, isOnHome: router.pathname === "/", page },
-      // ]);
+      logEvent([
+        EventName.Swap.dropdownAssetSelected,
+        {
+          tokenName: tokenDenom,
+          isOnHome: router.pathname === "/",
+          page: "Swap Page",
+        },
+      ]);
       onTokenSelect(tokenDenom);
     };
 
@@ -123,7 +129,15 @@ export const TokenSelectWidget: FunctionComponent<
             </div>
           )}
           {tokenSelectionAvailable && (
-            <button className="h-[32px] rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (tokenSelectionAvailable) {
+                  setIsSelectOpen(!isSelectOpen);
+                }
+              }}
+              className="h-[32px] rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
+            >
               Change
             </button>
           )}
@@ -165,6 +179,16 @@ export const TokenSelectWidget: FunctionComponent<
           ) : (
             <div />
           )}
+        </div>
+        <div className="pt-16">
+          <TokenSelectDrawerLimit
+            isOpen={isSelectOpen}
+            onClose={() => setIsSelectOpen(false)}
+            onSelect={onSelect}
+            showSearchBox={true}
+            showRecommendedTokens={false}
+            selectableAssets={preSortedTokens}
+          />
         </div>
       </div>
     );

@@ -43,8 +43,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     return (
       <div className="flex flex-col gap-3">
         <TokenSelectWidget
-          dropdownOpen={false}
-          setDropdownOpen={() => {}}
           selectableAssets={[swapState.fromAsset, swapState.fromAsset]}
           selectedToken={swapState.toAsset}
           paymentToken={swapState.fromAsset}
