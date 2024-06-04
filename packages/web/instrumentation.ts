@@ -5,18 +5,8 @@ export function register() {
     serviceName: "vercel-datadog",
     instrumentationConfig: {
       fetch: {
-        propagateContextUrls: [/^https:\/\/sqs\d+/],
-        dontPropagateContextUrls: [/no-propagation\=1/],
-        attributesFromRequestHeaders: {
-          "request.cmd": "X-Cmd",
-        },
-        attributesFromResponseHeaders: {
-          "response.server": "X-Server",
-        },
+        propagateContextUrls: ["*"],
       },
-    },
-    attributesFromHeaders: {
-      client: "X-Client",
     },
   });
 }
