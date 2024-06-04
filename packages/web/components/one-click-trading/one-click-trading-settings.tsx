@@ -14,7 +14,7 @@ import React, {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getResetPeriodTranslationKey,

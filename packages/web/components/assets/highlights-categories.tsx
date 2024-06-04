@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
 import { PriceChange } from "~/components/assets/price";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import {
   Breakpoint,

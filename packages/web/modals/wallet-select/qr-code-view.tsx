@@ -4,7 +4,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import React, { Fragment, FunctionComponent, Suspense, useMemo } from "react";
 
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 

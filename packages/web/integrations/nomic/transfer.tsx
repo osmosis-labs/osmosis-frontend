@@ -16,7 +16,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { GradientView } from "~/components/assets/gradient-view";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";

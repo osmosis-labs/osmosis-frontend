@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import { ScreenGoBackButton } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";

@@ -21,7 +21,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
