@@ -29,8 +29,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ orderDirection = OrderDirection.Bid }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const [quoteDenom, setQuoteDenom] = useState<string>("OSMO");
-    const baseDenom = "ION";
+    const [baseDenom, setBaseDenom] = useState<string>("ION");
+    const quoteDenom = "OSMO";
 
     const { poolId, orderbookContractAddress } = useOrderbookPool({
       baseDenom,
@@ -55,11 +55,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       <div className="flex flex-col gap-3">
         <TokenSelectLimit
           selectableAssets={[swapState.fromAsset, swapState.toAsset]}
-          selectedToken={swapState.toAsset}
-          paymentToken={swapState.fromAsset}
-          paymentBalance={swapState.inAmountInput.balance!}
-          onTokenSelect={(newQuoteDenom) => setQuoteDenom(newQuoteDenom)}
+          baseAsset={swapState.baseAsset}
+          quoteAsset={swapState.quoteAsset}
+          outgoingBalance={swapState.inAmountInput.balance!}
+          onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
           disabled={false}
+          orderDirection={orderDirection}
         />
         <div className="px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
           <div className="flex place-content-end items-center transition-opacity">

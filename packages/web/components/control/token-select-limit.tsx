@@ -10,6 +10,7 @@ import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { OrderDirection } from "~/hooks/limit-orders";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useSwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
@@ -19,19 +20,20 @@ export interface TokenSelectLimitProps {
   setDropdownOpen?: (value: boolean) => void;
   // TODO: Better typing
   selectableAssets: ReturnType<typeof useSwapAsset>["asset"][];
-  selectedToken: ReturnType<typeof useSwapAsset>["asset"] &
+  baseAsset: ReturnType<typeof useSwapAsset>["asset"] &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  paymentToken: ReturnType<typeof useSwapAsset>["asset"] &
+  quoteAsset: ReturnType<typeof useSwapAsset>["asset"] &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  paymentBalance: CoinPretty;
+  outgoingBalance: CoinPretty;
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
+  orderDirection: OrderDirection;
 }
 
 export const TokenSelectLimit: FunctionComponent<
@@ -43,10 +45,11 @@ export const TokenSelectLimit: FunctionComponent<
     selectableAssets,
     onTokenSelect,
     canSelectTokens = true,
-    selectedToken,
-    paymentToken,
-    paymentBalance,
+    baseAsset,
+    quoteAsset,
+    outgoingBalance,
     disabled,
+    orderDirection,
   }) => {
     const { isMobile } = useWindowSize();
     const router = useRouter();
@@ -77,23 +80,22 @@ export const TokenSelectLimit: FunctionComponent<
     };
 
     const { price: paymentCoinPrice, isLoading: isLoadingPaymentPrice } =
-      useCoinPrice(paymentBalance);
+      useCoinPrice(outgoingBalance);
 
     const paymentFiatBalance = useMemo(
       () =>
         !isLoadingPaymentPrice && paymentCoinPrice
           ? new PricePretty(
               DEFAULT_VS_CURRENCY,
-              paymentCoinPrice.mul(paymentBalance)
+              paymentCoinPrice.mul(outgoingBalance)
             )
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      [paymentCoinPrice, paymentBalance, isLoadingPaymentPrice]
+      [paymentCoinPrice, outgoingBalance, isLoadingPaymentPrice]
     );
-
     return (
       <div>
         <div className="align-center relative z-10 flex flex-row place-content-between items-center rounded-xl bg-osmoverse-850 py-5 px-3 md:justify-start">
-          {selectedToken && (
+          {baseAsset && (
             <div
               className={classNames(
                 "flex items-center gap-2 text-left transition-opacity",
@@ -103,10 +105,10 @@ export const TokenSelectLimit: FunctionComponent<
                 }
               )}
             >
-              {selectedToken.coinImageUrl && (
+              {baseAsset.coinImageUrl && (
                 <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
-                    src={selectedToken.coinImageUrl}
+                    src={baseAsset.coinImageUrl}
                     alt="token icon"
                     width={isMobile ? 30 : 50}
                     height={isMobile ? 30 : 50}
@@ -114,17 +116,28 @@ export const TokenSelectLimit: FunctionComponent<
                   />
                 </div>
               )}
-              <div className="flex flex-row">
+              <div className="flex flex-col">
                 <div className="mr-2 flex items-center">
-                  {isMobile || selectedToken.coinName.length > 6 ? (
-                    <span className="text-h6">{selectedToken.coinName}</span>
+                  {isMobile || baseAsset.coinName.length > 6 ? (
+                    <span className="text-h6">{baseAsset.coinName}</span>
                   ) : (
-                    <h6>{selectedToken.coinName}</h6>
+                    <h6>{baseAsset.coinName}</h6>
                   )}
                   <span className="md:caption ml-2 w-32 truncate text-h6 text-osmoverse-400">
-                    {selectedToken.coinDenom}
+                    {baseAsset.coinDenom}
                   </span>
                 </div>
+                {orderDirection === OrderDirection.Ask && (
+                  <>
+                    {!isLoadingPaymentPrice && paymentFiatBalance ? (
+                      <div className="flex text-body1 text-osmoverse-300">
+                        {formatPretty(paymentFiatBalance)} available
+                      </div>
+                    ) : (
+                      <div />
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -143,7 +156,7 @@ export const TokenSelectLimit: FunctionComponent<
           )}
         </div>
         <div className="align-center relative z-0 mt-[-20px] flex flex-row place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
-          {paymentToken && (
+          {quoteAsset && (
             <div
               className={classNames(
                 "flex items-center gap-2 text-left transition-opacity",
@@ -153,11 +166,13 @@ export const TokenSelectLimit: FunctionComponent<
                 }
               )}
             >
-              <span className="subtitle1 text-osmoverse-300">Pay with</span>
-              {paymentToken.coinImageUrl && (
+              <span className="subtitle1 text-osmoverse-300">
+                {orderDirection === OrderDirection.Bid ? "Pay with" : "Receive"}
+              </span>
+              {quoteAsset.coinImageUrl && (
                 <div className="h-[24px] w-[24px] shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
-                    src={paymentToken.coinImageUrl}
+                    src={quoteAsset.coinImageUrl}
                     alt="token icon"
                     width={24}
                     height={24}
@@ -167,17 +182,21 @@ export const TokenSelectLimit: FunctionComponent<
               )}
               <div className="flex flex-row">
                 <span className="md:caption subtitle1 w-32 truncate">
-                  {paymentToken.coinDenom}
+                  {quoteAsset.coinDenom}
                 </span>
               </div>
             </div>
           )}
-          {!isLoadingPaymentPrice && paymentFiatBalance ? (
-            <div className="flex text-body1 text-osmoverse-300">
-              {formatPretty(paymentFiatBalance)} available
-            </div>
-          ) : (
-            <div />
+          {orderDirection === OrderDirection.Bid && (
+            <>
+              {!isLoadingPaymentPrice && paymentFiatBalance ? (
+                <div className="flex text-body1 text-osmoverse-300">
+                  {formatPretty(paymentFiatBalance)} available
+                </div>
+              ) : (
+                <div />
+              )}
+            </>
           )}
         </div>
         <div className="pt-16">

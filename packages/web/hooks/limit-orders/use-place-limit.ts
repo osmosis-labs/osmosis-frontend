@@ -2,7 +2,11 @@ import { Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { useCallback, useMemo, useState } from "react";
 
-import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
+import {
+  useSwapAmountInput,
+  useSwapAsset,
+  useSwapAssets,
+} from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 
 export enum OrderDirection {
@@ -35,8 +39,10 @@ export const usePlaceLimit = ({
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
   const swapAssets = useSwapAssets({
-    initialFromDenom: quoteDenom,
-    initialToDenom: baseDenom,
+    initialFromDenom:
+      orderDirection === OrderDirection.Bid ? quoteDenom : baseDenom,
+    initialToDenom:
+      orderDirection === OrderDirection.Bid ? baseDenom : quoteDenom,
     useQueryParams,
     useOtherCurrencies,
   });
@@ -83,10 +89,23 @@ export const usePlaceLimit = ({
     priceState,
   ]);
 
+  const { asset: quoteAsset } = useSwapAsset({
+    minDenomOrSymbol: quoteDenom,
+    existingAssets: swapAssets.selectableAssets,
+  });
+  console.log("QUOTE", quoteAsset);
+
+  const { asset: baseAsset } = useSwapAsset({
+    minDenomOrSymbol: baseDenom,
+    existingAssets: swapAssets.selectableAssets,
+  });
+
   return {
     ...swapAssets,
     quoteDenom,
     baseDenom,
+    baseAsset,
+    quoteAsset,
     priceState,
     inAmountInput,
     placeLimit,
