@@ -32,7 +32,7 @@ import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
 import { AprBreakdownLegacy } from "../cards/apr-breakdown";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () =>

@@ -41,7 +41,7 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const E = EventName.PoolDetail;
 

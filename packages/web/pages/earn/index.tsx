@@ -21,7 +21,7 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
