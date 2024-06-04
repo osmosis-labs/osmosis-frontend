@@ -110,7 +110,7 @@ function formatSpendLimit(spendLimit: PricePretty | undefined) {
   )}`;
 }
 
-const OneClickTradingSettings = ({
+export const OneClickTradingSettings = ({
   classes,
   onGoBack,
   transaction1CTParams,
@@ -632,5 +632,3 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
     </ModalBase>
   );
 };
-
-export default OneClickTradingSettings;
