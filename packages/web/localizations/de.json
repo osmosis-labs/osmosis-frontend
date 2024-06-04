@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "Verdienen",
     "positions": "Positionen",
-    "tokensCount": "{number} Token",
     "strategiesCount": "{number} Strategien",
     "oneStrategy": "1 Strategie",
     "value": "Wert",

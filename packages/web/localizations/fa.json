@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "بدست آوردن",
     "positions": "موقعیت ها",
-    "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
     "oneStrategy": "1 استراتژی",
     "value": "ارزش",

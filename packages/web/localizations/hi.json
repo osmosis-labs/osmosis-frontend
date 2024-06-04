@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "कमाना",
     "positions": "स्थितियां",
-    "tokensCount": "{number} टोकन",
     "strategiesCount": "{number} रणनीतियाँ",
     "oneStrategy": "1 रणनीति",
     "value": "कीमत",

@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "得る",
     "positions": "ポジション",
-    "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
     "oneStrategy": "1つの戦略",
     "value": "価値",

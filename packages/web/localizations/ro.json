@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "Câştiga",
     "positions": "Poziții",
-    "tokensCount": "{number} jetoane",
     "strategiesCount": "{number} strategii",
     "oneStrategy": "1 strategie",
     "value": "Valoare",

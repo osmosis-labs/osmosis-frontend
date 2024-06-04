@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "賺",
     "positions": "職位",
-    "tokensCount": "{number}標記",
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 策略",
     "value": "價值",

@@ -993,7 +993,6 @@
   "earnPage": {
     "title": "벌다",
     "positions": "직위",
-    "tokensCount": "{number} 토큰",
     "strategiesCount": "{number} 전략",
     "oneStrategy": "전략 1개",
     "value": "값",
