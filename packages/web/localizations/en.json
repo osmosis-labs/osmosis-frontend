@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Related Assets",
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",

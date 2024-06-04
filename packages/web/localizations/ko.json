@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "관련 자산",
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",

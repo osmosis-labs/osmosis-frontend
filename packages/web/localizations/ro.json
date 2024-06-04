@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Active aferente",
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",

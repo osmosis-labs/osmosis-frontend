@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "संबंधित संपत्ति",
     "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
     "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",

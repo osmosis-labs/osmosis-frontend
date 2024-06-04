@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Zugehörige Vermögenswerte",
     "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
     "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",

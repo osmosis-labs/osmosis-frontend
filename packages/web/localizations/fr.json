@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Actifs associés",
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",

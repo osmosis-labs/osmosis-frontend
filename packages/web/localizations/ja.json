@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "関連アセット",
     "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",

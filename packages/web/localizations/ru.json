@@ -958,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Связанные активы",
     "earnWith": "Зарабатывайте с помощью {denom}",
     "explorePools": "Исследуйте бассейны",
     "stakeYourDenomToEarn": "Сделайте ставку на свой {denom} чтобы заработать {apr} % годовых",
