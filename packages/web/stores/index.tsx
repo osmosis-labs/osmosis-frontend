@@ -18,8 +18,8 @@ function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
   apiUtils.edge.assets.getUserAssetsTotal.invalidate();
   apiUtils.edge.assets.getUserBridgeAssets.invalidate();
-  apiUtils.edge.concentratedLiquidity.getUserPositions.invalidate();
-  apiUtils.edge.concentratedLiquidity.getPositionDetails.invalidate();
+  apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
+  apiUtils.local.concentratedLiquidity.getPositionDetails.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";

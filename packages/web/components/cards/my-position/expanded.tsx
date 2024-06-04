@@ -567,7 +567,7 @@ const Chart: FunctionComponent<{
 
 const SuperfluidPositionInfo: FunctionComponent<
   NonNullable<
-    RouterOutputs["edge"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
+    RouterOutputs["local"]["concentratedLiquidity"]["getPositionDetails"]["superfluidData"]
   >
 > = (props) => {
   const {
