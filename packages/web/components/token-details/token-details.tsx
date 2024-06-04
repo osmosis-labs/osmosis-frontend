@@ -270,7 +270,7 @@ const TokenDetails = ({
   );
 };
 
-export default observer(TokenDetails);
+export const TokenDetailsWithObserver = observer(TokenDetails);
 
 interface TokenStatsProps {
   usdFiat?: FiatCurrency;
