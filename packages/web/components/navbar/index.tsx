@@ -24,7 +24,7 @@ import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import ClientOnly from "~/components/client-only";
+import { ClientOnly } from "~/components/client-only";
 import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { CustomClasses } from "~/components/types";
