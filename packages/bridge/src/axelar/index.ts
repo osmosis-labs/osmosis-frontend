@@ -10,16 +10,13 @@ import {
   Address,
   createPublicClient,
   encodeFunctionData,
+  erc20Abi,
   http,
   toHex,
 } from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
-import {
-  Erc20Abi,
-  EthereumChainInfo,
-  NativeEVMTokenConstantAddress,
-} from "../ethereum";
+import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -370,7 +367,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         type: "evm",
         to: fromAsset.address as Address, // ERC20 token address
         data: encodeFunctionData({
-          abi: Erc20Abi,
+          abi: erc20Abi,
           functionName: "transfer",
           args: [depositAddress as `0x${string}`, BigInt(fromAmount)],
         }),

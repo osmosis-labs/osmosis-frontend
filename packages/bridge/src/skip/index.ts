@@ -1,5 +1,6 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { isNil } from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
   Address,
@@ -290,7 +291,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     };
   }
 
-  private getEthersProvider(chainID: string) {
+  private getViemProvider(chainID: string) {
     const evmChain = Object.values(EthereumChainInfo).find(
       (chain) => chain.id.toString() === chainID
     );
@@ -320,7 +321,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
     | undefined
   > {
-    const provider = this.getEthersProvider(chainID);
+    const provider = this.getViemProvider(chainID);
 
     const allowance = await provider.readContract({
       abi: erc20Abi,
@@ -544,10 +545,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     try {
       if (!txData.approvalTransactionRequest) {
         const estimatedGas = await provider.estimateGas({
-          from: params.fromAddress,
+          account: params.fromAddress as Address,
           to: txData.to,
           data: txData.data,
-          value: txData.value,
+          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
         });
 
         return BigInt(estimatedGas);
@@ -584,10 +585,10 @@ export class SkipBridgeProvider implements BridgeProvider {
       };
 
       // Call with no state overrides
-      const callResult = await provider.send("eth_estimateGas", [
-        ...callParams,
-        stateDiff,
-      ]);
+      const callResult = await provider.request({
+        method: "eth_estimateGas",
+        params: [...callParams, stateDiff],
+      });
 
       return BigInt(callResult);
     } catch (err) {
