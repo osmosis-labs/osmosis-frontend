@@ -300,12 +300,12 @@ export async function getGasFeeAmount({
   const feeBalances: { denom: string; amount: string }[] = [];
 
   // iterate in order of fee denoms
-  chainFeeDenoms.forEach((denom) => {
+  for (const denom of chainFeeDenoms) {
     const balance = balances.find((balance) => balance.denom === denom);
     if (balance) {
       feeBalances.push(balance);
     }
-  });
+  }
 
   if (!feeBalances.length) {
     throw new InsufficientFeeError(
