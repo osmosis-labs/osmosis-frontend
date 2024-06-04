@@ -30,7 +30,7 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
   null
 );
 
-const OneClickTradingIntroModal = observer(() => {
+export const OneClickTradingIntroModal = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();

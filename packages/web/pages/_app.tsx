@@ -43,7 +43,7 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
+import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
 import DefaultSeo from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
