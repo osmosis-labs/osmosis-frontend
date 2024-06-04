@@ -44,7 +44,7 @@
   "devDependencies": {
     "@cosmology/proto-parser": "^1.5.0",
     "@cosmology/telescope": "^1.5.1",
-    "@types/node": "^18.16.3",
+    "@types/node": "^20.14.1",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
     "tsx": "^4.6.2"
