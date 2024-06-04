@@ -30,7 +30,10 @@ import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(

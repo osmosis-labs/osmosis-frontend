@@ -45,7 +45,10 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
