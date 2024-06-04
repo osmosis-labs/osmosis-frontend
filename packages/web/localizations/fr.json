@@ -979,7 +979,6 @@
     "marketCapRank": "Classement de la capitalisation boursière",
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
-    "tvl": "TVL",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",
     "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
@@ -993,9 +992,7 @@
   "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
-    "position": "Position",
     "positions": "Postes",
-    "allocation": "Allocation",
     "tokensCount": "{number} jetons",
     "strategiesCount": "Stratégies {number}",
     "oneStrategy": "1 stratégie",

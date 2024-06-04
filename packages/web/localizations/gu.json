@@ -979,7 +979,6 @@
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
-    "tvl": "ટીવીએલ",
     "buyToken": "{coinDenom} ખરીદો",
     "staking": "સ્ટેકિંગ",
     "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"
@@ -993,9 +992,7 @@
   "previewAssetsEnabledForSession": "આ સત્ર માટે પૂર્વાવલોકન સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો, અથવા `show_preview_assets=false` ઉમેરો.",
   "earnPage": {
     "title": "કમાઓ",
-    "position": "પદ",
     "positions": "હોદ્દાઓ",
-    "allocation": "ફાળવણી",
     "tokensCount": "{number} ટોકન્સ",
     "strategiesCount": "{number} વ્યૂહરચના",
     "oneStrategy": "1 વ્યૂહરચના",

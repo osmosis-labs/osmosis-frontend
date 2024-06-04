@@ -979,7 +979,6 @@
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
-    "tvl": "TVL",
     "buyToken": "خرید {coinDenom}",
     "staking": "شرط بندی",
     "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}"
@@ -993,9 +992,7 @@
   "previewAssetsEnabledForSession": "پیش‌نمایش دارایی‌های فعال برای این جلسه. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_preview_assets=false» را اضافه کنید.",
   "earnPage": {
     "title": "بدست آوردن",
-    "position": "موقعیت",
     "positions": "موقعیت ها",
-    "allocation": "تخصیص",
     "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
     "oneStrategy": "1 استراتژی",

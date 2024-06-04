@@ -979,7 +979,6 @@
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "tvl": "टी वी लाइनों",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
     "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"
@@ -993,9 +992,7 @@
   "previewAssetsEnabledForSession": "इस सत्र के लिए संपत्तियों का पूर्वावलोकन सक्षम किया गया। अक्षम करने के लिए एक नया टैब खोलें, या `show_preview_assets=false` जोड़ें।",
   "earnPage": {
     "title": "कमाना",
-    "position": "पद",
     "positions": "स्थितियां",
-    "allocation": "आवंटन",
     "tokensCount": "{number} टोकन",
     "strategiesCount": "{number} रणनीतियाँ",
     "oneStrategy": "1 रणनीति",
