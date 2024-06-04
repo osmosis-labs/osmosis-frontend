@@ -8,7 +8,9 @@ import SkeletonLoader from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
-const QRCode = React.lazy(() => import("~/components/qrcode"));
+const QRCode = React.lazy(() =>
+  import("~/components/qrcode").then((module) => ({ default: module.QRCode }))
+);
 
 const QRCodeLoader = () => (
   <div className="mb-7">
