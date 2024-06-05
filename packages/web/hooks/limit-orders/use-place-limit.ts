@@ -39,10 +39,8 @@ export const usePlaceLimit = ({
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
   const swapAssets = useSwapAssets({
-    initialFromDenom:
-      orderDirection === OrderDirection.Bid ? quoteDenom : baseDenom,
-    initialToDenom:
-      orderDirection === OrderDirection.Bid ? baseDenom : quoteDenom,
+    initialFromDenom: baseDenom,
+    initialToDenom: quoteDenom,
     useQueryParams,
     useOtherCurrencies,
   });

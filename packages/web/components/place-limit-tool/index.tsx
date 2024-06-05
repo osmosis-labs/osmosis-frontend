@@ -2,13 +2,14 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useRef, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
+import { LimitInput } from "~/components/input/limit-input";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { useStore } from "~/stores";
@@ -45,8 +46,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom,
       quoteDenom,
     });
-    const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
-    const { isMobile } = useWindowSize();
     const account = accountStore.getWallet("localosmosis");
 
     const isSwapToolLoading = false;
@@ -105,36 +104,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           </div>
           <div className="mt-3 flex place-content-between items-center">
             <div className="flex w-full flex-col items-center">
-              <input
-                ref={fromAmountInputEl}
-                type="number"
-                className={classNames(
-                  "w-full bg-transparent text-center text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                  "text-h2 font-h2 md:font-subtitle1"
-                )}
-                placeholder="0"
-                onChange={(e) => {
-                  e.preventDefault();
-                  if (e.target.value.length <= (isMobile ? 19 : 26)) {
-                    swapState.inAmountInput.setAmount(e.target.value);
-                  }
-                }}
-                value={swapState.inAmountInput.inputAmount}
-              />
-              <span
-                className={classNames(
-                  "subtitle1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity",
-                  !swapState.inAmountInput.fiatValue ||
-                    swapState.inAmountInput.fiatValue.toDec().isZero()
-                    ? "opacity-0"
-                    : "opacity-100"
-                )}
-              >{`≈ ${
-                swapState.inAmountInput.fiatValue &&
-                swapState.inAmountInput.fiatValue.toString().length > 15
-                  ? formatPretty(swapState.inAmountInput.fiatValue)
-                  : swapState.inAmountInput.fiatValue?.toString() ?? "0"
-              }`}</span>
+              <LimitInput baseAsset={swapState.inAmountInput.balance!} />
             </div>
           </div>
         </div>
