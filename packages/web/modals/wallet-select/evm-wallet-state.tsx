@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
-import ConnectingWalletState from "~/components/wallet-states/connecting-wallet-state";
-import ErrorWalletState from "~/components/wallet-states/error-wallet-state";
+import { ConnectingWalletState } from "~/components/wallet-states";
+import { ErrorWalletState } from "~/components/wallet-states";
 import { useTranslation } from "~/hooks";
 import { ConnectEvmWalletReturn } from "~/hooks/evm-wallet";
 import { WalletSelectModalProps } from "~/modals/wallet-select";

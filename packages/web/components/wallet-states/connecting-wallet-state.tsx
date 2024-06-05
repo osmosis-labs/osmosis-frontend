@@ -7,7 +7,7 @@ interface ConnectingWalletStateProps {
   desc?: string;
 }
 
-const ConnectingWalletState = ({
+export const ConnectingWalletState = ({
   walletLogo,
   title,
   desc,
@@ -31,5 +31,3 @@ const ConnectingWalletState = ({
     </div>
   );
 };
-
-export default ConnectingWalletState;

@@ -867,10 +867,6 @@
       "title": "Transaction settings"
     },
     "title": "Swap",
-    "promo": {
-      "newOpportunity": "New opportunity to earn with {denom}",
-      "discoverSuperchargedPools": "Discover Supercharged Pools"
-    },
     "dynamicSpreadFactor": "Dynamic"
   },
   "walletSelect": {
@@ -962,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Related Assets",
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
@@ -984,7 +979,6 @@
     "marketCapRank": "Market Cap Rank",
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
-    "tvl": "TVL",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",
     "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"
@@ -998,16 +992,10 @@
   "previewAssetsEnabledForSession": "Preview assets enabled for this session. To disable open a new tab, or append `show_preview_assets=false`.",
   "earnPage": {
     "title": "Earn",
-    "position": "Position",
     "positions": "Positions",
-    "allocation": "Allocation",
-    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} strategies",
     "oneStrategy": "1 strategy",
     "value": "Value",
-    "method": "Type",
-    "platform": "Platform",
-    "scrollToSeeMore": "scroll to see more",
     "discoverStrategies": "Discover Strategies",
     "myStrategies": "Your Strategies",
     "strategyPlatform": "Strategy",

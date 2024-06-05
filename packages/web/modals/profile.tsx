@@ -35,7 +35,7 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "~/components/drawers";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
 import { ArrowButton } from "~/components/ui/button";

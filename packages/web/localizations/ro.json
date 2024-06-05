@@ -867,10 +867,6 @@
       "title": "Setari tranzactie"
     },
     "title": "Schimb",
-    "promo": {
-      "newOpportunity": "O nouă oportunitate de a câștiga cu",
-      "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
-    },
     "dynamicSpreadFactor": "Dinamic"
   },
   "walletSelect": {
@@ -962,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Active aferente",
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
@@ -984,7 +979,6 @@
     "marketCapRank": "Poziția de capitalizare a pieței",
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
-    "tvl": "TVL",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
     "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
@@ -998,16 +992,10 @@
   "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "earnPage": {
     "title": "Câştiga",
-    "position": "Poziţie",
     "positions": "Poziții",
-    "allocation": "Alocare",
-    "tokensCount": "{number} jetoane",
     "strategiesCount": "{number} strategii",
     "oneStrategy": "1 strategie",
     "value": "Valoare",
-    "method": "Tip",
-    "platform": "Platformă",
-    "scrollToSeeMore": "derulați pentru a vedea mai multe",
     "discoverStrategies": "Descoperiți strategii",
     "myStrategies": "Strategiile tale",
     "strategyPlatform": "Strategie",

@@ -120,8 +120,7 @@ function Earn() {
               numberOfPositions={myStrategies.length}
               isLoading={areBalancesLoading}
             />
-            {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
-          <EarnAllocation /> */}
+
             <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">
               {t("earnPage.lookBelow")}
             </p>
@@ -147,7 +146,6 @@ function Earn() {
                 <p className="body2 text-osmoverse-200 opacity-50">
                   {t("earnPage.startEarningDescription")}
                 </p>
-
                 <Button
                   mode={"primary"}
                   className="max-h-11 max-w-[260px] xl:max-w-none"
@@ -170,32 +168,6 @@ function Earn() {
           </div>
         </SkeletonLoader>
       )}
-
-      {/* <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
-          <Tabs>
-            <TabButtons>
-              <TabButton withTextOpacity textClassName="!text-lg !leading-8">
-                {t("earnPage.position")}
-              </TabButton>
-              <TabButton
-                withTextOpacity
-                textClassName="!text-lg !leading-8"
-                className="ml-4"
-              >
-                {t("earnPage.allocation")}
-              </TabButton>
-            </TabButtons>
-            <TabPanels>
-              <TabPanel displayMode="block">
-                <EarnPosition />
-              </TabPanel>
-              <TabPanel displayMode="block">
-                <EarnAllocation />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div> */}
-
       <FilterProvider
         defaultFilters={defaultFilters}
         key={`filters-${isWalletConnected}-${holdenDenoms?.length}`}

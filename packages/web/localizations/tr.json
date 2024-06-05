@@ -867,10 +867,6 @@
       "title": "İşlem Ayarları"
     },
     "title": "Takas",
-    "promo": {
-      "newOpportunity": "Kazanmak için yeni fırsat",
-      "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
-    },
     "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
@@ -962,7 +958,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "İlgili Varlıklar",
     "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
     "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
@@ -984,7 +979,6 @@
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "tvl": "TVL",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",
     "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"
@@ -998,16 +992,10 @@
   "previewAssetsEnabledForSession": "Bu oturum için etkinleştirilen varlıkların önizlemesini görüntüleyin. Devre dışı bırakmak için yeni bir sekme açın veya \"show_preview_assets=false\" ifadesini ekleyin.",
   "earnPage": {
     "title": "Para kazanmak",
-    "position": "Konum",
     "positions": "Pozisyonlar",
-    "allocation": "Paylaştırma",
-    "tokensCount": "{number} jeton",
     "strategiesCount": "{number} stratejiler",
     "oneStrategy": "1 strateji",
     "value": "Değer",
-    "method": "Tip",
-    "platform": "platformu",
-    "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
     "myStrategies": "Stratejileriniz",
     "strategyPlatform": "Strateji",

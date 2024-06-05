@@ -17,8 +17,8 @@ import OneClickTradingSettings from "~/components/one-click-trading/one-click-tr
 import OneClickTradingWelcomeBack from "~/components/one-click-trading/one-click-trading-welcome-back";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
-import ConnectingWalletState from "~/components/wallet-states/connecting-wallet-state";
-import ErrorWalletState from "~/components/wallet-states/error-wallet-state";
+import { ConnectingWalletState } from "~/components/wallet-states";
+import { ErrorWalletState } from "~/components/wallet-states";
 import { CosmosWalletRegistry } from "~/config";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
