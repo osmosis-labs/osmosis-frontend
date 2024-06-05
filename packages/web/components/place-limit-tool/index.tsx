@@ -104,7 +104,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           </div>
           <div className="mt-3 flex place-content-between items-center">
             <div className="flex w-full flex-col items-center">
-              <LimitInput baseAsset={swapState.inAmountInput.balance!} />
+              <LimitInput
+                onChange={swapState.inAmountInput.setAmount}
+                baseAsset={swapState.inAmountInput.balance!}
+                tokenAmount={
+                  swapState.inAmountInput.amount
+                    ? formatPretty(swapState.inAmountInput.amount.toDec())
+                    : ""
+                }
+                price={swapState.priceState.price}
+              />
             </div>
           </div>
         </div>

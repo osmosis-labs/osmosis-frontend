@@ -58,12 +58,21 @@ export const usePlaceLimit = ({
       return;
     }
 
+    const paymentDenom =
+      orderDirection === OrderDirection.Bid
+        ? swapAssets.toAsset.coinMinimalDenom
+        : swapAssets.fromAsset.coinMinimalDenom;
+    const paymentAmount =
+      orderDirection === OrderDirection.Ask
+        ? quantity
+        : new Dec(quantity).mul(priceState.price).truncate().toString();
+
     const tickId = priceToTick(priceState.price);
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
         order_direction: orderDirection,
-        quantity,
+        quantity: paymentAmount,
         claim_bounty: CLAIM_BOUNTY,
       },
     };
@@ -73,8 +82,8 @@ export const usePlaceLimit = ({
       msg,
       [
         {
-          amount: quantity,
-          denom: swapAssets.fromAsset.coinMinimalDenom,
+          amount: paymentAmount,
+          denom: paymentDenom,
         },
       ]
     );

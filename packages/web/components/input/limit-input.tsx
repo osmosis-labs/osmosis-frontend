@@ -4,11 +4,13 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { DynamicSizeInput } from "~/components/input/dynamic-size-input";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
   baseAsset: CoinPretty;
+  onChange: (value: string) => void;
+  tokenAmount: string;
+  price: Dec;
 }
 
 enum FocusedInput {
@@ -33,10 +35,13 @@ const transformAmount = (value: string) => {
   return updatedValue;
 };
 
-export const LimitInput: FC<LimitInputProps> = ({ baseAsset }) => {
+export const LimitInput: FC<LimitInputProps> = ({
+  baseAsset,
+  onChange,
+  tokenAmount,
+  price,
+}) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  const [tokenAmount, setTokenAmount] = useState<string>("");
-  const { price, isLoading } = useCoinPrice(baseAsset);
   const [focused, setFocused] = useState<FocusedInput>(FocusedInput.FIAT);
 
   const swapFocus = useCallback(() => {
@@ -70,29 +75,27 @@ export const LimitInput: FC<LimitInputProps> = ({ baseAsset }) => {
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
         return;
       }
-      setTokenAmount(updatedValue);
+      onChange(updatedValue);
     },
-    [setTokenAmount]
+    [onChange]
   );
 
   useEffect(() => {
-    if (isLoading || focused !== FocusedInput.TOKEN) return;
+    if (focused !== FocusedInput.TOKEN) return;
     const value = tokenAmount && tokenAmount.length > 0 ? tokenAmount : "0";
     const fiatValue = price?.mul(new Dec(value));
-    const newFiatAmount = fiatValue?.toDec() ?? new Dec(0);
-    setFiatAmountSafe(formatPretty(newFiatAmount));
+    setFiatAmountSafe(formatPretty(fiatValue));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, isLoading, tokenAmount, setFiatAmountSafe]);
+  }, [price, tokenAmount, setFiatAmountSafe]);
 
   useEffect(() => {
-    if (isLoading || focused !== FocusedInput.FIAT) return;
+    if (focused !== FocusedInput.FIAT) return;
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
-    const tokenValue = new Dec(value)?.quo(price?.toDec() ?? new Dec(1));
-    const newTokenAmount = tokenValue ?? new Dec(0);
-    setTokenAmountSafe(formatPretty(newTokenAmount));
+    const tokenValue = new Dec(value)?.quo(price);
+    onChange(tokenValue.toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, isLoading, fiatAmount, setTokenAmountSafe]);
-  console.log(isLoading);
+  }, [price, fiatAmount, onChange]);
+
   const FiatInput = useMemo(() => {
     const isFocused = focused === FocusedInput.FIAT;
     return (
