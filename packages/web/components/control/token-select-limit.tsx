@@ -30,7 +30,8 @@ export interface TokenSelectLimitProps {
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  outgoingBalance: CoinPretty;
+  baseBalance: CoinPretty;
+  quoteBalance: CoinPretty;
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
   orderDirection: OrderDirection;
@@ -47,7 +48,8 @@ export const TokenSelectLimit: FunctionComponent<
     canSelectTokens = true,
     baseAsset,
     quoteAsset,
-    outgoingBalance,
+    baseBalance,
+    quoteBalance,
     disabled,
     orderDirection,
   }) => {
@@ -79,18 +81,28 @@ export const TokenSelectLimit: FunctionComponent<
       onTokenSelect(tokenDenom);
     };
 
-    const { price: paymentCoinPrice, isLoading: isLoadingPaymentPrice } =
-      useCoinPrice(outgoingBalance);
+    const { price: baseCoinPrice, isLoading: isLoadingBasePrice } =
+      useCoinPrice(baseBalance);
+    const { price: quoteCoinPrice, isLoading: isLoadingQuotePrice } =
+      useCoinPrice(quoteBalance);
 
-    const paymentFiatBalance = useMemo(
+    const baseFiatBalance = useMemo(
       () =>
-        !isLoadingPaymentPrice && paymentCoinPrice
+        !isLoadingBasePrice && baseCoinPrice
+          ? new PricePretty(DEFAULT_VS_CURRENCY, baseCoinPrice.mul(baseBalance))
+          : new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      [baseCoinPrice, baseBalance, isLoadingBasePrice]
+    );
+
+    const quoteFiatBalance = useMemo(
+      () =>
+        !isLoadingQuotePrice && quoteCoinPrice
           ? new PricePretty(
               DEFAULT_VS_CURRENCY,
-              paymentCoinPrice.mul(outgoingBalance)
+              quoteCoinPrice.mul(quoteBalance)
             )
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      [paymentCoinPrice, outgoingBalance, isLoadingPaymentPrice]
+      [quoteCoinPrice, quoteBalance, isLoadingQuotePrice]
     );
     return (
       <div>
@@ -129,9 +141,9 @@ export const TokenSelectLimit: FunctionComponent<
                 </div>
                 {orderDirection === OrderDirection.Ask && (
                   <>
-                    {!isLoadingPaymentPrice && paymentFiatBalance ? (
+                    {!isLoadingBasePrice && baseFiatBalance ? (
                       <div className="flex text-body1 text-osmoverse-300">
-                        {formatPretty(paymentFiatBalance)} available
+                        {formatPretty(baseFiatBalance)} available
                       </div>
                     ) : (
                       <div />
@@ -189,9 +201,9 @@ export const TokenSelectLimit: FunctionComponent<
           )}
           {orderDirection === OrderDirection.Bid && (
             <>
-              {!isLoadingPaymentPrice && paymentFiatBalance ? (
+              {!isLoadingQuotePrice && quoteFiatBalance ? (
                 <div className="flex text-body1 text-osmoverse-300">
-                  {formatPretty(paymentFiatBalance)} available
+                  {formatPretty(quoteFiatBalance)} available
                 </div>
               ) : (
                 <div />

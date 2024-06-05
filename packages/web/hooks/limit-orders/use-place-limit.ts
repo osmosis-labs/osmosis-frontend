@@ -1,7 +1,8 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { useCallback, useMemo, useState } from "react";
 
+import { useBalances } from "~/hooks/queries/cosmos/use-balances";
 import {
   useSwapAmountInput,
   useSwapAsset,
@@ -107,6 +108,38 @@ export const usePlaceLimit = ({
     existingAssets: swapAssets.selectableAssets,
   });
 
+  const { data: balances, isFetched: isBalancesFetched } = useBalances({
+    address: account?.address ?? "",
+    queryOptions: {
+      enabled: Boolean(account?.address),
+    },
+  });
+
+  const baseTokenBalanceRaw = balances?.balances.find(
+    (bal) => bal.denom === baseAsset?.coinMinimalDenom
+  )?.amount;
+  const baseTokenBalance = new CoinPretty(
+    baseAsset,
+    new Dec(baseTokenBalanceRaw ?? "0")
+  );
+
+  const quoteTokenBalanceRaw = balances?.balances.find(
+    (bal) => bal.denom === quoteAsset?.coinMinimalDenom
+  )?.amount;
+  const quoteTokenBalance = new CoinPretty(
+    quoteAsset,
+    new Dec(quoteTokenBalanceRaw ?? "0")
+  );
+
+  const insufficientFunds =
+    orderDirection === OrderDirection.Bid
+      ? quoteTokenBalance
+          .toDec()
+          .lt(inAmountInput.amount?.toDec() ?? new Dec(0))
+      : baseTokenBalance
+          .toDec()
+          .lt(inAmountInput.amount?.toDec() ?? new Dec(0));
+
   return {
     ...swapAssets,
     quoteDenom,
@@ -116,6 +149,10 @@ export const usePlaceLimit = ({
     priceState,
     inAmountInput,
     placeLimit,
+    baseTokenBalance,
+    quoteTokenBalance,
+    isBalancesFetched,
+    insufficientFunds,
   };
 };
 

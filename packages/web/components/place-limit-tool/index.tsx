@@ -56,7 +56,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           selectableAssets={[swapState.fromAsset, swapState.toAsset]}
           baseAsset={swapState.baseAsset}
           quoteAsset={swapState.quoteAsset}
-          outgoingBalance={swapState.inAmountInput.balance!}
+          baseBalance={swapState.baseTokenBalance}
+          quoteBalance={swapState.quoteTokenBalance}
           onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
           disabled={false}
           orderDirection={orderDirection}
@@ -163,8 +164,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           </div>
         </div>
         <Button
-          disabled={false}
-          isLoading={false}
+          disabled={swapState.insufficientFunds}
+          isLoading={!swapState.isBalancesFetched}
           loadingText={"Loading..."}
           onClick={swapState.placeLimit}
         >
