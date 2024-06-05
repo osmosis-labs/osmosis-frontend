@@ -59,42 +59,47 @@ export const LimitInput: FC<LimitInputProps> = ({
   const setFiatAmountSafe = useCallback(
     (value: string) => {
       const updatedValue = transformAmount(value);
-
+      const isFocused = focused === FocusedInput.FIAT;
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
         return;
       }
-      setFiatAmount(updatedValue);
+      isFocused
+        ? setFiatAmount(updatedValue)
+        : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
-    [setFiatAmount]
+    [setFiatAmount, focused]
   );
 
   const setTokenAmountSafe = useCallback(
     (value: string) => {
       const updatedValue = transformAmount(value);
+      const isFocused = focused === FocusedInput.TOKEN;
 
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
         return;
       }
-      onChange(updatedValue);
+      isFocused
+        ? onChange(updatedValue)
+        : onChange(formatPretty(new Dec(updatedValue)));
     },
-    [onChange]
+    [onChange, focused]
   );
 
   useEffect(() => {
-    if (focused !== FocusedInput.TOKEN) return;
-    const value = tokenAmount && tokenAmount.length > 0 ? tokenAmount : "0";
-    const fiatValue = price?.mul(new Dec(value));
+    if (focused !== FocusedInput.TOKEN || !price) return;
+    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : "0");
+    const fiatValue = price?.mul(value) ?? new Dec(0);
     setFiatAmountSafe(formatPretty(fiatValue));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price, tokenAmount, setFiatAmountSafe]);
 
   useEffect(() => {
-    if (focused !== FocusedInput.FIAT) return;
+    if (focused !== FocusedInput.FIAT || !price) return;
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
     const tokenValue = new Dec(value)?.quo(price);
-    onChange(tokenValue.toString());
+    setTokenAmountSafe(tokenValue.toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, fiatAmount, onChange]);
+  }, [price, fiatAmount, setTokenAmountSafe]);
 
   const FiatInput = useMemo(() => {
     const isFocused = focused === FocusedInput.FIAT;

@@ -107,11 +107,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               <LimitInput
                 onChange={swapState.inAmountInput.setAmount}
                 baseAsset={swapState.inAmountInput.balance!}
-                tokenAmount={
-                  swapState.inAmountInput.amount
-                    ? formatPretty(swapState.inAmountInput.amount.toDec())
-                    : ""
-                }
+                tokenAmount={swapState.inAmountInput.inputAmount}
                 price={swapState.priceState.price}
               />
             </div>
