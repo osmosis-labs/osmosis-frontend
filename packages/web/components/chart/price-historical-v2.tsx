@@ -7,17 +7,24 @@ import {
 import React, { FunctionComponent, memo } from "react";
 
 import { LinearChartController } from "~/components/chart/light-weight-charts/linear-chart";
+import { theme } from "~/tailwind.config";
 
 import { Chart } from "./light-weight-charts/chart";
 
 const seriesOpt: DeepPartial<AreaSeriesOptions> = {
-  lineColor: "#8C8AF9",
-  topColor: "rgba(60, 53, 109, 1)",
-  bottomColor: "rgba(32, 27, 67, 1)",
+  lineColor: theme.colors.wosmongton[300],
+  topColor: theme.colors.osmoverse[700],
+  bottomColor: theme.colors.osmoverse[850],
   priceLineVisible: false,
-  priceScaleId: "left",
+  lastValueVisible: false,
+  priceScaleId: "right",
   crosshairMarkerBorderWidth: 0,
   crosshairMarkerRadius: 8,
+  priceFormat: {
+    type: "price",
+    precision: 4,
+    minMove: 0.0001,
+  },
 };
 
 const HistoricalPriceChartV2: FunctionComponent<{
