@@ -321,19 +321,19 @@ export class SquidBridgeProvider implements BridgeProvider {
       data: transactionRequest.data as Address,
       value:
         transactionRequest.routeType !== "SEND"
-          ? toHex(transactionRequest.value)
+          ? toHex(BigInt(transactionRequest.value))
           : undefined,
       ...(transactionRequest.maxPriorityFeePerGas
         ? {
-            gas: toHex(transactionRequest.gasLimit),
-            maxFeePerGas: toHex(transactionRequest.maxFeePerGas),
+            gas: toHex(BigInt(transactionRequest.gasLimit)),
+            maxFeePerGas: toHex(BigInt(transactionRequest.maxFeePerGas)),
             maxPriorityFeePerGas: toHex(
-              transactionRequest.maxPriorityFeePerGas
+              BigInt(transactionRequest.maxPriorityFeePerGas)
             ),
           }
         : {
-            gas: toHex(transactionRequest.gasLimit),
-            gasPrice: toHex(transactionRequest.gasPrice),
+            gas: toHex(BigInt(transactionRequest.gasLimit)),
+            gasPrice: toHex(BigInt(transactionRequest.gasPrice)),
           }),
       approvalTransactionRequest: approvalTx,
     };

@@ -14,17 +14,15 @@ import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
+jest.mock("viem", () => {
+  const originalModule = jest.requireActual("viem");
   return {
     ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        _perform: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-    },
+    createPublicClient: jest.fn().mockImplementation(() => ({
+      estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+      getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
+    })),
+    http: jest.fn(),
   };
 });
 

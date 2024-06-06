@@ -286,7 +286,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       type: "evm",
       to: message.to as Address,
       data: `0x${message.data}`,
-      value: toHex(message.value),
+      value: toHex(BigInt(message.value)),
       approvalTransactionRequest,
     };
   }

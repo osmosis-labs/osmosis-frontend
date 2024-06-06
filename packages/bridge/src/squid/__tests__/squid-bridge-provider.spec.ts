@@ -9,26 +9,20 @@ import { BridgeQuoteError } from "../../errors";
 import { BridgeProviderContext } from "../../interface";
 import { SquidBridgeProvider } from "../index";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
+jest.mock("viem", () => {
+  const originalModule = jest.requireActual("viem");
   return {
     ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        send: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-      Contract: jest.fn().mockImplementation(() => ({
-        allowance: jest.fn().mockResolvedValue(BigInt("100")),
-        approve: {
-          populateTransaction: jest.fn().mockResolvedValue({
-            to: "0x123",
-            data: "0xabcdef",
-          }),
-        },
-      })),
-    },
+    createPublicClient: jest.fn().mockImplementation(() => ({
+      readContract: jest.fn().mockImplementation(({ functionName }) => {
+        if (functionName === "allowance") {
+          return Promise.resolve(BigInt("100"));
+        }
+        return Promise.reject(new Error("Unknown function"));
+      }),
+    })),
+    encodeFunctionData: jest.fn().mockImplementation(() => "0xabcdef"),
+    http: jest.fn().mockImplementation(() => ({})),
   };
 });
 beforeEach(() => {
