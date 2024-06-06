@@ -531,7 +531,6 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "resetPeriodTitle": "재설정 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
       "endingSession": "세션 종료",
