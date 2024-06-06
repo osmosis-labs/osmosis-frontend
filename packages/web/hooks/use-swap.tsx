@@ -269,12 +269,16 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          if (!maxSlippage) return reject(new Error("No max slippage"));
+          if (!maxSlippage)
+            return reject(new Error("Max slippage is not defined."));
           if (!inAmountInput.amount)
-            return reject(new Error("No input amount"));
-          if (!account) return reject(new Error("No account"));
-          if (!swapAssets.fromAsset) return reject(new Error("No from asset"));
-          if (!swapAssets.toAsset) return reject(new Error("No to asset"));
+            return reject(new Error("Input amount is not specified."));
+          if (!account)
+            return reject(new Error("Account information is missing."));
+          if (!swapAssets.fromAsset)
+            return reject(new Error("From asset is not specified."));
+          if (!swapAssets.toAsset)
+            return reject(new Error("To asset is not specified."));
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
           try {
@@ -287,7 +291,9 @@ export function useSwap(
             });
           } catch (e) {
             const error = e as Error;
-            return reject(error);
+            return reject(
+              new Error(`Transaction preparation failed: ${error.message}`)
+            );
           }
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;

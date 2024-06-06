@@ -222,9 +222,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch(() => {
-          console.log("reject sig");
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
+        .catch((e) => {
+          if (e instanceof Error && e.message.includes("Failed to send")) {
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
+          }
         })
         .finally(() => {
           setIsSendingTx(false);
