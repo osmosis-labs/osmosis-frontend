@@ -45,7 +45,7 @@ export function useAmountInput({
       },
       { enabled: Boolean(account?.address) }
     );
-  const rawCurrencyBalance = balances?.balances.find(
+  const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
   // manage amounts, with ability to set fraction of the amount
