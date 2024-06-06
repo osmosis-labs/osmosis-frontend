@@ -116,7 +116,7 @@ export function getOneClickTradingSessionAuthenticator({
 
   const messageFilterAnyOf = {
     Type: "AnyOf",
-    Config: Buffer.from(JSON.stringify(messageFilters)).toJSON().data,
+    Config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
   };
 
   const compositeAuthData = [
@@ -267,14 +267,12 @@ export const useCreateOneClickTradingSession = ({
         }
       }
 
-      let accountPubKey: string | undefined,
-        shouldAddFirstAuthenticator: boolean,
-        authenticators: ParsedAuthenticator[];
+      let authenticators: ParsedAuthenticator[];
       try {
-        ({ accountPubKey, shouldAddFirstAuthenticator, authenticators } =
-          await apiUtils.local.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
-            { userOsmoAddress: walletRepo.current.address! }
-          ));
+        ({ authenticators } =
+          await apiUtils.local.oneClickTrading.getAuthenticators.fetch({
+            userOsmoAddress: walletRepo.current.address!,
+          }));
       } catch (error) {
         throw new CreateOneClickSessionError(
           "Failed to fetch account public key and authenticators."
@@ -365,18 +363,10 @@ export const useCreateOneClickTradingSession = ({
         authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
       }
 
-      const authenticatorsToAdd =
-        shouldAddFirstAuthenticator && accountPubKey
-          ? [
-              getFirstAuthenticator({ pubKey: accountPubKey }),
-              oneClickTradingAuthenticator,
-            ]
-          : [oneClickTradingAuthenticator];
-
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis
           .sendAddOrRemoveAuthenticatorsMsg({
-            addAuthenticators: authenticatorsToAdd,
+            addAuthenticators: [oneClickTradingAuthenticator],
             removeAuthenticators: authenticatorsToRemove,
             memo: "",
 
@@ -407,7 +397,7 @@ export const useCreateOneClickTradingSession = ({
       accountStore.setOneClickTradingInfo({
         authenticatorId,
         publicKey,
-        privateKey: toBase64(key.toBytes()),
+        sessionKey: toBase64(key.toBytes()),
         allowedMessages,
         resetPeriod,
         sessionPeriod,

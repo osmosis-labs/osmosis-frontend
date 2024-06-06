@@ -103,7 +103,7 @@ export interface TxEvents {
 export interface OneClickTradingInfo {
   readonly authenticatorId: string;
   readonly publicKey: string;
-  readonly privateKey: string;
+  readonly sessionKey: string;
   readonly userOsmoAddress: string;
 
   networkFeeLimit: Currency & {

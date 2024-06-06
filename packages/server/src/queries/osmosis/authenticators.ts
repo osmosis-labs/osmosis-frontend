@@ -32,7 +32,7 @@ export const queryAuthenticatorSpendLimit = createNodeQuery<
 >({
   path: ({ address, authenticatorId }) => {
     const msg = JSON.stringify({
-      spending: {
+      spendings_by_account: {
         account: address,
         authenticator_id: `${authenticatorId}.1`,
       },
