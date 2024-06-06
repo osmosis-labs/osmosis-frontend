@@ -1011,7 +1011,7 @@ const InputsShadcn = () => {
   );
 };
 
-import QRCode from "~/components/qrcode";
+import { QRCode } from "~/components/qrcode";
 
 const QRCodes = () => (
   <Card title="QR Codes">
