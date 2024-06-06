@@ -480,6 +480,7 @@ const TokenChartHeader = observer(() => {
         decimal={maxDecimals}
         showAllRange
         hoverPrice={hoverPrice}
+        hoverDate={assetInfoConfig.hoverDate}
         historicalRange={assetInfoConfig.historicalRange}
         setHistoricalRange={assetInfoConfig.setHistoricalRange}
         fiatSymbol={fiatSymbol}
@@ -507,7 +508,7 @@ const TokenChart = observer(() => {
             data={assetInfoConfig.historicalChartData}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
-              assetInfoConfig.setHoverPrice(0);
+              assetInfoConfig.setHoverPrice(0, undefined);
             }}
           />
         </>

@@ -1,7 +1,6 @@
 import {
   ColorType,
   DeepPartial,
-  isBusinessDay,
   LineStyle,
   MouseEventParams,
   TickMarkType,
@@ -17,7 +16,10 @@ import React, {
   useSyncExternalStore,
 } from "react";
 
-import { priceFormatter } from "~/components/chart/light-weight-charts/utils";
+import {
+  priceFormatter,
+  timepointToString,
+} from "~/components/chart/light-weight-charts/utils";
 import { theme } from "~/tailwind.config";
 
 import {
@@ -33,38 +35,6 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
     window.removeEventListener("resize", callback);
   };
 }
-
-const timepointToString = (
-  timePoint: Time,
-  formatOptions: Intl.DateTimeFormatOptions,
-  locale?: string
-) => {
-  let date = new Date();
-
-  if (typeof timePoint === "string") {
-    date = new Date(timePoint);
-  } else if (!isBusinessDay(timePoint)) {
-    date = new Date((timePoint as number) * 1000);
-  } else {
-    date = new Date(
-      Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
-    );
-  }
-
-  // from given date we should use only as UTC date or timestamp
-  // but to format as locale date we can convert UTC date to local date
-  const localDateFromUtc = new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds(),
-    date.getUTCMilliseconds()
-  );
-
-  return localDateFromUtc.toLocaleString(locale, formatOptions);
-};
 
 export const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
