@@ -132,6 +132,10 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SkipBridgeProvider", () => {
   let provider: SkipBridgeProvider;
   let ctx: BridgeProviderContext;

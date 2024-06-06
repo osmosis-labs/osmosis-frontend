@@ -40,6 +40,10 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("AxelarBridgeProvider", () => {
   let provider: AxelarBridgeProvider;
   let ctx: BridgeProviderContext;

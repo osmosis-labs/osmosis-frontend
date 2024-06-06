@@ -80,6 +80,10 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SquidBridgeProvider", () => {
   let provider: SquidBridgeProvider;
   let ctx: BridgeProviderContext;
