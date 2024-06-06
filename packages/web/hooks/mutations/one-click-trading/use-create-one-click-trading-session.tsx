@@ -1,4 +1,4 @@
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import { toBase64 } from "@cosmjs/encoding";
 import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
@@ -35,16 +35,6 @@ export class CreateOneClickSessionError extends Error {
     super(message);
     this.name = "WalletSelectOneClickError";
   }
-}
-
-function getFirstAuthenticator({ pubKey }: { pubKey: string }): {
-  type: AuthenticatorType;
-  data: Uint8Array;
-} {
-  return {
-    type: "SignatureVerification",
-    data: fromBase64(pubKey),
-  };
 }
 
 export function isAuthenticatorOneClickTradingSession({
