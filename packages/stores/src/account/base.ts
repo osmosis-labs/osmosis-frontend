@@ -265,6 +265,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     );
 
+    this._walletManager.on("refresh_connection", () => {
+      this.refresh();
+    });
+
     this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
@@ -272,9 +276,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       message: () => this.refresh(),
     });
     this._walletManager.walletRepos.forEach((repo) => {
-      repo.setActions({
+      /* repo.setActions({
         viewWalletRepo: () => this.refresh(),
-      });
+      }); */
       repo.wallets.forEach((wallet) => {
         wallet.updateCallbacks({
           ...wallet.callbacks,
@@ -312,13 +316,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!this._refreshing) {
       this._refreshing = true;
       this._refreshRequests++;
-
-      /**
-       * Here we add some debounce
-       */
-      setTimeout(() => {
-        this._refreshing = false;
-      }, 100);
+      this._refreshing = false;
     }
   }
 
