@@ -670,8 +670,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right lg:hidden">
-                  {(isLoadingUserSharePool || isRefetchingUserSharePool) &&
-                  Boolean(account) ? (
+                  {Boolean(account) &&
+                  (isLoadingUserSharePool || isRefetchingUserSharePool) ? (
                     <Spinner />
                   ) : userSharePool ? (
                     <>
@@ -736,7 +736,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
                   </div>
-                  {isLoadingBondDurations || isLoadingUserSharePool ? (
+                  {Boolean(account) &&
+                  (isLoadingBondDurations || isLoadingUserSharePool) ? (
                     <Spinner />
                   ) : level2Disabled ? (
                     <h6 className="text-osmoverse-100">
@@ -753,7 +754,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         levelCta !== 2 || isRefetchingBondDurations
                       }
                       isLoading={
-                        isRefetchingBondDurations || isRefetchingUserSharePool
+                        Boolean(account) &&
+                        (isLoadingBondDurations || isLoadingUserSharePool)
                       }
                       loadingText={t("pool.bondShares")}
                       onClick={() => {
