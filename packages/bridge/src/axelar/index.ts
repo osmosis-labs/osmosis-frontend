@@ -12,7 +12,7 @@ import {
   encodeFunctionData,
   erc20Abi,
   http,
-  toHex,
+  numberToHex,
 } from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
@@ -360,7 +360,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       return {
         type: "evm",
         to: depositAddress as Address,
-        value: toHex(fromAmount),
+        value: numberToHex(BigInt(fromAmount)),
       };
     } else {
       return {

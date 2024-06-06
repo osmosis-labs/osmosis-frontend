@@ -184,6 +184,45 @@ describe("AxelarBridgeProvider", () => {
     });
   });
 
+  it("should create an EVM transaction with native token", async () => {
+    const mockDepositClient: Partial<AxelarAssetTransfer> = {
+      getDepositAddress: jest
+        .fn()
+        .mockResolvedValue("0x1234567890abcdef1234567890abcdef12345678"),
+    };
+
+    jest
+      .spyOn(provider, "getAssetTransferClient")
+      .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
+
+    const transaction = await provider.createEvmTransaction({
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: NativeEVMTokenConstantAddress,
+        decimals: 18,
+        sourceDenom: "eth",
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+        sourceDenom: "avax",
+      },
+      fromAmount: "1",
+      fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
+      toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+      simulated: false,
+    });
+
+    expect(transaction).toEqual({
+      value: "0x1", // same as from amount
+      type: "evm",
+      to: "0x1234567890abcdef1234567890abcdef12345678",
+    });
+  });
+
   it("should throw an error when creating an EVM transaction with a non-native token", async () => {
     const mockDepositClient: Partial<AxelarAssetTransfer> = {
       getDepositAddress: jest

@@ -11,7 +11,7 @@ import {
   http,
   keccak256,
   maxUint256,
-  toHex,
+  numberToHex,
 } from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
@@ -286,7 +286,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       type: "evm",
       to: message.to as Address,
       data: `0x${message.data}`,
-      value: toHex(BigInt(message.value)),
+      value: numberToHex(BigInt(message.value)),
       approvalTransactionRequest,
     };
   }

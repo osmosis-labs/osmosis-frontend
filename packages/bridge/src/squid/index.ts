@@ -14,7 +14,7 @@ import {
   encodeFunctionData,
   erc20Abi,
   http,
-  toHex,
+  numberToHex,
 } from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
@@ -311,19 +311,19 @@ export class SquidBridgeProvider implements BridgeProvider {
       data: transactionRequest.data as Address,
       value:
         transactionRequest.routeType !== "SEND"
-          ? toHex(BigInt(transactionRequest.value))
+          ? numberToHex(BigInt(transactionRequest.value))
           : undefined,
       ...(transactionRequest.maxPriorityFeePerGas
         ? {
-            gas: toHex(BigInt(transactionRequest.gasLimit)),
-            maxFeePerGas: toHex(BigInt(transactionRequest.maxFeePerGas)),
-            maxPriorityFeePerGas: toHex(
+            gas: numberToHex(BigInt(transactionRequest.gasLimit)),
+            maxFeePerGas: numberToHex(BigInt(transactionRequest.maxFeePerGas)),
+            maxPriorityFeePerGas: numberToHex(
               BigInt(transactionRequest.maxPriorityFeePerGas)
             ),
           }
         : {
-            gas: toHex(BigInt(transactionRequest.gasLimit)),
-            gasPrice: toHex(BigInt(transactionRequest.gasPrice)),
+            gas: numberToHex(BigInt(transactionRequest.gasLimit)),
+            gasPrice: numberToHex(BigInt(transactionRequest.gasPrice)),
           }),
       approvalTransactionRequest: approvalTx,
     };
