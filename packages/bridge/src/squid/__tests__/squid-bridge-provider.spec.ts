@@ -2,6 +2,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
+import { createPublicClient, http } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
@@ -25,6 +26,7 @@ jest.mock("viem", () => {
     http: jest.fn().mockImplementation(() => ({})),
   };
 });
+
 beforeEach(() => {
   server.use(
     rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) => {
@@ -262,5 +264,67 @@ describe("SquidBridgeProvider", () => {
         slippage: 1,
       })
     ).rejects.toThrow("toAsset mismatch");
+  });
+
+  it("should return approval transaction data if allowance is less than amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("50")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toEqual({
+      to: "0xTokenAddress",
+      data: "0xabcdef", // Mocked data from encodeFunctionData
+    });
+  });
+
+  it("should return undefined if allowance is greater than or equal to amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("150")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
+  });
+
+  it("should return undefined if the asset is native", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: true,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
   });
 });
