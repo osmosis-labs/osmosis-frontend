@@ -373,8 +373,10 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve(pools.length === 1 ? "exact-in" : "multihop");
+                ({ code }) => {
+                  if (code)
+                    reject("Failed to send swap exact amount in message");
+                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
                 }
               )
               .catch((reason) => {
@@ -389,8 +391,12 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve("multiroute");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      "Failed to send split route swap exact amount in message"
+                    );
+                  else resolve("multiroute");
                 }
               )
               .catch((reason) => {
