@@ -380,7 +380,8 @@ export function useSwap(
                 }
               )
               .catch((reason) => {
-                reject(reason);
+                // broadcast error or tx rejection
+                console.error(reason);
               });
             return pools.length === 1 ? "exact-in" : "multihop";
           } else if (routes.length > 1) {
@@ -400,9 +401,11 @@ export function useSwap(
                 }
               )
               .catch((reason) => {
-                reject(reason);
+                // broadcast error or tx rejection
+                console.error(reason);
               });
           } else {
+            // should not be possible because button should be disabled
             reject("No routes given");
           }
         }

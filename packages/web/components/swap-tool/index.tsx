@@ -222,11 +222,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch((error) => {
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
-          }
+        .catch(() => {
+          console.log("reject sig");
           logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
