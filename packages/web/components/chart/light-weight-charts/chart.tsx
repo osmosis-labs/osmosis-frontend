@@ -17,6 +17,7 @@ import React, {
   useSyncExternalStore,
 } from "react";
 
+import { priceFormatter } from "~/components/chart/light-weight-charts/utils";
 import { theme } from "~/tailwind.config";
 
 import {
@@ -76,8 +77,20 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     fontSize: 14,
   },
   grid: { horzLines: { visible: false }, vertLines: { visible: false } },
-  rightPriceScale: { visible: false },
-  leftPriceScale: { visible: false },
+  rightPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
+  },
+  leftPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+  },
   crosshair: {
     horzLine: { visible: false },
     vertLine: {
@@ -94,6 +107,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     mouse: false,
   },
   localization: {
+    priceFormatter,
     timeFormatter: (timePoint: Time) => {
       const formatOptions: Intl.DateTimeFormatOptions = {
         year: "numeric",
@@ -206,7 +220,7 @@ export const Chart = memo(
     }, []);
 
     return (
-      <div className="relative h-full" ref={setContainer}>
+      <div className="relative h-full [&_table]:table-auto" ref={setContainer}>
         {children}
       </div>
     );
