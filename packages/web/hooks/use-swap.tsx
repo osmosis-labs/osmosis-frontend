@@ -201,7 +201,10 @@ export function useSwap(
     // includes check for quoteQueryEnabled
     !isQuoteLoading &&
     Boolean(quote) &&
-    Boolean(account?.address);
+    Boolean(account?.address) &&
+    inAmountInput.debouncedInAmount !== null &&
+    inAmountInput.balance &&
+    inAmountInput.debouncedInAmount.toDec().lte(inAmountInput.balance.toDec());
   const {
     data: networkFee,
     error: networkFeeError,
@@ -269,14 +272,18 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          if (!maxSlippage) return reject("No max slippage");
-          if (!inAmountInput.amount) return reject("No input amount");
-          if (!account) return reject("No account");
-          if (!swapAssets.fromAsset) return reject("No from asset");
-          if (!swapAssets.toAsset) return reject("No to asset");
+          if (!maxSlippage)
+            return reject(new Error("Max slippage is not defined."));
+          if (!inAmountInput.amount)
+            return reject(new Error("Input amount is not specified."));
+          if (!account)
+            return reject(new Error("Account information is missing."));
+          if (!swapAssets.fromAsset)
+            return reject(new Error("From asset is not specified."));
+          if (!swapAssets.toAsset)
+            return reject(new Error("To asset is not specified."));
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
-
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
@@ -287,7 +294,9 @@ export function useSwap(
             });
           } catch (e) {
             const error = e as Error;
-            return reject(error.message);
+            return reject(
+              new Error(`Transaction preparation failed: ${error.message}`)
+            );
           }
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
@@ -344,7 +353,7 @@ export function useSwap(
                 );
               });
             } catch (e) {
-              return reject("Rejected manual approval");
+              return reject(new Error("Rejected manual approval"));
             }
           }
 
@@ -373,14 +382,15 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve(pools.length === 1 ? "exact-in" : "multihop");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
-            return pools.length === 1 ? "exact-in" : "multihop";
+              .catch(reject);
           } else if (routes.length > 1) {
             account.osmosis
               .sendSplitRouteSwapExactAmountInMsg(
@@ -389,15 +399,20 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve("multiroute");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error(
+                        "Failed to send split route swap exact amount in message"
+                      )
+                    );
+                  else resolve("multiroute");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
+              .catch(reject);
           } else {
-            reject("No routes given");
+            // should not be possible because button should be disabled
+            reject(new Error("No routes given"));
           }
         }
       ).finally(() => {

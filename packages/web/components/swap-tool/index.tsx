@@ -222,13 +222,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch((error) => {
-          console.error("swap failed", error);
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
+        .catch((e) => {
+          if (e instanceof Error && e.message.includes("Failed to send")) {
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
           }
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
           setIsSendingTx(false);

@@ -63,6 +63,35 @@ describe("getSumTotalSpenderCoinsSpent", () => {
 
     expect(coins).toEqual([]);
   });
+
+  it("should only total the amounts for the specified sender", () => {
+    const coins = getSumTotalSpenderCoinsSpent(
+      "osmo1gtgx92pxk6hvhc3c3g0xlkrwqq6knymu0e0caw",
+      mockMultipleEvents
+    );
+
+    // Expected result is the sum of the amounts for the specified sender, not for osmo13vhcd3xllpvz8tql4dzp8yszxeas8zxpzptyvjttdy7m64kuyz5sv6caqq
+    const expectedResult = [
+      {
+        denom:
+          "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
+        amount: "58573",
+      },
+      {
+        denom:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        amount: "21083680327000100",
+      },
+      {
+        denom:
+          "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
+        amount: "131211643845355500",
+      },
+      { denom: "uosmo", amount: "95799380" },
+    ];
+
+    expect(coins).toEqual(expectedResult);
+  });
 });
 
 describe("matchRawCoinValue", () => {
@@ -216,6 +245,28 @@ const mockMultipleEvents = [
         key: "amount",
         value:
           "10541840163500050ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5,65605821922677750ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D,47899690uosmo",
+        index: true,
+      },
+      {
+        key: "msg_index",
+        value: "0",
+        index: true,
+      },
+    ],
+  },
+  {
+    type: "coin_spent",
+    attributes: [
+      {
+        key: "spender",
+        value:
+          "osmo13vhcd3xllpvz8tql4dzp8yszxeas8zxpzptyvjttdy7m64kuyz5sv6caqq",
+        index: true,
+      },
+      {
+        key: "amount",
+        value:
+          "2605ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         index: true,
       },
       {
