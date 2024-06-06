@@ -12,7 +12,7 @@ import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
 
-export const NavbarOsmosisUpdates = () => {
+export const NavbarOsmosisUpdate = () => {
   const { t } = useTranslation();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const featureFlags = useFeatureFlags();
