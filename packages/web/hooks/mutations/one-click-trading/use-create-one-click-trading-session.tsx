@@ -77,8 +77,8 @@ export function getOneClickTradingSessionAuthenticator({
   data: Uint8Array;
 } {
   const signatureVerification = {
-    Type: "SignatureVerification",
-    Config: toBase64(key.getPubKey().toBytes()),
+    type: "SignatureVerification",
+    config: toBase64(key.getPubKey().toBytes()),
   };
 
   const spendLimitParams = toBase64(
@@ -91,8 +91,8 @@ export function getOneClickTradingSessionAuthenticator({
     )
   );
   const spendLimit = {
-    Type: "CosmwasmAuthenticatorV1",
-    Config: toBase64(
+    type: "CosmwasmAuthenticatorV1",
+    config: toBase64(
       Buffer.from(
         `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
       )
@@ -100,13 +100,13 @@ export function getOneClickTradingSessionAuthenticator({
   };
 
   const messageFilters = allowedMessages.map((message) => ({
-    Type: "MessageFilter",
-    Config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+    type: "MessageFilter",
+    config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
   }));
 
   const messageFilterAnyOf = {
-    Type: "AnyOf",
-    Config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
+    type: "AnyOf",
+    config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
   };
 
   const compositeAuthData = [
