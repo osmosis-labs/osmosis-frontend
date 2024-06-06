@@ -269,14 +269,14 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          if (!maxSlippage) return reject("No max slippage");
-          if (!inAmountInput.amount) return reject("No input amount");
-          if (!account) return reject("No account");
-          if (!swapAssets.fromAsset) return reject("No from asset");
-          if (!swapAssets.toAsset) return reject("No to asset");
+          if (!maxSlippage) return reject(new Error("No max slippage"));
+          if (!inAmountInput.amount)
+            return reject(new Error("No input amount"));
+          if (!account) return reject(new Error("No account"));
+          if (!swapAssets.fromAsset) return reject(new Error("No from asset"));
+          if (!swapAssets.toAsset) return reject(new Error("No to asset"));
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
-
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
@@ -287,7 +287,7 @@ export function useSwap(
             });
           } catch (e) {
             const error = e as Error;
-            return reject(error.message);
+            return reject(error);
           }
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
@@ -344,7 +344,7 @@ export function useSwap(
                 );
               });
             } catch (e) {
-              return reject("Rejected manual approval");
+              return reject(new Error("Rejected manual approval"));
             }
           }
 
@@ -375,15 +375,13 @@ export function useSwap(
                 signOptions,
                 ({ code }) => {
                   if (code)
-                    reject("Failed to send swap exact amount in message");
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
                   else resolve(pools.length === 1 ? "exact-in" : "multihop");
                 }
               )
-              .catch((reason) => {
-                // broadcast error or tx rejection
-                console.error(reason);
-              });
-            return pools.length === 1 ? "exact-in" : "multihop";
+              .catch(reject);
           } else if (routes.length > 1) {
             account.osmosis
               .sendSplitRouteSwapExactAmountInMsg(
@@ -395,18 +393,17 @@ export function useSwap(
                 ({ code }) => {
                   if (code)
                     reject(
-                      "Failed to send split route swap exact amount in message"
+                      new Error(
+                        "Failed to send split route swap exact amount in message"
+                      )
                     );
                   else resolve("multiroute");
                 }
               )
-              .catch((reason) => {
-                // broadcast error or tx rejection
-                console.error(reason);
-              });
+              .catch(reject);
           } else {
             // should not be possible because button should be disabled
-            reject("No routes given");
+            reject(new Error("No routes given"));
           }
         }
       ).finally(() => {
