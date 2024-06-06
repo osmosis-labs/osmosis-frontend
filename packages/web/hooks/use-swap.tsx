@@ -201,7 +201,10 @@ export function useSwap(
     // includes check for quoteQueryEnabled
     !isQuoteLoading &&
     Boolean(quote) &&
-    Boolean(account?.address);
+    Boolean(account?.address) &&
+    inAmountInput.debouncedInAmount !== null &&
+    inAmountInput.balance &&
+    inAmountInput.debouncedInAmount.toDec().lte(inAmountInput.balance.toDec());
   const {
     data: networkFee,
     error: networkFeeError,
