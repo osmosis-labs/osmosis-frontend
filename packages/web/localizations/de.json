@@ -866,10 +866,6 @@
       "title": "Transaktionseinstellungen"
     },
     "title": "Tauschen",
-    "promo": {
-      "newOpportunity": "Neue Möglichkeit, mit {denom} zu verdienen",
-      "discoverSuperchargedPools": "Entdecken Sie Supercharged Pools"
-    },
     "dynamicSpreadFactor": "Dynamisch"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Zugehörige Vermögenswerte",
     "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
     "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
@@ -983,7 +978,6 @@
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
-    "tvl": "TVL",
     "buyToken": "Kaufen Sie {coinDenom}",
     "staking": "Abstecken",
     "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "Vorschau-Assets für diese Sitzung aktiviert. Zum Deaktivieren öffnen Sie einen neuen Tab oder hängen „show_preview_assets=false“ an.",
   "earnPage": {
     "title": "Verdienen",
-    "position": "Position",
     "positions": "Positionen",
-    "allocation": "Zuweisung",
-    "tokensCount": "{number} Token",
     "strategiesCount": "{number} Strategien",
     "oneStrategy": "1 Strategie",
-    "value": "Wert",
-    "method": "Typ",
-    "platform": "Plattform",
-    "scrollToSeeMore": "Scrollen Sie, um mehr zu sehen",
     "discoverStrategies": "Entdecken Sie Strategien",
     "myStrategies": "Ihre Strategien",
     "strategyPlatform": "Strategie",

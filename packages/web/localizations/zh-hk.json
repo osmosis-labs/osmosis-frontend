@@ -866,10 +866,6 @@
       "title": "兌換設定"
     },
     "title": "兌換",
-    "promo": {
-      "newOpportunity": "新的賺錢機會",
-      "discoverSuperchargedPools": "探索增壓泳池"
-    },
     "dynamicSpreadFactor": "動態的"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "相關資產",
     "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
@@ -983,7 +978,6 @@
     "marketCapRank": "市值排名",
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
-    "tvl": "TVL",
     "buyToken": "購買{coinDenom}",
     "staking": "質押",
     "liquidityInOSMOPools": "{number} {denom}池中的流動性"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "earnPage": {
     "title": "賺",
-    "position": "位置",
     "positions": "職位",
-    "allocation": "分配",
-    "tokensCount": "{number}標記",
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 策略",
-    "value": "價值",
-    "method": "類型",
-    "platform": "平台",
-    "scrollToSeeMore": "捲動查看更多",
     "discoverStrategies": "發現策略",
     "myStrategies": "你的策略",
     "strategyPlatform": "策略",

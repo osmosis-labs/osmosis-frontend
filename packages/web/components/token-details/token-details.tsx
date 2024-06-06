@@ -6,8 +6,8 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import ClipboardButton from "~/components/buttons/clipboard-button";
-import Markdown from "~/components/markdown";
+import { ClipboardButton } from "~/components/buttons/clipboard-button";
+import { Markdown } from "~/components/markdown";
 import { LinkIconButton } from "~/components/ui/button";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -26,7 +26,7 @@ export interface TokenDetailsProps {
   className?: string;
 }
 
-const TokenDetails = ({
+const _TokenDetails = ({
   denom,
   tokenDetailsByLanguage,
   className,
@@ -270,7 +270,7 @@ const TokenDetails = ({
   );
 };
 
-export default observer(TokenDetails);
+export const TokenDetails = observer(_TokenDetails);
 
 interface TokenStatsProps {
   usdFiat?: FiatCurrency;
@@ -318,18 +318,6 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
               : "-"}
           </h5>
         </li>
-        {/* <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.tvl")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">
-            {totalValueLocked && usdFiat
-              ? formatPretty(
-                  new PricePretty(usdFiat, new Dec(totalValueLocked))
-                )
-              : "-"}
-          </h5>
-        </li> */}
       </ul>
     );
   }

@@ -866,10 +866,6 @@
       "title": "交易设置"
     },
     "title": "兑换",
-    "promo": {
-      "newOpportunity": "新的赚钱机会",
-      "discoverSuperchargedPools": "探索增压泳池"
-    },
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "相关资产",
     "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
@@ -983,7 +978,6 @@
     "marketCapRank": "市值排名",
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
-    "tvl": "TVL",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",
     "liquidityInOSMOPools": "{number} {denom}池中的流动性"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "预览为此会话启用的资产。要禁用打开新选项卡，或附加“show_preview_assets=false”。",
   "earnPage": {
     "title": "赚",
-    "position": "位置",
     "positions": "职位",
-    "allocation": "分配",
-    "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 个策略",
-    "value": "价值",
-    "method": "类型",
-    "platform": "平台",
-    "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",

@@ -7,7 +7,7 @@ export interface UseStepsProps {
   count: number;
 }
 
-export default function useSteps(props: UseStepsProps) {
+export function useSteps(props: UseStepsProps) {
   const { index, count } = props;
 
   const [activeStep, _setActiveStep] = useControllableState({

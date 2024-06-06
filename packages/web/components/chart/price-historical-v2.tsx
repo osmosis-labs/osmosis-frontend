@@ -20,7 +20,7 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   crosshairMarkerRadius: 8,
 };
 
-const HistoricalPriceChartV2: FunctionComponent<{
+export const HistoricalPriceChartV2: FunctionComponent<{
   data: { close: number; time: number }[];
   onPointerHover?: (price: number) => void;
   onPointerOut?: () => void;
@@ -50,5 +50,3 @@ const HistoricalPriceChartV2: FunctionComponent<{
     />
   );
 });
-
-export default HistoricalPriceChartV2;

@@ -18,10 +18,10 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
@@ -222,13 +222,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch((error) => {
-          console.error("swap failed", error);
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
+        .catch((e) => {
+          if (e instanceof Error && e.message.includes("Failed to send")) {
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
           }
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
           setIsSendingTx(false);
@@ -985,8 +982,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               loadingText={buttonText}
               onClick={sendSwapTx}
             >
-              {account?.walletStatus === WalletStatus.Connected ||
-              isSwapToolLoading ? (
+              {account?.walletStatus === WalletStatus.Connected ? (
                 buttonText
               ) : (
                 <h6 className="flex items-center gap-3">

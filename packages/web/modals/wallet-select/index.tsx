@@ -18,7 +18,7 @@ import { useUpdateEffect } from "react-use";
 import { Connector } from "wagmi";
 
 import { Icon } from "~/components/assets";
-import ClientOnly from "~/components/client-only";
+import { ClientOnly } from "~/components/client-only";
 import { Button } from "~/components/ui/button";
 import { CosmosWalletRegistry } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";

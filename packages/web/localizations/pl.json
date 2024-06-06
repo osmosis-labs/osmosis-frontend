@@ -866,10 +866,6 @@
       "title": "Ustawienia Transakcji"
     },
     "title": "Wymień",
-    "promo": {
-      "newOpportunity": "Nowa możliwość zarabiania dzięki",
-      "discoverSuperchargedPools": "Odkryj baseny Supercharged"
-    },
     "dynamicSpreadFactor": "Dynamiczny"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Powiązane aktywa",
     "earnWith": "Zarabiaj dzięki {denom}",
     "explorePools": "Przeglądaj baseny",
     "stakeYourDenomToEarn": "Postaw swój {denom} aby zarobić {apr} % RRSO",
@@ -983,7 +978,6 @@
     "marketCapRank": "Ranking kapitalizacji rynkowej",
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
-    "tvl": "TVL",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
     "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "Podgląd zasobów włączonych w tej sesji. Aby wyłączyć, otwórz nową kartę lub dodaj `show_preview_assets=false`.",
   "earnPage": {
     "title": "Zarabiać",
-    "position": "Pozycja",
     "positions": "Pozycje",
-    "allocation": "Przydział",
-    "tokensCount": "tokeny {number}",
     "strategiesCount": "Strategie {number}",
     "oneStrategy": "1 strategia",
-    "value": "Wartość",
-    "method": "Typ",
-    "platform": "Platforma",
-    "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
     "myStrategies": "Twoje strategie",
     "strategyPlatform": "Strategia",

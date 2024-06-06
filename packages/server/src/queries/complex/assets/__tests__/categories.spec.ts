@@ -1,4 +1,4 @@
-import dayjs from "../../../../utils/dayjs";
+import { dayjs } from "../../../../utils/dayjs";
 import { AssetLists } from "../../../__tests__/mock-asset-lists";
 import { isAssetInCategories } from "../categories";
 

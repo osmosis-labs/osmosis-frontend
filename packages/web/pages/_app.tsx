@@ -23,8 +23,8 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
-import ErrorBoundary from "~/components/error/error-boundary";
-import ErrorFallback from "~/components/error/error-fallback";
+import { ErrorBoundary } from "~/components/error/error-boundary";
+import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
@@ -43,8 +43,8 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import OneClickTradingIntroModal from "~/modals/one-click-trading-intro-modal";
-import DefaultSeo from "~/next-seo.config";
+import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
+import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
@@ -78,7 +78,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <StoreProvider>
           <WalletSelectProvider>
             <BridgeProvider>
-              <DefaultSeo />
+              <SEO />
               <IbcNotifier />
               <ToastContainer
                 toastStyle={{

@@ -12,7 +12,7 @@ import {
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
@@ -23,13 +23,13 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
 import { useConst } from "../../hooks/use-const";
-import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 
 const dataAttributeName = "data-token-id";
 

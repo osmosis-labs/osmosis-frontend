@@ -866,10 +866,6 @@
       "title": "트랜잭션 설정"
     },
     "title": "거래",
-    "promo": {
-      "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
-      "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
-    },
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "관련 자산",
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
@@ -983,7 +978,6 @@
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
-    "tvl": "TVL",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
     "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
-    "position": "위치",
     "positions": "직위",
-    "allocation": "배당",
-    "tokensCount": "{number} 토큰",
     "strategiesCount": "{number} 전략",
     "oneStrategy": "전략 1개",
-    "value": "값",
-    "method": "유형",
-    "platform": "플랫폼",
-    "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
     "myStrategies": "귀하의 전략",
     "strategyPlatform": "전략",

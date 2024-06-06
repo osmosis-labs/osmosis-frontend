@@ -11,7 +11,7 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";

@@ -866,10 +866,6 @@
       "title": "વ્યવહાર સેટિંગ્સ"
     },
     "title": "સ્વેપ",
-    "promo": {
-      "newOpportunity": "{denom} વડે કમાવાની નવી તક",
-      "discoverSuperchargedPools": "સુપરચાર્જ્ડ પૂલ શોધો"
-    },
     "dynamicSpreadFactor": "ગતિશીલ"
   },
   "walletSelect": {
@@ -961,7 +957,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "સંબંધિત અસ્કયામતો",
     "earnWith": "{denom} વડે કમાઓ",
     "explorePools": "પૂલનું અન્વેષણ કરો",
     "stakeYourDenomToEarn": "{denom} કમાવવા માટે તમારું {apr} % APR",
@@ -983,7 +978,6 @@
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
-    "tvl": "ટીવીએલ",
     "buyToken": "{coinDenom} ખરીદો",
     "staking": "સ્ટેકિંગ",
     "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"
@@ -997,16 +991,9 @@
   "previewAssetsEnabledForSession": "આ સત્ર માટે પૂર્વાવલોકન સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો, અથવા `show_preview_assets=false` ઉમેરો.",
   "earnPage": {
     "title": "કમાઓ",
-    "position": "પદ",
     "positions": "હોદ્દાઓ",
-    "allocation": "ફાળવણી",
-    "tokensCount": "{number} ટોકન્સ",
     "strategiesCount": "{number} વ્યૂહરચના",
     "oneStrategy": "1 વ્યૂહરચના",
-    "value": "મૂલ્ય",
-    "method": "પ્રકાર",
-    "platform": "પ્લેટફોર્મ",
-    "scrollToSeeMore": "વધુ જોવા માટે સ્ક્રોલ કરો",
     "discoverStrategies": "વ્યૂહરચના શોધો",
     "myStrategies": "તમારી વ્યૂહરચનાઓ",
     "strategyPlatform": "વ્યૂહરચના",

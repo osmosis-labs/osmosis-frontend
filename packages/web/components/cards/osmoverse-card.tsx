@@ -24,5 +24,3 @@ export const OsmoverseCard: React.FC<OsmoverseCardProps> = ({
     </div>
   </div>
 );
-
-export default OsmoverseCard;

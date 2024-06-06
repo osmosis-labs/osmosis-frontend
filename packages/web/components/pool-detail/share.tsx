@@ -16,7 +16,7 @@ import { useMeasure } from "react-use";
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
-import PoolComposition from "~/components/chart/pool-composition";
+import { PoolComposition } from "~/components/chart/pool-composition";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -38,7 +38,7 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const E = EventName.PoolDetail;
 

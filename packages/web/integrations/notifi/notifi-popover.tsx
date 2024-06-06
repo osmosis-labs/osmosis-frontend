@@ -11,7 +11,7 @@ import React, {
 import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";

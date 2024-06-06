@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { OneClickTradingBaseScreenProps } from "~/components/one-click-trading/screens/types";
 import {
   Screen,
