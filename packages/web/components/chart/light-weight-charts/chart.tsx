@@ -90,6 +90,10 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
   },
   crosshair: {
     horzLine: {
@@ -97,12 +101,14 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
       style: LineStyle.LargeDashed,
       width: 2,
       color: `${theme.colors.osmoverse[300]}33`,
+      labelVisible: false,
     },
     vertLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
       style: LineStyle.LargeDashed,
       width: 2,
       color: `${theme.colors.osmoverse[300]}33`,
+      labelVisible: false,
     },
   },
   handleScroll: false,

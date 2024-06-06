@@ -2,6 +2,7 @@ import {
   AreaData,
   AreaSeriesOptions,
   DeepPartial,
+  Time,
   UTCTimestamp,
 } from "lightweight-charts";
 import React, { FunctionComponent, memo } from "react";
@@ -29,7 +30,7 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
 
 const HistoricalPriceChartV2: FunctionComponent<{
   data: { close: number; time: number }[];
-  onPointerHover?: (price: number) => void;
+  onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
 }> = memo(({ data = [], onPointerHover, onPointerOut }) => {
   return (
@@ -49,7 +50,7 @@ const HistoricalPriceChartV2: FunctionComponent<{
         if (params.seriesData.size > 0) {
           const [data] = [...params.seriesData.values()] as AreaData[];
 
-          onPointerHover?.(data.value);
+          onPointerHover?.(data.value, data.time);
         } else {
           onPointerOut?.();
         }
