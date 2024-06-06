@@ -17,7 +17,7 @@ import {
 } from "../../../queries/data-services/earn";
 import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import dayjs from "../../../utils/dayjs";
+import { dayjs } from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
 import { type Asset, getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";

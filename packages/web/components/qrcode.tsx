@@ -20,7 +20,7 @@ const generateMatrix = (
   );
 };
 
-const QRCode: FunctionComponent<{
+export const QRCode: FunctionComponent<{
   errorCorrectionLevel?: QRCodeUtil.QRCodeErrorCorrectionLevel;
   logoUrl?: string;
   logoMargin?: number;
@@ -151,5 +151,3 @@ const QRCode: FunctionComponent<{
     </div>
   );
 };
-
-export default QRCode;

@@ -14,7 +14,7 @@ import React, {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getResetPeriodTranslationKey,
@@ -110,7 +110,7 @@ function formatSpendLimit(spendLimit: PricePretty | undefined) {
   )}`;
 }
 
-const OneClickTradingSettings = ({
+export const OneClickTradingSettings = ({
   classes,
   onGoBack,
   transaction1CTParams,
@@ -632,5 +632,3 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
     </ModalBase>
   );
 };
-
-export default OneClickTradingSettings;

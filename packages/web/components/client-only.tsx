@@ -1,6 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-const ClientOnly = (props: PropsWithChildren<{ className?: string }>) => {
+export const ClientOnly = (
+  props: PropsWithChildren<{ className?: string }>
+) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -13,5 +15,3 @@ const ClientOnly = (props: PropsWithChildren<{ className?: string }>) => {
 
   return <div {...props} />;
 };
-
-export default ClientOnly;

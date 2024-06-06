@@ -16,7 +16,7 @@ import React, {
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
@@ -45,11 +45,17 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 

@@ -12,9 +12,9 @@ import { useLocalStorage } from "react-use";
 
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import OneClickTradingConnectToContinue from "~/components/one-click-trading/one-click-trading-connect-to-continue";
-import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
-import OneClickTradingWelcomeBack from "~/components/one-click-trading/one-click-trading-welcome-back";
+import { OneClickTradingConnectToContinue } from "~/components/one-click-trading/one-click-trading-connect-to-continue";
+import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
+import { OneClickTradingWelcomeBack } from "~/components/one-click-trading/one-click-trading-welcome-back";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { ConnectingWalletState } from "~/components/wallet-states";
@@ -26,8 +26,8 @@ import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { ModalView, OnConnectWallet } from "~/modals/wallet-select/utils";
 import { useStore } from "~/stores";
 
-import QRCodeView from "./qr-code-view";
-import WalletTutorial from "./wallet-tutorial";
+import { QRCodeView } from "./qr-code-view";
+import { WalletTutorial } from "./wallet-tutorial";
 
 enum WalletSelect1CTScreens {
   Introduction = "Introduction",

@@ -12,12 +12,12 @@ import { useClickAway } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { GradientView } from "~/components/assets/gradient-view";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Disableable, InputProps } from "~/components/types";
 import { Button } from "~/components/ui/button";

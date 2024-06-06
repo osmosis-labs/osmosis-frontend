@@ -20,7 +20,7 @@ import { api } from "~/utils/trpc";
 
 import { CreditCardIcon } from "../assets/credit-card-icon";
 import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
