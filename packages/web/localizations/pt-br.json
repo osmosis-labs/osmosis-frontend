@@ -563,16 +563,6 @@
           "12hours": "12 horas"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Período de redefinição",
-        "description": "Defina uma duração para redefinir a cota de limite de gastos.",
-        "periods": {
-          "day": "Dia",
-          "week": "Semana",
-          "month": "Mês",
-          "year": "Ano"
-        }
-      },
       "discardChanges": {
         "title": "Descartar mudanças?",
         "message": "Deseja manter suas configurações existentes de negociação em 1 clique?",

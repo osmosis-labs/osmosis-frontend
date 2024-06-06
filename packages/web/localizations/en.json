@@ -563,16 +563,6 @@
           "12hours": "12 hours"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Reset period",
-        "description": "Set a duration to reset the spend limit quota.",
-        "periods": {
-          "day": "Day",
-          "week": "Week",
-          "month": "Month",
-          "year": "Year"
-        }
-      },
       "discardChanges": {
         "title": "Discard Changes?",
         "message": "Do you wish to keep your existing 1-Click Trading settings?",

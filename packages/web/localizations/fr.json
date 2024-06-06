@@ -563,16 +563,6 @@
           "12hours": "12 heures"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Période de réinitialisation",
-        "description": "Définissez une durée pour réinitialiser le quota de limite de dépenses.",
-        "periods": {
-          "day": "Jour",
-          "week": "Semaine",
-          "month": "Mois",
-          "year": "Année"
-        }
-      },
       "discardChanges": {
         "title": "Annuler les modifications?",
         "message": "Souhaitez-vous conserver vos paramètres de trading en 1-Click existants ?",

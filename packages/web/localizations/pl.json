@@ -563,16 +563,6 @@
           "12hours": "12 godzin"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Zresetuj okres",
-        "description": "Ustaw czas resetowania limitu wydatków.",
-        "periods": {
-          "day": "Dzień",
-          "week": "Tydzień",
-          "month": "Miesiąc",
-          "year": "Rok"
-        }
-      },
       "discardChanges": {
         "title": "Odrzucać zmiany?",
         "message": "Czy chcesz zachować swoje dotychczasowe ustawienia handlu jednym kliknięciem?",

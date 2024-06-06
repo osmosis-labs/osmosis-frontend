@@ -563,16 +563,6 @@
           "12hours": "12 Stunden"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Reset-Zeitraum",
-        "description": "Legen Sie einen Zeitraum fest, um das Ausgabenlimit-Kontingent zurückzusetzen.",
-        "periods": {
-          "day": "Tag",
-          "week": "Woche",
-          "month": "Monat",
-          "year": "Jahr"
-        }
-      },
       "discardChanges": {
         "title": "Änderungen verwerfen?",
         "message": "Möchten Sie Ihre bestehenden 1-Click-Trading-Einstellungen beibehalten?",

@@ -563,16 +563,6 @@
           "12hours": "12 horas"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Periodo de reinicio",
-        "description": "Establezca una duración para restablecer la cuota de límite de gasto.",
-        "periods": {
-          "day": "Día",
-          "week": "Semana",
-          "month": "Mes",
-          "year": "Año"
-        }
-      },
       "discardChanges": {
         "title": "¿Descartar los cambios?",
         "message": "¿Desea mantener su configuración actual de Trading con 1 clic?",

@@ -563,16 +563,6 @@
           "12hours": "12 saat"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Dönemi sıfırla",
-        "description": "Harcama sınırı kotasını sıfırlamak için bir süre ayarlayın.",
-        "periods": {
-          "day": "Gün",
-          "week": "Hafta",
-          "month": "Ay",
-          "year": "Yıl"
-        }
-      },
       "discardChanges": {
         "title": "Değişiklikleri gözardı et?",
         "message": "Mevcut Tek Tıklamayla Ticaret ayarlarınızı korumak istiyor musunuz?",

@@ -26,7 +26,7 @@ export const oneClickTradingRouter = createTRPCRouter({
     }): Promise<
       Pick<
         OneClickTradingTransactionParams,
-        "networkFeeLimit" | "resetPeriod" | "spendLimit" | "sessionPeriod"
+        "networkFeeLimit" | "spendLimit" | "sessionPeriod"
       > & {
         spendLimitTokenDecimals: number;
       }
@@ -43,7 +43,6 @@ export const oneClickTradingRouter = createTRPCRouter({
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
         spendLimitTokenDecimals: usdcAsset.coinDecimals,
         networkFeeLimit: networkFeeLimitStep.average,
-        resetPeriod: "day" as const,
         sessionPeriod: {
           end: "1hour" as const,
         },

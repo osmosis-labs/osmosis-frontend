@@ -563,16 +563,6 @@
           "12hours": "12 ore"
         }
       },
-      "resetPeriodScreen": {
-        "title": "Perioada de resetare",
-        "description": "Setați o durată pentru a reseta cota limită de cheltuieli.",
-        "periods": {
-          "day": "Zi",
-          "week": "Săptămână",
-          "month": "Lună",
-          "year": "An"
-        }
-      },
       "discardChanges": {
         "title": "Renunțați la modificări?",
         "message": "Doriți să vă păstrați setările existente de tranzacționare cu 1 clic?",

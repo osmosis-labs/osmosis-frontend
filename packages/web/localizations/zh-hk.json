@@ -563,16 +563,6 @@
           "12hours": "12小時"
         }
       },
-      "resetPeriodScreen": {
-        "title": "重置期",
-        "description": "設定重置支出限額配額的持續時間。",
-        "periods": {
-          "day": "天",
-          "week": "星期",
-          "month": "月",
-          "year": "年"
-        }
-      },
       "discardChanges": {
         "title": "放棄更改？",
         "message": "您希望保留現有的一鍵交易設定嗎？",

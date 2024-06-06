@@ -63,14 +63,12 @@ export function isAuthenticatorOneClickTradingSession({
 export function getOneClickTradingSessionAuthenticator({
   key,
   allowedAmount,
-  resetPeriod,
   allowedMessages,
   sessionPeriod,
 }: {
   key: PrivKeySecp256k1;
   allowedMessages: AvailableOneClickTradingMessages[];
   allowedAmount: string;
-  resetPeriod: OneClickTradingResetPeriods;
   sessionPeriod: OneClickTradingTimeLimit;
 }): {
   type: AuthenticatorType;
@@ -85,7 +83,7 @@ export function getOneClickTradingSessionAuthenticator({
     Buffer.from(
       JSON.stringify({
         limit: allowedAmount,
-        reset_period: resetPeriod,
+        reset_period: "day" as OneClickTradingResetPeriods,
         time_limit: sessionPeriod,
       })
     )
@@ -279,7 +277,6 @@ export const useCreateOneClickTradingSession = ({
         "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
       ];
-      const resetPeriod = transaction1CTParams.resetPeriod;
 
       let sessionPeriod: OneClickTradingTimeLimit;
       switch (transaction1CTParams.sessionPeriod.end) {
@@ -319,7 +316,6 @@ export const useCreateOneClickTradingSession = ({
           key,
           allowedAmount,
           allowedMessages,
-          resetPeriod,
           sessionPeriod,
         });
 
@@ -389,7 +385,6 @@ export const useCreateOneClickTradingSession = ({
         publicKey,
         sessionKey: toBase64(key.toBytes()),
         allowedMessages,
-        resetPeriod,
         sessionPeriod,
         sessionStartedAtUnix: dayjs().unix(),
         networkFeeLimit: {
