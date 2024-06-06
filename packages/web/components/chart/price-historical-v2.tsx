@@ -22,8 +22,8 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   crosshairMarkerRadius: 8,
   priceFormat: {
     type: "price",
-    precision: 4,
-    minMove: 0.0001,
+    precision: 10,
+    minMove: 0.0000001,
   },
 };
 
