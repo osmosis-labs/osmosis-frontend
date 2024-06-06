@@ -12,8 +12,8 @@ export interface RawAuthenticator {
 }
 
 export interface RawNestedAuthenticator {
-  Config: string;
-  Type: AuthenticatorType;
+  config: string;
+  type: AuthenticatorType;
 }
 
 export interface MessageFilterAuthenticator {
