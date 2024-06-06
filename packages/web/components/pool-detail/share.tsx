@@ -29,7 +29,7 @@ import {
 } from "~/hooks";
 import {
   AddLiquidityModal,
-  LockTokensModal,
+  LockShares,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
@@ -60,23 +60,26 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const address = account?.address ?? "";
 
     // queries
-    const { data: userSharePool, isLoading: isLoadingUserSharePool } =
-      api.edge.pools.getUserSharePool.useQuery(
-        {
-          poolId: pool.id,
-          userOsmoAddress: address,
-        },
-        {
-          enabled: !isWalletLoading && Boolean(address),
+    const {
+      data: userSharePool,
+      isLoading: isLoadingUserSharePool,
+      isRefetching: isRefetchingUserSharePool,
+    } = api.edge.pools.getUserSharePool.useQuery(
+      {
+        poolId: pool.id,
+        userOsmoAddress: address,
+      },
+      {
+        enabled: !isWalletLoading && Boolean(address),
 
-          // expensive query
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
           },
-        }
-      );
+        },
+      }
+    );
     const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
       poolId: pool.id,
     });
@@ -88,23 +91,26 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { data: poolMarketMetrics, isLoading: isPoolMarketMetricsLoading } =
       api.edge.pools.getPoolMarketMetrics.useQuery({ poolId: pool.id });
 
-    const { data: bondDurations_, isLoading: isLoadingBondDurations } =
-      api.edge.pools.getSharePoolBondDurations.useQuery(
-        {
-          poolId: pool.id,
-          userOsmoAddress: Boolean(address) ? address : undefined,
-        },
-        {
-          enabled: !isWalletLoading,
+    const {
+      data: bondDurations_,
+      isLoading: isLoadingBondDurations,
+      isRefetching: isRefetchingBondDurations,
+    } = api.edge.pools.getSharePoolBondDurations.useQuery(
+      {
+        poolId: pool.id,
+        userOsmoAddress: Boolean(address) ? address : undefined,
+      },
+      {
+        enabled: !isWalletLoading,
 
-          // expensive query
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
           },
-        }
-      );
+        },
+      }
+    );
     const bondDurations = useMemo(
       () => bondDurations_ ?? ([] as BondDuration[]),
       [bondDurations_]
@@ -298,6 +304,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       []
     );
 
+    console.log("parentBalance", lockLPTokensConfig?.balance?.toString());
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         {pool && showAddLiquidityModal && (
@@ -323,7 +331,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             />
           )}
         {lockLPTokensConfig && showLockLPTokenModal && (
-          <LockTokensModal
+          <LockShares
             poolId={pool.id}
             isOpen={showLockLPTokenModal}
             title={t("lockToken.title")}
@@ -331,7 +339,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             amountConfig={lockLPTokensConfig}
             onLockToken={onLockToken}
             bondDurations={bondDurations}
-            availableShares={userSharePool?.availableShares ?? undefined}
           />
         )}
         {isSuperfluid &&
@@ -629,8 +636,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         className="w-fit shrink-0 xs:w-full"
                         variant="outline"
                         disabled={
-                          userSharePool?.availableShares?.toDec().isZero() ??
-                          true
+                          !userSharePool?.availableShares
+                            ?.toDec()
+                            .isPositive() ?? true
                         }
                         onClick={() => {
                           logEvent([
@@ -662,7 +670,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col items-end text-right lg:hidden">
-                  {isLoadingUserSharePool && Boolean(account) ? (
+                  {(isLoadingUserSharePool || isRefetchingUserSharePool) &&
+                  Boolean(account) ? (
                     <Spinner />
                   ) : userSharePool ? (
                     <>
@@ -727,7 +736,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                     </span>
                   </div>
-                  {isLoadingBondDurations ? (
+                  {isLoadingBondDurations || isLoadingUserSharePool ? (
                     <Spinner />
                   ) : level2Disabled ? (
                     <h6 className="text-osmoverse-100">
@@ -739,7 +748,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         "!border-0 bg-gradient-positive text-osmoverse-900":
                           levelCta === 2,
                       })}
-                      disabled={levelCta !== 2}
+                      disabled={
+                        // isFetchingUserSharePool is checked within levelCta
+                        levelCta !== 2 || isRefetchingBondDurations
+                      }
+                      isLoading={
+                        isRefetchingBondDurations || isRefetchingUserSharePool
+                      }
+                      loadingText={t("pool.bondShares")}
                       onClick={() => {
                         logEvent([E.bondSharesClicked, baseEventInfo]);
                         setShowLockLPTokenModal(true);

@@ -12,19 +12,20 @@ export const storeContext = React.createContext<RootStore | null>(null);
 
 /** Once data is invalidated, React Query will automatically refetch data
  *  when the dependent component becomes visible. */
-function invalidateQueryData(apiUtils: ReturnType<typeof api.useUtils>) {
+function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAsset.invalidate();
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
   apiUtils.edge.assets.getUserAssetsTotal.invalidate();
   apiUtils.edge.assets.getUserBridgeAssets.invalidate();
+  apiUtils.edge.staking.getUserDelegations.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
   apiUtils.local.concentratedLiquidity.getPositionDetails.invalidate();
-
   apiUtils.edge.pools.getSharePool.invalidate();
   apiUtils.edge.pools.getPool.invalidate();
   apiUtils.edge.pools.getUserSharePool.invalidate();
   apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
+  apiUtils.local.balances.getUserBalances.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
@@ -38,7 +39,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
     () =>
       new RootStore({
         txEvents: {
-          onFulfill: () => invalidateQueryData(apiUtils),
+          onFulfill: () => refetchUserQueries(apiUtils),
 
           /**
            * This event is triggered when the network fee limit is exceeded.

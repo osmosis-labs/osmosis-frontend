@@ -6,7 +6,7 @@ import { FunctionComponent, useMemo, useState } from "react";
 
 import { SearchBox } from "~/components/input";
 import { Spinner } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
@@ -237,7 +237,9 @@ export const SuperfluidValidatorModal: FunctionComponent<
         <Button
           disabled={
             selectedValidatorAddress === null ||
-            account?.txTypeInProgress !== ""
+            account?.txTypeInProgress !== "" ||
+            isLoadingAllValidators ||
+            isLoadingUserValidators
           }
           onClick={() => {
             if (selectedValidatorAddress !== null) {

@@ -1,4 +1,3 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
@@ -15,15 +14,13 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export const LockTokensModal: FunctionComponent<
+export const LockShares: FunctionComponent<
   {
     poolId: string;
     amountConfig: ReturnType<typeof useAmountInput>;
     /** `electSuperfluid` is left undefined if it is irrelevant- if the user has already opted into superfluid in the past. */
     onLockToken: (duration: Duration, electSuperfluid?: boolean) => void;
     bondDurations?: BondDuration[];
-    /** Coin to lock, otherwise will be assumed to be shares for given pool id. */
-    availableShares?: CoinPretty;
   } & ModalBaseProps
 > = observer((props) => {
   const {
@@ -31,7 +28,6 @@ export const LockTokensModal: FunctionComponent<
     amountConfig: config,
     onLockToken,
     bondDurations: givenBondDurations,
-    availableShares: givenAvailableShares,
   } = props;
   const { t } = useTranslation();
 
@@ -63,34 +59,13 @@ export const LockTokensModal: FunctionComponent<
     [givenBondDurations, bondDurations_]
   );
 
-  const { data: userSharePool } = api.edge.pools.getUserSharePool.useQuery(
-    {
-      poolId: poolId,
-      userOsmoAddress: address,
-    },
-    {
-      enabled: !givenAvailableShares && Boolean(address),
-
-      // expensive query
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
-      },
-    }
-  );
-  const availableShares =
-    givenAvailableShares ?? userSharePool?.availableShares;
-
   /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
    *  TODO: perhaps we should display this in the view somehow
    */
   const superfluidBondDuration =
     bondDurations[bondDurations.length - 1]?.superfluid;
   const isSuperfluid = Boolean(superfluidBondDuration);
-  const hasSuperfluidValidator = Boolean(
-    superfluidBondDuration?.delegated || superfluidBondDuration?.undelegating
-  );
+  const hasSuperfluidValidator = Boolean(superfluidBondDuration?.delegated);
 
   // component state
   const [selectedDurationIndex, setSelectedDurationIndex] = useState<
@@ -138,7 +113,7 @@ export const LockTokensModal: FunctionComponent<
     {
       disabled:
         Boolean(config.error) ||
-        !Boolean(selectedDuration) ||
+        !selectedDuration ||
         Boolean(account?.txTypeInProgress),
       onClick: () => {
         if (selectedDuration) {
@@ -187,7 +162,7 @@ export const LockTokensModal: FunctionComponent<
         <div className="flex gap-4 overflow-x-auto p-[3px] md:gap-1">
           {bondDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
-              key={index}
+              key={duration.asMilliseconds()}
               duration={duration.humanize()}
               isSelected={index === selectedDurationIndex}
               onSelect={() => setSelectedDurationIndex(index)}
@@ -230,7 +205,7 @@ export const LockTokensModal: FunctionComponent<
         <div className="flex flex-col gap-2">
           <div className="flex place-content-between items-center">
             <span className="subtitle1">{t("lockToken.amountToBond")}</span>
-            {availableShares && (
+            {config.balance && (
               <div className="caption flex gap-1">
                 <span>{t("lockToken.availableToken")}</span>
                 <span
@@ -238,7 +213,7 @@ export const LockTokensModal: FunctionComponent<
                   onClick={() => config.setFraction(1)}
                 >
                   {t("pool.sharesAmount", {
-                    shares: availableShares
+                    shares: config.balance
                       .trim(true)
                       .hideDenom(true)
                       .toString(),
