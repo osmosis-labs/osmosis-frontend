@@ -4,6 +4,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { DynamicSizeInput } from "~/components/input/dynamic-size-input";
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
@@ -43,6 +44,7 @@ export const LimitInput: FC<LimitInputProps> = ({
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   const [focused, setFocused] = useState<FocusedInput>(FocusedInput.FIAT);
+  const { price: basePrice } = useCoinPrice(baseAsset);
 
   const swapFocus = useCallback(() => {
     switch (focused) {
@@ -99,7 +101,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     const tokenValue = new Dec(value)?.quo(price);
     setTokenAmountSafe(tokenValue.toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, fiatAmount, setTokenAmountSafe]);
+  }, [price, fiatAmount, setTokenAmountSafe, basePrice]);
 
   const FiatInput = useMemo(() => {
     const isFocused = focused === FocusedInput.FIAT;

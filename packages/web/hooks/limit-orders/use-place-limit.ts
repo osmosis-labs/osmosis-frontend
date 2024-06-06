@@ -1,13 +1,12 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useMemo, useState } from "react";
 
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useBalances } from "~/hooks/queries/cosmos/use-balances";
-import {
-  useSwapAmountInput,
-  useSwapAsset,
-  useSwapAssets,
-} from "~/hooks/use-swap";
+import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 
 export enum OrderDirection {
@@ -25,6 +24,8 @@ export interface UsePlaceLimitParams {
   quoteDenom: string;
   orderbookContractAddress: string;
 }
+
+export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
 
 // TODO: adjust as necessary
 const CLAIM_BOUNTY = "0.01";
@@ -45,6 +46,10 @@ export const usePlaceLimit = ({
     useQueryParams,
     useOtherCurrencies,
   });
+
+  const quoteAsset = swapAssets.toAsset;
+  const baseAsset = swapAssets.fromAsset;
+
   const priceState = useLimitPrice();
   const inAmountInput = useSwapAmountInput({
     swapAssets,
@@ -53,60 +58,85 @@ export const usePlaceLimit = ({
   });
   const account = accountStore.getWallet(osmosisChainId);
 
+  const paymentAmount = useMemo(
+    () =>
+      orderDirection === OrderDirection.Ask
+        ? inAmountInput.amount ?? new CoinPretty(baseAsset, "0")
+        : new CoinPretty(
+            quoteAsset,
+            inAmountInput.amount?.toCoin().amount ?? "0"
+          ).mul(priceState.price),
+    [
+      orderDirection,
+      inAmountInput.amount,
+      priceState.price,
+      baseAsset,
+      quoteAsset,
+    ]
+  );
+
+  const { price: basePrice } = useCoinPrice(
+    new CoinPretty(baseAsset, new Dec(1))
+  );
+  const { price: quotePrice } = useCoinPrice(
+    new CoinPretty(quoteAsset, new Dec(1))
+  );
+
+  const paymentFiatValue = useMemo(
+    () =>
+      mulPrice(
+        paymentAmount,
+        orderDirection === OrderDirection.Bid ? quotePrice : basePrice,
+        DEFAULT_VS_CURRENCY
+      ),
+    [paymentAmount, orderDirection, basePrice, quotePrice]
+  );
+
   const placeLimit = useCallback(async () => {
-    const quantity = inAmountInput.amount?.toCoin().amount ?? "0'";
+    const quantity = inAmountInput.amount?.toCoin().amount ?? "0";
     if (quantity === "0") {
       return;
     }
 
     const paymentDenom =
       orderDirection === OrderDirection.Bid
-        ? swapAssets.toAsset.coinMinimalDenom
-        : swapAssets.fromAsset.coinMinimalDenom;
-    const paymentAmount =
-      orderDirection === OrderDirection.Ask
-        ? quantity
-        : new Dec(quantity).mul(priceState.price).truncate().toString();
+        ? quoteAsset.coinMinimalDenom
+        : baseAsset.coinMinimalDenom;
 
     const tickId = priceToTick(priceState.price);
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
         order_direction: orderDirection,
-        quantity: paymentAmount,
+        quantity: paymentAmount?.toCoin().amount ?? "0",
         claim_bounty: CLAIM_BOUNTY,
       },
     };
-    await account?.cosmwasm.sendExecuteContractMsg(
-      "executeWasm",
-      orderbookContractAddress,
-      msg,
-      [
-        {
-          amount: paymentAmount,
-          denom: paymentDenom,
-        },
-      ]
-    );
+    try {
+      await account?.cosmwasm.sendExecuteContractMsg(
+        "executeWasm",
+        orderbookContractAddress,
+        msg,
+        [
+          {
+            amount: paymentAmount.toCoin().amount ?? "0",
+            denom: paymentDenom,
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Error attempting to broadcast place limit tx", error);
+    }
   }, [
     orderbookContractAddress,
     account,
-    swapAssets,
+    quoteAsset,
+    baseAsset,
     orderDirection,
     inAmountInput,
     priceState,
+    paymentAmount,
   ]);
-
-  const { asset: quoteAsset } = useSwapAsset({
-    minDenomOrSymbol: quoteDenom,
-    existingAssets: swapAssets.selectableAssets,
-  });
-  console.log("QUOTE", quoteAsset);
-
-  const { asset: baseAsset } = useSwapAsset({
-    minDenomOrSymbol: baseDenom,
-    existingAssets: swapAssets.selectableAssets,
-  });
 
   const { data: balances, isFetched: isBalancesFetched } = useBalances({
     address: account?.address ?? "",
@@ -141,7 +171,6 @@ export const usePlaceLimit = ({
           .lt(inAmountInput.amount?.toDec() ?? new Dec(0));
 
   return {
-    ...swapAssets,
     quoteDenom,
     baseDenom,
     baseAsset,
@@ -153,6 +182,8 @@ export const usePlaceLimit = ({
     quoteTokenBalance,
     isBalancesFetched,
     insufficientFunds,
+    paymentAmount,
+    paymentFiatValue,
   };
 };
 
