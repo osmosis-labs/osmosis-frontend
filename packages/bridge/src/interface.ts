@@ -140,6 +140,29 @@ export interface GetDepositAddressParams {
   autoUnwrapIntoNative?: boolean;
 }
 
+export const getBridgeExternalUrlSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  fromChain: bridgeChainSchema,
+  /**
+   * The destination chain information.
+   */
+  toChain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: bridgeAssetSchema,
+  /**
+   * The asset on the destination chain.
+   */
+  toAsset: bridgeAssetSchema,
+});
+
+export type GetBridgeExternalUrlParams = z.infer<
+  typeof getBridgeExternalUrlSchema
+>;
+
 export const getBridgeQuoteSchema = z.object({
   /**
    * The originating chain information.
