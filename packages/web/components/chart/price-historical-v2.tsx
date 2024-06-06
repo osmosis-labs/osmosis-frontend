@@ -6,7 +6,7 @@ import {
 } from "lightweight-charts";
 import React, { FunctionComponent, memo } from "react";
 
-import { LinearChartController } from "~/components/chart/light-weight-charts/linear-chart";
+import { AreaChartController } from "~/components/chart/light-weight-charts/area-chart";
 import { theme } from "~/tailwind.config";
 
 import { Chart } from "./light-weight-charts/chart";
@@ -34,7 +34,7 @@ const HistoricalPriceChartV2: FunctionComponent<{
 }> = memo(({ data = [], onPointerHover, onPointerOut }) => {
   return (
     <Chart
-      Controller={LinearChartController}
+      Controller={AreaChartController}
       series={[
         {
           type: "Area",
