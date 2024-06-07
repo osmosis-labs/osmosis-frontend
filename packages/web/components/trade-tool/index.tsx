@@ -26,6 +26,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
             case SwapToolTab.SELL:
               return <PlaceLimitTool orderDirection={OrderDirection.Ask} />;
             case SwapToolTab.SWAP:
+            default:
               return (
                 <SwapTool useOtherCurrencies useQueryParams page="Swap Page" />
               );
