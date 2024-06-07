@@ -99,16 +99,6 @@ export function getCachedPoolIncentivesMap(): Promise<
       const aprs = await queryPoolAprs();
       const astroport_aprs = await queryAstroportPoolAprs();
 
-      // TODO: Remove this once astroport apr return format is fixed
-      astroport_aprs.forEach((apr) => {
-        apr.pool_id = String(apr.pool_id);
-        apr.swap_fees = apr.swap_fees * 100;
-        apr.superfluid = apr.superfluid * 100;
-        apr.osmosis = apr.osmosis * 100;
-        apr.boost = apr.boost * 100;
-        apr.total_apr = apr.total_apr * 100;
-      });
-
       aprs.push(...astroport_aprs);
 
       return aprs.reduce((map, apr) => {
