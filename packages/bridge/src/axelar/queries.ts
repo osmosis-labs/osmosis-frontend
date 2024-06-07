@@ -1,3 +1,9 @@
+import { apiClient } from "@osmosis-labs/utils";
+import { CacheEntry, cachified } from "cachified";
+import { LRUCache } from "lru-cache";
+
+import { BridgeProviderContext } from "../interface";
+
 export type TransferStep = {
   id: string;
   type:
@@ -77,14 +83,105 @@ export async function getTransferStatus(
   origin = "https://api.axelarscan.io"
 ): Promise<TransferStatus> {
   try {
-    const response = await fetch(
-      `${origin}/cross-chain/transfers-status?txHash=${sendTxHash}`
-    );
-    const data = await response.json();
+    const url = new URL("/cross-chain/transfers-status", origin);
+    url.searchParams.set("txHash", sendTxHash);
 
-    return data as TransferStatus;
+    return apiClient<TransferStatus>(url.toString());
   } catch {
     console.error("Failed to fetch transfer status for tx hash: ", sendTxHash);
     return [];
   }
+}
+
+interface AxelarChain {
+  id: string;
+  chain_id: number | string;
+  chain_name: string;
+  maintainer_id: string;
+  endpoints: {
+    rpc: string[];
+    lcd: string[];
+  };
+  native_token: {
+    symbol: string;
+    name: string;
+    decimals: number;
+  };
+  name: string;
+  short_name: string;
+  image: string;
+  color: string;
+  explorer: {
+    name: string;
+    url: string;
+    icon: string;
+    block_path: string;
+    address_path: string;
+    contract_path: string;
+    contract_0_path: string;
+    transaction_path: string;
+    asset_path: string;
+  };
+  prefix_address: string;
+  prefix_chain_ids: string[];
+  chain_type: string;
+  provider_params: object[];
+}
+
+const cache = new LRUCache<string, CacheEntry>({
+  max: 5,
+});
+
+export async function getAxelarChains({
+  env,
+}: {
+  env: BridgeProviderContext["env"];
+}) {
+  return cachified({
+    key: `axelar-chains`,
+    cache,
+    ttl: 1000 * 60 * 30, // 30 minutes
+    getFreshValue: () =>
+      apiClient<AxelarChain[]>(
+        env === "mainnet"
+          ? "https://api.axelarscan.io/api/getChains"
+          : "https://testnet.api.axelarscan.io/api/getChains"
+      ),
+  });
+}
+
+interface AxelarAsset {
+  id: string; // ID using in general purpose
+  denom: string;
+  native_chain: string; // general ID of chain that asset is native on
+  name: string; // display name
+  symbol: string;
+  decimals: number; // token decimals
+  image: string; // logo path
+  coingecko_id: string; // asset identifier on coingecko service
+  addresses: {
+    [chain: string]: {
+      address: string; // EVM token address
+      ibc_denom: string; // Cosmos token address (denom)
+      symbol: string; // symbol of asset on each chain
+    };
+  };
+}
+
+export async function getAxelarAssets({
+  env,
+}: {
+  env: BridgeProviderContext["env"];
+}) {
+  return cachified({
+    key: "axelar-assets",
+    cache,
+    ttl: 1000 * 60 * 30, // 30 minutes
+    getFreshValue: () =>
+      apiClient<AxelarAsset[]>(
+        env === "mainnet"
+          ? "https://api.axelarscan.io/api/getAssets"
+          : "https://testnet.api.axelarscan.io/api/getAssets"
+      ),
+  });
 }

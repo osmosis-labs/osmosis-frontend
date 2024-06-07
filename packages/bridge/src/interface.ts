@@ -157,6 +157,10 @@ export const getBridgeExternalUrlSchema = z.object({
    * The asset on the destination chain.
    */
   toAsset: bridgeAssetSchema,
+  /**
+   * The address on the destination chain where the assets are to be received.
+   */
+  toAddress: z.string(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<
