@@ -252,7 +252,7 @@ export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
-  hoverDate?: string;
+  hoverDate?: string | null;
   decimal: number;
   formatOpts?: FormatOptions;
   fiatSymbol?: string;
@@ -346,8 +346,15 @@ export const PriceChartHeader: FunctionComponent<{
                 )}
               </h4>
             </SkeletonLoader>
-            {hoverDate ? (
-              <p className="flex flex-1 flex-col justify-center font-caption text-wosmongton-200">
+            {hoverDate !== undefined ? (
+              <p
+                className={classNames(
+                  "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
+                  {
+                    "invisible h-6": hoverDate === null,
+                  }
+                )}
+              >
                 {hoverDate}
               </p>
             ) : (

@@ -285,11 +285,9 @@ export class ObservableAssetInfoConfig {
   }
 
   @computed
-  get hoverDate(): string | undefined {
-    let date = this._hoverDate;
-
+  get hoverDate(): string | null {
     if (!this._hoverDate) {
-      date = new Date().toISOString();
+      return null;
     }
 
     const formatOptions: Intl.DateTimeFormatOptions = {
@@ -300,7 +298,7 @@ export class ObservableAssetInfoConfig {
       minute: "numeric",
     };
 
-    return timepointToString(date!, formatOptions, "en-US");
+    return timepointToString(this._hoverDate, formatOptions, "en-US");
   }
 
   @computed
