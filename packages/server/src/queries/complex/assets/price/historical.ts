@@ -2,7 +2,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import dayjs from "../../../../utils/dayjs";
+import { dayjs } from "../../../../utils/dayjs";
 import { queryMarketChart } from "../../../coingecko";
 import {
   queryTokenHistoricalChart,

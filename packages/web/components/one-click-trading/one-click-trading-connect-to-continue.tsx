@@ -3,7 +3,7 @@ import React from "react";
 
 import { useTranslation } from "~/hooks";
 
-const OneClickTradingConnectToContinue = () => {
+export const OneClickTradingConnectToContinue = () => {
   const { t } = useTranslation();
   return (
     <div className="flex h-full flex-col items-center justify-center px-8">
@@ -24,5 +24,3 @@ const OneClickTradingConnectToContinue = () => {
     </div>
   );
 };
-
-export default OneClickTradingConnectToContinue;

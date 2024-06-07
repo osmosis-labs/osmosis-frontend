@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";

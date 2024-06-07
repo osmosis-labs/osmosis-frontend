@@ -9,7 +9,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";

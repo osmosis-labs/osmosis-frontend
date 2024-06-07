@@ -48,7 +48,9 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-const QRCode = dynamic(() => import("~/components/qrcode"));
+const QRCode = dynamic(() =>
+  import("~/components/qrcode").then((module) => module.QRCode)
+);
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }

@@ -23,15 +23,15 @@ import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
-import LinkButton from "~/components/buttons/link-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
-import HistoricalPriceChartV2 from "~/components/chart/price-historical-v2";
+import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
 import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import { TokenDetailsWithObserver } from "~/components/token-details";
+import { TokenDetails } from "~/components/token-details";
 import { TwitterSection } from "~/components/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
@@ -245,7 +245,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   tokenDetailsByLanguage={tokenDetailsByLanguage}
                 />
               </div>
-              <TokenDetailsWithObserver
+              <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}

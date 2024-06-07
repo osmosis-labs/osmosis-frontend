@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useLocalStorage } from "react-use";
 
 import { Ad, AdBanners } from "~/components/ad-banner";
-import ErrorBoundary from "~/components/error/error-boundary";
+import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";

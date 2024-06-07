@@ -172,5 +172,3 @@ const AvatarIcon: React.FC<{ extraValidators?: number }> = ({
     </div>
   );
 };
-
-export default AvatarIcon;

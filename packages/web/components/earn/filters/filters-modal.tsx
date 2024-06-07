@@ -16,7 +16,7 @@ interface StrategiesFilter extends ListOption<string> {
   icon: ReactNode;
 }
 
-const FiltersModal = (
+export const FiltersModal = (
   props: ModalBaseProps & {
     rewardTypes: ListOption<string>[];
     lockDurationTypes: ListOption<string>[];
@@ -130,5 +130,3 @@ const FiltersModal = (
     </ModalBase>
   );
 };
-
-export default FiltersModal;

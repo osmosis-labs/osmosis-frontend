@@ -12,7 +12,7 @@ import {
 import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
-import StrategiesTable from "~/components/earn/table";
+import { StrategiesTable } from "~/components/earn/table";
 import {
   TabButton,
   TabButtons,
@@ -21,7 +21,7 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -30,7 +30,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
+import { useGetEarnStrategies } from "~/hooks/use-get-earn-strategies";
 import { useStore } from "~/stores";
 
 function Earn() {

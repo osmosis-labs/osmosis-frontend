@@ -9,7 +9,7 @@ import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ColumnCellCell } from "~/components/earn/table/columns";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
