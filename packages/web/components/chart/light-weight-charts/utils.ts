@@ -37,17 +37,5 @@ export const timepointToString = (
     );
   }
 
-  // from given date we should use only as UTC date or timestamp
-  // but to format as locale date we can convert UTC date to local date
-  const localDateFromUtc = new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds(),
-    date.getUTCMilliseconds()
-  );
-
-  return localDateFromUtc.toLocaleString(locale, formatOptions);
+  return date.toLocaleString(locale, formatOptions);
 };
