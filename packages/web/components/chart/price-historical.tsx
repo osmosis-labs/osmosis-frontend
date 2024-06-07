@@ -250,6 +250,7 @@ export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
+  hoverDate?: string | null;
   decimal: number;
   formatOpts?: FormatOptions;
   fiatSymbol?: string;
@@ -272,6 +273,7 @@ export const PriceChartHeader: FunctionComponent<{
     setHistoricalRange,
     baseDenom,
     quoteDenom,
+    hoverDate,
     hoverPrice,
     formatOpts,
     decimal,
@@ -318,29 +320,45 @@ export const PriceChartHeader: FunctionComponent<{
             classes?.pricesHeaderContainerClass
           )}
         >
-          <SkeletonLoader isLoaded={!isLoading}>
-            <h4
-              className={classNames(
-                "row-span-2 pr-1 font-caption sm:text-h5",
-                classes?.priceHeaderClass
-              )}
-            >
-              {fiatSymbol}
-              {compactZeros ? (
-                <>
-                  {significantDigits}.
-                  {Boolean(zeros) && (
-                    <>
-                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
-                    </>
-                  )}
-                  {decimalDigits}
-                </>
-              ) : (
-                getFormattedPrice()
-              )}
-            </h4>
-          </SkeletonLoader>
+          <div>
+            <SkeletonLoader isLoaded={!isLoading}>
+              <h4
+                className={classNames(
+                  "row-span-2 pr-1 font-caption sm:text-h5",
+                  classes?.priceHeaderClass
+                )}
+              >
+                {fiatSymbol}
+                {compactZeros ? (
+                  <>
+                    {significantDigits}.
+                    {Boolean(zeros) && (
+                      <>
+                        0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                      </>
+                    )}
+                    {decimalDigits}
+                  </>
+                ) : (
+                  getFormattedPrice()
+                )}
+              </h4>
+            </SkeletonLoader>
+            {hoverDate !== undefined ? (
+              <p
+                className={classNames(
+                  "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
+                  {
+                    "invisible h-6": hoverDate === null,
+                  }
+                )}
+              >
+                {hoverDate}
+              </p>
+            ) : (
+              false
+            )}
+          </div>
           {baseDenom && quoteDenom ? (
             <div
               className={classNames(

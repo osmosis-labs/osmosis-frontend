@@ -4,9 +4,11 @@ import {
   type TokenHistoricalPrice,
 } from "@osmosis-labs/server";
 import dayjs from "dayjs";
+import { Time } from "lightweight-charts";
 import { action, computed, makeObservable, observable } from "mobx";
 import { useEffect, useMemo } from "react";
 
+import { timepointToString } from "~/components/chart/light-weight-charts/utils";
 import { api } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
@@ -206,6 +208,9 @@ export class ObservableAssetInfoConfig {
   protected _hoverPrice: number = 0;
 
   @observable
+  protected _hoverDate?: Time = undefined;
+
+  @observable
   protected _historicalData: TokenHistoricalPrice[] = [];
 
   @observable
@@ -275,7 +280,25 @@ export class ObservableAssetInfoConfig {
     if (!fiat) {
       return undefined;
     }
+
     return new PricePretty(fiat, this._hoverPrice);
+  }
+
+  @computed
+  get hoverDate(): string | null {
+    if (!this._hoverDate) {
+      return null;
+    }
+
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+
+    return timepointToString(this._hoverDate, formatOptions, "en-US");
   }
 
   @computed
@@ -307,8 +330,9 @@ export class ObservableAssetInfoConfig {
   };
 
   @action
-  readonly setHoverPrice = (price: number) => {
+  readonly setHoverPrice = (price: number, time?: Time) => {
     this._hoverPrice = price;
+    this._hoverDate = time;
   };
 
   @action
