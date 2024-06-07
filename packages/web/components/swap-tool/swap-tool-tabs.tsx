@@ -4,9 +4,9 @@ import { FunctionComponent } from "react";
 import { theme } from "~/tailwind.config";
 
 export enum SwapToolTab {
-  SWAP = 0,
-  BUY = 1,
-  SELL = 2,
+  SWAP = "swap",
+  BUY = "buy",
+  SELL = "sell",
 }
 
 export interface SwapToolTabsProps {

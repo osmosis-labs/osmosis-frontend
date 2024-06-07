@@ -1,4 +1,4 @@
-import { parseAsInteger, useQueryState } from "nuqs";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { FunctionComponent, useMemo } from "react";
 
 import ClientOnly from "~/components/client-only";
@@ -13,7 +13,12 @@ import { OrderDirection } from "~/hooks/limit-orders";
 export interface TradeToolProps {}
 
 export const TradeTool: FunctionComponent<TradeToolProps> = () => {
-  const [tab, setTab] = useQueryState("tab", parseAsInteger.withDefault(0));
+  const [tab, setTab] = useQueryState(
+    "tab",
+    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
+      SwapToolTab.SWAP
+    )
+  );
 
   return (
     <ClientOnly>
