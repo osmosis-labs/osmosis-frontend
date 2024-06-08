@@ -1,5 +1,6 @@
 import { isNil } from "@osmosis-labs/utils";
 
+import { NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeProviderContext,
   GetBridgeExternalUrlParams,
@@ -12,6 +13,7 @@ export async function getAxelarExternalUrl({
   toAsset,
   env,
   toAddress,
+  fromAsset,
 }: GetBridgeExternalUrlParams & {
   env: BridgeProviderContext["env"];
 }): Promise<string> {
@@ -36,7 +38,7 @@ export async function getAxelarExternalUrl({
     throw new Error(`Chain not found: ${toChain.chainId}`);
   }
 
-  const toAxelarAsset = axelarAssets.find((axelarAsset) => {
+  const fromAxelarAsset = axelarAssets.find((axelarAsset) => {
     return (
       !isNil(axelarAsset.addresses[toAxelarChain.chain_name]) &&
       (axelarAsset.addresses[toAxelarChain.chain_name].ibc_denom ===
@@ -46,14 +48,24 @@ export async function getAxelarExternalUrl({
     );
   });
 
-  if (!toAxelarAsset) {
+  if (!fromAxelarAsset) {
     throw new Error(`Asset not found: ${toAsset.address}`);
   }
 
   const url = new URL("https://satellite.money/");
   url.searchParams.set("source", fromAxelarChain.chain_name);
   url.searchParams.set("destination", toAxelarChain.chain_name);
-  url.searchParams.set("asset_denom", toAxelarAsset.id);
+  url.searchParams.set(
+    "asset_denom",
+    // Check if the asset has multiple denoms (indicating wrapped tokens)
+    !isNil(fromAxelarAsset.denoms) && fromAxelarAsset.denoms.length > 1
+      ? // If the fromAsset address is the native EVM token constant address, use the second denom which is the unwrapped token
+        fromAsset.address === NativeEVMTokenConstantAddress
+        ? fromAxelarAsset.denoms[1]
+        : fromAxelarAsset.denoms[0]
+      : // If there are no multiple denoms, use the default denom
+        fromAxelarAsset.denom
+  );
   url.searchParams.set("destination_address", toAddress);
 
   return url.toString();

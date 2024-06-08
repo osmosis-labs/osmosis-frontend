@@ -153,6 +153,7 @@ export async function getAxelarChains({
 interface AxelarAsset {
   id: string; // ID using in general purpose
   denom: string;
+  denoms: string[];
   native_chain: string; // general ID of chain that asset is native on
   name: string; // display name
   symbol: string;
