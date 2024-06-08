@@ -531,7 +531,6 @@
       "spendLimitTitle": "Limit wydatków",
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
-      "resetPeriodTitle": "Zresetuj okres",
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "editSessionButton": "Zapisz zmiany",
       "endingSession": "Zakończenie sesji",
@@ -561,16 +560,6 @@
           "1hour": "1 godzina",
           "3hours": "3 godziny",
           "12hours": "12 godzin"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Zresetuj okres",
-        "description": "Ustaw czas resetowania limitu wydatków.",
-        "periods": {
-          "day": "Dzień",
-          "week": "Tydzień",
-          "month": "Miesiąc",
-          "year": "Rok"
         }
       },
       "discardChanges": {

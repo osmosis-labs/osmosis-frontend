@@ -531,7 +531,6 @@
       "spendLimitTitle": "Límite de gasto",
       "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
-      "resetPeriodTitle": "Periodo de reinicio",
       "startButton": "Comience a operar con 1 clic",
       "editSessionButton": "Guardar cambios",
       "endingSession": "Finalizando sesión",
@@ -561,16 +560,6 @@
           "1hour": "1 hora",
           "3hours": "3 horas",
           "12hours": "12 horas"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Periodo de reinicio",
-        "description": "Establezca una duración para restablecer la cuota de límite de gasto.",
-        "periods": {
-          "day": "Día",
-          "week": "Semana",
-          "month": "Mes",
-          "year": "Año"
         }
       },
       "discardChanges": {

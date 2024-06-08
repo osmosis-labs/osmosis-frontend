@@ -531,7 +531,6 @@
       "spendLimitTitle": "Spend Limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
-      "resetPeriodTitle": "Reset period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
       "endingSession": "Ending session",
@@ -561,16 +560,6 @@
           "1hour": "1 hour",
           "3hours": "3 hours",
           "12hours": "12 hours"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Reset period",
-        "description": "Set a duration to reset the spend limit quota.",
-        "periods": {
-          "day": "Day",
-          "week": "Week",
-          "month": "Month",
-          "year": "Year"
         }
       },
       "discardChanges": {

@@ -18,7 +18,6 @@ jest.mock("~/config", () => ({
 describe("isAuthenticatorOneClickTradingSession", () => {
   const key = new PrivKeySecp256k1(Buffer.from("key"));
   const allowedAmount = "1000";
-  const resetPeriod = "day";
   const allowedMessages: AvailableOneClickTradingMessages[] = [
     "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
@@ -29,7 +28,6 @@ describe("isAuthenticatorOneClickTradingSession", () => {
     const rawAuthenticator = getOneClickTradingSessionAuthenticator({
       key,
       allowedAmount,
-      resetPeriod,
       allowedMessages,
       sessionPeriod,
     });
@@ -46,7 +44,7 @@ describe("isAuthenticatorOneClickTradingSession", () => {
   it("should return false for an invalid 1-Click Trading Session authenticator", () => {
     const authenticator = {
       type: "AllOf",
-      subAuthenticators: [{ type: "InvalidType" }],
+      subAuthenticators: [{ type: "Invalidtype" }],
     };
     expect(
       isAuthenticatorOneClickTradingSession({
@@ -60,7 +58,6 @@ describe("getOneClickTradingSessionAuthenticator", () => {
   it("should generate a correct 1-Click Trading Session authenticator", () => {
     const key = PrivKeySecp256k1.generateRandomKey();
     const allowedAmount = "1000";
-    const resetPeriod = "day";
     const allowedMessages: AvailableOneClickTradingMessages[] = [
       "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
       "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
@@ -70,7 +67,6 @@ describe("getOneClickTradingSessionAuthenticator", () => {
     const result = getOneClickTradingSessionAuthenticator({
       key,
       allowedAmount,
-      resetPeriod,
       allowedMessages,
       sessionPeriod,
     });
@@ -78,9 +74,9 @@ describe("getOneClickTradingSessionAuthenticator", () => {
     expect(result.type).toEqual("AllOf");
     const data = JSON.parse(Buffer.from(result.data).toString());
     expect(data).toHaveLength(3);
-    expect(data[0].Type).toEqual("SignatureVerification");
-    expect(data[1].Type).toEqual("CosmwasmAuthenticatorV1");
-    expect(data[2].Type).toEqual("AnyOf");
+    expect(data[0].type).toEqual("SignatureVerification");
+    expect(data[1].type).toEqual("CosmwasmAuthenticatorV1");
+    expect(data[2].type).toEqual("AnyOf");
   });
 });
 

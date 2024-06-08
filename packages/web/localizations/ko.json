@@ -531,7 +531,6 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "resetPeriodTitle": "재설정 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
       "endingSession": "세션 종료",
@@ -561,16 +560,6 @@
           "1hour": "1 시간",
           "3hours": "3 시간",
           "12hours": "12 시간"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "재설정 기간",
-        "description": "지출 한도 할당량을 재설정하는 기간을 설정하세요.",
-        "periods": {
-          "day": "낮",
-          "week": "주",
-          "month": "월",
-          "year": "년도"
         }
       },
       "discardChanges": {

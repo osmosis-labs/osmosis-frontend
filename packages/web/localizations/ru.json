@@ -531,7 +531,6 @@
       "spendLimitTitle": "Лимит расходов",
       "networkFeeLimitTitle": "Лимит сетевой комиссии",
       "sessionPeriodTitle": "Период сессии",
-      "resetPeriodTitle": "Период сброса",
       "startButton": "Начать торговлю в 1 клик",
       "editSessionButton": "Сохранить изменения",
       "endingSession": "Завершение сеанса",
@@ -561,16 +560,6 @@
           "1hour": "1 час",
           "3hours": "3 часа",
           "12hours": "12 часов"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Период сброса",
-        "description": "Установите продолжительность сброса квоты лимита расходов.",
-        "periods": {
-          "day": "День",
-          "week": "Неделя",
-          "month": "Месяц",
-          "year": "Год"
         }
       },
       "discardChanges": {

@@ -531,7 +531,6 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
-      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
@@ -561,16 +560,6 @@
           "1hour": "1時間",
           "3hours": "3時間",
           "12hours": "12時間"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "リセット期間",
-        "description": "支出制限割り当てをリセットする期間を設定します。",
-        "periods": {
-          "day": "日",
-          "week": "週",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {

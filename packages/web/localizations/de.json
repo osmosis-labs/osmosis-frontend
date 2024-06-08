@@ -531,7 +531,6 @@
       "spendLimitTitle": "Ausgabenlimit",
       "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
       "sessionPeriodTitle": "Sitzungszeitraum",
-      "resetPeriodTitle": "Reset-Zeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
       "endingSession": "Sitzung beenden",
@@ -561,16 +560,6 @@
           "1hour": "1 Stunde",
           "3hours": "3 Stunden",
           "12hours": "12 Stunden"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Reset-Zeitraum",
-        "description": "Legen Sie einen Zeitraum fest, um das Ausgabenlimit-Kontingent zurückzusetzen.",
-        "periods": {
-          "day": "Tag",
-          "week": "Woche",
-          "month": "Monat",
-          "year": "Jahr"
         }
       },
       "discardChanges": {
