@@ -1,5 +1,24 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { rest } from "msw";
+
+import { server } from "../../__tests__/msw";
 import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { getAxelarExternalUrl } from "../external-urls";
+import {
+  MockAxelarAssets,
+  MockAxelarChains,
+} from "./mock-axelar-assets-and-chains";
+
+beforeEach(() => {
+  server.use(
+    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
+      return res(ctx.json(MockAxelarAssets));
+    }),
+    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) => {
+      return res(ctx.json(MockAxelarChains));
+    })
+  );
+});
 
 describe("getAxelarExternalUrl", () => {
   it("should return the correct URL for Weth <> axlEth", async () => {
