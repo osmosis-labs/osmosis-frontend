@@ -1,9 +1,7 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useMemo, useState } from "react";
 
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useBalances } from "~/hooks/queries/cosmos/use-balances";
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
@@ -75,21 +73,11 @@ export const usePlaceLimit = ({
     ]
   );
 
-  const { price: basePrice } = useCoinPrice(
+  const { price: baseAssetPrice } = useCoinPrice(
     new CoinPretty(baseAsset, new Dec(1))
   );
-  const { price: quotePrice } = useCoinPrice(
+  const { price: quoteAssetPrice } = useCoinPrice(
     new CoinPretty(quoteAsset, new Dec(1))
-  );
-
-  const paymentFiatValue = useMemo(
-    () =>
-      mulPrice(
-        paymentAmount,
-        orderDirection === OrderDirection.Bid ? quotePrice : basePrice,
-        DEFAULT_VS_CURRENCY
-      ),
-    [paymentAmount, orderDirection, basePrice, quotePrice]
   );
 
   const placeLimit = useCallback(async () => {
@@ -174,7 +162,9 @@ export const usePlaceLimit = ({
     quoteDenom,
     baseDenom,
     baseAsset,
+    baseAssetPrice,
     quoteAsset,
+    quoteAssetPrice,
     priceState,
     inAmountInput,
     placeLimit,
@@ -183,7 +173,6 @@ export const usePlaceLimit = ({
     isBalancesFetched,
     insufficientFunds,
     paymentAmount,
-    paymentFiatValue,
   };
 };
 
