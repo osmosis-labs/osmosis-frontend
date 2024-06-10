@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer-limit";
 import { Disableable } from "~/components/types";
@@ -12,6 +12,7 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
 
@@ -57,11 +58,11 @@ export const TokenSelectLimit: FunctionComponent<
     const { logEvent } = useAmplitudeAnalytics();
 
     // parent overrideable state
-    const [isSelectOpenLocal, setIsSelectOpenLocal] = useState(false);
-    const isSelectOpen =
-      dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
-    const setIsSelectOpen =
-      setDropdownOpen === undefined ? setIsSelectOpenLocal : setDropdownOpen;
+    const [isSelectOpen, setIsSelectOpen] = useControllableState({
+      defaultValue: false,
+      onChange: setDropdownOpen,
+      value: dropdownOpen,
+    });
 
     const preSortedTokens = selectableAssets;
 
