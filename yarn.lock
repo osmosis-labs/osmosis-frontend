@@ -3667,28 +3667,20 @@
   dependencies:
     "@cosmos-kit/station-extension" "^2.5.2"
 
-"@cosmos-kit/trust-extension@2.5.9", "@cosmos-kit/trust-extension@^2.5.9":
+"@cosmos-kit/trust-extension@2.5.9":
   version "2.5.9"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/trust-extension/-/trust-extension-2.5.9.tgz#1c460fdaf8463442a9d8f8efa28978bb7847a41d"
   integrity sha512-zmHb2eNKgoH2zqlSqJh15Uo229xUte7nufTqBBvMmW251dLaQvhMtg94onAMO1RE0221FCpTTuX/M64tSmVtCg==
   dependencies:
     "@cosmos-kit/core" "^2.8.9"
 
-"@cosmos-kit/trust-mobile@2.5.9", "@cosmos-kit/trust-mobile@^2.5.9":
+"@cosmos-kit/trust-mobile@2.5.9":
   version "2.5.9"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/trust-mobile/-/trust-mobile-2.5.9.tgz#b469252096b03d2ede9bb68a7d172fd4ff7478e5"
   integrity sha512-ib9Ojk02hZeKslDfu1S8rbmGu7Hnc+ldcm6hydshmubPAozF8o5Mv6KisTSdktewgkYrZzKVd6xWaB1zxQFEOA==
   dependencies:
     "@cosmos-kit/core" "^2.8.9"
     "@cosmos-kit/walletconnect" "^2.5.9"
-
-"@cosmos-kit/trust@2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/trust/-/trust-2.6.0.tgz#718d3d991d3e468b4d0b340e4cd0508753ed6d41"
-  integrity sha512-4paN6EJIkHVWPEdUc+IK9jR7jj1AKHQlJLEDk3V1XYm6kGInSBf/08MXzgVwaMT2FU4UQN6kk+Z6dVrvnLOCtg==
-  dependencies:
-    "@cosmos-kit/trust-extension" "^2.5.9"
-    "@cosmos-kit/trust-mobile" "^2.5.9"
 
 "@cosmos-kit/walletconnect@^2.4.3":
   version "2.4.3"
