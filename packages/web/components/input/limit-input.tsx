@@ -90,6 +90,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     const value = new Dec(tokenAmount.length > 0 ? tokenAmount : "0");
     const fiatValue = price?.mul(value) ?? new Dec(0);
     setFiatAmountSafe(formatPretty(fiatValue));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price, tokenAmount, setFiatAmountSafe]);
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
     const tokenValue = new Dec(value)?.quo(price);
     setTokenAmountSafe(tokenValue.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price, fiatAmount, setTokenAmountSafe]);
 
   const FiatInput = useMemo(() => {
