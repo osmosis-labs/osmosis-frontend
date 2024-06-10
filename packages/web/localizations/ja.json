@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "古い",
     "newer": "新しい"
+  },
+  "place-limit": {
+    "reviewOrder": "注文の確認"
   }
 }

@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "Daha eski",
     "newer": "Daha yeni"
+  },
+  "place-limit": {
+    "reviewOrder": "Siparişi İncele"
   }
 }

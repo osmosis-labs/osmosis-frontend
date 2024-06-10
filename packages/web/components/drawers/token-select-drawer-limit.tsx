@@ -10,9 +10,9 @@ import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
-import { useTranslation } from "~/hooks";
+import { useFilteredData, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
-import { useSwapAsset } from "~/hooks/use-swap";
+import { SwapAsset } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
@@ -48,7 +48,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
   onSelect?: (tokenDenom: string) => void;
   showRecommendedTokens?: boolean;
   showSearchBox?: boolean;
-  selectableAssets: (ReturnType<typeof useSwapAsset>["asset"] &
+  selectableAssets: (SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -190,8 +190,13 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
     });
 
     // TODO: Wire up search
-    const onSearch = (_nextValue: string) => {
+    const [query, setQuery, results] = useFilteredData(assets, [
+      "coinDenom",
+      "coinName",
+    ]);
+    const onSearch = (nextValue: string) => {
       setKeyboardSelectedIndex(0);
+      setQuery(nextValue);
     };
 
     const assetToActivate = assets.find(
@@ -271,6 +276,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                     className="!w-full"
                     placeholder={t("components.searchTokens")}
                     onInput={onSearch}
+                    currentValue={query}
                     onKeyDown={searchBarKeyDown}
                     size={isMobile ? "medium" : "large"}
                   />
@@ -287,7 +293,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                     onMouseDown={onMouseDownQuickSelect}
                     className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
                   >
-                    {/* {[].map((asset) => {
+                    {/*TODO: Reenable featured denoms {[].map((asset) => {
                       const { coinDenom, coinImageUrl } = asset;
 
                       return (
@@ -326,7 +332,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
               <Spinner className="m-auto" />
             ) : (
               <div className="flex flex-col overflow-auto">
-                {assets.map(
+                {results.map(
                   (
                     {
                       coinDenom,

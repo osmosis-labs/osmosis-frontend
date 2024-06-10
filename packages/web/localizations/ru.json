@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "Старшая",
     "newer": "Новее"
+  },
+  "place-limit": {
+    "reviewOrder": "Просмотреть заказ"
   }
 }

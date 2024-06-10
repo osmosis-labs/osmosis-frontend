@@ -48,7 +48,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom,
       quoteDenom,
     });
-    const account = accountStore.getWallet("localosmosis");
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const isSwapToolLoading = false;
 
@@ -178,7 +178,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           >
             {account?.walletStatus === WalletStatus.Connected ||
             isSwapToolLoading ? (
-              "Review Order"
+              t("place-limit.reviewOrder")
             ) : (
               <h6 className="flex items-center gap-3">
                 <Icon id="wallet" className="h-6 w-6" />

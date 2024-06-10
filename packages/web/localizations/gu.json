@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "જૂની",
     "newer": "નવું"
+  },
+  "place-limit": {
+    "reviewOrder": "રિવ્યૂ ઓર્ડર"
   }
 }

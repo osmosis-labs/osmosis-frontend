@@ -1,9 +1,9 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { DynamicSizeInput } from "~/components/input/dynamic-size-input";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { formatPretty } from "~/utils/formatter";
 
@@ -117,15 +117,16 @@ export const LimitInput: FC<LimitInputProps> = ({
         onClick={focused === FocusedInput.TOKEN ? swapFocus : undefined}
       >
         <span className="mr-1">$</span>
-        <DynamicSizeInput
+        <AutosizeInput
           placeholder="0"
           type="number"
           value={fiatAmount}
-          className={classNames(
-            "bg-transparent text-center placeholder:text-white-disabled focus:outline-none",
+          inputClassName={classNames(
+            "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-full",
             { "cursor-pointer": !isFocused }
           )}
-          onChange={setFiatAmountSafe}
+          injectStyles={false}
+          onChange={(e) => setFiatAmountSafe(e.target.value)}
           onClick={!isFocused ? swapFocus : undefined}
         />
         {focused === FocusedInput.TOKEN && <Icon id="chevron-up" />}
@@ -146,15 +147,15 @@ export const LimitInput: FC<LimitInputProps> = ({
         )}
         onClick={focused === FocusedInput.FIAT ? swapFocus : undefined}
       >
-        <DynamicSizeInput
+        <AutosizeInput
           type="number"
           placeholder="0"
           value={tokenAmount}
-          className={classNames(
+          inputClassName={classNames(
             "bg-transparent text-center placeholder:text-white-disabled focus:outline-none",
             { "cursor-pointer": !isFocused }
           )}
-          onChange={setTokenAmountSafe}
+          onChange={(e) => setTokenAmountSafe(e.target.value)}
           onClick={!isFocused ? swapFocus : undefined}
         />
         <span

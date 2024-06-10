@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer-limit";
 import { Disableable } from "~/components/types";
@@ -12,20 +12,20 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
-import { useSwapAsset } from "~/hooks/use-swap";
+import { useControllableState } from "~/hooks/use-controllable-state";
+import type { SwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
 
 export interface TokenSelectLimitProps {
   dropdownOpen?: boolean;
   setDropdownOpen?: (value: boolean) => void;
-  // TODO: Better typing
-  selectableAssets: ReturnType<typeof useSwapAsset>["asset"][];
-  baseAsset: ReturnType<typeof useSwapAsset>["asset"] &
+  selectableAssets: SwapAsset[];
+  baseAsset: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  quoteAsset: ReturnType<typeof useSwapAsset>["asset"] &
+  quoteAsset: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -58,11 +58,11 @@ export const TokenSelectLimit: FunctionComponent<
     const { logEvent } = useAmplitudeAnalytics();
 
     // parent overrideable state
-    const [isSelectOpenLocal, setIsSelectOpenLocal] = useState(false);
-    const isSelectOpen =
-      dropdownOpen === undefined ? isSelectOpenLocal : dropdownOpen;
-    const setIsSelectOpen =
-      setDropdownOpen === undefined ? setIsSelectOpenLocal : setDropdownOpen;
+    const [isSelectOpen, setIsSelectOpen] = useControllableState({
+      defaultValue: false,
+      onChange: setDropdownOpen,
+      value: dropdownOpen,
+    });
 
     const preSortedTokens = selectableAssets;
 
@@ -104,6 +104,20 @@ export const TokenSelectLimit: FunctionComponent<
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
       [quoteCoinPrice, quoteBalance, isLoadingQuotePrice]
     );
+
+    const showBaseBalance = useMemo(
+      () =>
+        orderDirection === OrderDirection.Ask &&
+        !baseFiatBalance.toDec().isZero(),
+      [orderDirection, baseFiatBalance]
+    );
+    const showQuoteBalance = useMemo(
+      () =>
+        orderDirection === OrderDirection.Bid &&
+        !quoteFiatBalance.toDec().isZero(),
+      [orderDirection, quoteFiatBalance]
+    );
+
     return (
       <div>
         <div className="align-center relative z-10 flex flex-row place-content-between items-center rounded-xl bg-osmoverse-850 py-5 px-3 md:justify-start">
@@ -139,16 +153,10 @@ export const TokenSelectLimit: FunctionComponent<
                     {baseAsset.coinDenom}
                   </span>
                 </div>
-                {orderDirection === OrderDirection.Ask && (
-                  <>
-                    {!isLoadingBasePrice && baseFiatBalance ? (
-                      <div className="flex text-body1 text-osmoverse-300">
-                        {formatPretty(baseFiatBalance)} available
-                      </div>
-                    ) : (
-                      <div />
-                    )}
-                  </>
+                {showBaseBalance && (
+                  <div className="flex text-body1 text-osmoverse-300">
+                    {formatPretty(baseFiatBalance)} available
+                  </div>
                 )}
               </div>
             </div>
@@ -161,13 +169,13 @@ export const TokenSelectLimit: FunctionComponent<
                   setIsSelectOpen(!isSelectOpen);
                 }
               }}
-              className="h-[32px] rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
+              className="h-8 rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
             >
               Change
             </button>
           )}
         </div>
-        <div className="align-center relative z-0 mt-[-20px] flex flex-row place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
+        <div className="align-center relative z-0 -mt-5 flex place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
           {quoteAsset && (
             <div
               className={classNames(
@@ -182,7 +190,7 @@ export const TokenSelectLimit: FunctionComponent<
                 {orderDirection === OrderDirection.Bid ? "Pay with" : "Receive"}
               </span>
               {quoteAsset.coinImageUrl && (
-                <div className="h-[24px] w-[24px] shrink-0 rounded-full md:h-7 md:w-7">
+                <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
                     src={quoteAsset.coinImageUrl}
                     alt="token icon"
@@ -192,23 +200,17 @@ export const TokenSelectLimit: FunctionComponent<
                   />
                 </div>
               )}
-              <div className="flex flex-row">
+              <div className="flex">
                 <span className="md:caption subtitle1 w-32 truncate">
                   {quoteAsset.coinDenom}
                 </span>
               </div>
             </div>
           )}
-          {orderDirection === OrderDirection.Bid && (
-            <>
-              {!isLoadingQuotePrice && quoteFiatBalance ? (
-                <div className="flex text-body1 text-osmoverse-300">
-                  {formatPretty(quoteFiatBalance)} available
-                </div>
-              ) : (
-                <div />
-              )}
-            </>
+          {showQuoteBalance && (
+            <div className="flex text-body1 text-osmoverse-300">
+              {formatPretty(quoteFiatBalance)} available
+            </div>
           )}
         </div>
         <div className="pt-16">

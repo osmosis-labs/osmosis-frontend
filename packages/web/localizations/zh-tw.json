@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "年長的",
     "newer": "較新"
+  },
+  "place-limit": {
+    "reviewOrder": "查看訂單"
   }
 }

@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "पुराने",
     "newer": "नई"
+  },
+  "place-limit": {
+    "reviewOrder": "अादेश का पुनः निरिक्षण"
   }
 }

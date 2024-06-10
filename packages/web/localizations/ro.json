@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "Mai batran",
     "newer": "Mai nou"
+  },
+  "place-limit": {
+    "reviewOrder": "Verificați comanda"
   }
 }

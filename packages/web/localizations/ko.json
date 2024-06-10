@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "이전",
     "newer": "최신"
+  },
+  "place-limit": {
+    "reviewOrder": "주문 검토"
   }
 }
