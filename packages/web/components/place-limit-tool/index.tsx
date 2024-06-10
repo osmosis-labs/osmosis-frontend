@@ -46,7 +46,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom,
       quoteDenom,
     });
-    const account = accountStore.getWallet("localosmosis");
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const isSwapToolLoading = false;
 
