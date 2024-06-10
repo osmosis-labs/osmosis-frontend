@@ -16,29 +16,27 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build; rm tsconfig.tsbuildinfo",
+    "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "test:e2e": "yarn with-env is-ci-cli test:e2e:ci test:e2e:dev",
-    "test:e2e:dev": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --watch",
-    "test:e2e:ci": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --ci",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "prepare": "yarn build",
-    "with-env": "dotenv -e ../web/.env -c --"
+    "prepare": "yarn build"
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.14.0",
     "@axelar-network/axelarjs-sdk": "0.16.0",
     "@cosmjs/encoding": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/proto-codecs": "^5.1.0",
+    "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/tx": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
     "cachified": "^3.5.4",
     "ethers": "^6.8.0",
-    "jest-util": "^29.7.0",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
     "web3-utils": "^1.7.4",
@@ -48,7 +46,7 @@
     "@types/jest-in-case": "^1.0.6",
     "jest-in-case": "^1.0.2",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
     "*": [

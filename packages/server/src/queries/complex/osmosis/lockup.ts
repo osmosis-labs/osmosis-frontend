@@ -1,7 +1,7 @@
 import { Chain } from "@osmosis-labs/types";
 import { Duration } from "dayjs/plugin/duration";
 
-import dayjs from "../../../utils/dayjs";
+import { dayjs } from "../../../utils/dayjs";
 import { queryAccountLockedLongerDuration } from "../../osmosis/lockup";
 
 export type UserLock = {

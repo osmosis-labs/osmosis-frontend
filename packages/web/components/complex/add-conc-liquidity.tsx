@@ -16,7 +16,7 @@ import React, {
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
@@ -24,12 +24,12 @@ import {
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { EventName } from "~/config";
+import { EventName } from "~/config/analytics-events";
 import {
   ObservableAddConcentratedLiquidityConfig,
   useAmplitudeAnalytics,
@@ -45,11 +45,17 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 

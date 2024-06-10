@@ -531,7 +531,6 @@
       "spendLimitTitle": "Limite de gastos",
       "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
-      "resetPeriodTitle": "Período de redefinição",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
       "endingSession": "Encerrando sessão",
@@ -561,16 +560,6 @@
           "1hour": "1 hora",
           "3hours": "3 horas",
           "12hours": "12 horas"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Período de redefinição",
-        "description": "Defina uma duração para redefinir a cota de limite de gastos.",
-        "periods": {
-          "day": "Dia",
-          "week": "Semana",
-          "month": "Mês",
-          "year": "Ano"
         }
       },
       "discardChanges": {
@@ -867,10 +856,6 @@
       "title": "Configurações de Transação"
     },
     "title": "Trocar",
-    "promo": {
-      "newOpportunity": "Nova oportunidade de ganhar com",
-      "discoverSuperchargedPools": "Descubra Piscinas Superalimentadas"
-    },
     "dynamicSpreadFactor": "Dinâmico"
   },
   "walletSelect": {
@@ -962,7 +947,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Ativos Relacionados",
     "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
@@ -984,7 +968,6 @@
     "marketCapRank": "Classificação de capitalização de mercado",
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
-    "tvl": "TVL",
     "buyToken": "Compre {coinDenom}",
     "staking": "Estacamento",
     "liquidityInOSMOPools": "Liquidez em pools {number} {denom}"
@@ -998,16 +981,9 @@
   "previewAssetsEnabledForSession": "Visualize os ativos habilitados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganhar",
-    "position": "Posição",
     "positions": "Posições",
-    "allocation": "Alocação",
-    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estratégias",
     "oneStrategy": "1 estratégia",
-    "value": "Valor",
-    "method": "Tipo",
-    "platform": "Plataforma",
-    "scrollToSeeMore": "role para ver mais",
     "discoverStrategies": "Descubra estratégias",
     "myStrategies": "Suas estratégias",
     "strategyPlatform": "Estratégia",

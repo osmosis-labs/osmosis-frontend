@@ -132,6 +132,7 @@ export async function getPools(
 }
 
 export * from "./bonding";
+export * from "./env";
 export * from "./incentives";
 export * from "./market";
 export * from "./providers";

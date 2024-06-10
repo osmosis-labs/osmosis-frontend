@@ -26,7 +26,7 @@ const MarkdownParagraph: NormalMarkdownComponent<"p"> = ({
   );
 };
 
-const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
+export const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
   return (
     <ReactMarkdown
       components={{
@@ -38,5 +38,3 @@ const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
     </ReactMarkdown>
   );
 };
-
-export default Markdown;

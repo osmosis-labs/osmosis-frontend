@@ -31,7 +31,7 @@ export class ApiClientError<Data = unknown> extends Error {
   }
 }
 
-interface ClientOptions extends RequestInit {
+export interface ClientOptions extends RequestInit {
   data?: Record<string, any>;
 }
 
@@ -96,7 +96,7 @@ export async function apiClient<T>(
         return data;
       } else {
         throw new ApiClientError({
-          message: getErrorMessage({ message: data?.message }),
+          message: getErrorMessage({ message: data?.message ?? data.error }),
           data,
           response,
         });
@@ -104,13 +104,12 @@ export async function apiClient<T>(
     } catch (e) {
       const error = e as Error | ApiClientError;
 
+      // may contain sensitive data and will be thrown away anyways because of error
+      if (config.headers) delete config.headers;
+
       console.error("Fetch Error. Info:", {
         endpoint,
-        config: {
-          ...config,
-          customHeaders: null,
-          headers: null,
-        },
+        config,
         status: response.status,
         exception: e,
       });

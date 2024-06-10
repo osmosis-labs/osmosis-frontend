@@ -1,6 +1,6 @@
 import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { aggregateRawCoinsByDenom } from "@osmosis-labs/utils";
+import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {
   calcSumCoinsValue,
@@ -20,7 +20,6 @@ import {
   LiquidityPosition,
   queryAccountPositions,
 } from "../../../queries/osmosis/concentratedliquidity";
-import { timeout } from "../../../utils/async";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { getUserLocks } from "../osmosis/lockup";
 import { getPools } from "./index";

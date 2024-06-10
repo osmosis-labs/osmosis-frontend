@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { useWindowSize } from "~/hooks";
 import {
   DisplayingView,

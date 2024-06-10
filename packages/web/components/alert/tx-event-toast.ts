@@ -1,5 +1,6 @@
 import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse, isSlippageError } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { isSlippageError } from "@osmosis-labs/tx";
 import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { toast } from "react-toastify";
 

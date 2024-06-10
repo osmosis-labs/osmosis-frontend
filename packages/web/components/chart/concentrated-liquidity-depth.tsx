@@ -19,7 +19,7 @@ export type DepthData = {
   depth: number;
 };
 
-const ConcentratedLiquidityDepthChart: FunctionComponent<{
+export const ConcentratedLiquidityDepthChart: FunctionComponent<{
   min?: number;
   max?: number;
   yRange: [number, number];
@@ -252,6 +252,3 @@ const DragContainer: FunctionComponent<{
     />
   </Annotation>
 );
-
-// needed for next/dynamic to avoid including visx in main bundle
-export default ConcentratedLiquidityDepthChart;

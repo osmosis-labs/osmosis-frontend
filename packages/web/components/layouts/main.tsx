@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
-import NavbarOsmoPrice from "~/components/navbar-osmo-price";
-import NavbarOsmosisUpdates from "~/components/navbar-osmosis-update";
+import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
+import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
 
 export const MainLayout = observer(
@@ -53,7 +53,7 @@ export const MainLayout = observer(
           />
           <div className="flex flex-1 flex-col justify-end gap-5">
             <div className="px-2">
-              <NavbarOsmosisUpdates />
+              <NavbarOsmosisUpdate />
             </div>
             <NavbarOsmoPrice />
           </div>

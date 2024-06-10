@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  RegistryWallet,
+  CosmosRegistryWallet,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
-export const WalletRegistry: RegistryWallet[] = [
+export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,

@@ -1,4 +1,4 @@
-import { createNodeQuery } from "../../../queries/base-utils";
+import { createNodeQuery } from "../../create-node-query";
 
 interface MintParams {
   params: {

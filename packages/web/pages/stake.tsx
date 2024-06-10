@@ -9,7 +9,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
@@ -18,7 +18,7 @@ import { AmountDefault, EventName } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useGetApr, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
@@ -253,7 +253,9 @@ export const Staking: React.FC = observer(() => {
 
   const onStakeButtonClick = useCallback(() => {
     if (!isWalletConnected) {
-      onOpenWalletSelect(osmosisChainId);
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: osmosisChainId }],
+      });
       return;
     }
 

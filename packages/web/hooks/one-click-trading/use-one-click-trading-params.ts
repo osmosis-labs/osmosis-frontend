@@ -19,7 +19,6 @@ export function getParametersFromOneClickTradingInfo({
       oneClickTradingInfo.networkFeeLimit,
       new Dec(oneClickTradingInfo.networkFeeLimit.amount)
     ),
-    resetPeriod: oneClickTradingInfo.resetPeriod,
     sessionPeriod: {
       end: oneClickTradingInfo.humanizedSessionPeriod,
     },

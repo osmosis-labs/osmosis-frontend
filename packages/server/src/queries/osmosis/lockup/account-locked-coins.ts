@@ -1,4 +1,4 @@
-import { createNodeQuery } from "../../base-utils";
+import { createNodeQuery } from "../../create-node-query";
 import { AccountCoins } from "./types";
 
 /** Includes locked and unlocking coins.

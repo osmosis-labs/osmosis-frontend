@@ -4,7 +4,7 @@ import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { t } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 /** FOR USE IN MODALS
@@ -62,7 +62,9 @@ export function useConnectWalletModalRedirect(
           {...actionButtonProps}
           disabled={false}
           onClick={() => {
-            onOpenWalletSelect(chainId); // show select connect modal
+            onOpenWalletSelect({
+              walletOptions: [{ walletType: "cosmos", chainId }],
+            }); // show select connect modal
             setShowSelf(false);
           }}
         >
