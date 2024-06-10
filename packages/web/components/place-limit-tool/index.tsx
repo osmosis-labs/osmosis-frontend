@@ -103,7 +103,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </Tooltip>
             </div>
           </div>
-          <div className="mt-3 flex place-content-between items-center">
+          <div className="mt-3 flex items-center justify-between">
             <div className="flex w-full flex-col items-center">
               <LimitInput
                 onChange={swapState.inAmountInput.setAmount}
@@ -114,7 +114,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           </div>
         </div>
-        <div className="mt-3 flex place-content-between items-center text-body1">
+        <div className="mt-3 flex items-center justify-between text-body1">
           <div className="flex w-full flex-col">
             <div>
               <span
@@ -130,7 +130,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           </div>
         </div>
-        <div className="flex w-full flex-row place-content-between items-center rounded-xl border border-osmoverse-700 py-3 px-6">
+        <div className="flex w-full items-center justify-between rounded-xl border border-osmoverse-700 py-3 px-6">
           <div className="h-full">
             <span>{`${swapState.priceState.percentAdjusted
               .mul(new Dec(100))
