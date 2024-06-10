@@ -107,6 +107,16 @@ export class SquidBridgeProvider implements BridgeProvider {
         });
 
         try {
+          if (fromChain.chainType === "cosmos") {
+            throw new BridgeQuoteError([
+              {
+                errorType: BridgeError.UnsupportedQuoteError,
+                message:
+                  "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
+              },
+            ]);
+          }
+
           const data = await apiClient<RouteResponse>(url.toString(), {
             headers: {
               "x-integrator-id": this.integratorId,
