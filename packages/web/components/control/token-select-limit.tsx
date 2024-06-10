@@ -104,6 +104,20 @@ export const TokenSelectLimit: FunctionComponent<
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
       [quoteCoinPrice, quoteBalance, isLoadingQuotePrice]
     );
+
+    const showBaseBalance = useMemo(
+      () =>
+        orderDirection === OrderDirection.Ask &&
+        !baseFiatBalance.toDec().isZero(),
+      [orderDirection, baseFiatBalance]
+    );
+    const showQuoteBalance = useMemo(
+      () =>
+        orderDirection === OrderDirection.Bid &&
+        !quoteFiatBalance.toDec().isZero(),
+      [orderDirection, quoteFiatBalance]
+    );
+
     return (
       <div>
         <div className="align-center relative z-10 flex flex-row place-content-between items-center rounded-xl bg-osmoverse-850 py-5 px-3 md:justify-start">
@@ -139,16 +153,10 @@ export const TokenSelectLimit: FunctionComponent<
                     {baseAsset.coinDenom}
                   </span>
                 </div>
-                {orderDirection === OrderDirection.Ask && (
-                  <>
-                    {!isLoadingBasePrice && baseFiatBalance ? (
-                      <div className="flex text-body1 text-osmoverse-300">
-                        {formatPretty(baseFiatBalance)} available
-                      </div>
-                    ) : (
-                      <div />
-                    )}
-                  </>
+                {showBaseBalance && (
+                  <div className="flex text-body1 text-osmoverse-300">
+                    {formatPretty(baseFiatBalance)} available
+                  </div>
                 )}
               </div>
             </div>
@@ -199,16 +207,10 @@ export const TokenSelectLimit: FunctionComponent<
               </div>
             </div>
           )}
-          {orderDirection === OrderDirection.Bid && (
-            <>
-              {!isLoadingQuotePrice && quoteFiatBalance ? (
-                <div className="flex text-body1 text-osmoverse-300">
-                  {formatPretty(quoteFiatBalance)} available
-                </div>
-              ) : (
-                <div />
-              )}
-            </>
+          {showQuoteBalance && (
+            <div className="flex text-body1 text-osmoverse-300">
+              {formatPretty(quoteFiatBalance)} available
+            </div>
           )}
         </div>
         <div className="pt-16">
