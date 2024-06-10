@@ -314,7 +314,7 @@ export const WalletRegistry: RegistryWallet[] = [
     features: [],
     mode: "extension", // Add mode property with correct value
   },
-  {
+  /* {
     ...CosmosKitWalletList["trust-mobile"],
     logo: "/wallets/trust.png",
     mobileDisabled: false,
@@ -353,5 +353,5 @@ export const WalletRegistry: RegistryWallet[] = [
     governanceUrl: "https://governance.trustwallet.com/",
     features: [],
     mode: "wallet-connect",
-  },
+  },*/
 ];
