@@ -12,20 +12,19 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
-import { useSwapAsset } from "~/hooks/use-swap";
+import type { SwapAsset } from "~/hooks/use-swap";
 import { formatPretty } from "~/utils/formatter";
 
 export interface TokenSelectLimitProps {
   dropdownOpen?: boolean;
   setDropdownOpen?: (value: boolean) => void;
-  // TODO: Better typing
-  selectableAssets: ReturnType<typeof useSwapAsset>["asset"][];
-  baseAsset: ReturnType<typeof useSwapAsset>["asset"] &
+  selectableAssets: SwapAsset[];
+  baseAsset: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  quoteAsset: ReturnType<typeof useSwapAsset>["asset"] &
+  quoteAsset: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
