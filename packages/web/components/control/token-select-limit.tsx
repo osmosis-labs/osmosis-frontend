@@ -169,13 +169,13 @@ export const TokenSelectLimit: FunctionComponent<
                   setIsSelectOpen(!isSelectOpen);
                 }
               }}
-              className="h-[32px] rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
+              className="h-8 rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
             >
               Change
             </button>
           )}
         </div>
-        <div className="align-center relative z-0 mt-[-20px] flex flex-row place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
+        <div className="align-center relative z-0 -mt-5 flex place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
           {quoteAsset && (
             <div
               className={classNames(
@@ -190,7 +190,7 @@ export const TokenSelectLimit: FunctionComponent<
                 {orderDirection === OrderDirection.Bid ? "Pay with" : "Receive"}
               </span>
               {quoteAsset.coinImageUrl && (
-                <div className="h-[24px] w-[24px] shrink-0 rounded-full md:h-7 md:w-7">
+                <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
                     src={quoteAsset.coinImageUrl}
                     alt="token icon"
@@ -200,7 +200,7 @@ export const TokenSelectLimit: FunctionComponent<
                   />
                 </div>
               )}
-              <div className="flex flex-row">
+              <div className="flex">
                 <span className="md:caption subtitle1 w-32 truncate">
                   {quoteAsset.coinDenom}
                 </span>
