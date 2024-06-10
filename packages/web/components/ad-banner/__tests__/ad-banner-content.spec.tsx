@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 
 import { renderWithProviders } from "~/__tests__/test-utils";
 import { SwapAdBannerResponse } from "~/pages";
@@ -21,7 +21,10 @@ test("renders ad banner content correctly", () => {
     featured: true,
   };
 
-  renderWithProviders(<AdBannerContent {...mockAd} localization={{}} />);
+  act(() => {
+    renderWithProviders(<AdBannerContent {...mockAd} localization={{}} />);
+  });
+
   const headerElement = screen.getByText(mockAd.headerOrTranslationKey);
   const subheaderElement = screen.getByText(mockAd.subheaderOrTranslationKey);
   const imageElement = screen.getByAltText(mockAd.iconImageAltOrTranslationKey);
@@ -62,12 +65,15 @@ test("renders ad banner content with localization correctly", () => {
 
   const ad = mockAdResponseWithLocalization.banners[0];
 
-  renderWithProviders(
-    <AdBannerContent
-      {...ad}
-      localization={mockAdResponseWithLocalization.localization}
-    />
-  );
+  act(() => {
+    renderWithProviders(
+      <AdBannerContent
+        {...ad}
+        localization={mockAdResponseWithLocalization.localization}
+      />
+    );
+  });
+
   const headerElement = screen.getByText("Mock Header");
   const subheaderElement = screen.getByText("Mock Subheader");
   const imageElement = screen.getByAltText("Mock Icon");

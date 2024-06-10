@@ -531,7 +531,6 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
-      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
@@ -561,16 +560,6 @@
           "1hour": "1時間",
           "3hours": "3時間",
           "12hours": "12時間"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "リセット期間",
-        "description": "支出制限割り当てをリセットする期間を設定します。",
-        "periods": {
-          "day": "日",
-          "week": "週",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {
@@ -867,10 +856,6 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "promo": {
-      "newOpportunity": "{denom}で獲得する新たな機会",
-      "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    },
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
@@ -962,7 +947,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "関連アセット",
     "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
@@ -984,7 +968,6 @@
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
-    "tvl": "TVL",
     "buyToken": "{coinDenom}を購入する",
     "staking": "ステーキング",
     "liquidityInOSMOPools": "{number} {denom}プールの流動性"
@@ -998,16 +981,9 @@
   "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
-    "position": "位置",
     "positions": "ポジション",
-    "allocation": "割り当て",
-    "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
     "oneStrategy": "1つの戦略",
-    "value": "価値",
-    "method": "タイプ",
-    "platform": "プラットホーム",
-    "scrollToSeeMore": "スクロールしてさらに見る",
     "discoverStrategies": "戦略を発見する",
     "myStrategies": "あなたの戦略",
     "strategyPlatform": "戦略",

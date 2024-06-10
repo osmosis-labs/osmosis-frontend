@@ -531,7 +531,6 @@
       "spendLimitTitle": "Limite de dépenses",
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
-      "resetPeriodTitle": "Période de réinitialisation",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
       "endingSession": "Fin de la séance",
@@ -561,16 +560,6 @@
           "1hour": "1 heure",
           "3hours": "3 heures",
           "12hours": "12 heures"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Période de réinitialisation",
-        "description": "Définissez une durée pour réinitialiser le quota de limite de dépenses.",
-        "periods": {
-          "day": "Jour",
-          "week": "Semaine",
-          "month": "Mois",
-          "year": "Année"
         }
       },
       "discardChanges": {
@@ -867,10 +856,6 @@
       "title": "Paramètres de transaction"
     },
     "title": "Échanger",
-    "promo": {
-      "newOpportunity": "Nouvelle opportunité de gagner avec",
-      "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    },
     "dynamicSpreadFactor": "Dynamique"
   },
   "walletSelect": {
@@ -962,7 +947,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Actifs associés",
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
@@ -984,7 +968,6 @@
     "marketCapRank": "Classement de la capitalisation boursière",
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
-    "tvl": "TVL",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",
     "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
@@ -998,16 +981,9 @@
   "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
-    "position": "Position",
     "positions": "Postes",
-    "allocation": "Allocation",
-    "tokensCount": "{number} jetons",
     "strategiesCount": "Stratégies {number}",
     "oneStrategy": "1 stratégie",
-    "value": "Valeur",
-    "method": "Taper",
-    "platform": "Plate-forme",
-    "scrollToSeeMore": "faites défiler pour en voir plus",
     "discoverStrategies": "Découvrez les stratégies",
     "myStrategies": "Vos stratégies",
     "strategyPlatform": "Stratégie",

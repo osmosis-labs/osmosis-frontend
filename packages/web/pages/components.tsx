@@ -22,9 +22,9 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GradientView } from "~/components/assets/gradient-view";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import ClipboardButton from "~/components/buttons/clipboard-button";
-import IconButton from "~/components/buttons/icon-button";
-import LinkButton from "~/components/buttons/link-button";
+import { ClipboardButton } from "~/components/buttons/clipboard-button";
+import { IconButton } from "~/components/buttons/icon-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,
@@ -36,8 +36,8 @@ import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import Spinner from "~/components/loaders/spinner";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { Spinner } from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
@@ -1011,7 +1011,7 @@ const InputsShadcn = () => {
   );
 };
 
-import QRCode from "~/components/qrcode";
+import { QRCode } from "~/components/qrcode";
 
 const QRCodes = () => (
   <Card title="QR Codes">

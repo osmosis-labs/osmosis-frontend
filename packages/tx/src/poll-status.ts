@@ -36,18 +36,20 @@ export class PollingStatusSubscription {
   }
 
   protected async startSubscription() {
+    let timeoutId: NodeJS.Timeout | undefined;
     while (this._subscriptionCount > 0) {
       try {
         const status = await queryRPCStatus({ restUrl: this.rpc });
         const blockTime = this.calcAverageBlockTimeMs(status);
         this._handlers.forEach((handler) => handler(status, blockTime));
         await new Promise((resolve) => {
-          setTimeout(resolve, blockTime);
+          timeoutId = setTimeout(resolve, blockTime);
         });
       } catch (e: any) {
-        console.error(`Failed to fetch /status: ${e?.toString()}`);
+        console.error(`Failed to fetch /status: ${e}`);
       }
     }
+    if (timeoutId) clearTimeout(timeoutId);
   }
 
   protected increaseSubscriptionCount() {
@@ -68,6 +70,8 @@ export class PollingStatusSubscription {
    * The estimate is a rough estimate from the latest and earliest block times in sync info, so it may
    * not be fully up to date if block time changes.
    *
+   * Prefers returning defaults vs throwing errors.
+   *
    * Returns the default block time if the calculated block time is unexpected or unreasonable.
    */
   protected calcAverageBlockTimeMs(status: QueryStatusResponse): number {
@@ -87,16 +91,17 @@ export class PollingStatusSubscription {
         return this.defaultBlockTimeMs;
       }
 
+      // prevent division by zero
+      if (latestBlockHeight <= earliestBlockHeight) {
+        return this.defaultBlockTimeMs;
+      }
+
       const latestBlockTime = new Date(
         status.result.sync_info.latest_block_time
       ).getTime();
       const earliestBlockTime = new Date(
         status.result.sync_info.earliest_block_time
       ).getTime();
-
-      if (latestBlockHeight <= earliestBlockHeight) {
-        return this.defaultBlockTimeMs;
-      }
 
       const avg = Math.ceil(
         (latestBlockTime - earliestBlockTime) /

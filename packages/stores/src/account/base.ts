@@ -904,7 +904,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }) as Uint8Array;
 
     const privateKey = new PrivKeySecp256k1(
-      fromBase64(oneClickTradingInfo.privateKey)
+      fromBase64(oneClickTradingInfo.sessionKey)
     );
 
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();

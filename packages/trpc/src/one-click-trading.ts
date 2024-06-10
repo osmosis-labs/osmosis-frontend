@@ -6,7 +6,6 @@ import {
   getFeeTokenGasPriceStep,
   getSessionAuthenticator,
   queryAuthenticatorSpendLimit,
-  queryBaseAccount,
 } from "@osmosis-labs/server";
 import {
   AssetList,
@@ -27,7 +26,7 @@ export const oneClickTradingRouter = createTRPCRouter({
     }): Promise<
       Pick<
         OneClickTradingTransactionParams,
-        "networkFeeLimit" | "resetPeriod" | "spendLimit" | "sessionPeriod"
+        "networkFeeLimit" | "spendLimit" | "sessionPeriod"
       > & {
         spendLimitTokenDecimals: number;
       }
@@ -44,7 +43,6 @@ export const oneClickTradingRouter = createTRPCRouter({
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
         spendLimitTokenDecimals: usdcAsset.coinDecimals,
         networkFeeLimit: networkFeeLimitStep.average,
-        resetPeriod: "day" as const,
         sessionPeriod: {
           end: "1hour" as const,
         },
@@ -77,24 +75,16 @@ export const oneClickTradingRouter = createTRPCRouter({
 
       return sessionAuthenticator;
     }),
-  getAccountPubKeyAndAuthenticators: publicProcedure
+  getAuthenticators: publicProcedure
     .input(UserOsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
-      const [cosmosAccount, authenticators] = await Promise.all([
-        queryBaseAccount({
-          bech32Address: input.userOsmoAddress,
-          chainList: ctx.chainList,
-        }),
-        getAuthenticators({
-          userOsmoAddress: input.userOsmoAddress,
-          chainList: ctx.chainList,
-        }),
-      ]);
+      const authenticators = await getAuthenticators({
+        userOsmoAddress: input.userOsmoAddress,
+        chainList: ctx.chainList,
+      });
 
       return {
-        accountPubKey: cosmosAccount.account.pub_key?.key,
         authenticators,
-        shouldAddFirstAuthenticator: authenticators.length === 0,
       };
     }),
   getAmountSpent: publicProcedure

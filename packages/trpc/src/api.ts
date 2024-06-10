@@ -18,7 +18,7 @@ import { trpcMiddleware } from "./middleware";
 /**
  * Pass asset lists and chain list to be used cas context in backend service.
  */
-export type CreateContextOptions = {
+type CreateContextOptions = {
   assetLists: AssetList[];
   chainList: Chain[];
 };

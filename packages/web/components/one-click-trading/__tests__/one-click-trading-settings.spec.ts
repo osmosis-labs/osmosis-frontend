@@ -23,7 +23,6 @@ describe("compare1CTTransactionParams", () => {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: mockCoinPretty(13485),
-      resetPeriod: "day",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -38,7 +37,6 @@ describe("compare1CTTransactionParams", () => {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: mockCoinPretty(13485),
-      resetPeriod: "day",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -56,7 +54,6 @@ describe("compare1CTTransactionParams", () => {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: mockCoinPretty(13485),
-      resetPeriod: "day",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -69,30 +66,11 @@ describe("compare1CTTransactionParams", () => {
     expect(changes).toContain("networkFeeLimit");
   });
 
-  it("should detect changes in resetPeriod", () => {
-    const prevParams: OneClickTradingTransactionParams = {
-      isOneClickEnabled: true,
-      spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
-      resetPeriod: "day",
-      sessionPeriod: { end: "1hour" },
-    };
-
-    const nextParams: OneClickTradingTransactionParams = {
-      ...prevParams,
-      resetPeriod: "week",
-    };
-
-    const changes = compare1CTTransactionParams({ prevParams, nextParams });
-    expect(changes).toContain("resetPeriod");
-  });
-
   it("should detect multiple changes including sessionPeriod", () => {
     const prevParams: OneClickTradingTransactionParams = {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: mockCoinPretty(13485),
-      resetPeriod: "day",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -100,14 +78,12 @@ describe("compare1CTTransactionParams", () => {
       ...prevParams,
       spendLimit: mockPricePretty(7000),
       networkFeeLimit: mockCoinPretty(16000),
-      resetPeriod: "month",
       sessionPeriod: { end: "3hours" },
     };
 
     const changes = compare1CTTransactionParams({ prevParams, nextParams });
     expect(changes).toContain("spendLimit");
     expect(changes).toContain("networkFeeLimit");
-    expect(changes).toContain("resetPeriod");
     expect(changes).toContain("sessionPeriod");
   });
 });

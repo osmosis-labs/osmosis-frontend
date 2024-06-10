@@ -1,6 +1,6 @@
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
-import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
+import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
@@ -33,6 +33,7 @@ export const ProfileOneClickTradingSettings = ({
       enabled: shouldFetchSessionAuthenticator,
       cacheTime: 15_000, // 15 seconds
       staleTime: 15_000, // 15 seconds
+      retry: false,
     }
   );
 

@@ -531,7 +531,6 @@
       "spendLimitTitle": "Harcama Limiti",
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
-      "resetPeriodTitle": "Dönemi sıfırla",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",
       "endingSession": "Oturumu sonlandır",
@@ -561,16 +560,6 @@
           "1hour": "1 saat",
           "3hours": "3 saat",
           "12hours": "12 saat"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Dönemi sıfırla",
-        "description": "Harcama sınırı kotasını sıfırlamak için bir süre ayarlayın.",
-        "periods": {
-          "day": "Gün",
-          "week": "Hafta",
-          "month": "Ay",
-          "year": "Yıl"
         }
       },
       "discardChanges": {
@@ -867,10 +856,6 @@
       "title": "İşlem Ayarları"
     },
     "title": "Takas",
-    "promo": {
-      "newOpportunity": "Kazanmak için yeni fırsat",
-      "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
-    },
     "dynamicSpreadFactor": "Dinamik"
   },
   "walletSelect": {
@@ -962,7 +947,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "İlgili Varlıklar",
     "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
     "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
@@ -984,7 +968,6 @@
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "tvl": "TVL",
     "buyToken": "{coinDenom} satın alın",
     "staking": "Staking",
     "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite"
@@ -998,16 +981,9 @@
   "previewAssetsEnabledForSession": "Bu oturum için etkinleştirilen varlıkların önizlemesini görüntüleyin. Devre dışı bırakmak için yeni bir sekme açın veya \"show_preview_assets=false\" ifadesini ekleyin.",
   "earnPage": {
     "title": "Para kazanmak",
-    "position": "Konum",
     "positions": "Pozisyonlar",
-    "allocation": "Paylaştırma",
-    "tokensCount": "{number} jeton",
     "strategiesCount": "{number} stratejiler",
     "oneStrategy": "1 strateji",
-    "value": "Değer",
-    "method": "Tip",
-    "platform": "platformu",
-    "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
     "discoverStrategies": "Stratejileri Keşfedin",
     "myStrategies": "Stratejileriniz",
     "strategyPlatform": "Strateji",

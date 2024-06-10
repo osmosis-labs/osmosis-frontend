@@ -26,7 +26,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Select Swap Pair tests on Master
+      - name: Run Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
@@ -63,7 +63,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Select Swap Pair tests on Stage
+      - name: Run Swap Pair tests on Stage
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
