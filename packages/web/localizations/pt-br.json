@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "Mais velho",
     "newer": "Mais recente"
+  },
+  "place-limit": {
+    "reviewOrder": "Revisar pedido"
   }
 }

@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "مسن تر",
     "newer": "جدیدتر"
+  },
+  "place-limit": {
+    "reviewOrder": "سفارش بررسی"
   }
 }

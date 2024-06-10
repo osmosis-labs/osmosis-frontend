@@ -1128,5 +1128,8 @@
   "pagination": {
     "older": "Older",
     "newer": "Newer"
+  },
+  "place-limit": {
+    "reviewOrder": "Review Order"
   }
 }

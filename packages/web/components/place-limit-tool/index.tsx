@@ -171,7 +171,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         >
           {account?.walletStatus === WalletStatus.Connected ||
           isSwapToolLoading ? (
-            "Place Order"
+            t("place-limit.reviewOrder")
           ) : (
             <h6 className="flex items-center gap-3">
               <Icon id="wallet" className="h-6 w-6" />
