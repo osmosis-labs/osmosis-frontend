@@ -24,7 +24,10 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   orderDirection,
   orderType,
 }) => {
+  //TODO: Retrieve maker fee from contract
   const fee = useMemo(() => new PricePretty(DEFAULT_VS_CURRENCY, 0.14), []);
+
+  //TODO: Normalize price against the dollar
   const total = useMemo(() => {
     if (
       placeLimitState.paymentFiatValue &&
@@ -34,6 +37,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     }
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }, [placeLimitState.paymentFiatValue, fee]);
+
   return (
     <ModalBase
       isOpen={isOpen}
@@ -43,7 +47,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
       }`}
     >
       <div className="mt-6 flex flex-col">
-        <div className="flex w-full flex-row justify-center">
+        <div className="flex w-full justify-center">
           <Image
             width={48}
             height={48}
@@ -64,7 +68,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
         </div>
       </div>
       <div className="my-4 flex w-full flex-col">
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Amount</span>
           <span className="text-osmoverse-100">
             ≈{" "}
@@ -73,16 +77,16 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               : "$0"}
           </span>
         </div>
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Total Estimated Fees</span>
           <span className="text-osmoverse-100">≈ {formatPretty(fee)}</span>
         </div>
         <hr className="my-2 text-osmoverse-700" />
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Total</span>
           <span className="text-osmoverse-100">≈ {formatPretty(total)}</span>
         </div>
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">
             {orderDirection === OrderDirection.Ask
               ? "Receive Asset"
@@ -99,16 +103,16 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             {placeLimitState.quoteAsset.coinDenom}
           </span>
         </div>
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Order Type</span>
           <span className="text-osmoverse-100">
             {orderType === "limit" ? "Limit order" : "Market order"}
           </span>
         </div>
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Limit price</span>
-          <div className="flex flex-row items-center justify-center text-osmoverse-100">
-            <div className="space-content-between mr-2 flex flex-row items-center justify-center rounded-xl border border-osmoverse-700 px-3 py-1 text-caption text-osmoverse-300">
+          <div className="flex  items-center justify-center text-osmoverse-100">
+            <div className="mr-2 flex items-center justify-center justify-between rounded-xl border border-osmoverse-700 px-3 py-1 text-caption text-osmoverse-300">
               {!placeLimitState.priceState.percentAdjusted.isZero() && (
                 <Icon
                   id="triangle-down"
@@ -135,17 +139,17 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             <div> ${formatPretty(placeLimitState.priceState.price)}</div>
           </div>
         </div>
-        <div className="flex w-full flex-row justify-between py-2 text-body2">
+        <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">More details</span>
           <span className="cursor-pointer text-wosmongton-300">Show</span>
         </div>
-        <div className="mt-5 flex w-full flex-row items-center justify-center py-2 text-body2">
+        <div className="mt-5 flex w-full items-center justify-center py-2 text-body2">
           <span className="text-caption text-osmoverse-300">
             Disclaimer lorem ipsum.{" "}
             <a className="text-wosmongton-300">Learn more.</a>
           </span>
         </div>
-        <div className="mt-4 flex w-full flex-row justify-between space-x-2 py-2 text-body2">
+        <div className="mt-4 flex w-full justify-between space-x-2 py-2 text-body2">
           <Button
             mode="unstyled"
             onClick={onRequestClose}
