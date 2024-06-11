@@ -50,7 +50,13 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
               "bg-osmoverse-700": isActive,
             })}
           >
-            <p className="font-medium font-h1">{tab.label}</p>
+            <p
+              className={classNames("font-semibold", {
+                "text-osmoverse-100": !isActive,
+              })}
+            >
+              {tab.label}
+            </p>
           </button>
         );
       })}
