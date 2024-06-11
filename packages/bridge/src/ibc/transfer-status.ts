@@ -69,7 +69,6 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
         destChannelId: msgEvents.destChannelId,
         destTimeoutHeight: msgEvents.timeoutHeight,
         sequence: msgEvents.sequence,
-        status: "pending",
         serializedParamsOrHash,
       });
     } catch (e) {
@@ -99,11 +98,8 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     destChannelId: string;
     destTimeoutHeight: string;
     sequence: string;
-    status: IbcTransferStatus;
     serializedParamsOrHash: string;
   }): Promise<void> {
-    this.pushNewStatus(serializedParamsOrHash, "pending");
-
     const destBlockSubscriber = this.getBlockSubscriber(destChainId);
     const subscriptions: Promise<"timeout" | "received">[] = [];
     let timeoutUnsubscriber: (() => void) | undefined;
@@ -115,16 +111,31 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
           destBlockSubscriber,
           destTimeoutHeight
         );
-        timeoutUnsubscriber = unsubscriber;
+
+        // used for cleanup
+        let timeoutId: NodeJS.Timeout | undefined;
+        let resolved = false;
+        timeoutUnsubscriber = () => {
+          clearTimeout(timeoutId);
+          unsubscriber();
+          if (!resolved) reject();
+        };
+
         promise
           .then((avgBlockTimeMs) => {
             // Even though the block is reached to the timeout height,
             // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
             // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
             // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
-            setTimeout(() => resolve("timeout"), avgBlockTimeMs);
+            timeoutId = setTimeout(() => {
+              resolved = true;
+              resolve("timeout");
+            }, avgBlockTimeMs);
           })
-          .catch(reject);
+          .catch(() => {
+            clearTimeout(timeoutId);
+            reject();
+          });
       });
 
       subscriptions.push(timeoutPromise);
@@ -217,8 +228,8 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     });
 
     return {
-      unsubscriber,
       promise,
+      unsubscriber,
     };
   }
 
@@ -249,6 +260,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     return rpc;
   }
 
+  /** Sends a status to the receiver with prefix key prepended. */
   protected pushNewStatus(
     serializedParamsOrHash: string,
     status: TransferStatus
