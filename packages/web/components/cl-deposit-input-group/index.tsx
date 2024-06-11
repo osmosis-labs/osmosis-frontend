@@ -3,16 +3,17 @@ import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, useCallback, useMemo } from "react";
+import React, { FunctionComponent, useMemo } from "react";
 
 import { InputBox } from "~/components/input";
 import { useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export const DepositAmountGroup: FunctionComponent<{
   currency?: Currency;
-  onUpdate: (amount: number) => void;
+  onUpdate: (amount: string) => void;
   onMax: () => void;
   currentValue: string;
   percentage: RatePretty;
@@ -32,16 +33,15 @@ export const DepositAmountGroup: FunctionComponent<{
     priceInputClass,
     outOfRangeClassName,
   }) => {
-    const { chainStore, queriesStore, accountStore } = useStore();
+    const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { chainId } = chainStore.osmosis;
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
     const address = account?.address ?? "";
 
     const { fiatValue: currentValuePrice } = useCoinFiatValue(
       useMemo(
         () =>
-          currency
+          currency && currentValue !== "" && !isNaN(Number(currentValue))
             ? new CoinPretty(
                 currency,
                 new Dec(currentValue).mul(
@@ -53,19 +53,14 @@ export const DepositAmountGroup: FunctionComponent<{
       )
     );
 
-    const walletBalance = currency
-      ? queriesStore
-          .get(chainId)
-          .queryBalances.getQueryBech32Address(address)
-          .getBalanceFromCurrency(currency)
-      : null;
-
-    const updateValue = useCallback(
-      (val: string) => {
-        const newVal = Number(val);
-        onUpdate(newVal);
-      },
-      [onUpdate]
+    const { data: walletBalance } = api.local.balances.getUserBalances.useQuery(
+      { bech32Address: address },
+      {
+        enabled: !!account?.address,
+        select: (balances) =>
+          balances.find(({ denom }) => denom === currency?.coinMinimalDenom)
+            ?.coin,
+      }
     );
 
     if (outOfRange) {
@@ -139,7 +134,7 @@ export const DepositAmountGroup: FunctionComponent<{
                 inputClassName="!leading-4"
                 type="number"
                 currentValue={currentValue}
-                onInput={updateValue}
+                onInput={onUpdate}
                 rightEntry
               />
               <div className="caption pr-3 text-osmoverse-400">
