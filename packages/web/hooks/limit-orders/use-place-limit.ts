@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useMemo, useState } from "react";
@@ -58,23 +58,6 @@ export const usePlaceLimit = ({
   });
   const account = accountStore.getWallet(osmosisChainId);
 
-  const paymentAmount = useMemo(
-    () =>
-      orderDirection === OrderDirection.Ask
-        ? inAmountInput.amount ?? new CoinPretty(baseAsset, "0")
-        : new CoinPretty(
-            quoteAsset,
-            inAmountInput.amount?.toCoin().amount ?? "0"
-          ).mul(priceState.price),
-    [
-      orderDirection,
-      inAmountInput.amount,
-      priceState.price,
-      baseAsset,
-      quoteAsset,
-    ]
-  );
-
   const { price: baseAssetPrice } = useCoinPrice(
     new CoinPretty(baseAsset, new Dec(1))
   );
@@ -82,20 +65,64 @@ export const usePlaceLimit = ({
     new CoinPretty(quoteAsset, new Dec(1))
   );
 
-  const paymentFiatValue = useMemo(
-    () =>
-      mulPrice(
-        paymentAmount,
-        orderDirection === OrderDirection.Bid
-          ? quoteAssetPrice
-          : baseAssetPrice,
-        DEFAULT_VS_CURRENCY
-      ),
-    [paymentAmount, orderDirection, baseAssetPrice, quoteAssetPrice]
-  );
+  /**
+   * Calculates the amount of tokens to be sent with the order.
+   * In the case of an Ask order the amount sent is the amount of tokens defined by the user in terms of the base asset.
+   * In the case of a Bid order the amount sent is the requested fiat amount divided by the current quote asset price.
+   * The amount is then multiplied by the number of decimal places the quote asset has.
+   *
+   * @returns The amount of tokens to be sent with the order in base asset amounts for an Ask and quote asset amounts for a Bid.
+   */
+  const paymentTokenValue = useMemo(() => {
+    // The amount of tokens the user wishes to buy/sell
+    const baseTokenAmount =
+      inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
+    if (orderDirection === OrderDirection.Ask) {
+      // In the case of an Ask we just return the amount requested to sell
+      return baseTokenAmount;
+    } else {
+      // Determine the outgoing fiat amount the user wants to buy
+      const outgoingFiatValue =
+        mulPrice(
+          baseTokenAmount,
+          new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
+          DEFAULT_VS_CURRENCY
+        ) ?? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+
+      // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
+      // Multiply by 10^n where n is the amount of decimals for the quote asset
+      const quoteTokenAmount = outgoingFiatValue!
+        .quo(quoteAssetPrice ?? new Dec(1))
+        .toDec()
+        .mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)));
+      return new CoinPretty(quoteAsset, quoteTokenAmount);
+    }
+  }, [
+    quoteAssetPrice,
+    baseAsset,
+    orderDirection,
+    inAmountInput.amount,
+    quoteAsset,
+    priceState.price,
+  ]);
+
+  /**
+   * Determines the fiat amount the user will pay for their order.
+   * In the case of an Ask the fiat amount is the amount of tokens the user will sell times the currently selected price.
+   * In the case of a Bid the fiat amount is the amount of tokens the user will buy times the current price of the quote asset.
+   */
+  const paymentFiatValue = useMemo(() => {
+    return orderDirection === OrderDirection.Ask
+      ? mulPrice(
+          paymentTokenValue,
+          new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
+          DEFAULT_VS_CURRENCY
+        )
+      : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
+  }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
 
   const placeLimit = useCallback(async () => {
-    const quantity = inAmountInput.amount?.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
       return;
     }
@@ -105,12 +132,16 @@ export const usePlaceLimit = ({
         ? quoteAsset.coinMinimalDenom
         : baseAsset.coinMinimalDenom;
 
-    const tickId = priceToTick(priceState.price);
+    // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
+    // To account for this we divide by the quote asset price.
+    const tickId = priceToTick(
+      priceState.price.quo(quoteAssetPrice?.toDec() ?? new Dec(1))
+    );
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
         order_direction: orderDirection,
-        quantity: paymentAmount?.toCoin().amount ?? "0",
+        quantity,
         claim_bounty: CLAIM_BOUNTY,
       },
     };
@@ -121,7 +152,7 @@ export const usePlaceLimit = ({
         msg,
         [
           {
-            amount: paymentAmount.toCoin().amount ?? "0",
+            amount: quantity,
             denom: paymentDenom,
           },
         ]
@@ -135,9 +166,9 @@ export const usePlaceLimit = ({
     quoteAsset,
     baseAsset,
     orderDirection,
-    inAmountInput,
     priceState,
-    paymentAmount,
+    quoteAssetPrice,
+    paymentTokenValue,
   ]);
 
   const { data: balances, isFetched: isBalancesFetched } = useBalances({
@@ -184,7 +215,6 @@ export const usePlaceLimit = ({
     quoteTokenBalance,
     isBalancesFetched,
     insufficientFunds,
-    paymentAmount,
     quoteAssetPrice,
     baseAssetPrice,
     paymentFiatValue,
