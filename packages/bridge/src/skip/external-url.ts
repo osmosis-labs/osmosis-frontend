@@ -5,7 +5,10 @@ export function getSkipExternalUrl({
   toChain,
   fromAsset,
   toAsset,
-}: GetBridgeExternalUrlParams): string {
+  env,
+}: GetBridgeExternalUrlParams): string | undefined {
+  if (env === "testnet") return undefined;
+
   const url = new URL("https://ibc.fun/");
   url.searchParams.set("src_chain", String(fromChain.chainId));
   url.searchParams.set("src_asset", fromAsset.address);

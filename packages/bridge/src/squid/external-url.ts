@@ -5,8 +5,13 @@ export function getSquidExternalUrl({
   toChain,
   fromAsset,
   toAsset,
+  env,
 }: GetBridgeExternalUrlParams): string {
-  const url = new URL("https://app.squidrouter.com/");
+  const url = new URL(
+    env === "mainnet"
+      ? "https://app.squidrouter.com/"
+      : "https://testnet.app.squidrouter.com/"
+  );
   url.searchParams.set(
     "chains",
     [fromChain.chainId, toChain.chainId].join(",")

@@ -1,4 +1,4 @@
-import { getSkipExternalUrl } from "../external-urls";
+import { getSkipExternalUrl } from "../external-url";
 
 describe("getSkipExternalUrl", () => {
   it("should generate the correct URL for given parameters", () => {

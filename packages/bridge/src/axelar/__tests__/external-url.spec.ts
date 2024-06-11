@@ -3,7 +3,7 @@ import { rest } from "msw";
 
 import { server } from "../../__tests__/msw";
 import { NativeEVMTokenConstantAddress } from "../../ethereum";
-import { getAxelarExternalUrl } from "../external-urls";
+import { getAxelarExternalUrl } from "../external-url";
 import {
   MockAxelarAssets,
   MockAxelarChains,
@@ -135,7 +135,7 @@ describe("getAxelarExternalUrl", () => {
 
   it("should throw an error if fromChain is not found", async () => {
     const params = {
-      fromChain: { chainId: "nonexistent", chainType: "evm" },
+      fromChain: { chainId: 9898989898988, chainType: "evm" },
       toChain: { chainId: "chain2", chainType: "cosmos" },
       fromAsset: {
         address: "address1",
@@ -151,16 +151,16 @@ describe("getAxelarExternalUrl", () => {
       },
       env: "mainnet",
       toAddress: "destination-address",
-    } as Parameters<typeof getAxelarExternalUrl>[0];
+    } satisfies Parameters<typeof getAxelarExternalUrl>[0];
 
     await expect(getAxelarExternalUrl(params)).rejects.toThrow(
-      "Chain not found: nonexistent"
+      "Chain not found: 9898989898988"
     );
   });
 
   it("should throw an error if toChain is not found", async () => {
     const params = {
-      fromChain: { chainId: "chain1", chainType: "evm" },
+      fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "nonexistent", chainType: "cosmos" },
       fromAsset: {
         address: "address1",
@@ -176,10 +176,10 @@ describe("getAxelarExternalUrl", () => {
       },
       env: "mainnet",
       toAddress: "destination-address",
-    } as Parameters<typeof getAxelarExternalUrl>[0];
+    } satisfies Parameters<typeof getAxelarExternalUrl>[0];
 
     await expect(getAxelarExternalUrl(params)).rejects.toThrow(
-      "Chain not found: chain1"
+      "Chain not found: nonexistent"
     );
   });
 

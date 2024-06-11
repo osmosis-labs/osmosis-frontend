@@ -1,10 +1,7 @@
 import { isNil } from "@osmosis-labs/utils";
 
 import { NativeEVMTokenConstantAddress } from "../ethereum";
-import {
-  BridgeProviderContext,
-  GetBridgeExternalUrlParams,
-} from "../interface";
+import { GetBridgeExternalUrlParams } from "../interface";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 
 export async function getAxelarExternalUrl({
@@ -14,9 +11,7 @@ export async function getAxelarExternalUrl({
   env,
   toAddress,
   fromAsset,
-}: GetBridgeExternalUrlParams & {
-  env: BridgeProviderContext["env"];
-}): Promise<string> {
+}: GetBridgeExternalUrlParams): Promise<string> {
   const [axelarChains, axelarAssets] = await Promise.all([
     getAxelarChains({ env }),
     getAxelarAssets({ env }),
@@ -52,7 +47,11 @@ export async function getAxelarExternalUrl({
     throw new Error(`Asset not found: ${toAsset.address}`);
   }
 
-  const url = new URL("https://satellite.money/");
+  const url = new URL(
+    env === "mainnet"
+      ? "https://satellite.money/"
+      : "https://testnet.satellite.money/"
+  );
   url.searchParams.set("source", fromAxelarChain.chain_name);
   url.searchParams.set("destination", toAxelarChain.chain_name);
   url.searchParams.set(
