@@ -59,7 +59,7 @@ export const DepositAmountGroup: FunctionComponent<{
         enabled: !!account?.address,
         select: (balances) =>
           balances.find(({ denom }) => denom === currency?.coinMinimalDenom)
-            ?.coin,
+            ?.coin ?? (currency ? new CoinPretty(currency, 0) : undefined),
       }
     );
 
