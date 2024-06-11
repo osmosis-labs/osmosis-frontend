@@ -108,8 +108,8 @@ export const usePlaceLimit = ({
 
   /**
    * Determines the fiat amount the user will pay for their order.
-   * In the case of an Ask the fiat amount is the amount of tokens the user will sell times the currently selected price.
-   * In the case of a Bid the fiat amount is the amount of tokens the user will buy times the current price of the quote asset.
+   * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
+   * In the case of a Bid the fiat amount is the amount of quote asset tokens the user will send multiplied by the current price of the quote asset.
    */
   const paymentFiatValue = useMemo(() => {
     return orderDirection === OrderDirection.Ask
