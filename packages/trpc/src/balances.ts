@@ -1,5 +1,6 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import {
+  captureIfError,
   getAsset,
   getShareDenomPoolId,
   makeGammShareCurrency,
@@ -19,25 +20,28 @@ export const balancesRouter = createTRPCRouter({
         ...input,
         ...ctx,
       }).then((res) =>
-        res.balances.map(({ denom, amount }) =>
-          denom.startsWith("gamm")
-            ? {
-                denom,
-                amount,
-                coin: new CoinPretty(
-                  makeGammShareCurrency(getShareDenomPoolId(denom)),
-                  amount
-                ),
-              }
-            : {
-                denom,
-                amount,
-                coin: new CoinPretty(
-                  getAsset({ ...ctx, anyDenom: denom }),
-                  amount
-                ),
-              }
-        )
+        res.balances.map(({ denom, amount }) => {
+          if (denom.startsWith("gamm")) {
+            return {
+              denom,
+              amount,
+              coin: new CoinPretty(
+                makeGammShareCurrency(getShareDenomPoolId(denom)),
+                amount
+              ),
+            };
+          } else {
+            const asset = captureIfError(() =>
+              getAsset({ ...ctx, anyDenom: denom })
+            );
+
+            return {
+              denom,
+              amount,
+              coin: asset ? new CoinPretty(asset, amount) : undefined,
+            };
+          }
+        })
       )
     ),
 });
