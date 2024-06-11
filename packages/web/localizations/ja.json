@@ -1130,6 +1130,18 @@
     "newer": "新しい"
   },
   "place-limit": {
-    "reviewOrder": "注文の確認"
+    "reviewOrder": "注文の確認",
+    "marketOrder": {
+      "title": "成行注文",
+      "description": "最安価格で今すぐご購入ください"
+    },
+    "limitOrder": {
+      "title": "指値注文",
+      "description": "{denom}価格が下がったら購入する"
+    },
+    "recurringOrder": {
+      "title": "定期注文",
+      "description": "時間の経過とともに平均価格で購入する"
+    }
   }
 }

@@ -1,10 +1,11 @@
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
+import { useTranslation } from "~/hooks";
 
 interface UITradeType {
   id: "market" | "limit" | "recurring";
@@ -13,33 +14,38 @@ interface UITradeType {
   icon: SpriteIconId;
 }
 
-export const uiTradeTypes: UITradeType[] = [
-  {
-    id: "market",
-    title: "Market Order",
-    description: "Buy immediately at best available price",
-    icon: "exchange",
-  },
-  {
-    id: "limit",
-    title: "Limit Order",
-    description: "Buy when BTC price decreases",
-    icon: "trade",
-  },
-  {
-    id: "recurring",
-    title: "Recurring Order",
-    description: "Buy at average price over time",
-    icon: "history-uncolored",
-  },
-];
-
 const TRADE_TYPES = ["market", "limit", "recurring"] as const;
 
 export default function OrderTypeSelector() {
+  const { t } = useTranslation();
+
   const [type, setType] = useQueryState(
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
+  );
+
+  const uiTradeTypes: UITradeType[] = useMemo(
+    () => [
+      {
+        id: "market",
+        title: t("place-limit.marketOrder.title"),
+        description: t("place-limit.marketOrder.description"),
+        icon: "exchange",
+      },
+      {
+        id: "limit",
+        title: t("place-limit.limitOrder.title"),
+        description: t("place-limit.limitOrder.description", { denom: "BTC" }),
+        icon: "trade",
+      },
+      {
+        id: "recurring",
+        title: t("place-limit.recurringOrder.title"),
+        description: t("place-limit.recurringOrder.description"),
+        icon: "history-uncolored",
+      },
+    ],
+    [t]
   );
 
   return (
