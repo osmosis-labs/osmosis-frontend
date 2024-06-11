@@ -4,6 +4,7 @@ import { FunctionComponent, useMemo } from "react";
 import ClientOnly from "~/components/client-only";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { SwapTool } from "~/components/swap-tool";
+import OrderTypeSelector from "~/components/swap-tool/order-type-selector";
 import {
   SwapToolTab,
   SwapToolTabs,
@@ -23,7 +24,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
   return (
     <ClientOnly>
       <div className="relative flex flex-col gap-6 overflow-hidden md:gap-6 md:px-3 md:pb-4 md:pt-4">
-        <SwapToolTabs activeTab={tab} setTab={setTab} />
+        <div className="flex w-full items-center justify-between">
+          <SwapToolTabs activeTab={tab} setTab={setTab} />
+          <OrderTypeSelector />
+        </div>
         {useMemo(() => {
           switch (tab) {
             case SwapToolTab.BUY:
