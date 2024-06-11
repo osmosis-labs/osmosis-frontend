@@ -127,10 +127,7 @@ export const usePlaceLimit = ({
       return;
     }
 
-    const paymentDenom =
-      orderDirection === OrderDirection.Bid
-        ? quoteAsset.coinMinimalDenom
-        : baseAsset.coinMinimalDenom;
+    const paymentDenom = paymentTokenValue.toCoin().denom;
 
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
@@ -163,8 +160,6 @@ export const usePlaceLimit = ({
   }, [
     orderbookContractAddress,
     account,
-    quoteAsset,
-    baseAsset,
     orderDirection,
     priceState,
     quoteAssetPrice,
