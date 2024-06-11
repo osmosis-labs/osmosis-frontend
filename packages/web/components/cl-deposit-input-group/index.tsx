@@ -41,7 +41,7 @@ export const DepositAmountGroup: FunctionComponent<{
     const { fiatValue: currentValuePrice } = useCoinFiatValue(
       useMemo(
         () =>
-          currency
+          currency && currentValue !== "" && !isNaN(Number(currentValue))
             ? new CoinPretty(
                 currency,
                 new Dec(currentValue).mul(
