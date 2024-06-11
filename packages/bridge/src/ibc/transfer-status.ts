@@ -113,10 +113,10 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
         );
 
         // used for cleanup
-        let timeoutId: NodeJS.Timeout | undefined;
+        let timeout: ReturnType<typeof setTimeout> | undefined;
         let resolved = false;
         timeoutUnsubscriber = () => {
-          clearTimeout(timeoutId);
+          clearTimeout(timeout);
           unsubscriber();
           if (!resolved) reject();
         };
@@ -127,13 +127,13 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
             // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
             // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
             // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
-            timeoutId = setTimeout(() => {
+            timeout = setTimeout(() => {
               resolved = true;
               resolve("timeout");
             }, avgBlockTimeMs);
           })
           .catch(() => {
-            clearTimeout(timeoutId);
+            clearTimeout(timeout);
             reject();
           });
       });
@@ -145,10 +145,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
-    const packetReceivedTracer = new TxTracer(
-      this.getChainRpcUrl(destChainId),
-      "/websocket"
-    );
+    const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
     const receivedPromise = packetReceivedTracer
       .traceTx({
         // Should use the dst channel.
@@ -175,10 +172,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
-    const timeoutTracer = new TxTracer(
-      this.getChainRpcUrl(sourceChainId),
-      "/websocket"
-    );
+    const timeoutTracer = new TxTracer(this.getChainRpcUrl(sourceChainId));
     await timeoutTracer
       .traceTx({
         "timeout_packet.packet_src_channel": sourceChannelId,

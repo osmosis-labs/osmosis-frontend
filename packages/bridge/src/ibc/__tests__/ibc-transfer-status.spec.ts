@@ -1,4 +1,5 @@
 import { queryRPCStatus, queryTx } from "@osmosis-labs/server";
+import { TxTracer } from "@osmosis-labs/tx";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
@@ -78,9 +79,10 @@ describe("IBCTransferStatusProvider", () => {
     consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllTimers();
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it("should handle numerical chain IDs", async () => {
@@ -90,7 +92,7 @@ describe("IBCTransferStatusProvider", () => {
       toChainId: "osmosis-1",
     });
 
-    provider.trackTxStatus(params);
+    await provider.trackTxStatus(params);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
@@ -159,8 +161,8 @@ describe("IBCTransferStatusProvider", () => {
       },
     });
     (queryRPCStatus as jest.Mock).mockResolvedValue(
-      // not timed out
-      makeRpcStatusResponse("100000")
+      // not timed out, but this is irrelevant since the traceTx promise resolves immediately
+      makeRpcStatusResponse("90")
     );
 
     const params = JSON.stringify({
@@ -175,6 +177,55 @@ describe("IBCTransferStatusProvider", () => {
       `IBC${params}`,
       "success"
     );
+  });
+
+  it("should handle an IBC timeout", async () => {
+    (queryTx as jest.Mock).mockResolvedValue({
+      tx_response: {
+        code: 0,
+        events: [
+          {
+            type: "send_packet",
+            attributes: [
+              { key: "packet_src_channel", value: "channel-0" },
+              { key: "packet_dst_channel", value: "channel-1" },
+              { key: "packet_sequence", value: "1" },
+              { key: "packet_timeout_height", value: "1-100" },
+            ],
+          },
+        ],
+      },
+    });
+    (queryRPCStatus as jest.Mock).mockResolvedValueOnce(
+      // times out since this response block time is greater than the timeout height (100)
+      makeRpcStatusResponse("110")
+    );
+    // cause a delay in the IBC ack tx trace to allow the timeout timeout to resolve first
+    (TxTracer as jest.Mock).mockImplementation(() => ({
+      traceTx: jest
+        .fn()
+        .mockReturnValueOnce(
+          // the mock returned block time should be about 900 ms, so 1500 ms
+          // should be enough to ensure the timeout trace resolves first in a stable way (timing in JS is not guaranteed)
+          new Promise((resolve) => setTimeout(resolve, 1500))
+        )
+        .mockResolvedValueOnce(undefined),
+      close: jest.fn(),
+    }));
+
+    const params = JSON.stringify({
+      sendTxHash: "ABC123",
+      fromChainId: "osmosis-1",
+      toChainId: "cosmoshub-4",
+    });
+
+    await provider.trackTxStatus(params);
+
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      `IBC${params}`,
+      "refunded"
+    );
+    expect(TxTracer).toHaveBeenCalledTimes(2);
   });
 
   it("should handle unexpected errors", async () => {
