@@ -1,8 +1,6 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { theme } from "~/tailwind.config";
-
 export enum SwapToolTab {
   SWAP = "swap",
   BUY = "buy",
@@ -18,17 +16,14 @@ const tabs = [
   {
     label: "Buy",
     value: SwapToolTab.BUY,
-    color: theme.colors.bullish[400],
   },
   {
     label: "Sell",
     value: SwapToolTab.SELL,
-    color: theme.colors.rust[400],
   },
   {
     label: "Swap",
     value: SwapToolTab.SWAP,
-    color: theme.colors.ammelia[400],
   },
 ];
 
@@ -44,22 +39,18 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   activeTab,
 }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex w-max items-center rounded-3xl border border-osmoverse-700">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.value;
         return (
           <button
             key={`swap-tab-${tab.value}`}
             onClick={() => setTab(tab.value)}
-            className={classNames("px-3 py-2", {
-              "!pl-0": tab.value === SwapToolTab.BUY,
-              "text-osmoverse-500": !isActive,
+            className={classNames("rounded-3xl px-4 py-3", {
+              "bg-osmoverse-700": isActive,
             })}
-            style={{
-              color: isActive ? tab.color : undefined,
-            }}
           >
-            <h6 className="leading-6">{tab.label}</h6>
+            <p className="font-medium font-h1">{tab.label}</p>
           </button>
         );
       })}
