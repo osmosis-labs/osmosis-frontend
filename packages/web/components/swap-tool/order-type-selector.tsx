@@ -8,13 +8,15 @@ import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 
 interface UITradeType {
-  id: "market" | "limit" | "recurring";
+  // id: "market" | "limit" | "recurring";
+  id: "market" | "limit";
   title: string;
   description: string;
   icon: SpriteIconId;
 }
 
-const TRADE_TYPES = ["market", "limit", "recurring"] as const;
+// const TRADE_TYPES = ["market", "limit", "recurring"] as const;
+const TRADE_TYPES = ["market", "limit"] as const;
 
 export default function OrderTypeSelector() {
   const { t } = useTranslation();
@@ -38,12 +40,12 @@ export default function OrderTypeSelector() {
         description: t("place-limit.limitOrder.description", { denom: "BTC" }),
         icon: "trade",
       },
-      {
-        id: "recurring",
-        title: t("place-limit.recurringOrder.title"),
-        description: t("place-limit.recurringOrder.description"),
-        icon: "history-uncolored",
-      },
+      // {
+      //   id: "recurring",
+      //   title: t("place-limit.recurringOrder.title"),
+      //   description: t("place-limit.recurringOrder.description"),
+      //   icon: "history-uncolored",
+      // },
     ],
     [t]
   );
