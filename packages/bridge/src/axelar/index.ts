@@ -6,15 +6,17 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import { getAssetFromAssetList, getKeyByValue } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
-import { ethers } from "ethers";
-import { hexToNumberString, toHex } from "web3-utils";
+import {
+  Address,
+  createPublicClient,
+  encodeFunctionData,
+  erc20Abi,
+  http,
+  numberToHex,
+} from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
-import {
-  Erc20Abi,
-  EthereumChainInfo,
-  NativeEVMTokenConstantAddress,
-} from "../ethereum";
+import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -260,26 +262,27 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       if (transactionData.type === "evm") {
         const evmChain = Object.values(EthereumChainInfo).find(
-          ({ chainId }) => String(chainId) === String(params.fromChain.chainId)
+          ({ id: chainId }) =>
+            String(chainId) === String(params.fromChain.chainId)
         );
 
         if (!evmChain) throw new Error("Could not find EVM chain");
 
-        const fromProvider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
+        const fromProvider = createPublicClient({
+          chain: evmChain,
+          transport: http(evmChain.rpcUrls.default.http[0]),
+        });
 
         const gasAmountUsed = String(
           await fromProvider.estimateGas({
-            from: params.fromAddress,
+            account: params.fromAddress as Address,
             to: transactionData.to,
-            value: transactionData.value,
+            value: BigInt(transactionData.value ?? ""),
             data: transactionData.data,
           })
         );
-        const gasPrice = hexToNumberString(
-          await fromProvider._perform({
-            method: "getGasPrice",
-          })
-        );
+
+        const gasPrice = (await fromProvider.getGasPrice()).toString();
 
         const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
         return {
@@ -356,17 +359,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (isNativeToken) {
       return {
         type: "evm",
-        to: depositAddress,
-        value: toHex(fromAmount),
+        to: depositAddress as Address,
+        value: numberToHex(BigInt(fromAmount)),
       };
     } else {
       return {
         type: "evm",
-        to: fromAsset.address, // ERC20 token address
-        data: Erc20Abi.encodeFunctionData("transfer", [
-          depositAddress,
-          toHex(fromAmount),
-        ]),
+        to: fromAsset.address as Address, // ERC20 token address
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [depositAddress as `0x${string}`, BigInt(fromAmount)],
+        }),
       };
     }
   }
@@ -546,7 +550,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
-      ({ chainId }) => String(chainId) === String(chain.chainId)
+      ({ id: chainId }) => String(chainId) === String(chain.chainId)
     )?.chainName;
 
     if (!ethereumChainName) return undefined;

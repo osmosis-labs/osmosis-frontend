@@ -1,6 +1,7 @@
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
+import { Address, Hex } from "viem";
 import { z } from "zod";
 
 export type BridgeEnvironment = "mainnet" | "testnet";
@@ -178,8 +179,8 @@ export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
 export interface EvmBridgeTransactionRequest {
   type: "evm";
-  to: string;
-  data?: string;
+  to: Address;
+  data?: Hex;
   value?: string;
   gasPrice?: string;
   maxPriorityFeePerGas?: string;

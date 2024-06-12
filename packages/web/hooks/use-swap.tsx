@@ -117,6 +117,7 @@ export function useSwap(
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
+
   const quoteQueryEnabled =
     isToFromAssets &&
     Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
@@ -124,9 +125,10 @@ export function useSwap(
     // with the input amount when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
+    inAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
     !isWalletLoading;
-
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -195,13 +197,17 @@ export function useSwap(
   const networkFeeQueryEnabled =
     featureFlags.swapToolSimulateFee &&
     !Boolean(precedentError) &&
-    // includes check for quoteQueryEnabled
     !isQuoteLoading &&
-    Boolean(quote) &&
+    quoteQueryEnabled &&
+    Boolean(quote?.messages) &&
     Boolean(account?.address) &&
     inAmountInput.debouncedInAmount !== null &&
     inAmountInput.balance &&
-    inAmountInput.debouncedInAmount.toDec().lte(inAmountInput.balance.toDec());
+    inAmountInput.amount &&
+    inAmountInput.debouncedInAmount
+      .toDec()
+      .lte(inAmountInput.balance.toDec()) &&
+    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec());
   const {
     data: networkFee,
     error: networkFeeError,
@@ -790,11 +796,15 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
+    featureFlags.swapToolSimulateFee &&
     !isLoadingWallet &&
+    !account?.txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     // since the in amount is debounced, the asset could be wrong when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset!.coinMinimalDenom &&
     !!inAmountInput.balance &&
     !inAmountInput.balance.toDec().isZero() &&
@@ -818,11 +828,9 @@ function useSwapAmountInput({
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
   const networkFeeQueryEnabled =
-    featureFlags.swapToolSimulateFee &&
-    // includes check for balanceQuoteQueryEnabled
     !isQuoteForCurrentBalanceLoading &&
-    Boolean(quoteForCurrentBalance) &&
-    !account?.txTypeInProgress;
+    balanceQuoteQueryEnabled &&
+    Boolean(quoteForCurrentBalance);
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
