@@ -503,7 +503,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (!fromChainAxelarId || !toChainAxelarId) {
       throw new Error(
         `Unsupported chain: Chain ID ${
-          fromChainAxelarId || toChainAxelarId
+          !fromChainAxelarId ? fromChain.chainId : toChain.chainId
         } is not supported.`
       );
     }
