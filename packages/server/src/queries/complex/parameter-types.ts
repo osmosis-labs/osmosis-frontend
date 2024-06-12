@@ -7,3 +7,7 @@ export type UserOsmoAddress = z.infer<typeof UserOsmoAddressSchema>;
 export const UserOsmoAddressSchema = z.object({
   userOsmoAddress: z.string().startsWith("osmo").optional(),
 });
+export type ContractOsmoAddress = z.infer<typeof ContractOsmoAddressSchema>;
+export const ContractOsmoAddressSchema = z.object({
+  contractOsmoAddress: z.string().startsWith("osmo").optional(),
+});

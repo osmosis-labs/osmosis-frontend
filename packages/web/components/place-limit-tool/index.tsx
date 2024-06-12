@@ -35,7 +35,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const [baseDenom, setBaseDenom] = useState<string>("ION");
     const quoteDenom = "OSMO";
 
-    const { poolId, orderbookContractAddress } = useOrderbookPool({
+    const { poolId, contractAddress, makerFee } = useOrderbookPool({
       baseDenom,
       quoteDenom,
     });
@@ -44,7 +44,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       poolId,
       orderDirection,
       useQueryParams: false,
-      orderbookContractAddress,
+      orderbookContractAddress: contractAddress,
       baseDenom,
       quoteDenom,
     });
@@ -191,6 +191,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           placeLimitState={swapState}
           orderDirection={orderDirection}
           isOpen={reviewOpen}
+          makerFee={makerFee}
           onRequestClose={() => setReviewOpen(false)}
           orderType="limit"
         />

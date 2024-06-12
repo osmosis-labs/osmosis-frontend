@@ -3,6 +3,7 @@ export * from "./cms-router";
 export * from "./concentrated-liquidity-router";
 export * from "./earn-router";
 export * from "./one-click-trading-router";
+export * from "./orderbook-router";
 export * from "./pools-router";
 export * from "./staking-router";
 export * from "./swap-router";
