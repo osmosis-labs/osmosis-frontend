@@ -21,6 +21,10 @@ jest.mock("@osmosis-labs/utils", () => {
   };
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SquidTransferStatusProvider", () => {
   let provider: SquidTransferStatusProvider;
   const mockReceiver: TransferStatusReceiver = {
@@ -30,10 +34,6 @@ describe("SquidTransferStatusProvider", () => {
   beforeEach(() => {
     provider = new SquidTransferStatusProvider("mainnet" as BridgeEnvironment);
     provider.statusReceiverDelegate = mockReceiver;
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it("should initialize with correct URLs", () => {

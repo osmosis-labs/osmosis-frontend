@@ -2,6 +2,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
+import { createPublicClient, http } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
@@ -9,28 +10,23 @@ import { BridgeQuoteError } from "../../errors";
 import { BridgeProviderContext } from "../../interface";
 import { SquidBridgeProvider } from "../index";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
+jest.mock("viem", () => {
+  const originalModule = jest.requireActual("viem");
   return {
     ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        send: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-      Contract: jest.fn().mockImplementation(() => ({
-        allowance: jest.fn().mockResolvedValue(BigInt("100")),
-        approve: {
-          populateTransaction: jest.fn().mockResolvedValue({
-            to: "0x123",
-            data: "0xabcdef",
-          }),
-        },
-      })),
-    },
+    createPublicClient: jest.fn().mockImplementation(() => ({
+      readContract: jest.fn().mockImplementation(({ functionName }) => {
+        if (functionName === "allowance") {
+          return Promise.resolve(BigInt("100"));
+        }
+        return Promise.reject(new Error("Unknown function"));
+      }),
+    })),
+    encodeFunctionData: jest.fn().mockImplementation(() => "0xabcdef"),
+    http: jest.fn().mockImplementation(() => ({})),
   };
 });
+
 beforeEach(() => {
   server.use(
     rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) => {
@@ -82,6 +78,10 @@ beforeEach(() => {
       );
     })
   );
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 describe("SquidBridgeProvider", () => {
@@ -268,5 +268,67 @@ describe("SquidBridgeProvider", () => {
         slippage: 1,
       })
     ).rejects.toThrow("toAsset mismatch");
+  });
+
+  it("should return approval transaction data if allowance is less than amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("50")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toEqual({
+      to: "0xTokenAddress",
+      data: "0xabcdef", // Mocked data from encodeFunctionData
+    });
+  });
+
+  it("should return undefined if allowance is greater than or equal to amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("150")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
+  });
+
+  it("should return undefined if the asset is native", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: true,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
   });
 });

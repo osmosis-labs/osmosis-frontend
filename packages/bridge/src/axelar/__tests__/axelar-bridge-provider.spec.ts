@@ -14,17 +14,15 @@ import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
+jest.mock("viem", () => {
+  const originalModule = jest.requireActual("viem");
   return {
     ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        _perform: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-    },
+    createPublicClient: jest.fn().mockImplementation(() => ({
+      estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+      getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
+    })),
+    http: jest.fn(),
   };
 });
 
@@ -40,6 +38,10 @@ beforeEach(() => {
       }
     )
   );
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 describe("AxelarBridgeProvider", () => {
@@ -183,6 +185,45 @@ describe("AxelarBridgeProvider", () => {
       data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
       type: "evm",
       to: "0x0000000000000000000000000000000000000000",
+    });
+  });
+
+  it("should create an EVM transaction with native token", async () => {
+    const mockDepositClient: Partial<AxelarAssetTransfer> = {
+      getDepositAddress: jest
+        .fn()
+        .mockResolvedValue("0x1234567890abcdef1234567890abcdef12345678"),
+    };
+
+    jest
+      .spyOn(provider, "getAssetTransferClient")
+      .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
+
+    const transaction = await provider.createEvmTransaction({
+      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: NativeEVMTokenConstantAddress,
+        decimals: 18,
+        sourceDenom: "eth",
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+        sourceDenom: "avax",
+      },
+      fromAmount: "1",
+      fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
+      toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+      simulated: false,
+    });
+
+    expect(transaction).toEqual({
+      value: "0x1", // same as from amount
+      type: "evm",
+      to: "0x1234567890abcdef1234567890abcdef12345678",
     });
   });
 
