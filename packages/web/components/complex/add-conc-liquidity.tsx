@@ -585,7 +585,7 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
-                baseDepositAmountIn.setAmount(amount.toString());
+                baseDepositAmountIn.setAmount(amount);
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
@@ -601,7 +601,7 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
-                quoteDepositAmountIn.setAmount(amount.toString());
+                quoteDepositAmountIn.setAmount(amount);
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}

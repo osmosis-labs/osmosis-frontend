@@ -86,16 +86,16 @@ export function parseNestedAuthenticator({
   authenticator: RawNestedAuthenticator;
 }): NestedAuthenticator {
   try {
-    if (rawNestedAuthenticator.Type === "SignatureVerification") {
+    if (rawNestedAuthenticator.type === "SignatureVerification") {
       return {
         type: "SignatureVerification",
-        publicKey: rawNestedAuthenticator.Config,
+        publicKey: rawNestedAuthenticator.config,
       };
     }
 
-    if (rawNestedAuthenticator.Type === "CosmwasmAuthenticatorV1") {
+    if (rawNestedAuthenticator.type === "CosmwasmAuthenticatorV1") {
       const parsedData: { contract: string; params: string } = JSON.parse(
-        Buffer.from(rawNestedAuthenticator.Config, "base64").toString("utf-8")
+        Buffer.from(rawNestedAuthenticator.config, "base64").toString("utf-8")
       );
       const parsedParams = JSON.parse(
         Buffer.from(parsedData.params, "base64").toString("utf-8")
@@ -107,9 +107,9 @@ export function parseNestedAuthenticator({
       } as CosmwasmAuthenticatorV1;
     }
 
-    if (rawNestedAuthenticator.Type === "MessageFilter") {
+    if (rawNestedAuthenticator.type === "MessageFilter") {
       const parsedData: { "@type": string } = JSON.parse(
-        Buffer.from(rawNestedAuthenticator.Config, "base64").toString("utf-8")
+        Buffer.from(rawNestedAuthenticator.config, "base64").toString("utf-8")
       );
       return {
         type: "MessageFilter",
@@ -118,15 +118,15 @@ export function parseNestedAuthenticator({
     }
 
     if (
-      rawNestedAuthenticator.Type === "AnyOf" ||
-      rawNestedAuthenticator.Type === "AllOf"
+      rawNestedAuthenticator.type === "AnyOf" ||
+      rawNestedAuthenticator.type === "AllOf"
     ) {
       const subAuthenticators: RawNestedAuthenticator[] = JSON.parse(
-        Buffer.from(rawNestedAuthenticator.Config, "base64").toString("utf-8")
+        Buffer.from(rawNestedAuthenticator.config, "base64").toString("utf-8")
       );
 
       return {
-        type: rawNestedAuthenticator.Type,
+        type: rawNestedAuthenticator.type,
         subAuthenticators: subAuthenticators.map(
           (subAuthenticator: RawNestedAuthenticator) => {
             return parseNestedAuthenticator({
@@ -138,7 +138,7 @@ export function parseNestedAuthenticator({
     }
 
     throw new Error(
-      `Unknown nested authenticator type: ${rawNestedAuthenticator.Type}`
+      `Unknown nested authenticator type: ${rawNestedAuthenticator.type}`
     );
   } catch (error) {
     console.error("Error parsing nested authenticator:", {

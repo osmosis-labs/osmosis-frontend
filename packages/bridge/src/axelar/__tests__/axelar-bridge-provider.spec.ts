@@ -14,17 +14,14 @@ import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 
-jest.mock("viem", () => {
-  const originalModule = jest.requireActual("viem");
-  return {
-    ...originalModule,
-    createPublicClient: jest.fn().mockImplementation(() => ({
-      estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
-      getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
-    })),
-    http: jest.fn(),
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+    getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
+  })),
+  http: jest.fn(),
+}));
 
 beforeEach(() => {
   server.use(
@@ -118,7 +115,9 @@ describe("AxelarBridgeProvider", () => {
         },
         toAddress: "0x456",
       })
-    ).rejects.toThrow("Unsupported chain");
+    ).rejects.toThrow(
+      "Unsupported chain: Chain ID 989898989898 is not supported."
+    );
   });
 
   it("should estimate gas cost for EVM transactions", async () => {

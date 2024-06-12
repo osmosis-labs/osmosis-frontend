@@ -6,7 +6,8 @@ export function usePrice(currency?: { coinMinimalDenom: string }) {
       coinMinimalDenom: currency?.coinMinimalDenom ?? "",
     },
     {
-      enabled: Boolean(currency),
+      enabled:
+        Boolean(currency) && !currency?.coinMinimalDenom.startsWith("gamm"),
       cacheTime: 1000 * 3, // 3 second
       staleTime: 1000 * 3, // 3 second
     }

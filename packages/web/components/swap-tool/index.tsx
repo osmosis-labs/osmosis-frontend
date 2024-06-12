@@ -979,7 +979,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     Boolean(swapState.error) ||
                     Boolean(swapState.networkFeeError)))
               }
-              loadingText={buttonText}
               onClick={sendSwapTx}
             >
               {account?.walletStatus === WalletStatus.Connected ? (

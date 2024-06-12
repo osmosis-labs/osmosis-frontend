@@ -391,7 +391,7 @@
     "noAvailableShares": "没有可用 {denom} 份额",
     "noRoute": "此交易没有路线",
     "noSendCurrency": "未设置发送货币",
-    "notInitialized": "未初始化",
+    "notInitialized": "加载中...",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
     "zeroAmount": "数量为零",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "消费限额",
       "networkFeeLimitTitle": "网络费用限额",
       "sessionPeriodTitle": "会议期间",
-      "resetPeriodTitle": "重置期",
       "startButton": "开始一键交易",
       "editSessionButton": "保存更改",
       "endingSession": "结束会议",
@@ -561,16 +560,6 @@
           "1hour": "1小时",
           "3hours": "3小时",
           "12hours": "12小时"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "重置期",
-        "description": "设置重置支出限额配额的持续时间。",
-        "periods": {
-          "day": "天",
-          "week": "星期",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "查看绑定奖励",
     "collapseDetails": "收起详情",
     "commission": "佣金",
-    "currentDailyEarn": "您当前正在赚取",
     "dailyEarnAmount": "{amount} /天",
-    "day": "天",
     "delegated": "委托",
     "details": "详情",
-    "earnMore": "通过结合赚取 {amount}",
     "earnSwapFees": "赚取交易费",
     "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
     "from": "来自",

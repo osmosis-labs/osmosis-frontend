@@ -7,7 +7,6 @@ import {
 import {
   Currency,
   OneClickTradingHumanizedSessionPeriod,
-  OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
@@ -103,7 +102,7 @@ export interface TxEvents {
 export interface OneClickTradingInfo {
   readonly authenticatorId: string;
   readonly publicKey: string;
-  readonly privateKey: string;
+  readonly sessionKey: string;
   readonly userOsmoAddress: string;
 
   networkFeeLimit: Currency & {
@@ -114,9 +113,6 @@ export interface OneClickTradingInfo {
     decimals: number;
     amount: string;
   };
-
-  // Period to reset the spend limit quota.
-  readonly resetPeriod: OneClickTradingResetPeriods;
 
   // Time limit for the session to be considered valid.
   readonly sessionPeriod: OneClickTradingTimeLimit;
