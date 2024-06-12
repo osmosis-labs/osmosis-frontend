@@ -1130,6 +1130,18 @@
     "newer": "較新"
   },
   "place-limit": {
-    "reviewOrder": "查看訂單"
+    "reviewOrder": "查看訂單",
+    "marketOrder": {
+      "title": "市價訂單",
+      "description": "立即以最優惠的價格購買"
+    },
+    "limitOrder": {
+      "title": "限價訂單",
+      "description": "當{denom}價格下跌時購買"
+    },
+    "recurringOrder": {
+      "title": "重複訂單",
+      "description": "以一段時間內的平均價格購買"
+    }
   }
 }

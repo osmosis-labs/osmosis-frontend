@@ -1130,6 +1130,18 @@
     "newer": "Daha yeni"
   },
   "place-limit": {
-    "reviewOrder": "Siparişi İncele"
+    "reviewOrder": "Siparişi İncele",
+    "marketOrder": {
+      "title": "Market siparişi",
+      "description": "Mevcut en iyi fiyatla hemen satın alın"
+    },
+    "limitOrder": {
+      "title": "Limit Emri",
+      "description": "{denom} fiyatı düştüğünde satın alın"
+    },
+    "recurringOrder": {
+      "title": "Yinelenen Sipariş",
+      "description": "Zaman içinde ortalama fiyattan satın alın"
+    }
   }
 }

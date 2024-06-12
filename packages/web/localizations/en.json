@@ -1130,6 +1130,18 @@
     "newer": "Newer"
   },
   "place-limit": {
-    "reviewOrder": "Review Order"
+    "reviewOrder": "Review Order",
+    "marketOrder": {
+      "title": "Market Order",
+      "description": "Buy immediately at best available price"
+    },
+    "limitOrder": {
+      "title": "Limit Order",
+      "description": "Buy when {denom} price decreases"
+    },
+    "recurringOrder": {
+      "title": "Recurring Order",
+      "description": "Buy at average price over time"
+    }
   }
 }
