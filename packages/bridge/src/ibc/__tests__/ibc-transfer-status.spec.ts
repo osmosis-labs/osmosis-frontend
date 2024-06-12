@@ -6,7 +6,10 @@ import { MockChains } from "../../__tests__/mock-chains";
 import { TransferStatusReceiver } from "../../interface";
 import { IBCTransferStatusProvider } from "../transfer-status";
 
-const makeRpcStatusResponse = (timeoutHeight: string) => ({
+const makeRpcStatusResponse = (
+  timeoutHeight: string,
+  network = "mock_network"
+) => ({
   jsonrpc: "2.0",
   id: 1,
   result: {
@@ -26,7 +29,7 @@ const makeRpcStatusResponse = (timeoutHeight: string) => ({
       },
       id: "mock_id",
       listen_addr: "mock_listen_addr",
-      network: "mock_network",
+      network: network,
       version: "mock_version",
       channels: "mock_channels",
       moniker: "mock_moniker",
@@ -85,7 +88,7 @@ describe("IBCTransferStatusProvider", () => {
     jest.restoreAllMocks();
   });
 
-  it("should handle numerical chain IDs", async () => {
+  it("should handle numerical chain IDs - from chain ID", async () => {
     const params = JSON.stringify({
       sendTxHash: "ABC123",
       fromChainId: 1,
@@ -97,6 +100,61 @@ describe("IBCTransferStatusProvider", () => {
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
       new Error("Unexpected numerical chain ID for cosmos tx: 1")
+    );
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      `IBC${params}`,
+      "connection-error"
+    );
+  });
+
+  it("should handle numerical chain IDs - to chain ID", async () => {
+    const params = JSON.stringify({
+      sendTxHash: "ABC123",
+      fromChainId: "osmosis-1",
+      toChainId: 123,
+    });
+
+    await provider.trackTxStatus(params);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Unexpected failure when tracing IBC transfer status",
+      new Error("Unexpected numerical chain ID for cosmos tx: 123")
+    );
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      `IBC${params}`,
+      "connection-error"
+    );
+  });
+
+  it("should handle invalid destTimeoutHeight", async () => {
+    const params = JSON.stringify({
+      sendTxHash: "ABC123",
+      fromChainId: "osmosis-1",
+      toChainId: "cosmoshub-4",
+    });
+
+    (queryTx as jest.Mock).mockResolvedValue({
+      tx_response: {
+        code: 0,
+        events: [
+          {
+            type: "send_packet",
+            attributes: [
+              { key: "packet_src_channel", value: "channel-0" },
+              { key: "packet_dst_channel", value: "channel-1" },
+              { key: "packet_sequence", value: "1" },
+              { key: "packet_timeout_height", value: "123-0" },
+            ],
+          },
+        ],
+      },
+    });
+
+    await provider.trackTxStatus(params);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Unexpected failure when tracing IBC transfer status",
+      new Error("Invalid destination timeout height: 123-0")
     );
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
       `IBC${params}`,
@@ -163,6 +221,42 @@ describe("IBCTransferStatusProvider", () => {
     (queryRPCStatus as jest.Mock).mockResolvedValue(
       // not timed out, but this is irrelevant since the traceTx promise resolves immediately
       makeRpcStatusResponse("90")
+    );
+
+    const params = JSON.stringify({
+      sendTxHash: "ABC123",
+      fromChainId: "osmosis-1",
+      toChainId: "cosmoshub-4",
+    });
+
+    await provider.trackTxStatus(params);
+
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      `IBC${params}`,
+      "success"
+    );
+  });
+
+  it("should succeed on new chain version", async () => {
+    (queryTx as jest.Mock).mockResolvedValue({
+      tx_response: {
+        code: 0,
+        events: [
+          {
+            type: "send_packet",
+            attributes: [
+              { key: "packet_src_channel", value: "channel-0" },
+              { key: "packet_dst_channel", value: "channel-1" },
+              { key: "packet_sequence", value: "1" },
+              { key: "packet_timeout_height", value: "1-100" },
+            ],
+          },
+        ],
+      },
+    });
+    (queryRPCStatus as jest.Mock).mockResolvedValue(
+      // not timed out, but this is irrelevant since the traceTx promise resolves immediately
+      makeRpcStatusResponse("90", "osmosis-2")
     );
 
     const params = JSON.stringify({
@@ -247,5 +341,17 @@ describe("IBCTransferStatusProvider", () => {
       `IBC${params}`,
       "connection-error"
     );
+  });
+
+  it("should generate correct explorer url", async () => {
+    const params = JSON.stringify({
+      sendTxHash: "ABC123",
+      fromChainId: "osmosis-1",
+      toChainId: "osmosis-1",
+    });
+
+    const url = provider.makeExplorerUrl(params);
+
+    expect(url).toBe(`https://www.mintscan.io/osmosis-1/txs/ABC123`);
   });
 });

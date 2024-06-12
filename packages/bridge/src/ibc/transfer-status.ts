@@ -106,7 +106,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
 
     // poll for timeout
     if (!destTimeoutHeight.endsWith("-0")) {
-      const timeoutPromise = new Promise<"timeout">((resolve, reject) => {
+      const timeoutPromise = new Promise<"timeout">((resolve) => {
         const { promise, unsubscriber } = this.pollTimeoutHeight(
           destBlockSubscriber,
           destTimeoutHeight
@@ -114,28 +114,18 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
 
         // used for cleanup
         let timeout: ReturnType<typeof setTimeout> | undefined;
-        let resolved = false;
         timeoutUnsubscriber = () => {
           clearTimeout(timeout);
           unsubscriber();
-          if (!resolved) reject();
         };
 
-        promise
-          .then((avgBlockTimeMs) => {
-            // Even though the block is reached to the timeout height,
-            // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
-            // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
-            // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
-            timeout = setTimeout(() => {
-              resolved = true;
-              resolve("timeout");
-            }, avgBlockTimeMs);
-          })
-          .catch(() => {
-            clearTimeout(timeout);
-            reject();
-          });
+        promise.then((avgBlockTimeMs) => {
+          // Even though the block is reached to the timeout height,
+          // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+          // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
+          // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
+          timeout = setTimeout(() => resolve("timeout"), avgBlockTimeMs);
+        });
       });
 
       subscriptions.push(timeoutPromise);
@@ -189,7 +179,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
    *
    * `timeoutHeight` should be formatted as `{chain_version}-{block_height}`
    *
-   * @returns A promise that resolves to the average block time if the timeout height is met. Also an unsubscriber that is required to stop the polling when called.
+   * @returns A promise that resolves to the average block time if the timeout height is met or more rarely when the chain version is incremented. Also an unsubscriber that is required to stop the polling when called.
    */
   protected pollTimeoutHeight(
     statusSubscriber: PollingStatusSubscription,
