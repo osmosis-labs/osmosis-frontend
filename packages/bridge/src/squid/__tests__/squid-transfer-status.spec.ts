@@ -21,6 +21,9 @@ jest.mock("@osmosis-labs/utils", () => {
   };
 });
 
+// silence console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 describe("SquidTransferStatusProvider", () => {
   let provider: SquidTransferStatusProvider;
   const mockReceiver: TransferStatusReceiver = {

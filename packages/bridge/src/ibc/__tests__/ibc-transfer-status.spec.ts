@@ -352,6 +352,6 @@ describe("IBCTransferStatusProvider", () => {
 
     const url = provider.makeExplorerUrl(params);
 
-    expect(url).toBe(`https://www.mintscan.io/osmosis-1/txs/ABC123`);
+    expect(url).toBe(`https://www.mintscan.io/osmosis/txs/ABC123`);
   });
 });
