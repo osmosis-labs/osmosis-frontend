@@ -21,6 +21,9 @@ jest.mock("@osmosis-labs/utils", () => {
   };
 });
 
+// silence console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 afterEach(() => {
   jest.clearAllMocks();
 });

@@ -26,6 +26,9 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// silence console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 describe("AxelarTransferStatusProvider", () => {
   let provider: AxelarTransferStatusProvider;
   const mockReceiver: TransferStatusReceiver = {
