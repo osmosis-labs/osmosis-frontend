@@ -80,23 +80,23 @@ export const usePlaceLimit = ({
     if (orderDirection === OrderDirection.Ask) {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
-    } else {
-      // Determine the outgoing fiat amount the user wants to buy
-      const outgoingFiatValue =
-        mulPrice(
-          baseTokenAmount,
-          new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
-          DEFAULT_VS_CURRENCY
-        ) ?? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
-
-      // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
-      // Multiply by 10^n where n is the amount of decimals for the quote asset
-      const quoteTokenAmount = outgoingFiatValue!
-        .quo(quoteAssetPrice ?? new Dec(1))
-        .toDec()
-        .mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)));
-      return new CoinPretty(quoteAsset, quoteTokenAmount);
     }
+
+    // Determine the outgoing fiat amount the user wants to buy
+    const outgoingFiatValue =
+      mulPrice(
+        baseTokenAmount,
+        new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
+        DEFAULT_VS_CURRENCY
+      ) ?? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+
+    // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
+    // Multiply by 10^n where n is the amount of decimals for the quote asset
+    const quoteTokenAmount = outgoingFiatValue!
+      .quo(quoteAssetPrice ?? new Dec(1))
+      .toDec()
+      .mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)));
+    return new CoinPretty(quoteAsset, quoteTokenAmount);
   }, [
     quoteAssetPrice,
     baseAsset,
