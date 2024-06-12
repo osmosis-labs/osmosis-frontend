@@ -1130,6 +1130,18 @@
     "newer": "较新"
   },
   "place-limit": {
-    "reviewOrder": "查看订单"
+    "reviewOrder": "查看订单",
+    "marketOrder": {
+      "title": "市价订单",
+      "description": "立即以最佳价格购买"
+    },
+    "limitOrder": {
+      "title": "限价订单",
+      "description": "当{denom}价格下降时买入"
+    },
+    "recurringOrder": {
+      "title": "重复订单",
+      "description": "按一段时间内的平均价格购买"
+    }
   }
 }

@@ -1130,6 +1130,18 @@
     "newer": "નવું"
   },
   "place-limit": {
-    "reviewOrder": "રિવ્યૂ ઓર્ડર"
+    "reviewOrder": "રિવ્યૂ ઓર્ડર",
+    "marketOrder": {
+      "title": "માર્કેટ ઓર્ડર",
+      "description": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ ખરીદો"
+    },
+    "limitOrder": {
+      "title": "મર્યાદા ઓર્ડર",
+      "description": "જ્યારે {denom} કિંમત ઘટે ત્યારે ખરીદો"
+    },
+    "recurringOrder": {
+      "title": "રિકરિંગ ઓર્ડર",
+      "description": "સમય જતાં સરેરાશ કિંમતે ખરીદો"
+    }
   }
 }
