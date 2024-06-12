@@ -26,7 +26,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
       <div className="relative flex flex-col gap-6 overflow-hidden md:gap-6 md:px-3 md:pb-4 md:pt-4">
         <div className="flex w-full items-center justify-between">
           <SwapToolTabs activeTab={tab} setTab={setTab} />
-          <OrderTypeSelector />
+          {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
         </div>
         {useMemo(() => {
           switch (tab) {
