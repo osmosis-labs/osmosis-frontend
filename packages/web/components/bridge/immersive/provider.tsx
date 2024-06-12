@@ -47,7 +47,7 @@ export const ImmersiveBridgeFlow = ({
       <ScreenManager
         currentScreen={String(step)}
         onChangeScreen={(screen) => {
-          return setStep(Number(screen) as 0 | 1 | 2 | 3 | 4);
+          return setStep(Number(screen) as 0 | 1 | 2);
         }}
       >
         <Transition
@@ -60,7 +60,7 @@ export const ImmersiveBridgeFlow = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="flex w-full max-w-container flex-col gap-10">
+          <div className="flex h-full w-full max-w-container flex-col gap-10 py-12">
             <StepProgress
               className="w-full"
               steps={[
@@ -71,34 +71,36 @@ export const ImmersiveBridgeFlow = ({
               currentStep={step}
             />
 
-            <Screen screenName="0">
-              {({ setCurrentScreen }) => (
-                <div>
-                  <h6>Step 1: Asset</h6>
-                  <Button onClick={() => setIsVisible(false)}>Close</Button>
-                  <Button onClick={() => setCurrentScreen("1")}>Next</Button>
-                </div>
-              )}
-            </Screen>
-            <Screen screenName="1">
-              {({ setCurrentScreen, goBack }) => (
-                <div>
-                  <Button onClick={goBack}>Back</Button>
-                  <Button onClick={() => setCurrentScreen("2")}>Next</Button>
+            <div className="flex-1 overflow-auto">
+              <Screen screenName="0">
+                {({ setCurrentScreen }) => (
+                  <div>
+                    <h6>Step 1: Asset</h6>
+                    <Button onClick={() => setIsVisible(false)}>Close</Button>
+                    <Button onClick={() => setCurrentScreen("1")}>Next</Button>
+                  </div>
+                )}
+              </Screen>
+              <Screen screenName="1">
+                {({ setCurrentScreen, goBack }) => (
+                  <div>
+                    <Button onClick={goBack}>Back</Button>
+                    <Button onClick={() => setCurrentScreen("2")}>Next</Button>
 
-                  <DepositScreen />
-                </div>
-              )}
-            </Screen>
-            <Screen screenName="2">
-              {({ goBack }) => (
-                <div>
-                  <h6>Step 4: Review</h6>
-                  <Button onClick={goBack}>Back</Button>
-                  <Button onClick={() => setIsVisible(false)}>Close</Button>
-                </div>
-              )}
-            </Screen>
+                    <DepositScreen />
+                  </div>
+                )}
+              </Screen>
+              <Screen screenName="2">
+                {({ goBack }) => (
+                  <div>
+                    <h6>Step 3: Review</h6>
+                    <Button onClick={goBack}>Back</Button>
+                    <Button onClick={() => setIsVisible(false)}>Close</Button>
+                  </div>
+                )}
+              </Screen>
+            </div>
             {/* {isConnected ? (
               <div>
                 <p>Evm Address: {address}</p>

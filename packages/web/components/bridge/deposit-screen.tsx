@@ -1,85 +1,128 @@
-export const DepositScreen = () => {
-  return (
-    <div className="flex  flex-col items-center justify-center p-4 text-white-full">
-      <div className="w-full max-w-md rounded-2xl p-6">
-        <h1 className="mb-6 text-center text-2xl font-h1">
-          Deposit <span className="text-superfluid">USDC</span>
-        </h1>
+import classNames from "classnames";
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="text-sm">From network</span>
-            <div className="ml-2 flex items-center rounded-lg bg-osmoverse-700 p-2">
-              <img
-                src="/path/to/noble-icon.png"
-                alt="Noble"
-                className="mr-2 h-6 w-6"
-              />
-              <span>Noble</span>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <span className="text-sm">To network</span>
-            <div className="ml-2 flex items-center rounded-lg bg-osmoverse-700 p-2">
-              <img
-                src="/path/to/osmosis-icon.png"
-                alt="Osmosis"
-                className="mr-2 h-6 w-6"
-              />
-              <span>Osmosis</span>
-            </div>
-          </div>
+import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
+import { Button } from "~/components/ui/button";
+import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+export const DepositScreen = () => {
+  const {
+    accountStore,
+    chainStore: {
+      osmosis: { chainId },
+    },
+  } = useStore();
+  const wallet = accountStore.getWallet(chainId);
+
+  const { data: asset, isLoading } = api.edge.assets.getUserAsset.useQuery({
+    findMinDenomOrSymbol: "USDC",
+  });
+
+  if (isLoading || !asset) {
+    return null;
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-[30rem] flex-col items-center justify-center p-4 text-white-full">
+      <h5 className="mb-6 flex items-center justify-center gap-3">
+        <span>Deposit</span>{" "}
+        <img className="h-8 w-8" src={asset.coinImageUrl} alt="token image" />{" "}
+        <span>{asset.coinDenom}</span>
+      </h5>
+
+      <div className="mb-6 flex w-full flex-col gap-2">
+        <div className="flex w-full gap-2">
+          <span className="body1 flex-1 text-osmoverse-300">From network</span>
+          {/* Render to match the height of the right arrow for the network selectors */}
+          <Icon id="arrow-right" className="invisible" />
+          <span className="body1 flex-1 text-osmoverse-300">To network</span>
         </div>
 
-        <div className="text-center text-4xl font-bold">$0</div>
+        <div className="flex items-center gap-2">
+          <div className="subtitle1 flex-1 rounded-[48px] bg-osmoverse-825 py-2 px-4">
+            Noble
+          </div>
 
-        <div className="flex justify-center">
-          <div className="text-center text-sm">0 USDC</div>
-          <button className="rounded-lg bg-osmoverse-700 py-2 px-4 text-white-full">
+          <Icon id="arrow-right" className="text-osmoverse-300" />
+
+          <div className="subtitle1 flex-1 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
+            Osmosis
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full flex-col gap-6">
+        <div className="relative flex items-center justify-center">
+          <div className="justify-self-center">
+            <div className="text-center text-4xl font-bold">$0</div>
+            <div className="text-center text-sm">0 {asset.coinDenom}</div>
+          </div>
+
+          <button className="body2 absolute right-0 rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200">
             Max
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center rounded-lg bg-osmoverse-700 p-2">
-            <span className="mr-2">USDC.e</span>
-            <span className="text-sm text-osmoverse-300">$80.00 available</span>
-          </div>
-          <div className="flex items-center rounded-lg bg-osmoverse-700 p-2">
-            <span className="mr-2">USDC</span>
-            <span className="text-sm text-osmoverse-300">$30.00</span>
-          </div>
-          <div className="flex items-center rounded-lg bg-osmoverse-700 p-2">
-            <span className="mr-2">USDC.axl</span>
-            <span className="text-sm text-osmoverse-300">$10.00</span>
-          </div>
+        <div className="flex items-center justify-between rounded-2xl bg-osmoverse-1000">
+          {[
+            {
+              label: "USDC.e",
+              amount: "$80.00 available",
+              active: true,
+            },
+            { label: "USDC", amount: "$30.00", active: false },
+            { label: "USDC.axl", amount: "$10.00", active: false },
+          ].map(({ label, amount, active }, index) => (
+            <button
+              key={index}
+              className={classNames(
+                "subtitle1 flex w-full flex-col items-center rounded-lg p-2",
+                {
+                  "bg-osmoverse-825 text-wosmongton-100": active,
+                  "text-osmoverse-100": !active,
+                }
+              )}
+            >
+              <span>{label}</span>
+              <span className="body2 text-osmoverse-300">{amount}</span>
+            </button>
+          ))}
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm">Transfer with</span>
-          <div className="flex items-center rounded-lg bg-osmoverse-700 p-2">
+          <span className="body1 text-osmoverse-300">Transfer with</span>
+          <div className="flex items-center gap-2 rounded-lg">
             <img
-              src="/path/to/keplr-icon.png"
-              alt="Keplr"
-              className="mr-2 h-6 w-6"
+              src={wallet?.walletInfo.logo}
+              alt={wallet?.walletInfo.prettyName}
+              className="h-6 w-6"
             />
-            <span>Keplr</span>
+            <span>{wallet?.walletInfo.prettyName}</span>
+            <Icon
+              id="chevron-down"
+              width={12}
+              height={12}
+              className="text-osmoverse-300"
+            />
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm">Estimating time</span>
-          <span className="text-sm">Calculating fees</span>
+          <div className="flex items-center gap-2">
+            <Spinner className="text-wosmongton-500" />
+            <span className="body1 text-osmoverse-300">Estimating time</span>
+          </div>
+
+          <span className="body1 text-osmoverse-300">Calculating fees</span>
         </div>
 
-        <button className="w-full rounded-lg bg-superfluid py-2 px-4 text-white-full">
-          Review deposit
-        </button>
+        <div className="flex flex-col items-center gap-2">
+          <Button className="w-full">Review deposit</Button>
 
-        <div className="mt-4 text-center">
-          <a href="#" className="text-sm text-superfluid">
+          <button className="text-lg font-h6 text-wosmongton-200">
             More deposit options
-          </a>
+          </button>
         </div>
       </div>
     </div>
