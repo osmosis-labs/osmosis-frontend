@@ -7,6 +7,7 @@ import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
+import { tailwind_extension_info as tailwindExtensionInfo } from "@cosmos-kit/tailwind-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 import * as fs from "fs";
@@ -22,6 +23,7 @@ const CosmosKitWalletList = [
   okxWalletExtensionInfo,
   xdefiExtensionInfo,
   stationExtensionInfo,
+  tailwindExtensionInfo as Wallet,
 ];
 
 function isObject(value: any): value is Record<any, any> {
