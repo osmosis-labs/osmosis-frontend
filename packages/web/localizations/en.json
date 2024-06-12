@@ -391,7 +391,7 @@
     "noAvailableShares": "No available {denom} shares",
     "noRoute": "No route for this trade",
     "noSendCurrency": "Currency to send not set",
-    "notInitialized": "Not initialized",
+    "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "Spend Limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
-      "resetPeriodTitle": "Reset period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
       "endingSession": "Ending session",
@@ -561,16 +560,6 @@
           "1hour": "1 hour",
           "3hours": "3 hours",
           "12hours": "12 hours"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Reset period",
-        "description": "Set a duration to reset the spend limit quota.",
-        "periods": {
-          "day": "Day",
-          "week": "Week",
-          "month": "Month",
-          "year": "Year"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "Check back for bonding rewards",
     "collapseDetails": "Hide pool composition",
     "commission": "commission",
-    "currentDailyEarn": "You're currently earning",
     "dailyEarnAmount": "{amount} / day",
-    "day": "day",
     "delegated": "delegated",
     "details": "Details",
-    "earnMore": "Earn {amount} more by bonding",
     "earnSwapFees": "Earn swap fees",
     "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
     "from": "from",

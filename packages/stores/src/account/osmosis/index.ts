@@ -1300,75 +1300,69 @@ export class OsmosisAccountImpl {
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
+    poolTotalShares: Int,
+    poolAssets: { denom: string; amount: string }[],
+    poolExitFee: Dec,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const queries = this.queries;
     const mkp = this.makeCoinPretty;
+
+    const estimated = OsmosisMath.estimateExitSwap(
+      {
+        totalShare: poolTotalShares,
+        poolAssets: poolAssets.map((asset) => ({
+          ...asset,
+          amount: new Int(asset.amount),
+        })),
+        exitFee: poolExitFee,
+      },
+      mkp,
+      shareInAmount,
+      this.msgOpts.exitPool.shareCoinDecimals
+    );
+
+    const maxSlippageDec = new Dec(maxSlippage).quo(
+      DecUtils.getTenExponentNInPrecisionRange(2)
+    );
+
+    const tokenOutMins = maxSlippageDec.equals(new Dec(0))
+      ? []
+      : estimated.tokenOuts.map((tokenOut) => {
+          return {
+            denom: tokenOut.currency.coinMinimalDenom,
+            amount: tokenOut
+              .toDec() // TODO: confirm toDec() respects token dec count
+              .mul(new Dec(1).sub(maxSlippageDec))
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  tokenOut.currency.coinDecimals
+                )
+              )
+              .truncate()
+              .toString(),
+          };
+        });
+
+    const msg = this.msgOpts.exitPool.messageComposer({
+      poolId: BigInt(poolId),
+      sender: this.address,
+      shareInAmount: new Dec(shareInAmount)
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.msgOpts.exitPool.shareCoinDecimals
+          )
+        )
+        .truncate()
+        .toString(),
+      tokenOutMins,
+    });
 
     await this.base.signAndBroadcast(
       this.chainId,
       "exitPool",
-      async () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        await queryPool.waitFreshResponse();
-
-        const pool = queryPool.sharePool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const estimated = OsmosisMath.estimateExitSwap(
-          pool,
-          mkp,
-          shareInAmount,
-          this.msgOpts.exitPool.shareCoinDecimals
-        );
-
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-
-        const tokenOutMins = maxSlippageDec.equals(new Dec(0))
-          ? []
-          : estimated.tokenOuts.map((tokenOut) => {
-              return {
-                denom: tokenOut.currency.coinMinimalDenom,
-                amount: tokenOut
-                  .toDec() // TODO: confirm toDec() respects token dec count
-                  .mul(new Dec(1).sub(maxSlippageDec))
-                  .mul(
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      tokenOut.currency.coinDecimals
-                    )
-                  )
-                  .truncate()
-                  .toString(),
-              };
-            });
-
-        const msg = this.msgOpts.exitPool.messageComposer({
-          poolId: BigInt(pool.id),
-          sender: this.address,
-          shareInAmount: new Dec(shareInAmount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                this.msgOpts.exitPool.shareCoinDecimals
-              )
-            )
-            .truncate()
-            .toString(),
-          tokenOutMins,
-        });
-
-        return [msg];
-      },
+      [msg],
       memo,
       undefined,
       undefined,
@@ -1392,7 +1386,7 @@ export class OsmosisAccountImpl {
    * Lock tokens for some duration into a lock. Useful for allowing the user to capture bonding incentives.
    *
    * @param duration Duration, in seconds, to lock up the tokens.
-   * @param tokens Tokens to lock. `amount`s are not in micro.
+   * @param tokens Base token amount to lock.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1406,14 +1400,8 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
-      const amount = new Dec(token.amount)
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(token.currency.coinDecimals)
-        )
-        .truncate();
-
       return {
-        amount: amount.toString(),
+        amount: token.amount,
         denom: token.currency.coinMinimalDenom,
       };
     });
@@ -1452,7 +1440,7 @@ export class OsmosisAccountImpl {
     );
   }
 
-  /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
+  /**
    * @param lockIds Ids of LP bonded locks.
    * @param validatorAddress Bech32 address of validator to delegate to.
    * @param memo Tx memo.
@@ -1464,6 +1452,8 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    if (lockIds.length === 0) throw new Error("No locks to delegate");
+
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.superfluidDelegate.messageComposer({
         sender: this.address,
@@ -1506,7 +1496,7 @@ export class OsmosisAccountImpl {
   }
 
   /** https://docs.osmosis.zone/overview/osmo.html#superfluid-staking
-   * @param tokens LP tokens to delegate and lock. `amount`s are not in micro.
+   * @param tokens LP tokens to delegate and lock.
    * @param validatorAddress Validator address to delegate to.
    * @param memo Tx memo.
    * @param onFulfill Callback to handle tx fullfillment.
@@ -1521,14 +1511,8 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
-      const amount = new Dec(token.amount)
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(token.currency.coinDecimals)
-        )
-        .truncate();
-
       return {
-        amount: amount.toString(),
+        amount: token.amount,
         denom: token.currency.coinMinimalDenom,
       };
     });

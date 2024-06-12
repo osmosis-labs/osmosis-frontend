@@ -391,7 +391,7 @@
     "noAvailableShares": "Aucun actif {denom} disponible",
     "noRoute": "Pas d'itinéraire pour ce commerce",
     "noSendCurrency": "Devise à envoyer non définie",
-    "notInitialized": "Non initialisé",
+    "notInitialized": "Chargement...",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "zeroAmount": "Le montant est zéro",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "Limite de dépenses",
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
-      "resetPeriodTitle": "Période de réinitialisation",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
       "endingSession": "Fin de la séance",
@@ -561,16 +560,6 @@
           "1hour": "1 heure",
           "3hours": "3 heures",
           "12hours": "12 heures"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Période de réinitialisation",
-        "description": "Définissez une durée pour réinitialiser le quota de limite de dépenses.",
-        "periods": {
-          "day": "Jour",
-          "week": "Semaine",
-          "month": "Mois",
-          "year": "Année"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "Revenez pour les récompenses de liaison",
     "collapseDetails": "Cacher details",
     "commission": "commission",
-    "currentDailyEarn": "Vous gagnez actuellement",
     "dailyEarnAmount": "{amount} / jour",
-    "day": "jour",
     "delegated": "Déléguer",
     "details": "Détails",
-    "earnMore": "Gagnez {amount} plus en blocant",
     "earnSwapFees": "Gagner des commissions d'échange",
     "earnSwapFeesCaption": "Convertissez vos jetons en actions et gagnez sur chaque échange.",
     "from": "de",

@@ -391,7 +391,7 @@
     "noAvailableShares": "Keine verfügbaren {denom} Freigaben",
     "noRoute": "Keine Route für diesen Handel",
     "noSendCurrency": "Die zu sendende Währung ist nicht festgelegt",
-    "notInitialized": "Nicht initialisiert",
+    "notInitialized": "Wird geladen...",
     "percentageSum": "Die Summe der Prozentsätze beträgt nicht 100",
     "scalingFactorTooLow": "Skalierungsfaktor zu niedrig",
     "zeroAmount": "Betrag ist Null",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "Ausgabenlimit",
       "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
       "sessionPeriodTitle": "Sitzungszeitraum",
-      "resetPeriodTitle": "Reset-Zeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
       "endingSession": "Sitzung beenden",
@@ -561,16 +560,6 @@
           "1hour": "1 Stunde",
           "3hours": "3 Stunden",
           "12hours": "12 Stunden"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Reset-Zeitraum",
-        "description": "Legen Sie einen Zeitraum fest, um das Ausgabenlimit-Kontingent zurückzusetzen.",
-        "periods": {
-          "day": "Tag",
-          "week": "Woche",
-          "month": "Monat",
-          "year": "Jahr"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "Schauen Sie noch einmal vorbei, um Bindungsprämien zu erhalten",
     "collapseDetails": "Poolzusammensetzung ausblenden",
     "commission": "Kommission",
-    "currentDailyEarn": "Sie verdienen derzeit",
     "dailyEarnAmount": "{amount} / Tag",
-    "day": "Tag",
     "delegated": "delegiert",
     "details": "Einzelheiten",
-    "earnMore": "Verdienen Sie {amount} mehr durch Bindung",
     "earnSwapFees": "Verdienen Sie Swap-Gebühren",
     "earnSwapFeesCaption": "Wandeln Sie Ihre Token in Aktien um und verdienen Sie bei jedem Tausch.",
     "from": "aus",

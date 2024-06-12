@@ -239,7 +239,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("base");
-                config.baseDepositAmountIn.setAmount(amount.toString());
+                config.baseDepositAmountIn.setAmount(amount);
               },
               [config]
             )}
@@ -256,7 +256,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("quote");
-                config.quoteDepositAmountIn.setAmount(amount.toString());
+                config.quoteDepositAmountIn.setAmount(amount);
               },
               [config]
             )}

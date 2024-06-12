@@ -391,7 +391,7 @@
     "noAvailableShares": "利用可能な{denom}共有がありません",
     "noRoute": "この取引にはルートがありません",
     "noSendCurrency": "送金通貨が設定されていません",
-    "notInitialized": "初期化されていません",
+    "notInitialized": "読み込み中...",
     "percentageSum": "パーセンテージの合計が 100 にならない",
     "scalingFactorTooLow": "倍率が低すぎる",
     "zeroAmount": "金額はゼロです",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
-      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
@@ -561,16 +560,6 @@
           "1hour": "1時間",
           "3hours": "3時間",
           "12hours": "12時間"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "リセット期間",
-        "description": "支出制限割り当てをリセットする期間を設定します。",
-        "periods": {
-          "day": "日",
-          "week": "週",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "絆の報酬をもう一度チェックしてください",
     "collapseDetails": "プール構成を非表示にする",
     "commission": "手数料",
-    "currentDailyEarn": "あなたは現在稼いでいます",
     "dailyEarnAmount": "{amount} / 日",
-    "day": "日",
     "delegated": "委任された",
     "details": "詳細",
-    "earnMore": "ボンディングによってさらに{amount}獲得しましょう",
     "earnSwapFees": "スワップ手数料を獲得する",
     "earnSwapFeesCaption": "トークンを株式に変換し、交換するたびに収益を上げます。",
     "from": "から",
