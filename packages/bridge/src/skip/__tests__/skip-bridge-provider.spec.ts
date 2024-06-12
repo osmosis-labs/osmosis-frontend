@@ -16,21 +16,18 @@ import {
 import { SkipBridgeProvider } from "..";
 import { SkipMsg } from "../types";
 
-jest.mock("viem", () => {
-  const originalModule = jest.requireActual("viem");
-  return {
-    ...originalModule,
-    createPublicClient: jest.fn().mockImplementation(() => ({
-      estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
-      request: jest.fn().mockResolvedValue("0x4a817c800"),
-      getGasPrice: jest.fn().mockResolvedValue(BigInt("20000000000")),
-      readContract: jest.fn().mockResolvedValue(BigInt("100")),
-    })),
-    encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
-    encodePacked: jest.fn().mockReturnValue("0xabcdef"),
-    keccak256: jest.fn().mockReturnValue("0xabcdef"),
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+    request: jest.fn().mockResolvedValue("0x4a817c800"),
+    getGasPrice: jest.fn().mockResolvedValue(BigInt("20000000000")),
+    readContract: jest.fn().mockResolvedValue(BigInt("100")),
+  })),
+  encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
+  encodePacked: jest.fn().mockReturnValue("0xabcdef"),
+  keccak256: jest.fn().mockReturnValue("0xabcdef"),
+}));
 
 beforeEach(() => {
   server.use(

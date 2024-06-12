@@ -501,7 +501,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
     const toChainAxelarId = this.getAxelarChainId(toChain);
 
     if (!fromChainAxelarId || !toChainAxelarId) {
-      throw new Error("Unsupported chain");
+      throw new Error(
+        `Unsupported chain: Chain ID ${
+          fromChainAxelarId || toChainAxelarId
+        } is not supported.`
+      );
     }
 
     return cachified({
