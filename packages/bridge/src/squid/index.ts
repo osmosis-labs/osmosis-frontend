@@ -270,7 +270,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
     const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-      return chainId === fromChain.chainId;
+      return String(chainId) === String(fromChain.chainId);
     });
 
     if (!squidFromChain) {
