@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useState } from "react";
 
+import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const useOrderbookPool = ({
@@ -13,8 +14,14 @@ export const useOrderbookPool = ({
   const [contractAddress] = useState<string>(
     "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w"
   );
+  const { accountStore } = useStore();
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: contractAddress,
+  });
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const orderState = useOrders({
+    orderbookAddress: contractAddress,
+    userAddress: account?.address ?? "",
   });
   return {
     poolId: "1",
@@ -23,6 +30,7 @@ export const useOrderbookPool = ({
     contractAddress,
     makerFee,
     isMakerFeeLoading,
+    orderState,
   };
 };
 
@@ -38,6 +46,24 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   }, [isLoading, makerFeeData]);
   return {
     makerFee,
+    isLoading,
+  };
+};
+
+const useOrders = ({
+  orderbookAddress,
+  userAddress,
+}: {
+  orderbookAddress: string;
+  userAddress: string;
+}) => {
+  const { data: orders, isLoading } =
+    api.local.orderbook.getActiveOrders.useQuery({
+      contractOsmoAddress: orderbookAddress,
+      userOsmoAddress: userAddress,
+    });
+  return {
+    orders,
     isLoading,
   };
 };

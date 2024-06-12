@@ -1,5 +1,8 @@
-import { queryOrderbookMakerFee } from "../queries";
-import { ContractOsmoAddressSchema } from "../queries/complex/parameter-types";
+import { queryOrderbookActiveOrders, queryOrderbookMakerFee } from "../queries";
+import {
+  ContractOsmoAddressSchema,
+  UserOsmoAddressSchema,
+} from "../queries/complex/parameter-types";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const orderbookRouter = createTRPCRouter({
@@ -14,5 +17,18 @@ export const orderbookRouter = createTRPCRouter({
       return {
         makerFee: data,
       };
+    }),
+  getActiveOrders: publicProcedure
+    .input(
+      ContractOsmoAddressSchema.required().and(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { contractOsmoAddress, userOsmoAddress } = input;
+      const resp = await queryOrderbookActiveOrders({
+        orderbookAddress: contractOsmoAddress,
+        userAddress: userOsmoAddress,
+        chainList: ctx.chainList,
+      });
+      return resp.data;
     }),
 });
