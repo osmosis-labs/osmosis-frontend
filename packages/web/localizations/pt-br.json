@@ -391,7 +391,7 @@
     "noAvailableShares": "Não está disponivel {denom} participações",
     "noRoute": "Sem rota para esta troca",
     "noSendCurrency": "Moeda para envio não configurada",
-    "notInitialized": "Não Inicializado",
+    "notInitialized": "Carregando...",
     "percentageSum": "A soma das porcentagens não é 100",
     "scalingFactorTooLow": "Fator de escalonamento muito baixo",
     "zeroAmount": "Quantia é zero",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "Limite de gastos",
       "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
-      "resetPeriodTitle": "Período de redefinição",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
       "endingSession": "Encerrando sessão",
@@ -561,16 +560,6 @@
           "1hour": "1 hora",
           "3hours": "3 horas",
           "12hours": "12 horas"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Período de redefinição",
-        "description": "Defina uma duração para redefinir a cota de limite de gastos.",
-        "periods": {
-          "day": "Dia",
-          "week": "Semana",
-          "month": "Mês",
-          "year": "Ano"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "Confira mais tarde por recompensas de delegação",
     "collapseDetails": "Esconder composição da piscina",
     "commission": "comissão",
-    "currentDailyEarn": "Você está ganhando atualmente",
     "dailyEarnAmount": "{amount} / dia",
-    "day": "dia",
     "delegated": "delegado",
     "details": "Detalhes",
-    "earnMore": "Ganhe {amount} mais travando",
     "earnSwapFees": "Ganhe taxas de troca",
     "earnSwapFeesCaption": "Converta seus tokens em ações e ganhe em cada troca",
     "from": "de",

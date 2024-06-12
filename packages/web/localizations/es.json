@@ -391,7 +391,7 @@
     "noAvailableShares": "No hay acciones disponibles {denom}",
     "noRoute": "No hay ruta para este cambio",
     "noSendCurrency": "Moneda para enviar no establecida",
-    "notInitialized": "No inicializado",
+    "notInitialized": "Cargando...",
     "percentageSum": "La suma de porcentajes no es 100",
     "scalingFactorTooLow": "Factor de escala demasiado bajo",
     "zeroAmount": "La cantidad es cero",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "Límite de gasto",
       "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
-      "resetPeriodTitle": "Periodo de reinicio",
       "startButton": "Comience a operar con 1 clic",
       "editSessionButton": "Guardar cambios",
       "endingSession": "Finalizando sesión",
@@ -561,16 +560,6 @@
           "1hour": "1 hora",
           "3hours": "3 horas",
           "12hours": "12 horas"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "Periodo de reinicio",
-        "description": "Establezca una duración para restablecer la cuota de límite de gasto.",
-        "periods": {
-          "day": "Día",
-          "week": "Semana",
-          "month": "Mes",
-          "year": "Año"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "Vuelva a consultar las recompensas de vinculación",
     "collapseDetails": "Ocultar detalles",
     "commission": "comisión",
-    "currentDailyEarn": "Actualmente estás ganando",
     "dailyEarnAmount": "{amount} / día",
-    "day": "día",
     "delegated": "delegado",
     "details": "Detalles",
-    "earnMore": "Gane {amount} más por abonar",
     "earnSwapFees": "Ganar tarifas de intercambio",
     "earnSwapFeesCaption": "Convierta sus tokens en participaciones y gane en cada intercambio.",
     "from": "de",

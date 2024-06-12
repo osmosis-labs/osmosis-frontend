@@ -19,8 +19,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
-
-import { useBalances } from "../queries/cosmos/use-balances";
+import { api } from "~/utils/trpc";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user’s currency balance as input. Includes support for debounce on input.
@@ -39,13 +38,14 @@ export function useAmountInput({
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances, isFetched: isBalancesFetched } = useBalances({
-    address: account?.address ?? "",
-    queryOptions: {
-      enabled: Boolean(account?.address),
-    },
-  });
-  const rawCurrencyBalance = balances?.balances.find(
+  const { data: balances, isFetched: isBalancesFetched } =
+    api.local.balances.getUserBalances.useQuery(
+      {
+        bech32Address: account?.address ?? "",
+      },
+      { enabled: Boolean(account?.address) }
+    );
+  const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
   // manage amounts, with ability to set fraction of the amount

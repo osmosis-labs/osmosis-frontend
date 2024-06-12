@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
@@ -201,44 +201,54 @@ export async function getUserSharePools(params: {
 
     // underlying assets behind all shares
     // when catching: likely shares balance is too small for precision
-    const underlyingAvailableCoins: CoinPretty[] = available
-      ? await getGammShareUnderlyingCoins({ ...params, ...available }).catch(
-          (e) => captureErrorAndReturn(e, [])
-        )
-      : [];
-    const underlyingLockedCoins: CoinPretty[] = locked
-      ? await getGammShareUnderlyingCoins({ ...params, ...locked }).catch((e) =>
-          captureErrorAndReturn(e, [])
-        )
-      : [];
-    const underlyingUnlockingCoins: CoinPretty[] = unlocking
-      ? await getGammShareUnderlyingCoins({ ...params, ...unlocking }).catch(
-          (e) => captureErrorAndReturn(e, [])
-        )
-      : [];
-    const totalCoins: CoinPretty[] = total
-      ? await getGammShareUnderlyingCoins({ ...params, ...total }).catch((e) =>
-          captureErrorAndReturn(e, [])
-        )
-      : [];
+    const [
+      underlyingAvailableCoins,
+      underlyingLockedCoins,
+      underlyingUnlockingCoins,
+      totalCoins,
+    ] = await Promise.all([
+      available
+        ? getGammShareUnderlyingCoins({ ...params, ...available }).catch((e) =>
+            captureErrorAndReturn(e, [])
+          )
+        : Promise.resolve([]),
+      locked
+        ? getGammShareUnderlyingCoins({ ...params, ...locked }).catch((e) =>
+            captureErrorAndReturn(e, [])
+          )
+        : Promise.resolve([]),
+      unlocking
+        ? getGammShareUnderlyingCoins({ ...params, ...unlocking }).catch((e) =>
+            captureErrorAndReturn(e, [])
+          )
+        : Promise.resolve([]),
+      total
+        ? getGammShareUnderlyingCoins({ ...params, ...total }).catch((e) =>
+            captureErrorAndReturn(e, [])
+          )
+        : Promise.resolve([]),
+    ]);
 
     // value of all shares
-    const availableValue = await calcSumCoinsValue({
-      ...params,
-      coins: underlyingAvailableCoins,
-    });
-    const lockedValue = await calcSumCoinsValue({
-      ...params,
-      coins: underlyingLockedCoins,
-    });
-    const unlockingValue = await calcSumCoinsValue({
-      ...params,
-      coins: underlyingUnlockingCoins,
-    });
-    const totalValue = await calcSumCoinsValue({
-      ...params,
-      coins: totalCoins,
-    });
+    const [availableValue, lockedValue, unlockingValue, totalValue] =
+      await Promise.all([
+        calcSumCoinsValue({
+          ...params,
+          coins: underlyingAvailableCoins,
+        }),
+        calcSumCoinsValue({
+          ...params,
+          coins: underlyingLockedCoins,
+        }),
+        calcSumCoinsValue({
+          ...params,
+          coins: underlyingUnlockingCoins,
+        }),
+        calcSumCoinsValue({
+          ...params,
+          coins: totalCoins,
+        }),
+      ]);
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(

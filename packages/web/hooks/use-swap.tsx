@@ -18,7 +18,6 @@ import {
   makeMinimalAsset,
 } from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -45,7 +44,6 @@ import { useStore } from "~/stores";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
@@ -97,7 +95,6 @@ export function useSwap(
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -415,14 +412,7 @@ export function useSwap(
             reject(new Error("No routes given"));
           }
         }
-      ).finally(() => {
-        // TODO: Move this logic to osmosis account store
-        // But for now we will invalidate query data here.
-        if (!account?.address) return;
-        useBalances.invalidateQuery({ address: account.address, queryClient });
-
-        inAmountInput.reset();
-      }),
+      ).finally(() => inAmountInput.reset()),
     [
       maxSlippage,
       inAmountInput,
@@ -438,7 +428,6 @@ export function useSwap(
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
-      queryClient,
     ]
   );
 
@@ -1232,6 +1221,8 @@ function useQueryRouterBestQuote(
           // the gas simulation will fail due to slippage and the user would see errors
           staleTime: 5_000,
           cacheTime: 5_000,
+          refetchInterval: 5_000,
+
           // Disable retries, as useQueries
           // will block successfull quotes from being returned
           // if failed quotes are being returned

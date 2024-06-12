@@ -2,32 +2,40 @@ import {
   AreaData,
   AreaSeriesOptions,
   DeepPartial,
+  Time,
   UTCTimestamp,
 } from "lightweight-charts";
 import React, { FunctionComponent, memo } from "react";
 
-import { LinearChartController } from "~/components/chart/light-weight-charts/linear-chart";
+import { AreaChartController } from "~/components/chart/light-weight-charts/area-chart";
+import { theme } from "~/tailwind.config";
 
 import { Chart } from "./light-weight-charts/chart";
 
 const seriesOpt: DeepPartial<AreaSeriesOptions> = {
-  lineColor: "#8C8AF9",
-  topColor: "rgba(60, 53, 109, 1)",
-  bottomColor: "rgba(32, 27, 67, 1)",
+  lineColor: theme.colors.wosmongton[300],
+  topColor: theme.colors.osmoverse[700],
+  bottomColor: theme.colors.osmoverse[850],
   priceLineVisible: false,
-  priceScaleId: "left",
+  lastValueVisible: false,
+  priceScaleId: "right",
   crosshairMarkerBorderWidth: 0,
   crosshairMarkerRadius: 8,
+  priceFormat: {
+    type: "price",
+    precision: 10,
+    minMove: 0.0000001,
+  },
 };
 
 export const HistoricalPriceChartV2: FunctionComponent<{
   data: { close: number; time: number }[];
-  onPointerHover?: (price: number) => void;
+  onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
 }> = memo(({ data = [], onPointerHover, onPointerOut }) => {
   return (
     <Chart
-      Controller={LinearChartController}
+      Controller={AreaChartController}
       series={[
         {
           type: "Area",
@@ -42,7 +50,7 @@ export const HistoricalPriceChartV2: FunctionComponent<{
         if (params.seriesData.size > 0) {
           const [data] = [...params.seriesData.values()] as AreaData[];
 
-          onPointerHover?.(data.value);
+          onPointerHover?.(data.value, data.time);
         } else {
           onPointerOut?.();
         }

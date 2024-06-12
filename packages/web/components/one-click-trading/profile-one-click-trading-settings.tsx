@@ -33,6 +33,7 @@ export const ProfileOneClickTradingSettings = ({
       enabled: shouldFetchSessionAuthenticator,
       cacheTime: 15_000, // 15 seconds
       staleTime: 15_000, // 15 seconds
+      retry: false,
     }
   );
 

@@ -391,7 +391,7 @@
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
-    "notInitialized": "초기화되지 않았습니다",
+    "notInitialized": "로드 중...",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
     "zeroAmount": "수량이 0입니다.",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "resetPeriodTitle": "재설정 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
       "endingSession": "세션 종료",
@@ -561,16 +560,6 @@
           "1hour": "1 시간",
           "3hours": "3 시간",
           "12hours": "12 시간"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "재설정 기간",
-        "description": "지출 한도 할당량을 재설정하는 기간을 설정하세요.",
-        "periods": {
-          "day": "낮",
-          "week": "주",
-          "month": "월",
-          "year": "년도"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "나중에 다시 방문하여 본딩 보상을 확인하십시오.",
     "collapseDetails": "닫기",
     "commission": "수수료",
-    "currentDailyEarn": "내 일일 보상",
     "dailyEarnAmount": "{amount} /일",
-    "day": "일",
     "delegated": "위임된 자산",
     "details": "상세정보",
-    "earnMore": "본딩으로 {amount} 더 벌기",
     "earnSwapFees": "교환 수수료 수익 받기",
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 교환이 발생하면 수수료를 받으세요",
     "from": "출처:",

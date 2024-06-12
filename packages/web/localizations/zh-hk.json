@@ -391,7 +391,7 @@
     "noAvailableShares": "冇可用嘅 {denom} 份額喎",
     "noRoute": "此交易沒有路線",
     "noSendCurrency": "未設定要傳送嘅貨幣",
-    "notInitialized": "未初始化",
+    "notInitialized": "載入中...",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
     "zeroAmount": "未提供幣額",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "消費限額",
       "networkFeeLimitTitle": "網路費用限額",
       "sessionPeriodTitle": "會議期間",
-      "resetPeriodTitle": "重置期",
       "startButton": "開始一鍵交易",
       "editSessionButton": "儲存變更",
       "endingSession": "結束會議",
@@ -561,16 +560,6 @@
           "1hour": "1小時",
           "3hours": "3小時",
           "12hours": "12小時"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "重置期",
-        "description": "設定重置支出限額配額的持續時間。",
-        "periods": {
-          "day": "天",
-          "week": "星期",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "稍後回來確認鎖定獎勵",
     "collapseDetails": "收起詳情",
     "commission": "佣金",
-    "currentDailyEarn": "你現在正賺取",
     "dailyEarnAmount": "{amount} /天",
-    "day": "日",
     "delegated": "已質押",
     "details": "詳情",
-    "earnMore": "通過鎖定賺取 {amount}",
     "earnSwapFees": "賺取兌換費",
     "earnSwapFeesCaption": "轉換你嘅代幣成流動性池份額並賺取每次兌換嘅兌換費",
     "from": "來自",

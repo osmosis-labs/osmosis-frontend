@@ -63,10 +63,11 @@ export class LinearChartController extends AreaChartController {
 
           return `
             <h6 class="text-h6 font-semibold text-white-full whitespace-nowrap">
-              $
               ${
                 formatPretty(closeDec, {
                   maxDecimals,
+                  currency: "USD",
+                  style: "currency",
                   ...formatOpts,
                 }) || ""
               }

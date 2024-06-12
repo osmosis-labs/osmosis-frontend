@@ -255,10 +255,6 @@ export async function mapGetUserPositionDetails({
     ...params,
     bech32Address: userOsmoAddress,
   });
-  const stakeCurrencyPromise = getAsset({
-    ...params,
-    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
-  });
   const superfluidPoolIdsPromise = getSuperfluidPoolIds(params);
 
   const [
@@ -266,16 +262,19 @@ export async function mapGetUserPositionDetails({
     userUnbondingPositions,
     delegatedPositions,
     undelegatingPositions,
-    stakeCurrency,
     superfluidPoolIds,
   ] = await Promise.all([
     positionsPromise,
     userUnbondingPositionsPromise,
     delegatedPositionsPromise,
     undelegatingPositionsPromise,
-    stakeCurrencyPromise,
     superfluidPoolIdsPromise,
   ]);
+
+  const stakeCurrency = getAsset({
+    ...params,
+    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
+  });
 
   const lockableDurations = getLockableDurations();
   const longestLockDuration = lockableDurations[lockableDurations.length - 1];
@@ -585,23 +584,28 @@ export type PositionHistoricalPerformance = Awaited<
 
 /** Gets a breakdown of current and reward coins, with fiat values, for a single CL position. */
 export async function getPositionHistoricalPerformance({
-  positionId,
+  position: givenPosition,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
-  positionId: string;
+  /** Position by ID or the returned position object. */
+  position: string | LiquidityPosition;
 }) {
-  const [{ position }, performance] = await Promise.all([
-    queryPositionById({ ...params, id: positionId }),
-    queryPositionPerformance({
-      positionId,
-    }),
-  ]);
+  const { position } =
+    typeof givenPosition === "string"
+      ? await queryPositionById({ ...params, id: givenPosition })
+      : { position: givenPosition };
+
+  const performance = await queryPositionPerformance({
+    positionId: position.position.position_id,
+  });
 
   // There is no performance data for this position
   if (performance.message) {
-    console.error(`No performance data for position ${positionId}`);
+    console.error(
+      `No performance data for position ${position.position.position_id}`
+    );
   }
 
   // get all user CL coins, including claimable rewards
@@ -651,31 +655,33 @@ export async function getPositionHistoricalPerformance({
 
   // calculate fiat values
 
-  const currentValue = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue({ ...params, coins: currentCoins }).catch((e) =>
-      captureErrorAndReturn(e, new Dec(0))
-    )
-  );
-  const currentCoinsValues = (
-    await Promise.all(
+  const [
+    currentValue,
+    currentCoinsValues,
+    principalValue,
+    claimableRewardsValue,
+    totalEarnedValue,
+  ] = await Promise.all([
+    calcSumCoinsValue({ ...params, coins: currentCoins })
+      .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value))
+      .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))),
+    Promise.all(
       currentCoins
         .map((coin) => calcCoinValue({ ...params, coin }))
         .map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
-    )
-  ).map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p));
-  const principalValue = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue({ ...params, coins: principalCoins })
-  );
-  const claimableRewardsValue = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue({ ...params, coins: claimableRewardCoins })
-  );
-  const totalEarnedValue = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    await calcSumCoinsValue({ ...params, coins: totalRewardCoins })
-  );
+    ).then((values) =>
+      values.map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p))
+    ),
+    calcSumCoinsValue({ ...params, coins: principalCoins }).then(
+      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+    ),
+    calcSumCoinsValue({ ...params, coins: claimableRewardCoins }).then(
+      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+    ),
+    calcSumCoinsValue({ ...params, coins: totalRewardCoins }).then(
+      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
+    ),
+  ]);
 
   const principalValueDec = principalValue.toDec();
 
