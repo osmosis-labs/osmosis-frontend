@@ -36,10 +36,9 @@
     "@osmosis-labs/tx": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
     "cachified": "^3.5.4",
-    "ethers": "^6.8.0",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
-    "web3-utils": "^1.7.4",
+    "viem": "2.13.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {

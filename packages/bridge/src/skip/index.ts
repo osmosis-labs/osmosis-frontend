@@ -1,15 +1,21 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { isNil } from "@osmosis-labs/utils";
 import cachified from "cachified";
-import { ethers, JsonRpcProvider } from "ethers";
-import { toHex } from "web3-utils";
+import {
+  Address,
+  createPublicClient,
+  encodeFunctionData,
+  encodePacked,
+  erc20Abi,
+  http,
+  keccak256,
+  maxUint256,
+  numberToHex,
+} from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
-import {
-  Erc20Abi,
-  EthereumChainInfo,
-  NativeEVMTokenConstantAddress,
-} from "../ethereum";
+import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -151,7 +157,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
-          fromAddress,
+          fromAddress as Address,
           msgs
         );
 
@@ -211,7 +217,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createTransaction(
     chainID: string,
-    address: string,
+    address: Address,
     messages: SkipMsg[]
   ) {
     for (const message of messages) {
@@ -262,7 +268,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createEvmTransaction(
     chainID: string,
-    sender: string,
+    sender: Address,
     message: SkipEvmTx
   ): Promise<EvmBridgeTransactionRequest> {
     let approvalTransactionRequest;
@@ -278,32 +284,35 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     return {
       type: "evm",
-      to: message.to,
+      to: message.to as Address,
       data: `0x${message.data}`,
-      value: toHex(message.value),
+      value: numberToHex(BigInt(message.value)),
       approvalTransactionRequest,
     };
   }
 
-  private getEthersProvider(chainID: string) {
+  private getViemProvider(chainID: string) {
     const evmChain = Object.values(EthereumChainInfo).find(
-      (chain) => chain.chainId.toString() === chainID
+      (chain) => chain.id.toString() === chainID
     );
 
     if (!evmChain) {
       throw new Error("Could not find EVM chain");
     }
 
-    const provider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
+    const provider = createPublicClient({
+      chain: evmChain,
+      transport: http(evmChain.rpcUrls.default.http[0]),
+    });
 
     return provider;
   }
 
   async getApprovalTransactionRequest(
     chainID: string,
-    tokenAddress: string,
-    owner: string,
-    spender: string,
+    tokenAddress: Address,
+    owner: Address,
+    spender: Address,
     amount: string
   ): Promise<
     | {
@@ -312,28 +321,28 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
     | undefined
   > {
-    const provider = this.getEthersProvider(chainID);
+    const provider = this.getViemProvider(chainID);
 
-    const fromTokenContract = new ethers.Contract(
-      tokenAddress,
-      Erc20Abi,
-      provider
-    );
-
-    const allowance = await fromTokenContract.allowance(owner, spender);
+    const allowance = await provider.readContract({
+      abi: erc20Abi,
+      address: tokenAddress,
+      functionName: "allowance",
+      args: [owner, spender],
+    });
 
     if (BigInt(allowance.toString()) >= BigInt(amount)) {
       return;
     }
 
-    const approveTx = await fromTokenContract.approve.populateTransaction(
-      spender,
-      amount
-    );
+    const approveTxData = encodeFunctionData({
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [spender, BigInt(amount)],
+    });
 
     return {
-      to: approveTx.to!,
-      data: approveTx.data!,
+      to: tokenAddress,
+      data: approveTxData,
     };
   }
 
@@ -493,12 +502,15 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
 
     const evmChain = Object.values(EthereumChainInfo).find(
-      ({ chainId }) => chainId === params.fromChain.chainId
+      ({ id: chainId }) => chainId === params.fromChain.chainId
     );
 
     if (!evmChain) throw new Error("Could not find EVM chain");
 
-    const provider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
+    const provider = createPublicClient({
+      chain: evmChain,
+      transport: http(evmChain.rpcUrls.default.http[0]),
+    });
 
     const estimatedGas = await this.estimateEvmGasWithStateOverrides(
       provider,
@@ -509,13 +521,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       return;
     }
 
-    const feeData = await provider.getFeeData();
+    const gasPrice = await provider.getGasPrice();
 
-    if (!feeData.gasPrice) {
+    if (!gasPrice) {
       throw new Error("Failed to get gas price");
     }
 
-    const gasCost = estimatedGas * feeData.gasPrice;
+    const gasCost = estimatedGas * gasPrice;
 
     return {
       amount: gasCost.toString(),
@@ -526,17 +538,17 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   async estimateEvmGasWithStateOverrides(
-    provider: JsonRpcProvider,
+    provider: ReturnType<typeof createPublicClient>,
     params: GetBridgeQuoteParams,
     txData: EvmBridgeTransactionRequest
   ) {
     try {
       if (!txData.approvalTransactionRequest) {
         const estimatedGas = await provider.estimateGas({
-          from: params.fromAddress,
+          account: params.fromAddress as Address,
           to: txData.to,
           data: txData.data,
-          value: txData.value,
+          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
         });
 
         return BigInt(estimatedGas);
@@ -544,13 +556,14 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       const slot = 10; // Allowance slot (differs from contract to contract but is usually 10)
 
-      const temp = ethers.solidityPackedKeccak256(
-        ["uint256", "uint256"],
-        [params.fromAddress, slot]
+      const temp = keccak256(
+        encodePacked(
+          ["uint256", "uint256"],
+          [BigInt(params.fromAddress), BigInt(slot)]
+        )
       );
-      const index = ethers.solidityPackedKeccak256(
-        ["uint256", "uint256"],
-        [txData.to, temp]
+      const index = keccak256(
+        encodePacked(["uint256", "uint256"], [BigInt(txData.to), BigInt(temp)])
       );
 
       const callParams = [
@@ -566,16 +579,16 @@ export class SkipBridgeProvider implements BridgeProvider {
       const stateDiff = {
         [txData.approvalTransactionRequest.to]: {
           stateDiff: {
-            [index]: `0x${ethers.MaxUint256.toString(16)}`,
+            [index]: `0x${maxUint256.toString(16)}`,
           },
         },
       };
 
       // Call with no state overrides
-      const callResult = await provider.send("eth_estimateGas", [
-        ...callParams,
-        stateDiff,
-      ]);
+      const callResult = await provider.request({
+        method: "eth_estimateGas",
+        params: [...callParams, stateDiff],
+      });
 
       return BigInt(callResult);
     } catch (err) {
