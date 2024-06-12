@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
@@ -11,6 +11,7 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
@@ -31,9 +32,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ orderDirection = OrderDirection.Bid }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
+    const {
+      selectableBaseDenoms,
+      selectableQuoteDenoms,
+      selectableBaseAssets,
+    } = useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
-    const [baseDenom, setBaseDenom] = useState<string>("ION");
-    const quoteDenom = "OSMO";
+    const [baseDenom, setBaseDenom] = useState<string>("OSMO");
+    const [quoteDenom, setQuoteDenom] = useState<string>("USDC");
+
+    useEffect(() => {
+      if (selectableBaseDenoms.length > 0) {
+        const baseDenom = selectableBaseDenoms[0];
+        setBaseDenom(baseDenom);
+      }
+    }, [selectableBaseDenoms, selectableQuoteDenoms]);
+    useEffect(() => {
+      if (Object.keys(selectableQuoteDenoms).length > 0) {
+        const quoteDenom = selectableQuoteDenoms[baseDenom][0];
+        setQuoteDenom(quoteDenom);
+      }
+    }, [selectableQuoteDenoms, baseDenom]);
 
     const { poolId, contractAddress, makerFee } = useOrderbookPool({
       baseDenom,
@@ -56,7 +75,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       <>
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
-            selectableAssets={[swapState.baseAsset, swapState.quoteAsset]}
+            selectableAssets={selectableBaseAssets as any[]}
             baseAsset={swapState.baseAsset}
             quoteAsset={swapState.quoteAsset}
             baseBalance={swapState.baseTokenBalance}

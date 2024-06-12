@@ -202,7 +202,6 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
     const assetToActivate = assets.find(
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
     );
-
     return (
       <div onKeyDown={containerKeyDown}>
         <ActivateUnverifiedTokenConfirmation

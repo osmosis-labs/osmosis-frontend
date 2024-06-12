@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
+import { useOrderbookByDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -11,23 +12,24 @@ export const useOrderbookPool = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const [contractAddress] = useState<string>(
-    "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w"
-  );
+  const { orderbook } = useOrderbookByDenoms({
+    baseDenom,
+    quoteDenom,
+  });
   const { accountStore } = useStore();
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
-    orderbookAddress: contractAddress,
+    orderbookAddress: orderbook?.contractAddress ?? "",
   });
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const orderState = useOrders({
-    orderbookAddress: contractAddress,
+    orderbookAddress: orderbook?.contractAddress ?? "",
     userAddress: account?.address ?? "",
   });
   return {
     poolId: "1",
     baseDenom,
     quoteDenom,
-    contractAddress,
+    contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,
     orderState,
