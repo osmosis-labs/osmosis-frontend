@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer-limit";
+import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -121,7 +121,15 @@ export const TokenSelectLimit: FunctionComponent<
 
     return (
       <div className="flex flex-col">
-        <div className="flex items-center justify-between rounded-tl-xl rounded-tr-xl bg-osmoverse-850 py-3 px-5 md:justify-start">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (tokenSelectionAvailable) {
+              setIsSelectOpen(!isSelectOpen);
+            }
+          }}
+          className="flex items-center justify-between rounded-t-xl bg-osmoverse-850 py-3 px-5 md:justify-start"
+        >
           {baseAsset && (
             <div
               className={classNames(
@@ -144,12 +152,12 @@ export const TokenSelectLimit: FunctionComponent<
                 </div>
               )}
               <div className="flex flex-col">
-                <div className="flex items-center">
-                  <h6>{baseAsset.coinName}</h6>
-                  <span className="md:caption ml-2 w-32 truncate text-h6 font-h6 text-osmoverse-400">
+                <h6 className="inline-flex items-center gap-2">
+                  <span>{baseAsset.coinName}</span>
+                  <span className="md:caption w-32 truncate text-left text-osmoverse-400">
                     {baseAsset.coinDenom}
                   </span>
-                </div>
+                </h6>
                 {showBaseBalance && (
                   <div className="flex text-body1 text-osmoverse-300">
                     {formatPretty(baseFiatBalance)} available
@@ -159,23 +167,15 @@ export const TokenSelectLimit: FunctionComponent<
             </div>
           )}
           {tokenSelectionAvailable && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (tokenSelectionAvailable) {
-                  setIsSelectOpen(!isSelectOpen);
-                }
-              }}
-              className="flex h-6 w-6 items-center justify-center"
-            >
+            <div className="flex h-6 w-6 items-center justify-center">
               <Icon
                 id="chevron-down"
                 className="h-[7px] w-3 text-osmoverse-300"
               />
-            </button>
+            </div>
           )}
-        </div>
-        <div className="flex items-center justify-between rounded-bl-xl rounded-br-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+        </button>
+        <div className="flex items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
           <div className="flex w-full items-center justify-between">
             {quoteAsset && (
               <div
@@ -226,12 +226,12 @@ export const TokenSelectLimit: FunctionComponent<
             </div>
           </div>
         </div>
-        <TokenSelectDrawerLimit
+        <TokenSelectModalLimit
           isOpen={isSelectOpen}
           onClose={() => setIsSelectOpen(false)}
           onSelect={onSelect}
-          showSearchBox={true}
-          showRecommendedTokens={false}
+          showSearchBox
+          showRecommendedTokens
           selectableAssets={preSortedTokens}
         />
       </div>
