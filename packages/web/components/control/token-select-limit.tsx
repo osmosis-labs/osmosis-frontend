@@ -8,6 +8,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
+import PriceSelector from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -175,57 +176,13 @@ export const TokenSelectLimit: FunctionComponent<
             </div>
           )}
         </button>
-        <div className="flex items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
-          <div className="flex w-full items-center justify-between">
-            {quoteAsset && (
-              <div
-                className={classNames(
-                  "flex items-center gap-2 transition-opacity",
-                  tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
-                  {
-                    "opacity-40": disabled,
-                  }
-                )}
-              >
-                <span className="body2 text-osmoverse-300">
-                  {orderDirection === OrderDirection.Bid
-                    ? "Pay with"
-                    : "Receive"}
-                </span>
-                {quoteAsset.coinImageUrl && (
-                  <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                    <Image
-                      src={quoteAsset.coinImageUrl}
-                      alt="token icon"
-                      width={24}
-                      height={24}
-                      priority
-                    />
-                  </div>
-                )}
-                <span className="md:caption body2 w-32 truncate text-left">
-                  {quoteAsset.coinDenom}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              {showQuoteBalance && (
-                <span className="body2 inline-flex text-osmoverse-300">
-                  {formatPretty(quoteFiatBalance, {
-                    minimumFractionDigits: 5,
-                  })}{" "}
-                  available
-                </span>
-              )}
-              <button className="flex h-6 w-6 items-center justify-center">
-                <Icon
-                  id="chevron-down"
-                  className="h-[7px] w-3 text-osmoverse-300"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
+        <PriceSelector
+          quoteAsset={quoteAsset}
+          showQuoteBalance={showQuoteBalance}
+          tokenSelectionAvailable={tokenSelectionAvailable}
+          disabled={disabled}
+          quoteFiatBalance={quoteFiatBalance}
+        />
         <TokenSelectModalLimit
           isOpen={isSelectOpen}
           onClose={() => setIsSelectOpen(false)}
