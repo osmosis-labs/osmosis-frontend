@@ -1130,6 +1130,18 @@
     "newer": "Plus récent"
   },
   "place-limit": {
-    "reviewOrder": "Réviser la commande"
+    "reviewOrder": "Réviser la commande",
+    "marketOrder": {
+      "title": "Ordre du marché",
+      "description": "Achetez immédiatement au meilleur prix disponible"
+    },
+    "limitOrder": {
+      "title": "Ordre Limité",
+      "description": "Achetez lorsque le prix {denom} diminue"
+    },
+    "recurringOrder": {
+      "title": "Commande récurrente",
+      "description": "Acheter au prix moyen dans le temps"
+    }
   }
 }

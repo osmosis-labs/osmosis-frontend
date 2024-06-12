@@ -52,7 +52,7 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
           >
             <p
               className={classNames("font-semibold", {
-                "text-osmoverse-100": !isActive,
+                "text-wosmongton-100": !isActive,
               })}
             >
               {tab.label}

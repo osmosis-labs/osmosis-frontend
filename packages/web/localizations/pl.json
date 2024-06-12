@@ -1130,6 +1130,18 @@
     "newer": "Nowsza"
   },
   "place-limit": {
-    "reviewOrder": "Przegląd zamówienia"
+    "reviewOrder": "Przegląd zamówienia",
+    "marketOrder": {
+      "title": "Porządek rynkowy",
+      "description": "Kup natychmiast po najlepszej dostępnej cenie"
+    },
+    "limitOrder": {
+      "title": "Zamówienie z limitem",
+      "description": "Kupuj, gdy cena {denom} spadnie"
+    },
+    "recurringOrder": {
+      "title": "Zamówienie powtarzające się",
+      "description": "Kupuj po średniej cenie na przestrzeni czasu"
+    }
   }
 }
