@@ -15,8 +15,6 @@ import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 import * as prettier from "prettier";
 
-// import { trustMobileInfo } from "~/integrations/trust-walletconnect";
-
 type UpdateWalletMode =
   | "ledger"
   | "extension"
@@ -34,7 +32,6 @@ const CosmosKitWalletList: Wallet[] = [
   leapExtensionInfo,
   leapMobileInfo,
   trustExtensionInfo,
-  // trustMobileInfo,
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
   xdefiExtensionInfo,
