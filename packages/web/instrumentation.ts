@@ -5,7 +5,7 @@ export function register() {
     serviceName: "vercel-datadog",
     instrumentationConfig: {
       fetch: {
-        propagateContextUrls: ["*"],
+        propagateContextUrls: [".*"],
       },
     },
   });
