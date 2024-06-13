@@ -143,7 +143,7 @@ export interface Asset {
   };
 
   /** Flag indicating if this asset is an alloyed asset. */
-  isAlloyed: boolean;
+  isAlloyed?: boolean;
   /** Contract address of alloyed asset CW pool. */
   contract?: string;
 
