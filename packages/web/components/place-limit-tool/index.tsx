@@ -39,8 +39,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom,
       quoteDenom,
     });
+
     const swapState = usePlaceLimit({
-      osmosisChainId: "localosmosis",
+      osmosisChainId: accountStore.osmosisChainId,
       poolId,
       orderDirection,
       useQueryParams: false,
