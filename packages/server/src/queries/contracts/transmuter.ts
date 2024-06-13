@@ -2,10 +2,12 @@ import { getQuerySmartContractPath } from "../cosmwasm/wasm";
 import { createNodeQuery } from "../create-node-query";
 
 interface TransmuterTotalPoolLiquidityResponse {
-  total_pool_liquidity: {
-    denom: string;
-    amount: string;
-  }[];
+  data: {
+    total_pool_liquidity: {
+      denom: string;
+      amount: string;
+    }[];
+  };
 }
 
 export const queryTransmuterTotalPoolLiquidity = createNodeQuery<

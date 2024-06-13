@@ -31,7 +31,9 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         coin: CoinPretty;
       }> = [];
 
-      const { total_pool_liquidity } = await queryTransmuterTotalPoolLiquidity({
+      const {
+        data: { total_pool_liquidity = [] },
+      } = await queryTransmuterTotalPoolLiquidity({
         contractAddress,
         chainList,
       });
