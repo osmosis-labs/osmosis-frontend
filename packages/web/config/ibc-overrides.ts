@@ -621,7 +621,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
-  BERLIN: {
+  "BERLIN-legacy": {
     depositUrlOverride: "https://app.evmos.org/assets",
   },
   BMOS: {
