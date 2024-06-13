@@ -42,6 +42,20 @@ export interface BridgeProvider {
   ) => Promise<BridgeTransactionRequest>;
 
   /**
+   * Requests the available source assets for a given destination chain and destination coin.
+   * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
+   * In practice, this can be used to offer a list of selectable assets for the user to choose from.
+   *
+   * @param toChain The destination chain.
+   * @param toAsset The destination coin.
+   * @returns A promise that resolves to an array of source coins with source identifiers.
+   */
+  getAvailableSourceAssetVariants(
+    toChain: BridgeChain,
+    toAsset: BridgeAsset
+  ): Promise<BridgeAsset[]>;
+
+  /**
    * If the provider supports deposit address transfers:
    * Requests for a deposit address generated from the given params.
    * Sending to the deposit address automatically triggers the transfer.

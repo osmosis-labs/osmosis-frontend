@@ -19,6 +19,7 @@ import { BridgeError, BridgeQuoteError } from "../errors";
 import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
+  BridgeChain,
   BridgeCoin,
   BridgeDepositAddress,
   BridgeProvider,
@@ -31,6 +32,7 @@ import {
   GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { getAxelarAssets, getAxelarChains } from "./queries";
 import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
   AxelarChainIds_SourceChainMap,
@@ -248,6 +250,81 @@ export class AxelarBridgeProvider implements BridgeProvider {
       },
       ttl: 20 * 1000, // 20 seconds,
     });
+  }
+
+  async getAvailableSourceAssetVariants(
+    toChain: BridgeChain,
+    toAsset: BridgeAsset
+  ): Promise<BridgeAsset[]> {
+    // get origin axelar asset info from given toAsset
+    const axelarAssets = await getAxelarAssets({ env: this.ctx.env });
+    const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
+      Object.keys(addresses).some(
+        (address) =>
+          addresses[address]?.ibc_denom === toAsset.address ||
+          addresses[address]?.address === toAsset.address
+      )
+    );
+    if (!axelarSourceAsset) return [];
+
+    // make sure to chain and to asset align (validation)
+    const toChainAxelarId = this.getAxelarChainId(toChain);
+    if (!toChainAxelarId) return [];
+    const axelarToAssetAddress = axelarSourceAsset.addresses[toChainAxelarId];
+    if (
+      !axelarToAssetAddress ||
+      toAsset.address !== axelarToAssetAddress.ibc_denom ||
+      toAsset.address !== axelarToAssetAddress.address
+    )
+      return [];
+
+    const sourceVariants: BridgeAsset[] = [];
+
+    // return just origin asset and the unwrapped version for now, but
+    // can return other axl-versions later if wanted
+    const nativeChainAsset =
+      axelarSourceAsset.addresses[axelarSourceAsset.native_chain];
+    if (!nativeChainAsset) return [];
+    else {
+      const sourceAssetId =
+        nativeChainAsset?.address ?? nativeChainAsset?.ibc_denom;
+      if (!sourceAssetId) return [];
+
+      sourceVariants.push({
+        denom: nativeChainAsset.symbol,
+        address: sourceAssetId,
+        decimals: axelarSourceAsset.decimals,
+        sourceDenom: axelarSourceAsset.denom,
+      });
+    }
+
+    if (axelarSourceAsset.denoms) {
+      // there are auto-wrapped versions
+      // assume it's the chain native asset
+      const unwrappedDenoms = axelarSourceAsset.denoms.filter(
+        (denom) => denom !== axelarSourceAsset.denom
+      );
+
+      if (unwrappedDenoms.length !== 1) return sourceVariants;
+
+      const axelarChains = await getAxelarChains({ env: this.ctx.env });
+      const axelarChain = axelarChains.find(
+        (chain) => chain.id === axelarSourceAsset.native_chain
+      );
+
+      if (!axelarChain) return sourceVariants;
+      // only handle unwrapping with evm chains due to ERC20 standard
+      if (axelarChain.chain_type !== "evm") return sourceVariants;
+
+      sourceVariants.push({
+        denom: axelarChain.native_token.symbol,
+        address: NativeEVMTokenConstantAddress,
+        decimals: axelarChain.native_token.decimals,
+        sourceDenom: unwrappedDenoms[0],
+      });
+    }
+
+    return sourceVariants;
   }
 
   async estimateGasCost(

@@ -22,6 +22,7 @@ import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
+  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
@@ -29,6 +30,7 @@ import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
+  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 
@@ -54,6 +56,9 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote({
     fromAmount,
@@ -252,6 +257,13 @@ export class SquidBridgeProvider implements BridgeProvider {
       },
       ttl: 20 * 1000, // 20 seconds,
     });
+  }
+
+  async getAvailableSourceAssetVariants(
+    _toChain: BridgeChain,
+    _toAsset: BridgeAsset
+  ): Promise<BridgeAsset[]> {
+    throw new Error("Not implemented.");
   }
 
   async createEvmTransaction({

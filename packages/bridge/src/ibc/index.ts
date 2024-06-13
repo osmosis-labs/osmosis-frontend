@@ -6,11 +6,15 @@ import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
+  BridgeAsset,
+  BridgeChain,
+  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   CosmosBridgeTransactionRequest,
   GetBridgeQuoteParams,
+  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 
@@ -21,6 +25,9 @@ export class IbcBridgeProvider implements BridgeProvider {
   protected protoRegistry = new Registry(ibcProtoRegistry);
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     this.validate(params);
@@ -102,6 +109,13 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       transactionRequest: signDoc,
     };
+  }
+
+  async getAvailableSourceAssetVariants(
+    _toChain: BridgeChain,
+    _toAsset: BridgeAsset
+  ): Promise<BridgeAsset[]> {
+    throw new Error("Not implemented.");
   }
 
   /**
