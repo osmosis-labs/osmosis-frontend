@@ -122,11 +122,11 @@ export const assetsRouter = createTRPCRouter({
   getAssetWithPrice: publicProcedure
     .input(
       z.object({
-        coinMinimalDenom: z.string(),
+        findMinDenomOrSymbol: z.string(),
       })
     )
-    .query(async ({ input: { coinMinimalDenom }, ctx }) => {
-      const asset = getAsset({ ...ctx, anyDenom: coinMinimalDenom });
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const asset = getAsset({ ...ctx, anyDenom: findMinDenomOrSymbol });
       const price = await getAssetPrice({
         ...ctx,
         asset,

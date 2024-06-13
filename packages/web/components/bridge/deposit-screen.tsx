@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -21,9 +21,11 @@ export const DepositScreen = () => {
   } = useStore();
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: asset, isLoading } = api.edge.assets.getUserAsset.useQuery({
-    findMinDenomOrSymbol: "USDC",
-  });
+  const { data: asset, isLoading } = api.edge.assets.getAssetWithPrice.useQuery(
+    {
+      findMinDenomOrSymbol: "USDC",
+    }
+  );
   const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
     findChainNameOrId: "osmosis",
   });
@@ -56,12 +58,40 @@ export const DepositScreen = () => {
     return `$${value}`;
   };
 
-  const parseCryptoAmount = (value: string) => {
-    return value.replace("%", "");
-  };
+  const onInput = (type: "fiat" | "crypto") => (value: string) => {
+    let nextValue = type === "fiat" ? parseFiatAmount(value) : value;
+    if (!isNumeric(nextValue) && nextValue !== "") return;
 
-  const formatCryptoAmount = (value: string) => {
-    return `${value}%`;
+    if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
+      nextValue = nextValue.slice(1);
+    }
+    if (nextValue === "") {
+      nextValue = "0";
+    }
+    if (nextValue === ".") {
+      nextValue = "0.";
+    }
+
+    if (type === "fiat") {
+      // Update the crypto amount based on the fiat amount
+      const priceInFiat = asset.currentPrice.toDec();
+      const nextFiatAmount = new Dec(nextValue);
+      const nextCryptoAmount = nextFiatAmount
+        .quo(priceInFiat)
+        .mul(DecUtils.getTenExponentN(asset.coinDecimals))
+        .toString();
+
+      setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
+    } else {
+      // Update the fiat amount based on the crypto amount
+      const priceInFiat = asset.currentPrice.toDec();
+      const nextCryptoAmount = new Dec(nextValue);
+      const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
+
+      setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
+    }
+
+    type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
   };
 
   return (
@@ -102,25 +132,7 @@ export const DepositScreen = () => {
                   <InputBox
                     inputClassName="text-center"
                     currentValue={formatFiatAmount(fiatAmount)}
-                    onInput={(value) => {
-                      let nextValue = parseFiatAmount(value);
-                      if (!isNumeric(nextValue) && nextValue !== "") return;
-
-                      if (
-                        nextValue.startsWith("0") &&
-                        !nextValue.startsWith("0.")
-                      ) {
-                        nextValue = nextValue.slice(1);
-                      }
-                      if (nextValue === "") {
-                        nextValue = "0";
-                      }
-                      if (nextValue === ".") {
-                        nextValue = "0.";
-                      }
-
-                      setFiatAmount(nextValue);
-                    }}
+                    onInput={onInput("fiat")}
                     className="mr-4 border-none bg-transparent text-center"
                   />
                 </>
@@ -129,25 +141,7 @@ export const DepositScreen = () => {
                   <InputBox
                     rightEntry
                     currentValue={cryptoAmount}
-                    onInput={(value) => {
-                      let nextValue = value;
-                      if (!isNumeric(nextValue) && nextValue !== "") return;
-
-                      if (
-                        nextValue.startsWith("0") &&
-                        !nextValue.startsWith("0.")
-                      ) {
-                        nextValue = nextValue.slice(1);
-                      }
-                      if (nextValue === "") {
-                        nextValue = "0";
-                      }
-                      if (nextValue === ".") {
-                        nextValue = "0.";
-                      }
-
-                      setCryptoAmount(nextValue);
-                    }}
+                    onInput={onInput("crypto")}
                     className="border-none bg-transparent text-center"
                     trailingSymbol={
                       <span className="ml-1 mr-6 align-middle text-2xl text-osmoverse-500">
