@@ -1,7 +1,6 @@
 import {
   ColorType,
   DeepPartial,
-  isBusinessDay,
   LineStyle,
   MouseEventParams,
   TickMarkType,
@@ -17,6 +16,10 @@ import React, {
   useSyncExternalStore,
 } from "react";
 
+import {
+  priceFormatter,
+  timepointToString,
+} from "~/components/chart/light-weight-charts/utils";
 import { theme } from "~/tailwind.config";
 
 import {
@@ -33,38 +36,6 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
-const timepointToString = (
-  timePoint: Time,
-  formatOptions: Intl.DateTimeFormatOptions,
-  locale?: string
-) => {
-  let date = new Date();
-
-  if (typeof timePoint === "string") {
-    date = new Date(timePoint);
-  } else if (!isBusinessDay(timePoint)) {
-    date = new Date((timePoint as number) * 1000);
-  } else {
-    date = new Date(
-      Date.UTC(timePoint.year, timePoint.month - 1, timePoint.day)
-    );
-  }
-
-  // from given date we should use only as UTC date or timestamp
-  // but to format as locale date we can convert UTC date to local date
-  const localDateFromUtc = new Date(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds(),
-    date.getUTCMilliseconds()
-  );
-
-  return localDateFromUtc.toLocaleString(locale, formatOptions);
-};
-
 export const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
     fontFamily: theme.fontFamily.subtitle1.join(","),
@@ -76,15 +47,38 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     fontSize: 14,
   },
   grid: { horzLines: { visible: false }, vertLines: { visible: false } },
-  rightPriceScale: { visible: false },
-  leftPriceScale: { visible: false },
+  rightPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
+  },
+  leftPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
+  },
   crosshair: {
-    horzLine: { visible: false },
+    horzLine: {
+      labelBackgroundColor: theme.colors.osmoverse[850],
+      style: LineStyle.LargeDashed,
+      width: 2,
+      color: `${theme.colors.osmoverse[300]}33`,
+      labelVisible: false,
+    },
     vertLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
       style: LineStyle.LargeDashed,
       width: 2,
       color: `${theme.colors.osmoverse[300]}33`,
+      labelVisible: false,
     },
   },
   handleScroll: false,
@@ -94,6 +88,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     mouse: false,
   },
   localization: {
+    priceFormatter,
     timeFormatter: (timePoint: Time) => {
       const formatOptions: Intl.DateTimeFormatOptions = {
         year: "numeric",
@@ -206,7 +201,7 @@ export const Chart = memo(
     }, []);
 
     return (
-      <div className="relative h-full" ref={setContainer}>
+      <div className="relative h-full [&_table]:table-auto" ref={setContainer}>
         {children}
       </div>
     );

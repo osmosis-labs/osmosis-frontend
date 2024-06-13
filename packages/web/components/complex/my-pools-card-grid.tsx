@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { PoolCard } from "~/components/cards";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {

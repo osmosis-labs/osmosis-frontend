@@ -1,4 +1,4 @@
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import { toBase64 } from "@cosmjs/encoding";
 import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
@@ -37,16 +37,6 @@ export class CreateOneClickSessionError extends Error {
   }
 }
 
-function getFirstAuthenticator({ pubKey }: { pubKey: string }): {
-  type: AuthenticatorType;
-  data: Uint8Array;
-} {
-  return {
-    type: "SignatureVerification",
-    data: fromBase64(pubKey),
-  };
-}
-
 export function isAuthenticatorOneClickTradingSession({
   authenticator,
 }: {
@@ -73,36 +63,34 @@ export function isAuthenticatorOneClickTradingSession({
 export function getOneClickTradingSessionAuthenticator({
   key,
   allowedAmount,
-  resetPeriod,
   allowedMessages,
   sessionPeriod,
 }: {
   key: PrivKeySecp256k1;
   allowedMessages: AvailableOneClickTradingMessages[];
   allowedAmount: string;
-  resetPeriod: OneClickTradingResetPeriods;
   sessionPeriod: OneClickTradingTimeLimit;
 }): {
   type: AuthenticatorType;
   data: Uint8Array;
 } {
   const signatureVerification = {
-    Type: "SignatureVerification",
-    Config: toBase64(key.getPubKey().toBytes()),
+    type: "SignatureVerification",
+    config: toBase64(key.getPubKey().toBytes()),
   };
 
   const spendLimitParams = toBase64(
     Buffer.from(
       JSON.stringify({
         limit: allowedAmount,
-        reset_period: resetPeriod,
+        reset_period: "day" as OneClickTradingResetPeriods,
         time_limit: sessionPeriod,
       })
     )
   );
   const spendLimit = {
-    Type: "CosmwasmAuthenticatorV1",
-    Config: toBase64(
+    type: "CosmwasmAuthenticatorV1",
+    config: toBase64(
       Buffer.from(
         `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
       )
@@ -110,13 +98,13 @@ export function getOneClickTradingSessionAuthenticator({
   };
 
   const messageFilters = allowedMessages.map((message) => ({
-    Type: "MessageFilter",
-    Config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
+    type: "MessageFilter",
+    config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
   }));
 
   const messageFilterAnyOf = {
-    Type: "AnyOf",
-    Config: Buffer.from(JSON.stringify(messageFilters)).toJSON().data,
+    type: "AnyOf",
+    config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
   };
 
   const compositeAuthData = [
@@ -267,14 +255,12 @@ export const useCreateOneClickTradingSession = ({
         }
       }
 
-      let accountPubKey: string | undefined,
-        shouldAddFirstAuthenticator: boolean,
-        authenticators: ParsedAuthenticator[];
+      let authenticators: ParsedAuthenticator[];
       try {
-        ({ accountPubKey, shouldAddFirstAuthenticator, authenticators } =
-          await apiUtils.local.oneClickTrading.getAccountPubKeyAndAuthenticators.fetch(
-            { userOsmoAddress: walletRepo.current.address! }
-          ));
+        ({ authenticators } =
+          await apiUtils.local.oneClickTrading.getAuthenticators.fetch({
+            userOsmoAddress: walletRepo.current.address!,
+          }));
       } catch (error) {
         throw new CreateOneClickSessionError(
           "Failed to fetch account public key and authenticators."
@@ -291,7 +277,6 @@ export const useCreateOneClickTradingSession = ({
         "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
       ];
-      const resetPeriod = transaction1CTParams.resetPeriod;
 
       let sessionPeriod: OneClickTradingTimeLimit;
       switch (transaction1CTParams.sessionPeriod.end) {
@@ -331,7 +316,6 @@ export const useCreateOneClickTradingSession = ({
           key,
           allowedAmount,
           allowedMessages,
-          resetPeriod,
           sessionPeriod,
         });
 
@@ -365,18 +349,10 @@ export const useCreateOneClickTradingSession = ({
         authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
       }
 
-      const authenticatorsToAdd =
-        shouldAddFirstAuthenticator && accountPubKey
-          ? [
-              getFirstAuthenticator({ pubKey: accountPubKey }),
-              oneClickTradingAuthenticator,
-            ]
-          : [oneClickTradingAuthenticator];
-
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
         account.osmosis
           .sendAddOrRemoveAuthenticatorsMsg({
-            addAuthenticators: authenticatorsToAdd,
+            addAuthenticators: [oneClickTradingAuthenticator],
             removeAuthenticators: authenticatorsToRemove,
             memo: "",
 
@@ -407,9 +383,8 @@ export const useCreateOneClickTradingSession = ({
       accountStore.setOneClickTradingInfo({
         authenticatorId,
         publicKey,
-        privateKey: toBase64(key.toBytes()),
+        sessionKey: toBase64(key.toBytes()),
         allowedMessages,
-        resetPeriod,
         sessionPeriod,
         sessionStartedAtUnix: dayjs().unix(),
         networkFeeLimit: {

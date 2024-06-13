@@ -18,7 +18,6 @@ import {
   makeMinimalAsset,
 } from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -45,7 +44,6 @@ import { useStore } from "~/stores";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
@@ -97,11 +95,11 @@ export function useSwap(
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
   const { t } = useTranslation();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -119,15 +117,18 @@ export function useSwap(
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
-  const canLoadQuote =
+
+  const quoteQueryEnabled =
     isToFromAssets &&
     Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
     // since input is debounced there could be the wrong asset associated
     // with the input amount when switching assets
     inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    !Boolean(account?.txTypeInProgress);
-
+    inAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom &&
+    !account?.txTypeInProgress &&
+    !isWalletLoading;
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -140,11 +141,11 @@ export function useSwap(
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    canLoadQuote
+    quoteQueryEnabled
   );
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
+  const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
 
   const {
     data: spotPriceQuote,
@@ -197,8 +198,16 @@ export function useSwap(
     featureFlags.swapToolSimulateFee &&
     !Boolean(precedentError) &&
     !isQuoteLoading &&
-    Boolean(quote) &&
-    Boolean(account?.address);
+    quoteQueryEnabled &&
+    Boolean(quote?.messages) &&
+    Boolean(account?.address) &&
+    inAmountInput.debouncedInAmount !== null &&
+    inAmountInput.balance &&
+    inAmountInput.amount &&
+    inAmountInput.debouncedInAmount
+      .toDec()
+      .lte(inAmountInput.balance.toDec()) &&
+    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec());
   const {
     data: networkFee,
     error: networkFeeError,
@@ -211,10 +220,7 @@ export function useSwap(
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
-  const isLoadingNetworkFee =
-    featureFlags.swapToolSimulateFee &&
-    isLoadingNetworkFee_ &&
-    networkFeeQueryEnabled;
+  const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
   const hasExceededOneClickTradingGasLimit = useMemo(() => {
     if (
@@ -269,14 +275,18 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          if (!maxSlippage) return reject("No max slippage");
-          if (!inAmountInput.amount) return reject("No input amount");
-          if (!account) return reject("No account");
-          if (!swapAssets.fromAsset) return reject("No from asset");
-          if (!swapAssets.toAsset) return reject("No to asset");
+          if (!maxSlippage)
+            return reject(new Error("Max slippage is not defined."));
+          if (!inAmountInput.amount)
+            return reject(new Error("Input amount is not specified."));
+          if (!account)
+            return reject(new Error("Account information is missing."));
+          if (!swapAssets.fromAsset)
+            return reject(new Error("From asset is not specified."));
+          if (!swapAssets.toAsset)
+            return reject(new Error("To asset is not specified."));
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
-
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
@@ -287,7 +297,9 @@ export function useSwap(
             });
           } catch (e) {
             const error = e as Error;
-            return reject(error.message);
+            return reject(
+              new Error(`Transaction preparation failed: ${error.message}`)
+            );
           }
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
@@ -344,7 +356,7 @@ export function useSwap(
                 );
               });
             } catch (e) {
-              return reject("Rejected manual approval");
+              return reject(new Error("Rejected manual approval"));
             }
           }
 
@@ -373,14 +385,15 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve(pools.length === 1 ? "exact-in" : "multihop");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
-            return pools.length === 1 ? "exact-in" : "multihop";
+              .catch(reject);
           } else if (routes.length > 1) {
             account.osmosis
               .sendSplitRouteSwapExactAmountInMsg(
@@ -389,25 +402,23 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve("multiroute");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error(
+                        "Failed to send split route swap exact amount in message"
+                      )
+                    );
+                  else resolve("multiroute");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
+              .catch(reject);
           } else {
-            reject("No routes given");
+            // should not be possible because button should be disabled
+            reject(new Error("No routes given"));
           }
         }
-      ).finally(() => {
-        // TODO: Move this logic to osmosis account store
-        // But for now we will invalidate query data here.
-        if (!account?.address) return;
-        useBalances.invalidateQuery({ address: account.address, queryClient });
-
-        inAmountInput.reset();
-      }),
+      ).finally(() => inAmountInput.reset()),
     [
       maxSlippage,
       inAmountInput,
@@ -423,7 +434,6 @@ export function useSwap(
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
-      queryClient,
     ]
   );
 
@@ -774,6 +784,7 @@ function useSwapAmountInput({
 }) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const featureFlags = useFeatureFlags();
 
@@ -785,10 +796,20 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
-    !!inAmountInput.balance &&
-    !inAmountInput.balance?.toDec().isZero() &&
+    featureFlags.swapToolSimulateFee &&
+    !isLoadingWallet &&
+    !account?.txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset);
+    Boolean(swapAssets.toAsset) &&
+    // since the in amount is debounced, the asset could be wrong when switching assets
+    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    inAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    !!inAmountInput.balance &&
+    !inAmountInput.balance.toDec().isZero() &&
+    inAmountInput.balance.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom;
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
@@ -806,11 +827,10 @@ function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
-  const networkQueryEnabled =
-    featureFlags.swapToolSimulateFee &&
+  const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
-    Boolean(quoteForCurrentBalance) &&
-    !Boolean(account?.txTypeInProgress);
+    balanceQuoteQueryEnabled &&
+    Boolean(quoteForCurrentBalance);
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
@@ -818,10 +838,10 @@ function useSwapAmountInput({
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
-    enabled: networkQueryEnabled,
+    enabled: networkFeeQueryEnabled,
   });
   const isLoadingCurrentBalanceNetworkFee =
-    networkQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
+    networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
     return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
@@ -1209,6 +1229,8 @@ function useQueryRouterBestQuote(
           // the gas simulation will fail due to slippage and the user would see errors
           staleTime: 5_000,
           cacheTime: 5_000,
+          refetchInterval: 5_000,
+
           // Disable retries, as useQueries
           // will block successfull quotes from being returned
           // if failed quotes are being returned

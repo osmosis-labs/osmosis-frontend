@@ -22,7 +22,7 @@ test.describe("Test Swap Stables feature", () => {
   let USDT =
     "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB";
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.log("Before test setup Wallet Extension.");
     // Launch Chrome with a Keplr wallet extension
     const pathToExtension = path.join(__dirname, "../keplr-extension");
@@ -51,7 +51,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
   });
 
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await context.close();
   });
 

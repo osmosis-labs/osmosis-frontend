@@ -2,6 +2,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
+import { createPublicClient, http } from "viem";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
@@ -9,28 +10,20 @@ import { BridgeQuoteError } from "../../errors";
 import { BridgeProviderContext } from "../../interface";
 import { SquidBridgeProvider } from "../index";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
-  return {
-    ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        send: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-      Contract: jest.fn().mockImplementation(() => ({
-        allowance: jest.fn().mockResolvedValue(BigInt("100")),
-        approve: {
-          populateTransaction: jest.fn().mockResolvedValue({
-            to: "0x123",
-            data: "0xabcdef",
-          }),
-        },
-      })),
-    },
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    readContract: jest.fn().mockImplementation(({ functionName }) => {
+      if (functionName === "allowance") {
+        return Promise.resolve(BigInt("100"));
+      }
+      return Promise.reject(new Error("Unknown function"));
+    }),
+  })),
+  encodeFunctionData: jest.fn().mockImplementation(() => "0xabcdef"),
+  http: jest.fn().mockImplementation(() => ({})),
+}));
+
 beforeEach(() => {
   server.use(
     rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) => {
@@ -84,6 +77,10 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SquidBridgeProvider", () => {
   let provider: SquidBridgeProvider;
   let ctx: BridgeProviderContext;
@@ -107,8 +104,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote", async () => {
     const quote = await provider.getQuote({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -137,8 +134,8 @@ describe("SquidBridgeProvider", () => {
         denom: "AVAX",
         priceImpact: "0.000000000000000000",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       transferFee: {
         amount: "0.01",
         denom: "ETH",
@@ -169,12 +166,12 @@ describe("SquidBridgeProvider", () => {
         fromChain: {
           chainId: "unsupported",
           chainName: "Unsupported",
-          chainType: "evm",
+          chainType: "cosmos",
         },
         toChain: {
           chainId: "unsupported",
           chainName: "Unsupported",
-          chainType: "evm",
+          chainType: "cosmos",
         },
         fromAsset: {
           denom: "ETH",
@@ -204,7 +201,7 @@ describe("SquidBridgeProvider", () => {
         decimals: 18,
         sourceDenom: "eth",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
       estimateFromAmount: "1",
       transactionRequest: {
@@ -248,8 +245,8 @@ describe("SquidBridgeProvider", () => {
     });
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: "0x0",
@@ -268,5 +265,67 @@ describe("SquidBridgeProvider", () => {
         slippage: 1,
       })
     ).rejects.toThrow("toAsset mismatch");
+  });
+
+  it("should return approval transaction data if allowance is less than amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("50")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toEqual({
+      to: "0xTokenAddress",
+      data: "0xabcdef", // Mocked data from encodeFunctionData
+    });
+  });
+
+  it("should return undefined if allowance is greater than or equal to amount", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    (fromTokenContract.readContract as jest.Mock).mockResolvedValueOnce(
+      BigInt("150")
+    );
+
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: false,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
+  });
+
+  it("should return undefined if the asset is native", async () => {
+    const fromTokenContract = createPublicClient({
+      transport: http(),
+    });
+    const approvalTx = await provider.getApprovalTx({
+      fromTokenContract,
+      tokenAddress: "0xTokenAddress",
+      isFromAssetNative: true,
+      fromAmount: "100",
+      fromAddress: "0xFromAddress",
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      targetAddress: "0xTargetAddress",
+    });
+
+    expect(approvalTx).toBeUndefined();
   });
 });

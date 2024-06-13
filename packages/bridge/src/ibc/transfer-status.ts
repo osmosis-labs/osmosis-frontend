@@ -69,7 +69,6 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
         destChannelId: msgEvents.destChannelId,
         destTimeoutHeight: msgEvents.timeoutHeight,
         sequence: msgEvents.sequence,
-        status: "pending",
         serializedParamsOrHash,
       });
     } catch (e) {
@@ -99,32 +98,34 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     destChannelId: string;
     destTimeoutHeight: string;
     sequence: string;
-    status: IbcTransferStatus;
     serializedParamsOrHash: string;
   }): Promise<void> {
-    this.pushNewStatus(serializedParamsOrHash, "pending");
-
     const destBlockSubscriber = this.getBlockSubscriber(destChainId);
     const subscriptions: Promise<"timeout" | "received">[] = [];
     let timeoutUnsubscriber: (() => void) | undefined;
 
     // poll for timeout
     if (!destTimeoutHeight.endsWith("-0")) {
-      const timeoutPromise = new Promise<"timeout">((resolve, reject) => {
+      const timeoutPromise = new Promise<"timeout">((resolve) => {
         const { promise, unsubscriber } = this.pollTimeoutHeight(
           destBlockSubscriber,
           destTimeoutHeight
         );
-        timeoutUnsubscriber = unsubscriber;
-        promise
-          .then((avgBlockTimeMs) => {
-            // Even though the block is reached to the timeout height,
-            // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
-            // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
-            // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
-            setTimeout(() => resolve("timeout"), avgBlockTimeMs);
-          })
-          .catch(reject);
+
+        // used for cleanup
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        timeoutUnsubscriber = () => {
+          clearTimeout(timeout);
+          unsubscriber();
+        };
+
+        promise.then((avgBlockTimeMs) => {
+          // Even though the block is reached to the timeout height,
+          // the receiving packet event could be delivered before the block timeout if the network connection is unstable.
+          // This it not the chain issue itself, just an issue from the frontend connection: it it impossible to ensure the network status entirely.
+          // To reduce this problem, just wait an additional block height even if the block is reached to the timeout height.
+          timeout = setTimeout(() => resolve("timeout"), avgBlockTimeMs);
+        });
       });
 
       subscriptions.push(timeoutPromise);
@@ -134,10 +135,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
-    const packetReceivedTracer = new TxTracer(
-      this.getChainRpcUrl(destChainId),
-      "/websocket"
-    );
+    const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
     const receivedPromise = packetReceivedTracer
       .traceTx({
         // Should use the dst channel.
@@ -164,10 +162,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
-    const timeoutTracer = new TxTracer(
-      this.getChainRpcUrl(sourceChainId),
-      "/websocket"
-    );
+    const timeoutTracer = new TxTracer(this.getChainRpcUrl(sourceChainId));
     await timeoutTracer
       .traceTx({
         "timeout_packet.packet_src_channel": sourceChannelId,
@@ -184,7 +179,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
    *
    * `timeoutHeight` should be formatted as `{chain_version}-{block_height}`
    *
-   * @returns A promise that resolves to the average block time if the timeout height is met. Also an unsubscriber that is required to stop the polling when called.
+   * @returns A promise that resolves to the average block time if the timeout height is met or more rarely when the chain version is incremented. Also an unsubscriber that is required to stop the polling when called.
    */
   protected pollTimeoutHeight(
     statusSubscriber: PollingStatusSubscription,
@@ -217,8 +212,8 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     });
 
     return {
-      unsubscriber,
       promise,
+      unsubscriber,
     };
   }
 
@@ -249,6 +244,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     return rpc;
   }
 
+  /** Sends a status to the receiver with prefix key prepended. */
   protected pushNewStatus(
     serializedParamsOrHash: string,
     status: TransferStatus

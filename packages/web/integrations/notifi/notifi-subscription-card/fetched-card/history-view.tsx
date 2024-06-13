@@ -9,7 +9,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useNotifiLocalStorage } from "~/integrations/notifi/hooks";

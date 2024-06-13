@@ -14,7 +14,7 @@ import { ReactElement, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
@@ -42,7 +42,7 @@ interface YourBalanceProps {
   className?: string;
 }
 
-const YourBalance = observer(
+export const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const {
       queriesStore,
@@ -328,8 +328,6 @@ const YourBalance = observer(
     );
   }
 );
-
-export default YourBalance;
 
 const ActionButton = ({
   title,

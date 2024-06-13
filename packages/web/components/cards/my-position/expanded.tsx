@@ -41,11 +41,17 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 

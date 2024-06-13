@@ -5,12 +5,12 @@ import { useState } from "react";
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
 
-import IconButton from "./icon-button";
+import { IconButton } from "./icon-button";
 
 /**
  * Renders an icon within a button.
  */
-const ClipboardButton = forwardRef<
+export const ClipboardButton = forwardRef<
   HTMLButtonElement,
   {
     value?: string;
@@ -78,5 +78,3 @@ const ClipboardButton = forwardRef<
     </IconButton>
   );
 });
-
-export default ClipboardButton;

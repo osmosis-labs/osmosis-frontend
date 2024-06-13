@@ -10,12 +10,24 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { IBCBalance } from "~/stores/assets";
 
-const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
-  ssr: false,
-});
-const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
-  ssr: false,
-});
+const AxelarTransfer = dynamic(
+  () =>
+    import("~/integrations/axelar/transfer").then(
+      (module) => module.AxelarTransfer
+    ),
+  {
+    ssr: false,
+  }
+);
+const NomicTransfer = dynamic(
+  () =>
+    import("~/integrations/nomic/transfer").then(
+      (module) => module.NomicTransfer
+    ),
+  {
+    ssr: false,
+  }
+);
 
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;

@@ -391,7 +391,7 @@
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
-    "notInitialized": "초기화되지 않았습니다",
+    "notInitialized": "로드 중...",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
     "zeroAmount": "수량이 0입니다.",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "지출 한도",
       "networkFeeLimitTitle": "네트워크 수수료 한도",
       "sessionPeriodTitle": "세션 기간",
-      "resetPeriodTitle": "재설정 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
       "endingSession": "세션 종료",
@@ -561,16 +560,6 @@
           "1hour": "1 시간",
           "3hours": "3 시간",
           "12hours": "12 시간"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "재설정 기간",
-        "description": "지출 한도 할당량을 재설정하는 기간을 설정하세요.",
-        "periods": {
-          "day": "낮",
-          "week": "주",
-          "month": "월",
-          "year": "년도"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "나중에 다시 방문하여 본딩 보상을 확인하십시오.",
     "collapseDetails": "닫기",
     "commission": "수수료",
-    "currentDailyEarn": "내 일일 보상",
     "dailyEarnAmount": "{amount} /일",
-    "day": "일",
     "delegated": "위임된 자산",
     "details": "상세정보",
-    "earnMore": "본딩으로 {amount} 더 벌기",
     "earnSwapFees": "교환 수수료 수익 받기",
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 교환이 발생하면 수수료를 받으세요",
     "from": "출처:",
@@ -867,10 +853,6 @@
       "title": "트랜잭션 설정"
     },
     "title": "거래",
-    "promo": {
-      "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
-      "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
-    },
     "dynamicSpreadFactor": "동적"
   },
   "walletSelect": {
@@ -962,7 +944,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "관련 자산",
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
@@ -984,7 +965,6 @@
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
-    "tvl": "TVL",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
     "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
@@ -998,16 +978,9 @@
   "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
-    "position": "위치",
     "positions": "직위",
-    "allocation": "배당",
-    "tokensCount": "{number} 토큰",
     "strategiesCount": "{number} 전략",
     "oneStrategy": "전략 1개",
-    "value": "값",
-    "method": "유형",
-    "platform": "플랫폼",
-    "scrollToSeeMore": "더 보려면 스크롤하세요",
     "discoverStrategies": "전략 발견",
     "myStrategies": "귀하의 전략",
     "strategyPlatform": "전략",

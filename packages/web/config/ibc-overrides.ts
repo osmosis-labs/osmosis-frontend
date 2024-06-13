@@ -267,10 +267,8 @@ const MainnetIBCAdditionalData: Partial<
     },
   },
   INJ: {
-    depositUrlOverride:
-      "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-    withdrawUrlOverride:
-      "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+    depositUrlOverride: "https://bridge.injective.network/",
+    withdrawUrlOverride: "https://bridge.injective.network/",
   },
   FTM: {
     sourceChainNameOverride: "Fantom",
@@ -736,6 +734,10 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
   "wSOL.pica": {
+    depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+    withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+  },
+  WHINE: {
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },

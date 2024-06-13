@@ -30,11 +30,17 @@ import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 
@@ -233,7 +239,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("base");
-                config.baseDepositAmountIn.setAmount(amount.toString());
+                config.baseDepositAmountIn.setAmount(amount);
               },
               [config]
             )}
@@ -250,7 +256,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("quote");
-                config.quoteDepositAmountIn.setAmount(amount.toString());
+                config.quoteDepositAmountIn.setAmount(amount);
               },
               [config]
             )}

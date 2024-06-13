@@ -7,12 +7,18 @@ import type {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
-import { ethers } from "ethers";
 import Long from "long";
-import { toHex } from "web3-utils";
+import {
+  Address,
+  createPublicClient,
+  encodeFunctionData,
+  erc20Abi,
+  http,
+  numberToHex,
+} from "viem";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
-import { Erc20Abi, NativeEVMTokenConstantAddress } from "../ethereum";
+import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -264,7 +270,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
     const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-      return chainId === fromChain.chainId;
+      return String(chainId) === String(fromChain.chainId);
     });
 
     if (!squidFromChain) {
@@ -276,21 +282,29 @@ export class SquidBridgeProvider implements BridgeProvider {
       ]);
     }
 
-    let approvalTx: ethers.ContractTransaction | undefined;
+    let approvalTx: { to: Address; data: string } | undefined;
     try {
-      const fromProvider = new ethers.JsonRpcProvider(squidFromChain.rpc);
-      const fromTokenContract = new ethers.Contract(
-        fromAsset.address,
-        Erc20Abi,
-        fromProvider
+      const evmChain = Object.values(EthereumChainInfo).find(
+        ({ id: chainId }) => String(chainId) === String(squidFromChain.chainId)
       );
+
+      if (!evmChain) {
+        throw new Error("Could not find EVM chain");
+      }
+
+      const fromTokenContract = createPublicClient({
+        chain: evmChain,
+        transport: http(evmChain.rpcUrls.default.http[0]),
+      });
+
       approvalTx = await this.getApprovalTx({
-        fromAddress,
+        fromAddress: fromAddress as Address,
         fromAmount: estimateFromAmount,
         fromChain,
         isFromAssetNative,
         fromTokenContract,
-        targetAddress: transactionRequest.targetAddress,
+        targetAddress: transactionRequest.targetAddress as Address,
+        tokenAddress: fromAsset.address as Address,
       });
     } catch (e) {
       throw new BridgeQuoteError([
@@ -303,23 +317,23 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     return {
       type: "evm",
-      to: transactionRequest.targetAddress,
-      data: transactionRequest.data,
+      to: transactionRequest.targetAddress as Address,
+      data: transactionRequest.data as Address,
       value:
         transactionRequest.routeType !== "SEND"
-          ? toHex(transactionRequest.value)
+          ? numberToHex(BigInt(transactionRequest.value))
           : undefined,
       ...(transactionRequest.maxPriorityFeePerGas
         ? {
-            gas: toHex(transactionRequest.gasLimit),
-            maxFeePerGas: toHex(transactionRequest.maxFeePerGas),
-            maxPriorityFeePerGas: toHex(
-              transactionRequest.maxPriorityFeePerGas
+            gas: numberToHex(BigInt(transactionRequest.gasLimit)),
+            maxFeePerGas: numberToHex(BigInt(transactionRequest.maxFeePerGas)),
+            maxPriorityFeePerGas: numberToHex(
+              BigInt(transactionRequest.maxPriorityFeePerGas)
             ),
           }
         : {
-            gas: toHex(transactionRequest.gasLimit),
-            gasPrice: toHex(transactionRequest.gasPrice),
+            gas: numberToHex(BigInt(transactionRequest.gasLimit)),
+            gasPrice: numberToHex(BigInt(transactionRequest.gasPrice)),
           }),
       approvalTransactionRequest: approvalTx,
     };
@@ -437,34 +451,42 @@ export class SquidBridgeProvider implements BridgeProvider {
     isFromAssetNative,
     fromAddress,
     targetAddress,
+    tokenAddress,
   }: {
-    fromTokenContract: ethers.Contract;
+    fromTokenContract: ReturnType<typeof createPublicClient>;
+    tokenAddress: Address;
     isFromAssetNative: boolean;
     fromAmount: string;
-    fromAddress: string;
+    fromAddress: Address;
     fromChain: BridgeChain;
     /**
      * The address of the contract that will be called with the approval, in this case, Squid's router contract.
      */
-    targetAddress: string;
+    targetAddress: Address;
   }) {
     const _sourceAmount = BigInt(fromAmount);
 
     if (!isFromAssetNative) {
-      const allowance = await fromTokenContract.allowance(
-        fromAddress,
-        targetAddress
-      );
+      const allowance = await fromTokenContract.readContract({
+        abi: erc20Abi,
+        address: tokenAddress,
+        functionName: "allowance",
+        args: [fromAddress, targetAddress],
+      });
 
       if (_sourceAmount > allowance) {
         const amountToApprove = _sourceAmount;
 
-        const approveTx = await fromTokenContract.approve.populateTransaction(
-          targetAddress,
-          amountToApprove
-        );
+        const approveTxData = encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "approve",
+          args: [targetAddress, BigInt(amountToApprove)],
+        });
 
-        return approveTx;
+        return {
+          to: tokenAddress,
+          data: approveTxData,
+        };
       }
     }
   }

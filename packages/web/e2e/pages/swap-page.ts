@@ -127,7 +127,7 @@ export class SwapPage {
 
     if (fromTokenText == from && toTokenText == to) {
       console.log(
-        "Current pair:" + fromTokenText + toTokenText + " is already matching."
+        "Current pair: " + fromTokenText + toTokenText + " is already matching."
       );
       return;
     }
@@ -135,7 +135,7 @@ export class SwapPage {
     if (fromTokenText == to && toTokenText == from) {
       await this.flipTokenPair();
       console.log(
-        "Current pair:" + fromTokenText + toTokenText + " is fliped."
+        "Current pair: " + fromTokenText + toTokenText + " is fliped."
       );
       return;
     }
