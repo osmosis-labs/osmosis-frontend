@@ -11,8 +11,10 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
-import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
+import {
+  useOrderbook,
+  useOrderbookSelectableDenoms,
+} from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -54,7 +56,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [selectableQuoteDenoms, baseDenom]);
 
-    const { poolId, contractAddress, makerFee } = useOrderbookPool({
+    const { poolId, contractAddress, makerFee } = useOrderbook({
       baseDenom,
       quoteDenom,
     });

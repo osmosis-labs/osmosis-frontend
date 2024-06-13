@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
@@ -130,6 +131,68 @@ export const useOrderbookSelectableDenoms = () => {
     selectableBaseDenoms,
     selectableQuoteDenoms,
     selectableBaseAssets,
+    isLoading,
+  };
+};
+
+/**
+ * Retrieves a single orderbook by base and quote denom.
+ * @param denoms An object including both the base and quote denom
+ * @returns A state including info about the current orderbook and any orders the user may have on the orderbook
+ */
+export const useOrderbook = ({
+  baseDenom,
+  quoteDenom,
+}: {
+  baseDenom: string;
+  quoteDenom: string;
+}) => {
+  const { orderbook } = useOrderbookByDenoms({
+    baseDenom,
+    quoteDenom,
+  });
+  const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
+    orderbookAddress: orderbook?.contractAddress ?? "",
+  });
+
+  return {
+    poolId: "1",
+    contractAddress: orderbook?.contractAddress ?? "",
+    makerFee,
+    isMakerFeeLoading,
+  };
+};
+
+const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
+  const { data: makerFeeData, isLoading } =
+    api.local.orderbook.getMakerFee.useQuery({
+      contractOsmoAddress: orderbookAddress,
+    });
+
+  const makerFee = useMemo(() => {
+    if (isLoading) return new Dec(0);
+    return new Dec(makerFeeData?.makerFee ?? 0);
+  }, [isLoading, makerFeeData]);
+  return {
+    makerFee,
+    isLoading,
+  };
+};
+
+export const useActiveLimitOrdersByOrderbook = ({
+  orderbookAddress,
+  userAddress,
+}: {
+  orderbookAddress: string;
+  userAddress: string;
+}) => {
+  const { data: orders, isLoading } =
+    api.local.orderbook.getActiveOrders.useQuery({
+      contractOsmoAddress: orderbookAddress,
+      userOsmoAddress: userAddress,
+    });
+  return {
+    orders,
     isLoading,
   };
 };
