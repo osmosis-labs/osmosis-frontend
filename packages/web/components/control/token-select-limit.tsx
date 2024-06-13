@@ -159,22 +159,25 @@ export const TokenSelectLimit: FunctionComponent<
                     {baseAsset.coinDenom}
                   </span>
                 </h6>
-                {showBaseBalance && (
-                  <div className="flex text-body1 text-osmoverse-300">
-                    {formatPretty(baseFiatBalance)} available
-                  </div>
-                )}
               </div>
             </div>
           )}
-          {tokenSelectionAvailable && (
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-down"
-                className="h-[7px] w-3 text-osmoverse-300"
-              />
-            </div>
-          )}
+
+          <div className="flex h-6 items-center justify-center">
+            {showBaseBalance && (
+              <div className="flex text-body1 text-osmoverse-300">
+                {formatPretty(baseFiatBalance)} available
+              </div>
+            )}
+            {tokenSelectionAvailable && (
+              <div className="ml-2 flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-down"
+                  className="h-[7px] w-3 text-osmoverse-300"
+                />
+              </div>
+            )}
+          </div>
         </button>
         <PriceSelector
           quoteAsset={quoteAsset}

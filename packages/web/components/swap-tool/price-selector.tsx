@@ -113,195 +113,208 @@ export default function PriceSelector({
 
   return (
     <Menu as="div" className="relative inline-block">
-      <Menu.Button className="flex w-full items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
-        <div className="flex w-full items-center justify-between">
-          {quoteAsset && (
-            <div
-              className={classNames(
-                "flex items-center gap-2 transition-opacity",
-                tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
-                {
-                  "opacity-40": disabled,
-                }
-              )}
-            >
-              <span className="body2 text-osmoverse-300">
-                {tab === "buy" ? "Pay with" : "Receive"}
-              </span>
-              {quoteAsset.rawAsset.logoURIs && (
-                <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                  <Image
-                    src={
-                      quoteAsset.rawAsset.logoURIs.svg ||
-                      quoteAsset.rawAsset.logoURIs.png ||
-                      ""
+      {({ open }) => (
+        <>
+          <Menu.Button className="flex w-full items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+            <div className="flex w-full items-center justify-between">
+              {quoteAsset && (
+                <div
+                  className={classNames(
+                    "flex items-center gap-2 transition-opacity",
+                    tokenSelectionAvailable
+                      ? "cursor-pointer"
+                      : "cursor-default",
+                    {
+                      "opacity-40": disabled,
                     }
-                    alt={`${quoteAsset.symbol} icon`}
-                    width={24}
-                    height={24}
-                    priority
-                  />
-                </div>
-              )}
-              <span className="md:caption body2 w-32 truncate text-left">
-                {quoteAsset.symbol}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center gap-1">
-            {showQuoteBalance && quoteAssetWithBalance && (
-              <span className="body2 inline-flex text-osmoverse-300">
-                {formatPretty(quoteAssetWithBalance.usdValue!, {
-                  minimumFractionDigits: 5,
-                })}{" "}
-                available
-              </span>
-            )}
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-down"
-                className="h-[7px] w-3 text-osmoverse-300"
-              />
-            </div>
-          </div>
-        </div>
-      </Menu.Button>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
-          <div className="flex flex-col border-b border-osmoverse-700 p-2">
-            {defaultStables.map((stable) => {
-              const {
-                symbol,
-                rawAsset: { name, logoURIs },
-              } = stable!;
-              const isSelected = quote === symbol;
-              const availableBalance =
-                userDefaultStablesBalances.find(
-                  (u) => u?.coinDenom === stable?.symbol
-                )?.usdValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
-
-              return (
-                <Menu.Item key={name}>
-                  {({ active }) => (
-                    <button
-                      onClick={() => setQuote(symbol)}
-                      className={classNames(
-                        "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
-                        { "bg-osmoverse-700": active || isSelected }
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={logoURIs.svg || logoURIs.png || ""}
-                          alt={`${name} logo`}
-                          className="h-10 w-10"
-                          width={40}
-                          height={40}
-                        />
-                        <div className="flex flex-col gap-1 text-left">
-                          <p>{name}</p>
-                          <small className="text-sm leading-5 text-osmoverse-300">
-                            {symbol}
-                          </small>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {wallet?.isWalletConnected && (
-                          <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                            <span
-                              className={classNames({
-                                "text-white-full": availableBalance
-                                  .toDec()
-                                  .gt(new Dec(0)),
-                              })}
-                            >
-                              {formatPretty(availableBalance)}
-                            </span>
-                            <span className="body2 font-light">available</span>
-                          </p>
-                        )}
-                        <Icon
-                          id="check-mark-circle"
-                          className={classNames(
-                            "h-4 w-4 rounded-full text-[#CC54C2]",
-                            {
-                              "opacity-0": !isSelected,
-                            }
-                          )}
-                        />
-                      </div>
-                    </button>
                   )}
-                </Menu.Item>
-              );
-            })}
-          </div>
-          <div className="flex flex-col px-5 py-2">
-            <button className="flex w-full items-center justify-between py-3">
-              <span className="subtitle1 font-semibold text-wosmongton-200">
-                Add funds
-              </span>
-              <div className="flex items-center gap-1">
-                <div className="relative flex items-center">
-                  {defaultStables.map((stable, i) => {
-                    const {
-                      symbol,
-                      rawAsset: { logoURIs },
-                    } = stable!;
-
-                    return (
+                >
+                  <span className="body2 text-osmoverse-300">
+                    {tab === "buy" ? "Pay with" : "Receive"}
+                  </span>
+                  {quoteAsset.rawAsset.logoURIs && (
+                    <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
                       <Image
-                        key={`${symbol}-logo`}
-                        alt=""
-                        src={logoURIs.svg || logoURIs.png || ""}
+                        src={
+                          quoteAsset.rawAsset.logoURIs.svg ||
+                          quoteAsset.rawAsset.logoURIs.png ||
+                          ""
+                        }
+                        alt={`${quoteAsset.symbol} icon`}
                         width={24}
                         height={24}
-                        className={classNames("h-6 w-6", {
-                          "-ml-2": i > 0,
-                        })}
+                        priority
                       />
-                    );
-                  })}
+                    </div>
+                  )}
+                  <span className="md:caption body2 w-32 truncate text-left">
+                    {quoteAsset.symbol}
+                  </span>
                 </div>
-                <div className="flex h-6 w-6 items-center justify-center">
-                  <Icon
-                    id="chevron-right"
-                    className="h-3 w-[7px] text-osmoverse-300"
-                  />
-                </div>
-              </div>
-            </button>
-            <button className="flex w-full items-center justify-between py-3">
-              <span className="subtitle1 font-semibold text-wosmongton-200">
-                Swap from another asset
-              </span>
+              )}
               <div className="flex items-center gap-1">
-                <Image
-                  src={"/images/quote-swap-from-another-asset.png"}
-                  alt=""
-                  width={176}
-                  height={48}
-                  className="h-6 w-[88px]"
-                />
+                {showQuoteBalance && quoteAssetWithBalance && (
+                  <span className="body2 inline-flex text-osmoverse-300">
+                    {formatPretty(quoteAssetWithBalance.usdValue!, {
+                      minimumFractionDigits: 5,
+                    })}{" "}
+                    available
+                  </span>
+                )}
                 <div className="flex h-6 w-6 items-center justify-center">
                   <Icon
-                    id="chevron-right"
-                    className="h-3 w-[7px] text-osmoverse-300"
+                    id="chevron-down"
+                    className={classNames(
+                      "h-[7px] w-3 text-osmoverse-300 transition-transform",
+                      {
+                        "rotate-180": open,
+                      }
+                    )}
                   />
                 </div>
               </div>
-            </button>
-          </div>
-        </Menu.Items>
-      </Transition>
+            </div>
+          </Menu.Button>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+              <div className="flex flex-col border-b border-osmoverse-700 p-2">
+                {defaultStables.map((stable) => {
+                  const {
+                    symbol,
+                    rawAsset: { name, logoURIs },
+                  } = stable!;
+                  const isSelected = quote === symbol;
+                  const availableBalance =
+                    userDefaultStablesBalances.find(
+                      (u) => u?.coinDenom === stable?.symbol
+                    )?.usdValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
+
+                  return (
+                    <Menu.Item key={name}>
+                      {({ active }) => (
+                        <button
+                          onClick={() => setQuote(symbol)}
+                          className={classNames(
+                            "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+                            { "bg-osmoverse-700": active || isSelected }
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Image
+                              src={logoURIs.svg || logoURIs.png || ""}
+                              alt={`${name} logo`}
+                              className="h-10 w-10"
+                              width={40}
+                              height={40}
+                            />
+                            <div className="flex flex-col gap-1 text-left">
+                              <p>{name}</p>
+                              <small className="text-sm leading-5 text-osmoverse-300">
+                                {symbol}
+                              </small>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {wallet?.isWalletConnected && (
+                              <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                                <span
+                                  className={classNames({
+                                    "text-white-full": availableBalance
+                                      .toDec()
+                                      .gt(new Dec(0)),
+                                  })}
+                                >
+                                  {formatPretty(availableBalance)}
+                                </span>
+                                <span className="body2 font-light">
+                                  available
+                                </span>
+                              </p>
+                            )}
+                            <Icon
+                              id="check-mark-circle"
+                              className={classNames(
+                                "h-4 w-4 rounded-full text-[#CC54C2]",
+                                {
+                                  "opacity-0": !isSelected,
+                                }
+                              )}
+                            />
+                          </div>
+                        </button>
+                      )}
+                    </Menu.Item>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col px-5 py-2">
+                <button className="flex w-full items-center justify-between py-3">
+                  <span className="subtitle1 font-semibold text-wosmongton-200">
+                    Add funds
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <div className="relative flex items-center">
+                      {defaultStables.map((stable, i) => {
+                        const {
+                          symbol,
+                          rawAsset: { logoURIs },
+                        } = stable!;
+
+                        return (
+                          <Image
+                            key={`${symbol}-logo`}
+                            alt=""
+                            src={logoURIs.svg || logoURIs.png || ""}
+                            width={24}
+                            height={24}
+                            className={classNames("h-6 w-6", {
+                              "-ml-2": i > 0,
+                            })}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="flex h-6 w-6 items-center justify-center">
+                      <Icon
+                        id="chevron-right"
+                        className="h-3 w-[7px] text-osmoverse-300"
+                      />
+                    </div>
+                  </div>
+                </button>
+                <button className="flex w-full items-center justify-between py-3">
+                  <span className="subtitle1 font-semibold text-wosmongton-200">
+                    Swap from another asset
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src={"/images/quote-swap-from-another-asset.png"}
+                      alt=""
+                      width={176}
+                      height={48}
+                      className="h-6 w-[88px]"
+                    />
+                    <div className="flex h-6 w-6 items-center justify-center">
+                      <Icon
+                        id="chevron-right"
+                        className="h-3 w-[7px] text-osmoverse-300"
+                      />
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </Menu.Items>
+          </Transition>
+        </>
+      )}
     </Menu>
   );
 }
