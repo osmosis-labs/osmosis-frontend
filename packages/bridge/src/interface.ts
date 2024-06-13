@@ -46,9 +46,13 @@ export interface BridgeProvider {
    * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
    * In practice, this can be used to offer a list of selectable assets for the user to choose from.
    *
+   * In general should avoid throwing errors, but return an empty array if no source assets are available with the given input.
+   * May throw an error if an unexpected error occurs.
+   *
    * @param toChain The destination chain.
    * @param toAsset The destination coin.
    * @returns A promise that resolves to an array of source coins with source identifiers.
+   * @throws Unexpected errors.
    */
   getAvailableSourceAssetVariants(
     toChain: BridgeChain,
