@@ -25,11 +25,17 @@ const testnetOrderbooks: Orderbook[] = [
   },
 ];
 
+/**
+ * Retrieves all available orderbooks for the current chain.
+ * Fetch is asynchronous so a loading state is returned.
+ * @returns A state including an orderbooks array and a loading boolean.
+ */
 export const useOrderbooks = (): {
   orderbooks: Orderbook[];
   isLoading: boolean;
 } => {
   const { orderbooks, isLoading } = {
+    // TODO: Replace with SQS filtered response
     orderbooks: testnetOrderbooks,
     isLoading: false,
   };
@@ -37,6 +43,11 @@ export const useOrderbooks = (): {
   return { orderbooks: orderbooks ?? [], isLoading };
 };
 
+/**
+ * Retrieves a single orderbook by base and quote denom.
+ * @param denoms An object including both the base and quote denom
+ * @returns A state including an orderbook and a loading boolean.
+ */
 export const useOrderbookByDenoms = ({
   baseDenom,
   quoteDenom,
@@ -54,6 +65,11 @@ export const useOrderbookByDenoms = ({
   return { orderbook, isLoading };
 };
 
+/**
+ * Retrieves all available base and quote denoms for the current chain.
+ * Fetch is asynchronous so a loading state is returned.
+ * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
+ */
 export const useOrderbookSelectableDenoms = () => {
   const { orderbooks, isLoading } = useOrderbooks();
 
@@ -69,15 +85,18 @@ export const useOrderbookSelectableDenoms = () => {
       }
     );
 
+  // Determine selectable base denoms from orderbooks in the form of denom strings
   const selectableBaseDenoms = useMemo(() => {
     const selectableDenoms = orderbooks.map((orderbook) => orderbook.baseDenom);
     return Array.from(new Set(selectableDenoms));
   }, [orderbooks]);
 
+  // Map selectable asset pages to array of assets
   const selectableAssets = useMemo(() => {
     return selectableAssetPages?.pages.flatMap((page) => page.items) ?? [];
   }, [selectableAssetPages]);
 
+  // Map selectable base asset denoms to asset objects
   const selectableBaseAssets = selectableBaseDenoms.map((denom) => {
     const existingAsset = selectableAssets.find(
       (asset) => asset.coinDenom === denom
@@ -96,7 +115,7 @@ export const useOrderbookSelectableDenoms = () => {
     return makeMinimalAsset(asset.rawAsset);
   });
 
-  console.log(selectableBaseAssets);
+  // Create mapping between base denom strings and a string of selectable quote asset denom strings
   const selectableQuoteDenoms = useMemo(() => {
     const quoteDenoms: Record<string, string[]> = {};
     for (let i = 0; i < selectableBaseDenoms.length; i++) {
