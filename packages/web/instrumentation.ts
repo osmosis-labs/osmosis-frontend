@@ -2,10 +2,10 @@ import { registerOTel } from "@vercel/otel";
 
 export function register() {
   registerOTel({
-    serviceName: "vercel-datadog",
+    serviceName: "vercel",
     instrumentationConfig: {
       fetch: {
-        propagateContextUrls: ["*"],
+        propagateContextUrls: ["/health", "/healthcheck", "/router/quote"],
       },
     },
   });
