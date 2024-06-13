@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { Asset } from "@osmosis-labs/server";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
@@ -71,7 +72,7 @@ export const useOrderbookByDenoms = ({
  * Fetch is asynchronous so a loading state is returned.
  * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
  */
-export const useOrderbookSelectableDenoms = () => {
+export const useOrderbookSelectableDenoms = <TAsset extends Asset>() => {
   const { orderbooks, isLoading } = useOrderbooks();
 
   const { data: selectableAssetPages } =
@@ -98,23 +99,29 @@ export const useOrderbookSelectableDenoms = () => {
   }, [selectableAssetPages]);
 
   // Map selectable base asset denoms to asset objects
-  const selectableBaseAssets = selectableBaseDenoms.map((denom) => {
-    const existingAsset = selectableAssets.find(
-      (asset) => asset.coinDenom === denom
-    );
-    if (existingAsset) {
-      return existingAsset;
-    }
-    const asset = getAssetFromAssetList({
-      symbol: denom,
-      sourceDenom: denom,
-      assetLists: AssetLists,
-    });
+  const selectableBaseAssets: TAsset[] = useMemo(
+    () =>
+      selectableBaseDenoms
+        .map((denom) => {
+          const existingAsset = selectableAssets.find(
+            (asset) => asset.coinDenom === denom
+          );
+          if (existingAsset) {
+            return existingAsset as TAsset;
+          }
+          const asset = getAssetFromAssetList({
+            symbol: denom,
+            sourceDenom: denom,
+            assetLists: AssetLists,
+          });
 
-    if (!asset) return;
+          if (!asset) return;
 
-    return makeMinimalAsset(asset.rawAsset);
-  });
+          return makeMinimalAsset(asset.rawAsset) as TAsset;
+        })
+        .filter((a) => a !== undefined) as TAsset[],
+    [selectableBaseDenoms, selectableAssets]
+  );
 
   // Create mapping between base denom strings and a string of selectable quote asset denom strings
   const selectableQuoteDenoms = useMemo(() => {

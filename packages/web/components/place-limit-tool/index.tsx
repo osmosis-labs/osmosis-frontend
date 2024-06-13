@@ -38,6 +38,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       selectableBaseDenoms,
       selectableQuoteDenoms,
       selectableBaseAssets,
+      isLoading,
     } = useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [baseDenom, setBaseDenom] = useState<string>("OSMO");
@@ -71,13 +72,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const isSwapToolLoading = false;
+    const isSwapToolLoading = isLoading;
 
     return (
       <>
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
-            selectableAssets={selectableBaseAssets as any[]}
+            selectableAssets={selectableBaseAssets}
             baseAsset={swapState.baseAsset}
             quoteAsset={swapState.quoteAsset}
             baseBalance={swapState.baseTokenBalance}
