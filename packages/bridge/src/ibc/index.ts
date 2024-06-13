@@ -8,13 +8,11 @@ import { BridgeError, BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
-  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   CosmosBridgeTransactionRequest,
   GetBridgeQuoteParams,
-  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 
@@ -25,9 +23,6 @@ export class IbcBridgeProvider implements BridgeProvider {
   protected protoRegistry = new Registry(ibcProtoRegistry);
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     this.validate(params);
@@ -113,9 +108,38 @@ export class IbcBridgeProvider implements BridgeProvider {
 
   async getAvailableSourceAssetVariants(
     _toChain: BridgeChain,
-    _toAsset: BridgeAsset
+    toAsset: BridgeAsset
   ): Promise<(BridgeChain & BridgeAsset)[]> {
-    throw new Error("Not implemented.");
+    const asset = this.ctx.assetLists
+      .flatMap((list) => list.assets)
+      .find(
+        (asset) =>
+          asset.coinMinimalDenom === toAsset.address ||
+          asset.sourceDenom === toAsset.sourceDenom
+      );
+
+    const ibcTransferMethod = asset?.transferMethods.find(
+      ({ type }) => type === "ibc"
+    ) as IbcTransferMethod;
+
+    if (!ibcTransferMethod || !asset) return [];
+
+    const sourceChain = this.ctx.chainList.find(
+      (chain) => chain.chain_id === ibcTransferMethod.counterparty.chainId
+    );
+
+    if (!sourceChain) return [];
+
+    return [
+      {
+        chainId: sourceChain.chain_id,
+        chainType: "cosmos",
+        address: asset.sourceDenom,
+        denom: asset.symbol,
+        decimals: asset.decimals,
+        sourceDenom: ibcTransferMethod.counterparty.sourceDenom,
+      },
+    ];
   }
 
   /**
