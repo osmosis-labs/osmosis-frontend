@@ -4,7 +4,13 @@ import { useMemo } from "react";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { api } from "~/utils/trpc";
 
-const testnetOrderbooks = [
+interface Orderbook {
+  baseDenom: string;
+  quoteDenom: string;
+  contractAddress: string;
+}
+
+const testnetOrderbooks: Orderbook[] = [
   {
     baseDenom: "OSMO",
     quoteDenom: "USDC",
@@ -19,13 +25,16 @@ const testnetOrderbooks = [
   },
 ];
 
-export const useOrderbooks = () => {
+export const useOrderbooks = (): {
+  orderbooks: Orderbook[];
+  isLoading: boolean;
+} => {
   const { orderbooks, isLoading } = {
     orderbooks: testnetOrderbooks,
     isLoading: false,
   };
 
-  return { orderbooks, isLoading };
+  return { orderbooks: orderbooks ?? [], isLoading };
 };
 
 export const useOrderbookByDenoms = ({
