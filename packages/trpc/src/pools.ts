@@ -179,7 +179,7 @@ export const poolsRouter = createTRPCRouter({
     .query(({ input: { poolId } }) =>
       getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
     ),
-  queryTransmuterTotalPoolLiquidity: publicProcedure
+  getTransmuterTotalPoolLiquidity: publicProcedure
     .input(z.object({ contractAddress: z.string() }))
     .query(({ ctx, input: { contractAddress } }) =>
       getCachedTransmuterTotalPoolLiquidity(

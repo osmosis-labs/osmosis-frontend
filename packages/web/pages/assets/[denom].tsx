@@ -11,7 +11,6 @@ import {
   Twitter,
 } from "@osmosis-labs/server";
 import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
-import { AvatarIcon } from "@radix-ui/react-icons";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
@@ -171,17 +170,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         : undefined;
     }, [language, tokenDetailsByLanguage]);
 
-    const title = useMemo(() => {
-      if (details) {
-        return details.name;
-      }
-
+    const asset = useMemo(() => {
       const currencies = ChainList.map(
         (info) => info.keplrChain.currencies
       ).reduce((a, b) => [...a, ...b]);
 
       const currency = currencies.find(
-        (el) => el.coinDenom === denom.toUpperCase()
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
       );
 
       if (!currency) {
@@ -193,8 +188,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         assetLists: AssetLists,
       });
 
+      return asset;
+    }, [denom]);
+
+    const title = useMemo(() => {
+      if (details) {
+        return details.name;
+      }
+
       return asset?.rawAsset.name;
-    }, [denom, details]);
+    }, [details, asset]);
 
     const SwapTool_ = (
       <SwapTool
@@ -206,6 +209,22 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         page="Token Info Page"
       />
     );
+
+    const { data: alloyedAssets } =
+      api.edge.pools.getTransmuterTotalPoolLiquidity.useQuery(
+        {
+          contractAddress: asset?.rawAsset.contract!.replace(
+            "/alloyed/allUSDT",
+            ""
+          )!,
+        },
+        {
+          enabled:
+            asset &&
+            asset.rawAsset.isAlloyed &&
+            Boolean(asset.rawAsset.contract),
+        }
+      );
 
     return (
       <AssetInfoViewProvider value={contextValue}>
@@ -258,54 +277,74 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
 
-              <section>
-                <h3 className="mb-8 text-h6 font-semibold">
-                  Underlying assets
-                </h3>
+              {alloyedAssets ? (
+                <section>
+                  <h3 className="mb-8 text-h6 font-semibold">
+                    Underlying assets
+                  </h3>
 
-                <p className="mb-6 text-body2 font-medium text-osmoverse-300">
-                  Bitcoin (BTC) on Osmosis is comprised of 3 different types of
-                  Bitcoin.{" "}
-                  <Link
-                    href="#"
-                    target="_blank"
-                    className="text-wosmongton-300"
-                  >
-                    Learn more
-                  </Link>
-                </p>
+                  <p className="mb-6 text-body2 font-medium text-osmoverse-300">
+                    {title} ({denom}) on Osmosis is comprised of{" "}
+                    {alloyedAssets.length} different types of {title}.{" "}
+                    <Link
+                      href="https://forum.osmosis.zone/t/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation/2624"
+                      target="_blank"
+                      className="text-wosmongton-300"
+                    >
+                      Learn more
+                    </Link>
+                  </p>
 
-                <div className="flex flex-col gap-8">
-                  <Link href="#" className="flex">
-                    <AvatarIcon className="h-12 w-12 min-w-[48px] rounded-full" />
+                  <div className="flex flex-col gap-8">
+                    {alloyedAssets.map((alloyedAsset) => (
+                      <Link
+                        href={`/assets/${alloyedAsset.asset.coinDenom}`}
+                        key={alloyedAsset.asset.coinMinimalDenom}
+                        className="flex"
+                      >
+                        {alloyedAsset.asset.coinImageUrl ? (
+                          <Image
+                            src={alloyedAsset.asset.coinImageUrl}
+                            alt={alloyedAsset.asset.coinName}
+                            width={48}
+                            height={48}
+                            className="h-12 w-12 min-w-[48px]"
+                          />
+                        ) : (
+                          false
+                        )}
 
-                    <div className="ml-3 mr-2">
-                      <p className="mb-1 text-subtitle1 font-semibold">
-                        Wrapped BitcoinWrapped BitcoinWrapped BitcoinWrapped
-                      </p>
+                        <div className="ml-3 mr-2">
+                          <p className="mb-1 text-subtitle1 font-semibold">
+                            {alloyedAsset.asset.coinName}
+                          </p>
 
-                      <p className="text-body2 font-medium text-osmoverse-300">
-                        WBTC
-                      </p>
-                    </div>
+                          <p className="text-body2 font-medium text-osmoverse-300">
+                            {alloyedAsset.asset.coinDenom}
+                          </p>
+                        </div>
 
-                    <div className="ml-auto">
-                      <p className="mb-1 text-subtitle1 font-semibold">
-                        67.89%
-                      </p>
+                        <div className="ml-auto">
+                          <p className="mb-1 text-subtitle1 font-semibold">
+                            {alloyedAsset.percentage?.toString()}
+                          </p>
 
-                      <p className="text-right text-body2 font-medium text-osmoverse-300">
-                        of BTC
-                      </p>
-                    </div>
+                          <p className="text-right text-body2 font-medium text-osmoverse-300">
+                            of {denom}
+                          </p>
+                        </div>
 
-                    <Icon
-                      id="caret-down"
-                      className="ml-2 h-6 w-6 min-w-[24px] -rotate-90 text-osmoverse-500"
-                    />
-                  </Link>
-                </div>
-              </section>
+                        <Icon
+                          id="caret-down"
+                          className="ml-2 h-6 w-6 min-w-[24px] -rotate-90 text-osmoverse-500"
+                        />
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : (
+                false
+              )}
             </div>
           </div>
         </main>
