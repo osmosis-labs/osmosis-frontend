@@ -1,14 +1,19 @@
 import { Menu, Transition } from "@headlessui/react";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { SwapAsset } from "~/hooks/use-swap";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 interface PriceSelectorProps {
   quoteAsset: SwapAsset &
@@ -21,35 +26,90 @@ interface PriceSelectorProps {
   quoteFiatBalance: PricePretty;
 }
 
-const UI_DEFAULT_STABLES = [
-  {
-    name: "USDC",
-    symbol: "USDC",
-    logoURIs: {
-      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg",
-    },
-  },
-  {
-    name: "Tether",
-    symbol: "USDT",
-    logoURIs: {
-      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdt.svg",
-    },
-  },
-];
+const UI_DEFAULT_STABLES = ["USDC", "USDT"];
 
 export default function PriceSelector({
-  quoteAsset,
   tokenSelectionAvailable,
   disabled,
   showQuoteBalance,
-  quoteFiatBalance,
 }: PriceSelectorProps & Disableable) {
   const [tab] = useQueryState("tab");
   const [quote, setQuote] = useQueryState(
     "quote",
     parseAsString.withDefault("USDC")
   );
+
+  const quoteAsset = useMemo(
+    () => getAssetFromAssetList({ assetLists: AssetLists, symbol: quote }),
+    [quote]
+  );
+
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+  const defaultStables = useMemo(
+    () =>
+      UI_DEFAULT_STABLES.map((symbol) =>
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          symbol,
+        })
+      ).filter(Boolean),
+    []
+  );
+
+  const { data: userStables } = api.edge.assets.getUserAssets.useQuery(
+    { userOsmoAddress: wallet?.address },
+    {
+      enabled: !!wallet?.address,
+      select: (data) =>
+        data.items.filter(({ coinDenom }) => {
+          const asset = getAssetFromAssetList({
+            assetLists: AssetLists,
+            symbol: coinDenom,
+          });
+
+          /**
+           * TEMP
+           *
+           * Waiting for fix on the assetlist for USDC not
+           * having "stablecoin" value in the "categories" array
+           */
+          if (asset?.symbol === "USDC") return true;
+
+          return asset?.rawAsset.categories.includes("stablecoin");
+        }),
+    }
+  );
+
+  const quoteAssetWithBalance = useMemo(
+    () => userStables?.find(({ coinDenom }) => coinDenom === quote),
+    [quote, userStables]
+  );
+
+  const userDefaultStablesBalances = useMemo(() => {
+    return defaultStables
+      .map((defStable) => {
+        const defInUserStables = userStables?.find(
+          ({ coinDenom }) => defStable!.symbol === coinDenom
+        );
+
+        if (!defInUserStables) return;
+
+        return defInUserStables;
+      })
+      .filter(Boolean)
+      .sort((a, b) =>
+        a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
+      );
+  }, [defaultStables, userStables]);
+
+  // const selectableStablecoins = useMemo(() => {
+  //   if (!wallet?.isWalletConnected) return defaultStables;
+
+  //   if (userStables && userHasDefaultStablesBalance) {
+  //   }
+  // }, [defaultStables, userStables, wallet?.isWalletConnected]);
 
   return (
     <Menu as="div" className="relative inline-block">
@@ -68,11 +128,15 @@ export default function PriceSelector({
               <span className="body2 text-osmoverse-300">
                 {tab === "buy" ? "Pay with" : "Receive"}
               </span>
-              {quoteAsset.coinImageUrl && (
+              {quoteAsset.rawAsset.logoURIs && (
                 <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
-                    src={quoteAsset.coinImageUrl}
-                    alt="token icon"
+                    src={
+                      quoteAsset.rawAsset.logoURIs.svg ||
+                      quoteAsset.rawAsset.logoURIs.png ||
+                      ""
+                    }
+                    alt={`${quoteAsset.symbol} icon`}
                     width={24}
                     height={24}
                     priority
@@ -80,14 +144,14 @@ export default function PriceSelector({
                 </div>
               )}
               <span className="md:caption body2 w-32 truncate text-left">
-                {quoteAsset.coinDenom}
+                {quoteAsset.symbol}
               </span>
             </div>
           )}
           <div className="flex items-center gap-1">
-            {showQuoteBalance && (
+            {showQuoteBalance && quoteAssetWithBalance && (
               <span className="body2 inline-flex text-osmoverse-300">
-                {formatPretty(quoteFiatBalance, {
+                {formatPretty(quoteAssetWithBalance.usdValue!, {
                   minimumFractionDigits: 5,
                 })}{" "}
                 available
@@ -111,10 +175,18 @@ export default function PriceSelector({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[280px] origin-top-left flex-col rounded-xl bg-osmoverse-800">
-          <div className="flex flex-col gap-2 p-2">
-            {UI_DEFAULT_STABLES.map(({ name, symbol, logoURIs }) => {
+        <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+          <div className="flex flex-col border-b border-osmoverse-700 p-2">
+            {defaultStables.map((stable) => {
+              const {
+                symbol,
+                rawAsset: { name, logoURIs },
+              } = stable!;
               const isSelected = quote === symbol;
+              const availableBalance =
+                userDefaultStablesBalances.find(
+                  (u) => u?.coinDenom === stable?.symbol
+                )?.usdValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
 
               return (
                 <Menu.Item key={name}>
@@ -128,7 +200,7 @@ export default function PriceSelector({
                     >
                       <div className="flex items-center gap-3">
                         <Image
-                          src={logoURIs.svg}
+                          src={logoURIs.svg || logoURIs.png || ""}
                           alt={`${name} logo`}
                           className="h-10 w-10"
                           width={40}
@@ -141,17 +213,92 @@ export default function PriceSelector({
                           </small>
                         </div>
                       </div>
-                      {isSelected && (
+                      <div className="flex items-center gap-3">
+                        {wallet?.isWalletConnected && (
+                          <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                            <span
+                              className={classNames({
+                                "text-white-full": availableBalance
+                                  .toDec()
+                                  .gt(new Dec(0)),
+                              })}
+                            >
+                              {formatPretty(availableBalance)}
+                            </span>
+                            <span className="body2 font-light">available</span>
+                          </p>
+                        )}
                         <Icon
                           id="check-mark-circle"
-                          className="h-4 w-4 text-[#CC54C2]"
+                          className={classNames(
+                            "h-4 w-4 rounded-full text-[#CC54C2]",
+                            {
+                              "opacity-0": !isSelected,
+                            }
+                          )}
                         />
-                      )}
+                      </div>
                     </button>
                   )}
                 </Menu.Item>
               );
             })}
+          </div>
+          <div className="flex flex-col px-5 py-2">
+            <button className="flex w-full items-center justify-between py-3">
+              <span className="subtitle1 font-semibold text-wosmongton-200">
+                Add funds
+              </span>
+              <div className="flex items-center gap-1">
+                <div className="relative flex items-center">
+                  {defaultStables.map((stable, i) => {
+                    const {
+                      symbol,
+                      rawAsset: { logoURIs },
+                    } = stable!;
+
+                    return (
+                      <Image
+                        key={`${symbol}-logo`}
+                        alt=""
+                        src={logoURIs.svg || logoURIs.png || ""}
+                        width={24}
+                        height={24}
+                        className={classNames("h-6 w-6", {
+                          "-ml-2": i > 0,
+                        })}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex h-6 w-6 items-center justify-center">
+                  <Icon
+                    id="chevron-right"
+                    className="h-3 w-[7px] text-osmoverse-300"
+                  />
+                </div>
+              </div>
+            </button>
+            <button className="flex w-full items-center justify-between py-3">
+              <span className="subtitle1 font-semibold text-wosmongton-200">
+                Swap from another asset
+              </span>
+              <div className="flex items-center gap-1">
+                <Image
+                  src={"/images/quote-swap-from-another-asset.png"}
+                  alt=""
+                  width={176}
+                  height={48}
+                  className="h-6 w-[88px]"
+                />
+                <div className="flex h-6 w-6 items-center justify-center">
+                  <Icon
+                    id="chevron-right"
+                    className="h-3 w-[7px] text-osmoverse-300"
+                  />
+                </div>
+              </div>
+            </button>
           </div>
         </Menu.Items>
       </Transition>
