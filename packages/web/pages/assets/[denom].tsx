@@ -213,10 +213,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { data: alloyedAssets } =
       api.edge.pools.getTransmuterTotalPoolLiquidity.useQuery(
         {
-          contractAddress: asset?.rawAsset.contract!.replace(
-            "/alloyed/allUSDT",
-            ""
-          )!,
+          contractAddress: asset?.rawAsset.contract!,
         },
         {
           enabled:
