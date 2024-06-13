@@ -3,6 +3,7 @@ import {
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
   getCachedPoolMarketMetricsMap,
+  getCachedTransmuterTotalPoolLiquidity,
   getPool,
   getPools,
   getSharePool,
@@ -177,5 +178,14 @@ export const poolsRouter = createTRPCRouter({
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
       getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
+    ),
+  queryTransmuterTotalPoolLiquidity: publicProcedure
+    .input(z.object({ contractAddress: z.string() }))
+    .query(({ ctx, input: { contractAddress } }) =>
+      getCachedTransmuterTotalPoolLiquidity(
+        contractAddress,
+        ctx.chainList,
+        ctx.assetLists
+      )
     ),
 });

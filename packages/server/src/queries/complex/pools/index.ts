@@ -139,4 +139,5 @@ export * from "./providers";
 export * from "./route-token-out-given-in";
 export * from "./share";
 export * from "./superfluid";
+export * from "./transmuter";
 export * from "./user";
