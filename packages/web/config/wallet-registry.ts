@@ -312,6 +312,18 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     stakeUrl: "https://trustwallet.com/staking",
     governanceUrl: "https://governance.trustwallet.com/",
     features: [],
-    mode: "extension", // Add mode property with correct value
+    mode: "extension",
+  },
+  {
+    ...CosmosKitWalletList["cdcwallet-extension"],
+    logo: "/wallets/crypto-com.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cdcwallet-extension").then(
+        (m) => m.CdcwalletExtensionWallet
+      ),
+    windowPropertyName: "cdc_wallet",
+    stakeUrl: "https://crypto.com/staking",
+    features: [],
+    mode: "extension",
   },
 ];
