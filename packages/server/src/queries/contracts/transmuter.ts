@@ -10,6 +10,9 @@ interface TransmuterTotalPoolLiquidityResponse {
   };
 }
 
+/**
+ * returns an array with the composition of the liquidity in the pool
+ */
 export const queryTransmuterTotalPoolLiquidity = createNodeQuery<
   TransmuterTotalPoolLiquidityResponse,
   {
