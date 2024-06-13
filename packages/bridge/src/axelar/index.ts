@@ -255,7 +255,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async getAvailableSourceAssetVariants(
     toChain: BridgeChain,
     toAsset: BridgeAsset
-  ): Promise<BridgeAsset[]> {
+  ): Promise<(BridgeChain & BridgeAsset)[]> {
     // get origin axelar asset info from given toAsset
     const axelarAssets = await getAxelarAssets({ env: this.ctx.env });
     const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
@@ -278,28 +278,48 @@ export class AxelarBridgeProvider implements BridgeProvider {
     )
       return [];
 
-    const sourceVariants: BridgeAsset[] = [];
+    const sourceVariants: (BridgeChain & BridgeAsset)[] = [];
 
     // return just origin asset and the unwrapped version for now, but
     // can return other axl-versions later if wanted
     const nativeChainAsset =
       axelarSourceAsset.addresses[axelarSourceAsset.native_chain];
     if (!nativeChainAsset) return [];
-    else {
-      const sourceAssetId =
-        nativeChainAsset?.address ?? nativeChainAsset?.ibc_denom;
-      if (!sourceAssetId) return [];
 
-      sourceVariants.push({
-        denom: nativeChainAsset.symbol,
-        address: sourceAssetId,
-        decimals: axelarSourceAsset.decimals,
-        sourceDenom: axelarSourceAsset.denom,
-      });
-    }
+    const axelarChains = await getAxelarChains({ env: this.ctx.env });
+    const sourceAssetId =
+      nativeChainAsset?.address ?? nativeChainAsset?.ibc_denom;
+    if (!sourceAssetId) return [];
 
+    const axelarChain = axelarChains.find(
+      (chain) => chain.id === axelarSourceAsset.native_chain
+    );
+
+    if (!axelarChain) return [];
+
+    // axelar chain list IDs are canonical
+    const chainInfo =
+      axelarChain.chain_type === "evm"
+        ? {
+            chainId: axelarChain.chain_id as number,
+            chainType: axelarChain.chain_type,
+          }
+        : {
+            chainId: axelarChain.chain_id as string,
+            chainType: axelarChain.chain_type,
+          };
+
+    sourceVariants.push({
+      ...chainInfo,
+      chainName: axelarChain.chain_name,
+      denom: nativeChainAsset.symbol,
+      address: sourceAssetId,
+      decimals: axelarSourceAsset.decimals,
+      sourceDenom: axelarSourceAsset.denom,
+    });
+
+    // there are auto-un/wrapped versions
     if (axelarSourceAsset.denoms) {
-      // there are auto-wrapped versions
       // assume it's the chain native asset
       const unwrappedDenoms = axelarSourceAsset.denoms.filter(
         (denom) => denom !== axelarSourceAsset.denom
@@ -307,7 +327,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       if (unwrappedDenoms.length !== 1) return sourceVariants;
 
-      const axelarChains = await getAxelarChains({ env: this.ctx.env });
       const axelarChain = axelarChains.find(
         (chain) => chain.id === axelarSourceAsset.native_chain
       );
@@ -317,6 +336,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (axelarChain.chain_type !== "evm") return sourceVariants;
 
       sourceVariants.push({
+        // axelar chain list IDs are canonical
+        chainId: axelarChain.chain_id as number,
+        chainType: axelarChain.chain_type,
+        chainName: axelarChain.chain_name,
         denom: axelarChain.native_token.symbol,
         address: NativeEVMTokenConstantAddress,
         decimals: axelarChain.native_token.decimals,

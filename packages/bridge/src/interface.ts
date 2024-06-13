@@ -53,7 +53,7 @@ export interface BridgeProvider {
   getAvailableSourceAssetVariants(
     toChain: BridgeChain,
     toAsset: BridgeAsset
-  ): Promise<BridgeAsset[]>;
+  ): Promise<(BridgeChain & BridgeAsset)[]>;
 
   /**
    * If the provider supports deposit address transfers:

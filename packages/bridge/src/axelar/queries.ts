@@ -124,7 +124,7 @@ interface AxelarChain {
   };
   prefix_address: string;
   prefix_chain_ids: string[];
-  chain_type: string;
+  chain_type: "evm" | "cosmos";
   provider_params: object[];
 }
 

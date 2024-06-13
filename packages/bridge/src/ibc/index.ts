@@ -114,7 +114,7 @@ export class IbcBridgeProvider implements BridgeProvider {
   async getAvailableSourceAssetVariants(
     _toChain: BridgeChain,
     _toAsset: BridgeAsset
-  ): Promise<BridgeAsset[]> {
+  ): Promise<(BridgeChain & BridgeAsset)[]> {
     throw new Error("Not implemented.");
   }
 
