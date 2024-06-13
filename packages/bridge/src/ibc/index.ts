@@ -124,15 +124,9 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!ibcTransferMethod || !asset) return [];
 
-    const sourceChain = this.ctx.chainList.find(
-      (chain) => chain.chain_id === ibcTransferMethod.counterparty.chainId
-    );
-
-    if (!sourceChain) return [];
-
     return [
       {
-        chainId: sourceChain.chain_id,
+        chainId: ibcTransferMethod.counterparty.chainId,
         chainType: "cosmos",
         address: asset.sourceDenom,
         denom: asset.symbol,
