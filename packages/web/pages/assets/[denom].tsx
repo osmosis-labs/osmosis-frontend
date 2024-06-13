@@ -277,18 +277,21 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               {alloyedAssets ? (
                 <section>
                   <h3 className="mb-8 text-h6 font-semibold">
-                    Underlying assets
+                    {t("tokenInfos.underlyingAssets.title")}
                   </h3>
 
                   <p className="mb-6 text-body2 font-medium text-osmoverse-300">
-                    {title} ({denom}) on Osmosis is comprised of{" "}
-                    {alloyedAssets.length} different types of {title}.{" "}
+                    {t("tokenInfos.underlyingAssets.description", {
+                      name: title ?? denom,
+                      denom,
+                      count: alloyedAssets.length.toString(),
+                    })}{" "}
                     <Link
                       href="https://forum.osmosis.zone/t/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation/2624"
                       target="_blank"
                       className="text-wosmongton-300"
                     >
-                      Learn more
+                      {t("pool.learnMore")}
                     </Link>
                   </p>
 
@@ -327,7 +330,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                           </p>
 
                           <p className="text-right text-body2 font-medium text-osmoverse-300">
-                            of {denom}
+                            {t("tokenInfos.underlyingAssets.of", { denom })}
                           </p>
                         </div>
 

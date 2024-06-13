@@ -967,7 +967,12 @@
     "circulatingSupply": "循环供应",
     "buyToken": "购买{coinDenom}",
     "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性"
+    "liquidityInOSMOPools": "{number} {denom}池中的流动性",
+    "underlyingAssets": {
+      "title": "基础资产",
+      "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",
+      "of": "{denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "渗透更新！",

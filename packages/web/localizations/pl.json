@@ -967,7 +967,12 @@
     "circulatingSupply": "Krążące zaopatrzenie",
     "buyToken": "Kup {coinDenom}",
     "staking": "Stawianie",
-    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}"
+    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}",
+    "underlyingAssets": {
+      "title": "Aktywa bazowe",
+      "description": "{name} ( {denom} ) na osmozie składa się z {count} różne typy {name} .",
+      "of": "of {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Aktualizacje osmozy!",

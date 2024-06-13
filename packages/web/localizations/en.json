@@ -967,7 +967,12 @@
     "circulatingSupply": "Circulating Supply",
     "buyToken": "Buy {coinDenom}",
     "staking": "Staking",
-    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools"
+    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools",
+    "underlyingAssets": {
+      "title": "Underlying assets",
+      "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",
+      "of": "of {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Osmosis updates!",

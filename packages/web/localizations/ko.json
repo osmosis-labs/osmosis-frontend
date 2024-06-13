@@ -967,7 +967,12 @@
     "circulatingSupply": "순환 공급",
     "buyToken": "{coinDenom} 구매",
     "staking": "스테이킹",
-    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성"
+    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성",
+    "underlyingAssets": {
+      "title": "기초자산",
+      "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",
+      "of": "{denom} 의"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "오스모시스 업데이트!",
