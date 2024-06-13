@@ -11,9 +11,11 @@ import {
   Twitter,
 } from "@osmosis-labs/server";
 import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
+import { AvatarIcon } from "@radix-ui/react-icons";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
@@ -253,8 +255,57 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <TwitterSection tweets={tweets} />
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
+
+              <section>
+                <h3 className="mb-8 text-h6 font-semibold">
+                  Underlying assets
+                </h3>
+
+                <p className="mb-6 text-body2 font-medium text-osmoverse-300">
+                  Bitcoin (BTC) on Osmosis is comprised of 3 different types of
+                  Bitcoin.{" "}
+                  <Link
+                    href="#"
+                    target="_blank"
+                    className="text-wosmongton-300"
+                  >
+                    Learn more
+                  </Link>
+                </p>
+
+                <div className="flex flex-col gap-8">
+                  <Link href="#" className="flex">
+                    <AvatarIcon className="h-12 w-12 min-w-[48px] rounded-full" />
+
+                    <div className="ml-3 mr-2">
+                      <p className="mb-1 text-subtitle1 font-semibold">
+                        Wrapped BitcoinWrapped BitcoinWrapped BitcoinWrapped
+                      </p>
+
+                      <p className="text-body2 font-medium text-osmoverse-300">
+                        WBTC
+                      </p>
+                    </div>
+
+                    <div className="ml-auto">
+                      <p className="mb-1 text-subtitle1 font-semibold">
+                        67.89%
+                      </p>
+
+                      <p className="text-right text-body2 font-medium text-osmoverse-300">
+                        of BTC
+                      </p>
+                    </div>
+
+                    <Icon
+                      id="caret-down"
+                      className="ml-2 h-6 w-6 min-w-[24px] -rotate-90 text-osmoverse-500"
+                    />
+                  </Link>
+                </div>
+              </section>
             </div>
           </div>
         </main>
