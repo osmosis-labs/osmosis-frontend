@@ -610,7 +610,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     return cachified({
       cache: this.ctx.cache,
-      key: `${fromChainAxelarId}/${toChainAxelarId}/${toAddress}/${
+      key: `${
+        AxelarBridgeProvider.ID
+      }${fromChainAxelarId}_${toChainAxelarId}/${toAddress}/${
         fromAsset.sourceDenom
       }/${Boolean(autoUnwrapIntoNative)}`,
       getFreshValue: async (): Promise<BridgeDepositAddress> => {

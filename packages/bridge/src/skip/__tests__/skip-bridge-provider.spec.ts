@@ -343,7 +343,7 @@ describe("SkipBridgeProvider", () => {
 
   it("should fetch and cache skip assets", async () => {
     const chainID = "1";
-    const assets = await provider.getSkipAssets(chainID);
+    const assets = await provider.getAssets(chainID);
 
     expect(assets).toBeDefined();
     expect(assets[chainID].assets.length).toBeGreaterThan(0);

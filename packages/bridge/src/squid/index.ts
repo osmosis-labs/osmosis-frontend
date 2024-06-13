@@ -268,10 +268,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     const tokens = await this.getTokens();
     const toToken = tokens.find(
       (t) =>
-        (t.address === toAsset.address ||
-          t.ibcDenom === toAsset.address ||
-          t.address === toAsset.sourceDenom ||
-          t.ibcDenom === toAsset.sourceDenom) &&
+        (t.address === toAsset.address || t.ibcDenom === toAsset.address) &&
         // squid uses canonical chain IDs (numerical and string)
         t.chainId === toChain.chainId
     );
@@ -283,7 +280,10 @@ export class SquidBridgeProvider implements BridgeProvider {
     const commonSourceChainTokens = tokens
       .filter(
         (t) =>
-          t.commonKey === toToken.commonKey && t.address !== toToken.address
+          (t.commonKey === toToken.commonKey ||
+            // common coingeckoIDs can be used to identify the same variants
+            t.coingeckoId === toToken.coingeckoId) &&
+          t.address !== toToken.address
       )
       .map((t) => {
         const chain = chains.find(({ chainId }) => chainId === t.chainId);
@@ -490,7 +490,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   getChains() {
     return cachified({
       cache: this.ctx.cache,
-      key: "chains",
+      key: SquidBridgeProvider.ID + "_chains",
       ttl: 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
@@ -509,7 +509,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   getTokens() {
     return cachified({
       cache: this.ctx.cache,
-      key: "tokens",
+      key: SquidBridgeProvider.ID + "_tokens",
       ttl: 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {

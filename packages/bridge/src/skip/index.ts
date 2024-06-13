@@ -214,10 +214,60 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   async getAvailableSourceAssetVariants(
-    _toChain: BridgeChain,
-    _toAsset: BridgeAsset
+    toChain: BridgeChain,
+    toAsset: BridgeAsset
   ): Promise<(BridgeChain & BridgeAsset)[]> {
-    throw new Error("Not implemented.");
+    const toChainAsset = await this.getSkipAsset(toChain, toAsset);
+    if (!toChainAsset) return [];
+
+    // find variants
+    const assets = await this.getAssets();
+    const sourceVariants: (BridgeChain & BridgeAsset)[] = [];
+
+    // IBC shared origin assets
+    const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
+      const chainAssets = assets[chainID].assets;
+
+      return chainAssets.filter(
+        (asset) =>
+          asset.origin_denom === toChainAsset.origin_denom &&
+          asset.origin_chain_id === toChainAsset.origin_chain_id &&
+          asset.denom !== toChainAsset.denom
+      );
+    });
+
+    for (const sharedOriginAsset of sharedOriginAssets) {
+      const chainInfo = sharedOriginAsset.is_evm
+        ? {
+            chainId: Number(sharedOriginAsset.chain_id),
+            chainType: "evm" as const,
+          }
+        : !sharedOriginAsset.is_svm
+        ? {
+            chainId: sharedOriginAsset.chain_id as string,
+            chainType: "cosmos" as const,
+          }
+        : undefined;
+
+      if (!chainInfo) continue;
+
+      sourceVariants.push({
+        ...chainInfo,
+        address: sharedOriginAsset.denom,
+        denom:
+          sharedOriginAsset.symbol ??
+          sharedOriginAsset.name ??
+          sharedOriginAsset.denom,
+        decimals: sharedOriginAsset.decimals ?? toAsset.decimals,
+        sourceDenom: sharedOriginAsset.origin_denom,
+      });
+    }
+
+    // TODO: when Skip supports new features
+    // * CCTP variants
+    // * EVM swappable variants
+
+    return sourceVariants;
   }
 
   async getTransactionData(
@@ -361,7 +411,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSkipAsset(chain: BridgeChain, asset: BridgeAsset) {
     const chainID = chain.chainId.toString();
 
-    const chainAssets = await this.getSkipAssets(chainID);
+    const chainAssets = await this.getAssets(chainID);
 
     for (const skipAsset of chainAssets[chainID].assets) {
       if (chain.chainType === "evm") {
@@ -388,32 +438,24 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
-  async getSkipAssets(chainID: string) {
+  getAssets(chainID?: string) {
     return cachified({
       cache: this.ctx.cache,
-      key: JSON.stringify({
-        id: SkipBridgeProvider.ID,
-        func: "_getSkipAssets",
-        chainID,
-      }),
-      getFreshValue: async () => {
-        return this.skipClient.assets({
+      key: SkipBridgeProvider.ID + `_assets_${chainID}`,
+      ttl: 1000 * 60 * 30, // 30 minutes
+      getFreshValue: () =>
+        this.skipClient.assets({
           chainID,
-        });
-      },
+        }),
     });
   }
 
-  async getChains() {
+  getChains() {
     return cachified({
       cache: this.ctx.cache,
-      key: JSON.stringify({
-        id: SkipBridgeProvider.ID,
-        func: "_getChains",
-      }),
-      getFreshValue: async () => {
-        return this.skipClient.chains();
-      },
+      key: SkipBridgeProvider.ID + "_chains",
+      ttl: 1000 * 60 * 30, // 30 minutes
+      getFreshValue: () => this.skipClient.chains(),
     });
   }
 
