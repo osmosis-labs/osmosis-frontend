@@ -332,8 +332,12 @@ export async function getGasFeeAmount({
       .truncate()
       .toString();
 
-    // Check if this balance is not enough to pay the fee, if so skip.
-    if (new Dec(feeAmount).gt(new Dec(unspentFeeBalance.amount))) continue;
+    // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
+    if (
+      new Dec(feeAmount).gt(new Dec(unspentFeeBalance.amount)) ||
+      new Dec(feeAmount).lte(new Dec(0))
+    )
+      continue;
 
     // found enough to pay the fee that is not spent
     return [
@@ -377,6 +381,9 @@ export async function getGasFeeAmount({
     .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
 
   for (const spentFeeAmount of spentFees) {
+    // check for gas price conversion having too little precision
+    if (new Dec(spentFeeAmount.feeAmount).lte(new Dec(0))) continue;
+
     const spentAmount =
       coinsSpent.find(({ denom }) => denom === spentFeeAmount.denom)?.amount ||
       "0";
