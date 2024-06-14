@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 import { Icon } from "~/components/assets";
+import { SkeletonLoader } from "~/components/loaders";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -54,34 +55,40 @@ export const MoreDepositOptions = (modalProps: ModalBaseProps) => {
         Choose from the following alternative providers to deposit (aka
         “bridge”) your {asset?.coinDenom} to {prettyChainName}.
       </h1>
-      {isLoadingExternalUrls || isLoadingAsset ? (
-        <p>loading...</p>
-      ) : (
-        <div className="flex flex-col gap-1 pt-4">
-          {externalUrlsData?.externalUrls.map(
-            ({ urlProviderName: providerName, url, logo }) => (
-              <a
-                key={url.toString()}
-                href={url.toString()}
-                target="_blank"
-                rel="noreferrer"
-                className="subtitle1 flex items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
-              >
-                <div className="flex items-center gap-3">
-                  <Image
-                    alt={`${providerName} logo`}
-                    src={logo}
-                    width={44}
-                    height={42}
-                  />
-                  <span>Deposit with {providerName}</span>
-                </div>
-                <Icon id="arrow-up-right" className="text-osmoverse-400" />
-              </a>
-            )
-          )}
-        </div>
-      )}
+      <div className="flex flex-col gap-1 pt-4">
+        {isLoadingExternalUrls || isLoadingAsset ? (
+          <>
+            {new Array(3).fill(undefined).map((_, i) => (
+              <SkeletonLoader key={i} className="h-[76px] w-full" />
+            ))}
+          </>
+        ) : (
+          <>
+            {externalUrlsData?.externalUrls.map(
+              ({ urlProviderName: providerName, url, logo }) => (
+                <a
+                  key={url.toString()}
+                  href={url.toString()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="subtitle1 flex items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <Image
+                      alt={`${providerName} logo`}
+                      src={logo}
+                      width={44}
+                      height={42}
+                    />
+                    <span>Deposit with {providerName}</span>
+                  </div>
+                  <Icon id="arrow-up-right" className="text-osmoverse-400" />
+                </a>
+              )
+            )}
+          </>
+        )}
+      </div>
     </ModalBase>
   );
 };
