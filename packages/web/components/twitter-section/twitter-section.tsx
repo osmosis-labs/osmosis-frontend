@@ -64,7 +64,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
     <li className="flex flex-col items-start gap-4 self-stretch py-3">
       <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
         <div
-          className={`flex h-13 w-13 items-center gap-3 overflow-hidden 1.5xs:self-center ${
+          className={`flex h-12 w-12 items-center gap-3 overflow-hidden 1.5xs:self-center ${
             !user.profilePictureUrl ? "bg-white-high" : ""
           }`}
         >
@@ -73,8 +73,9 @@ const Tweet: FunctionComponent<RichTweet> = ({
               className="h-full w-full rounded-full"
               src={user.profilePictureUrl}
               alt={user.username ?? ""}
-              width={52}
-              height={52}
+              quality={100}
+              width={48}
+              height={48}
             />
           ) : null}
         </div>
@@ -113,9 +114,10 @@ const Tweet: FunctionComponent<RichTweet> = ({
               <Image
                 className="relative mt-4 h-auto w-full max-w-2xl self-stretch rounded-3xl object-cover"
                 src={previewImage}
+                quality={100}
                 alt="Tweet image"
-                width={200}
-                height={258}
+                width={1200}
+                height={675}
               />
             )}
           </Link>
