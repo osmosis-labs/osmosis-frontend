@@ -20,7 +20,6 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
-  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
@@ -28,7 +27,6 @@ import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
-  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { SkipApiClient } from "./queries";
@@ -38,12 +36,11 @@ export class SkipBridgeProvider implements BridgeProvider {
   static readonly ID = "Skip";
   readonly providerName = SkipBridgeProvider.ID;
 
-  protected readonly skipClient = new SkipApiClient();
+  readonly skipClient: SkipApiClient;
 
-  constructor(protected readonly ctx: BridgeProviderContext) {}
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
+  constructor(protected readonly ctx: BridgeProviderContext) {
+    this.skipClient = new SkipApiClient(ctx.env);
+  }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
