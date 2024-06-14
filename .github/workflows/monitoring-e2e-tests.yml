@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "*/45 * * * *"
+  push:
+    branches:
+      - FE-456
 
 jobs:
   prod-e2e-tests:
