@@ -1,5 +1,5 @@
 import { isNil } from "@osmosis-labs/utils";
-import { createClient, VercelKV } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 import { Cache as CachifiedCache, CacheEntry, totalTtl } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -21,7 +21,7 @@ const isTestEnv = process.env.NODE_ENV === "test";
  *  Falls back to in-memory cache if the remote client is not able to be created.
  */
 export class RemoteCache implements CachifiedCache {
-  protected kvStore: VercelKV | null = null;
+  protected kvStore: Redis | null = null;
 
   protected fallbackCache: CachifiedCache | null = null;
 
@@ -59,7 +59,7 @@ export class RemoteCache implements CachifiedCache {
       }
 
       try {
-        this.kvStore = createClient({
+        this.kvStore = new Redis({
           url,
           token,
         });
