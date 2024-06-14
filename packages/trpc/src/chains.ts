@@ -21,11 +21,21 @@ export const chainsRouter = createTRPCRouter({
       })
     ),
   getChains: publicProcedure
-    .input(CursorPaginationSchema)
-    .query(async ({ input: { cursor, limit }, ctx }) =>
+    .input(
+      CursorPaginationSchema.merge(z.object({ search: z.string().optional() }))
+    )
+    .query(async ({ input: { cursor, limit, search }, ctx }) =>
       maybeCachePaginatedItems({
         cacheKey: "chains",
-        getFreshItems: () => Promise.resolve(ctx.chainList),
+        getFreshItems: () =>
+          Promise.resolve(
+            ctx.chainList.filter((chain) => {
+              return search
+                ? chain.chain_name.includes(search) ||
+                    chain.pretty_name.includes(search)
+                : true;
+            })
+          ),
         cursor,
         limit,
       })
