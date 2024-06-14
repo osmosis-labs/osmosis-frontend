@@ -73,6 +73,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
               className="h-full w-full rounded-full"
               src={user.profilePictureUrl}
               alt={user.username ?? ""}
+              unoptimized
               quality={100}
               width={48}
               height={48}
@@ -114,6 +115,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
               <Image
                 className="relative mt-4 h-auto w-full max-w-2xl self-stretch rounded-3xl object-cover"
                 src={previewImage}
+                unoptimized
                 quality={100}
                 alt="Tweet image"
                 width={200}
