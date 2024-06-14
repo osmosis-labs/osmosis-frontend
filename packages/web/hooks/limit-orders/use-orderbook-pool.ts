@@ -34,7 +34,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
 
   const makerFee = useMemo(() => {
     if (isLoading) return new Dec(0);
-    return new Dec(makerFeeData?.makerFee ?? 0);
+    return makerFeeData?.makerFee ?? new Dec(0);
   }, [isLoading, makerFeeData]);
   return {
     makerFee,
