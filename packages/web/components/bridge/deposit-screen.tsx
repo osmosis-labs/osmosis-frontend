@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { MoreDepositOptions } from "~/components/bridge/more-deposit-options";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
@@ -20,6 +21,7 @@ export const DepositScreen = () => {
     },
   } = useStore();
   const wallet = accountStore.getWallet(chainId);
+  const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
 
   const { data: asset, isLoading } = api.edge.assets.getAssetWithPrice.useQuery(
     {
@@ -244,9 +246,14 @@ export const DepositScreen = () => {
           <Button
             variant="ghost"
             className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
+            onClick={() => setIsMoreOptionsVisible(true)}
           >
             More deposit options
           </Button>
+          <MoreDepositOptions
+            isOpen={isMoreOptionsVisible}
+            onRequestClose={() => setIsMoreOptionsVisible(false)}
+          />
         </div>
       </div>
     </div>

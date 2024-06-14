@@ -5,6 +5,7 @@ import {
   BridgeError,
   BridgeProviders,
   BridgeQuoteError,
+  getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
 } from "@osmosis-labs/bridge";
 import {
@@ -13,7 +14,7 @@ import {
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
-import { Errors, timeout } from "@osmosis-labs/utils";
+import { Errors, isNil, timeout } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -31,6 +32,13 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   Squid: "/bridges/squid.svg",
   Axelar: "/bridges/axelar.svg",
   IBC: "/bridges/ibc.svg",
+};
+
+const ExternalBridgeLogoUrls: Record<Bridge, string> = {
+  Skip: "/external-bridges/ibc-fun.svg",
+  Squid: "/bridges/squid.svg",
+  Axelar: "/external-bridges/satellite.svg",
+  IBC: "/external-bridges/tfm.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -284,5 +292,53 @@ export const bridgeTransferRouter = createTRPCRouter({
           ]),
         });
       }
+    }),
+
+  getExternalUrls: publicProcedure
+    .input(getBridgeExternalUrlSchema)
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            // passes testnet chains if IS_TESTNET
+            getTimeoutHeight({ ...ctx, destinationAddress }),
+        }
+      );
+
+      const eventualExternalUrls = await Promise.all(
+        Object.values(bridgeProviders.bridges).map((bridgeProvider) =>
+          timeout(
+            () =>
+              bridgeProvider
+                .getExternalUrl(input)
+                .then((externalUrl) =>
+                  !isNil(externalUrl)
+                    ? {
+                        ...externalUrl,
+                        logo: ExternalBridgeLogoUrls[
+                          bridgeProvider.providerName
+                        ],
+                      }
+                    : undefined
+                )
+                .catch(() => undefined),
+            5_000, // 5 seconds
+            `Failed to get external url for ${bridgeProvider.providerName}`
+          )().catch(() => undefined)
+        )
+      );
+
+      const externalUrls = eventualExternalUrls.filter(
+        (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
+          Boolean(externalUrl)
+      );
+
+      return {
+        externalUrls,
+      };
     }),
 });

@@ -20,12 +20,14 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
@@ -595,6 +597,23 @@ export class SkipBridgeProvider implements BridgeProvider {
       console.error("failed to estimate gas:", err);
       return BigInt(0);
     }
+  }
+
+  async getExternalUrl({
+    fromChain,
+    toChain,
+    fromAsset,
+    toAsset,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    if (this.ctx.env === "testnet") return undefined;
+
+    const url = new URL("https://ibc.fun/");
+    url.searchParams.set("src_chain", String(fromChain.chainId));
+    url.searchParams.set("src_asset", fromAsset.address);
+    url.searchParams.set("dest_chain", String(toChain.chainId));
+    url.searchParams.set("dest_asset", toAsset.address);
+
+    return { urlProviderName: "IBC.fun", url };
   }
 }
 

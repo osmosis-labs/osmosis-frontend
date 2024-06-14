@@ -233,3 +233,54 @@ describe("IbcBridgeProvider", () => {
     });
   });
 });
+
+describe("IbcBridgeProvider.getExternalUrl", () => {
+  let provider: IbcBridgeProvider;
+
+  beforeEach(() => {
+    provider = new IbcBridgeProvider(mockContext);
+    jest.clearAllMocks();
+  });
+
+  it("should return undefined for EVM fromChain", async () => {
+    const params = {
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      fromAsset: { sourceDenom: "weth-wei" },
+      toAsset: { sourceDenom: "uatom" },
+    } as Parameters<typeof provider.getExternalUrl>[0];
+
+    const url = await provider.getExternalUrl(params);
+
+    expect(url).toBeUndefined();
+  });
+
+  it("should return undefined for EVM toChain", async () => {
+    const params = {
+      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      toChain: { chainId: 1, chainType: "evm" },
+      fromAsset: { sourceDenom: "uosmo" },
+      toAsset: { sourceDenom: "weth-wei" },
+    } as Parameters<typeof provider.getExternalUrl>[0];
+
+    const url = await provider.getExternalUrl(params);
+
+    expect(url).toBeUndefined();
+  });
+
+  it("should generate the correct URL for given parameters", async () => {
+    const params = {
+      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      fromAsset: { sourceDenom: "uosmo" },
+      toAsset: { sourceDenom: "uatom" },
+    } as Parameters<typeof provider.getExternalUrl>[0];
+
+    const expectedUrl =
+      "https://geo.tfm.com/?chainFrom=osmosis-1&token0=uosmo&chainTo=cosmoshub-4&token1=uatom";
+    const result = await provider.getExternalUrl(params);
+
+    expect(result?.urlProviderName).toBe("TFM");
+    expect(result?.url.toString()).toBe(expectedUrl);
+  });
+});

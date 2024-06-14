@@ -52,6 +52,10 @@ export interface BridgeProvider {
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
+
+  getExternalUrl: (
+    params: GetBridgeExternalUrlParams
+  ) => Promise<BridgeExternalUrl | undefined>;
 }
 
 const cosmosChainSchema = z.object({
@@ -182,7 +186,6 @@ export const getBridgeExternalUrlSchema = z.object({
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: z.string(),
-  env: z.union([z.literal("mainnet"), z.literal("testnet")]),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<
@@ -292,6 +295,11 @@ export interface BridgeQuote {
 
   /** Sign doc. */
   transactionRequest?: BridgeTransactionRequest;
+}
+
+export interface BridgeExternalUrl {
+  urlProviderName: string;
+  url: URL;
 }
 
 // Transfer status
