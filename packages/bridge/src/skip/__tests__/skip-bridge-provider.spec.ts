@@ -335,7 +335,7 @@ describe("SkipBridgeProvider", () => {
       sourceDenom: "asset1",
     };
 
-    const skipAsset = await provider.getSkipAsset(chain, asset);
+    const skipAsset = await provider.getAsset(chain, asset);
 
     expect(skipAsset).toBeDefined();
     expect(skipAsset?.denom).toBe("asset1");
@@ -431,4 +431,6 @@ describe("SkipBridgeProvider", () => {
 
     expect(approvalTxRequest).toBeUndefined();
   });
+
+  describe("getAvailableSourceAssetVariants", () => {});
 });

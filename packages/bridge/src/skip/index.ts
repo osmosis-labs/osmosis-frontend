@@ -68,7 +68,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         slippage,
       }),
       getFreshValue: async (): Promise<BridgeQuote> => {
-        const sourceAsset = await this.getSkipAsset(fromChain, fromAsset);
+        const sourceAsset = await this.getAsset(fromChain, fromAsset);
 
         if (!sourceAsset) {
           throw new BridgeQuoteError([
@@ -79,7 +79,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           ]);
         }
 
-        const destinationAsset = await this.getSkipAsset(toChain, toAsset);
+        const destinationAsset = await this.getAsset(toChain, toAsset);
 
         if (!destinationAsset) {
           throw new BridgeQuoteError([
@@ -214,7 +214,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     toChain: BridgeChain,
     toAsset: BridgeAsset
   ): Promise<(BridgeChain & BridgeAsset)[]> {
-    const toChainAsset = await this.getSkipAsset(toChain, toAsset);
+    const toChainAsset = await this.getAsset(toChain, toAsset);
     if (!toChainAsset) return [];
 
     // find variants
@@ -405,7 +405,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     };
   }
 
-  async getSkipAsset(chain: BridgeChain, asset: BridgeAsset) {
+  async getAsset(chain: BridgeChain, asset: BridgeAsset) {
     const chainID = chain.chainId.toString();
 
     const chainAssets = await this.getAssets(chainID);
