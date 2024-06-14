@@ -1,11 +1,11 @@
 import { Menu, Transition } from "@headlessui/react";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
@@ -26,6 +26,11 @@ interface PriceSelectorProps {
   quoteFiatBalance: PricePretty;
 }
 
+type AssetWithBalance = Asset & {
+  amount?: CoinPretty;
+  usdValue?: PricePretty;
+};
+
 const UI_DEFAULT_STABLES = ["USDC", "USDT"];
 
 export default function PriceSelector({
@@ -40,7 +45,9 @@ export default function PriceSelector({
   );
 
   const quoteAsset = useMemo(
-    () => getAssetFromAssetList({ assetLists: AssetLists, symbol: quote }),
+    () =>
+      getAssetFromAssetList({ assetLists: AssetLists, symbol: quote })
+        ?.rawAsset as Asset | undefined,
     [quote]
   );
 
@@ -49,12 +56,13 @@ export default function PriceSelector({
 
   const defaultStables = useMemo(
     () =>
-      UI_DEFAULT_STABLES.map((symbol) =>
-        getAssetFromAssetList({
-          assetLists: AssetLists,
-          symbol,
-        })
-      ).filter(Boolean),
+      UI_DEFAULT_STABLES.map(
+        (symbol) =>
+          getAssetFromAssetList({
+            assetLists: AssetLists,
+            symbol,
+          })?.rawAsset
+      ).filter(Boolean) as Asset[],
     []
   );
 
@@ -63,53 +71,92 @@ export default function PriceSelector({
     {
       enabled: !!wallet?.address,
       select: (data) =>
-        data.items.filter(({ coinDenom }) => {
-          const asset = getAssetFromAssetList({
-            assetLists: AssetLists,
-            symbol: coinDenom,
-          });
+        data.items
+          .map((walletAsset) => {
+            const asset = getAssetFromAssetList({
+              assetLists: AssetLists,
+              symbol: walletAsset.coinDenom,
+            });
 
-          /**
-           * TEMP
-           *
-           * Waiting for fix on the assetlist for USDC not
-           * having "stablecoin" value in the "categories" array
-           */
-          if (asset?.symbol === "USDC") return true;
+            // Extrapolate the rawAsset and return the amount and usdValue
+            const returnAsset: AssetWithBalance = {
+              ...asset!.rawAsset,
+              amount: walletAsset.amount,
+              usdValue: walletAsset.usdValue,
+            };
 
-          return asset?.rawAsset.categories.includes("stablecoin");
-        }),
+            /**
+             * TEMP
+             *
+             * Waiting for fix on the assetlist for USDC not
+             * having "stablecoin" value in the "categories" array
+             */
+            if (asset?.symbol === "USDC") return returnAsset;
+
+            return asset?.rawAsset.categories.includes("stablecoin")
+              ? returnAsset
+              : undefined;
+          })
+          .filter(Boolean)
+          .toSorted((a, b) =>
+            a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
+          ) as AssetWithBalance[],
     }
   );
 
+  const userStablesWithoutBalances = useMemo(
+    () =>
+      userStables
+        ?.map(({ amount, usdValue, ...props }) => ({ ...props }))
+        .filter(Boolean) as Asset[],
+    [userStables]
+  );
+
+  /**
+   * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
+   * Sell trades limited to canonical USDC and alloyed USDT.
+   */
+  const defaultStablesWithBalances = useMemo(
+    () =>
+      defaultStables.map(
+        (defaultStable) =>
+          userStables?.find(({ symbol }) => defaultStable.symbol === symbol) ??
+          defaultStable
+      ),
+    [defaultStables, userStables]
+  );
+
+  const selectableStables = useMemo(() => {
+    if (!wallet?.isWalletConnected) {
+      return defaultStables;
+    }
+
+    return tab === "buy"
+      ? userStablesWithoutBalances
+      : defaultStablesWithBalances;
+  }, [
+    defaultStables,
+    defaultStablesWithBalances,
+    tab,
+    userStablesWithoutBalances,
+    wallet?.isWalletConnected,
+  ]);
+
   const quoteAssetWithBalance = useMemo(
-    () => userStables?.find(({ coinDenom }) => coinDenom === quote),
+    () => userStables?.find(({ symbol }) => symbol === quote),
     [quote, userStables]
   );
 
-  const userDefaultStablesBalances = useMemo(() => {
-    return defaultStables
-      .map((defStable) => {
-        const defInUserStables = userStables?.find(
-          ({ coinDenom }) => defStable!.symbol === coinDenom
-        );
-
-        if (!defInUserStables) return;
-
-        return defInUserStables;
-      })
-      .filter(Boolean)
-      .sort((a, b) =>
-        a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
-      );
-  }, [defaultStables, userStables]);
-
-  // const selectableStablecoins = useMemo(() => {
-  //   if (!wallet?.isWalletConnected) return defaultStables;
-
-  //   if (userStables && userHasDefaultStablesBalance) {
-  //   }
-  // }, [defaultStables, userStables, wallet?.isWalletConnected]);
+  /**
+   * Default selection is highest balance stable.
+   * When user changes selection, app should persist
+   * selection across both Buy and Sell trade modes.
+   */
+  useEffect(() => {
+    if (userStables && userStables.length > 0) {
+      setQuote(userStables[0].symbol);
+    }
+  }, [setQuote, userStables]);
 
   return (
     <Menu as="div" className="relative inline-block">
@@ -132,12 +179,12 @@ export default function PriceSelector({
                   <span className="body2 text-osmoverse-300">
                     {tab === "buy" ? "Pay with" : "Receive"}
                   </span>
-                  {quoteAsset.rawAsset.logoURIs && (
+                  {quoteAsset.logoURIs && (
                     <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
                       <Image
                         src={
-                          quoteAsset.rawAsset.logoURIs.svg ||
-                          quoteAsset.rawAsset.logoURIs.png ||
+                          quoteAsset.logoURIs.svg ||
+                          quoteAsset.logoURIs.png ||
                           ""
                         }
                         alt={`${quoteAsset.symbol} icon`}
@@ -153,14 +200,16 @@ export default function PriceSelector({
                 </div>
               )}
               <div className="flex items-center gap-1">
-                {showQuoteBalance && quoteAssetWithBalance && (
-                  <span className="body2 inline-flex text-osmoverse-300">
-                    {formatPretty(quoteAssetWithBalance.usdValue!, {
-                      minimumFractionDigits: 5,
-                    })}{" "}
-                    available
-                  </span>
-                )}
+                {showQuoteBalance &&
+                  quoteAssetWithBalance &&
+                  quoteAssetWithBalance.usdValue && (
+                    <span className="body2 inline-flex text-osmoverse-300">
+                      {formatPretty(quoteAssetWithBalance.usdValue, {
+                        minimumFractionDigits: 5,
+                      })}{" "}
+                      available
+                    </span>
+                  )}
                 <div className="flex h-6 w-6 items-center justify-center">
                   <Icon
                     id="chevron-down"
@@ -186,16 +235,11 @@ export default function PriceSelector({
           >
             <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
               <div className="flex flex-col border-b border-osmoverse-700 p-2">
-                {defaultStables.map((stable) => {
-                  const {
-                    symbol,
-                    rawAsset: { name, logoURIs },
-                  } = stable!;
+                {selectableStables.map(({ symbol, name, logoURIs }) => {
                   const isSelected = quote === symbol;
                   const availableBalance =
-                    userDefaultStablesBalances.find(
-                      (u) => u?.coinDenom === stable?.symbol
-                    )?.usdValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0);
+                    userStables &&
+                    userStables.find((u) => u?.symbol === symbol)?.usdValue;
 
                   return (
                     <Menu.Item key={name}>
@@ -223,7 +267,7 @@ export default function PriceSelector({
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            {wallet?.isWalletConnected && (
+                            {wallet?.isWalletConnected && availableBalance && (
                               <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
                                 <span
                                   className={classNames({
@@ -256,40 +300,38 @@ export default function PriceSelector({
                 })}
               </div>
               <div className="flex flex-col px-5 py-2">
-                <button className="flex w-full items-center justify-between py-3">
-                  <span className="subtitle1 font-semibold text-wosmongton-200">
-                    Add funds
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <div className="relative flex items-center">
-                      {defaultStables.map((stable, i) => {
-                        const {
-                          symbol,
-                          rawAsset: { logoURIs },
-                        } = stable!;
-
-                        return (
-                          <Image
-                            key={`${symbol}-logo`}
-                            alt=""
-                            src={logoURIs.svg || logoURIs.png || ""}
-                            width={24}
-                            height={24}
-                            className={classNames("h-6 w-6", {
-                              "-ml-2": i > 0,
-                            })}
-                          />
-                        );
-                      })}
+                {tab === "buy" && (
+                  <button className="flex w-full items-center justify-between py-3">
+                    <span className="subtitle1 font-semibold text-wosmongton-200">
+                      Add funds
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <div className="relative flex items-center">
+                        {/** Here we just display default stables */}
+                        {defaultStables.map(({ symbol, logoURIs }, i) => {
+                          return (
+                            <Image
+                              key={`${symbol}-logo`}
+                              alt=""
+                              src={logoURIs.svg || logoURIs.png || ""}
+                              width={24}
+                              height={24}
+                              className={classNames("h-6 w-6", {
+                                "-ml-2": i > 0,
+                              })}
+                            />
+                          );
+                        })}
+                      </div>
+                      <div className="flex h-6 w-6 items-center justify-center">
+                        <Icon
+                          id="chevron-right"
+                          className="h-3 w-[7px] text-osmoverse-300"
+                        />
+                      </div>
                     </div>
-                    <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="chevron-right"
-                        className="h-3 w-[7px] text-osmoverse-300"
-                      />
-                    </div>
-                  </div>
-                </button>
+                  </button>
+                )}
                 <button className="flex w-full items-center justify-between py-3">
                   <span className="subtitle1 font-semibold text-wosmongton-200">
                     Swap from another asset
