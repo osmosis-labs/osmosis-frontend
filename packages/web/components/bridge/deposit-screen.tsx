@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { BridgeNetworkSelect } from "~/components/bridge/bridge-network-select";
 import { MoreDepositOptions } from "~/components/bridge/more-deposit-options";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders";
@@ -265,6 +266,8 @@ const ChainSelectorButton: FunctionComponent<{
   children: ReactNode;
   chainLogo: string;
 }> = ({ readonly, children, chainLogo: _chainLogo }) => {
+  const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
+
   if (readonly) {
     return (
       <div className="subtitle1 flex-1 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
@@ -274,14 +277,25 @@ const ChainSelectorButton: FunctionComponent<{
   }
 
   return (
-    <button className="subtitle1 group flex flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850">
-      <span>{children}</span>
-      <Icon
-        id="chevron-down"
-        className="text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
-        width={12}
-        height={12}
+    <>
+      <button
+        onClick={() => {
+          setIsNetworkSelectVisible(true);
+        }}
+        className="subtitle1 group flex flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
+      >
+        <span>{children}</span>
+        <Icon
+          id="chevron-down"
+          className="text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
+          width={12}
+          height={12}
+        />
+      </button>
+      <BridgeNetworkSelect
+        isOpen={isNetworkSelectVisible}
+        onRequestClose={() => setIsNetworkSelectVisible(false)}
       />
-    </button>
+    </>
   );
 };
