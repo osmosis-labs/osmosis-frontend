@@ -131,7 +131,7 @@ export default function PriceSelector({
       return defaultStables;
     }
 
-    return tab === "buy"
+    return tab === "sell"
       ? userStablesWithoutBalances
       : defaultStablesWithBalances;
   }, [
