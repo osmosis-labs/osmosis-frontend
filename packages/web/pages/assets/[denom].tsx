@@ -14,7 +14,6 @@ import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
@@ -23,6 +22,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
+import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
 import {
@@ -210,19 +210,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       />
     );
 
-    const { data: alloyedAssets } =
-      api.edge.pools.getTransmuterTotalPoolLiquidity.useQuery(
-        {
-          contractAddress: asset?.rawAsset.contract!,
-        },
-        {
-          enabled:
-            asset &&
-            asset.rawAsset.isAlloyed &&
-            Boolean(asset.rawAsset.contract),
-        }
-      );
-
     return (
       <AssetInfoViewProvider value={contextValue}>
         <NextSeo
@@ -274,77 +261,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
 
-              {alloyedAssets ? (
-                <section>
-                  <h3 className="mb-8 text-h6 font-semibold">
-                    {t("tokenInfos.underlyingAssets.title")}
-                  </h3>
-
-                  <p className="mb-6 text-body2 font-medium text-osmoverse-300">
-                    {t("tokenInfos.underlyingAssets.description", {
-                      name: title ?? denom,
-                      denom,
-                      count: alloyedAssets.length.toString(),
-                    })}{" "}
-                    <Link
-                      href="https://forum.osmosis.zone/t/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation/2624"
-                      target="_blank"
-                      className="text-wosmongton-300"
-                    >
-                      {t("pool.learnMore")}
-                    </Link>
-                  </p>
-
-                  <div className="flex flex-col gap-8">
-                    {alloyedAssets.map((alloyedAsset) => (
-                      <Link
-                        href={`/assets/${alloyedAsset.asset.coinDenom}`}
-                        key={alloyedAsset.asset.coinMinimalDenom}
-                        className="flex"
-                      >
-                        {alloyedAsset.asset.coinImageUrl ? (
-                          <Image
-                            src={alloyedAsset.asset.coinImageUrl}
-                            alt={alloyedAsset.asset.coinName}
-                            width={48}
-                            height={48}
-                            className="h-12 w-12 min-w-[48px]"
-                          />
-                        ) : (
-                          false
-                        )}
-
-                        <div className="ml-3 mr-2">
-                          <p className="mb-1 text-subtitle1 font-semibold">
-                            {alloyedAsset.asset.coinName}
-                          </p>
-
-                          <p className="text-body2 font-medium text-osmoverse-300">
-                            {alloyedAsset.asset.coinDenom}
-                          </p>
-                        </div>
-
-                        <div className="ml-auto">
-                          <p className="mb-1 text-subtitle1 font-semibold">
-                            {alloyedAsset.percentage?.toString()}
-                          </p>
-
-                          <p className="text-right text-body2 font-medium text-osmoverse-300">
-                            {t("tokenInfos.underlyingAssets.of", { denom })}
-                          </p>
-                        </div>
-
-                        <Icon
-                          id="caret-down"
-                          className="ml-2 h-6 w-6 min-w-[24px] -rotate-90 text-osmoverse-500"
-                        />
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              ) : (
-                false
-              )}
+              {asset && asset.rawAsset.isAlloyed && asset.rawAsset.contract ? (
+                <AlloyedAssetsSection
+                  title={title ?? denom}
+                  denom={denom}
+                  contractAddress={asset.rawAsset.contract}
+                />
+              ) : null}
             </div>
           </div>
         </main>
