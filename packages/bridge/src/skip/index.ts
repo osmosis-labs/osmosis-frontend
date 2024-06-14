@@ -1,5 +1,6 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
@@ -29,6 +30,7 @@ import {
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
@@ -210,6 +212,12 @@ export class SkipBridgeProvider implements BridgeProvider {
     });
   }
 
+  /**
+   * Returns the source/origin asset variants that can be used to reach a destination given destination chain and asset.
+   *
+   * Currently, just supports IBC shared origin assets. But can be expanded to support EVM-swappable assets
+   * and CCTP variants.
+   */
   async getAvailableSourceAssetVariants(
     toChain: BridgeChain,
     toAsset: BridgeAsset
@@ -219,7 +227,54 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     // find variants
     const assets = await this.getAssets();
-    const sourceVariants: (BridgeChain & BridgeAsset)[] = [];
+    const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+
+    // asset list counterparties
+    const asset = this.ctx.assetLists
+      .flatMap(({ assets }) => assets)
+      .find((asset) => asset.coinMinimalDenom === toAsset.address);
+
+    for (const counterparty of asset?.counterparty ?? []) {
+      // check if supported by skip
+      if (!("chainId" in counterparty)) continue;
+      if (
+        !assets[counterparty.chainId].assets.some(
+          (a) => a.denom === counterparty.sourceDenom
+        )
+      )
+        continue;
+
+      if (counterparty.chainType === "cosmos") {
+        const c = counterparty as CosmosCounterparty;
+
+        // check if supported by skip
+        if (assets[c.chainId].assets.some((a) => a.denom === c.sourceDenom)) {
+          foundVariants.setAsset(c.chainId, c.sourceDenom, {
+            chainId: c.chainId,
+            chainType: "cosmos",
+            address: c.sourceDenom,
+            denom: c.symbol,
+            decimals: c.decimals,
+            sourceDenom: c.sourceDenom,
+          });
+        }
+      }
+      if (counterparty.chainType === "evm") {
+        const c = counterparty as EVMCounterparty;
+
+        // check if supported by skip
+        if (assets[c.chainId].assets.some((a) => a.denom === c.sourceDenom)) {
+          foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+            chainId: c.chainId,
+            chainType: "evm",
+            address: c.sourceDenom,
+            denom: c.symbol,
+            decimals: c.decimals,
+            sourceDenom: c.sourceDenom,
+          });
+        }
+      }
+    }
 
     // IBC shared origin assets
     const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
@@ -248,23 +303,27 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if (!chainInfo) continue;
 
-      sourceVariants.push({
-        ...chainInfo,
-        address: sharedOriginAsset.denom,
-        denom:
-          sharedOriginAsset.symbol ??
-          sharedOriginAsset.name ??
-          sharedOriginAsset.denom,
-        decimals: sharedOriginAsset.decimals ?? toAsset.decimals,
-        sourceDenom: sharedOriginAsset.origin_denom,
-      });
+      foundVariants.setAsset(
+        sharedOriginAsset.chain_id,
+        sharedOriginAsset.denom,
+        {
+          ...chainInfo,
+          address: sharedOriginAsset.denom,
+          denom:
+            sharedOriginAsset.symbol ??
+            sharedOriginAsset.name ??
+            sharedOriginAsset.denom,
+          decimals: sharedOriginAsset.decimals ?? toAsset.decimals,
+          sourceDenom: sharedOriginAsset.origin_denom,
+        }
+      );
     }
 
     // TODO: when Skip supports new features
     // * CCTP variants
     // * EVM swappable variants
 
-    return sourceVariants;
+    return foundVariants.assets;
   }
 
   async getTransactionData(

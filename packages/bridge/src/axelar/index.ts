@@ -32,6 +32,7 @@ import {
   GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { BridgeAssetMap } from "../utils";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
@@ -278,7 +279,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     )
       return [];
 
-    const sourceVariants: (BridgeChain & BridgeAsset)[] = [];
+    const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
 
     // return just origin asset and the unwrapped version for now, but
     // can return other axl-versions later if wanted
@@ -309,14 +310,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
             chainType: axelarChain.chain_type,
           };
 
-    sourceVariants.push({
-      ...chainInfo,
-      chainName: axelarChain.chain_name,
-      denom: nativeChainAsset.symbol,
-      address: sourceAssetId,
-      decimals: axelarSourceAsset.decimals,
-      sourceDenom: axelarSourceAsset.denom,
-    });
+    foundVariants.setAsset(
+      axelarChain.chain_id.toString(),
+      axelarSourceAsset.denom,
+      {
+        ...chainInfo,
+        chainName: axelarChain.chain_name,
+        denom: nativeChainAsset.symbol,
+        address: sourceAssetId,
+        decimals: axelarSourceAsset.decimals,
+        sourceDenom: axelarSourceAsset.denom,
+      }
+    );
 
     // there are auto-un/wrapped versions
     if (axelarSourceAsset.denoms) {
@@ -325,29 +330,33 @@ export class AxelarBridgeProvider implements BridgeProvider {
         (denom) => denom !== axelarSourceAsset.denom
       );
 
-      if (unwrappedDenoms.length !== 1) return sourceVariants;
+      if (unwrappedDenoms.length !== 1) return foundVariants.assets;
 
       const axelarChain = axelarChains.find(
         (chain) => chain.id === axelarSourceAsset.native_chain
       );
 
-      if (!axelarChain) return sourceVariants;
+      if (!axelarChain) return foundVariants.assets;
       // only handle unwrapping with evm chains due to ERC20 standard
-      if (axelarChain.chain_type !== "evm") return sourceVariants;
+      if (axelarChain.chain_type !== "evm") return foundVariants.assets;
 
-      sourceVariants.push({
-        // axelar chain list IDs are canonical
-        chainId: axelarChain.chain_id as number,
-        chainType: axelarChain.chain_type,
-        chainName: axelarChain.chain_name,
-        denom: axelarChain.native_token.symbol,
-        address: NativeEVMTokenConstantAddress,
-        decimals: axelarChain.native_token.decimals,
-        sourceDenom: unwrappedDenoms[0],
-      });
+      foundVariants.setAsset(
+        axelarChain.chain_id.toString(),
+        axelarSourceAsset.denom,
+        {
+          // axelar chain list IDs are canonical
+          chainId: axelarChain.chain_id as number,
+          chainType: axelarChain.chain_type,
+          chainName: axelarChain.chain_name,
+          denom: axelarChain.native_token.symbol,
+          address: NativeEVMTokenConstantAddress,
+          decimals: axelarChain.native_token.decimals,
+          sourceDenom: unwrappedDenoms[0],
+        }
+      );
     }
 
-    return sourceVariants;
+    return foundVariants.assets;
   }
 
   async estimateGasCost(

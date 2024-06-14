@@ -7,6 +7,7 @@ import {
   type TransactionRequest,
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
@@ -24,7 +25,6 @@ import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
-  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
@@ -32,9 +32,9 @@ import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
-  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { BridgeAssetMap } from "../utils";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -58,9 +58,6 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote({
     fromAmount,
@@ -275,6 +272,51 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     if (!toToken) return [];
 
+    const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+
+    // asset list counterparties
+    const asset = this.ctx.assetLists
+      .flatMap(({ assets }) => assets)
+      .find((asset) => asset.coinMinimalDenom === toAsset.address);
+
+    for (const counterparty of asset?.counterparty ?? []) {
+      // check if supported by squid
+      if (!("chainId" in counterparty)) continue;
+      if (
+        !tokens.some(
+          (t) =>
+            t.address === counterparty.sourceDenom &&
+            t.chainId === counterparty.chainId
+        )
+      )
+        continue;
+
+      if (counterparty.chainType === "cosmos") {
+        const c = counterparty as CosmosCounterparty;
+
+        foundVariants.setAsset(c.chainId, c.sourceDenom, {
+          chainId: c.chainId,
+          chainType: "cosmos",
+          address: c.sourceDenom,
+          denom: c.symbol,
+          decimals: c.decimals,
+          sourceDenom: c.sourceDenom,
+        });
+      }
+      if (counterparty.chainType === "evm") {
+        const c = counterparty as EVMCounterparty;
+
+        foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+          chainId: c.chainId,
+          chainType: "evm",
+          address: c.sourceDenom,
+          denom: c.symbol,
+          decimals: c.decimals,
+          sourceDenom: c.sourceDenom,
+        });
+      }
+    }
+
     // leverage squid's "commonKey" to gather other like source assets for toToken
     const chains = await this.getChains();
     const commonSourceChainTokens = tokens
@@ -292,7 +334,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       })
       .filter((t): t is NonNullable<typeof t> => !!t);
 
-    return commonSourceChainTokens.map((chainToken) => {
+    for (const chainToken of commonSourceChainTokens) {
       const chainInfo =
         chainToken.chainType === ChainType.EVM
           ? {
@@ -304,16 +346,22 @@ export class SquidBridgeProvider implements BridgeProvider {
               chainType: "cosmos" as const,
             };
 
-      return {
-        // squid chain list IDs are canonical
-        ...chainInfo,
-        chainName: chainToken.chainName,
-        denom: chainToken.symbol,
-        address: chainToken.address,
-        decimals: chainToken.decimals,
-        sourceDenom: chainToken.address,
-      };
-    });
+      foundVariants.setAsset(
+        chainToken.chainId.toString(),
+        chainToken.address,
+        {
+          // squid chain list IDs are canonical
+          ...chainInfo,
+          chainName: chainToken.chainName,
+          denom: chainToken.symbol,
+          address: chainToken.address,
+          decimals: chainToken.decimals,
+          sourceDenom: chainToken.address,
+        }
+      );
+    }
+
+    return foundVariants.assets;
   }
 
   async createEvmTransaction({
