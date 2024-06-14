@@ -126,21 +126,21 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   />
                 </button>
               </div>
-              <div className="w -full  flex flex-row place-content-between items-center rounded-xl border border-osmoverse-700 py-3 px-6">
-                <div className="h-full">
-                  <span>{`${swapState.priceState.percentAdjusted
-                    .mul(new Dec(100))
-                    .round()
-                    .abs()}% `}</span>
-                  <span className="text-osmoverse-400">
-                    {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
-                    current price
-                  </span>
+              <div className="flex w-full items-center justify-between rounded-2xl bg-osmoverse-1000 py-3 px-5">
+                <div className="inline-flex items-center gap-1 py-1">
+                  {/** TODO: Dynamic width */}
+                  <input
+                    type="text"
+                    className="w-[92px] bg-transparent text-white-full"
+                    value={"$123456.01"}
+                  />
+                  <span className="text-osmoverse-400">=</span>
+                  <span className="text-osmoverse-400">1 {base}</span>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="flex items-center gap-1">
                   {percentAdjustmentOptions.map(({ label, value }) => (
                     <button
-                      className="rounded-xl border border-osmoverse-700 py-1 px-3 text-wosmongton-200"
+                      className="flex h-8 items-center rounded-5xl border border-osmoverse-700 px-3"
                       key={`limit-price-adjust-${label}`}
                       onClick={() =>
                         swapState.priceState.adjustByPercentage(
@@ -150,7 +150,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         )
                       }
                     >
-                      {label}
+                      <span className="body2 text-wosmongton-200">
+                        {label !== "0%" &&
+                          (orderDirection === OrderDirection.Bid ? "-" : "+")}
+                        {label}
+                      </span>
                     </button>
                   ))}
                 </div>
