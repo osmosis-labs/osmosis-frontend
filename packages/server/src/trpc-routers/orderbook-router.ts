@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
-import { queryOrderbookMakerFee } from "../queries";
+import { getOrderbookMakerFee } from "../queries/complex/orderbooks";
 import { OsmoAddressSchema } from "../queries/complex/parameter-types";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -9,12 +9,12 @@ export const orderbookRouter = createTRPCRouter({
     .input(OsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
       const { osmoAddress } = input;
-      const { data } = await queryOrderbookMakerFee({
+      const makerFee = await getOrderbookMakerFee({
         orderbookAddress: osmoAddress,
         chainList: ctx.chainList,
       });
       return {
-        makerFee: new Dec(data),
+        makerFee: new Dec(makerFee),
       };
     }),
 });
