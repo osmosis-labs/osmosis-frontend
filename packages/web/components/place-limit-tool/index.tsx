@@ -1,18 +1,18 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useState } from "react";
+import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
+import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
+import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
@@ -30,12 +30,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
-    const [baseDenom, setBaseDenom] = useState<string>("ION");
-    const quoteDenom = "OSMO";
+    const [base, setBase] = useQueryState(
+      "base",
+      parseAsString.withDefault("ION")
+    );
+    const [quote] = useQueryState("base", parseAsString.withDefault("USDC"));
+    const [type] = useQueryState(
+      "type",
+      parseAsStringLiteral(TRADE_TYPES).withDefault("market")
+    );
 
     const { poolId, orderbookContractAddress } = useOrderbookPool({
-      baseDenom,
-      quoteDenom,
+      baseDenom: base,
+      quoteDenom: quote,
     });
 
     const swapState = usePlaceLimit({
@@ -44,8 +51,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       orderDirection,
       useQueryParams: false,
       orderbookContractAddress,
-      baseDenom,
-      quoteDenom,
+      baseDenom: base,
+      quoteDenom: quote,
     });
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -60,7 +67,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             quoteAsset={swapState.quoteAsset}
             baseBalance={swapState.baseTokenBalance}
             quoteBalance={swapState.quoteTokenBalance}
-            onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
+            onTokenSelect={setBase}
             disabled={false}
             orderDirection={orderDirection}
           />
@@ -76,7 +83,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </button>
               </div>
               <div className="flex w-full items-center justify-center gap-1 pb-5">
-                <p className="text-wosmongton-200">0 BTC</p>
+                <p className="text-wosmongton-200">0 {quote}</p>
                 <button className="flex items-center">
                   <Icon
                     id="arrow-right"
@@ -94,39 +101,46 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </div>
             </div>
           </div>
-          <div className="mt-3 flex place-content-between items-center text-body1">
-            <div className="flex w-full flex-col">
-              <div>
-                <span
-                  className={classNames(
-                    "w-full bg-transparent text-white-full focus:outline-none"
-                  )}
-                >{`When ${swapState.baseDenom} price is at `}</span>
-                <span
-                  className={classNames(
-                    "w-full bg-transparent text-wosmongton-300 focus:outline-none "
-                  )}
-                >{`$${formatPretty(swapState.priceState.price)}`}</span>
+          {type === "limit" && (
+            <>
+              <div className="inline-flex items-center gap-1 pt-6">
+                <span className="body2 text-osmoverse-300">
+                  When {swapState.baseDenom} price is
+                </span>
+                <button className="body2 inline-flex items-center gap-1 text-wosmongton-300">
+                  <span>
+                    {`${swapState.priceState.percentAdjusted
+                      .mul(new Dec(100))
+                      .round()
+                      .abs()}%`}
+                  </span>
+                  <span>
+                    {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
+                    current price
+                  </span>
+                  <Icon
+                    id="arrows-swap-16"
+                    className="h-4 w-4 text-wosmongton-300"
+                    width={16}
+                    height={16}
+                  />
+                </button>
               </div>
-            </div>
-          </div>
-          <div className="flex w-full flex-row place-content-between items-center rounded-xl border border-osmoverse-700 py-3 px-6">
-            <div className="h-full">
-              <span>{`${swapState.priceState.percentAdjusted
-                .mul(new Dec(100))
-                .round()
-                .abs()}% `}</span>
-              <span className="text-osmoverse-400">
-                {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
-                current price
-              </span>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {useMemo(
-                () =>
-                  percentAdjustmentOptions.map(({ label, value }) => (
+              <div className="w -full  flex flex-row place-content-between items-center rounded-xl border border-osmoverse-700 py-3 px-6">
+                <div className="h-full">
+                  <span>{`${swapState.priceState.percentAdjusted
+                    .mul(new Dec(100))
+                    .round()
+                    .abs()}% `}</span>
+                  <span className="text-osmoverse-400">
+                    {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
+                    current price
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {percentAdjustmentOptions.map(({ label, value }) => (
                     <button
-                      className="rounded-xl border border-osmoverse-700 py-1 px-3 text-white-full text-wosmongton-200"
+                      className="rounded-xl border border-osmoverse-700 py-1 px-3 text-wosmongton-200"
                       key={`limit-price-adjust-${label}`}
                       onClick={() =>
                         swapState.priceState.adjustByPercentage(
@@ -138,11 +152,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     >
                       {label}
                     </button>
-                  )),
-                [swapState.priceState, orderDirection]
-              )}
-            </div>
-          </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
           <Button
             disabled={
               swapState.insufficientFunds ||
