@@ -967,7 +967,12 @@
     "circulatingSupply": "Suministro circulante",
     "buyToken": "Comprar {coinDenom}",
     "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}"
+    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
+    "underlyingAssets": {
+      "title": "Activos subyacentes",
+      "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",
+      "of": "de {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
