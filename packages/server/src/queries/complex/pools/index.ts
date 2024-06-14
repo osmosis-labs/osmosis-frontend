@@ -103,7 +103,7 @@ export async function getPools(
       coin.currency.coinMinimalDenom,
     ]),
     poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
-    coinNames: pool.reserveCoins.flatMap((coin) => [
+    coinNames: pool.reserveCoins.map((coin) => [
       // @ts-ignore
       coin.currency.coinName,
     ]),
