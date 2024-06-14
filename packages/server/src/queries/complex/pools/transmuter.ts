@@ -41,7 +41,7 @@ export async function getCachedTransmuterTotalPoolLiquidity(
       });
 
       const totalLiquidity = total_pool_liquidity.reduce((acc, asset) => {
-        return acc.add(new Dec(parseInt(asset.amount, 10)));
+        return acc.add(new Dec(asset.amount));
       }, new Dec(0));
 
       for (const coin of total_pool_liquidity) {

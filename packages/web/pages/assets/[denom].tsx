@@ -261,7 +261,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
 
-              {asset && asset.rawAsset.isAlloyed && asset.rawAsset.contract ? (
+              {asset?.rawAsset?.isAlloyed && asset?.rawAsset?.contract ? (
                 <AlloyedAssetsSection
                   title={title ?? denom}
                   denom={denom}
