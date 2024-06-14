@@ -6,8 +6,6 @@ import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
-import { LimitInput } from "~/components/input/limit-input";
-import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
@@ -66,55 +64,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             disabled={false}
             orderDirection={orderDirection}
           />
-          <div className="px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
-            <div className="flex place-content-end items-center transition-opacity">
-              <div className="flex items-center gap-1.5">
-                <Tooltip
-                  content={
-                    <div className="text-center">
-                      {t("swap.maxButtonErrorNoBalance")}
-                    </div>
-                  }
-                  disabled={!swapState.inAmountInput.notEnoughBalanceForMax}
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={classNames(
-                      "text-wosmongton-300",
-                      swapState.inAmountInput.isMaxValue &&
-                        !swapState.inAmountInput
-                          .isLoadingCurrentBalanceNetworkFee &&
-                        !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote
-                        ? "bg-wosmongton-100/20"
-                        : "bg-transparent"
-                    )}
-                    disabled={
-                      !swapState.inAmountInput.balance ||
-                      swapState.inAmountInput.balance.toDec().isZero() ||
-                      swapState.inAmountInput.notEnoughBalanceForMax
-                    }
-                    isLoading={false}
-                    loadingText={t("swap.MAX")}
-                    classes={{
-                      spinner: "!h-3 !w-3",
-                      spinnerContainer: "!gap-1",
-                    }}
-                    onClick={() => swapState.inAmountInput.toggleMax()}
-                  >
-                    {t("swap.MAX")}
-                  </Button>
-                </Tooltip>
+          <div className="flex flex-col rounded-2xl bg-osmoverse-1000">
+            <p className="body2 p-4 text-center font-light text-osmoverse-400">
+              Enter an amount to buy
+            </p>
+            <div className="flex flex-col gap-2">
+              <div className="relative flex w-full items-center justify-center pb-2">
+                <h3 className="self-center text-wosmongton-400">$0</h3>
+                <button className="absolute right-4 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
+                  <span className="body2 text-wosmongton-200">Max</span>
+                </button>
               </div>
-            </div>
-            <div className="mt-3 flex place-content-between items-center">
-              <div className="flex w-full flex-col items-center">
-                <LimitInput
-                  onChange={swapState.inAmountInput.setAmount}
-                  baseAsset={swapState.inAmountInput.balance!}
-                  tokenAmount={swapState.inAmountInput.inputAmount}
-                  price={swapState.priceState.price}
-                />
+              <div className="flex w-full items-center justify-center gap-1 pb-5">
+                <p className="text-wosmongton-200">0 BTC</p>
+                <button className="flex items-center">
+                  <Icon
+                    id="arrow-right"
+                    className="h-6 w-4 rotate-90 text-wosmongton-200"
+                    width={16}
+                    height={24}
+                  />
+                  <Icon
+                    id="arrow-right"
+                    className="-ml-1 h-6 w-4 -rotate-90 text-wosmongton-200"
+                    width={16}
+                    height={24}
+                  />
+                </button>
               </div>
             </div>
           </div>
