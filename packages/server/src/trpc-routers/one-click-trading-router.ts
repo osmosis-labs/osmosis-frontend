@@ -14,7 +14,7 @@ import {
   getAuthenticators,
   getSessionAuthenticator,
 } from "../queries/complex/authenticators";
-import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
+import { OsmoAddressSchema } from "../queries/complex/parameter-types";
 import { queryAuthenticatorSpendLimit } from "../queries/osmosis/authenticators";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -57,11 +57,11 @@ export const oneClickTradingRouter = createTRPCRouter({
   ),
   getSessionAuthenticator: publicProcedure
     .input(
-      UserOsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
+      OsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
     )
     .query(async ({ input, ctx }) => {
       const sessionAuthenticator = await getSessionAuthenticator({
-        userOsmoAddress: input.userOsmoAddress,
+        userOsmoAddress: input.osmoAddress,
         publicKey: input.publicKey,
         chainList: ctx.chainList,
       });
@@ -76,15 +76,15 @@ export const oneClickTradingRouter = createTRPCRouter({
       return sessionAuthenticator;
     }),
   getAccountPubKeyAndAuthenticators: publicProcedure
-    .input(UserOsmoAddressSchema.required())
+    .input(OsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
       const [cosmosAccount, authenticators] = await Promise.all([
         queryCosmosAccount({
-          address: input.userOsmoAddress,
+          address: input.osmoAddress,
           chainList: ctx.chainList,
         }),
         getAuthenticators({
-          userOsmoAddress: input.userOsmoAddress,
+          userOsmoAddress: input.osmoAddress,
           chainList: ctx.chainList,
         }),
       ]);
@@ -97,14 +97,14 @@ export const oneClickTradingRouter = createTRPCRouter({
     }),
   getAmountSpent: publicProcedure
     .input(
-      UserOsmoAddressSchema.required().and(
+      OsmoAddressSchema.required().and(
         z.object({ authenticatorId: z.string() })
       )
     )
-    .query(async ({ input: { userOsmoAddress, authenticatorId }, ctx }) => {
+    .query(async ({ input: { osmoAddress, authenticatorId }, ctx }) => {
       const [spendLimit, usdcAsset] = await Promise.all([
         queryAuthenticatorSpendLimit({
-          address: userOsmoAddress,
+          address: osmoAddress,
           authenticatorId,
           chainList: ctx.chainList,
         }),

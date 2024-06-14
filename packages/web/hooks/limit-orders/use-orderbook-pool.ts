@@ -29,7 +29,7 @@ export const useOrderbookPool = ({
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   const { data: makerFeeData, isLoading } =
     api.local.orderbook.getMakerFee.useQuery({
-      contractOsmoAddress: orderbookAddress,
+      osmoAddress: orderbookAddress,
     });
 
   const makerFee = useMemo(() => {
