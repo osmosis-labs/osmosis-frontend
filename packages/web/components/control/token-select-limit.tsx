@@ -180,11 +180,9 @@ export const TokenSelectLimit: FunctionComponent<
           </div>
         </button>
         <PriceSelector
-          quoteAsset={quoteAsset}
           showQuoteBalance={showQuoteBalance}
           tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
-          quoteFiatBalance={quoteFiatBalance}
         />
         <TokenSelectModalLimit
           isOpen={isSelectOpen}

@@ -10,20 +10,13 @@ import React, { Fragment, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { SwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface PriceSelectorProps {
-  quoteAsset: SwapAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
   tokenSelectionAvailable: boolean;
   showQuoteBalance: boolean;
-  quoteFiatBalance: PricePretty;
 }
 
 type AssetWithBalance = Asset & {
@@ -31,7 +24,7 @@ type AssetWithBalance = Asset & {
   usdValue?: PricePretty;
 };
 
-const UI_DEFAULT_STABLES = ["USDC", "USDT"];
+const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
 export default function PriceSelector({
   tokenSelectionAvailable,
@@ -54,9 +47,9 @@ export default function PriceSelector({
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const defaultStables = useMemo(
+  const defaultQuotes = useMemo(
     () =>
-      UI_DEFAULT_STABLES.map(
+      UI_DEFAULT_QUOTES.map(
         (symbol) =>
           getAssetFromAssetList({
             assetLists: AssetLists,
@@ -66,7 +59,7 @@ export default function PriceSelector({
     []
   );
 
-  const { data: userStables } = api.edge.assets.getUserAssets.useQuery(
+  const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
     { userOsmoAddress: wallet?.address },
     {
       enabled: !!wallet?.address,
@@ -93,6 +86,7 @@ export default function PriceSelector({
              */
             if (asset?.symbol === "USDC") return returnAsset;
 
+            // In the future, we might want to pass every coin instead of just stables.
             return asset?.rawAsset.categories.includes("stablecoin")
               ? returnAsset
               : undefined;
@@ -104,47 +98,47 @@ export default function PriceSelector({
     }
   );
 
-  const userStablesWithoutBalances = useMemo(
+  const userQuotesWithoutBalances = useMemo(
     () =>
-      userStables
+      userQuotes
         ?.map(({ amount, usdValue, ...props }) => ({ ...props }))
         .filter(Boolean) as Asset[],
-    [userStables]
+    [userQuotes]
   );
 
   /**
    * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
    * Sell trades limited to canonical USDC and alloyed USDT.
    */
-  const defaultStablesWithBalances = useMemo(
+  const defaultQuotesWithBalances = useMemo(
     () =>
-      defaultStables.map(
-        (defaultStable) =>
-          userStables?.find(({ symbol }) => defaultStable.symbol === symbol) ??
-          defaultStable
+      defaultQuotes.map(
+        (defaultQuote) =>
+          userQuotes?.find(({ symbol }) => defaultQuote.symbol === symbol) ??
+          defaultQuote
       ),
-    [defaultStables, userStables]
+    [defaultQuotes, userQuotes]
   );
 
-  const selectableStables = useMemo(() => {
+  const selectableQuotes = useMemo(() => {
     if (!wallet?.isWalletConnected) {
-      return defaultStables;
+      return defaultQuotes;
     }
 
     return tab === "sell"
-      ? userStablesWithoutBalances
-      : defaultStablesWithBalances;
+      ? userQuotesWithoutBalances
+      : defaultQuotesWithBalances;
   }, [
-    defaultStables,
-    defaultStablesWithBalances,
+    defaultQuotes,
+    defaultQuotesWithBalances,
     tab,
-    userStablesWithoutBalances,
+    userQuotesWithoutBalances,
     wallet?.isWalletConnected,
   ]);
 
   const quoteAssetWithBalance = useMemo(
-    () => userStables?.find(({ symbol }) => symbol === quote),
-    [quote, userStables]
+    () => userQuotes?.find(({ symbol }) => symbol === quote),
+    [quote, userQuotes]
   );
 
   /**
@@ -153,10 +147,10 @@ export default function PriceSelector({
    * selection across both Buy and Sell trade modes.
    */
   useEffect(() => {
-    if (userStables && userStables.length > 0) {
-      setQuote(userStables[0].symbol);
+    if (userQuotes && userQuotes.length > 0) {
+      setQuote(userQuotes[0].symbol);
     }
-  }, [setQuote, userStables]);
+  }, [setQuote, userQuotes]);
 
   return (
     <Menu as="div" className="relative inline-block">
@@ -235,11 +229,11 @@ export default function PriceSelector({
           >
             <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
               <div className="flex flex-col border-b border-osmoverse-700 p-2">
-                {selectableStables.map(({ symbol, name, logoURIs }) => {
+                {selectableQuotes.map(({ symbol, name, logoURIs }) => {
                   const isSelected = quote === symbol;
                   const availableBalance =
-                    userStables &&
-                    userStables.find((u) => u?.symbol === symbol)?.usdValue;
+                    userQuotes &&
+                    userQuotes.find((u) => u?.symbol === symbol)?.usdValue;
 
                   return (
                     <Menu.Item key={name}>
@@ -307,8 +301,8 @@ export default function PriceSelector({
                     </span>
                     <div className="flex items-center gap-1">
                       <div className="relative flex items-center">
-                        {/** Here we just display default stables */}
-                        {defaultStables.map(({ symbol, logoURIs }, i) => {
+                        {/** Here we just display default quotes */}
+                        {defaultQuotes.map(({ symbol, logoURIs }, i) => {
                           return (
                             <Image
                               key={`${symbol}-logo`}
