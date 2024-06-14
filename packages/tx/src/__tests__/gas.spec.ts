@@ -740,8 +740,6 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    console.log({ gasAmount });
-
     const expectedGasAmount = new Dec(baseFee)
       .mul(new Dec(gasMultiplier))
       .quo(new Dec(lowEnoughSpotPrice))

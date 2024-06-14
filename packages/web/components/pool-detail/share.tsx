@@ -216,8 +216,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           unbondingPeriod: duration.asDays(),
         };
 
-        console.log({ electSuperfluid });
-
         logEvent([E.bondingStarted, lockInfo]);
 
         if (electSuperfluid) {
@@ -258,10 +256,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     );
     const handleSuperfluidDelegateToValidator = useCallback(
       (validatorAddress: string) => {
-        console.log("handleSuperfluidDelegateToValidator", {
-          validatorAddress,
-          isSuperfluid,
-        });
         if (!isSuperfluid || !pool.id) return;
 
         const poolInfo = {
@@ -303,8 +297,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       (setter: Function, show: boolean) => () => setter(show),
       []
     );
-
-    console.log("parentBalance", lockLPTokensConfig?.balance?.toString());
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
