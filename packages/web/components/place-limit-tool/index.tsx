@@ -2,10 +2,11 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
+import { LimitInput } from "~/components/input/limit-input";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
@@ -26,7 +27,7 @@ const percentAdjustmentOptions = [
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ orderDirection = OrderDirection.Bid }) => {
+  () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -38,6 +39,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const [type] = useQueryState(
       "type",
       parseAsStringLiteral(TRADE_TYPES).withDefault("market")
+    );
+    const [tab] = useQueryState("tab");
+
+    const orderDirection = useMemo(
+      () => (tab === "buy" ? OrderDirection.Bid : OrderDirection.Ask),
+      [tab]
     );
 
     const { poolId, orderbookContractAddress } = useOrderbookPool({
@@ -54,6 +61,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom: base,
       quoteDenom: quote,
     });
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const isSwapToolLoading = false;
@@ -71,36 +79,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             disabled={false}
             orderDirection={orderDirection}
           />
-          <div className="flex flex-col rounded-2xl bg-osmoverse-1000">
+          <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
             <p className="body2 p-4 text-center font-light text-osmoverse-400">
-              Enter an amount to buy
+              Enter an amount to{" "}
+              {orderDirection === OrderDirection.Bid ? "buy" : "sell"}
             </p>
-            <div className="flex flex-col gap-2">
-              <div className="relative flex w-full items-center justify-center pb-2">
-                <h3 className="self-center text-wosmongton-400">$0</h3>
-                <button className="absolute right-4 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
-                  <span className="body2 text-wosmongton-200">Max</span>
-                </button>
-              </div>
-              <div className="flex w-full items-center justify-center gap-1 pb-5">
-                <p className="text-wosmongton-200">0 {quote}</p>
-                <button className="flex items-center">
-                  <Icon
-                    id="arrow-right"
-                    className="h-6 w-4 rotate-90 text-wosmongton-200"
-                    width={16}
-                    height={24}
-                  />
-                  <Icon
-                    id="arrow-right"
-                    className="-ml-1 h-6 w-4 -rotate-90 text-wosmongton-200"
-                    width={16}
-                    height={24}
-                  />
-                </button>
-              </div>
-            </div>
+            <LimitInput
+              onChange={swapState.inAmountInput.setAmount}
+              baseAsset={swapState.inAmountInput.balance!}
+              tokenAmount={swapState.inAmountInput.inputAmount}
+              price={swapState.priceState.price}
+            />
           </div>
+
           {type === "limit" && (
             <>
               <div className="inline-flex items-center gap-1 pt-6">
