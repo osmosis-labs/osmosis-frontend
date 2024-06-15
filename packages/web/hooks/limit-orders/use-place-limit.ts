@@ -234,7 +234,6 @@ const useLimitPrice = ({
   tokenIn: string;
   tokenOut: string;
 }) => {
-  // TODO: Fetch spot price from SQS
   const { spotPrice, isLoading } = useOrderbookSpotPrice({
     orderbookAddress: contractAddress,
     quoteAssetDenom: tokenOut,

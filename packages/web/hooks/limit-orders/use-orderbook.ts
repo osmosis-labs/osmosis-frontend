@@ -152,6 +152,15 @@ export const useOrderbook = ({
   };
 };
 
+/**
+ * Hook to fetch the maker fee for a given orderbook.
+ *
+ * Queries the maker fee using the orderbook's address.
+ * If the data is still loading, it returns a default value of Dec(0) for the maker fee.
+ * Once the data is loaded, it returns the actual maker fee if available, or Dec(0) if not.
+ * @param {string} orderbookAddress - The contract address of the orderbook.
+ * @returns {Object} An object containing the maker fee and the loading state.
+ */
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   const { data: makerFeeData, isLoading } =
     api.edge.orderbooks.getMakerFee.useQuery({
@@ -162,6 +171,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
     if (isLoading) return new Dec(0);
     return makerFeeData?.makerFee ?? new Dec(0);
   }, [isLoading, makerFeeData]);
+
   return {
     makerFee,
     isLoading,
@@ -186,6 +196,20 @@ export const useActiveLimitOrdersByOrderbook = ({
   };
 };
 
+/**
+ * Hook to fetch the current spot price of a given pair from an orderbook.
+ *
+ * The spot price is determined by the provided quote asset and base asset.
+ *
+ * For a BID the quote asset is the base asset and the base asset is the quote asset of the orderbook.
+ *
+ * For an ASK the quote asset is the quote asset and the base asset is the base asset of the orderbook.
+ *
+ * @param {string} orderbookAddress - The contract address of the orderbook.
+ * @param {string} quoteAssetDenom - The token out asset denom.
+ * @param {string} baseAssetDenom - The token in asset denom.
+ * @returns {Object} An object containing the spot price and the loading state.
+ */
 export const useOrderbookSpotPrice = ({
   orderbookAddress,
   quoteAssetDenom,
