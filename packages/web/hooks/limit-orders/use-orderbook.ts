@@ -184,3 +184,24 @@ export const useActiveLimitOrdersByOrderbook = ({
     isLoading,
   };
 };
+
+export const useOrderbookSpotPrice = ({
+  orderbookAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+}: {
+  orderbookAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+}) => {
+  const { data: spotPrice, isLoading } =
+    api.edge.orderbooks.getSpotPrice.useQuery({
+      osmoAddress: orderbookAddress,
+      quoteAssetDenom,
+      baseAssetDenom,
+    });
+  return {
+    spotPrice,
+    isLoading,
+  };
+};

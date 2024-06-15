@@ -196,7 +196,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               !swapState.inAmountInput.inputAmount ||
               swapState.inAmountInput.inputAmount === "0"
             }
-            isLoading={!swapState.isBalancesFetched || isMakerFeeLoading}
+            isLoading={
+              !swapState.isBalancesFetched ||
+              isMakerFeeLoading ||
+              swapState.priceState.isLoading
+            }
             loadingText={"Loading..."}
             onClick={() => setReviewOpen(true)}
           >

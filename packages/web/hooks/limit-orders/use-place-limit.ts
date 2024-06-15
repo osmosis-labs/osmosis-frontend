@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useMemo, useState } from "react";
 
+import { useOrderbookSpotPrice } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useBalances } from "~/hooks/queries/cosmos/use-balances";
@@ -50,7 +51,15 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const priceState = useLimitPrice();
+  const tokenIn =
+    orderDirection === OrderDirection.Bid ? quoteAsset : baseAsset;
+  const tokenOut =
+    orderDirection === OrderDirection.Bid ? baseAsset : quoteAsset;
+  const priceState = useLimitPrice({
+    contractAddress: orderbookContractAddress,
+    tokenIn: tokenIn.coinMinimalDenom,
+    tokenOut: tokenOut.coinMinimalDenom,
+  });
   const inAmountInput = useSwapAmountInput({
     swapAssets,
     forceSwapInPoolId: undefined,
@@ -216,9 +225,21 @@ export const usePlaceLimit = ({
   };
 };
 
-const useLimitPrice = () => {
+const useLimitPrice = ({
+  contractAddress,
+  tokenIn,
+  tokenOut,
+}: {
+  contractAddress: string;
+  tokenIn: string;
+  tokenOut: string;
+}) => {
   // TODO: Fetch spot price from SQS
-  const spotPrice = useMemo(() => new Dec(1), []);
+  const { spotPrice, isLoading } = useOrderbookSpotPrice({
+    orderbookAddress: contractAddress,
+    quoteAssetDenom: tokenOut,
+    baseAssetDenom: tokenIn,
+  });
   const [percentAdjusted, setPercentAdjusted] = useState(new Dec(0));
 
   const adjustByPercentage = useCallback((percentage: Dec) => {
@@ -226,9 +247,9 @@ const useLimitPrice = () => {
   }, []);
 
   const price = useMemo(
-    () => spotPrice.mul(new Dec(1).add(percentAdjusted)),
+    () => (spotPrice ?? new Dec(1)).mul(new Dec(1).add(percentAdjusted)),
     [spotPrice, percentAdjusted]
   );
 
-  return { spotPrice, price, adjustByPercentage, percentAdjusted };
+  return { spotPrice, price, adjustByPercentage, percentAdjusted, isLoading };
 };

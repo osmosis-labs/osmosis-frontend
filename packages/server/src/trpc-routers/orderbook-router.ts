@@ -2,7 +2,10 @@ import { Dec } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { queryOrderbookActiveOrders } from "../queries";
-import { getOrderbookMakerFee } from "../queries/complex/orderbooks";
+import {
+  getOrderbookMakerFee,
+  getOrderbookSpotPrice,
+} from "../queries/complex/orderbooks";
 import { OsmoAddressSchema } from "../queries/complex/parameter-types";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -36,5 +39,25 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return resp.data;
+    }),
+  getSpotPrice: publicProcedure
+    .input(
+      z
+        .object({
+          quoteAssetDenom: z.string(),
+          baseAssetDenom: z.string(),
+        })
+        .required()
+        .and(OsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { quoteAssetDenom, baseAssetDenom, osmoAddress } = input;
+      const spotPrice = await getOrderbookSpotPrice({
+        orderbookAddress: osmoAddress,
+        quoteAssetDenom: quoteAssetDenom,
+        baseAssetDenom: baseAssetDenom,
+        chainList: ctx.chainList,
+      });
+      return new Dec(spotPrice);
     }),
 });
