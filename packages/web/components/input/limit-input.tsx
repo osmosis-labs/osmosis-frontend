@@ -1,5 +1,6 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
@@ -13,7 +14,7 @@ export interface LimitInputProps {
   price: Dec;
 }
 
-enum FocusedInput {
+export enum FocusedInput {
   FIAT = "fiat",
   TOKEN = "token",
 }
@@ -42,19 +43,19 @@ export const LimitInput: FC<LimitInputProps> = ({
   price,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  const [focused, setFocused] = useState<FocusedInput>(FocusedInput.FIAT);
+  const [tab] = useQueryState("tab");
+  const [focused, setFocused] = useState<FocusedInput>(
+    tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN
+  );
 
   const swapFocus = useCallback(() => {
-    switch (focused) {
-      case FocusedInput.FIAT:
-        setFocused(FocusedInput.TOKEN);
-        break;
-      case FocusedInput.TOKEN:
-      default:
-        setFocused(FocusedInput.FIAT);
-        break;
-    }
-  }, [focused]);
+    setFocused((p) =>
+      p === FocusedInput.FIAT ? FocusedInput.TOKEN : FocusedInput.FIAT
+    );
+  }, []);
+
+  // Swap focus every time the tab changes
+  useEffect(() => swapFocus(), [swapFocus, tab]);
 
   const setFiatAmountSafe = useCallback(
     (value: string) => {
