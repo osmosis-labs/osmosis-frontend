@@ -53,6 +53,7 @@ import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -754,7 +755,7 @@ export function useSwapAssets({
   };
 }
 
-function useSwapAmountInput({
+export function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
@@ -850,7 +851,7 @@ function useSwapAmountInput({
  * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
  */
-function useToFromDenoms({
+export function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
@@ -924,7 +925,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends Asset>({
+export function useSwapAsset<TAsset extends Asset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -1295,7 +1296,7 @@ function makeRouterErrorFromTrpcError(
 }
 
 /** Gets recommended assets directly from asset list. */
-function useRecommendedAssets(
+export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {

@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "Старшая",
     "newer": "Новее"
+  },
+  "place-limit": {
+    "reviewOrder": "Просмотреть заказ",
+    "marketOrder": {
+      "title": "Рыночный ордер",
+      "description": "Купите немедленно по лучшей доступной цене"
+    },
+    "limitOrder": {
+      "title": "Лимитный ордер",
+      "description": "Покупайте, когда цена {denom} снижается"
+    },
+    "recurringOrder": {
+      "title": "Повторяющийся заказ",
+      "description": "Покупайте по средней цене с течением времени"
+    }
   }
 }

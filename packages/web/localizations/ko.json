@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "이전",
     "newer": "최신"
+  },
+  "place-limit": {
+    "reviewOrder": "주문 검토",
+    "marketOrder": {
+      "title": "시장가 주문",
+      "description": "가장 좋은 가격으로 즉시 구매하세요"
+    },
+    "limitOrder": {
+      "title": "제한 주문",
+      "description": "{denom} 가격이 하락하면 구매하세요."
+    },
+    "recurringOrder": {
+      "title": "반복 주문",
+      "description": "시간이 지남에 따라 평균 가격으로 구매"
+    }
   }
 }

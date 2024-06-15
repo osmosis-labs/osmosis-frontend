@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "Mai batran",
     "newer": "Mai nou"
+  },
+  "place-limit": {
+    "reviewOrder": "Verificați comanda",
+    "marketOrder": {
+      "title": "Ordinul pieței",
+      "description": "Cumpărați imediat la cel mai bun preț disponibil"
+    },
+    "limitOrder": {
+      "title": "Ordin limită",
+      "description": "Cumpărați când prețul {denom} scade"
+    },
+    "recurringOrder": {
+      "title": "Comandă recurentă",
+      "description": "Cumpărați la preț mediu în timp"
+    }
   }
 }

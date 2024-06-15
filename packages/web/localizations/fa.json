@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "مسن تر",
     "newer": "جدیدتر"
+  },
+  "place-limit": {
+    "reviewOrder": "سفارش بررسی",
+    "marketOrder": {
+      "title": "سفارش بازار",
+      "description": "بلافاصله با بهترین قیمت موجود خرید کنید"
+    },
+    "limitOrder": {
+      "title": "سفارش محدود",
+      "description": "زمانی که قیمت {denom} کاهش یابد، خرید کنید"
+    },
+    "recurringOrder": {
+      "title": "سفارش تکراری",
+      "description": "در طول زمان با قیمت متوسط خرید کنید"
+    }
   }
 }

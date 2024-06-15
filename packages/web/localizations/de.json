@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "Älter",
     "newer": "Neuere"
+  },
+  "place-limit": {
+    "reviewOrder": "Bestellung überprüfen",
+    "marketOrder": {
+      "title": "Marktauftrag",
+      "description": "Sofort zum besten verfügbaren Preis kaufen"
+    },
+    "limitOrder": {
+      "title": "Limit-Auftrag",
+      "description": "Kaufen, wenn der Preis {denom} sinkt"
+    },
+    "recurringOrder": {
+      "title": "Wiederkehrende Bestellung",
+      "description": "Kaufen Sie zum Durchschnittspreis im Laufe der Zeit"
+    }
   }
 }

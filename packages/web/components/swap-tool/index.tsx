@@ -5,13 +5,14 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
   MouseEvent,
+  ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -29,14 +30,12 @@ import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
-  useFeatureFlags,
-  useOneClickTradingSession,
-  useTranslation,
-} from "~/hooks";
-import {
   useAmplitudeAnalytics,
   useDisclosure,
+  useFeatureFlags,
+  useOneClickTradingSession,
   useSlippageConfig,
+  useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";

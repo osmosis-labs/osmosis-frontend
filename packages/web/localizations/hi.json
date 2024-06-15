@@ -1128,5 +1128,20 @@
   "pagination": {
     "older": "पुराने",
     "newer": "नई"
+  },
+  "place-limit": {
+    "reviewOrder": "अादेश का पुनः निरिक्षण",
+    "marketOrder": {
+      "title": "बाजार आदेश",
+      "description": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत खरीदें"
+    },
+    "limitOrder": {
+      "title": "सीमा आदेश",
+      "description": "जब {denom} कीमत घट जाए तो खरीदें"
+    },
+    "recurringOrder": {
+      "title": "आवर्ती आदेश",
+      "description": "समय के साथ औसत कीमत पर खरीदें"
+    }
   }
 }
