@@ -14,14 +14,15 @@ interface Orderbook {
 
 const testnetOrderbooks: Orderbook[] = [
   {
-    baseDenom: "OSMO",
-    quoteDenom: "USDC",
+    baseDenom: "uosmo",
+    quoteDenom:
+      "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
     contractAddress:
       "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
   },
   {
-    baseDenom: "ION",
-    quoteDenom: "OSMO",
+    baseDenom: "uion",
+    quoteDenom: "uosmo",
     contractAddress:
       "osmo1ruxn39qj6x44gms8pfzw22kd7kemslc5fahgua3wuz0tkyks0uhq2f25wh",
   },

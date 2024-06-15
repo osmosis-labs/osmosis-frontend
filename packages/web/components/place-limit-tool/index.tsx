@@ -51,7 +51,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [selectableBaseDenoms, selectableQuoteDenoms]);
     useEffect(() => {
-      if (Object.keys(selectableQuoteDenoms).length > 0) {
+      if (
+        Object.keys(selectableQuoteDenoms).length > 0 &&
+        selectableQuoteDenoms[baseDenom] &&
+        selectableQuoteDenoms[baseDenom].length > 0
+      ) {
         const quoteDenom = selectableQuoteDenoms[baseDenom][0];
         setQuoteDenom(quoteDenom);
       }
