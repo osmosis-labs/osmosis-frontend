@@ -46,28 +46,6 @@ export const useOrderbooks = (): {
 };
 
 /**
- * Retrieves a single orderbook by base and quote denom.
- * @param denoms An object including both the base and quote denom
- * @returns A state including an orderbook and a loading boolean.
- */
-export const useOrderbookByDenoms = ({
-  baseDenom,
-  quoteDenom,
-}: {
-  baseDenom: string;
-  quoteDenom: string;
-}) => {
-  const { orderbooks, isLoading } = useOrderbooks();
-
-  const orderbook = orderbooks.find(
-    (orderbook) =>
-      orderbook.baseDenom === baseDenom && orderbook.quoteDenom === quoteDenom
-  );
-
-  return { orderbook, isLoading };
-};
-
-/**
  * Retrieves all available base and quote denoms for the current chain.
  * Fetch is asynchronous so a loading state is returned.
  * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
@@ -154,10 +132,12 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { orderbook } = useOrderbookByDenoms({
-    baseDenom,
-    quoteDenom,
-  });
+  const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
+
+  const orderbook = orderbooks.find(
+    (orderbook) =>
+      orderbook.baseDenom === baseDenom && orderbook.quoteDenom === quoteDenom
+  );
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
@@ -167,6 +147,7 @@ export const useOrderbook = ({
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,
+    isOrderbookLoading,
   };
 };
 
