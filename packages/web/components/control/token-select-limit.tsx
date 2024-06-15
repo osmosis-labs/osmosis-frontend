@@ -6,7 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 
-import { TokenSelectDrawerLimit } from "~/components/drawers/token-select-drawer-limit";
+import { Icon } from "~/components/assets";
+import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
+import PriceSelector from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -119,12 +121,20 @@ export const TokenSelectLimit: FunctionComponent<
     );
 
     return (
-      <div>
-        <div className="align-center relative z-10 flex flex-row place-content-between items-center rounded-xl bg-osmoverse-850 py-5 px-3 md:justify-start">
+      <div className="flex flex-col">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (tokenSelectionAvailable) {
+              setIsSelectOpen(!isSelectOpen);
+            }
+          }}
+          className="flex items-center justify-between rounded-t-xl bg-osmoverse-850 py-3 px-5 md:justify-start"
+        >
           {baseAsset && (
             <div
               className={classNames(
-                "flex items-center gap-2 text-left transition-opacity",
+                "flex items-center gap-4 transition-opacity",
                 tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
                 {
                   "opacity-40": disabled,
@@ -132,97 +142,56 @@ export const TokenSelectLimit: FunctionComponent<
               )}
             >
               {baseAsset.coinImageUrl && (
-                <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
+                <div className="h-12 w-12 shrink-0 rounded-full md:h-7 md:w-7">
                   <Image
                     src={baseAsset.coinImageUrl}
                     alt="token icon"
-                    width={isMobile ? 30 : 50}
-                    height={isMobile ? 30 : 50}
+                    width={isMobile ? 30 : 48}
+                    height={isMobile ? 30 : 48}
                     priority
                   />
                 </div>
               )}
               <div className="flex flex-col">
-                <div className="mr-2 flex items-center">
-                  {isMobile || baseAsset.coinName.length > 6 ? (
-                    <span className="text-h6">{baseAsset.coinName}</span>
-                  ) : (
-                    <h6>{baseAsset.coinName}</h6>
-                  )}
-                  <span className="md:caption ml-2 w-32 truncate text-h6 text-osmoverse-400">
+                <h6 className="inline-flex items-center gap-2">
+                  <span>{baseAsset.coinName}</span>
+                  <span className="md:caption w-32 truncate text-left text-osmoverse-400">
                     {baseAsset.coinDenom}
                   </span>
-                </div>
-                {showBaseBalance && (
-                  <div className="flex text-body1 text-osmoverse-300">
-                    {formatPretty(baseFiatBalance)} available
-                  </div>
-                )}
+                </h6>
               </div>
             </div>
           )}
-          {tokenSelectionAvailable && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (tokenSelectionAvailable) {
-                  setIsSelectOpen(!isSelectOpen);
-                }
-              }}
-              className="h-8 rounded-2xl bg-osmoverse-800 py-1 px-3 text-body2 text-wosmongton-200"
-            >
-              Change
-            </button>
-          )}
-        </div>
-        <div className="align-center relative z-0 -mt-5 flex place-content-between items-center rounded-xl bg-osmoverse-1000 py-5 px-3 pt-10 md:justify-start">
-          {quoteAsset && (
-            <div
-              className={classNames(
-                "flex items-center gap-2 text-left transition-opacity",
-                tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
-                {
-                  "opacity-40": disabled,
-                }
-              )}
-            >
-              <span className="subtitle1 text-osmoverse-300">
-                {orderDirection === OrderDirection.Bid ? "Pay with" : "Receive"}
-              </span>
-              {quoteAsset.coinImageUrl && (
-                <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                  <Image
-                    src={quoteAsset.coinImageUrl}
-                    alt="token icon"
-                    width={24}
-                    height={24}
-                    priority
-                  />
-                </div>
-              )}
-              <div className="flex">
-                <span className="md:caption subtitle1 w-32 truncate">
-                  {quoteAsset.coinDenom}
-                </span>
+
+          <div className="flex h-6 items-center justify-center">
+            {showBaseBalance && (
+              <div className="flex text-body1 text-osmoverse-300">
+                {formatPretty(baseFiatBalance)} available
               </div>
-            </div>
-          )}
-          {showQuoteBalance && (
-            <div className="flex text-body1 text-osmoverse-300">
-              {formatPretty(quoteFiatBalance)} available
-            </div>
-          )}
-        </div>
-        <div className="pt-16">
-          <TokenSelectDrawerLimit
-            isOpen={isSelectOpen}
-            onClose={() => setIsSelectOpen(false)}
-            onSelect={onSelect}
-            showSearchBox={true}
-            showRecommendedTokens={false}
-            selectableAssets={preSortedTokens}
-          />
-        </div>
+            )}
+            {tokenSelectionAvailable && (
+              <div className="ml-2 flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-down"
+                  className="h-[7px] w-3 text-osmoverse-300"
+                />
+              </div>
+            )}
+          </div>
+        </button>
+        <PriceSelector
+          showQuoteBalance={showQuoteBalance}
+          tokenSelectionAvailable={tokenSelectionAvailable}
+          disabled={disabled}
+        />
+        <TokenSelectModalLimit
+          isOpen={isSelectOpen}
+          onClose={() => setIsSelectOpen(false)}
+          onSelect={onSelect}
+          showSearchBox
+          showRecommendedTokens
+          selectableAssets={preSortedTokens}
+        />
       </div>
     );
   }
