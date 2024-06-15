@@ -1,4 +1,3 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
@@ -9,7 +8,7 @@ import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
@@ -47,6 +46,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       () => (tab === "buy" ? OrderDirection.Bid : OrderDirection.Ask),
       [tab]
     );
+
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const { poolId, orderbookContractAddress } = useOrderbookPool({
       baseDenom: base,
@@ -155,31 +156,31 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             <div className="inline-flex items-center gap-1 py-3.5">
               <span className="body2 text-osmoverse-300">
                 {swapState.baseDenom} price ≈{" "}
-                {formatPretty(swapState.quoteAssetPrice!)}{" "}
+                {formatPretty(swapState.quoteAssetPrice ?? new Dec(0))}{" "}
                 {swapState.quoteDenom}
               </span>
             </div>
           )}
-          <Button
-            disabled={
-              swapState.insufficientFunds ||
-              !swapState.inAmountInput.inputAmount ||
-              swapState.inAmountInput.inputAmount === "0"
-            }
-            isLoading={!swapState.isBalancesFetched}
-            loadingText={"Loading..."}
-            onClick={() => setReviewOpen(true)}
-          >
-            {account?.walletStatus === WalletStatus.Connected ||
-            isSwapToolLoading ? (
-              t("place-limit.reviewOrder")
-            ) : (
-              <h6 className="flex items-center gap-3">
-                <Icon id="wallet" className="h-6 w-6" />
-                {t("connectWallet")}
-              </h6>
-            )}
-          </Button>
+          {!account?.isWalletConnected ? (
+            <Button
+              onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
+            >
+              <h6 className="">{t("connectWallet")}</h6>
+            </Button>
+          ) : (
+            <Button
+              disabled={
+                swapState.insufficientFunds ||
+                !swapState.inAmountInput.inputAmount ||
+                swapState.inAmountInput.inputAmount === "0"
+              }
+              isLoading={!swapState.isBalancesFetched}
+              loadingText={"Loading..."}
+              onClick={() => setReviewOpen(true)}
+            >
+              <h6>{t("place-limit.reviewOrder")}</h6>
+            </Button>
+          )}
         </div>
         <ReviewLimitOrderModal
           placeLimitState={swapState}
