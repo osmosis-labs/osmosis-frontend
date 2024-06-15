@@ -1,19 +1,16 @@
-import { Transition } from "@headlessui/react";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { Fragment, FunctionComponent, useRef, useState } from "react";
+import { useQueryState } from "nuqs";
+import { FunctionComponent, useRef, useState } from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
-import { SearchBox } from "~/components/input";
-import { Tooltip } from "~/components/tooltip";
-import { useFilteredData, useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
-import { SwapAsset } from "~/hooks/use-swap";
-import { ActivateUnverifiedTokenConfirmation } from "~/modals";
+import { useFilteredData, useWalletSelect } from "~/hooks";
+import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
+import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
@@ -42,7 +39,7 @@ function getAllTokenElements() {
   return document.querySelectorAll(`[${dataAttributeName}]`);
 }
 
-export const TokenSelectDrawerLimit: FunctionComponent<{
+export const TokenSelectModalLimit: FunctionComponent<{
   isOpen: boolean;
   onClose?: () => void;
   onSelect?: (tokenDenom: string) => void;
@@ -70,10 +67,16 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
     hasNextPageAssets = false,
     fetchNextPageAssets = () => {},
   }) => {
-    const { t } = useTranslation();
-    const { userSettings } = useStore();
-    const { isMobile } = useWindowSize();
+    const { userSettings, accountStore } = useStore();
+    const { onOpenWalletSelect } = useWalletSelect();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
+    const recommendedAssets = useRecommendedAssets();
+
+    const [tab] = useQueryState("tab");
+
+    const isWalletConnected = accountStore.getWallet(
+      accountStore.osmosisChainId
+    )?.isWalletConnected;
 
     const [
       keyboardSelectedIndex,
@@ -180,20 +183,21 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
       },
     });
 
-    const { handleKeyDown: searchBarKeyDown } = useKeyActions({
-      ArrowDown: (event) => {
-        event.preventDefault();
-      },
-      ArrowUp: (event) => {
-        event.preventDefault();
-      },
-    });
+    // const { handleKeyDown: searchBarKeyDown } = useKeyActions({
+    //   ArrowDown: (event) => {
+    //     event.preventDefault();
+    //   },
+    //   ArrowUp: (event) => {
+    //     event.preventDefault();
+    //   },
+    // });
 
     // TODO: Wire up search
-    const [query, setQuery, results] = useFilteredData(assets, [
+    const [, setQuery, results] = useFilteredData(assets, [
       "coinDenom",
       "coinName",
     ]);
+
     const onSearch = (nextValue: string) => {
       setKeyboardSelectedIndex(0);
       setQuery(nextValue);
@@ -219,118 +223,91 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
             setConfirmUnverifiedAssetDenom(null);
           }}
         />
-
-        <Transition
-          as={Fragment}
-          show={isOpen}
-          enter="transition duration-300 ease-inOutBack"
-          enterFrom="invisible opacity-0"
-          enterTo="visible opacity-100"
-          leave="transition duration-300 ease-inOutBack"
-          leaveFrom="visible opacity-100"
-          leaveTo="visible opacity-0"
+        <ModalBase
+          isOpen={isOpen}
+          onRequestClose={onClose}
+          hideCloseButton
+          className="w-[512px] rounded-5xl !p-0"
         >
-          <div
-            onClick={() => onClose?.()}
-            className="absolute inset-0 z-40 bg-osmoverse-1000/80"
-          />
-        </Transition>
-
-        <Transition
-          as={Fragment}
-          show={isOpen}
-          enter="transition duration-300 ease-inOutBack"
-          enterFrom="invisible opacity-0 translate-y-[15%]"
-          enterTo="visible opacity-100 translate-y-0"
-          leave="transition duration-300 ease-inOutBack"
-          leaveFrom="visible opacity-100 translate-y-0"
-          leaveTo="visible opacity-0 translate-y-[15%]"
-          afterEnter={() => searchBoxRef?.current?.focus()}
-          afterLeave={() => setIsRequestingClose(false)}
-        >
-          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16">
-            <div
-              onClick={() => onClose()}
-              className="relative flex items-center justify-center pb-4 pt-8"
-            >
-              <IconButton
-                className="absolute left-4 w-fit py-0 text-osmoverse-400"
-                mode="unstyled"
-                size="unstyled"
-                aria-label="Close"
-                icon={<Icon id="chevron-left" width={16} height={16} />}
-              />
-
-              <h1 className="text-h6 font-h6">
-                {t("components.selectToken.title")}
-              </h1>
+          <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-850">
+            <div className="relative flex h-20 items-center justify-center p-4">
+              <h6>Select asset to {tab === "buy" ? "buy" : "sell"}</h6>
+              <button
+                onClick={onClose}
+                className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
+              >
+                <Icon id="thin-x" className="text-wosmongton-200" />
+              </button>
             </div>
-
-            <div className="mb-2 shadow-[0_4px_8px_0_rgba(9,5,36,0.12)]">
+            {!isWalletConnected && (
+              <div className="flex w-full items-center justify-center gap-1 pb-4">
+                <button
+                  onClick={() =>
+                    onOpenWalletSelect(accountStore.osmosisChainId)
+                  }
+                  className="body1 font-semibold text-wosmongton-300"
+                >
+                  Connect your wallet
+                </button>
+                <p className="font-semibold">to see your balances</p>
+              </div>
+            )}
+            <div className="flex flex-col">
               {showSearchBox && (
-                <div className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                  <SearchBox
-                    ref={searchBoxRef}
-                    type="text"
-                    className="!w-full"
-                    placeholder={t("components.searchTokens")}
-                    onInput={onSearch}
-                    currentValue={query}
-                    onKeyDown={searchBarKeyDown}
-                    size={isMobile ? "medium" : "large"}
-                  />
+                <div className="px-8" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center gap-3 rounded-5xl bg-osmoverse-800 py-4 px-5">
+                    <div className="flex h-6 w-6 items-center justify-center">
+                      <Icon
+                        id="search"
+                        className="h-5 w-5 text-wosmongton-200"
+                      />
+                    </div>
+                    <input
+                      autoFocus
+                      onChange={(e) => onSearch(e.target.value)}
+                      placeholder="Search assets"
+                      className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
+                    />
+                  </div>
                 </div>
               )}
-
-              {showRecommendedTokens && (
+              {tab === "buy" && showRecommendedTokens && (
                 <div
-                  data-testid="recommended-assets-container"
-                  className="mb-2 h-fit"
+                  ref={quickSelectRef}
+                  onMouseDown={onMouseDownQuickSelect}
+                  className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
                 >
-                  <div
-                    ref={quickSelectRef}
-                    onMouseDown={onMouseDownQuickSelect}
-                    className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
-                  >
-                    {/*TODO: Reenable featured denoms {[].map((asset) => {
-                      const { coinDenom, coinImageUrl } = asset;
-
-                      return (
-                        <button
-                          key={asset.coinDenom}
-                          className={classNames(
-                            "flex items-center space-x-3 rounded-lg border border-osmoverse-700 p-2",
-                            "transition-colors duration-150 ease-out hover:bg-osmoverse-900",
-                            "my-1 focus:bg-osmoverse-900"
-                          )}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onClickAsset(coinDenom);
-                          }}
-                        >
-                          {coinImageUrl && (
-                            <div className="h-[24px] w-[24px] rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={24}
-                                height={24}
-                              />
-                            </div>
-                          )}
-                          <p className="subtitle1">{coinDenom}</p>
-                        </button>
-                      );
-                    })} */}
-                  </div>
+                  {recommendedAssets.map(({ coinDenom, coinImageUrl }) => (
+                    <button
+                      key={coinDenom}
+                      className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
+                      onClick={() => {
+                        onClickAsset(coinDenom);
+                      }}
+                    >
+                      {coinImageUrl && (
+                        <div className="h-6 w-6 rounded-full">
+                          <Image
+                            src={coinImageUrl}
+                            alt="token icon"
+                            width={24}
+                            height={24}
+                          />
+                        </div>
+                      )}
+                      <p className="font-semibold">{coinDenom}</p>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
             {isLoadingSelectAssets ? (
-              <Spinner className="m-auto" />
+              <div className="flex items-center justify-center py-8">
+                <Spinner />
+              </div>
             ) : (
-              <div className="flex flex-col overflow-auto">
+              <div className="no-scrollbar flex flex-col overflow-auto py-3 px-4">
                 {results.map(
                   (
                     {
@@ -348,8 +325,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                       <button
                         key={coinMinimalDenom}
                         className={classNames(
-                          "flex cursor-pointer items-center justify-between px-5 py-2",
-                          "transition-colors duration-150 ease-out",
+                          "flex cursor-pointer items-center justify-between rounded-2xl p-4 transition-colors duration-150 ease-out",
                           {
                             "bg-osmoverse-900": keyboardSelectedIndex === index,
                           }
@@ -374,26 +350,24 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                             }
                           )}
                         >
-                          <div className="flex items-center">
+                          <div className="flex items-center gap-4">
                             {coinImageUrl && (
-                              <div className="mr-4 h-8 w-8 rounded-full">
+                              <div className="h-12 w-12 rounded-full">
                                 <Image
                                   src={coinImageUrl}
                                   alt="token icon"
-                                  width={32}
-                                  height={32}
+                                  width={48}
+                                  height={48}
                                 />
                               </div>
                             )}
-                            <div className="mr-4">
-                              <h6 className="button font-button text-white-full">
-                                {coinDenom}
-                              </h6>
-                              <div className="caption text-left font-medium text-osmoverse-400">
-                                {coinName}
+                            <div className="flex flex-col gap-1">
+                              <h6 className="font-semibold">{coinName}</h6>
+                              <div className="subtitle2 text-osmoverse-400">
+                                {amount ? formatPretty(amount) : coinDenom}
                               </div>
                             </div>
-                            {!isVerified && shouldShowUnverifiedAssets && (
+                            {/* {!isVerified && shouldShowUnverifiedAssets && (
                               <Tooltip
                                 content={t(
                                   "components.selectToken.unverifiedAsset"
@@ -404,10 +378,36 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                                   className="h-5 w-5 text-osmoverse-400"
                                 />
                               </Tooltip>
-                            )}
+                            )} */}
                           </div>
 
-                          {amount &&
+                          {isWalletConnected && (
+                            <div className="flex flex-col items-end gap-1">
+                              <p
+                                className={classNames("text-osmoverse-400", {
+                                  "text-white-full": usdValue,
+                                })}
+                              >
+                                {formatPretty(
+                                  usdValue ??
+                                    new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                                )}
+                              </p>
+                              {/* <Link
+                                href={"#"}
+                                className="subtitle2 inline-flex items-center text-wosmongton-300"
+                              >
+                                2 balances
+                                <div className="flex h-4 w-4 items-center justify-center">
+                                  <Icon
+                                    id="chevron-right"
+                                    className="h-3 w-[7px]"
+                                  />
+                                </div>
+                              </Link> */}
+                            </div>
+                          )}
+                          {/* {amount &&
                             isVerified &&
                             usdValue &&
                             amount.toDec().isPositive() && (
@@ -421,13 +421,13 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
                                   {usdValue.toString()}
                                 </span>
                               </div>
-                            )}
+                            )} */}
                         </div>
-                        {!shouldShowUnverifiedAssets && !isVerified && (
+                        {/* {!shouldShowUnverifiedAssets && !isVerified && (
                           <p className="caption whitespace-nowrap text-wosmongton-200">
                             {t("components.selectToken.clickToActivate")}
                           </p>
-                        )}
+                        )} */}
                       </button>
                     );
                   }
@@ -443,7 +443,7 @@ export const TokenSelectDrawerLimit: FunctionComponent<{
               </div>
             )}
           </div>
-        </Transition>
+        </ModalBase>
       </div>
     );
   }

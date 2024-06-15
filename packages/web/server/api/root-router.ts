@@ -3,7 +3,6 @@ import {
   concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
-  orderbookRouter,
   swapRouter,
 } from "@osmosis-labs/server";
 
@@ -18,7 +17,6 @@ export const localRouter = createTRPCRouter({
   concentratedLiquidity: concentratedLiquidityRouter,
   oneClickTrading: oneClickTradingRouter,
   cms: cmsRouter,
-  orderbook: orderbookRouter,
 });
 
 export const appRouter = createTRPCRouter({

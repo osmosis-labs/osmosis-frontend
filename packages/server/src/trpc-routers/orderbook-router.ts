@@ -1,26 +1,34 @@
-import { queryOrderbookActiveOrders, queryOrderbookMakerFee } from "../queries";
-import {
-  ContractOsmoAddressSchema,
-  UserOsmoAddressSchema,
-} from "../queries/complex/parameter-types";
+import { Dec } from "@keplr-wallet/unit";
+
+import { queryOrderbookActiveOrders } from "../queries";
+import { getOrderbookMakerFee } from "../queries/complex/orderbooks";
+import { OsmoAddressSchema } from "../queries/complex/parameter-types";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const orderbookRouter = createTRPCRouter({
   getMakerFee: publicProcedure
-    .input(ContractOsmoAddressSchema.required())
+    .input(OsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
-      const { contractOsmoAddress } = input;
-      const { data } = await queryOrderbookMakerFee({
-        orderbookAddress: contractOsmoAddress,
+      const { osmoAddress } = input;
+      const makerFee = await getOrderbookMakerFee({
+        orderbookAddress: osmoAddress,
         chainList: ctx.chainList,
       });
       return {
-        makerFee: data,
+        makerFee: new Dec(makerFee),
       };
     }),
   getActiveOrders: publicProcedure
     .input(
-      ContractOsmoAddressSchema.required().and(UserOsmoAddressSchema.required())
+      OsmoAddressSchema.required()
+        .transform(({ osmoAddress }) => ({
+          contractOsmoAddress: osmoAddress,
+        }))
+        .and(
+          OsmoAddressSchema.required().transform(({ osmoAddress }) => ({
+            userOsmoAddress: osmoAddress,
+          }))
+        )
     )
     .query(async ({ input, ctx }) => {
       const { contractOsmoAddress, userOsmoAddress } = input;

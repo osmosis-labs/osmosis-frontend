@@ -1296,7 +1296,7 @@ function makeRouterErrorFromTrpcError(
 }
 
 /** Gets recommended assets directly from asset list. */
-function useRecommendedAssets(
+export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {
