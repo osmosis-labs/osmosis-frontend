@@ -20,16 +20,6 @@ export const queryOrderbookMakerFee = createNodeQuery<
   },
 });
 
-// pub tick_id: i64,
-// pub order_id: u64,
-// pub order_direction: OrderDirection,
-// pub owner: Addr,
-// pub quantity: Uint128,
-// pub etas: Decimal256,
-// pub claim_bounty: Option<Decimal256>,
-// // Immutable quantity of the order when placed
-// pub placed_quantity: Uint128,
-
 export interface LimitOrder {
   tick_id: number;
   order_id: number;
