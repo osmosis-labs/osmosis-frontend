@@ -172,13 +172,13 @@ export const useOrderbook = ({
 
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   const { data: makerFeeData, isLoading } =
-    api.local.orderbook.getMakerFee.useQuery({
-      contractOsmoAddress: orderbookAddress,
+    api.edge.orderbooks.getMakerFee.useQuery({
+      osmoAddress: orderbookAddress,
     });
 
   const makerFee = useMemo(() => {
     if (isLoading) return new Dec(0);
-    return new Dec(makerFeeData?.makerFee ?? 0);
+    return makerFeeData?.makerFee ?? new Dec(0);
   }, [isLoading, makerFeeData]);
   return {
     makerFee,
@@ -194,7 +194,7 @@ export const useActiveLimitOrdersByOrderbook = ({
   userAddress: string;
 }) => {
   const { data: orders, isLoading } =
-    api.local.orderbook.getActiveOrders.useQuery({
+    api.edge.orderbooks.getActiveOrders.useQuery({
       contractOsmoAddress: orderbookAddress,
       userOsmoAddress: userAddress,
     });

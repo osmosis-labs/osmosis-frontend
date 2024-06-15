@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { z } from "zod";
 
 import { queryOrderbookActiveOrders } from "../queries";
 import { getOrderbookMakerFee } from "../queries/complex/orderbooks";
@@ -20,15 +21,12 @@ export const orderbookRouter = createTRPCRouter({
     }),
   getActiveOrders: publicProcedure
     .input(
-      OsmoAddressSchema.required()
-        .transform(({ osmoAddress }) => ({
-          contractOsmoAddress: osmoAddress,
-        }))
-        .and(
-          OsmoAddressSchema.required().transform(({ osmoAddress }) => ({
-            userOsmoAddress: osmoAddress,
-          }))
-        )
+      z
+        .object({
+          contractOsmoAddress: z.string().startsWith("osmo"),
+          userOsmoAddress: z.string().startsWith("osmo"),
+        })
+        .required()
     )
     .query(async ({ input, ctx }) => {
       const { contractOsmoAddress, userOsmoAddress } = input;
