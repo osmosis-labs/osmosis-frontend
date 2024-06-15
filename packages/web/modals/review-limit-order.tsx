@@ -15,6 +15,7 @@ export interface ReviewLimitOrderModalProps {
   placeLimitState: PlaceLimitState;
   orderDirection: OrderDirection;
   orderType: "limit" | "market";
+  makerFee: Dec;
 }
 
 export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
@@ -23,9 +24,15 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   placeLimitState,
   orderDirection,
   orderType,
+  makerFee,
 }) => {
   //TODO: Retrieve maker fee from contract
-  const fee = useMemo(() => new PricePretty(DEFAULT_VS_CURRENCY, 0.14), []);
+  const fee = useMemo(() => {
+    return (
+      placeLimitState.paymentFiatValue?.mul(makerFee) ??
+      new PricePretty(DEFAULT_VS_CURRENCY, 0)
+    );
+  }, [placeLimitState.paymentFiatValue, makerFee]);
 
   //TODO: Normalize price against the dollar
   const total = useMemo(() => {
