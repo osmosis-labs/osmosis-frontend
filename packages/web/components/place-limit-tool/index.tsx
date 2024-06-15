@@ -14,6 +14,7 @@ import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
@@ -91,8 +92,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               price={swapState.priceState.price}
             />
           </div>
-
-          {type === "limit" && (
+          {type === "limit" ? (
             <>
               <div className="inline-flex items-center gap-1 pt-6">
                 <span className="body2 text-osmoverse-300">
@@ -151,6 +151,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </div>
               </div>
             </>
+          ) : (
+            <div className="inline-flex items-center gap-1 py-3.5">
+              <span className="body2 text-osmoverse-300">
+                {swapState.baseDenom} price ≈{" "}
+                {formatPretty(swapState.quoteAssetPrice!)}{" "}
+                {swapState.quoteDenom}
+              </span>
+            </div>
           )}
           <Button
             disabled={
