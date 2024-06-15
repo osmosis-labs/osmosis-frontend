@@ -35,10 +35,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const [baseDenom, setBaseDenom] = useState<string>("ION");
     const quoteDenom = "OSMO";
 
-    const { poolId, contractAddress, makerFee } = useOrderbookPool({
-      baseDenom,
-      quoteDenom,
-    });
+    const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
+      useOrderbookPool({
+        baseDenom,
+        quoteDenom,
+      });
 
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
@@ -173,7 +174,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               !swapState.inAmountInput.inputAmount ||
               swapState.inAmountInput.inputAmount === "0"
             }
-            isLoading={!swapState.isBalancesFetched}
+            isLoading={!swapState.isBalancesFetched || isMakerFeeLoading}
             loadingText={"Loading..."}
             onClick={() => setReviewOpen(true)}
           >

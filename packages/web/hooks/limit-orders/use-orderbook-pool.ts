@@ -11,7 +11,7 @@ export const useOrderbookPool = ({
   quoteDenom: string;
 }) => {
   const [contractAddress] = useState<string>(
-    "osmo1svmdh0ega4jg44xc3gg36tkjpzrzlrgajv6v6c2wf0ul8m3gjajs0dps9w"
+    "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga"
   );
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: contractAddress,
@@ -28,7 +28,7 @@ export const useOrderbookPool = ({
 
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   const { data: makerFeeData, isLoading } =
-    api.local.orderbook.getMakerFee.useQuery({
+    api.edge.orderbooks.getMakerFee.useQuery({
       osmoAddress: orderbookAddress,
     });
 
