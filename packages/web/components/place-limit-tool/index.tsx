@@ -67,6 +67,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const isSwapToolLoading = false;
+    const hasFunds = true;
 
     return (
       <>
@@ -168,18 +169,28 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               <h6 className="">{t("connectWallet")}</h6>
             </Button>
           ) : (
-            <Button
-              disabled={
-                swapState.insufficientFunds ||
-                !swapState.inAmountInput.inputAmount ||
-                swapState.inAmountInput.inputAmount === "0"
-              }
-              isLoading={!swapState.isBalancesFetched}
-              loadingText={"Loading..."}
-              onClick={() => setReviewOpen(true)}
-            >
-              <h6>{t("place-limit.reviewOrder")}</h6>
-            </Button>
+            <>
+              {hasFunds ? (
+                <Button
+                  disabled={
+                    swapState.insufficientFunds ||
+                    !swapState.inAmountInput.inputAmount ||
+                    swapState.inAmountInput.inputAmount === "0"
+                  }
+                  isLoading={!swapState.isBalancesFetched}
+                  loadingText={"Loading..."}
+                  onClick={() => setReviewOpen(true)}
+                >
+                  <h6>
+                    {orderDirection === OrderDirection.Bid ? "Buy" : "Sell"}
+                  </h6>
+                </Button>
+              ) : (
+                <Button onClick={() => setReviewOpen(true)}>
+                  <h6>Add funds</h6>
+                </Button>
+              )}
+            </>
           )}
         </div>
         <ReviewLimitOrderModal
