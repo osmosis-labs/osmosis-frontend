@@ -41,7 +41,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     fontFamily: theme.fontFamily.subtitle1.join(","),
     background: {
       type: ColorType.Solid,
-      color: theme.colors.osmoverse[850],
+      color: "transparent",
     },
     textColor: theme.colors.wosmongton[200],
     fontSize: 14,
