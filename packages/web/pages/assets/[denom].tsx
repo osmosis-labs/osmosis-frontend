@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  Asset,
   CoingeckoCoin,
   getActiveCoingeckoCoins,
   getAsset,
@@ -48,7 +49,6 @@ import {
   useUserWatchlist,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
-import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
@@ -58,7 +58,7 @@ import { api } from "~/utils/trpc";
 interface AssetInfoPageProps {
   tweets: RichTweet[];
   tokenDenom: string;
-  tokenMinimalDenom?: string;
+  tokenMinimalDenom?: string | null;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
@@ -66,7 +66,7 @@ interface AssetInfoPageProps {
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tokenDenom, ...rest }) => {
+  ({ tokenDenom, tokenMinimalDenom, ...rest }) => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
@@ -74,17 +74,24 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
       if (
         (typeof featureFlags.tokenInfo !== "undefined" &&
           !featureFlags.tokenInfo) ||
-        !tokenDenom
+        !tokenDenom ||
+        !tokenMinimalDenom
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router, tokenDenom]);
+    }, [featureFlags.tokenInfo, router, tokenDenom, tokenMinimalDenom]);
 
     if (!tokenDenom) {
       return null; // TODO: Add skeleton loader
     }
 
-    return <AssetInfoView tokenDenom={tokenDenom} {...rest} />;
+    return (
+      <AssetInfoView
+        tokenDenom={tokenDenom}
+        tokenMinimalDenom={tokenMinimalDenom}
+        {...rest}
+      />
+    );
   }
 );
 
@@ -95,6 +102,99 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   strict: true,
 });
 
+const currencies = ChainList.flatMap((info) => info.keplrChain.currencies);
+
+interface UseAssetInfoProps {
+  denom: string;
+  coingeckoCoin?: CoingeckoCoin | null;
+  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
+}
+
+const useAssetInfo = (props: UseAssetInfoProps) => {
+  const { denom, coingeckoCoin, tokenDetailsByLanguage } = props;
+
+  const language = useCurrentLanguage();
+
+  const details = useMemo(() => {
+    return tokenDetailsByLanguage
+      ? tokenDetailsByLanguage[language]
+      : undefined;
+  }, [language, tokenDetailsByLanguage]);
+
+  const coinGeckoId = useMemo(
+    () =>
+      details?.coingeckoID
+        ? details?.coingeckoID
+        : currencies.find(
+            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
+          )?.coinGeckoId,
+    [details?.coingeckoID, denom]
+  );
+
+  const twitterUrl = useMemo(() => {
+    if (details?.twitterURL) {
+      return details.twitterURL;
+    }
+
+    if (coingeckoCoin?.links?.twitter_screen_name) {
+      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
+    }
+  }, [coingeckoCoin?.links?.twitter_screen_name, details?.twitterURL]);
+
+  const websiteURL = useMemo(() => {
+    if (details?.websiteURL) {
+      return details.websiteURL;
+    }
+
+    if (
+      coingeckoCoin?.links?.homepage &&
+      coingeckoCoin.links.homepage.length > 0
+    ) {
+      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
+    }
+  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
+
+  const coingeckoURL = useMemo(() => {
+    if (coinGeckoId) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
+    }
+  }, [coinGeckoId]);
+
+  const asset = useMemo(() => {
+    const currency = currencies.find(
+      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
+    );
+
+    if (!currency) {
+      return undefined;
+    }
+
+    const asset = getAssetFromAssetList({
+      coinMinimalDenom: currency?.coinMinimalDenom,
+      assetLists: AssetLists,
+    });
+
+    return asset;
+  }, [denom]);
+
+  const title = useMemo(() => {
+    if (details) {
+      return details.name;
+    }
+
+    return asset?.rawAsset.name;
+  }, [details, asset]);
+
+  return {
+    asset,
+    title,
+    details,
+    twitterUrl,
+    websiteURL,
+    coingeckoURL,
+  };
+};
+
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
   ({
     tokenDenom,
@@ -104,12 +204,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     coingeckoCoin,
   }) => {
     const { t } = useTranslation();
-    const language = useCurrentLanguage();
     const router = useRouter();
 
     const assetInfoConfig = useAssetInfoConfig(
       tokenDenom,
-      tokenMinimalDenom,
+      tokenMinimalDenom!,
       coingeckoCoin?.id
     );
 
@@ -164,40 +263,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       return tokenDenom as string;
     }, [tokenDenom]);
 
-    const details = useMemo(() => {
-      return tokenDetailsByLanguage
-        ? tokenDetailsByLanguage[language]
-        : undefined;
-    }, [language, tokenDetailsByLanguage]);
-
-    const asset = useMemo(() => {
-      const currencies = ChainList.map(
-        (info) => info.keplrChain.currencies
-      ).reduce((a, b) => [...a, ...b]);
-
-      const currency = currencies.find(
-        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
-      );
-
-      if (!currency) {
-        return undefined;
-      }
-
-      const asset = getAssetFromAssetList({
-        coinMinimalDenom: currency?.coinMinimalDenom,
-        assetLists: AssetLists,
-      });
-
-      return asset;
-    }, [denom]);
-
-    const title = useMemo(() => {
-      if (details) {
-        return details.name;
-      }
-
-      return asset?.rawAsset.name;
-    }, [details, asset]);
+    const { asset, title, details } = useAssetInfo({
+      denom,
+      tokenDetailsByLanguage,
+    });
 
     const SwapTool_ = (
       <SwapTool
@@ -284,90 +353,14 @@ interface NavigationProps {
 
 const Navigation = observer((props: NavigationProps) => {
   const { tokenDetailsByLanguage, coingeckoCoin, denom } = props;
-  const { chainStore } = useStore();
   const { t } = useTranslation();
-  const language = useCurrentLanguage();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const details = useMemo(() => {
-    return tokenDetailsByLanguage
-      ? tokenDetailsByLanguage[language]
-      : undefined;
-  }, [language, tokenDetailsByLanguage]);
-
-  const chain = useMemo(
-    () => chainStore.getChainFromCurrency(denom),
-    [denom, chainStore]
-  );
-
-  const currencies = useMemo(
-    () => chain?.currencies ?? [],
-    [chain?.currencies]
-  );
-
-  const coinGeckoId = useMemo(
-    () =>
-      details?.coingeckoID
-        ? details?.coingeckoID
-        : currencies.find(
-            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
-          )?.coinGeckoId,
-    [currencies, details?.coingeckoID, denom]
-  );
-
-  const title = useMemo(() => {
-    if (details) {
-      return details.name;
-    }
-
-    const currencies = ChainList.map(
-      (info) => info.keplrChain.currencies
-    ).reduce((a, b) => [...a, ...b]);
-
-    const currency = currencies.find(
-      (el) => el.coinDenom === denom.toUpperCase()
-    );
-
-    if (!currency) {
-      return undefined;
-    }
-
-    const asset = getAssetFromAssetList({
-      coinMinimalDenom: currency?.coinMinimalDenom,
-      assetLists: AssetLists,
-    });
-
-    return asset?.rawAsset.name;
-  }, [denom, details]);
-
-  const twitterUrl = useMemo(() => {
-    if (details?.twitterURL) {
-      return details.twitterURL;
-    }
-
-    if (coingeckoCoin?.links?.twitter_screen_name) {
-      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
-    }
-  }, [coingeckoCoin?.links?.twitter_screen_name, details?.twitterURL]);
-
-  const websiteURL = useMemo(() => {
-    if (details?.websiteURL) {
-      return details.websiteURL;
-    }
-
-    if (
-      coingeckoCoin?.links?.homepage &&
-      coingeckoCoin.links.homepage.length > 0
-    ) {
-      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
-    }
-  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
-
-  const coingeckoURL = useMemo(() => {
-    if (coinGeckoId) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
-    }
-  }, [coinGeckoId]);
+  const { twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
+    denom,
+    tokenDetailsByLanguage,
+    coingeckoCoin,
+  });
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
@@ -586,57 +579,62 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
+  let token: Asset | null = null;
 
-  /**
-   * Lookup for the current token
-   */
-  const token = getAsset({ anyDenom: tokenDenom, assetLists: AssetLists });
+  try {
+    /**
+     * Lookup for the current token
+     */
+    token = getAsset({ anyDenom: tokenDenom, assetLists: AssetLists });
 
-  if (tokenDenom) {
-    try {
-      tokenDetailsByLanguage = Object.fromEntries(
-        await Promise.all(
-          SUPPORTED_LANGUAGES.map(async (lang) => {
-            try {
-              const res = await getTokenInfo(tokenDenom, lang.value);
+    if (tokenDenom) {
+      try {
+        tokenDetailsByLanguage = Object.fromEntries(
+          await Promise.all(
+            SUPPORTED_LANGUAGES.map(async (lang) => {
+              try {
+                const res = await getTokenInfo(tokenDenom, lang.value);
 
-              return [lang.value, res];
-            } catch (error) {}
+                return [lang.value, res];
+              } catch (error) {}
 
-            return [lang.value, null];
-          })
-        )
-      );
+              return [lang.value, null];
+            })
+          )
+        );
 
-      const tokenDetails = tokenDetailsByLanguage
-        ? tokenDetailsByLanguage["en"]
-        : undefined;
+        const tokenDetails = tokenDetailsByLanguage
+          ? tokenDetailsByLanguage["en"]
+          : undefined;
 
-      if (tokenDetails) {
-        if (tokenDetails.coingeckoID) {
-          coingeckoCoin =
-            (await queryCoingeckoCoin(tokenDetails.coingeckoID)) ?? null;
-        }
+        if (tokenDetails) {
+          if (tokenDetails.coingeckoID) {
+            coingeckoCoin =
+              (await queryCoingeckoCoin(tokenDetails.coingeckoID)) ?? null;
+          }
 
-        if (tokenDetails.twitterURL) {
-          const userId = tokenDetails.twitterURL.split("/").pop();
+          if (tokenDetails.twitterURL) {
+            const userId = tokenDetails.twitterURL.split("/").pop();
 
-          if (userId) {
-            const twitter = new Twitter();
+            if (userId) {
+              const twitter = new Twitter();
 
-            tweets = await twitter.getUserTweets(userId);
+              tweets = await twitter.getUserTweets(userId);
+            }
           }
         }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
     }
+  } catch (e) {
+    console.error(e);
   }
 
   return {
     props: {
-      tokenDenom: token?.coinDenom ?? tokenDenom,
-      tokenMinimalDenom: token.coinMinimalDenom,
+      tokenDenom: token?.coinDenom ?? tokenDenom ?? null,
+      tokenMinimalDenom: token?.coinMinimalDenom ?? null,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
