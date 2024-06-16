@@ -16,6 +16,7 @@ import { OrderDirection } from "~/hooks/limit-orders";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export interface TokenSelectLimitProps {
@@ -49,15 +50,18 @@ export const TokenSelectLimit: FunctionComponent<
     onTokenSelect,
     canSelectTokens = true,
     baseAsset,
-    quoteAsset,
     baseBalance,
-    quoteBalance,
     disabled,
     orderDirection,
   }) => {
     const { isMobile } = useWindowSize();
     const router = useRouter();
     const { logEvent } = useAmplitudeAnalytics();
+    const { accountStore } = useStore();
+
+    const isWalletConnected = accountStore.getWallet(
+      accountStore.osmosisChainId
+    )?.isWalletConnected;
 
     // parent overrideable state
     const [isSelectOpen, setIsSelectOpen] = useControllableState({
@@ -85,8 +89,6 @@ export const TokenSelectLimit: FunctionComponent<
 
     const { price: baseCoinPrice, isLoading: isLoadingBasePrice } =
       useCoinPrice(baseBalance);
-    const { price: quoteCoinPrice, isLoading: isLoadingQuotePrice } =
-      useCoinPrice(quoteBalance);
 
     const baseFiatBalance = useMemo(
       () =>
@@ -96,28 +98,13 @@ export const TokenSelectLimit: FunctionComponent<
       [baseCoinPrice, baseBalance, isLoadingBasePrice]
     );
 
-    const quoteFiatBalance = useMemo(
-      () =>
-        !isLoadingQuotePrice && quoteCoinPrice
-          ? new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              quoteCoinPrice.mul(quoteBalance)
-            )
-          : new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      [quoteCoinPrice, quoteBalance, isLoadingQuotePrice]
-    );
-
     const showBaseBalance = useMemo(
-      () =>
-        orderDirection === OrderDirection.Ask &&
-        !baseFiatBalance.toDec().isZero(),
-      [orderDirection, baseFiatBalance]
+      () => orderDirection === OrderDirection.Ask && isWalletConnected,
+      [isWalletConnected, orderDirection]
     );
     const showQuoteBalance = useMemo(
-      () =>
-        orderDirection === OrderDirection.Bid &&
-        !quoteFiatBalance.toDec().isZero(),
-      [orderDirection, quoteFiatBalance]
+      () => orderDirection === OrderDirection.Bid,
+      [orderDirection]
     );
 
     return (
