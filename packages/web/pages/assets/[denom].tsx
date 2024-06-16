@@ -10,7 +10,7 @@ import {
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
-import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
+import { sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
@@ -30,23 +30,21 @@ import { SwapTool } from "~/components/swap-tool";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { YourBalance } from "~/components/your-balance";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
-  useCurrentLanguage,
   useTranslation,
   useUserWatchlist,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
-  tokenDenom: string;
-  tokenMinimalDenom?: string | null;
+  token: Asset | null;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
@@ -54,7 +52,7 @@ interface AssetInfoPageProps {
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tokenDenom, tokenMinimalDenom, ...rest }) => {
+  ({ token, ...rest }) => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
@@ -62,135 +60,34 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
       if (
         (typeof featureFlags.tokenInfo !== "undefined" &&
           !featureFlags.tokenInfo) ||
-        !tokenDenom ||
-        !tokenMinimalDenom
+        !token
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router, tokenDenom, tokenMinimalDenom]);
+    }, [featureFlags.tokenInfo, router, token]);
 
-    if (!tokenDenom) {
-      return null; // TODO: Add skeleton loader
-    }
-
-    return (
-      <AssetInfoView
-        tokenDenom={tokenDenom}
-        tokenMinimalDenom={tokenMinimalDenom}
-        {...rest}
-      />
-    );
+    return <AssetInfoView token={token} {...rest} />;
   }
 );
 
-const currencies = ChainList.flatMap((info) => info.keplrChain.currencies);
-
-interface UseAssetInfoProps {
-  denom: string;
-  coingeckoCoin?: CoingeckoCoin | null;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
-}
-
-const useAssetInfo = (props: UseAssetInfoProps) => {
-  const { denom, coingeckoCoin, tokenDetailsByLanguage } = props;
-
-  const language = useCurrentLanguage();
-
-  const details = useMemo(() => {
-    return tokenDetailsByLanguage
-      ? tokenDetailsByLanguage[language]
-      : undefined;
-  }, [language, tokenDetailsByLanguage]);
-
-  const coinGeckoId = useMemo(
-    () =>
-      details?.coingeckoID
-        ? details?.coingeckoID
-        : currencies.find(
-            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
-          )?.coinGeckoId,
-    [details?.coingeckoID, denom]
-  );
-
-  const twitterUrl = useMemo(() => {
-    if (details?.twitterURL) {
-      return details.twitterURL;
-    }
-
-    if (coingeckoCoin?.links?.twitter_screen_name) {
-      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
-    }
-  }, [coingeckoCoin?.links?.twitter_screen_name, details?.twitterURL]);
-
-  const websiteURL = useMemo(() => {
-    if (details?.websiteURL) {
-      return details.websiteURL;
-    }
-
-    if (
-      coingeckoCoin?.links?.homepage &&
-      coingeckoCoin.links.homepage.length > 0
-    ) {
-      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
-    }
-  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
-
-  const coingeckoURL = useMemo(() => {
-    if (coinGeckoId) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
-    }
-  }, [coinGeckoId]);
-
-  const asset = useMemo(() => {
-    const currency = currencies.find(
-      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
-    );
-
-    if (!currency) {
-      return undefined;
-    }
-
-    const asset = getAssetFromAssetList({
-      coinMinimalDenom: currency?.coinMinimalDenom,
-      assetLists: AssetLists,
-    });
-
-    return asset;
-  }, [denom]);
-
-  const title = useMemo(() => {
-    if (details) {
-      return details.name;
-    }
-
-    return asset?.rawAsset.name;
-  }, [details, asset]);
-
-  return {
-    asset,
-    title,
-    details,
-    twitterUrl,
-    websiteURL,
-    coingeckoURL,
-  };
-};
-
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({
-    tokenDenom,
-    tokenMinimalDenom,
-    tweets,
-    tokenDetailsByLanguage,
-    coingeckoCoin,
-  }) => {
+  ({ token, tweets, tokenDetailsByLanguage, coingeckoCoin }) => {
     const { t } = useTranslation();
     const router = useRouter();
 
+    if (!token) {
+      return null;
+    }
+
+    const { title, details, coinGeckoId } = useAssetInfo({
+      token,
+      tokenDetailsByLanguage,
+    });
+
     const assetInfoConfig = useAssetInfoConfig(
-      tokenDenom,
-      tokenMinimalDenom!,
-      coingeckoCoin?.id
+      token.coinDenom,
+      token.coinMinimalDenom,
+      coinGeckoId
     );
 
     useAmplitudeAnalytics({
@@ -238,24 +135,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       [assetInfoConfig]
     );
 
-    // const routablePools = useRoutablePools();
-
-    const denom = useMemo(() => {
-      return tokenDenom as string;
-    }, [tokenDenom]);
-
-    const { asset, title, details } = useAssetInfo({
-      denom,
-      tokenDetailsByLanguage,
-    });
-
     const SwapTool_ = (
       <SwapTool
         fixedWidth
         useQueryParams={false}
         useOtherCurrencies={true}
-        initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-        initialOutTokenDenom={denom}
+        initialSendTokenDenom={token.coinDenom === "USDC" ? "OSMO" : "USDC"}
+        initialOutTokenDenom={token.coinDenom}
         page="Token Info Page"
       />
     );
@@ -263,7 +149,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     return (
       <AssetInfoViewProvider value={contextValue}>
         <NextSeo
-          title={`${title ? `${title} (${denom})` : denom} | Osmosis`}
+          title={`${
+            title ? `${title} (${token.coinDenom})` : token.coinDenom
+          } | Osmosis`}
           description={details?.description}
         />
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
@@ -283,7 +171,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             href="/assets"
           />
           <Navigation
-            denom={denom}
+            token={token}
             tokenDetailsByLanguage={tokenDetailsByLanguage}
             coingeckoCoin={coingeckoCoin}
           />
@@ -296,12 +184,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 </div>
                 <YourBalance
                   className="xl:flex-grow"
-                  denom={denom}
+                  denom={token.coinDenom}
                   tokenDetailsByLanguage={tokenDetailsByLanguage}
                 />
               </div>
               <TokenDetails
-                denom={denom}
+                token={token}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
               />
@@ -310,12 +198,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
             <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
-
-              {asset?.rawAsset?.isAlloyed && asset?.rawAsset?.contract ? (
+              {token.isAlloyed && token.contract ? (
                 <AlloyedAssetsSection
-                  title={title ?? denom}
-                  denom={denom}
-                  contractAddress={asset.rawAsset.contract}
+                  title={title ?? token.coinDenom}
+                  denom={token.coinDenom}
+                  contractAddress={token.contract}
                 />
               ) : null}
             </div>
@@ -327,18 +214,18 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 );
 
 interface NavigationProps {
+  token: Asset;
   tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
   coingeckoCoin?: CoingeckoCoin | null;
-  denom: string;
 }
 
 const Navigation = observer((props: NavigationProps) => {
-  const { tokenDetailsByLanguage, coingeckoCoin, denom } = props;
+  const { tokenDetailsByLanguage, coingeckoCoin, token } = props;
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const { twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
-    denom,
+    token,
     tokenDetailsByLanguage,
     coingeckoCoin,
   });
@@ -346,7 +233,7 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{denom}</h1>
+        <h1 className="text-h4 font-h4">{token.coinDenom}</h1>
         {title ? (
           <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
         ) : (
@@ -360,12 +247,12 @@ const Navigation = observer((props: NavigationProps) => {
           variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={() => toggleWatchAssetDenom(denom)}
+          onClick={() => toggleWatchAssetDenom(token.coinDenom)}
         >
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              watchListDenoms.includes(denom)
+              watchListDenoms.includes(token.coinDenom)
                 ? ""
                 : "opacity-30 group-hover:opacity-100"
             } `}
@@ -461,7 +348,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   params,
 }) => {
   let tweets: RichTweet[] = [];
-  let tokenDenom = params?.denom as string;
+  const tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
   let token: Asset | null = null;
@@ -518,8 +405,10 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom: token?.coinDenom ?? tokenDenom ?? null,
-      tokenMinimalDenom: token?.coinMinimalDenom ?? null,
+      /**
+       * Remove undefined properties because they cannot be serialized
+       */
+      token: JSON.parse(JSON.stringify(token)),
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,

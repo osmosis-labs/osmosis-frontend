@@ -17,6 +17,8 @@ export type Asset = {
   coinImageUrl?: string;
   isVerified: boolean;
   isUnstable: boolean;
+  isAlloyed: boolean;
+  contract?: string;
 };
 
 export const AssetFilterSchema = z.object({
