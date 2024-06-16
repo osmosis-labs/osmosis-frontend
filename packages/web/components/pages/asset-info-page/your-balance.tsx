@@ -1,5 +1,5 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { TokenCMSData } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
+import { Asset, TokenCMSData } from "@osmosis-labs/server";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -17,10 +17,8 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
-  useCurrentLanguage,
   useFakeFeeConfig,
   useFeatureFlags,
   useGetApr,
@@ -30,12 +28,13 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
+import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface YourBalanceProps {
-  denom: string;
+  token: Asset;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
@@ -43,7 +42,7 @@ interface YourBalanceProps {
 }
 
 export const YourBalance = observer(
-  ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
+  ({ token, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const {
       queriesStore,
       chainStore,
@@ -54,16 +53,21 @@ export const YourBalance = observer(
     const featureFlags = useFeatureFlags();
     const { t } = useTranslation();
     const { stakingAPR } = useGetApr();
-    const language = useCurrentLanguage();
     const osmosisChainId = chainStore.osmosis.chainId;
     const account = accountStore.getWallet(osmosisChainId);
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
+
+    const { details } = useAssetInfo({
+      token,
+      tokenDetailsByLanguage,
+    });
+
     const isOsmo = useMemo(
       () =>
-        denom.toLowerCase() ===
+        token.coinDenom.toLowerCase() ===
         chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
-      [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+      [chainStore.osmosis.stakeCurrency.coinDenom, token]
     );
 
     const feeConfig = useFakeFeeConfig(
@@ -74,17 +78,11 @@ export const YourBalance = observer(
 
     const { data } = api.edge.assets.getUserMarketAsset.useQuery(
       {
-        findMinDenomOrSymbol: denom,
+        findMinDenomOrSymbol: token.coinDenom,
         userOsmoAddress: account?.address,
       },
       { enabled: Boolean(account?.address) }
     );
-
-    const details = useMemo(() => {
-      return tokenDetailsByLanguage
-        ? tokenDetailsByLanguage[language]
-        : undefined;
-    }, [language, tokenDetailsByLanguage]);
 
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -101,18 +99,6 @@ export const YourBalance = observer(
       () => isOsmo && balance.toDec().gt(new Dec(0)),
       [balance, isOsmo]
     );
-
-    const currency = useMemo(() => {
-      const currencies = ChainList.map(
-        (info) => info.keplrChain.currencies
-      ).reduce((a, b) => [...a, ...b]);
-
-      const currency = currencies.find(
-        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
-      );
-
-      return currency;
-    }, [denom]);
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -188,26 +174,22 @@ export const YourBalance = observer(
         [queryOsmosis, account, priceStore]
       )
     ).filter((pool) =>
-      pool.queryPool.poolAssetDenoms.includes(currency?.base ?? "")
+      pool.queryPool.poolAssetDenoms.includes(token.coinMinimalDenom)
     );
 
     const assetPoolBalance = useMemo(() => {
-      if (!currency) {
-        return undefined;
-      }
-
       return dustFilteredPools.reduce((total, nextPool) => {
         const userPool = nextPool.poolDetail.userPoolAssets.find(
-          ({ asset }) => asset.currency.coinDenom === denom
+          ({ asset }) => asset.currency.coinDenom === token.coinDenom
         );
 
         if (userPool) {
-          return userPool.asset.add(total);
+          return userPool.asset.toDec().add(total);
         }
 
         return total;
-      }, new CoinPretty(currency, 0));
-    }, [currency, denom, dustFilteredPools]);
+      }, new Dec(0));
+    }, [token, dustFilteredPools]);
 
     const fiatAssetPoolBalance = useMemo(() => {
       return data?.currentPrice?.mul(assetPoolBalance ?? new Dec(0));
@@ -218,13 +200,13 @@ export const YourBalance = observer(
         className={`${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
       >
         <BalanceStats
-          denom={denom}
+          token={token}
           tokenDetailsByLanguage={tokenDetailsByLanguage}
         />
         <div className="flex flex-col gap-6 self-stretch">
           <header>
             <h6 className="text-lg font-h6 leading-6 tracking-wide">
-              {t("tokenInfos.earnWith", { denom })}{" "}
+              {t("tokenInfos.earnWith", { denom: token.coinDenom })}{" "}
             </h6>
           </header>
           <div className="flex gap-6 self-stretch 1.5xl:flex-col">
@@ -237,7 +219,7 @@ export const YourBalance = observer(
                 onClick={() =>
                   logEvent([
                     EventName.TokenInfo.cardClicked,
-                    { tokenName: denom, title: "Stake" },
+                    { tokenName: token.coinDenom, title: "Stake" },
                   ])
                 }
               >
@@ -259,9 +241,11 @@ export const YourBalance = observer(
                     hasStakingBalance
                       ? formatPretty(balance)
                       : !isOsmo
-                      ? t("tokenInfos.stakeYourDenomToEarnNoAPR", { denom })
+                      ? t("tokenInfos.stakeYourDenomToEarnNoAPR", {
+                          denom: token.coinDenom,
+                        })
                       : t("tokenInfos.stakeYourDenomToEarn", {
-                          denom,
+                          denom: token.coinDenom,
                           apr: stakingAPR.truncate().toString(),
                         })
                   }
@@ -278,13 +262,13 @@ export const YourBalance = observer(
               </Link>
             )}
             <Link
-              href={`/pools?searchQuery=${encodeURIComponent(denom)}`}
+              href={`/pools?searchQuery=${encodeURIComponent(token.coinDenom)}`}
               passHref
               className="w-full grow"
               onClick={() =>
                 logEvent([
                   EventName.TokenInfo.cardClicked,
-                  { tokenName: denom, title: "Explore Pools" },
+                  { tokenName: token.coinDenom, title: "Explore Pools" },
                 ])
               }
             >
@@ -293,7 +277,7 @@ export const YourBalance = observer(
                   dustFilteredPools.length > 0
                     ? t("tokenInfos.liquidityInOSMOPools", {
                         number: dustFilteredPools.length.toString(),
-                        denom,
+                        denom: token.coinDenom,
                       })
                     : t("tokenInfos.explorePools")
                 }
@@ -383,7 +367,7 @@ const ActionButton = ({
   </div>
 );
 
-const BalanceStats = observer(({ denom }: YourBalanceProps) => {
+const BalanceStats = observer(({ token }: YourBalanceProps) => {
   const { t } = useTranslation();
   const { chainStore, accountStore, assetsStore } = useStore();
   const { bridgeAsset, fiatRampSelection } = useBridge();
@@ -391,20 +375,20 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
 
   const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const tokenChain = chainStore.getChainFromCurrency(denom);
+  const tokenChain = chainStore.getChainFromCurrency(token.coinDenom);
   const chainId = tokenChain?.chainId;
 
   const { data, isLoading: isCoinDataLoading } =
     api.edge.assets.getUserMarketAsset.useQuery({
-      findMinDenomOrSymbol: denom,
+      findMinDenomOrSymbol: token.coinDenom,
       userOsmoAddress: account?.address,
     });
 
   const isOsmosis = useMemo(
     () =>
-      denom.toLowerCase() ===
+      token.coinDenom.toLowerCase() ===
       chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
-    [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+    [chainStore.osmosis.stakeCurrency.coinDenom, token]
   );
 
   const isNativeAsset = useMemo(
@@ -416,9 +400,10 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
     () =>
       ibcBalances.find(
         (ibcBalance) =>
-          ibcBalance.balance.denom.toLowerCase() === denom.toLowerCase()
+          ibcBalance.balance.denom.toLowerCase() ===
+          token.coinDenom.toLowerCase()
       ),
-    [ibcBalances, denom]
+    [ibcBalances, token]
   );
 
   const isChainSupported = Boolean(
@@ -450,12 +435,16 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                     {formatPretty(data.currentPrice.mul(data.amount))}
                   </h4>
                   <p className="text-subtitle1 font-subtitle1 leading-6 text-osmoverse-300">
-                    {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+                    {data?.amount
+                      ? formatPretty(data?.amount)
+                      : `0 ${token.coinDenom}`}
                   </p>
                 </>
               ) : (
                 <h4 className="text-h4 font-h4 leading-9 text-osmoverse-100">
-                  {data?.amount ? formatPretty(data?.amount) : `0 ${denom}`}
+                  {data?.amount
+                    ? formatPretty(data?.amount)
+                    : `0 ${token.coinDenom}`}
                 </h4>
               )}
             </div>
@@ -490,7 +479,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
               <Button
                 className="w-full"
                 disabled={!tokenChain?.chainId || !isDepositSupported}
-                onClick={() => bridgeAsset(denom, "deposit")}
+                onClick={() => bridgeAsset(token.coinDenom, "deposit")}
               >
                 {t("assets.historyTable.colums.deposit")}
               </Button>
@@ -523,7 +512,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
                   data.amount.toDec().isZero()
                 }
                 variant="outline"
-                onClick={() => bridgeAsset(denom, "withdraw")}
+                onClick={() => bridgeAsset(token.coinDenom, "withdraw")}
               >
                 {t("assets.historyTable.colums.withdraw")}
               </Button>
@@ -545,7 +534,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
               }}
             />
             <span className="whitespace-nowrap">
-              {t("tokenInfos.buyToken", { coinDenom: denom })}
+              {t("tokenInfos.buyToken", { coinDenom: token.coinDenom })}
             </span>
           </Button>
         ) : null}

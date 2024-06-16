@@ -26,10 +26,10 @@ import { LinkButton } from "~/components/buttons/link-button";
 import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
 import { TokenDetails } from "~/components/pages/asset-info-page/token-details";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
+import { YourBalance } from "~/components/pages/asset-info-page/your-balance";
 import { SwapTool } from "~/components/swap-tool";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
-import { YourBalance } from "~/components/your-balance";
 import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import {
@@ -184,7 +184,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 </div>
                 <YourBalance
                   className="xl:flex-grow"
-                  denom={token.coinDenom}
+                  token={token}
                   tokenDetailsByLanguage={tokenDetailsByLanguage}
                 />
               </div>

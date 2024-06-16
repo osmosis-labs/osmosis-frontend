@@ -13,7 +13,6 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
 
 const TEXT_CHAR_LIMIT = 450;
 
@@ -58,10 +57,6 @@ const _TokenDetails = ({
   }, [isExpandable, isExpanded, details]);
 
   const usdFiat = priceStore.getFiatCurrency("usd");
-
-  const { data } = api.edge.assets.getAssetWithPrice.useQuery({
-    coinMinimalDenom: token.coinMinimalDenom,
-  });
 
   const coingeckoCoinInfo = coinGeckoId
     ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
