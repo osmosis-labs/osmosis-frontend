@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import {
   Asset,
   CoingeckoCoin,
@@ -18,23 +17,16 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
-import { FunctionComponent } from "react";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
-import {
-  ChartUnavailable,
-  PriceChartHeader,
-} from "~/components/chart/price-historical";
-import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
-import { Spinner } from "~/components/loaders/spinner";
+import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
+import { TokenDetails } from "~/components/pages/asset-info-page/token-details";
+import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
 import { SwapTool } from "~/components/swap-tool";
-import { TokenDetails } from "~/components/token-details";
-import { TwitterSection } from "~/components/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { YourBalance } from "~/components/your-balance";
@@ -42,18 +34,14 @@ import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import {
-  ObservableAssetInfoConfig,
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
   useUserWatchlist,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
-import { getPriceExtendedFormatOptions } from "~/utils/formatter";
-import { getDecimalCount } from "~/utils/number";
-import { createContext } from "~/utils/react-context";
-import { api } from "~/utils/trpc";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
@@ -94,13 +82,6 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
     );
   }
 );
-
-const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
-  assetInfoConfig: ObservableAssetInfoConfig;
-}>({
-  name: "AssetInfoViewContext",
-  strict: true,
-});
 
 const currencies = ChainList.flatMap((info) => info.keplrChain.currencies);
 
@@ -308,7 +289,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
-              <TokenChartSection />
+              <TokenChart />
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                   {SwapTool_}
@@ -422,102 +403,6 @@ const Navigation = observer((props: NavigationProps) => {
         )}
       </div>
     </nav>
-  );
-});
-
-const TokenChartSection = () => {
-  return (
-    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl pb-8 md:pb-6">
-      <div className="p-8 pb-0 md:p-6">
-        <TokenChartHeader />
-      </div>
-      <TokenChart />
-    </section>
-  );
-};
-
-const TokenChartHeader = observer(() => {
-  const { assetInfoConfig } = useAssetInfoView();
-
-  const { data: assetPrice, isLoading } =
-    api.edge.assets.getAssetPrice.useQuery(
-      {
-        coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
-      },
-      {
-        enabled: assetInfoConfig.coinMinimalDenom !== undefined,
-      }
-    );
-
-  const hoverPrice = useMemo(() => {
-    let price = new Dec(0);
-    const decHoverPrice = assetInfoConfig.hoverPrice?.toDec();
-
-    if (decHoverPrice && !decHoverPrice.isZero()) {
-      price = decHoverPrice;
-    } else if (assetPrice) {
-      price = assetPrice.toDec();
-    }
-
-    return Number(price.toString());
-  }, [assetInfoConfig.hoverPrice, assetPrice]);
-
-  const fiatSymbol =
-    assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
-    assetPrice?.fiatCurrency.symbol;
-
-  const minimumDecimals = 2;
-  const maxDecimals = Math.max(getDecimalCount(hoverPrice), minimumDecimals);
-
-  const formatOpts = useMemo(
-    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
-    [hoverPrice]
-  );
-
-  return (
-    <header>
-      <PriceChartHeader
-        isLoading={isLoading}
-        formatOpts={formatOpts}
-        decimal={maxDecimals}
-        showAllRange
-        hoverPrice={hoverPrice}
-        hoverDate={assetInfoConfig.hoverDate}
-        historicalRange={assetInfoConfig.historicalRange}
-        setHistoricalRange={assetInfoConfig.setHistoricalRange}
-        fiatSymbol={fiatSymbol}
-        classes={{
-          priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
-        }}
-        compactZeros
-      />
-    </header>
-  );
-});
-
-const TokenChart = observer(() => {
-  const { assetInfoConfig } = useAssetInfoView();
-
-  return (
-    <div className="h-[370px] w-full xl:h-[250px]">
-      {assetInfoConfig.isHistoricalDataLoading ? (
-        <div className="flex h-full flex-col items-center justify-center">
-          <Spinner />
-        </div>
-      ) : !assetInfoConfig.historicalChartUnavailable ? (
-        <>
-          <HistoricalPriceChartV2
-            data={assetInfoConfig.historicalChartData}
-            onPointerHover={assetInfoConfig.setHoverPrice}
-            onPointerOut={() => {
-              assetInfoConfig.setHoverPrice(0, undefined);
-            }}
-          />
-        </>
-      ) : (
-        <ChartUnavailable />
-      )}
-    </div>
   );
 });
 
