@@ -1131,6 +1131,7 @@
   },
   "place-limit": {
     "reviewOrder": "Review Order",
+    "totalFees": "Total Fees",
     "marketOrder": {
       "title": "Market Order",
       "description": "Buy immediately at best available price"

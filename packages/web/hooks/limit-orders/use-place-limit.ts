@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useMemo, useState } from "react";
 
+import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
 import { useBalances } from "~/hooks/queries/cosmos/use-balances";
@@ -16,13 +17,11 @@ export enum OrderDirection {
 
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
-  poolId: string;
   orderDirection: OrderDirection;
   useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
   baseDenom: string;
   quoteDenom: string;
-  orderbookContractAddress: string;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -34,7 +33,6 @@ export const usePlaceLimit = ({
   osmosisChainId,
   quoteDenom,
   baseDenom,
-  orderbookContractAddress,
   orderDirection,
   useQueryParams = false,
   useOtherCurrencies = false,
@@ -45,6 +43,14 @@ export const usePlaceLimit = ({
     initialToDenom: quoteDenom,
     useQueryParams,
     useOtherCurrencies,
+  });
+  const {
+    makerFee,
+    isMakerFeeLoading,
+    contractAddress: orderbookContractAddress,
+  } = useOrderbook({
+    quoteDenom,
+    baseDenom,
   });
 
   const quoteAsset = swapAssets.toAsset;
@@ -198,6 +204,43 @@ export const usePlaceLimit = ({
           .toDec()
           .lt(inAmountInput.amount?.toDec() ?? new Dec(0));
 
+  const expectedTokenAmountOut = useMemo(() => {
+    const preFeeAmount =
+      orderDirection === OrderDirection.Ask
+        ? new CoinPretty(
+            quoteAsset,
+            paymentFiatValue?.quo(quoteAssetPrice?.toDec() ?? new Dec(1)) ??
+              new Dec(1)
+          ).mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)))
+        : inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
+    return preFeeAmount.mul(new Dec(1).sub(makerFee));
+  }, [
+    inAmountInput.amount,
+    baseAsset,
+    quoteAsset,
+    orderDirection,
+    makerFee,
+    quoteAssetPrice,
+    paymentFiatValue,
+  ]);
+
+  const expectedFiatAmountOut = useMemo(() => {
+    return orderDirection === OrderDirection.Ask
+      ? new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          quoteAssetPrice?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+        )
+      : new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          priceState.price?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+        );
+  }, [
+    priceState.price,
+    expectedTokenAmountOut,
+    orderDirection,
+    quoteAssetPrice,
+  ]);
+
   return {
     quoteDenom,
     baseDenom,
@@ -213,6 +256,10 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     baseAssetPrice,
     paymentFiatValue,
+    makerFee,
+    isMakerFeeLoading,
+    expectedTokenAmountOut,
+    expectedFiatAmountOut,
   };
 };
 

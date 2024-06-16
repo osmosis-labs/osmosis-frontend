@@ -56,7 +56,7 @@ export const MyPositionCard: FunctionComponent<{
     api.local.concentratedLiquidity.getPositionDetails.useQuery(
       {
         positionId: id,
-        userOsmoAddress: account?.address ?? "",
+        osmoAddress: account?.address ?? "",
       },
       {
         enabled: Boolean(account?.address),
