@@ -216,7 +216,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           title={`${title ? `${title} (${denom})` : denom} | Osmosis`}
           description={details?.description}
         />
-        <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
+        <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 xs:px-2">
           <LinkButton
             className="mr-auto hidden md:flex"
             icon={
