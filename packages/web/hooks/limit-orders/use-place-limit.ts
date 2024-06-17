@@ -27,7 +27,7 @@ export interface UsePlaceLimitParams {
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
 
 // TODO: adjust as necessary
-const CLAIM_BOUNTY = "0.01";
+const CLAIM_BOUNTY = "0.001";
 
 export const usePlaceLimit = ({
   osmosisChainId,
@@ -70,6 +70,7 @@ export const usePlaceLimit = ({
   const { price: quoteAssetPrice } = usePrice({
     coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
   });
+
   /**
    * Calculates the amount of tokens to be sent with the order.
    * In the case of an Ask order the amount sent is the amount of tokens defined by the user in terms of the base asset.

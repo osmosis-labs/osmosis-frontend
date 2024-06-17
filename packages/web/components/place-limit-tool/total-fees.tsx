@@ -40,14 +40,8 @@ export const TotalFees: FC<TotalFeesProps> = memo(({ swapState }) => {
           className="flex w-full cursor-pointer items-center justify-between"
           onClick={() => setDisplayInfo(!displayInfo)}
         >
-          <div className="text-body2 text-osmoverse-400">
-            {t("place-limit.totalFees")}
-          </div>
+          <div className="text-subtitle1">{t("place-limit.tradeDetails")}</div>
           <div className="flex items-center justify-end text-body2 text-osmoverse-300">
-            {formatPretty(totalFeeFiat, {
-              maxDecimals: 2,
-              minimumFractionDigits: 2,
-            })}{" "}
             <Icon
               id="chevron-down"
               className={classNames(

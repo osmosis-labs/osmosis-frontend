@@ -18,6 +18,7 @@ const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
   ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
   : "";
 const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
+const validDenoms = [USDC_DENOM, USDT_DENOM];
 
 const testnetOrderbooks: Orderbook[] = [
   {
@@ -52,9 +53,8 @@ export const useOrderbooks = (): {
 
   const onlyStableOrderbooks = useMemo(
     () =>
-      (orderbooks ?? []).filter(
-        ({ quoteDenom }) =>
-          quoteDenom === USDC_DENOM || quoteDenom === USDT_DENOM
+      (orderbooks ?? []).filter(({ quoteDenom }) =>
+        validDenoms.includes(quoteDenom)
       ),
     [orderbooks]
   );
