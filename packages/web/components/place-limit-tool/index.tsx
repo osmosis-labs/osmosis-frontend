@@ -2,7 +2,8 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { useQueryState } from "nuqs";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
@@ -34,28 +35,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ orderDirection = OrderDirection.Bid }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const {
-      selectableBaseDenoms,
-      selectableQuoteDenoms,
-      selectableBaseAssets,
-      isLoading,
-    } = useOrderbookSelectableDenoms();
+    const { selectableBaseAssets, isLoading } = useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
-    const [baseDenom, setBaseDenom] = useState<string>("OSMO");
-    const [quoteDenom, setQuoteDenom] = useState<string>("USDC");
-
-    useEffect(() => {
-      if (selectableBaseDenoms.length > 0) {
-        const baseDenom = selectableBaseDenoms[0];
-        setBaseDenom(baseDenom);
-      }
-    }, [selectableBaseDenoms, selectableQuoteDenoms]);
-    useEffect(() => {
-      if (Object.keys(selectableQuoteDenoms).length > 0) {
-        const quoteDenom = selectableQuoteDenoms[baseDenom][0];
-        setQuoteDenom(quoteDenom);
-      }
-    }, [selectableQuoteDenoms, baseDenom]);
+    const [baseDenom, setBaseDenom] = useState<string>("ION");
+    const [quoteDenom] = useQueryState("quote", { defaultValue: "USDC" });
 
     const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
       useOrderbook({
@@ -81,10 +64,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
             selectableAssets={selectableBaseAssets}
-            baseAsset={swapState.baseAsset}
-            quoteAsset={swapState.quoteAsset}
-            baseBalance={swapState.baseTokenBalance}
-            quoteBalance={swapState.quoteTokenBalance}
+            baseAsset={swapState.baseAsset!}
+            quoteAsset={swapState.quoteAsset!}
+            baseBalance={swapState.baseTokenBalance!}
+            quoteBalance={swapState.quoteTokenBalance!}
             onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
             disabled={false}
             orderDirection={orderDirection}

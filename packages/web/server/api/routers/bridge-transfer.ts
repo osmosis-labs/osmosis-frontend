@@ -5,17 +5,15 @@ import {
   BridgeError,
   BridgeProviders,
   BridgeQuoteError,
-  Errors,
   getBridgeQuoteSchema,
 } from "@osmosis-labs/bridge";
 import {
-  createTRPCRouter,
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
   getTimeoutHeight,
-  publicProcedure,
-  timeout,
 } from "@osmosis-labs/server";
+import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import { Errors, timeout } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -27,10 +25,12 @@ const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
+// TODO: this should be in view layer
 const BridgeLogoUrls: Record<Bridge, string> = {
-  Skip: "/bridge/skip.svg",
-  Squid: "/bridge/squid.svg",
-  Axelar: "/bridge/axelar.svg",
+  Skip: "/bridges/skip.svg",
+  Squid: "/bridges/squid.svg",
+  Axelar: "/bridges/axelar.svg",
+  IBC: "/bridges/ibc.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -137,7 +137,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         return {
           quote: {
             provider: {
-              id: bridgeProvider.providerName,
+              id: bridgeProvider.providerName as Bridge,
               logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
             },
             ...quote,

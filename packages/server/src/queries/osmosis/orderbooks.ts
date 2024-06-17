@@ -1,4 +1,4 @@
-import { createNodeQuery } from "../base-utils";
+import { createNodeQuery } from "../create-node-query";
 
 interface OrderbookMakerFeeResponse {
   data: string;
@@ -10,7 +10,7 @@ export const queryOrderbookMakerFee = createNodeQuery<
     orderbookAddress: string;
   }
 >({
-  path: ({ orderbookAddress }) => {
+  path: ({ orderbookAddress }: { orderbookAddress: string }) => {
     const msg = JSON.stringify({
       get_maker_fee: {},
     });

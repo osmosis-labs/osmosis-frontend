@@ -6,17 +6,28 @@ import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
 import { TransferStatus } from "../queries";
 import { AxelarTransferStatusProvider } from "../transfer-status";
 
-jest.mock("@osmosis-labs/utils", () => ({
-  poll: jest.fn(({ fn, validate }) => {
-    const pollFn = async () => {
-      const result = await fn();
-      if (validate(result)) {
-        return result;
-      }
-    };
-    return pollFn();
-  }),
-}));
+jest.mock("@osmosis-labs/utils", () => {
+  const originalModule = jest.requireActual("@osmosis-labs/utils");
+  return {
+    ...originalModule,
+    poll: jest.fn(({ fn, validate }) => {
+      const pollFn = async () => {
+        const result = await fn();
+        if (validate(result)) {
+          return result;
+        }
+      };
+      return pollFn();
+    }),
+  };
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+// silence console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
 
 describe("AxelarTransferStatusProvider", () => {
   let provider: AxelarTransferStatusProvider;
@@ -27,10 +38,6 @@ describe("AxelarTransferStatusProvider", () => {
   beforeEach(() => {
     provider = new AxelarTransferStatusProvider("mainnet" as BridgeEnvironment);
     provider.statusReceiverDelegate = mockReceiver;
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it("should initialize with correct URLs", () => {

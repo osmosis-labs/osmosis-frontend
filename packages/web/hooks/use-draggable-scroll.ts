@@ -10,7 +10,7 @@ interface Options {
   direction?: Direction;
 }
 
-export default function useDraggableScroll(
+export function useDraggableScroll(
   ref: RefObject<HTMLElement>,
   options: Options = { direction: Direction.Horizontal }
 ) {

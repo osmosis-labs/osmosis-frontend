@@ -52,7 +52,7 @@ import {
 /**
  * @deprecated
  */
-const AxelarTransfer: FunctionComponent<
+export const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     ethWalletClient: EthWallet;
@@ -620,6 +620,3 @@ const AxelarTransfer: FunctionComponent<
     );
   }
 );
-
-// accommodate next/dynamic
-export default AxelarTransfer;

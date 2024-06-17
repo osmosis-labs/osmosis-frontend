@@ -1,7 +1,8 @@
 import { RawAuthenticator } from "@osmosis-labs/types";
 
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "../../env";
-import { createNodeQuery } from "../base-utils";
+import { getQuerySmartContractPath } from "../cosmwasm";
+import { createNodeQuery } from "../create-node-query";
 
 export const queryAuthenticators = createNodeQuery<
   {
@@ -31,14 +32,16 @@ export const queryAuthenticatorSpendLimit = createNodeQuery<
   }
 >({
   path: ({ address, authenticatorId }) => {
-    const msg = JSON.stringify({
+    const msg = {
       spending: {
         account: address,
         authenticator_id: `${authenticatorId}.1`,
       },
-    });
-    const encodedMsg = Buffer.from(msg).toString("base64");
+    };
 
-    return `/cosmwasm/wasm/v1/contract/${SPEND_LIMIT_CONTRACT_ADDRESS}/smart/${encodedMsg}`;
+    return getQuerySmartContractPath({
+      msg,
+      contractAddress: SPEND_LIMIT_CONTRACT_ADDRESS!,
+    });
   },
 });

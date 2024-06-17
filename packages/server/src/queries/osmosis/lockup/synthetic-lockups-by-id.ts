@@ -1,4 +1,4 @@
-import { createNodeQuery } from "../../base-utils";
+import { createNodeQuery } from "../../create-node-query";
 import { SyntheticLock } from "./types";
 
 export type SyntheticLockups = {

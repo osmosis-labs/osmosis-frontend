@@ -12,7 +12,7 @@ const SEO_VALUES = {
   FAVICON: "/favicon.ico",
 };
 
-const SEO: React.FC = () => {
+export const SEO: React.FC = () => {
   const { t } = useTranslation();
 
   const [shortcutIcon, setShortcutIcon] = useState<string>("");
@@ -70,5 +70,3 @@ const SEO: React.FC = () => {
 
   return <DefaultSeo {...config} />;
 };
-
-export default SEO;
