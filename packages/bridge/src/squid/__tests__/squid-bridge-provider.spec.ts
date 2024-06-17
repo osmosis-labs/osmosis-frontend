@@ -4526,8 +4526,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/eth.svg",
         blockExplorerUrls: ["https://etherscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          wrappedNativeToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           ensRegistry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -4556,8 +4555,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/arb.svg",
         blockExplorerUrls: ["https://arbiscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+          wrappedNativeToken: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
@@ -4586,8 +4584,7 @@ describe("SquidBridgeProvider", () => {
           "https://s2.coinmarketcap.com/static/img/coins/64x64/11840.png",
         blockExplorerUrls: ["https://optimistic.etherscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x4200000000000000000000000000000000000006",
+          wrappedNativeToken: "0x4200000000000000000000000000000000000006",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
@@ -4616,8 +4613,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-satellite/main/public/assets/chains/linea.logo.svg",
         blockExplorerUrls: ["https://lineascan.build/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
+          wrappedNativeToken: "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
@@ -4646,8 +4642,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-satellite/main/public/assets/chains/base.logo.svg",
         blockExplorerUrls: ["https://basescan.org/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x4200000000000000000000000000000000000006",
+          wrappedNativeToken: "0x4200000000000000000000000000000000000006",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
@@ -4676,8 +4671,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/avalanche.svg",
         blockExplorerUrls: ["https://avascan.info/blockchain/c/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+          wrappedNativeToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
           ensRegistry: "0xa7eebb2926d22d34588497769889cbc2be0a5d97",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
@@ -4706,8 +4700,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/polygon.svg",
         blockExplorerUrls: ["https://polygonscan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+          wrappedNativeToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -4736,8 +4729,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/bnb.svg",
         blockExplorerUrls: ["https://bscscan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          wrappedNativeToken: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x55d398326f99059fF775485246999027B3197955",
@@ -4766,8 +4758,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/fantom.svg",
         blockExplorerUrls: ["https://ftmscan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          wrappedNativeToken: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
@@ -4796,8 +4787,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/glmr.svg",
         blockExplorerUrls: ["https://moonscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xAcc15dC74880C9944775448304B263D191c6077F",
+          wrappedNativeToken: "0xAcc15dC74880C9944775448304B263D191c6077F",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x931715fee2d06333043d11f658c8ce934ac61d0c",
@@ -4826,8 +4816,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/wmnt.svg",
         blockExplorerUrls: ["https://mantlescan.info/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8",
+          wrappedNativeToken: "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9",
@@ -4856,8 +4845,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/scroll.svg",
         blockExplorerUrls: ["https://scrollscan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x5300000000000000000000000000000000000004",
+          wrappedNativeToken: "0x5300000000000000000000000000000000000004",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
@@ -4886,8 +4874,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/chains/celo.svg",
         blockExplorerUrls: ["https://celoscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x471EcE3750Da237f93B8E339c536989b8978a438",
+          wrappedNativeToken: "0x471EcE3750Da237f93B8E339c536989b8978a438",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
@@ -4916,8 +4903,7 @@ describe("SquidBridgeProvider", () => {
           "https://s2.coinmarketcap.com/static/img/coins/64x64/4846.png",
         blockExplorerUrls: ["https://kavascan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
+          wrappedNativeToken: "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
@@ -4946,8 +4932,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/filecoin.svg",
         blockExplorerUrls: ["https://filfox.info/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A",
+          wrappedNativeToken: "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "TODO",
@@ -4976,8 +4961,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/tokens/blast.svg",
         blockExplorerUrls: ["https://blastscan.io/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x4300000000000000000000000000000000000004",
+          wrappedNativeToken: "0x4300000000000000000000000000000000000004",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x4300000000000000000000000000000000000003",
@@ -5006,8 +4990,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/fraxtal.svg",
         blockExplorerUrls: ["https://fraxscan.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0xfc00000000000000000000000000000000000006",
+          wrappedNativeToken: "0xfc00000000000000000000000000000000000006",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0xfc00000000000000000000000000000000000001",
@@ -5036,8 +5019,7 @@ describe("SquidBridgeProvider", () => {
           "https://raw.githubusercontent.com/0xsquid/assets/main/images/chains/immutable-blk.svg",
         blockExplorerUrls: ["https://explorer.immutable.com/"],
         chainNativeContracts: {
-          wrappedNativeToken:
-            "0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D",
+          wrappedNativeToken: "0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D",
           ensRegistry: "",
           multicall: "0xcA11bde05977b3631167028862bE2a173976CA11",
           usdcToken: "0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2",
@@ -5674,12 +5656,7 @@ describe("SquidBridgeProvider", () => {
           gateway: "",
         },
         chainToAxelarChannelId: "channel-33",
-        features: [
-          "stargate",
-          "ibc-transfer",
-          "no-legacy-stdTx",
-          "ibc-go",
-        ],
+        features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
         gasPriceStep: {
           low: 0.05,
           average: 0.125,
@@ -5692,10 +5669,7 @@ describe("SquidBridgeProvider", () => {
         chainName: "secret-snip",
         chainType: "cosmos",
         rpc: "https://secret-rpc-sl.norm.io",
-        rpcList: [
-          "https://secret-rpc-sl.norm.io",
-          "https://1rpc.io/scrt-rpc",
-        ],
+        rpcList: ["https://secret-rpc-sl.norm.io", "https://1rpc.io/scrt-rpc"],
         rest: "https://secret-rest-sl.norm.io",
         networkName: "Secret",
         chainId: "secret-4",
@@ -6027,12 +6001,7 @@ describe("SquidBridgeProvider", () => {
           average: 5.665,
           high: 7,
         },
-        features: [
-          "stargate",
-          "ibc-transfer",
-          "no-legacy-stdTx",
-          "ibc-pfm",
-        ],
+        features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-pfm"],
         axelarContracts: {
           gateway: "",
         },
@@ -6180,12 +6149,7 @@ describe("SquidBridgeProvider", () => {
           high: 224000000000000000,
         },
         coinType: 60,
-        features: [
-          "ibc-transfer",
-          "ibc-go",
-          "eth-address-gen",
-          "eth-key-sign",
-        ],
+        features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
         axelarContracts: {
           gateway: "",
         },
@@ -6255,12 +6219,7 @@ describe("SquidBridgeProvider", () => {
           average: 0.125,
           high: 0.2,
         },
-        features: [
-          "stargate",
-          "no-legacy-stdTx",
-          "ibc-transfer",
-          "ibc-pfm",
-        ],
+        features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "ibc-pfm"],
         axelarContracts: {
           gateway: "",
         },
@@ -6542,12 +6501,7 @@ describe("SquidBridgeProvider", () => {
           gateway: "",
         },
         chainToAxelarChannelId: "channel-9",
-        features: [
-          "stargate",
-          "ibc-transfer",
-          "no-legacy-stdTx",
-          "ibc-go",
-        ],
+        features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
         gasPriceStep: {
           low: 0.1,
           average: 0.2,
