@@ -20,7 +20,7 @@ import { sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { OsmoAddressSchema } from "./parameter-types";
+import { UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
   IncentivePoolFilterSchema
@@ -45,15 +45,17 @@ export const poolsRouter = createTRPCRouter({
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId }, ctx }) => getSharePool({ ...ctx, poolId })),
   getUserPools: publicProcedure
-    .input(OsmoAddressSchema.required())
-    .query(async ({ input: { osmoAddress: userOsmoAddress }, ctx }) =>
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input: { userOsmoAddress }, ctx }) =>
       getUserPools({ ...ctx, bech32Address: userOsmoAddress }).then((pools) =>
         sort(pools, "userValue")
       )
     ),
   getUserSharePool: publicProcedure
-    .input(z.object({ poolId: z.string() }).merge(OsmoAddressSchema.required()))
-    .query(async ({ input: { poolId, osmoAddress: userOsmoAddress }, ctx }) =>
+    .input(
+      z.object({ poolId: z.string() }).merge(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
       getUserSharePools({
         ...ctx,
         bech32Address: userOsmoAddress,
@@ -61,8 +63,8 @@ export const poolsRouter = createTRPCRouter({
       }).then((pools) => pools[0] ?? null)
     ),
   getUserSharePools: publicProcedure
-    .input(OsmoAddressSchema.required())
-    .query(async ({ input: { osmoAddress: userOsmoAddress }, ctx }) =>
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input: { userOsmoAddress }, ctx }) =>
       getUserSharePools({ ...ctx, bech32Address: userOsmoAddress }).then(
         (pools) => sort(pools, "totalValue")
       )
@@ -73,9 +75,9 @@ export const poolsRouter = createTRPCRouter({
         .object({
           poolId: z.string(),
         })
-        .merge(OsmoAddressSchema)
+        .merge(UserOsmoAddressSchema)
     )
-    .query(async ({ input: { poolId, osmoAddress: userOsmoAddress }, ctx }) =>
+    .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
       getSharePoolBondDurations({
         ...ctx,
         poolId,

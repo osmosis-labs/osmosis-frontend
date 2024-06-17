@@ -17,7 +17,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { OsmoAddressSchema } from "./parameter-types";
+import { UserOsmoAddressSchema } from "./parameter-types";
 
 export const oneClickTradingRouter = createTRPCRouter({
   getParameters: publicProcedure.query(
@@ -57,11 +57,11 @@ export const oneClickTradingRouter = createTRPCRouter({
   ),
   getSessionAuthenticator: publicProcedure
     .input(
-      OsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
+      UserOsmoAddressSchema.required().and(z.object({ publicKey: z.string() }))
     )
     .query(async ({ input, ctx }) => {
       const sessionAuthenticator = await getSessionAuthenticator({
-        userOsmoAddress: input.osmoAddress,
+        userOsmoAddress: input.userOsmoAddress,
         publicKey: input.publicKey,
         chainList: ctx.chainList,
       });
@@ -76,10 +76,10 @@ export const oneClickTradingRouter = createTRPCRouter({
       return sessionAuthenticator;
     }),
   getAuthenticators: publicProcedure
-    .input(OsmoAddressSchema.required())
+    .input(UserOsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
       const authenticators = await getAuthenticators({
-        userOsmoAddress: input.osmoAddress,
+        userOsmoAddress: input.userOsmoAddress,
         chainList: ctx.chainList,
       });
 
@@ -89,14 +89,14 @@ export const oneClickTradingRouter = createTRPCRouter({
     }),
   getAmountSpent: publicProcedure
     .input(
-      OsmoAddressSchema.required().and(
+      UserOsmoAddressSchema.required().and(
         z.object({ authenticatorId: z.string() })
       )
     )
-    .query(async ({ input: { osmoAddress, authenticatorId }, ctx }) => {
+    .query(async ({ input: { userOsmoAddress, authenticatorId }, ctx }) => {
       const [spendLimit, usdcAsset] = await Promise.all([
         queryAuthenticatorSpendLimit({
-          address: osmoAddress,
+          address: userOsmoAddress,
           authenticatorId,
           chainList: ctx.chainList,
         }),

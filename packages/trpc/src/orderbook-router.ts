@@ -1,8 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
+import { getOrderbookMakerFee } from "@osmosis-labs/server";
 
-import { getOrderbookMakerFee } from "../queries/complex/orderbooks";
-import { OsmoAddressSchema } from "../queries/complex/parameter-types";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "./api";
+import { OsmoAddressSchema } from "./parameter-types";
 
 export const orderbookRouter = createTRPCRouter({
   getMakerFee: publicProcedure

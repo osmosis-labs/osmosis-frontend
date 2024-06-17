@@ -8,7 +8,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
-import PriceSelector from "~/components/swap-tool/price-selector";
+import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
