@@ -2,6 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useQueryState } from "nuqs";
 import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -33,7 +34,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [baseDenom, setBaseDenom] = useState<string>("ION");
-    const quoteDenom = "OSMO";
+    const [quoteDenom] = useQueryState("quote", { defaultValue: "USDC" });
 
     const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
       useOrderbookPool({
@@ -59,10 +60,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
             selectableAssets={[swapState.baseAsset, swapState.quoteAsset]}
-            baseAsset={swapState.baseAsset}
-            quoteAsset={swapState.quoteAsset}
-            baseBalance={swapState.baseTokenBalance}
-            quoteBalance={swapState.quoteTokenBalance}
+            baseAsset={swapState.baseAsset!}
+            quoteAsset={swapState.quoteAsset!}
+            baseBalance={swapState.baseTokenBalance!}
+            quoteBalance={swapState.quoteTokenBalance!}
             onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
             disabled={false}
             orderDirection={orderDirection}

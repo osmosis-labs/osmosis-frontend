@@ -20,7 +20,7 @@ import { api } from "~/utils/trpc";
 
 import { CreditCardIcon } from "../assets/credit-card-icon";
 import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
@@ -329,7 +329,11 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
       <Button
         className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
         onClick={() => {
-          onOpenWalletSelect(chainStore.osmosis.chainId);
+          onOpenWalletSelect({
+            walletOptions: [
+              { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
+            ],
+          });
         }}
       >
         {t("connectWallet")}

@@ -17,5 +17,3 @@ export const Spinner = (props: SpinnerProps) => {
     </div>
   );
 };
-
-export default Spinner;

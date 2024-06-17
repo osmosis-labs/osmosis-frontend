@@ -735,8 +735,11 @@ export const TransferContent: FunctionComponent<
   const isInsufficientFee =
     inputAmountRaw !== "" &&
     selectedQuote?.transferFee !== undefined &&
+    selectedQuote?.transferFee.denom === assetToBridge.balance.denom && // make sure the fee is in the same denom as the asset
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
+      .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
+      .abs()
       .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =

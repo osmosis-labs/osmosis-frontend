@@ -19,6 +19,7 @@ export const createMsgOpts = <
   dict: Dict
 ) => dict;
 
+/** Core message options for cosmos-based chains. */
 export const cosmosMsgOpts = createMsgOpts({
   ibcTransfer: {
     gas: 450000,

@@ -11,7 +11,7 @@ import { Button } from "~/components/buttons/button";
 /**
  * Renders an icon within a button.
  */
-const IconButton = forwardRef<
+export const IconButton = forwardRef<
   HTMLButtonElement,
   {
     icon?: ReactNode;
@@ -41,5 +41,3 @@ const IconButton = forwardRef<
     </Button>
   );
 });
-
-export default IconButton;

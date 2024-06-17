@@ -1,6 +1,7 @@
-import type { AssetList } from "@osmosis-labs/types";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
+import { Address, Hex } from "viem";
 import { z } from "zod";
 
 export type BridgeEnvironment = "mainnet" | "testnet";
@@ -9,6 +10,7 @@ export interface BridgeProviderContext {
   env: BridgeEnvironment;
   cache: LRUCache<string, CacheEntry>;
   assetLists: AssetList[];
+  chainList: Chain[];
 
   /** Provides current timeout height for a chain of the ID
    *  parsed from the bech32 config of the given destinationAddress. */
@@ -52,19 +54,15 @@ export interface BridgeProvider {
   ) => Promise<BridgeDepositAddress>;
 }
 
-const bridgeChainSchema = z.object({
+const cosmosChainSchema = z.object({
   /**
-   * EVM chainId or Cosmos chainId
+   * Cosmos chainId
    *
-   * Cosmos examples:
+   * Examples:
    * - osmosis-1
    * - cosmoshub-4
-   *
-   * EVM Examples:
-   * - 1 (Ethereum)
-   * - 10 (Optimism)
    */
-  chainId: z.union([z.string(), z.number()]),
+  chainId: z.string(),
   /**
    * Optional: The human-readable name of the chain.
    */
@@ -74,10 +72,35 @@ const bridgeChainSchema = z.object({
    */
   networkName: z.string().optional(),
   /**
-   * The type of blockchain, either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains.
+   * The type of blockchain, which is 'cosmos' for Cosmos-based chains.
    */
-  chainType: z.union([z.literal("evm"), z.literal("cosmos")]),
+  chainType: z.literal("cosmos"),
 });
+
+const evmChainSchema = z.object({
+  /**
+   * EVM chainId
+   *
+   * Examples:
+   * - 1 (Ethereum)
+   * - 10 (Optimism)
+   */
+  chainId: z.number(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+  /**
+   * Optional: The name of the network to which the chain belongs.
+   */
+  networkName: z.string().optional(),
+  /**
+   * The type of blockchain, which is 'evm' for EVM-based chains.
+   */
+  chainType: z.literal("evm"),
+});
+
+const bridgeChainSchema = z.union([cosmosChainSchema, evmChainSchema]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
@@ -122,11 +145,11 @@ export interface GetDepositAddressParams {
   /**
    * The originating chain information.
    */
-  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  fromChain: BridgeChain;
   /**
    * The destination chain information.
    */
-  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  toChain: BridgeChain;
   /**
    * The asset on the originating chain.
    */
@@ -137,6 +160,34 @@ export interface GetDepositAddressParams {
   toAddress: string;
   autoUnwrapIntoNative?: boolean;
 }
+
+export const getBridgeExternalUrlSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  fromChain: bridgeChainSchema,
+  /**
+   * The destination chain information.
+   */
+  toChain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: bridgeAssetSchema,
+  /**
+   * The asset on the destination chain.
+   */
+  toAsset: bridgeAssetSchema,
+  /**
+   * The address on the destination chain where the assets are to be received.
+   */
+  toAddress: z.string(),
+  env: z.union([z.literal("mainnet"), z.literal("testnet")]),
+});
+
+export type GetBridgeExternalUrlParams = z.infer<
+  typeof getBridgeExternalUrlSchema
+>;
 
 export const getBridgeQuoteSchema = z.object({
   /**
@@ -177,8 +228,8 @@ export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
 export interface EvmBridgeTransactionRequest {
   type: "evm";
-  to: string;
-  data?: string;
+  to: Address;
+  data?: Hex;
   value?: string;
   gasPrice?: string;
   maxPriorityFeePerGas?: string;
@@ -268,7 +319,12 @@ export interface TransferStatusReceiver {
 }
 
 /** A simplified transfer status. */
-export type TransferStatus = "success" | "pending" | "failed";
+export type TransferStatus =
+  | "success"
+  | "pending"
+  | "failed"
+  | "refunded"
+  | "connection-error";
 
 /** A simplified reason for transfer failure. */
 export type TransferFailureReason = "insufficientFee";

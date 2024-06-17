@@ -12,7 +12,7 @@ import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { Button } from "~/components/buttons";
 import { Spinner } from "~/components/loaders";
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
-import OneClickTradingSettings from "~/components/one-click-trading/one-click-trading-settings";
+import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import {
   useOneClickTradingParams,
@@ -30,7 +30,7 @@ export const useGlobalIs1CTIntroModalScreen = createGlobalState<Screens | null>(
   null
 );
 
-const OneClickTradingIntroModal = observer(() => {
+export const OneClickTradingIntroModal = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
@@ -268,5 +268,3 @@ const IntroModal1CTScreens = observer(
     );
   }
 );
-
-export default OneClickTradingIntroModal;

@@ -25,9 +25,6 @@ export interface OneClickTradingTransactionParams {
   spendLimit: PricePretty;
   networkFeeLimit: CoinPretty;
 
-  // Period to reset the spend limit quota.
-  resetPeriod: OneClickTradingResetPeriods;
-
   // Time limit for the session to be considered valid.
   sessionPeriod: {
     end: OneClickTradingHumanizedSessionPeriod;

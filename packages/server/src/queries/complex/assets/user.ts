@@ -1,9 +1,12 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { aggregateCoinsByDenom, isNil } from "@osmosis-labs/utils";
+import {
+  aggregateCoinsByDenom,
+  isNil,
+  SortDirection,
+} from "@osmosis-labs/utils";
 
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
-import { SortDirection } from "../../../utils/sort";
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
 import { getUserUnderlyingCoinsFromClPositions } from "../concentrated-liquidity";

@@ -7,5 +7,5 @@
     "module": "ES6",
     "allowJs": true
   },
-  "include": ["src/**/*", "src/tests/msw-server.ts"]
+  "include": ["src/**/*"]
 }

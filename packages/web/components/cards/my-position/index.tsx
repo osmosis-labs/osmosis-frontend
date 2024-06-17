@@ -7,7 +7,7 @@ import { FunctionComponent, ReactNode, useState } from "react";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -23,17 +23,14 @@ export const MyPositionCard: FunctionComponent<{
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
+  const { showLinkToPool = false, position } = props;
   const {
-    showLinkToPool = false,
-    position: {
-      id,
-      poolId,
-      currentCoins,
-      currentValue,
-      priceRange: [lowerPrice, upperPrice],
-      isFullRange,
-    },
-  } = props;
+    poolId,
+    currentCoins,
+    currentValue,
+    priceRange: [lowerPrice, upperPrice],
+    isFullRange,
+  } = position;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
   const featureFlags = useFeatureFlags();
@@ -41,7 +38,7 @@ export const MyPositionCard: FunctionComponent<{
   const { data: positionPerformance } =
     api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
       {
-        positionId: id,
+        position: position.position,
       },
       {
         trpc: {
@@ -55,7 +52,7 @@ export const MyPositionCard: FunctionComponent<{
   const { data: positionDetails, isLoading: isLoadingPositionDetails } =
     api.local.concentratedLiquidity.getPositionDetails.useQuery(
       {
-        positionId: id,
+        position: position.position,
         userOsmoAddress: account?.address ?? "",
       },
       {

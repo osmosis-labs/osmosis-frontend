@@ -11,13 +11,6 @@ import {
 
 import { StdSignDoc } from "./types";
 
-export interface TxFee extends StdFee {
-  /**
-   * If set to true, the fee will be used as it is and will not undergo any estimation process.
-   */
-  force?: boolean;
-}
-
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
   /**
