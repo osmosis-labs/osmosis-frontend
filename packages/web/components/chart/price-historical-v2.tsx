@@ -65,7 +65,7 @@ export const HistoricalPriceChartV2: FunctionComponent<{
 });
 
 export const HistoricalPriceChartHeaderV2: FunctionComponent<{
-  hoverPrice: number;
+  hoverPrice: Dec;
   hoverDate?: string | null;
   maxDecimal?: number;
   formatOptions?: FormatOptions;
@@ -75,7 +75,7 @@ export const HistoricalPriceChartHeaderV2: FunctionComponent<{
   hoverDate,
   hoverPrice,
   formatOptions,
-  maxDecimal = Math.max(getDecimalCount(hoverPrice), 2),
+  maxDecimal = Math.max(getDecimalCount(hoverPrice.toString()), 2),
   fiatSymbol,
   isLoading = false,
 }) => {
@@ -85,7 +85,7 @@ export const HistoricalPriceChartHeaderV2: FunctionComponent<{
         <h3 className="font-h3 sm:text-h4">
           {fiatSymbol}
           <SubscriptDecimal
-            decimal={new Dec(hoverPrice)}
+            decimal={hoverPrice}
             maxDecimals={maxDecimal}
             formatOptions={formatOptions}
           />

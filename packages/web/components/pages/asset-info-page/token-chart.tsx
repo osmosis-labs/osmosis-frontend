@@ -68,7 +68,7 @@ export const TokenChartHeader = observer(() => {
       price = assetPrice.toDec();
     }
 
-    return Number(price.toString());
+    return price;
   }, [assetInfoConfig.hoverPrice, assetPrice]);
 
   const fiatSymbol =
