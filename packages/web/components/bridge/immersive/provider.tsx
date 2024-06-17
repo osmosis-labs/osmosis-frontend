@@ -2,7 +2,7 @@ import { Transition } from "@headlessui/react";
 import { PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
-import { DepositScreen } from "~/components/bridge/deposit-screen";
+import { AmountScreen } from "~/components/bridge/amount-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager"; // Import ScreenManager and Screen
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button } from "~/components/ui/button";
@@ -16,6 +16,7 @@ export const ImmersiveBridgeFlow = ({
 }: PropsWithChildren<BridgeFlowProvider>) => {
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
   // const { isConnected, address } = useEvmWalletAccount();
   // const { onOpenWalletSelect } = useWalletSelect();
   // const { disconnect } = useDisconnectEvmWallet();
@@ -52,6 +53,7 @@ export const ImmersiveBridgeFlow = ({
       >
         <Transition
           show={isVisible}
+          as="div"
           className="absolute inset-0 z-[999] flex items-center justify-center overflow-auto bg-osmoverse-900"
           enter="transition-opacity duration-300"
           enterFrom="opacity-0"
@@ -84,10 +86,21 @@ export const ImmersiveBridgeFlow = ({
               <Screen screenName="1">
                 {({ setCurrentScreen, goBack }) => (
                   <div>
-                    <Button onClick={goBack}>Back</Button>
-                    <Button onClick={() => setCurrentScreen("2")}>Next</Button>
+                    <div className="flex items-center gap-2">
+                      <Button onClick={goBack}>Back</Button>
+                      <Button onClick={() => setCurrentScreen("2")}>
+                        Next
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          setType(type === "deposit" ? "withdraw" : "deposit")
+                        }
+                      >
+                        Type: {type}
+                      </Button>
+                    </div>
 
-                    <DepositScreen />
+                    <AmountScreen type={type} />
                   </div>
                 )}
               </Screen>

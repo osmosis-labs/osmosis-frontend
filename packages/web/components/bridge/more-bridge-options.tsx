@@ -3,11 +3,19 @@ import React from "react";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export const MoreDepositOptions = (modalProps: ModalBaseProps) => {
+interface MoreBridgeOptionsProps extends ModalBaseProps {
+  type: "deposit" | "withdraw";
+}
+
+export const MoreBridgeOptions = ({
+  type,
+  ...modalProps
+}: MoreBridgeOptionsProps) => {
   const {
     accountStore,
     chainStore: {
@@ -15,6 +23,7 @@ export const MoreDepositOptions = (modalProps: ModalBaseProps) => {
     },
   } = useStore();
   const wallet = accountStore.getWallet(chainId);
+  const { t } = useTranslation();
 
   // TODO: Use context state to get the fromAsset, toAsset, fromChain, and toChain
   const { data: asset, isLoading: isLoadingAsset } =
@@ -47,13 +56,24 @@ export const MoreDepositOptions = (modalProps: ModalBaseProps) => {
 
   return (
     <ModalBase
-      title="More deposit options"
+      title={t(
+        type === "deposit"
+          ? "transfer.moreBridgeOptions.titleDeposit"
+          : "transfer.moreBridgeOptions.titleWithdraw"
+      )}
       className="!max-w-[30rem]"
       {...modalProps}
     >
       <h1 className="body1 py-4 text-center text-osmoverse-300">
-        Choose from the following alternative providers to deposit (aka
-        “bridge”) your {asset?.coinDenom} to {prettyChainName}.
+        {t(
+          type === "deposit"
+            ? "transfer.moreBridgeOptions.descriptionDeposit"
+            : "transfer.moreBridgeOptions.descriptionWithdraw",
+          {
+            asset: asset?.coinDenom ?? "",
+            chain: prettyChainName,
+          }
+        )}
       </h1>
       <div className="flex flex-col gap-1 pt-4">
         {isLoadingExternalUrls || isLoadingAsset ? (
@@ -80,7 +100,14 @@ export const MoreDepositOptions = (modalProps: ModalBaseProps) => {
                       width={44}
                       height={42}
                     />
-                    <span>Deposit with {providerName}</span>
+                    <span>
+                      {t(
+                        type === "deposit"
+                          ? "transfer.moreBridgeOptions.depositWith"
+                          : "transfer.moreBridgeOptions.withdrawWith"
+                      )}{" "}
+                      {providerName}
+                    </span>
                   </div>
                   <Icon id="arrow-up-right" className="text-osmoverse-400" />
                 </a>
