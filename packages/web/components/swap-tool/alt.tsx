@@ -19,7 +19,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
 import { SplitRoute } from "~/components/swap-tool/split-route";
@@ -174,7 +174,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const sendSwapTx = () => {
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
-        return onOpenWalletSelect(chainId);
+        return onOpenWalletSelect({
+          walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+        });
       }
 
       if (!swapState.inAmountInput.amount) return;
