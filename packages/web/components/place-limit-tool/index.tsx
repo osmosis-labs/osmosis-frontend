@@ -1,7 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { FunctionComponent, useMemo, useState } from "react";
+import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
@@ -31,16 +31,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
-    const [base, setBase] = useQueryState(
-      "base",
-      parseAsString.withDefault("ION")
-    );
-    const [quote] = useQueryState("base", parseAsString.withDefault("USDC"));
-    const [type] = useQueryState(
-      "type",
-      parseAsStringLiteral(TRADE_TYPES).withDefault("market")
-    );
-    const [tab] = useQueryState("tab");
+    const [{ base, quote, tab, type }, set] = useQueryStates({
+      base: parseAsString.withDefault("OSMO"),
+      quote: parseAsString.withDefault("USDC"),
+      type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
+      tab: parseAsString,
+    });
+
+    const setBase = useCallback((base: string) => set({ base }), [set]);
 
     const orderDirection = useMemo(
       () => (tab === "buy" ? OrderDirection.Bid : OrderDirection.Ask),
@@ -49,17 +47,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const { onOpenWalletSelect } = useWalletSelect();
 
-    const { poolId, orderbookContractAddress } = useOrderbookPool({
-      baseDenom: base,
-      quoteDenom: quote,
-    });
+    const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
+      useOrderbookPool({
+        baseDenom: base,
+        quoteDenom: quote,
+      });
 
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       poolId,
       orderDirection,
       useQueryParams: false,
-      orderbookContractAddress,
+      orderbookContractAddress: contractAddress,
       baseDenom: base,
       quoteDenom: quote,
     });
@@ -177,7 +176,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     !swapState.inAmountInput.inputAmount ||
                     swapState.inAmountInput.inputAmount === "0"
                   }
-                  isLoading={!swapState.isBalancesFetched}
+                  isLoading={!swapState.isBalancesFetched || isMakerFeeLoading}
                   loadingText={"Loading..."}
                   onClick={() => setReviewOpen(true)}
                 >
