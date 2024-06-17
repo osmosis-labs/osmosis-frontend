@@ -306,6 +306,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [forceSwapInPoolId]
     );
 
+    const isUnsufficentBalance = useMemo(
+      () => swapState.error?.message === "Insufficient balance",
+      [swapState.error?.message]
+    );
+
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden">
@@ -347,8 +352,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         ref={fromAmountInputEl}
                         type="number"
                         className={classNames(
-                          "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                          "text-h5 font-h5 md:font-subtitle1"
+                          "w-full bg-transparent text-right text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                          "text-h5 font-h5 md:font-subtitle1",
+                          {
+                            "text-rust-300": isUnsufficentBalance,
+                          }
                         )}
                         placeholder="0"
                         onChange={(e) => {
@@ -390,7 +398,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           }
                           onClick={() => swapState.inAmountInput.toggleMax()}
                           className={classNames(
-                            "flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 bg-transparent py-1.5 px-3 text-wosmongton-200 transition-colors hover:bg-osmoverse-700 disabled:pointer-events-none disabled:opacity-50"
+                            "flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 bg-transparent py-1.5 px-3 text-wosmongton-200 transition-colors hover:bg-osmoverse-700 disabled:pointer-events-none disabled:opacity-50",
+                            {
+                              "text-rust-300": isUnsufficentBalance,
+                            }
                           )}
                         >
                           {isLoadingMaxButton && (
@@ -739,15 +750,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               loadingText={buttonText}
               onClick={sendSwapTx}
             >
-              {account?.walletStatus === WalletStatus.Connected ||
-              isSwapToolLoading ? (
-                buttonText
-              ) : (
-                <h6 className="flex items-center gap-3">
-                  <Icon id="wallet" className="h-6 w-6" />
-                  {t("connectWallet")}
-                </h6>
-              )}
+              <h6>
+                {account?.walletStatus === WalletStatus.Connected ||
+                isSwapToolLoading
+                  ? buttonText
+                  : t("connectWallet")}
+              </h6>
             </Button>
           )}
         </div>
