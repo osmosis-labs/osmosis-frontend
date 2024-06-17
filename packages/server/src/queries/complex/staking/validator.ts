@@ -36,7 +36,7 @@ export async function getValidatorInfo({
   return cachified({
     cache: validatorsCache,
     key: `validator-${validatorBech32Address}`,
-    ttl: 1000 * 10, // 10 seconds
+    ttl: 1000 * 30, // 30 seconds
     getFreshValue: async () => {
       let jailed = false;
       let inactive = false;
@@ -86,6 +86,32 @@ export async function getValidatorInfo({
         validatorImgSrc: thumbnail,
         inactive: jailed ? "jailed" : inactive ? "inactive" : undefined,
       };
+    },
+  });
+}
+
+export async function getValidatorsWithInfos({
+  chainList,
+  status,
+}: {
+  chainList: Chain[];
+  status: BondStatus;
+}) {
+  return cachified({
+    cache: validatorsCache,
+    key: `validator-infos-${status}`,
+    ttl: 1000 * 30, // 30 seconds
+    getFreshValue: async () => {
+      const validators = await getValidators({ chainList, status });
+
+      return Promise.all(
+        validators.map((validator) =>
+          getValidatorInfo({
+            chainList,
+            validatorBech32Address: validator.operator_address,
+          }).then((info) => ({ ...validator, ...info }))
+        )
+      );
     },
   });
 }

@@ -24,8 +24,8 @@ test.describe("Test Swap feature", () => {
   let AKT =
     "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
-  test.beforeEach(async () => {
-    console.log("Before test setup Wallet Extension.");
+  test.beforeAll(async () => {
+    console.log("\nBefore test setup Wallet Extension.");
     // Launch Chrome with a Keplr wallet extension
     const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
@@ -35,6 +35,7 @@ test.describe("Test Swap feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
+      viewport: { width: 1280, height: 1024 },
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
@@ -53,7 +54,7 @@ test.describe("Test Swap feature", () => {
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
   });
 
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await context.close();
   });
 

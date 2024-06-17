@@ -1,5 +1,5 @@
 import { apiClient } from "@osmosis-labs/utils";
-import { createClient, VercelKV } from "@vercel/kv";
+import { Redis } from "@upstash/redis";
 import { Cache, CacheEntry, cachified } from "cachified";
 
 import {
@@ -50,7 +50,7 @@ export interface RichTweet {
 
 const DEFAULT_TTL = 1000 * 60 * 60 * 24 * 7;
 
-const kvStoreAdapter = (store: VercelKV): Cache => ({
+const kvStoreAdapter = (store: Redis): Cache => ({
   set: <T>(key: string, value: CacheEntry<T>) => {
     value.metadata.ttl;
     return store.set(key, value, {
@@ -75,7 +75,7 @@ export class Twitter {
   private rawUsers: RawUser[] = [];
   private rawMedia: RawMedia[] = [];
 
-  private kvStore: VercelKV;
+  private kvStore: Redis;
   private cache: Cache;
 
   /**
@@ -85,7 +85,7 @@ export class Twitter {
    */
   constructor(cacheExpireTime: number = DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
-    this.kvStore = createClient({
+    this.kvStore = new Redis({
       url: KV_STORE_REST_API_URL!,
       token: KV_STORE_REST_API_TOKEN!,
     });

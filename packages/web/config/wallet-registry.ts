@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  RegistryWallet,
+  CosmosRegistryWallet,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
-export const WalletRegistry: RegistryWallet[] = [
+export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
@@ -284,5 +284,34 @@ export const WalletRegistry: RegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+  },
+  {
+    ...CosmosKitWalletList["trust-extension"],
+    logo: "/wallets/trust.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+    windowPropertyName: "trustwallet",
+    async supportsChain(chainId) {
+      const trustAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "stride-1",
+        "neutron-1",
+        "axelar-dojo-1",
+        "laozi-mainnet",
+        "columbus-5",
+        "phoenix-1",
+        "evmos_9001-2",
+        "injective-1",
+        "stargaze-1",
+        "crypto-org-chain-mainnet-1",
+        "kava_2222-10",
+      ];
+      return trustAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://trustwallet.com/staking",
+    governanceUrl: "https://governance.trustwallet.com/",
+    features: [],
+    mode: "extension", // Add mode property with correct value
   },
 ];

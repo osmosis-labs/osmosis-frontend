@@ -5,10 +5,10 @@ import { useCallback, useMemo, useState } from "react";
 
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
-import { useBalances } from "~/hooks/queries/cosmos/use-balances";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export enum OrderDirection {
   Bid = "bid",
@@ -64,13 +64,12 @@ export const usePlaceLimit = ({
   });
   const account = accountStore.getWallet(osmosisChainId);
 
-  const { price: baseAssetPrice } = useCoinPrice(
-    new CoinPretty(baseAsset, new Dec(1))
-  );
-  const { price: quoteAssetPrice } = useCoinPrice(
-    new CoinPretty(quoteAsset, new Dec(1))
-  );
-
+  const { price: baseAssetPrice } = usePrice({
+    coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+  });
+  const { price: quoteAssetPrice } = usePrice({
+    coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
+  });
   /**
    * Calculates the amount of tokens to be sent with the order.
    * In the case of an Ask order the amount sent is the amount of tokens defined by the user in terms of the base asset.
@@ -82,7 +81,7 @@ export const usePlaceLimit = ({
   const paymentTokenValue = useMemo(() => {
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
-      inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
+      inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
     if (orderDirection === OrderDirection.Ask) {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
@@ -101,8 +100,8 @@ export const usePlaceLimit = ({
     const quoteTokenAmount = outgoingFiatValue!
       .quo(quoteAssetPrice ?? new Dec(1))
       .toDec()
-      .mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)));
-    return new CoinPretty(quoteAsset, quoteTokenAmount);
+      .mul(new Dec(Math.pow(10, quoteAsset!.coinDecimals)));
+    return new CoinPretty(quoteAsset!, quoteTokenAmount);
   }, [
     quoteAssetPrice,
     baseAsset,
@@ -172,47 +171,45 @@ export const usePlaceLimit = ({
     paymentTokenValue,
   ]);
 
-  const { data: balances, isFetched: isBalancesFetched } = useBalances({
-    address: account?.address ?? "",
-    queryOptions: {
-      enabled: Boolean(account?.address),
-    },
-  });
-
-  const baseTokenBalanceRaw = balances?.balances.find(
-    (bal) => bal.denom === baseAsset?.coinMinimalDenom
-  )?.amount;
-  const baseTokenBalance = new CoinPretty(
-    baseAsset,
-    new Dec(baseTokenBalanceRaw ?? "0")
-  );
-
-  const quoteTokenBalanceRaw = balances?.balances.find(
-    (bal) => bal.denom === quoteAsset?.coinMinimalDenom
-  )?.amount;
-  const quoteTokenBalance = new CoinPretty(
-    quoteAsset,
-    new Dec(quoteTokenBalanceRaw ?? "0")
-  );
+  const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
+    api.local.balances.getUserBalances.useQuery(
+      { bech32Address: account?.address ?? "" },
+      {
+        enabled: !!account?.address,
+        select: (balances) =>
+          balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
+            ?.coin,
+      }
+    );
+  const { data: quoteTokenBalance, isLoading: isQuoteTokenBalanceLoading } =
+    api.local.balances.getUserBalances.useQuery(
+      { bech32Address: account?.address ?? "" },
+      {
+        enabled: !!account?.address,
+        select: (balances) =>
+          balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
+            ?.coin,
+      }
+    );
 
   const insufficientFunds =
-    orderDirection === OrderDirection.Bid
+    (orderDirection === OrderDirection.Bid
       ? quoteTokenBalance
-          .toDec()
-          .lt(inAmountInput.amount?.toDec() ?? new Dec(0))
+          ?.toDec()
+          ?.lt(inAmountInput.amount?.toDec() ?? new Dec(0))
       : baseTokenBalance
-          .toDec()
-          .lt(inAmountInput.amount?.toDec() ?? new Dec(0));
+          ?.toDec()
+          ?.lt(inAmountInput.amount?.toDec() ?? new Dec(0))) ?? true;
 
   const expectedTokenAmountOut = useMemo(() => {
     const preFeeAmount =
       orderDirection === OrderDirection.Ask
         ? new CoinPretty(
-            quoteAsset,
+            quoteAsset!,
             paymentFiatValue?.quo(quoteAssetPrice?.toDec() ?? new Dec(1)) ??
               new Dec(1)
-          ).mul(new Dec(Math.pow(10, quoteAsset.coinDecimals)))
-        : inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
+          ).mul(new Dec(Math.pow(10, quoteAsset!.coinDecimals)))
+        : inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
     return preFeeAmount.mul(new Dec(1).sub(makerFee));
   }, [
     inAmountInput.amount,
@@ -251,7 +248,8 @@ export const usePlaceLimit = ({
     placeLimit,
     baseTokenBalance,
     quoteTokenBalance,
-    isBalancesFetched,
+    isBalancesFetched:
+      !isBaseTokenBalanceLoading && !isQuoteTokenBalanceLoading,
     insufficientFunds,
     quoteAssetPrice,
     baseAssetPrice,

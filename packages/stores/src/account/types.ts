@@ -7,7 +7,6 @@ import {
 import {
   Currency,
   OneClickTradingHumanizedSessionPeriod,
-  OneClickTradingResetPeriods,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
@@ -35,7 +34,7 @@ export interface DeliverTxResponse {
   readonly gasWanted: string;
 }
 
-export type RegistryWallet = Omit<Wallet, "logo"> & {
+export type CosmosRegistryWallet = Omit<Wallet, "logo"> & {
   logo: string;
   lazyInstall: () => any;
   stakeUrl?: string;
@@ -84,8 +83,8 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
     UnionToIntersection<Injects[number]> & {
       txTypeInProgress: string;
       isReadyToSendTx: boolean;
-      supportsChain: Required<RegistryWallet>["supportsChain"];
-      walletInfo: RegistryWallet;
+      supportsChain: Required<CosmosRegistryWallet>["supportsChain"];
+      walletInfo: CosmosRegistryWallet;
     };
 
 export interface TxEvents {
@@ -103,7 +102,7 @@ export interface TxEvents {
 export interface OneClickTradingInfo {
   readonly authenticatorId: string;
   readonly publicKey: string;
-  readonly privateKey: string;
+  readonly sessionKey: string;
   readonly userOsmoAddress: string;
 
   networkFeeLimit: Currency & {
@@ -114,9 +113,6 @@ export interface OneClickTradingInfo {
     decimals: number;
     amount: string;
   };
-
-  // Period to reset the spend limit quota.
-  readonly resetPeriod: OneClickTradingResetPeriods;
 
   // Time limit for the session to be considered valid.
   readonly sessionPeriod: OneClickTradingTimeLimit;

@@ -1,9 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY, queryBalances } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { act, waitFor } from "@testing-library/react";
-import { rest } from "msw";
 
 import { server, trpcMsw } from "~/__tests__/msw";
 import {
@@ -14,8 +13,6 @@ import {
 import { ChainList } from "~/config/generated/chain-list";
 
 import { isValidNumericalRawInput, useAmountInput } from "../use-amount-input";
-
-const osmosisLcdUrl = ChainList[0].apis.rest[0].address;
 
 describe("useAmountInput", () => {
   const osmoMockCurrency: Currency = {
@@ -33,22 +30,18 @@ describe("useAmountInput", () => {
           ctx.data(new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)))
         );
       }),
-      rest.get(
-        `${osmosisLcdUrl}/cosmos/bank/v1beta1/balances/osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks`,
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              balances: [
-                {
-                  denom: osmoMockCurrency.coinMinimalDenom,
-                  amount: "1000000000",
-                },
-              ],
-            } as Awaited<ReturnType<typeof queryBalances>>)
-          );
-        }
-      )
+      trpcMsw.local.balances.getUserBalances.query((_req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data([
+            {
+              denom: osmoMockCurrency.coinMinimalDenom,
+              amount: "1000000000",
+              coin: undefined,
+            },
+          ])
+        );
+      })
     );
   });
 
@@ -178,7 +171,7 @@ describe("useAmountInput", () => {
 
   it("calculates max amount but does not consider gas if 'gasAmount' currency does not match currency", async () => {
     const mockGasAmount = new CoinPretty(
-      { ...osmoMockCurrency, coinDenom: "ATOM" },
+      { ...osmoMockCurrency, coinDenom: "ATOM", coinMinimalDenom: "uatom" },
       new Dec(1).mul(DecUtils.getTenExponentN(osmoMockCurrency.coinDecimals))
     ); // 1 ATOM for gas
 

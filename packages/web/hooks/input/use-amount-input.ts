@@ -16,14 +16,16 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
-
-import { useBalances } from "../queries/cosmos/use-balances";
+import { api } from "~/utils/trpc";
 
 /** Manages user input for a currency, with helpers for selecting
- *  the user’s currency balance as input. Includes support for debounce on input. */
+ *  the user’s currency balance as input. Includes support for debounce on input.
+ *  If provided a gas amount and it is the same as the input currency,
+ *  the gas fee will be subtracted if the user is inputting the max amount.
+ */
 export function useAmountInput({
   currency,
   inputDebounceMs = 500,
@@ -36,13 +38,14 @@ export function useAmountInput({
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances, isFetched: isBalancesFetched } = useBalances({
-    address: account?.address ?? "",
-    queryOptions: {
-      enabled: Boolean(account?.address),
-    },
-  });
-  const rawCurrencyBalance = balances?.balances.find(
+  const { data: balances, isFetched: isBalancesFetched } =
+    api.local.balances.getUserBalances.useQuery(
+      {
+        bech32Address: account?.address ?? "",
+      },
+      { enabled: Boolean(account?.address) }
+    );
+  const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
   // manage amounts, with ability to set fraction of the amount
@@ -83,12 +86,21 @@ export function useAmountInput({
     [currency, balances, rawCurrencyBalance]
   );
 
-  const maxAmount = useMemo(() => {
+  const maxAmountWithGas = useMemo(() => {
     if (!currency) return;
 
     let maxValue: CoinPretty | undefined = balance;
-    if (balance && gasAmount?.denom === currency?.coinDenom && gasAmount) {
-      maxValue = balance.sub(gasAmount);
+    if (
+      balance &&
+      gasAmount?.currency.coinMinimalDenom === currency?.coinMinimalDenom &&
+      gasAmount
+    ) {
+      const valueWithGas = balance.sub(gasAmount);
+      if (valueWithGas.toDec().gte(new Dec(0))) {
+        maxValue = valueWithGas;
+      } else {
+        maxValue = new CoinPretty(currency, 0);
+      }
     }
 
     return maxValue;
@@ -110,14 +122,14 @@ export function useAmountInput({
           .truncate();
       }
 
-      if (fraction === 1 && !isNil(maxAmount)) {
-        amountInt = new Int(maxAmount.toCoin().amount);
+      if (fraction === 1 && !isNil(maxAmountWithGas)) {
+        amountInt = new Int(maxAmountWithGas.toCoin().amount);
       }
 
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [currency, inputAmount, fraction, rawCurrencyBalance, maxAmount]);
+  }, [currency, inputAmount, fraction, rawCurrencyBalance, maxAmountWithGas]);
 
   const isHalfValue = useMemo(
     () =>
@@ -132,8 +144,10 @@ export function useAmountInput({
   const isMaxValue = useMemo(
     () =>
       fraction === 1 ||
-      (amount && maxAmount ? amount.toDec().equals(maxAmount.toDec()) : false),
-    [amount, fraction, maxAmount]
+      (amount && maxAmountWithGas
+        ? amount.toDec().equals(maxAmountWithGas.toDec())
+        : false),
+    [amount, fraction, maxAmountWithGas]
   );
 
   const inputAmountWithFraction = useMemo(
@@ -154,20 +168,7 @@ export function useAmountInput({
     setDebounceInAmount(amount ?? null);
   }, [setDebounceInAmount, amount]);
 
-  /**
-   * When the `amount` is `undefined` due to the absence of valid input,
-   * we should create a CoinPretty object using the currency. This allows
-   * us to fetch the price before generating a quote, displaying results
-   * faster on slow networks.
-   */
-  let coinForPrice: CoinPretty | undefined;
-  if (!isNil(amount)) {
-    coinForPrice = amount;
-  } else if (!isNil(currency)) {
-    coinForPrice = new CoinPretty(currency, 0);
-  }
-
-  const { price } = useCoinPrice(coinForPrice);
+  const { price } = usePrice(currency);
   const fiatValue = useMemo(
     () => mulPrice(amount, price, DEFAULT_VS_CURRENCY),
     [amount, price]
@@ -186,10 +187,13 @@ export function useAmountInput({
     if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec())) {
       return new InsufficientBalanceError("Insufficient balance");
     }
-    if (!isNil(maxAmount) && amount.toDec().gt(maxAmount.toDec())) {
+    if (
+      !isNil(maxAmountWithGas) &&
+      amount.toDec().gt(maxAmountWithGas.toDec())
+    ) {
       return new InsufficientBalanceForFeeError("Insufficient balance for fee");
     }
-  }, [amount, inputAmount, isBalancesFetched, balance, maxAmount]);
+  }, [amount, inputAmount, isBalancesFetched, balance, maxAmountWithGas]);
 
   const reset = useCallback(() => {
     setAmount("");
@@ -210,11 +214,11 @@ export function useAmountInput({
     fraction,
     isEmpty: inputAmountWithFraction === "",
     error,
+    isHalfValue,
+    isMaxValue,
     setAmount,
     reset,
     setFraction,
-    isHalfValue,
-    isMaxValue,
     toggleMax: useCallback(
       () => setFraction(fraction === 1 ? null : 1),
       [fraction]

@@ -54,7 +54,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/cosmos/txs/${txHash}",
+        tx_page: "https://www.mintscan.io/osmosis/txs/{txHash}",
       },
     ],
     features: [
@@ -115,7 +115,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/osmosis/txs/${txHash}",
+        tx_page: "https://www.mintscan.io/cosmos/txs/{txHash}",
       },
     ],
     features: ["ibc-go", "ibc-transfer"],
@@ -178,7 +178,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/juno/txs/${txHash}",
+        tx_page: "https://www.mintscan.io/juno/txs/{txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -233,7 +233,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://explorer.injective.network/transaction/${txHash}",
+        tx_page: "https://explorer.injective.network/transaction/{txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
@@ -290,7 +290,7 @@ export const MockChains: Chain[] = [
     explorers: [
       {
         tx_page:
-          "https://secretnodes.com/secret/chains/secret-4/transactions/${txHash}",
+          "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
       },
     ],
     features: [
@@ -351,7 +351,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://axelarscan.io/tx/${txHash}",
+        tx_page: "https://axelarscan.io/tx/{txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "axelar-evm-bridge"],

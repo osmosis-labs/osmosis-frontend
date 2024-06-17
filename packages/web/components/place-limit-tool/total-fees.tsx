@@ -4,7 +4,7 @@ import classNames from "classnames";
 import React, { FC, memo, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useTranslation } from "~/hooks";
 import { PlaceLimitState } from "~/hooks/limit-orders";
 import { formatPretty } from "~/utils/formatter";

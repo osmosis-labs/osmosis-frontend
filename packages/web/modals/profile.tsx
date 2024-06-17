@@ -35,7 +35,7 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "~/components/drawers";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
 import { ArrowButton } from "~/components/ui/button";
@@ -48,7 +48,9 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-const QRCode = dynamic(() => import("~/components/qrcode"));
+const QRCode = dynamic(() =>
+  import("~/components/qrcode").then((module) => module.QRCode)
+);
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }

@@ -1,7 +1,7 @@
 import { isArray, isDefined, isString } from "~/hooks/data/types";
 
 // adapted from https://github.com/krisk/Fuse/tree/master/src/helpers
-export default function get(obj: any, path: any) {
+export function get(obj: any, path: any) {
   const list: any[] = [];
   let arr = false;
 

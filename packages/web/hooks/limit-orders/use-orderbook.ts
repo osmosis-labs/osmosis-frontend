@@ -4,6 +4,8 @@ import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useSwapAsset } from "~/hooks/use-swap";
+import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 interface Orderbook {
@@ -11,6 +13,11 @@ interface Orderbook {
   quoteDenom: string;
   contractAddress: string;
 }
+
+const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
+  ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
+  : "";
+const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
 
 const testnetOrderbooks: Orderbook[] = [
   {
@@ -43,7 +50,16 @@ export const useOrderbooks = (): {
     isLoading: false,
   };
 
-  return { orderbooks: orderbooks ?? [], isLoading };
+  const onlyStableOrderbooks = useMemo(
+    () =>
+      (orderbooks ?? []).filter(
+        ({ quoteDenom }) =>
+          quoteDenom === USDC_DENOM || quoteDenom === USDT_DENOM
+      ),
+    [orderbooks]
+  );
+
+  return { orderbooks: onlyStableOrderbooks, isLoading };
 };
 
 /**
@@ -133,12 +149,61 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
+  const { accountStore } = useStore();
 
-  const orderbook = orderbooks.find(
-    (orderbook) =>
-      orderbook.baseDenom === baseDenom && orderbook.quoteDenom === quoteDenom
+  const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
+  const { data: selectableAssetPages } =
+    api.edge.assets.getUserAssets.useInfiniteQuery(
+      {
+        userOsmoAddress: accountStore.getWallet(accountStore.osmosisChainId)
+          ?.address,
+        includePreview: false,
+        limit: 50, // items per page
+      },
+      {
+        enabled: true,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+
+        // avoid blocking
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+
+  const selectableAssets = useMemo(
+    () =>
+      true
+        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        : [],
+    [selectableAssetPages?.pages]
   );
+  const { asset: baseAsset } = useSwapAsset({
+    minDenomOrSymbol: baseDenom,
+    existingAssets: selectableAssets,
+  });
+  const { asset: quoteAsset } = useSwapAsset({
+    minDenomOrSymbol: quoteDenom,
+    existingAssets: selectableAssets,
+  });
+
+  const orderbook = useMemo(
+    () =>
+      orderbooks.find(
+        (orderbook) =>
+          baseAsset &&
+          quoteAsset &&
+          (orderbook.baseDenom === baseAsset.coinDenom ||
+            orderbook.baseDenom === baseAsset.coinMinimalDenom) &&
+          (orderbook.quoteDenom === quoteAsset.coinDenom ||
+            orderbook.quoteDenom === quoteAsset.coinMinimalDenom)
+      ),
+    [orderbooks, baseAsset, quoteAsset]
+  );
+
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });

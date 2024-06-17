@@ -14,12 +14,8 @@ import React, {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
-import {
-  getResetPeriodTranslationKey,
-  ResetPeriodScreen,
-} from "~/components/one-click-trading/screens/reset-period-screen";
 import {
   getSessionPeriodTranslationKey,
   SessionPeriodScreen,
@@ -47,7 +43,6 @@ enum SettingsScreens {
   SpendLimit = "spendLimit",
   NetworkFeeLimit = "networkFeeLimit",
   SessionPeriod = "sessionPeriod",
-  ResetPeriod = "resetPeriod",
 }
 
 interface OneClickTradingSettingsProps {
@@ -93,10 +88,6 @@ export function compare1CTTransactionParams({
     changes.add("networkFeeLimit");
   }
 
-  if (prevParams?.resetPeriod !== nextParams?.resetPeriod) {
-    changes.add("resetPeriod");
-  }
-
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
     changes.add("sessionPeriod");
   }
@@ -110,7 +101,7 @@ function formatSpendLimit(spendLimit: PricePretty | undefined) {
   )}`;
 }
 
-const OneClickTradingSettings = ({
+export const OneClickTradingSettings = ({
   classes,
   onGoBack,
   transaction1CTParams,
@@ -418,40 +409,6 @@ const OneClickTradingSettings = ({
                     }
                     isDisabled={isDisabled}
                   />
-                  <SettingRow
-                    title={t("oneClickTrading.settings.resetPeriodTitle")}
-                    onClick={() =>
-                      setCurrentScreen(SettingsScreens.ResetPeriod)
-                    }
-                    content={
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className={classNames(
-                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
-                          changes.includes("resetPeriod") && "text-bullish-400"
-                        )}
-                        disabled={isDisabled}
-                      >
-                        <p>
-                          {transaction1CTParams
-                            ? t(
-                                getResetPeriodTranslationKey(
-                                  transaction1CTParams.resetPeriod
-                                )
-                              )
-                            : ""}
-                        </p>
-                        <Icon
-                          id="chevron-right"
-                          width={18}
-                          height={18}
-                          className="text-osmoverse-500 group-hover:text-white-full"
-                        />
-                      </Button>
-                    }
-                    isDisabled={isDisabled}
-                  />
                 </div>
 
                 {hasExistingSession &&
@@ -548,20 +505,6 @@ const OneClickTradingSettings = ({
                 />
               </div>
             </Screen>
-
-            <Screen screenName={SettingsScreens.ResetPeriod}>
-              <div
-                className={classNames(
-                  "flex w-full flex-col gap-12",
-                  classes?.root
-                )}
-              >
-                <ResetPeriodScreen
-                  transaction1CTParams={transaction1CTParams!}
-                  setTransaction1CTParams={setTransaction1CTParams}
-                />
-              </div>
-            </Screen>
           </>
         )}
       </ScreenManager>
@@ -632,5 +575,3 @@ const DiscardChangesConfirmationModal: FunctionComponent<{
     </ModalBase>
   );
 };
-
-export default OneClickTradingSettings;

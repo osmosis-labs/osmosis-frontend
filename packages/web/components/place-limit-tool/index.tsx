@@ -2,6 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { useQueryState } from "nuqs";
 import { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -12,6 +13,7 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -33,8 +35,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [baseDenom, setBaseDenom] = useState<string>("OSMO");
-    const quoteDenom = "USDC";
+    const [quoteDenom] = useQueryState("quote", { defaultValue: "USDC" });
 
+    const { selectableBaseAssets } = useOrderbookSelectableDenoms();
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
@@ -50,11 +53,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       <>
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
-            selectableAssets={[swapState.baseAsset, swapState.quoteAsset]}
-            baseAsset={swapState.baseAsset}
-            quoteAsset={swapState.quoteAsset}
-            baseBalance={swapState.baseTokenBalance}
-            quoteBalance={swapState.quoteTokenBalance}
+            selectableAssets={selectableBaseAssets}
+            baseAsset={swapState.baseAsset!}
+            quoteAsset={swapState.quoteAsset!}
+            baseBalance={swapState.baseTokenBalance!}
+            quoteBalance={swapState.quoteTokenBalance!}
             onTokenSelect={(newDenom) => setBaseDenom(newDenom)}
             disabled={false}
             orderDirection={orderDirection}

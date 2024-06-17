@@ -20,17 +20,13 @@
     "./build/utils/dayjs.js"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build; rm tsconfig.tsbuildinfo",
+    "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "test:e2e": "yarn with-env is-ci-cli test:e2e:ci test:e2e:dev",
-    "test:e2e:dev": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --watch",
-    "test:e2e:ci": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --ci",
     "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
     "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
-    "prepare": "yarn build",
-    "with-env": "dotenv -e ../web/.env -c --"
+    "prepare": "yarn build"
   },
   "dependencies": {
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
@@ -40,9 +36,7 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
     "@sentry/core": "^7.109.0",
-    "@trpc/client": "^10.45.1",
-    "@trpc/server": "^10.45.1",
-    "@vercel/kv": "^0.2.3",
+    "@upstash/redis": "^1.31.5",
     "axios": "^0.27.2",
     "cachified": "^3.5.4",
     "dataloader": "^2.2.2",
@@ -57,7 +51,7 @@
     "@types/jest-in-case": "^1.0.6",
     "jest-in-case": "^1.0.2",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
     "*": [

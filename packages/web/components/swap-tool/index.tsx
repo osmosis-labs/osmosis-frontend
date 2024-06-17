@@ -19,10 +19,10 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
@@ -33,7 +33,6 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useFeatureFlags,
-  useOneClickTradingSession,
   useSlippageConfig,
   useTranslation,
   useWalletSelect,
@@ -82,10 +81,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       useWalletSelect();
     const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-    const { isOneClickTradingEnabled } = useOneClickTradingSession();
-    const [isSendingTx, setIsSendingTx] = useState(false);
-
     const account = accountStore.getWallet(chainId);
+
+    const [isSendingTx_, setIsSendingTx] = useState(false);
+    const isSendingTx = isSendingTx_ || Boolean(account?.txTypeInProgress);
+
     const slippageConfig = useSlippageConfig();
 
     const swapState = useSwap({
@@ -179,7 +179,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const sendSwapTx = () => {
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
-        return onOpenWalletSelect(chainId);
+        return onOpenWalletSelect({
+          walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+        });
       }
 
       if (!swapState.inAmountInput.amount) return;
@@ -222,13 +224,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch((error) => {
-          console.error("swap failed", error);
-          if (error instanceof Error && error.message === "Request rejected") {
-            // don't log when the user rejects in wallet
-            return;
+        .catch((e) => {
+          if (e instanceof Error && e.message.includes("Failed to send")) {
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
           }
-          logEvent([EventName.Swap.swapFailed, baseEvent]);
         })
         .finally(() => {
           setIsSendingTx(false);
@@ -236,7 +235,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    /** Indicates any of the dependent queries in swap tool are loading. */
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
     let buttonText: string;
     if (swapState.error) {
@@ -289,13 +292,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
       .toDec()
       .gte(new Dec(0.01));
-
-    const isLoadingMaxButton =
-      featureFlags.swapToolSimulateFee &&
-      !isNil(account?.address) &&
-      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-      !swapState.inAmountInput?.balance?.toDec().isZero() &&
-      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
@@ -520,7 +516,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.balance.toDec().isZero() ||
                         swapState.inAmountInput.notEnoughBalanceForMax
                       }
-                      isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
                       classes={{
                         spinner: "!h-3 !w-3",
@@ -700,10 +695,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
-                      "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive() &&
-                        !swapState.inAmountInput.isTyping &&
-                        !swapState.isQuoteLoading
+                      "md:subtitle1 whitespace-nowrap text-right transition-all",
+                      swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
@@ -728,21 +721,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                       {
                         "opacity-0":
-                          !swapState.tokenOutFiatValue ||
                           swapState.tokenOutFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          (!swapState.tokenOutFiatValue?.toDec().isZero() &&
+                          (!swapState.tokenOutFiatValue.toDec().isZero() &&
                             isSwapToolLoading) ||
                           swapState.inAmountInput.isTyping,
                       }
                     )}
                   >
                     {`≈ ${
-                      swapState.tokenOutFiatValue &&
                       swapState.tokenOutFiatValue.toString().length > 15
                         ? formatPretty(swapState.tokenOutFiatValue)
-                        : swapState.tokenOutFiatValue?.toString() ?? "0"
+                        : swapState.tokenOutFiatValue.toString()
                     }`}
                   </span>
                 </div>
@@ -764,10 +755,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                !swapState.isSpotPriceQuoteLoading
+                !isSwapToolLoading
               }
             >
-              {/* TODO - move this custom button to our own button component */}
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -987,25 +977,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||
+                    isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
+                    Boolean(swapState.networkFeeError)))
               }
-              isLoading={
-                /**
-                 * While 1-Click is enabled, display a loading spinner when simulation
-                 * is in progress since we don't have a wallet to compute the fee for
-                 * us. We need the network fee to be calculated before we can proceed
-                 * with the trade.
-                 */
-                isOneClickTradingEnabled &&
-                swapState.isLoadingNetworkFee &&
-                !swapState.inAmountInput.isEmpty
-              }
-              loadingText={buttonText}
               onClick={sendSwapTx}
             >
-              {account?.walletStatus === WalletStatus.Connected ||
-              isSwapToolLoading ? (
+              {account?.walletStatus === WalletStatus.Connected ? (
                 buttonText
               ) : (
                 <h6 className="flex items-center gap-3">
