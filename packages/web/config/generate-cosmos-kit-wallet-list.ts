@@ -1,5 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Wallet } from "@cosmos-kit/core";
+import * as fs from "node:fs";
+import path from "node:path";
+
+import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
@@ -7,17 +10,28 @@ import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
+import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
-import * as fs from "fs";
-import path from "path";
 import * as prettier from "prettier";
 
-const CosmosKitWalletList = [
+type UpdateWalletMode =
+  | "ledger"
+  | "extension"
+  | "wallet-connect"
+  | "social-login"
+  | undefined;
+
+interface Wallet extends Omit<DefaultWallet, "mode"> {
+  mode: UpdateWalletMode;
+}
+
+const CosmosKitWalletList: Wallet[] = [
   keplrExtensionInfo,
   keplrMobileInfo,
   leapExtensionInfo,
   leapMobileInfo,
+  trustExtensionInfo,
   cosmostationExtensionInfo,
   okxWalletExtensionInfo,
   xdefiExtensionInfo,

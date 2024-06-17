@@ -5,21 +5,21 @@ import { server } from "../../__tests__/msw";
 import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
 import { SkipTransferStatusProvider } from "../transfer-status";
 
-jest.mock("@osmosis-labs/utils", () => {
-  const originalModule = jest.requireActual("@osmosis-labs/utils");
-  return {
-    ...originalModule,
-    poll: jest.fn(({ fn, validate }) => {
-      const pollFn = async () => {
-        const result = await fn();
-        if (validate(result)) {
-          return result;
-        }
-      };
-      return pollFn();
-    }),
-  };
-});
+jest.mock("@osmosis-labs/utils", () => ({
+  ...jest.requireActual("@osmosis-labs/utils"),
+  poll: jest.fn(({ fn, validate }) => {
+    const pollFn = async () => {
+      const result = await fn();
+      if (validate(result)) {
+        return result;
+      }
+    };
+    return pollFn();
+  }),
+}));
+
+// silence console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
 
 describe("SkipTransferStatusProvider", () => {
   let provider: SkipTransferStatusProvider;
@@ -54,12 +54,12 @@ describe("SkipTransferStatusProvider", () => {
       })
     );
 
-    await provider.trackTxStatus(
-      JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })
-    );
+    const params = JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 });
+
+    await provider.trackTxStatus(params);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Skip${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      `Skip${params}`,
       "success",
       undefined
     );
@@ -72,12 +72,12 @@ describe("SkipTransferStatusProvider", () => {
       })
     );
 
-    await provider.trackTxStatus(
-      JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })
-    );
+    const params = JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 });
+
+    await provider.trackTxStatus(params);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Skip${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      `Skip${params}`,
       "failed",
       undefined
     );

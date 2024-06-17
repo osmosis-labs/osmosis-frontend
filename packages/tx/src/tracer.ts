@@ -57,7 +57,7 @@ export class TxTracer {
 
   constructor(
     protected readonly url: string,
-    protected readonly wsEndpoint: string,
+    protected readonly wsEndpoint: string = "/websocket",
     protected readonly options: {
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {}
