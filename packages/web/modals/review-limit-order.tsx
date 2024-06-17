@@ -1,6 +1,7 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import Image from "next/image";
+import { useQueryState } from "nuqs";
 import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -14,7 +15,6 @@ export interface ReviewLimitOrderModalProps {
   onRequestClose: () => void;
   placeLimitState: PlaceLimitState;
   orderDirection: OrderDirection;
-  orderType: "limit" | "market";
   makerFee: Dec;
 }
 
@@ -23,7 +23,6 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   onRequestClose,
   placeLimitState,
   orderDirection,
-  orderType,
   makerFee,
 }) => {
   //TODO: Retrieve maker fee from contract
@@ -45,6 +44,8 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }, [placeLimitState.paymentFiatValue, fee]);
 
+  const [orderType] = useQueryState("type");
+
   return (
     <ModalBase
       isOpen={isOpen}
@@ -54,7 +55,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     >
       <div className="relative flex h-20 w-full items-center justify-center p-4">
         <h6>
-          {orderDirection === OrderDirection.Ask ? "Buy" : "Sell"}{" "}
+          {orderDirection === OrderDirection.Bid ? "Buy" : "Sell"}{" "}
           {placeLimitState.baseAsset?.coinName}
         </h6>
         <button
@@ -89,25 +90,27 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           </div>
         )}
         <div className="flex w-full flex-col pt-3">
-          <RecapRow
-            left={
-              orderDirection === OrderDirection.Ask
-                ? "Receive Asset"
-                : "Pay With"
-            }
-            right={
-              <span className="text-osmoverse-100">
-                <Image
-                  width={24}
-                  height={24}
-                  src={placeLimitState.quoteAsset.coinImageUrl!}
-                  alt={placeLimitState.quoteAsset.coinDenom}
-                  className="inline"
-                />{" "}
-                {placeLimitState.quoteAsset.coinDenom}
-              </span>
-            }
-          />
+          {placeLimitState.quoteAsset && (
+            <RecapRow
+              left={
+                orderDirection === OrderDirection.Ask
+                  ? "Receive Asset"
+                  : "Pay With"
+              }
+              right={
+                <span className="text-osmoverse-100">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={placeLimitState.quoteAsset.coinImageUrl!}
+                    alt={placeLimitState.quoteAsset.coinDenom}
+                    className="inline"
+                  />{" "}
+                  {placeLimitState.quoteAsset.coinDenom}
+                </span>
+              }
+            />
+          )}
           <RecapRow
             left="Amount"
             right={
@@ -125,25 +128,6 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           />
           <hr className="my-2 text-osmoverse-700" />
           <RecapRow left="Total" right={<>≈ {formatPretty(total)}</>} />
-          <RecapRow
-            left={
-              orderDirection === OrderDirection.Ask
-                ? "Receive Asset"
-                : "Pay With"
-            }
-            right={
-              <div className="flex items-center gap-1">
-                <Image
-                  width={24}
-                  height={24}
-                  src={placeLimitState.quoteAsset.coinImageUrl!}
-                  alt={placeLimitState.quoteAsset.coinDenom}
-                  className="inline"
-                />{" "}
-                {placeLimitState.quoteAsset.coinDenom}
-              </div>
-            }
-          />
           <RecapRow
             left="Order Type"
             right={
