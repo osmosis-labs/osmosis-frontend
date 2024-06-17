@@ -104,11 +104,11 @@ export const useOrderbookSelectableDenoms = <TAsset extends Asset>() => {
   // Create mapping between base denom strings and a string of selectable quote asset denom strings
   const selectableQuoteDenoms = useMemo(() => {
     const quoteDenoms: Record<string, string[]> = {};
-    for (let i = 0; i < selectableBaseDenoms.length; i++) {
+    selectableBaseDenoms.forEach((_, i) => {
       quoteDenoms[selectableBaseDenoms[i]] = orderbooks
         .filter((orderbook) => orderbook.baseDenom === selectableBaseDenoms[i])
         .map((orderbook) => orderbook.quoteDenom);
-    }
+    });
     return quoteDenoms;
   }, [selectableBaseDenoms, orderbooks]);
 
