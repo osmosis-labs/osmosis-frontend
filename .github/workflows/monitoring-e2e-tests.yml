@@ -3,13 +3,23 @@ name: Synthetic Monitoring E2E tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/45 * * * *"
+    - cron: "*/30 * * * *"
   push:
     branches:
       - FE-456
 
 jobs:
-  prod-e2e-tests:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+
+  frontend-e2e-tests:
+    needs: setup-matrix
     runs-on: macos-latest
     environment:
       name: prod_swap_test
@@ -34,7 +44,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests on Prod
         env:
-          BASE_URL: "https://app.osmosis.zone"
+          BASE_URL: ${{ matrix.base-url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
@@ -66,7 +76,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
+                    "text": "*Environment:* ${{ matrix.env }}\n*App URL:* ${{ matrix.base-url }}"
                   }
                 },
                 {
@@ -82,19 +92,22 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-  stage-e2e-tests:
-    runs-on: macos-latest
-    environment:
-      name: prod_swap_test
+  server-e2e-tests:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     steps:
-      - name: Echo IP
-        run: curl https://api.ipify.org
-      - name: Check out repository
+      - name: Checkout Repo
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -102,23 +115,21 @@ jobs:
           key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests on Stage
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Echo Current Server URL
+        run: echo "SQS Server URL:${{ matrix.server-url }}"
+
+      - name: Run Tests
+        id: tests
+        run: yarn test:e2e --filter=server
         env:
-          BASE_URL: "https://stage.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        run: |
-          cd packages/web
-          npx playwright test -g "Test Swap Stables feature"
-      - name: upload test results
-        if: always()
-        id: e2e-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: stage-e2e-test-results
-          path: packages/web/playwright-report
+          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
+
+      # Send Slack alert if 'server-e2e-tests' job fails
       - name: Send Slack alert if test fails
         id: slack
         if: failure()
@@ -126,20 +137,20 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 Synthetic Monitoring Tests Failure Alert 🚨",
+              "text": "🚨 Server to SQS E2E Tests Failure Alert 🚨",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Synthetic Monitoring Tests Failure"
+                    "text": "Server to SQS E2E Tests Failure"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Environment:* preview\n*App URL:* ${{ github.event.deployment_status.environment_url }}"
+                    "text": "*Environment:* ${{ matrix.env }}\n*Server URL:* ${{ matrix.server-url }}\n*Timeseries URL:* ${{ matrix.timeseries-url }}"
                   }
                 },
                 {
