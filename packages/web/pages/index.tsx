@@ -54,7 +54,7 @@ const Home = () => {
               lowResXlinkHref={"/images/bitcoin-props-low.png"}
               xlinkHref={"/images/bitcoin-props.png"}
               x={"61"}
-              y={"682"}
+              y={"600"}
               width={"448.8865"}
               height={"285.1699"}
             />
