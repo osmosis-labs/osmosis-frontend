@@ -11,7 +11,7 @@ import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 

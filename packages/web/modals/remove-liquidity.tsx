@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { WeightedPoolRawResponse } from "@osmosis-labs/server";
 import { NoAvailableSharesError } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
@@ -12,6 +13,7 @@ import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {
@@ -21,19 +23,30 @@ export const RemoveLiquidityModal: FunctionComponent<
     RemovableShareLiquidity
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore } = useStore();
+  const { accountStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
   const [percentage, setPercentage] = useState("50");
+
+  const { data: pool, isLoading: isLoadingPool } =
+    api.edge.pools.getSharePool.useQuery({
+      poolId,
+    });
 
   const removeLiquidity = useCallback(
     () =>
       new Promise<void>((resolve, reject) => {
         if (!account) return reject("No account");
+        if (!pool) return reject("Pool pool found. ID: " + poolId);
+
+        const exitFee =
+          pool.type === "weighted"
+            ? (pool.raw as WeightedPoolRawResponse).pool_params.exit_fee
+            : "0";
+
         account.osmosis
           .sendExitPoolMsg(
             poolId,
@@ -41,6 +54,9 @@ export const RemoveLiquidityModal: FunctionComponent<
               .mul(new Dec(percentage).quo(new Dec(100)))
               .toDec()
               .toString(),
+            new Int(pool.raw.total_shares.amount),
+            pool.reserveCoins.map((coin) => coin.toCoin()),
+            new Dec(exitFee),
             undefined,
             undefined,
             (tx) => {
@@ -50,12 +66,12 @@ export const RemoveLiquidityModal: FunctionComponent<
           )
           .catch(reject);
       }),
-    [account, poolId, percentage, props.shares]
+    [account, pool, poolId, percentage, props.shares]
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: props.shares.toDec().isZero() || isSendingMsg,
+      disabled: props.shares.toDec().isZero() || isSendingMsg || isLoadingPool,
       onClick: () => {
         const removeLiquidityResult = removeLiquidity().finally(() =>
           props.onRequestClose()

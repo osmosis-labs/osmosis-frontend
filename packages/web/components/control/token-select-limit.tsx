@@ -8,14 +8,15 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
-import PriceSelector from "~/components/swap-tool/price-selector";
+import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
+import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 export interface TokenSelectLimitProps {
@@ -49,15 +50,18 @@ export const TokenSelectLimit: FunctionComponent<
     onTokenSelect,
     canSelectTokens = true,
     baseAsset,
-    quoteAsset,
     baseBalance,
-    quoteBalance,
     disabled,
     orderDirection,
   }) => {
     const { isMobile } = useWindowSize();
     const router = useRouter();
     const { logEvent } = useAmplitudeAnalytics();
+    const { accountStore } = useStore();
+
+    const isWalletConnected = accountStore.getWallet(
+      accountStore.osmosisChainId
+    )?.isWalletConnected;
 
     // parent overrideable state
     const [isSelectOpen, setIsSelectOpen] = useControllableState({
@@ -83,41 +87,25 @@ export const TokenSelectLimit: FunctionComponent<
       onTokenSelect(tokenDenom);
     };
 
-    const { price: baseCoinPrice, isLoading: isLoadingBasePrice } =
-      useCoinPrice(baseBalance);
-    const { price: quoteCoinPrice, isLoading: isLoadingQuotePrice } =
-      useCoinPrice(quoteBalance);
+    const { price: baseCoinPrice, isLoading: isLoadingBasePrice } = usePrice({
+      coinMinimalDenom: baseAsset.coinMinimalDenom,
+    });
 
     const baseFiatBalance = useMemo(
       () =>
-        !isLoadingBasePrice && baseCoinPrice
+        !isLoadingBasePrice && baseCoinPrice && baseBalance
           ? new PricePretty(DEFAULT_VS_CURRENCY, baseCoinPrice.mul(baseBalance))
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
       [baseCoinPrice, baseBalance, isLoadingBasePrice]
     );
 
-    const quoteFiatBalance = useMemo(
-      () =>
-        !isLoadingQuotePrice && quoteCoinPrice
-          ? new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              quoteCoinPrice.mul(quoteBalance)
-            )
-          : new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      [quoteCoinPrice, quoteBalance, isLoadingQuotePrice]
-    );
-
     const showBaseBalance = useMemo(
-      () =>
-        orderDirection === OrderDirection.Ask &&
-        !baseFiatBalance.toDec().isZero(),
-      [orderDirection, baseFiatBalance]
+      () => orderDirection === OrderDirection.Ask && isWalletConnected,
+      [isWalletConnected, orderDirection]
     );
     const showQuoteBalance = useMemo(
-      () =>
-        orderDirection === OrderDirection.Bid &&
-        !quoteFiatBalance.toDec().isZero(),
-      [orderDirection, quoteFiatBalance]
+      () => orderDirection === OrderDirection.Bid,
+      [orderDirection]
     );
 
     return (

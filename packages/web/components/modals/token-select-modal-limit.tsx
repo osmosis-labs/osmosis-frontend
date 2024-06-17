@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -15,13 +15,13 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
 import { useConst } from "../../hooks/use-const";
-import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 
 const dataAttributeName = "data-token-id";
 
@@ -45,11 +45,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
   onSelect?: (tokenDenom: string) => void;
   showRecommendedTokens?: boolean;
   showSearchBox?: boolean;
-  selectableAssets: (SwapAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>)[];
+  selectableAssets: SwapAsset[];
   isLoadingSelectAssets?: boolean;
   isFetchingNextPageAssets?: boolean;
   hasNextPageAssets?: boolean;
@@ -120,7 +116,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     const onClickAsset = (coinDenom: string) => {
       let isRecommended = false;
       const selectedAsset = assets.find(
-        (asset) => asset.coinDenom === coinDenom
+        (asset) => asset && asset.coinDenom === coinDenom
       );
 
       // shouldn't happen, but doing nothing is better
@@ -206,7 +202,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     };
 
     const assetToActivate = assets.find(
-      (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
+      (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
     );
 
     return (
@@ -246,7 +242,14 @@ export const TokenSelectModalLimit: FunctionComponent<{
               <div className="flex w-full items-center justify-center gap-1 pb-4">
                 <button
                   onClick={() =>
-                    onOpenWalletSelect(accountStore.osmosisChainId)
+                    onOpenWalletSelect({
+                      walletOptions: [
+                        {
+                          walletType: "cosmos",
+                          chainId: accountStore.osmosisChainId,
+                        },
+                      ],
+                    })
                   }
                   className="body1 font-semibold text-wosmongton-300"
                 >
@@ -311,7 +314,8 @@ export const TokenSelectModalLimit: FunctionComponent<{
               </div>
             ) : (
               <div className="no-scrollbar flex flex-col overflow-auto py-3 px-4">
-                {results.map(
+                {/* TODO: fix typing */}
+                {(results as any[]).map(
                   (
                     {
                       coinDenom,

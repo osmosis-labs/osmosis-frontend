@@ -1,7 +1,7 @@
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { FunctionComponent, useMemo } from "react";
 
-import ClientOnly from "~/components/client-only";
+import { ClientOnly } from "~/components/client-only";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { AltSwapTool } from "~/components/swap-tool/alt";
 import OrderTypeSelector from "~/components/swap-tool/order-type-selector";

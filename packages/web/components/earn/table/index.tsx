@@ -21,7 +21,7 @@ interface StrategiesTableProps {
   refetch: () => void;
 }
 
-const StrategiesTable = ({
+const _StrategiesTable = ({
   showBalance,
   strategies,
   areStrategiesLoading,
@@ -176,7 +176,7 @@ const StrategiesTable = ({
   );
 };
 
-export default observer(StrategiesTable);
+export const StrategiesTable = observer(_StrategiesTable);
 
 const LoadingStrategies = () => {
   const { t } = useTranslation();

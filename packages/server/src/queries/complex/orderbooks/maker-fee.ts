@@ -20,7 +20,7 @@ export function getOrderbookMakerFee({
     ttl: 1000 * 60 * 60 * 4, // 4 hours
     getFreshValue: () =>
       queryOrderbookMakerFee({ orderbookAddress, chainList }).then(
-        ({ data }) => data
+        ({ data }: { data: string }) => data
       ),
   });
 }

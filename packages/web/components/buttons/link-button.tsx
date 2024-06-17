@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 
 import { Button } from "~/components/ui/button";
 
-export default function LinkButton({
+export function LinkButton({
   label,
   icon,
   ariaLabel,

@@ -3,13 +3,13 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useMemo } from "react";
 
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 
 export function useCoinFiatValue(
   coin?: CoinPretty,
   vsCurrency = DEFAULT_VS_CURRENCY
 ): { fiatValue: PricePretty | undefined; isLoading: boolean } {
-  const { price, isLoading } = useCoinPrice(coin);
+  const { price, isLoading } = usePrice(coin?.currency);
   return {
     fiatValue: useMemo(
       () => mulPrice(coin, price, vsCurrency),

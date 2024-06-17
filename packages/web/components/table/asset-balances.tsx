@@ -1,4 +1,5 @@
-import type { Search, SortDirection } from "@osmosis-labs/server";
+import type { Search } from "@osmosis-labs/server";
+import type { SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
   createColumnHelper,
@@ -41,7 +42,7 @@ import { Icon } from "../assets";
 import { PriceChange } from "../assets/price";
 import { SubscriptDecimal } from "../chart";
 import { NoSearchResultsSplash, SearchBox } from "../input";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 import { Button } from "../ui/button";
 import { SortHeader } from "./headers/sort";
 

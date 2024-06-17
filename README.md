@@ -2,6 +2,8 @@
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
+> Note: this codebase is currently undergoing a refactor from Keplr's architecture to a tRPC stack to improve performance, maintainability, and development speed. We appreciate your patience as we work through these changes.
+
 ## Overview 💻
 
 Our [frontend](https://app.osmosis.zone) is built with the following tools:
@@ -63,7 +65,7 @@ To develop on the canonical public testnet, run:
 yarn build:testnet && yarn start:testnet
 ```
 
-To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), modify the .env file:
+To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), set this in your .env.local file in web package root:
 
 ```bash
 # Osmosis Chain Configuration Overwrite
@@ -96,6 +98,8 @@ yarn build:testnet && yarn start:testnet
 Note: our currency registrar checks IBC hashes to see if they can be found via the denom_trace query in the IBC module on chain. If it's not found, it won't add it to the chain's list of currencies. Make sure IBC assets on testnet can be found in the testnet's IBC module state for test IBC assets to be visible. Otherwise, test assets (i.e. made via tokenfactory) can be added as native assets to the Osmosis chain, simply by defining its base denom in the Osmosis chain info for testnet.
 
 ## Releases
+
+> Note: releases are suspended until the refactor is complete. Please avoid importing packages from this repo until further notice.
 
 Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
 

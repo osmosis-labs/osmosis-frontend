@@ -28,9 +28,23 @@ const config = {
   testPathIgnorePatterns: ["e2e"],
 };
 
+const esmModules = [
+  "superjson",
+  "@cosmos-kit/core",
+  "uuid",
+  "@keplr-wallet/unit",
+  "@osmosis-labs/stores",
+  "@osmosis-labs/utils",
+  "@axelar-network/axelarjs-sdk",
+  "wagmi",
+  "@wagmi",
+  "@walletconnect/ethereum-provider",
+  "uint8arrays",
+  "multiformats",
+  "@walletconnect/universal-provider",
+];
+
 module.exports = async () => ({
   ...(await createJestConfig(config)()),
-  transformIgnorePatterns: [
-    "node_modules/(?!(superjson|@cosmos-kit/core|uuid|@keplr-wallet/unit|@osmosis-labs/stores|@osmosis-labs/utils|@axelar-network/axelarjs-sdk)/)",
-  ],
+  transformIgnorePatterns: [`node_modules/(?!(${esmModules.join("|")})/)`],
 });

@@ -16,9 +16,9 @@ interface UITradeType {
 }
 
 // const TRADE_TYPES = ["market", "limit", "recurring"] as const;
-const TRADE_TYPES = ["market", "limit"] as const;
+export const TRADE_TYPES = ["market", "limit"] as const;
 
-export default function OrderTypeSelector() {
+export const OrderTypeSelector = () => {
   const { t } = useTranslation();
 
   const [type, setType] = useQueryState(
@@ -114,4 +114,4 @@ export default function OrderTypeSelector() {
       </Transition>
     </Menu>
   );
-}
+};

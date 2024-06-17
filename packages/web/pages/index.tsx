@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 
 import { Ad, AdBanners } from "~/components/ad-banner";
-import ErrorBoundary from "~/components/error/error-boundary";
+import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
 import {

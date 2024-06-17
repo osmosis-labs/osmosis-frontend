@@ -7,11 +7,10 @@ import {
   getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
-  sort,
   TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
@@ -23,19 +22,21 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
+import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
-import LinkButton from "~/components/buttons/link-button";
-import HistoricalPriceChart, {
+import { LinkButton } from "~/components/buttons/link-button";
+import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
-import Spinner from "~/components/loaders/spinner";
+import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
+import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import TokenDetails from "~/components/token-details/token-details";
-import TwitterSection from "~/components/twitter-section/twitter-section";
+import { TokenDetails } from "~/components/token-details";
+import { TwitterSection } from "~/components/twitter-section";
 import { LinkIconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
-import YourBalance from "~/components/your-balance/your-balance";
+import { YourBalance } from "~/components/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -45,7 +46,6 @@ import {
   useCurrentLanguage,
   useTranslation,
   useUserWatchlist,
-  useWindowSize,
 } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
@@ -170,17 +170,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         : undefined;
     }, [language, tokenDetailsByLanguage]);
 
-    const title = useMemo(() => {
-      if (details) {
-        return details.name;
-      }
-
+    const asset = useMemo(() => {
       const currencies = ChainList.map(
         (info) => info.keplrChain.currencies
       ).reduce((a, b) => [...a, ...b]);
 
       const currency = currencies.find(
-        (el) => el.coinDenom === denom.toUpperCase()
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
       );
 
       if (!currency) {
@@ -192,8 +188,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         assetLists: AssetLists,
       });
 
+      return asset;
+    }, [denom]);
+
+    const title = useMemo(() => {
+      if (details) {
+        return details.name;
+      }
+
       return asset?.rawAsset.name;
-    }, [denom, details]);
+    }, [details, asset]);
 
     const SwapTool_ = (
       <SwapTool
@@ -254,12 +258,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <TwitterSection tweets={tweets} />
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
 
-              {/* {routablePools && (
-                <RelatedAssets memoedPools={routablePools} tokenDenom={denom} />
-              )} */}
+              {asset?.rawAsset?.isAlloyed && asset?.rawAsset?.contract ? (
+                <AlloyedAssetsSection
+                  title={title ?? denom}
+                  denom={denom}
+                  contractAddress={asset.rawAsset.contract}
+                />
+              ) : null}
             </div>
           </div>
         </main>
@@ -481,6 +489,7 @@ const TokenChartHeader = observer(() => {
         decimal={maxDecimals}
         showAllRange
         hoverPrice={hoverPrice}
+        hoverDate={assetInfoConfig.hoverDate}
         historicalRange={assetInfoConfig.historicalRange}
         setHistoricalRange={assetInfoConfig.setHistoricalRange}
         fiatSymbol={fiatSymbol}
@@ -493,51 +502,8 @@ const TokenChartHeader = observer(() => {
   );
 });
 
-const useNumTicks = () => {
-  const { assetInfoConfig } = useAssetInfoView();
-  const { isMobile, isLargeDesktop, isExtraLargeDesktop } = useWindowSize();
-
-  const numTicks = useMemo(() => {
-    let ticks: number | undefined = isMobile ? 3 : 6;
-
-    if (isExtraLargeDesktop) {
-      return 10;
-    }
-
-    if (isLargeDesktop) {
-      return 8;
-    }
-
-    switch (assetInfoConfig.historicalRange) {
-      case "7d":
-        ticks = isMobile ? 1 : 8;
-        break;
-      case "1mo":
-        ticks = isMobile ? 2 : 6;
-        break;
-      case "1d":
-        ticks = isMobile ? 3 : 10;
-        break;
-      case "1y":
-      case "all":
-        ticks = isMobile ? 4 : 6;
-        break;
-    }
-
-    return ticks;
-  }, [
-    assetInfoConfig.historicalRange,
-    isMobile,
-    isLargeDesktop,
-    isExtraLargeDesktop,
-  ]);
-
-  return numTicks;
-};
-
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
-  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
@@ -547,18 +513,11 @@ const TokenChart = observer(() => {
         </div>
       ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <HistoricalPriceChart
-            minimal
-            showTooltip
-            showGradient
-            xNumTicks={xNumTicks}
+          <HistoricalPriceChartV2
             data={assetInfoConfig.historicalChartData}
-            fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
-            annotations={[]}
-            domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
-              assetInfoConfig.setHoverPrice(0);
+              assetInfoConfig.setHoverPrice(0, undefined);
             }}
           />
         </>

@@ -1,4 +1,3 @@
-/** A collection of errors that is itself an error. */
 export class Errors extends Error {
   errors: Array<{
     errorType: string;
@@ -52,4 +51,5 @@ export enum BridgeError {
   CreateEVMTxError = "CreateEVMTxError",
   NoQuotesError = "NoQuotesError",
   UnsupportedQuoteError = "UnsupportedQuoteError",
+  InsufficientAmount = "InsufficientAmountError",
 }
