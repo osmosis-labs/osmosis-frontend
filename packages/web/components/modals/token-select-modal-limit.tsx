@@ -54,6 +54,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
   isFetchingNextPageAssets?: boolean;
   hasNextPageAssets?: boolean;
   fetchNextPageAssets?: () => void;
+  headerTitle: string;
 }> = observer(
   ({
     isOpen,
@@ -66,6 +67,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     isFetchingNextPageAssets = false,
     hasNextPageAssets = false,
     fetchNextPageAssets = () => {},
+    headerTitle,
   }) => {
     const { userSettings, accountStore } = useStore();
     const { onOpenWalletSelect } = useWalletSelect();
@@ -232,7 +234,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
         >
           <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-850">
             <div className="relative flex h-20 items-center justify-center p-4">
-              <h6>Select asset to {tab === "buy" ? "buy" : "sell"}</h6>
+              <h6>{headerTitle}</h6>
               <button
                 onClick={onClose}
                 className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
