@@ -1,5 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
-import { getOrderbookMakerFee } from "@osmosis-labs/server";
+import {
+  getOrderbookMakerFee,
+  getOrderbookSpotPrice,
+} from "@osmosis-labs/server";
 import { queryOrderbookActiveOrders } from "@osmosis-labs/server";
 import { z } from "zod";
 
@@ -36,5 +39,22 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return resp.data;
+    }),
+  getSpotPrice: publicProcedure
+    .input(
+      z
+        .object({ tokenInDenom: z.string(), tokenOutDenom: z.string() })
+        .merge(OsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { tokenInDenom, tokenOutDenom, osmoAddress } = input;
+      const resp = await getOrderbookSpotPrice({
+        orderbookAddress: osmoAddress,
+        chainList: ctx.chainList,
+        tokenInDenom,
+        tokenOutDenom,
+      });
+
+      return new Dec(resp);
     }),
 });

@@ -56,7 +56,11 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const priceState = useLimitPrice();
+  const priceState = useLimitPrice({
+    orderbookContractAddress,
+    quoteAssetDenom: quoteAsset?.coinMinimalDenom ?? "",
+    baseAssetDenom: baseAsset?.coinMinimalDenom ?? "",
+  });
   const inAmountInput = useSwapAmountInput({
     swapAssets,
     forceSwapInPoolId: undefined,
@@ -261,9 +265,22 @@ export const usePlaceLimit = ({
   };
 };
 
-const useLimitPrice = () => {
+const useLimitPrice = ({
+  orderbookContractAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+}: {
+  orderbookContractAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+}) => {
   // TODO: Fetch spot price from SQS
-  const spotPrice = useMemo(() => new Dec(1), []);
+  const { data: spotPrice, isLoading } =
+    api.edge.orderbooks.getSpotPrice.useQuery({
+      osmoAddress: orderbookContractAddress,
+      tokenInDenom: quoteAssetDenom,
+      tokenOutDenom: baseAssetDenom,
+    });
   const [percentAdjusted, setPercentAdjusted] = useState(new Dec(0));
 
   const adjustByPercentage = useCallback((percentage: Dec) => {
@@ -271,9 +288,12 @@ const useLimitPrice = () => {
   }, []);
 
   const price = useMemo(
-    () => spotPrice.mul(new Dec(1).add(percentAdjusted)),
-    [spotPrice, percentAdjusted]
+    () =>
+      !isLoading && spotPrice
+        ? spotPrice.mul(new Dec(1).add(percentAdjusted))
+        : new Dec(1),
+    [spotPrice, percentAdjusted, isLoading]
   );
 
-  return { spotPrice, price, adjustByPercentage, percentAdjusted };
+  return { spotPrice, price, adjustByPercentage, percentAdjusted, isLoading };
 };

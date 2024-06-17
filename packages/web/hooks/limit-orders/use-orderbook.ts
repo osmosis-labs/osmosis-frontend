@@ -275,23 +275,23 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
  * @param {string} baseAssetDenom - The token in asset denom.
  * @returns {Object} An object containing the spot price and the loading state.
  */
-// export const useOrderbookSpotPrice = ({
-//   orderbookAddress,
-//   quoteAssetDenom,
-//   baseAssetDenom,
-// }: {
-//   orderbookAddress: string;
-//   quoteAssetDenom: string;
-//   baseAssetDenom: string;
-// }) => {
-//   const { data: spotPrice, isLoading } =
-//     api.edge.orderbooks.getSpotPrice.useQuery({
-//       osmoAddress: orderbookAddress,
-//       quoteAssetDenom,
-//       baseAssetDenom,
-//     });
-//   return {
-//     spotPrice,
-//     isLoading,
-//   };
-// };
+export const useOrderbookSpotPrice = ({
+  orderbookAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+}: {
+  orderbookAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+}) => {
+  const { data: spotPrice, isLoading } =
+    api.edge.orderbooks.getSpotPrice.useQuery({
+      osmoAddress: orderbookAddress,
+      tokenInDenom: quoteAssetDenom,
+      tokenOutDenom: baseAssetDenom,
+    });
+  return {
+    spotPrice,
+    isLoading,
+  };
+};
