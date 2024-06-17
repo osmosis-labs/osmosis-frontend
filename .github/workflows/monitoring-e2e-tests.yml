@@ -19,8 +19,12 @@ jobs:
           echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
 
   frontend-e2e-tests:
+    name: ${{ matrix.env }}
     needs: setup-matrix
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     environment:
       name: prod_swap_test
     steps:
