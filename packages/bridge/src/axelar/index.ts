@@ -641,13 +641,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     const fromAxelarAsset = axelarAssets.find((axelarAsset) => {
-      return (
-        !isNil(axelarAsset.addresses[toAxelarChain.chain_name]) &&
-        (axelarAsset.addresses[toAxelarChain.chain_name].ibc_denom ===
-          toAsset.address ||
-          axelarAsset.addresses[toAxelarChain.chain_name].address ===
-            toAsset.address)
-      );
+      const asset = axelarAsset.addresses[toAxelarChain.chain_name];
+      if (isNil(asset)) return false;
+
+      const ibcDenomMatches =
+        asset.ibc_denom?.toLowerCase() === toAsset.address?.toLowerCase();
+      const addressMatches =
+        asset.address?.toLowerCase() === toAsset.address?.toLowerCase();
+
+      return ibcDenomMatches || addressMatches;
     });
 
     if (!fromAxelarAsset) {

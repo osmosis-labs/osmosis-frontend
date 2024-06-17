@@ -55,6 +55,21 @@ export interface BridgeProvider {
 
   /**
    * Retrieves an external bridge URL for the given assets.
+   *
+   * This method generates a URL that can be used to perform a cross-chain transfer
+   * using an external bridge service. The URL is constructed based on the provided
+   * parameters, which include details about the source and destination chains, as well
+   * as the assets involved in the transfer.
+   *
+   * @param params - The parameters required to generate the external bridge URL.
+   * @param params.fromChain - The source chain from which the asset is being transferred.
+   * @param params.toChain - The destination chain to which the asset is being transferred.
+   * @param params.fromAsset - The asset being transferred from the source chain.
+   * @param params.toAsset - The asset being received on the destination chain.
+   * @param params.toAddress - The address on the destination chain to which the asset is being sent.
+   *
+   * @returns A promise that resolves to a BridgeExternalUrl object containing the URL and the provider name,
+   *          or undefined if the URL could not be generated.
    */
   getExternalUrl: (
     params: GetBridgeExternalUrlParams

@@ -540,7 +540,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
   });
 
   it("should return the correct URL for Weth <> axlEth", async () => {
-    const params = {
+    const result = await provider.getExternalUrl({
       fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
@@ -557,9 +557,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         sourceDenom: "weth-wei",
       },
       toAddress: "destination-address",
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const result = await provider.getExternalUrl(params);
+    });
 
     expect(result?.urlProviderName).toBe("Skip");
     expect(result?.url.toString()).toBe(
@@ -568,7 +566,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
   });
 
   it("should return the correct URL for Eth <> axlEth", async () => {
-    const params = {
+    const result = await provider.getExternalUrl({
       fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
@@ -585,9 +583,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         sourceDenom: "weth-wei",
       },
       toAddress: "destination-address",
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const result = await provider.getExternalUrl(params);
+    });
 
     expect(result?.urlProviderName).toBe("Skip");
     expect(result?.url.toString()).toBe(
@@ -596,7 +592,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
   });
 
   it("should return the correct URL for USDC <> axlUSDC", async () => {
-    const params = {
+    const result = await provider.getExternalUrl({
       fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
@@ -613,9 +609,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         sourceDenom: "uusdc",
       },
       toAddress: "destination-address",
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const result = await provider.getExternalUrl(params);
+    });
 
     expect(result?.urlProviderName).toBe("Skip");
     expect(result?.url.toString()).toBe(
@@ -624,7 +618,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
   });
 
   it("should return the correct URL for USDC <> axlUSDC (Avalanche)", async () => {
-    const params = {
+    const result = await provider.getExternalUrl({
       fromChain: { chainId: 43114, chainType: "evm" },
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
@@ -641,9 +635,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         sourceDenom: "uusdc",
       },
       toAddress: "destination-address",
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const result = await provider.getExternalUrl(params);
+    });
 
     expect(result?.urlProviderName).toBe("Skip");
     expect(result?.url.toString()).toBe(
@@ -652,74 +644,68 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
   });
 
   it("should throw an error if fromChain is not found", async () => {
-    const params = {
-      fromChain: { chainId: 9898989898988, chainType: "evm" },
-      toChain: { chainId: "chain2", chainType: "cosmos" },
-      fromAsset: {
-        address: "address1",
-        denom: "denom1",
-        sourceDenom: "sourceDenom1",
-        decimals: 18,
-      },
-      toAsset: {
-        address: "address2",
-        denom: "denom2",
-        sourceDenom: "sourceDenom2",
-        decimals: 18,
-      },
-      toAddress: "destination-address",
-    } satisfies Parameters<typeof provider.getExternalUrl>[0];
-
-    await expect(provider.getExternalUrl(params)).rejects.toThrow(
-      "Chain not found: 9898989898988"
-    );
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 9898989898988, chainType: "evm" },
+        toChain: { chainId: "chain2", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Chain not found: 9898989898988");
   });
 
   it("should throw an error if toChain is not found", async () => {
-    const params = {
-      fromChain: { chainId: 1, chainType: "evm" },
-      toChain: { chainId: "nonexistent", chainType: "cosmos" },
-      fromAsset: {
-        address: "address1",
-        denom: "denom1",
-        sourceDenom: "sourceDenom1",
-        decimals: 18,
-      },
-      toAsset: {
-        address: "address2",
-        denom: "denom2",
-        sourceDenom: "sourceDenom2",
-        decimals: 18,
-      },
-      toAddress: "destination-address",
-    } satisfies Parameters<typeof provider.getExternalUrl>[0];
-
-    await expect(provider.getExternalUrl(params)).rejects.toThrow(
-      "Chain not found: nonexistent"
-    );
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "nonexistent", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Chain not found: nonexistent");
   });
 
   it("should throw an error if toAsset is not found", async () => {
-    const params = {
-      fromChain: { chainId: 1, chainType: "evm" },
-      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
-      fromAsset: {
-        address: "address1",
-        denom: "denom1",
-        sourceDenom: "sourceDenom1",
-        decimals: 18,
-      },
-      toAsset: {
-        address: "nonexistent",
-        denom: "denom2",
-        sourceDenom: "sourceDenom2",
-        decimals: 18,
-      },
-      toAddress: "destination-address",
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    await expect(provider.getExternalUrl(params)).rejects.toThrow(
-      "Asset not found: nonexistent"
-    );
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "nonexistent",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Asset not found: nonexistent");
   });
 });

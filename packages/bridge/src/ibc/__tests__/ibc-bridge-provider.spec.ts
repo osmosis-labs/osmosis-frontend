@@ -243,14 +243,23 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
   });
 
   it("should return undefined for EVM fromChain", async () => {
-    const params = {
+    const url = await provider.getExternalUrl({
       fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
-      fromAsset: { sourceDenom: "weth-wei" },
-      toAsset: { sourceDenom: "uatom" },
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const url = await provider.getExternalUrl(params);
+      fromAsset: {
+        sourceDenom: "weth-wei",
+        address: "weth-wei",
+        decimals: 18,
+        denom: "WETH",
+      },
+      toAsset: {
+        sourceDenom: "uatom",
+        address: "uatom",
+        decimals: 6,
+        denom: "ATOM",
+      },
+      toAddress: "cosmos1...",
+    });
 
     expect(url).toBeUndefined();
   });
@@ -269,16 +278,25 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
   });
 
   it("should generate the correct URL for given parameters", async () => {
-    const params = {
-      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
-      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
-      fromAsset: { sourceDenom: "uosmo" },
-      toAsset: { sourceDenom: "uatom" },
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
     const expectedUrl =
       "https://geo.tfm.com/?chainFrom=osmosis-1&token0=uosmo&chainTo=cosmoshub-4&token1=uatom";
-    const result = await provider.getExternalUrl(params);
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      fromAsset: {
+        sourceDenom: "uosmo",
+        address: "uosmo",
+        decimals: 6,
+        denom: "OSMO",
+      },
+      toAsset: {
+        sourceDenom: "uatom",
+        address: "uatom",
+        decimals: 6,
+        denom: "ATOM",
+      },
+      toAddress: "cosmos1...",
+    });
 
     expect(result?.urlProviderName).toBe("TFM");
     expect(result?.url.toString()).toBe(expectedUrl);

@@ -3,6 +3,7 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 
@@ -22,14 +23,9 @@ interface AmountScreenProps {
   type: "deposit" | "withdraw";
 }
 
-export const AmountScreen = ({ type }: AmountScreenProps) => {
-  const {
-    accountStore,
-    chainStore: {
-      osmosis: { chainId },
-    },
-  } = useStore();
-  const wallet = accountStore.getWallet(chainId);
+export const AmountScreen = observer(({ type }: AmountScreenProps) => {
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -380,7 +376,7 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
       </div>
     </div>
   );
-};
+});
 
 const ChainSelectorButton: FunctionComponent<{
   readonly?: boolean;

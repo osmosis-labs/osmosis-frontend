@@ -455,57 +455,80 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
   });
 
   it("should generate the correct URL for given parameters", async () => {
-    const params = {
-      fromChain: { chainId: "cosmoshub-4" },
-      toChain: { chainId: "agoric-3" },
-      fromAsset: { address: "uatom" },
-      toAsset: { address: "ubld" },
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
     const expectedUrl =
       "https://ibc.fun/?src_chain=cosmoshub-4&src_asset=uatom&dest_chain=agoric-3&dest_asset=ubld";
-    const result = await provider.getExternalUrl(params);
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      toChain: { chainId: "agoric-3", chainType: "cosmos" },
+      fromAsset: {
+        address: "uatom",
+        denom: "uatom",
+        decimals: 6,
+        sourceDenom: "uatom",
+      },
+      toAsset: {
+        address: "ubld",
+        denom: "ubld",
+        decimals: 6,
+        sourceDenom: "ubld",
+      },
+      toAddress: "cosmos1...",
+    });
 
     expect(result?.urlProviderName).toBe("IBC.fun");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
   it("should encode asset addresses correctly", async () => {
-    const params = {
-      fromChain: { chainId: "akashnet-2" },
-      toChain: { chainId: "andromeda-1" },
+    const expectedUrl =
+      "https://ibc.fun/?src_chain=akashnet-2&src_asset=ibc%2F2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: "akashnet-2", chainType: "cosmos" },
+      toChain: { chainId: "andromeda-1", chainType: "cosmos" },
       fromAsset: {
         address:
+          "ibc/2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded",
+        denom: "AKT",
+        decimals: 6,
+        sourceDenom:
           "ibc/2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded",
       },
       toAsset: {
         address:
           "ibc/976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97",
+        denom: "ANDR",
+        decimals: 6,
+        sourceDenom:
+          "ibc/976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97",
       },
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const expectedUrl =
-      "https://ibc.fun/?src_chain=akashnet-2&src_asset=ibc%2F2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
-    const result = await provider.getExternalUrl(params);
+      toAddress: "cosmos1...",
+    });
 
     expect(result?.urlProviderName).toBe("IBC.fun");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
   it("should handle numeric chain IDs correctly", async () => {
-    const params = {
-      fromChain: { chainId: 42161 },
-      toChain: { chainId: "andromeda-1" },
-      fromAsset: { address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8" },
+    const expectedUrl =
+      "https://ibc.fun/?src_chain=42161&src_asset=0xff970a61a04b1ca14834a43f5de4533ebddb5cc8&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 42161, chainType: "evm" },
+      toChain: { chainId: "andromeda-1", chainType: "cosmos" },
+      fromAsset: {
+        address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        decimals: 18,
+        denom: "USDC",
+        sourceDenom: "USDC",
+      },
       toAsset: {
         address:
           "ibc/976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97",
+        decimals: 18,
+        denom: "USDC",
+        sourceDenom: "USDC",
       },
-    } as Parameters<typeof provider.getExternalUrl>[0];
-
-    const expectedUrl =
-      "https://ibc.fun/?src_chain=42161&src_asset=0xff970a61a04b1ca14834a43f5de4533ebddb5cc8&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
-    const result = await provider.getExternalUrl(params);
+      toAddress: "cosmos1...",
+    });
 
     expect(result?.urlProviderName).toBe("IBC.fun");
     expect(result?.url.toString()).toBe(expectedUrl);
