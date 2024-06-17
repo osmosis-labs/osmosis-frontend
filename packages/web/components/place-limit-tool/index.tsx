@@ -65,7 +65,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const isSwapToolLoading = false;
+    // const isSwapToolLoading = false;
     const hasFunds = true;
 
     return (
