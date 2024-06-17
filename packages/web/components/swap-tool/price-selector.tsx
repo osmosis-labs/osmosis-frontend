@@ -60,7 +60,7 @@ export default function PriceSelector({
   );
 
   const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
-    { userOsmoAddress: wallet?.address },
+    { osmoAddress: wallet?.address },
     {
       enabled: !!wallet?.address,
       select: (data) =>
