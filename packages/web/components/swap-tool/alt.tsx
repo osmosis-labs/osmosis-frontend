@@ -407,7 +407,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           )}
                         >
                           {isLoadingMaxButton && (
-                            <Spinner className="h-3 w-3" />
+                            <Spinner className="h-2.5 w-2.5" />
                           )}
                           Max
                         </button>
