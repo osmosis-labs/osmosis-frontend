@@ -6,17 +6,13 @@ import {
   Time,
   UTCTimestamp,
 } from "lightweight-charts";
-import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
+import React, { FunctionComponent, memo } from "react";
 
 import { AreaChartController } from "~/components/chart/light-weight-charts/area-chart";
+import { SubscriptDecimal } from "~/components/chart/price-historical";
 import { SkeletonLoader } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
-import {
-  compressZeros,
-  FormatOptions,
-  formatPretty,
-  getPriceExtendedFormatOptions,
-} from "~/utils/formatter";
+import { FormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
 import { Chart } from "./light-weight-charts/chart";
@@ -71,53 +67,28 @@ export const HistoricalPriceChartV2: FunctionComponent<{
 export const HistoricalPriceChartHeaderV2: FunctionComponent<{
   hoverPrice: number;
   hoverDate?: string | null;
-  decimal?: number;
-  formatOpts?: FormatOptions;
+  maxDecimal?: number;
+  formatOptions?: FormatOptions;
   fiatSymbol?: string;
   isLoading?: boolean;
 }> = ({
   hoverDate,
   hoverPrice,
-  formatOpts = getPriceExtendedFormatOptions(new Dec(hoverPrice)),
-  decimal = Math.max(getDecimalCount(hoverPrice), 2),
+  formatOptions,
+  maxDecimal = Math.max(getDecimalCount(hoverPrice), 2),
   fiatSymbol,
   isLoading = false,
 }) => {
-  const getFormattedPrice = useCallback(
-    (
-      additionalFormatOpts?: Partial<
-        Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
-      >
-    ) =>
-      formatPretty(new Dec(hoverPrice), {
-        maxDecimals: decimal,
-        notation: "compact",
-        ...formatOpts,
-        ...additionalFormatOpts,
-      }) || "",
-    [decimal, formatOpts, hoverPrice]
-  );
-
-  const { decimalDigits, significantDigits, zeros } = useMemo(
-    () => compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
-    [getFormattedPrice]
-  );
-
   return (
     <div className="flex flex-col gap-1">
       <SkeletonLoader isLoaded={!isLoading}>
         <h3 className="font-h3 sm:text-h4">
           {fiatSymbol}
-          <>
-            {significantDigits}.
-            {Boolean(zeros) && (
-              <>
-                0
-                <sub title={`${getFormattedPrice()}${fiatSymbol}`}>{zeros}</sub>
-              </>
-            )}
-            {decimalDigits}
-          </>
+          <SubscriptDecimal
+            decimal={new Dec(hoverPrice)}
+            maxDecimals={maxDecimal}
+            formatOptions={formatOptions}
+          />
         </h3>
       </SkeletonLoader>
       {hoverDate !== undefined ? (

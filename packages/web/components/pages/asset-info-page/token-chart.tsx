@@ -24,22 +24,26 @@ export const TokenChart = () => {
             <Spinner />
           </div>
         ) : !assetInfoConfig.historicalChartUnavailable ? (
-          <>
-            <HistoricalPriceChartV2
-              data={assetInfoConfig.historicalChartData}
-              onPointerHover={assetInfoConfig.setHoverPrice}
-              onPointerOut={() => {
-                assetInfoConfig.setHoverPrice(0, undefined);
-              }}
-            />
-          </>
+          <HistoricalPriceChartV2
+            data={assetInfoConfig.historicalChartData}
+            onPointerHover={assetInfoConfig.setHoverPrice}
+            onPointerOut={() => {
+              assetInfoConfig.setHoverPrice(0, undefined);
+            }}
+          />
         ) : (
           <ChartUnavailable />
         )}
       </div>
+
+      <TokenChartFooter />
     </section>
   );
 };
+
+export const TokenChartFooter = observer(() => {
+  return <footer className="flex justify-between"></footer>;
+});
 
 export const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
