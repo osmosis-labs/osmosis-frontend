@@ -53,6 +53,9 @@ export interface BridgeProvider {
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
 
+  /**
+   * Retrieves an external bridge URL for the given assets.
+   */
   getExternalUrl: (
     params: GetBridgeExternalUrlParams
   ) => Promise<BridgeExternalUrl | undefined>;

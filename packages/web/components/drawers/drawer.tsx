@@ -1,4 +1,4 @@
-import { DisclosurePanel, Transition } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import FocusTrap from "focus-trap-react";
@@ -124,7 +124,7 @@ export const DrawerOverlay: FunctionComponent<
 };
 
 export const DrawerPanel = (
-  props: PropsWithChildren<Parameters<typeof DisclosurePanel>[0]>
+  props: PropsWithChildren<Parameters<typeof Disclosure.Panel>[0]>
 ) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
   return (
@@ -140,7 +140,7 @@ export const DrawerPanel = (
       afterEnter={() => setIsAnimationComplete(true)}
     >
       <div
-        {...(props as React.HTMLProps<HTMLDivElement>)}
+        {...props}
         className={classNames(
           "absolute bottom-0 left-0 right-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16",
           props.className

@@ -1,4 +1,4 @@
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
@@ -236,9 +236,9 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
 
         <div className="flex items-center justify-between">
           <span className="body1 text-osmoverse-300">
-            {t(
-              `transfer.${type === "deposit" ? "transferWith" : "transferTo"}`
-            )}
+            {type === "deposit"
+              ? t("transfer.transferWith")
+              : t("transfer.transferTo")}
           </span>
           <div className="flex items-center gap-2 rounded-lg">
             <img
@@ -258,8 +258,8 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
 
         <Menu>
           {({ open }) => (
-            <>
-              <MenuButton>
+            <div className="relative w-full">
+              <Menu.Button className="w-full">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="body1 text-osmoverse-300">
@@ -296,13 +296,10 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
                     />
                   </div>
                 </div>
-              </MenuButton>
+              </Menu.Button>
 
-              <MenuItems
-                anchor="bottom end"
-                className="z-[1000] mt-3 flex flex-col gap-1 rounded-2xl bg-osmoverse-825 px-2 py-2"
-              >
-                <MenuItem>
+              <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex flex-col gap-1 rounded-2xl bg-osmoverse-825 px-2 py-2">
+                <Menu.Item>
                   <button className="flex items-center gap-3 rounded-lg bg-osmoverse-700 py-2 px-3 text-left">
                     <Image
                       src={asset.coinImageUrl ?? "/"}
@@ -326,8 +323,8 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
                       />
                     </div>
                   </button>
-                </MenuItem>
-                <MenuItem>
+                </Menu.Item>
+                <Menu.Item>
                   <button className="flex items-center gap-3 rounded-lg py-2 px-3 hover:bg-osmoverse-800">
                     {/* TODO: Add network suffix icon */}
                     <Image
@@ -340,9 +337,9 @@ export const AmountScreen = ({ type }: AmountScreenProps) => {
                       {t("transfer.convertTo")} {asset.coinDenom}.e
                     </p>
                   </button>
-                </MenuItem>
-              </MenuItems>
-            </>
+                </Menu.Item>
+              </Menu.Items>
+            </div>
           )}
         </Menu>
 
