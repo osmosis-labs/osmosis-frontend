@@ -24,8 +24,9 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   priceLineVisible: false,
   lastValueVisible: false,
   priceScaleId: "right",
-  crosshairMarkerBorderWidth: 0,
-  crosshairMarkerRadius: 8,
+  crosshairMarkerBorderWidth: 4,
+  crosshairMarkerBorderColor: theme.colors.osmoverse[900],
+  crosshairMarkerRadius: 4,
   priceFormat: {
     type: "price",
     precision: 10,
