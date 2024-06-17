@@ -7,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
-import FiltersModal from "~/components/earn/filters/filters-modal";
+import { FiltersModal } from "~/components/earn/filters/filters-modal";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";

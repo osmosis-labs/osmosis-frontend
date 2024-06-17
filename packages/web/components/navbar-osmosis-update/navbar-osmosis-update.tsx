@@ -4,15 +4,15 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
-import Spinner from "~/components/loaders/spinner";
+import { IconButton } from "~/components/buttons/icon-button";
+import { Spinner } from "~/components/loaders/spinner";
 import { ArrowButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
 
-const NavbarOsmosisUpdates = () => {
+export const NavbarOsmosisUpdate = () => {
   const { t } = useTranslation();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const featureFlags = useFeatureFlags();
@@ -109,5 +109,3 @@ const OsmosisUpdateModal: FunctionComponent<{
     </ModalBase>
   );
 };
-
-export default NavbarOsmosisUpdates;

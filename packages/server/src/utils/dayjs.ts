@@ -5,5 +5,4 @@ import duration from "dayjs/plugin/duration";
 
 dayjs.extend(duration);
 
-// eslint-disable-next-line import/no-default-export
-export default dayjs;
+export { dayjs };

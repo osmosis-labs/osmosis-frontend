@@ -16,14 +16,15 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "osmosis",
         price: {
-          poolId: "1077",
+          poolId: "1464",
           denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: ["defi"],
         transferMethods: [],
         counterparty: [],
         name: "Osmosis",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -45,10 +46,11 @@ export const AssetLists: AssetList[] = [
           poolId: "2",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["meme", "built_on_osmosis"],
         transferMethods: [],
         counterparty: [],
         name: "Ion DAO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -68,14 +70,14 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "ibc-index",
         price: {
-          poolId: "1254",
-          denom:
-            "ibc/D3B574938631B0A1BA704879020C696E514CFADAA7643CDE4BD5EB010BDE327B",
+          poolId: "1031",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [],
         counterparty: [],
         name: "IBC Index",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -102,6 +104,7 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "Staked IBCX",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -123,10 +126,11 @@ export const AssetLists: AssetList[] = [
           poolId: "1067",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: ["liquid_staking", "sail_initiative"],
         transferMethods: [],
         counterparty: [],
         name: "ERIS Amplified OSMO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -150,11 +154,12 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin", "defi", "built_on_osmosis"],
         pegMechanism: "collateralized",
         transferMethods: [],
         counterparty: [],
         name: "CDT Stablecoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -177,10 +182,11 @@ export const AssetLists: AssetList[] = [
           poolId: "1225",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [],
         counterparty: [],
         name: "Membrane",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -202,10 +208,11 @@ export const AssetLists: AssetList[] = [
           poolId: "1267",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [],
         counterparty: [],
         name: "OSMO Squared",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -228,10 +235,11 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [],
         counterparty: [],
         name: "ATOM Squared",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -249,10 +257,11 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sqbtc.svg",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [],
         counterparty: [],
         name: "BTC Squared",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -273,13 +282,15 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "levana-protocol",
         price: {
-          poolId: "1325",
-          denom: "uosmo",
+          poolId: "1337",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [],
         counterparty: [],
         name: "Levana",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -300,14 +311,16 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "milkyway-staked-tia",
         price: {
-          poolId: "1335",
+          poolId: "1475",
           denom:
             "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking", "built_on_osmosis"],
         transferMethods: [],
         counterparty: [],
+        variantGroupKey: "milkTIA",
         name: "milkTIA",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -326,11 +339,13 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
         },
+        coingeckoId: "wrapped-bitcoin",
         price: {
-          poolId: "1434",
-          denom: "uosmo",
+          poolId: "1436",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [],
         counterparty: [
           {
@@ -359,6 +374,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTC",
         name: "Wrapped Bitcoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -385,6 +401,7 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "WOSMO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -408,10 +425,11 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [],
         counterparty: [],
         name: "TIA Squared",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -434,6 +452,7 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "RAPTR",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -459,6 +478,7 @@ export const AssetLists: AssetList[] = [
         transferMethods: [],
         counterparty: [],
         name: "BADKID",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -479,16 +499,407 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sail.png",
         },
-        categories: ["meme"],
+        coingeckoId: "sail-dao",
+        price: {
+          poolId: "1782",
+          denom: "factory/osmo17fel472lgzs87ekt9dvk0zqyh5gl80sqp4sk4n/LAB",
+        },
+        categories: ["sail_initiative"],
         transferMethods: [],
         counterparty: [],
         name: "Sail",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-14T22:20:00.000Z",
         relative_image_url: "/tokens/generated/sail.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom: "factory/osmo1nr8zfakf6jauye3uqa9lrmr5xumee5n42lv92z/toro",
+        coinMinimalDenom:
+          "factory/osmo1nr8zfakf6jauye3uqa9lrmr5xumee5n42lv92z/toro",
+        symbol: "TORO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/toro.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/toro.svg",
+        },
+        price: {
+          poolId: "1624",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "TORO",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-01T21:57:00.000Z",
+        relative_image_url: "/tokens/generated/toro.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom: "factory/osmo17fel472lgzs87ekt9dvk0zqyh5gl80sqp4sk4n/LAB",
+        coinMinimalDenom:
+          "factory/osmo17fel472lgzs87ekt9dvk0zqyh5gl80sqp4sk4n/LAB",
+        symbol: "LAB",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/LAB.png",
+        },
+        coingeckoId: "mad-scientists",
+        price: {
+          poolId: "1656",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["nft_protocol", "sail_initiative", "built_on_osmosis"],
+        transferMethods: [],
+        counterparty: [],
+        name: "LAB",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-02T15:53:00.000Z",
+        relative_image_url: "/tokens/generated/lab.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1s3l0lcqc7tu0vpj6wdjz9wqpxv8nk6eraevje4fuwkyjnwuy82qsx3lduv/boneOsmo",
+        coinMinimalDenom:
+          "factory/osmo1s3l0lcqc7tu0vpj6wdjz9wqpxv8nk6eraevje4fuwkyjnwuy82qsx3lduv/boneOsmo",
+        symbol: "bOSMO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/bOSMO.png",
+        },
+        categories: ["liquid_staking", "sail_initiative"],
+        transferMethods: [],
+        counterparty: [],
+        name: "BackBone Labs Liquid Staked OSMO",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-15T18:00:00.000Z",
+        relative_image_url: "/tokens/generated/bosmo.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom: "factory/osmo1kqdw6pvn0xww6tyfv2sqvkkencdz0qw406x54r/IBC",
+        coinMinimalDenom:
+          "factory/osmo1kqdw6pvn0xww6tyfv2sqvkkencdz0qw406x54r/IBC",
+        symbol: "IBC",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ibc.png",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "IBC",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/ibc.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1s6ht8qrm8x0eg8xag5x3ckx9mse9g4se248yss/BERNESE",
+        coinMinimalDenom:
+          "factory/osmo1s6ht8qrm8x0eg8xag5x3ckx9mse9g4se248yss/BERNESE",
+        symbol: "BERNESE",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/bernese.png",
+        },
+        price: {
+          poolId: "1700",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "BERNESE",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-23T02:49:00.000Z",
+        relative_image_url: "/tokens/generated/bernese.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo19hdqma2mj0vnmgcxag6ytswjnr8a3y07q7e70p/wLIBRA",
+        coinMinimalDenom:
+          "factory/osmo19hdqma2mj0vnmgcxag6ytswjnr8a3y07q7e70p/wLIBRA",
+        symbol: "wLIBRA",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/0l/images/libra.svg",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/0l/images/libra.png",
+        },
+        price: {
+          poolId: "1721",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [],
+        counterparty: [
+          {
+            chainName: "0l",
+            sourceDenom: "microlibra",
+            chainType: "non-cosmos",
+            symbol: "LIBRA",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/0l/images/libra.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/0l/images/libra.svg",
+            },
+          },
+        ],
+        variantGroupKey: "LIBRA",
+        name: "Wrapped Libra Coin (LibraBridge)",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-30T12:00:00.000Z",
+        relative_image_url: "/tokens/generated/wlibra.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/cac",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/cac",
+        symbol: "CAC",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/CAC.png",
+        },
+        price: {
+          poolId: "1736",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Cosmos Airdrop Chat",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-06T12:00:00.000Z",
+        relative_image_url: "/tokens/generated/cac.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/pbb",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/pbb",
+        symbol: "PBB",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/PBB.png",
+        },
+        price: {
+          poolId: "1750",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Power Bottom",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-13T18:41:03.000Z",
+        relative_image_url: "/tokens/generated/pbb.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/bwh",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/bwh",
+        symbol: "BWH",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/BWH.png",
+        },
+        price: {
+          poolId: "1729",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "BeerWifHat",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-13T18:59:11.000Z",
+        relative_image_url: "/tokens/generated/bwh.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/shitmos",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/shitmos",
+        symbol: "SHITMOS",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/shitmos.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/shitmos.svg",
+        },
+        price: {
+          poolId: "1770",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "Shitmos",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-14T15:45:04.000Z",
+        relative_image_url: "/tokens/generated/shitmos.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/wiha",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/wiha",
+        symbol: "WIHA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/WIHA.png",
+        },
+        price: {
+          poolId: "1779",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "WiliHall",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-16T21:03:04.000Z",
+        relative_image_url: "/tokens/generated/wiha.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/crazyhorse",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/crazyhorse",
+        symbol: "CRAZYHORSE",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/CrazyHorse.png",
+        },
+        price: {
+          poolId: "1772",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "HorseShoeBar",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-14T22:32:04.000Z",
+        relative_image_url: "/tokens/generated/crazyhorse.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/coca",
+        coinMinimalDenom:
+          "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/coca",
+        symbol: "COCA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/COCA.png",
+        },
+        price: {
+          poolId: "1794",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [],
+        counterparty: [],
+        name: "CosmusCartol",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-21T11:07:05.000Z",
+        relative_image_url: "/tokens/generated/coca.png",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT",
+        coinMinimalDenom:
+          "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT",
+        symbol: "allUSDT",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg",
+        },
+        categories: ["stablecoin"],
+        pegMechanism: "collateralized",
+        transferMethods: [],
+        counterparty: [],
+        variantGroupKey: "allUSDT",
+        name: "Alloyed USDT",
+        isAlloyed: true,
+        contract:
+          "osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT",
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        listingDate: "2024-05-29T10:27:00.000Z",
+        relative_image_url: "/tokens/generated/allusdt.svg",
       },
     ],
   },
@@ -508,36 +919,9 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usdc.axl.png",
         },
         coingeckoId: "axlusdc",
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
-          {
-            name: "Axelar Bridge",
-            type: "integrated_bridge",
-            counterparty: [
-              {
-                unwrappedAssetId: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-                evmChainId: 1,
-                sourceChainId: "Ethereum",
-              },
-              {
-                unwrappedAssetId: "0xfab550568C688d5d8a52c7d794cb93edc26ec0ec",
-                evmChainId: 43114,
-                sourceChainId: "Avalanche",
-              },
-              {
-                unwrappedAssetId: "0xca01a1d0993565291051daff390892518acfad3a",
-                evmChainId: 1284,
-                sourceChainId: "Moonbeam",
-              },
-              {
-                unwrappedAssetId: "0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed",
-                evmChainId: 137,
-                sourceChainId: "Polygon",
-              },
-            ],
-            unwrappedAssetId: "uusdc",
-          },
           {
             name: "Satellite",
             type: "external_interface",
@@ -591,6 +975,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Axelar)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -609,25 +994,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "ethereum",
         price: {
-          poolId: "1134",
+          poolId: "1281",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
-          {
-            name: "Axelar Bridge",
-            type: "integrated_bridge",
-            counterparty: [
-              {
-                wrappedAssetId: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-                unwrappedAssetId: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-                evmChainId: 1,
-                sourceChainId: "Ethereum",
-              },
-            ],
-            wrappedAssetId: "weth-wei",
-            unwrappedAssetId: "eth",
-          },
           {
             name: "Satellite",
             type: "external_interface",
@@ -693,6 +1064,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Ether",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -710,6 +1082,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/wbtc.axl.svg",
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/wbtc.axl.png",
         },
+        coingeckoId: "axlwbtc",
         price: {
           poolId: "1422",
           denom:
@@ -762,14 +1135,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WBTC",
         name: "Wrapped Bitcoin (Axelar)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        sortWith: {
-          chainName: "axelar",
-          sourceDenom: "uaxl",
-        },
         relative_image_url: "/tokens/generated/wbtc.axl.svg",
       },
       {
@@ -782,12 +1152,13 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usdt.axl.svg",
         },
+        coingeckoId: "axelar-usdt",
         price: {
           poolId: "1150",
           denom:
             "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -835,14 +1206,11 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Axelar)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        sortWith: {
-          chainName: "axelar",
-          sourceDenom: "uaxl",
-        },
         relative_image_url: "/tokens/generated/usdt.axl.svg",
       },
       {
@@ -861,7 +1229,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -909,6 +1277,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DAI",
         name: "Dai Stablecoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -932,7 +1301,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: [],
+        categories: ["stablecoin"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -961,6 +1330,7 @@ export const AssetLists: AssetList[] = [
             decimals: 18,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/busd.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/busd.svg",
             },
           },
           {
@@ -979,6 +1349,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BUSD",
         name: "Binance USD",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1062,6 +1433,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BNB",
         name: "Binance Coin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1124,6 +1496,7 @@ export const AssetLists: AssetList[] = [
             symbol: "WMATIC",
             decimals: 18,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/wmatic.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/wmatic.svg",
             },
           },
@@ -1143,6 +1516,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MATIC",
         name: "Polygon",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1161,7 +1535,7 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "avalanche-2",
         price: {
-          poolId: "1427",
+          poolId: "899",
           denom: "uosmo",
         },
         categories: [],
@@ -1223,6 +1597,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AVAX",
         name: "Avalanche",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1240,7 +1615,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/dot.axl.svg",
         },
         price: {
-          poolId: "773",
+          poolId: "1091",
           denom: "uosmo",
         },
         categories: [],
@@ -1291,6 +1666,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "xcDOT",
         name: "Wrapped Polkadot (Axelar)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1315,9 +1691,9 @@ export const AssetLists: AssetList[] = [
         price: {
           poolId: "679",
           denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "hybrid",
         transferMethods: [
           {
@@ -1364,6 +1740,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FRAX",
         name: "Frax",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1386,7 +1763,7 @@ export const AssetLists: AssetList[] = [
           poolId: "731",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["oracles"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1434,6 +1811,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LINK",
         name: "Chainlink",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1451,7 +1829,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/aave.svg",
         },
         coingeckoId: "aave",
-        categories: [],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1497,6 +1875,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AAVE",
         name: "Aave",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -1514,7 +1893,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ape.svg",
         },
         coingeckoId: "apecoin",
-        categories: [],
+        categories: ["nft_protocol"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1560,6 +1939,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APE",
         name: "ApeCoin",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -1582,7 +1962,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: [],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1628,6 +2008,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MKR",
         name: "Maker",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1645,8 +2026,21 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/rai.svg",
         },
         coingeckoId: "rai",
-        categories: [],
+        price: {
+          poolId: "1604",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["stablecoin", "defi"],
         transferMethods: [
+          {
+            name: "Satellite",
+            type: "external_interface",
+            depositUrl:
+              "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-we",
+            withdrawUrl:
+              "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
+          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -1691,10 +2085,12 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAI",
         name: "Rai Reflex Index",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
-        preview: true,
+        preview: false,
+        listingDate: "2024-03-29T20:12:00.000Z",
         relative_image_url: "/tokens/generated/rai.svg",
       },
       {
@@ -1712,7 +2108,7 @@ export const AssetLists: AssetList[] = [
           poolId: "880",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["meme"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1758,6 +2154,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHIB",
         name: "Shiba Inu",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -1773,6 +2170,7 @@ export const AssetLists: AssetList[] = [
         decimals: 18,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.svg",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.png",
         },
         coingeckoId: "moonbeam",
         price: {
@@ -1821,6 +2219,7 @@ export const AssetLists: AssetList[] = [
             symbol: "WGLMR",
             decimals: 18,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.svg",
             },
           },
@@ -1833,12 +2232,14 @@ export const AssetLists: AssetList[] = [
             symbol: "GLMR",
             decimals: 18,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.svg",
             },
           },
         ],
         variantGroupKey: "GLMR",
         name: "Moonbeam",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1858,10 +2259,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "axelar",
         price: {
-          poolId: "812",
+          poolId: "1094",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["bridges"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -1896,6 +2297,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AXL",
         name: "Axelar",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -1947,6 +2349,7 @@ export const AssetLists: AssetList[] = [
             decimals: 18,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.svg",
             },
           },
           {
@@ -1978,6 +2381,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FTM",
         name: "Fantom",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2000,7 +2404,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -2060,6 +2464,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Polygon)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2082,7 +2487,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -2142,6 +2547,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Avalanche)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2161,11 +2567,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "filecoin",
         price: {
-          poolId: "1562",
-          denom:
-            "ibc/FE2CD1E6828EC0FAB8AF39BAC45BC25B965BA67CCBC50C13A14BD610B0D1E2C4",
+          poolId: "1006",
+          denom: "uosmo",
         },
-        categories: [],
+        categories: ["dweb", "depin"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2226,6 +2631,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FIL",
         name: "Filecoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2245,8 +2651,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "arbitrum",
         price: {
-          poolId: "1011",
-          denom: "uosmo",
+          poolId: "1580",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: [],
         transferMethods: [
@@ -2296,6 +2703,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARB",
         name: "Arbitrum",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2318,7 +2726,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1018",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["meme"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2366,6 +2774,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PEPE",
         name: "Pepe",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2388,7 +2797,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2434,6 +2843,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "cbETH",
         name: "Coinbase Wrapped Staked ETH",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2456,7 +2866,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2502,6 +2912,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "rETH",
         name: "Rocket Pool Ether",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2524,7 +2935,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2576,13 +2987,14 @@ export const AssetLists: AssetList[] = [
             symbol: "frxETH",
             decimals: 18,
             logoURIs: {
-              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png",
-              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.svg",
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.svg",
             },
           },
         ],
         variantGroupKey: "frxETH",
         name: "Staked Frax Ether",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2604,7 +3016,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2662,6 +3074,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stETH",
         name: "Wrapped Lido Staked Ether (Axelar)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2689,7 +3102,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["defi", "liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2737,6 +3150,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "YieldETH",
         name: "Real Yield ETH",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2762,10 +3176,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "cosmos",
         price: {
-          poolId: "1400",
-          denom: "uosmo",
+          poolId: "1282",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2800,6 +3215,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ATOM",
         name: "Cosmos Hub",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2824,10 +3240,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "crypto-com-chain",
         price: {
-          poolId: "9",
+          poolId: "1092",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -2861,6 +3277,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRO",
         name: "Cronos POS Chain",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2930,6 +3347,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUNC",
         name: "Luna Classic",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -2988,6 +3406,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USTC",
         name: "TerraClassicUSD",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3005,13 +3424,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/krt.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/krt.svg",
         },
-        coingeckoId: "terrakrw",
         price: {
           poolId: "581",
           denom:
             "ibc/BE1BB42D4BE3C30D50B68D7C41DB4DFCE9678E8EF8C539F6E6A9345048894FCC",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "algorithmic",
         transferMethods: [
           {
@@ -3047,6 +3465,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KRTC",
         name: "TerraClassicKRW",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3075,7 +3494,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1097",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3110,6 +3529,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JUNO",
         name: "Juno",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3128,12 +3548,11 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/marble.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/marble.svg",
         },
-        coingeckoId: "marble",
         price: {
           poolId: "649",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3170,6 +3589,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MARBLE",
         name: "Marble",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3193,7 +3613,7 @@ export const AssetLists: AssetList[] = [
           poolId: "631",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3230,6 +3650,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NETA",
         name: "Neta",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3248,12 +3669,11 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/hope.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/hope.svg",
         },
-        coingeckoId: "hope-galaxy",
         price: {
           poolId: "653",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3290,6 +3710,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HOPE",
         name: "Hope Galaxy",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3313,7 +3734,7 @@ export const AssetLists: AssetList[] = [
           poolId: "669",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3350,6 +3771,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAC",
         name: "Racoon",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3372,7 +3794,7 @@ export const AssetLists: AssetList[] = [
           poolId: "691",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3409,6 +3831,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLOCK",
         name: "Block",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3431,7 +3854,7 @@ export const AssetLists: AssetList[] = [
           poolId: "695",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3468,6 +3891,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DHK",
         name: "DHK",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3486,7 +3910,6 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/raw.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/raw.svg",
         },
-        coingeckoId: "junoswap-raw-dao",
         price: {
           poolId: "700",
           denom: "uosmo",
@@ -3528,6 +3951,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAW",
         name: "JunoSwap",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3550,7 +3974,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3586,6 +4010,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ASVT",
         name: "Another.Software Validator Token",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3607,7 +4032,7 @@ export const AssetLists: AssetList[] = [
           poolId: "718",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3643,6 +4068,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JOE",
         name: "JoeDAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3665,7 +4091,7 @@ export const AssetLists: AssetList[] = [
           poolId: "778",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3702,6 +4128,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLTO",
         name: "Gelotto",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3724,7 +4151,7 @@ export const AssetLists: AssetList[] = [
           poolId: "790",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3761,6 +4188,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GKEY",
         name: "GKey",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -3779,13 +4207,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/sejuno.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/sejuno.svg",
         },
-        coingeckoId: "stakeeasy-juno-derivative",
         price: {
           poolId: "807",
           denom:
             "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3822,6 +4249,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEJUNO",
         name: "StakeEasy seJUNO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3840,8 +4268,7 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/bjuno.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/bjuno.svg",
         },
-        coingeckoId: "stakeeasy-bjuno",
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3878,6 +4305,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BJUNO",
         name: "StakeEasy bJUNO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3900,7 +4328,7 @@ export const AssetLists: AssetList[] = [
           poolId: "941",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3937,6 +4365,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOLAR",
         name: "Solarbank DAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -3959,7 +4388,7 @@ export const AssetLists: AssetList[] = [
           poolId: "808",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -3996,6 +4425,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEASY",
         name: "StakeEasy SEASY",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4013,7 +4443,7 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/muse.png",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4049,6 +4479,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MUSE",
         name: "MuseDAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4061,13 +4492,13 @@ export const AssetLists: AssetList[] = [
           "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
         coinMinimalDenom:
           "ibc/7CE5F388D661D82A0774E47B5129DA51CC7129BD1A70B5FA6BCEBB5B0A2FAEAF",
-        symbol: "FURY",
+        symbol: "FURY.legacy",
         decimals: 6,
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/fanfury.png",
         },
         coingeckoId: "fanfury",
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4094,20 +4525,21 @@ export const AssetLists: AssetList[] = [
               "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
             chainType: "cosmos",
             chainId: "juno-1",
-            symbol: "FURY",
+            symbol: "FURY.legacy",
             decimals: 6,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/fanfury.png",
             },
           },
         ],
-        variantGroupKey: "FURY",
-        name: "Fanfury",
+        variantGroupKey: "FURY.legacy",
+        name: "FURY.legacy",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
-        relative_image_url: "/tokens/generated/fury.png",
+        relative_image_url: "/tokens/generated/fury.legacy.png",
       },
       {
         chainName: "juno",
@@ -4123,11 +4555,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "posthuman",
         price: {
-          poolId: "1255",
-          denom:
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          poolId: "1738",
+          denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4164,7 +4595,8 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PHMN",
         name: "POSTHUMAN",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
@@ -4182,12 +4614,11 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/hopers.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/hopers.svg",
         },
-        coingeckoId: "hopers-io",
         price: {
           poolId: "894",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4224,6 +4655,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HOPERS",
         name: "Hopers",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4284,6 +4716,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WYND",
         name: "Wynd DAO Governance Token",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -4306,7 +4739,7 @@ export const AssetLists: AssetList[] = [
           poolId: "924",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4343,6 +4776,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NRIDE",
         name: "nRide Token",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4364,7 +4798,7 @@ export const AssetLists: AssetList[] = [
           poolId: "949",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4400,6 +4834,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FOX",
         name: "Juno Fox",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4421,7 +4856,7 @@ export const AssetLists: AssetList[] = [
           poolId: "959",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4457,6 +4892,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GRDN",
         name: "Guardian",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4479,7 +4915,7 @@ export const AssetLists: AssetList[] = [
           poolId: "961",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4516,6 +4952,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNPU",
         name: "Mini Punks",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4537,7 +4974,7 @@ export const AssetLists: AssetList[] = [
           poolId: "962",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4573,6 +5010,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHIBAC",
         name: "ShibaCosmos",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4595,7 +5033,7 @@ export const AssetLists: AssetList[] = [
           poolId: "964",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4632,6 +5070,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SKOJ",
         name: "Sikoba Token",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4653,7 +5092,7 @@ export const AssetLists: AssetList[] = [
           poolId: "974",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4689,6 +5128,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CLST",
         name: "Celestims",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4710,7 +5150,7 @@ export const AssetLists: AssetList[] = [
           poolId: "975",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4746,6 +5186,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "OSDOGE",
         name: "Osmosis Doge",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4767,7 +5208,7 @@ export const AssetLists: AssetList[] = [
           poolId: "977",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4803,6 +5244,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APEMOS",
         name: "Apemos",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4824,7 +5266,7 @@ export const AssetLists: AssetList[] = [
           poolId: "969",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4860,6 +5302,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "INVDRS",
         name: "Invaders",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4881,7 +5324,7 @@ export const AssetLists: AssetList[] = [
           poolId: "978",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4917,6 +5360,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DOGA",
         name: "Doge Apr",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4938,7 +5382,7 @@ export const AssetLists: AssetList[] = [
           poolId: "981",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -4974,6 +5418,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CATMOS",
         name: "Catmos",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -4995,7 +5440,7 @@ export const AssetLists: AssetList[] = [
           poolId: "982",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5031,6 +5476,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SUMMIT",
         name: "Summit",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5052,7 +5498,7 @@ export const AssetLists: AssetList[] = [
           poolId: "993",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5088,6 +5534,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SPACER",
         name: "Spacer",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5109,7 +5556,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1009",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5145,6 +5592,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LIGHT",
         name: "LIGHT",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5166,7 +5614,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1000",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5202,6 +5650,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MILE",
         name: "Mille",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5223,7 +5672,7 @@ export const AssetLists: AssetList[] = [
           poolId: "997",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5259,6 +5708,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MANNA",
         name: "Manna",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5280,7 +5730,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1003",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5316,6 +5766,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "VOID",
         name: "Void",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5338,7 +5789,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D1542AA8762DB13087D8364F3EA6509FD6F009A34F00426AF9E4F9FA85CBBF1F",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5374,6 +5825,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SLCA",
         name: "Silica",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5431,6 +5883,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PEPEC",
         name: "Pepec",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5452,7 +5905,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1028",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5488,6 +5941,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CASA",
         name: "Casa",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5509,7 +5963,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1071",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5545,6 +5999,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WATR",
         name: "WATR",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5565,7 +6020,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1143",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5601,6 +6056,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DGL",
         name: "Licorice",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5623,7 +6079,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5659,6 +6115,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KLEO",
         name: "Kleomedes",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5680,7 +6137,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1377",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5716,6 +6173,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JAPE",
         name: "Junø Apes",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5738,7 +6196,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1392",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -5774,12 +6232,73 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SGNL",
         name: "Signal",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-18T15:42:00.000Z",
         relative_image_url: "/tokens/generated/sgnl.png",
+      },
+      {
+        chainName: "juno",
+        sourceDenom:
+          "cw20:juno1spjes0smg5yp40dl7gqyw0h8rn03tnmve06dd2m5acwgh6tlx86swha3xg",
+        coinMinimalDenom:
+          "ibc/0D62E47FDEBBC199D4E1853C0708F0F9337AC62D95B719585C9700E466060995",
+        symbol: "AFA",
+        decimals: 0,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/afa.png",
+        },
+        price: {
+          poolId: "1701",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "juno",
+              chainId: "juno-1",
+              sourceDenom:
+                "cw20:juno1spjes0smg5yp40dl7gqyw0h8rn03tnmve06dd2m5acwgh6tlx86swha3xg",
+              port: "wasm.juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+              channelId: "channel-47",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-169",
+              path: "transfer/channel-169/cw20:juno1spjes0smg5yp40dl7gqyw0h8rn03tnmve06dd2m5acwgh6tlx86swha3xg",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "juno",
+            sourceDenom:
+              "cw20:juno1spjes0smg5yp40dl7gqyw0h8rn03tnmve06dd2m5acwgh6tlx86swha3xg",
+            chainType: "cosmos",
+            chainId: "juno-1",
+            symbol: "AFA",
+            decimals: 0,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/afa.png",
+            },
+          },
+        ],
+        variantGroupKey: "AFA",
+        name: "Airdrop For All",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-13T19:00:00.000Z",
+        relative_image_url: "/tokens/generated/afa.png",
       },
     ],
   },
@@ -5803,7 +6322,7 @@ export const AssetLists: AssetList[] = [
           poolId: "722",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Evmos App",
@@ -5844,6 +6363,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EVMOS",
         name: "Evmos",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -5905,6 +6425,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NEOK",
         name: "Neokingdom DAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -5967,12 +6488,71 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BERLIN",
         name: "Teledisko DAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-07T18:18:00.000Z",
         relative_image_url: "/tokens/generated/berlin.svg",
+      },
+      {
+        chainName: "evmos",
+        sourceDenom: "erc20/0xfbf4318d24a93753f11d365a6dcf8b830e98ab0f",
+        coinMinimalDenom:
+          "ibc/B87F0F5255CC658408F167C2F7B987A8D914622E1F73BCC267406360588F2B1E",
+        symbol: "CROWDP",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/crowdp.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/crowdp.svg",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Evmos App",
+            type: "external_interface",
+            depositUrl: "https://app.evmos.org/assets",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "evmos",
+              chainId: "evmos_9001-2",
+              sourceDenom: "erc20/0xfbf4318d24a93753f11d365a6dcf8b830e98ab0f",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-204",
+              path: "transfer/channel-204/erc20/0xfbf4318d24a93753f11d365a6dcf8b830e98ab0f",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "evmos",
+            sourceDenom: "erc20/0xfbf4318d24a93753f11d365a6dcf8b830e98ab0f",
+            chainType: "cosmos",
+            chainId: "evmos_9001-2",
+            symbol: "CROWDP",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/crowdp.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/crowdp.svg",
+            },
+          },
+        ],
+        variantGroupKey: "CROWDP",
+        name: "Crowdpunk DAO",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/crowdp.svg",
       },
     ],
   },
@@ -5996,7 +6576,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1105",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6031,6 +6611,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KAVA",
         name: "Kava",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6049,7 +6630,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kava/images/hard.svg",
         },
         coingeckoId: "kava-lend",
-        categories: [],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6084,6 +6665,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HARD",
         name: "Kava Hard",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6102,7 +6684,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kava/images/swp.svg",
         },
         coingeckoId: "kava-swap",
-        categories: [],
+        price: {
+          poolId: "1631",
+          denom: "uosmo",
+        },
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6137,6 +6723,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SWP",
         name: "Kava Swap",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6159,7 +6746,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1390",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["stablecoin", "defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6194,6 +6781,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDX",
         name: "Kava USDX",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6216,7 +6804,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -6263,6 +6851,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6291,7 +6880,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1095",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["privacy"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6326,6 +6915,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SCRT",
         name: "Secret Network",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6348,12 +6938,13 @@ export const AssetLists: AssetList[] = [
           poolId: "845",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=alter",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6388,6 +6979,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ALTER",
         name: "Alter",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6405,17 +6997,17 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/butt.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/butt.svg",
         },
-        coingeckoId: "buttcoin-2",
         price: {
           poolId: "985",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=butt",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6450,6 +7042,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BUTT",
         name: "Button",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6472,11 +7065,6 @@ export const AssetLists: AssetList[] = [
         },
         categories: ["defi"],
         transferMethods: [
-          {
-            name: "Secret Network IBC Transfer",
-            type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
-          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -6509,9 +7097,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHD(old)",
         name: "Shade (old)",
+        isAlloyed: false,
         verified: false,
-        unstable: false,
-        disabled: false,
+        unstable: true,
+        disabled: true,
         preview: false,
         relative_image_url: "/tokens/generated/shd(old).svg",
       },
@@ -6536,7 +7125,8 @@ export const AssetLists: AssetList[] = [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=sienna",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6571,6 +7161,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SIENNA",
         name: "SIENNA",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6594,12 +7185,13 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
         },
-        categories: ["meme"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=stkd-scrt",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6634,6 +7226,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkd-SCRT",
         name: "SCRT Staking Derivatives",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6655,12 +7248,13 @@ export const AssetLists: AssetList[] = [
           poolId: "984",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=amber",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6695,6 +7289,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AMBER",
         name: "Amber",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -6723,7 +7318,8 @@ export const AssetLists: AssetList[] = [
           {
             name: "Secret Network IBC Transfer",
             type: "external_interface",
-            depositUrl: "https://dash.scrt.network/ibc",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=silk",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -6758,6 +7354,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SILK",
         name: "Silk",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6783,6 +7380,12 @@ export const AssetLists: AssetList[] = [
         },
         categories: ["defi"],
         transferMethods: [
+          {
+            name: "Secret Network IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://dash.scrt.network/ibc?chain=osmosis&mode=deposit&token=shd",
+          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -6816,6 +7419,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHD",
         name: "Shade",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6844,7 +7448,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1096",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["nft_protocol"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6879,6 +7483,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STARS",
         name: "Stargaze",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6897,13 +7502,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/dust.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/dust.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "1234",
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -6940,6 +7544,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STRDST",
         name: "Stardust STRDST",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -6958,13 +7563,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/brnch.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/brnch.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "1288",
           denom:
             "ibc/CFF40564FDA3E958D9904B8B479124987901168494655D9CC6B7C0EC0416020B",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7001,6 +7605,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BRNCH",
         name: "Branch",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -7019,13 +7624,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/sneaky.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/sneaky.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "1403",
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7062,6 +7666,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SNEAKY",
         name: "Sneaky Productions",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -7126,6 +7731,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HUAHUA",
         name: "Chihuahua",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7183,6 +7789,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PUPPY",
         name: "Puppy",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -7201,7 +7808,7 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/chihuahua/images/baddog.png",
         },
         price: {
-          poolId: "1420",
+          poolId: "1715",
           denom:
             "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228",
         },
@@ -7241,6 +7848,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BADDOG",
         name: "Chihuahuawifhat",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -7299,6 +7907,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WOOF",
         name: "WOOF",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -7325,10 +7934,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "persistence",
         price: {
-          poolId: "1101",
-          denom: "uosmo",
+          poolId: "1773",
+          denom:
+            "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
         },
-        categories: ["defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7363,6 +7973,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XPRT",
         name: "Persistence",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7386,7 +7997,7 @@ export const AssetLists: AssetList[] = [
           poolId: "648",
           denom: "uosmo",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7448,6 +8059,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PSTAKE",
         name: "pSTAKE Finance",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7471,7 +8083,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7506,6 +8118,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkATOM",
         name: "PSTAKE staked ATOM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7528,7 +8141,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1323",
           denom: "uosmo",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7563,6 +8176,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stkOSMO",
         name: "PSTAKE staked OSMO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7588,10 +8202,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "akash-network",
         price: {
-          poolId: "1093",
-          denom: "uosmo",
+          poolId: "1301",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["ai", "depin", "dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7626,6 +8241,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AKT",
         name: "Akash",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7654,7 +8270,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1483",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7689,6 +8305,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "REGEN",
         name: "Regen",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7712,7 +8329,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076",
         },
-        categories: [],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7747,6 +8364,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NCT",
         name: "Nature Carbon Ton",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7775,7 +8393,7 @@ export const AssetLists: AssetList[] = [
           poolId: "5",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["dweb", "privacy"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7810,6 +8428,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DVPN",
         name: "Sentinel",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7839,7 +8458,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7874,6 +8493,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IRIS",
         name: "IRISnet",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7902,7 +8522,7 @@ export const AssetLists: AssetList[] = [
           poolId: "197",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["social"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -7937,6 +8557,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IOV",
         name: "Starname",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -7965,7 +8586,7 @@ export const AssetLists: AssetList[] = [
           poolId: "463",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8000,6 +8621,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NGM",
         name: "e-Money",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8022,7 +8644,7 @@ export const AssetLists: AssetList[] = [
           poolId: "481",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["stablecoin"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8057,6 +8679,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EEUR",
         name: "e-Money EUR",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8085,7 +8708,7 @@ export const AssetLists: AssetList[] = [
           poolId: "553",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["social"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8120,6 +8743,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LIKE",
         name: "LikeCoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8149,7 +8773,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8184,6 +8808,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IXO",
         name: "Impacts Hub",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8213,7 +8838,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8248,6 +8873,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BCNA",
         name: "BitCanna",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8273,10 +8899,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bitsong",
         price: {
-          poolId: "1109",
-          denom: "uosmo",
+          poolId: "574",
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["social"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8311,11 +8938,126 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTSG",
         name: "BitSong",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/btsg.svg",
+      },
+      {
+        chainName: "bitsong",
+        sourceDenom: "ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09",
+        coinMinimalDenom:
+          "ibc/7ABF696369EFB3387DF22B6A24204459FE5EFD010220E8E5618DC49DB877047B",
+        symbol: "CLAY",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09.png",
+        },
+        price: {
+          poolId: "751",
+          denom:
+            "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+        },
+        categories: ["social"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "bitsong",
+              chainId: "bitsong-2b",
+              sourceDenom: "ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-73",
+              path: "transfer/channel-73/ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "bitsong",
+            sourceDenom: "ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09",
+            chainType: "cosmos",
+            chainId: "bitsong-2b",
+            symbol: "CLAY",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/ft2D8E7041556CE93E1EFD66C07C45D551A6AAAE09.png",
+            },
+          },
+        ],
+        variantGroupKey: "CLAY",
+        name: "Adam Clay FanToken",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-29T12:00:00.000Z",
+        relative_image_url: "/tokens/generated/clay.png",
+      },
+      {
+        chainName: "bitsong",
+        sourceDenom: "ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A",
+        coinMinimalDenom:
+          "ibc/B797E4F42CD33C50511B341E50C5CC0E8EF0D93B1E1247ABAA071583B8619202",
+        symbol: "404DR",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A.png",
+        },
+        price: {
+          poolId: "758",
+          denom:
+            "ibc/4E5444C35610CC76FC94E7F7886B93121175C28262DDFDDE6F84E82BF2425452",
+        },
+        categories: ["social"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "bitsong",
+              chainId: "bitsong-2b",
+              sourceDenom: "ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-73",
+              path: "transfer/channel-73/ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "bitsong",
+            sourceDenom: "ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A",
+            chainType: "cosmos",
+            chainId: "bitsong-2b",
+            symbol: "404DR",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/bitsong/images/ft99091610CCC66F4277C66D14AF2BC4C5EE52E27A.png",
+            },
+          },
+        ],
+        variantGroupKey: "404DR",
+        name: "404Deep Records Fantoken",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-29T12:00:00.000Z",
+        relative_image_url: "/tokens/generated/404dr.png",
       },
     ],
   },
@@ -8339,7 +9081,7 @@ export const AssetLists: AssetList[] = [
           poolId: "577",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8374,6 +9116,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XKI",
         name: "Ki",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8396,7 +9139,7 @@ export const AssetLists: AssetList[] = [
           poolId: "774",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8432,6 +9175,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LVN",
         name: "LVN",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8457,10 +9201,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "medibloc",
         price: {
-          poolId: "586",
-          denom: "uosmo",
+          poolId: "587",
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8495,6 +9240,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MED",
         name: "Medibloc",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8520,10 +9266,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bostrom",
         price: {
-          poolId: "597",
-          denom: "uosmo",
+          poolId: "912",
+          denom:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
-        categories: ["defi"],
+        categories: ["ai"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8558,6 +9305,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BOOT",
         name: "bostrom",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8614,6 +9362,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HYDROGEN",
         name: "Bostrom Hydrogen",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8671,6 +9420,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TOCYB",
         name: "Bostrom Tocyb",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8727,6 +9477,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "V",
         name: "Bostrom Volt",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8783,6 +9534,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "A",
         name: "Bostrom Ampere",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8811,7 +9563,7 @@ export const AssetLists: AssetList[] = [
           poolId: "601",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8846,6 +9598,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CMDX",
         name: "Comdex",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8865,9 +9618,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "composite",
         price: {
-          poolId: "1258",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "857",
+          denom: "uosmo",
         },
         categories: ["stablecoin", "defi"],
         pegMechanism: "collateralized",
@@ -8905,6 +9657,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CMST",
         name: "CMST",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -8927,7 +9680,7 @@ export const AssetLists: AssetList[] = [
           poolId: "967",
           denom: "uosmo",
         },
-        categories: [],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -8962,6 +9715,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HARBOR",
         name: "Harbor",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -8991,7 +9745,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9026,6 +9780,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CHEQ",
         name: "Cheqd",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9054,7 +9809,7 @@ export const AssetLists: AssetList[] = [
           poolId: "608",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9089,6 +9844,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUM",
         name: "Lum Network",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9117,7 +9873,7 @@ export const AssetLists: AssetList[] = [
           poolId: "613",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9152,9 +9908,10 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "VDL",
         name: "Vidulum",
+        isAlloyed: false,
         verified: true,
-        unstable: false,
-        disabled: false,
+        unstable: true,
+        disabled: true,
         preview: false,
         relative_image_url: "/tokens/generated/vdl.svg",
       },
@@ -9180,7 +9937,7 @@ export const AssetLists: AssetList[] = [
           poolId: "619",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["social"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9215,6 +9972,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DSM",
         name: "Desmos",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9242,7 +10000,7 @@ export const AssetLists: AssetList[] = [
           poolId: "621",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9276,6 +10034,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DIG",
         name: "Dig Chain",
+        isAlloyed: false,
         verified: true,
         unstable: true,
         disabled: true,
@@ -9301,9 +10060,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "sommelier",
         price: {
-          poolId: "1372",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1103",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -9340,6 +10098,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOMM",
         name: "Sommelier",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9368,7 +10127,7 @@ export const AssetLists: AssetList[] = [
           poolId: "626",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["oracles"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9403,6 +10162,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BAND",
         name: "Band Protocol",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9431,7 +10191,7 @@ export const AssetLists: AssetList[] = [
           poolId: "637",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9466,6 +10226,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DARC",
         name: "Konstellation",
+        isAlloyed: false,
         verified: true,
         unstable: true,
         disabled: true,
@@ -9529,6 +10290,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "UMEE",
         name: "UX Chain",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9554,10 +10316,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "graviton",
         price: {
-          poolId: "625",
+          poolId: "1113",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["bridges"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -9592,6 +10354,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GRAV",
         name: "Gravity Bridge",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9669,6 +10432,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WBTC",
         name: "Wrapped Bitcoin (Gravity Bridge)",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -9761,6 +10525,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Ether (Gravity Bridge)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -9781,12 +10546,13 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usdc.grv.svg",
         },
+        coingeckoId: "gravity-bridge-usdc",
         price: {
           poolId: "872",
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -9840,15 +10606,12 @@ export const AssetLists: AssetList[] = [
           },
         ],
         variantGroupKey: "USDC",
-        name: "USD Coin (Gravity Bridge)",
+        name: "USDC (Gravity Bridge)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        sortWith: {
-          chainName: "gravitybridge",
-          sourceDenom: "ugrav",
-        },
         relative_image_url: "/tokens/generated/usdc.grv.svg",
       },
       {
@@ -9864,9 +10627,9 @@ export const AssetLists: AssetList[] = [
         price: {
           poolId: "702",
           denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            "ibc/BE1BB42D4BE3C30D50B68D7C41DB4DFCE9678E8EF8C539F6E6A9345048894FCC",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -9921,6 +10684,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DAI",
         name: "DAI Stablecoin (Gravity Bridge)",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -9945,7 +10709,7 @@ export const AssetLists: AssetList[] = [
           poolId: "818",
           denom: "uosmo",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -10000,6 +10764,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Gravity Bridge)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10082,11 +10847,95 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PAGE",
         name: "Page",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/page.svg",
+      },
+      {
+        chainName: "gravitybridge",
+        sourceDenom: "gravity0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+        coinMinimalDenom:
+          "ibc/A5CCD24BA902843B1003A7EEE5F937C632808B9CF4925601241B15C5A0A51A53",
+        symbol: "PAXG.grv",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/paxg.grv.svg",
+        },
+        price: {
+          poolId: "1492",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["rwa"],
+        transferMethods: [
+          {
+            name: "Gravity Bridge",
+            type: "external_interface",
+            depositUrl:
+              "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+            withdrawUrl:
+              "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "gravitybridge",
+              chainId: "gravity-bridge-3",
+              sourceDenom: "gravity0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+              port: "transfer",
+              channelId: "channel-10",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-144",
+              path: "transfer/channel-144/gravity0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "gravitybridge",
+            sourceDenom: "gravity0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            chainType: "cosmos",
+            chainId: "gravity-bridge-3",
+            symbol: "PAXG",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/paxg.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/paxg.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            symbol: "PAXG",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/paxg.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/paxg.svg",
+            },
+          },
+        ],
+        variantGroupKey: "PAXG",
+        name: "Paxos Gold (Gravity Bridge)",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "gravitybridge",
+          sourceDenom: "ugrav",
+        },
+        listingDate: "2024-04-13T19:14:00.000Z",
+        relative_image_url: "/tokens/generated/paxg.grv.svg",
       },
     ],
   },
@@ -10110,7 +10959,7 @@ export const AssetLists: AssetList[] = [
           poolId: "644",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10145,6 +10994,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DEC",
         name: "Decentr",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10216,6 +11066,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SWTH",
         name: "Carbon",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10244,7 +11095,7 @@ export const AssetLists: AssetList[] = [
           poolId: "662",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["meme"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10279,6 +11130,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRBRUS",
         name: "Cerberus",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -10307,7 +11159,7 @@ export const AssetLists: AssetList[] = [
           poolId: "681",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["ai"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10342,6 +11194,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FET",
         name: "Fetch.ai",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10371,7 +11224,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["nft_protocol"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10406,6 +11259,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNTL",
         name: "AssetMantle",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10440,10 +11294,8 @@ export const AssetLists: AssetList[] = [
           {
             name: "Injective Hub",
             type: "external_interface",
-            depositUrl:
-              "https://hub.injective.network/bridge/?destination=osmosis&origin=injective&token=inj",
-            withdrawUrl:
-              "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
+            depositUrl: "https://bridge.injective.network/",
+            withdrawUrl: "https://bridge.injective.network/",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -10478,6 +11330,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "INJ",
         name: "Injective",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10532,6 +11385,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AUTISM",
         name: "Autism",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -10597,6 +11451,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NINJA",
         name: "Dog wif nunchucks",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -10619,8 +11474,16 @@ export const AssetLists: AssetList[] = [
           poolId: "1574",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2&token1=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7",
+            withdrawUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7&token1=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2",
+          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -10680,12 +11543,156 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLTO",
         name: "Gelotto (Injective)",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-01T20:23:00.000Z",
         relative_image_url: "/tokens/generated/injective.glto.svg",
+      },
+      {
+        chainName: "injective",
+        sourceDenom: "peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+        coinMinimalDenom:
+          "ibc/B84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000",
+        symbol: "BEAST",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/beast.png",
+        },
+        price: {
+          poolId: "1630",
+          denom: "uosmo",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be&token1=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000",
+            withdrawUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2FB84F8CC583A54DA8173711C0B66B22FDC1954FEB1CA8DBC66C89919DAFE02000&token1=peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "injective",
+              chainId: "injective-1",
+              sourceDenom: "peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+              port: "transfer",
+              channelId: "channel-8",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-122",
+              path: "transfer/channel-122/peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "injective",
+            sourceDenom: "peggy0xA4426666addBE8c4985377d36683D17FB40c31Be",
+            chainType: "cosmos",
+            chainId: "injective-1",
+            symbol: "BEAST",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/beast.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xA4426666addBE8c4985377d36683D17FB40c31Be",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xA4426666addBE8c4985377d36683D17FB40c31Be",
+            symbol: "BEAST",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/beast.png",
+            },
+          },
+        ],
+        variantGroupKey: "BEAST",
+        name: "Gelotto BEAST (Peggy)",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-01T19:35:00.000Z",
+        relative_image_url: "/tokens/generated/beast.png",
+      },
+      {
+        chainName: "injective",
+        sourceDenom: "factory/inj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52/uhava",
+        coinMinimalDenom:
+          "ibc/884EBC228DFCE8F1304D917A712AA9611427A6C1ECC3179B2E91D7468FB091A2",
+        symbol: "HAVA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/hava.png",
+        },
+        coingeckoId: "hava-coin",
+        price: {
+          poolId: "1687",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=factory%2Finj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52%2Fuhava&token1=ibc%2F884EBC228DFCE8F1304D917A712AA9611427A6C1ECC3179B2E91D7468FB091A2",
+            withdrawUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=injective-1&token0=ibc%2F884EBC228DFCE8F1304D917A712AA9611427A6C1ECC3179B2E91D7468FB091A2&token1=factory%2Finj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52%2Fuhava",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "injective",
+              chainId: "injective-1",
+              sourceDenom:
+                "factory/inj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52/uhava",
+              port: "transfer",
+              channelId: "channel-8",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-122",
+              path: "transfer/channel-122/factory/inj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52/uhava",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "injective",
+            sourceDenom:
+              "factory/inj1h0ypsdtjfcjynqu3m75z2zwwz5mmrj8rtk2g52/uhava",
+            chainType: "cosmos",
+            chainId: "injective-1",
+            symbol: "HAVA",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/hava.png",
+            },
+          },
+        ],
+        variantGroupKey: "HAVA",
+        name: "Hava Coin",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-15T15:55:00.000Z",
+        relative_image_url: "/tokens/generated/hava.png",
       },
     ],
   },
@@ -10710,7 +11717,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["oracles"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10745,6 +11752,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TICK",
         name: "Microtick",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -10808,6 +11816,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ROWAN",
         name: "Sifchain",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -10836,7 +11845,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1020",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10871,6 +11880,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CTK",
         name: "Shentu",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10899,7 +11909,7 @@ export const AssetLists: AssetList[] = [
           poolId: "693",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10934,6 +11944,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HASH",
         name: "Provenance",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -10961,7 +11972,7 @@ export const AssetLists: AssetList[] = [
           poolId: "697",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -10996,6 +12007,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GLX",
         name: "Galaxy",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11059,6 +12071,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MEME",
         name: "MEME",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11084,11 +12097,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "terra-luna-2",
         price: {
-          poolId: "1163",
-          denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+          poolId: "1728",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -11123,6 +12135,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUNA",
         name: "Luna",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11145,7 +12158,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1043",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -11189,6 +12202,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ROAR",
         name: "Lion DAO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11211,7 +12225,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/785AFEC6B3741100D15E7AF01374E3C4C36F24888E96479B1C33F5C71F364EF9",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -11255,6 +12269,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CUB",
         name: "Lion Cub DAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11277,7 +12292,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/785AFEC6B3741100D15E7AF01374E3C4C36F24888E96479B1C33F5C71F364EF9",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -11321,6 +12336,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLUE",
         name: "BLUE CUB DAO",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11333,13 +12349,12 @@ export const AssetLists: AssetList[] = [
           "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
         coinMinimalDenom:
           "ibc/C25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7",
-        symbol: "ASTRO",
+        symbol: "ASTRO.cw20",
         decimals: 6,
         logoURIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/astro.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/astro-cw20.svg",
         },
-        coingeckoId: "astroport-fi",
-        categories: ["meme"],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -11374,21 +12389,22 @@ export const AssetLists: AssetList[] = [
               "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
             chainType: "cosmos",
             chainId: "phoenix-1",
-            symbol: "ASTRO",
+            symbol: "ASTRO.cw20",
             decimals: 6,
             logoURIs: {
-              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/astro.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/astro-cw20.svg",
             },
           },
         ],
-        variantGroupKey: "ASTRO",
-        name: "Astroport",
+        variantGroupKey: "ASTRO.cw20",
+        name: "Astroport CW20 Token",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-13T17:30:00.000Z",
-        relative_image_url: "/tokens/generated/astro.png",
+        relative_image_url: "/tokens/generated/astro.cw20.svg",
       },
       {
         chainName: "terra2",
@@ -11405,7 +12421,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1505",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -11449,12 +12465,81 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BMOS",
         name: "Bitmos",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-02T22:12:00.000Z",
         relative_image_url: "/tokens/generated/bmos.png",
+      },
+      {
+        chainName: "terra2",
+        sourceDenom:
+          "cw20:terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+        coinMinimalDenom:
+          "ibc/06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56",
+        symbol: "SAYVE",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/sayve.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/sayve.svg",
+        },
+        price: {
+          poolId: "1638",
+          denom: "uosmo",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3&token1=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56",
+            withdrawUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F06EF575844982382F4D1BC3830D294557A30EDB3CD223153AFC8DFEF06349C56&token1=terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "terra2",
+              chainId: "phoenix-1",
+              sourceDenom:
+                "cw20:terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+              port: "wasm.terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+              channelId: "channel-26",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-341",
+              path: "transfer/channel-341/cw20:terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "terra2",
+            sourceDenom:
+              "cw20:terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3",
+            chainType: "cosmos",
+            chainId: "phoenix-1",
+            symbol: "SAYVE",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/sayve.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/terra2/images/sayve.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SAYVE",
+        name: "sayve",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/sayve.svg",
       },
     ],
   },
@@ -11478,7 +12563,7 @@ export const AssetLists: AssetList[] = [
           poolId: "729",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -11513,6 +12598,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ATOLO",
         name: "Rizon",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11540,7 +12626,7 @@ export const AssetLists: AssetList[] = [
           poolId: "732",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -11575,6 +12661,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "L1",
         name: "GenesisL1",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -11600,9 +12687,8 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "kujira",
         price: {
-          poolId: "1161",
-          denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+          poolId: "744",
+          denom: "uosmo",
         },
         categories: ["defi"],
         transferMethods: [
@@ -11645,6 +12731,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KUJI",
         name: "Kujira",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11665,10 +12752,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "usk",
         price: {
-          poolId: "827",
-          denom: "uosmo",
+          poolId: "1648",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["stablecoin", "defi"],
         transferMethods: [
           {
             name: "Kujira Blue",
@@ -11711,6 +12799,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USK",
         name: "USK",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11734,7 +12823,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1215",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: ["defi"],
         transferMethods: [
           {
             name: "Kujira Blue",
@@ -11777,6 +12866,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MNTA",
         name: "MantaDAO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11788,14 +12878,14 @@ export const AssetLists: AssetList[] = [
         sourceDenom:
           "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
         coinMinimalDenom:
-          "ibc/690EB0A0CA0DA2DC1E9CF62FB23C935AE5C7E9F57919CF89690521D5D70948A7",
+          "ibc/F74225B0AFD2F675AF56E9BE3F235486BCDE5C5E09AA88A97AFD2E052ABFE04C",
         symbol: "NSTK",
         decimals: 6,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/images/nstk.svg",
         },
         coingeckoId: "unstake-fi",
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -11831,6 +12921,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NSTK",
         name: "Unstake Fi",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11859,7 +12950,7 @@ export const AssetLists: AssetList[] = [
           poolId: "769",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -11894,6 +12985,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TGD",
         name: "Tgrade",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -11916,12 +13008,11 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/echelon/images/ech.svg",
         },
-        coingeckoId: "echelon",
         price: {
           poolId: "848",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Echelon Network",
@@ -11961,6 +13052,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ECH",
         name: "Echelon",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -11989,7 +13081,7 @@ export const AssetLists: AssetList[] = [
           poolId: "777",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["ai"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12024,6 +13116,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ODIN",
         name: "Odin Protocol",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12080,6 +13173,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GEO",
         name: "GEO",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -12136,6 +13230,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "O9W",
         name: "O9W",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -12192,6 +13287,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DOKI",
         name: "DOKI",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -12256,6 +13352,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CRE",
         name: "Crescent",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12283,7 +13380,7 @@ export const AssetLists: AssetList[] = [
           poolId: "788",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12318,6 +13415,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LUMEN",
         name: "LumenX",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -12346,7 +13444,7 @@ export const AssetLists: AssetList[] = [
           poolId: "799",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["ai"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12381,6 +13479,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ORAI",
         name: "Oraichain",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12409,7 +13508,7 @@ export const AssetLists: AssetList[] = [
           poolId: "796",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12444,6 +13543,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CUDOS",
         name: "Cudos",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12472,7 +13572,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1104",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12507,6 +13607,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLD",
         name: "Agoric",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12530,7 +13631,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: [],
+        categories: ["stablecoin", "defi"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12565,6 +13666,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IST",
         name: "Inter Stable Token",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12590,10 +13692,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "stride",
         price: {
-          poolId: "806",
+          poolId: "1098",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12628,6 +13730,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "STRD",
         name: "Stride",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12647,11 +13750,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "stride-staked-atom",
         price: {
-          poolId: "1136",
+          poolId: "1283",
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12686,6 +13789,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stATOM",
         name: "Stride Staked ATOM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12709,7 +13813,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12744,6 +13848,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stSTARS",
         name: "Stride Staked STARS",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12767,7 +13872,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12802,6 +13907,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stJUNO",
         name: "Stride Staked JUNO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12821,10 +13927,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "stride-staked-osmo",
         price: {
-          poolId: "833",
+          poolId: "1252",
           denom: "uosmo",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12859,6 +13965,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stOSMO",
         name: "Stride Staked OSMO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12882,7 +13989,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/785AFEC6B3741100D15E7AF01374E3C4C36F24888E96479B1C33F5C71F364EF9",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12917,6 +14024,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stLUNA",
         name: "Stride Staked LUNA",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12940,7 +14048,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -12975,6 +14083,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stEVMOS",
         name: "Stride Staked EVMOS",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -12998,7 +14107,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13033,6 +14142,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stUMEE",
         name: "Stride Staked UMEE",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13056,7 +14166,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/9BBA9A1C257E971E38C1422780CE6F0B0686F0A3085E2D61118D904BFE0F5F5E",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13091,6 +14201,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stSOMM",
         name: "Stride Staked SOMM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13113,7 +14224,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/831F0B1BBB1D08A2B75311892876D71565478C532967545476DF4C2D7492E48C",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13148,6 +14259,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stDYDX",
         name: "Stride Staked DYDX",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13175,7 +14287,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13210,6 +14322,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stTIA",
         name: "Stride Staked TIA",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13220,6 +14333,132 @@ export const AssetLists: AssetList[] = [
         },
         listingDate: "2024-01-31T23:17:00.000Z",
         relative_image_url: "/tokens/generated/sttia.svg",
+      },
+      {
+        chainName: "stride",
+        sourceDenom: "stusaga",
+        coinMinimalDenom:
+          "ibc/2CD9F8161C3FC332E78EF0C25F6E684D09379FB2F56EF9267E7EC139642EC57B",
+        symbol: "stSAGA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stsaga.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stsaga.svg",
+        },
+        price: {
+          poolId: "1674",
+          denom:
+            "ibc/094FB70C3006906F67F5D674073D2DAFAFB41537E7033098F5C752F211E7B6C2",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "stride",
+              chainId: "stride-1",
+              sourceDenom: "stusaga",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-326",
+              path: "transfer/channel-326/stusaga",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "stride",
+            sourceDenom: "stusaga",
+            chainType: "cosmos",
+            chainId: "stride-1",
+            symbol: "stSAGA",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stsaga.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stsaga.svg",
+            },
+          },
+        ],
+        variantGroupKey: "stSAGA",
+        name: "Stride Staked SAGA",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "stride",
+          sourceDenom: "ustrd",
+        },
+        listingDate: "2024-04-09T15:50:00.000Z",
+        relative_image_url: "/tokens/generated/stsaga.svg",
+      },
+      {
+        chainName: "stride",
+        sourceDenom: "stinj",
+        coinMinimalDenom:
+          "ibc/C04DFC9BCD893E57F2BEFE40F63EFD18D2768514DBD5F63ABD2FF7F48FC01D36",
+        symbol: "stINJ",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stinj.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stinj.svg",
+        },
+        price: {
+          poolId: "1675",
+          denom:
+            "ibc/64BA6E31FE887D66C6F8F31C7B1A80C7CA179239677B4088BB55F5EA07DBE273",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "stride",
+              chainId: "stride-1",
+              sourceDenom: "stinj",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-326",
+              path: "transfer/channel-326/stinj",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "stride",
+            sourceDenom: "stinj",
+            chainType: "cosmos",
+            chainId: "stride-1",
+            symbol: "stINJ",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stinj.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stinj.svg",
+            },
+          },
+        ],
+        variantGroupKey: "stINJ",
+        name: "Stride Staked INJ",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "stride",
+          sourceDenom: "ustrd",
+        },
+        listingDate: "2024-04-10T18:38:00.000Z",
+        relative_image_url: "/tokens/generated/stinj.svg",
       },
       {
         chainName: "stride",
@@ -13237,7 +14476,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/9A76CDF0CBCEF37923F32518FA15E5DC92B9F56128292BC4D63C4AEA76CBB110",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13272,6 +14511,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stDYM",
         name: "Stride Staked DYM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13305,7 +14545,7 @@ export const AssetLists: AssetList[] = [
           poolId: "813",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13340,6 +14580,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "REBUS",
         name: "Rebus",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13368,7 +14609,7 @@ export const AssetLists: AssetList[] = [
           poolId: "816",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13403,6 +14644,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TORI",
         name: "Teritori",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13431,7 +14673,7 @@ export const AssetLists: AssetList[] = [
           poolId: "826",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13466,6 +14708,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LAMB",
         name: "Lambda",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13495,7 +14738,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13530,7 +14773,8 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FUND",
         name: "Unification",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
@@ -13558,7 +14802,7 @@ export const AssetLists: AssetList[] = [
           poolId: "832",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13593,6 +14837,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "JKL",
         name: "Jackal",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -13621,7 +14866,7 @@ export const AssetLists: AssetList[] = [
           poolId: "856",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13656,6 +14901,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BZE",
         name: "BeeZee",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13684,7 +14930,7 @@ export const AssetLists: AssetList[] = [
           poolId: "858",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13719,6 +14965,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ACRE",
         name: "Acrechain",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13783,6 +15030,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "arUSD",
         name: "Arable USD",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13846,6 +15094,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CNTO",
         name: "Ciento Token",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13875,7 +15124,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13910,6 +15159,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "IMV",
         name: "Imversed",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -13934,11 +15184,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/medasdigital/images/medas.svg",
         },
         price: {
-          poolId: "1266",
+          poolId: "910",
           denom:
-            "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580",
+            "ibc/9712DBB13B9631EDFA9BF61B55F1B2D290B2ADB67E3A4EB3A875F3B6081B3B84",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -13973,6 +15223,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MEDAS",
         name: "Medas Digital Network",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -14036,6 +15287,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NOM",
         name: "Onomy",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14059,13 +15311,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dyson/images/dys.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dyson/images/dys.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "950",
           denom:
             "ibc/D1542AA8762DB13087D8364F3EA6509FD6F009A34F00426AF9E4F9FA85CBBF1F",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14100,6 +15351,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYS",
         name: "Dyson Protocol",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -14125,11 +15377,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "planq",
         price: {
-          poolId: "1218",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "898",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -14170,7 +15421,8 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PLQ",
         name: "Planq",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
@@ -14198,7 +15450,7 @@ export const AssetLists: AssetList[] = [
           poolId: "901",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14233,6 +15485,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CANTO",
         name: "Canto",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14257,11 +15510,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qstars.svg",
         },
         price: {
-          poolId: "903",
+          poolId: "1766",
           denom:
             "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14296,6 +15549,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qSTARS",
         name: "Quicksilver Liquid Staked STARS",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14322,7 +15576,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14357,6 +15611,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qATOM",
         name: "Quicksilver Liquid Staked ATOM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14379,11 +15634,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qregen.svg",
         },
         price: {
-          poolId: "948",
+          poolId: "1767",
           denom:
             "ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14418,6 +15673,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qREGEN",
         name: "Quicksilver Liquid Staked Regen",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14440,10 +15696,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "quicksilver",
         price: {
-          poolId: "952",
+          poolId: "1697",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14477,6 +15733,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QCK",
         name: "Quicksilver",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14498,7 +15755,7 @@ export const AssetLists: AssetList[] = [
           poolId: "956",
           denom: "uosmo",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14533,6 +15790,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qOSMO",
         name: "Quicksilver Liquid Staked OSMO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14559,7 +15817,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/9BBA9A1C257E971E38C1422780CE6F0B0686F0A3085E2D61118D904BFE0F5F5E",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14594,6 +15852,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "qSOMM",
         name: "Quicksilver Liquid Staked SOMM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14603,6 +15862,238 @@ export const AssetLists: AssetList[] = [
           sourceDenom: "uqck",
         },
         relative_image_url: "/tokens/generated/qsomm.svg",
+      },
+      {
+        chainName: "quicksilver",
+        sourceDenom: "uqjuno",
+        coinMinimalDenom:
+          "ibc/B4E18E61E1505C2F371B621E49B09E983F6A138F251A7B5286A6BDF739FD0D54",
+        symbol: "qJUNO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qjuno.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qjuno.svg",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "quicksilver",
+              chainId: "quicksilver-2",
+              sourceDenom: "uqjuno",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-522",
+              path: "transfer/channel-522/uqjuno",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "quicksilver",
+            sourceDenom: "uqjuno",
+            chainType: "cosmos",
+            chainId: "quicksilver-2",
+            symbol: "qJUNO",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qjuno.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qjuno.svg",
+            },
+          },
+        ],
+        variantGroupKey: "qJUNO",
+        name: "Quicksilver Liquid Staked JUNO",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "quicksilver",
+          sourceDenom: "uqck",
+        },
+        listingDate: "2024-05-14T18:30:00.000Z",
+        relative_image_url: "/tokens/generated/qjuno.svg",
+      },
+      {
+        chainName: "quicksilver",
+        sourceDenom: "uqsaga",
+        coinMinimalDenom:
+          "ibc/F2D400F2728E9DA06EAE2AFAB289931A69EDDA5A661578C66A3177EDFE3C0D13",
+        symbol: "qSAGA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsaga.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsaga.svg",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "quicksilver",
+              chainId: "quicksilver-2",
+              sourceDenom: "uqsaga",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-522",
+              path: "transfer/channel-522/uqsaga",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "quicksilver",
+            sourceDenom: "uqsaga",
+            chainType: "cosmos",
+            chainId: "quicksilver-2",
+            symbol: "qSAGA",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsaga.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qsaga.svg",
+            },
+          },
+        ],
+        variantGroupKey: "qSAGA",
+        name: "Quicksilver Liquid Staked SAGA",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "quicksilver",
+          sourceDenom: "uqck",
+        },
+        listingDate: "2024-05-14T18:30:00.000Z",
+        relative_image_url: "/tokens/generated/qsaga.svg",
+      },
+      {
+        chainName: "quicksilver",
+        sourceDenom: "aqdydx",
+        coinMinimalDenom:
+          "ibc/273C593E51ACE56F1F2BDB3E03A5CB81BB208B894BCAA642676A32C3454E8C27",
+        symbol: "qDYDX",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qdydx.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qdydx.svg",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "quicksilver",
+              chainId: "quicksilver-2",
+              sourceDenom: "aqdydx",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-522",
+              path: "transfer/channel-522/aqdydx",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "quicksilver",
+            sourceDenom: "aqdydx",
+            chainType: "cosmos",
+            chainId: "quicksilver-2",
+            symbol: "qDYDX",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qdydx.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qdydx.svg",
+            },
+          },
+        ],
+        variantGroupKey: "qDYDX",
+        name: "Quicksilver Liquid Staked DYDX",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "quicksilver",
+          sourceDenom: "uqck",
+        },
+        listingDate: "2024-05-14T18:30:00.000Z",
+        relative_image_url: "/tokens/generated/qdydx.svg",
+      },
+      {
+        chainName: "quicksilver",
+        sourceDenom: "uqbld",
+        coinMinimalDenom:
+          "ibc/C1C106D915C8E8C59E5DC69BF30FEF64729A6F788060B184C86A315DBB762EF7",
+        symbol: "qBLD",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qbld.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qbld.svg",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "quicksilver",
+              chainId: "quicksilver-2",
+              sourceDenom: "uqbld",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-522",
+              path: "transfer/channel-522/uqbld",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "quicksilver",
+            sourceDenom: "uqbld",
+            chainType: "cosmos",
+            chainId: "quicksilver-2",
+            symbol: "qBLD",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qbld.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qbld.svg",
+            },
+          },
+        ],
+        variantGroupKey: "qBLD",
+        name: "Quicksilver Liquid Staked BLD",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        sortWith: {
+          chainName: "quicksilver",
+          sourceDenom: "uqck",
+        },
+        listingDate: "2024-05-14T18:30:00.000Z",
+        relative_image_url: "/tokens/generated/qbld.svg",
       },
     ],
   },
@@ -14626,7 +16117,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1099",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14661,6 +16152,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MARS",
         name: "Mars Hub",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14684,12 +16176,11 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/8ball/images/8ball.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/8ball/images/8ball.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "935",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14724,6 +16215,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "EBL",
         name: "8ball",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -14751,7 +16243,7 @@ export const AssetLists: AssetList[] = [
           poolId: "954",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14786,6 +16278,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARKH",
         name: "Arkhadian",
+        isAlloyed: false,
         verified: false,
         unstable: true,
         disabled: true,
@@ -14814,7 +16307,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: [],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14849,6 +16342,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FRNZ",
         name: "Frienzies",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14871,7 +16365,8 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: [],
+        categories: ["stablecoin"],
+        pegMechanism: "collateralized",
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14917,7 +16412,8 @@ export const AssetLists: AssetList[] = [
           },
         ],
         variantGroupKey: "USDC",
-        name: "USD Coin",
+        name: "USDC",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14946,7 +16442,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1318",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["defi", "sail_initiative"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -14981,6 +16477,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "WHALE",
         name: "Migaloo",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -14999,9 +16496,9 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/ash.svg",
         },
         price: {
-          poolId: "1360",
+          poolId: "1660",
           denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+            "ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0",
         },
         categories: ["meme"],
         transferMethods: [
@@ -15039,6 +16536,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ASH",
         name: "ASH",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -15058,11 +16556,11 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/rac.svg",
         },
         price: {
-          poolId: "1359",
+          poolId: "1659",
           denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+            "ibc/42A9553A7770F3D7B62F3A82AF04E7719B4FD6EAF31BE5645092AAC4A6C2201D",
         },
-        categories: ["meme"],
+        categories: ["gaming", "sail_initiative"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15099,6 +16597,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RAC",
         name: "RAC",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -15157,6 +16656,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "GUPPY",
         name: "GUPPY",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -15174,7 +16674,7 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/shark.png",
         },
-        categories: ["meme"],
+        categories: ["sail_initiative"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15210,12 +16710,70 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SHARK",
         name: "SHARK",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-15T19:51:00.000Z",
         relative_image_url: "/tokens/generated/shark.png",
+      },
+      {
+        chainName: "migaloo",
+        sourceDenom:
+          "factory/migaloo1d0uma9qzcts4fzt7ml39xp44aut5k6qyjfzz4asalnecppppr3rsl52vvv/rstk",
+        coinMinimalDenom:
+          "ibc/04FAC73DFF7F1DD59395948F2F043B0BBF978AD4533EE37E811340F501A08FFB",
+        symbol: "RSTK",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/rstk.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/rstk.svg",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "migaloo",
+              chainId: "migaloo-1",
+              sourceDenom:
+                "factory/migaloo1d0uma9qzcts4fzt7ml39xp44aut5k6qyjfzz4asalnecppppr3rsl52vvv/rstk",
+              port: "transfer",
+              channelId: "channel-5",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-642",
+              path: "transfer/channel-642/factory/migaloo1d0uma9qzcts4fzt7ml39xp44aut5k6qyjfzz4asalnecppppr3rsl52vvv/rstk",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "migaloo",
+            sourceDenom:
+              "factory/migaloo1d0uma9qzcts4fzt7ml39xp44aut5k6qyjfzz4asalnecppppr3rsl52vvv/rstk",
+            chainType: "cosmos",
+            chainId: "migaloo-1",
+            symbol: "RSTK",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/rstk.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/migaloo/images/rstk.svg",
+            },
+          },
+        ],
+        variantGroupKey: "RSTK",
+        name: "RESTAKE",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-14T01:25:00.000Z",
+        relative_image_url: "/tokens/generated/rstk.svg",
       },
     ],
   },
@@ -15239,7 +16797,7 @@ export const AssetLists: AssetList[] = [
           poolId: "992",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["nft_protocol"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15274,6 +16832,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FLIX",
         name: "OmniFlix",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15303,7 +16862,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15338,6 +16897,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BLZ",
         name: "Bluzelle",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15366,7 +16926,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1036",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15401,6 +16961,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "LORE",
         name: "Gitopia",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15426,11 +16987,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "nolus",
         price: {
-          poolId: "1041",
+          poolId: "1797",
           denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15465,6 +17026,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NLS",
         name: "Nolus",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15490,11 +17052,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "neutron-3",
         price: {
-          poolId: "1324",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1388",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15529,6 +17090,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NTRN",
         name: "Neutron",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15552,7 +17114,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -15612,6 +17174,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "stETH",
         name: "Wrapped Lido Staked Ether",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15631,8 +17194,9 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "newt",
         price: {
-          poolId: "1334",
-          denom: "uosmo",
+          poolId: "1646",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: ["meme"],
         transferMethods: [
@@ -15670,6 +17234,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NEWT",
         name: "Newt",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15728,6 +17293,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "CIRCUS",
         name: "AtomEconomicZone69JaeKwonInu",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -15786,6 +17352,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BAD",
         name: "Badcoin",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -15845,12 +17412,245 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APOLLO",
         name: "Apollo DAO",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-01-22T21:05:00.000Z",
         relative_image_url: "/tokens/generated/apollo.svg",
+      },
+      {
+        chainName: "neutron",
+        sourceDenom:
+          "factory/neutron13lkh47msw28yynspc5rnmty3yktk43wc3dsv0l/ATOM1KLFG",
+        coinMinimalDenom:
+          "ibc/0E77E090EC04C476DE2BC0A7056580AC47660DAEB7B0D4701C085E3A046AC7B7",
+        symbol: "ATOM1KLFG",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ATOM1KLFGc.png",
+        },
+        price: {
+          poolId: "1679",
+          denom: "uosmo",
+        },
+        categories: ["meme"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "neutron",
+              chainId: "neutron-1",
+              sourceDenom:
+                "factory/neutron13lkh47msw28yynspc5rnmty3yktk43wc3dsv0l/ATOM1KLFG",
+              port: "transfer",
+              channelId: "channel-10",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-874",
+              path: "transfer/channel-874/factory/neutron13lkh47msw28yynspc5rnmty3yktk43wc3dsv0l/ATOM1KLFG",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "neutron",
+            sourceDenom:
+              "factory/neutron13lkh47msw28yynspc5rnmty3yktk43wc3dsv0l/ATOM1KLFG",
+            chainType: "cosmos",
+            chainId: "neutron-1",
+            symbol: "ATOM1KLFG",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ATOM1KLFGc.png",
+            },
+          },
+        ],
+        variantGroupKey: "ATOM1KLFG",
+        name: "ATOM1KLFG",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-09T16:00:00.000Z",
+        relative_image_url: "/tokens/generated/atom1klfg.png",
+      },
+      {
+        chainName: "neutron",
+        sourceDenom:
+          "factory/neutron1ffus553eet978k024lmssw0czsxwr97mggyv85lpcsdkft8v9ufsz3sa07/astro",
+        coinMinimalDenom:
+          "ibc/B8C608CEE08C4F30A15A7955306F2EDAF4A02BB191CABC4185C1A57FD978DA1B",
+        symbol: "ASTRO",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/astro.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/astro.svg",
+        },
+        coingeckoId: "astroport-fi",
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "neutron",
+              chainId: "neutron-1",
+              sourceDenom:
+                "factory/neutron1ffus553eet978k024lmssw0czsxwr97mggyv85lpcsdkft8v9ufsz3sa07/astro",
+              port: "transfer",
+              channelId: "channel-10",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-874",
+              path: "transfer/channel-874/factory/neutron1ffus553eet978k024lmssw0czsxwr97mggyv85lpcsdkft8v9ufsz3sa07/astro",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "neutron",
+            sourceDenom:
+              "factory/neutron1ffus553eet978k024lmssw0czsxwr97mggyv85lpcsdkft8v9ufsz3sa07/astro",
+            chainType: "cosmos",
+            chainId: "neutron-1",
+            symbol: "ASTRO",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/astro.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/astro.svg",
+            },
+          },
+        ],
+        variantGroupKey: "ASTRO",
+        name: "Astroport token",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-13T17:50:00.000Z",
+        relative_image_url: "/tokens/generated/astro.svg",
+      },
+      {
+        chainName: "neutron",
+        sourceDenom:
+          "factory/neutron1zlf3hutsa4qnmue53lz2tfxrutp8y2e3rj4nkghg3rupgl4mqy8s5jgxsn/xASTRO",
+        coinMinimalDenom:
+          "ibc/2ED09B03AA396BC2F35B741F4CA4A82D33A24A1007BFC1973299842DD626F564",
+        symbol: "xASTRO",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/xAstro.svg",
+        },
+        categories: ["defi", "liquid_staking"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "neutron",
+              chainId: "neutron-1",
+              sourceDenom:
+                "factory/neutron1zlf3hutsa4qnmue53lz2tfxrutp8y2e3rj4nkghg3rupgl4mqy8s5jgxsn/xASTRO",
+              port: "transfer",
+              channelId: "channel-10",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-874",
+              path: "transfer/channel-874/factory/neutron1zlf3hutsa4qnmue53lz2tfxrutp8y2e3rj4nkghg3rupgl4mqy8s5jgxsn/xASTRO",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "neutron",
+            sourceDenom:
+              "factory/neutron1zlf3hutsa4qnmue53lz2tfxrutp8y2e3rj4nkghg3rupgl4mqy8s5jgxsn/xASTRO",
+            chainType: "cosmos",
+            chainId: "neutron-1",
+            symbol: "xASTRO",
+            decimals: 6,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/xAstro.svg",
+            },
+          },
+        ],
+        variantGroupKey: "xASTRO",
+        name: "Staked Astroport Token",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        listingDate: "2024-04-13T17:50:00.000Z",
+        relative_image_url: "/tokens/generated/xastro.svg",
+      },
+      {
+        chainName: "neutron",
+        sourceDenom:
+          "factory/neutron133xakkrfksq39wxy575unve2nyehg5npx75nph/WEIRD",
+        coinMinimalDenom:
+          "ibc/38ADC6FFDDDB7D70B72AD0322CEA8844CB18FAA0A23400DBA8A99D43E18B3748",
+        symbol: "WEIRD",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/WEIRD.png",
+        },
+        price: {
+          poolId: "1776",
+          denom:
+            "ibc/D3B574938631B0A1BA704879020C696E514CFADAA7643CDE4BD5EB010BDE327B",
+        },
+        categories: ["meme"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "neutron",
+              chainId: "neutron-1",
+              sourceDenom:
+                "factory/neutron133xakkrfksq39wxy575unve2nyehg5npx75nph/WEIRD",
+              port: "transfer",
+              channelId: "channel-10",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-874",
+              path: "transfer/channel-874/factory/neutron133xakkrfksq39wxy575unve2nyehg5npx75nph/WEIRD",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "neutron",
+            sourceDenom:
+              "factory/neutron133xakkrfksq39wxy575unve2nyehg5npx75nph/WEIRD",
+            chainType: "cosmos",
+            chainId: "neutron-1",
+            symbol: "WEIRD",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/WEIRD.png",
+            },
+          },
+        ],
+        variantGroupKey: "WEIRD",
+        name: "WEIRD",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-08T18:00:00.000Z",
+        relative_image_url: "/tokens/generated/weird.png",
       },
     ],
   },
@@ -15873,13 +17673,15 @@ export const AssetLists: AssetList[] = [
           poolId: "1057",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["bridges"],
         transferMethods: [
           {
-            name: "Composable Trustless Zone",
+            name: "Picasso App",
             type: "external_interface",
-            depositUrl: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-            withdrawUrl: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+            depositUrl:
+              "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -15922,7 +17724,8 @@ export const AssetLists: AssetList[] = [
           },
         ],
         variantGroupKey: "PICA",
-        name: "Composable",
+        name: "Picasso",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -15948,10 +17751,11 @@ export const AssetLists: AssetList[] = [
         categories: [],
         transferMethods: [
           {
-            name: "Composable Trustless Zone",
+            name: "Picasso App",
             type: "external_interface",
-            depositUrl: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-            withdrawUrl: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+            depositUrl: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -16007,6 +17811,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KSM",
         name: "Kusama",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16023,6 +17828,7 @@ export const AssetLists: AssetList[] = [
         decimals: 10,
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png",
         },
         coingeckoId: "polkadot",
         price: {
@@ -16032,10 +17838,11 @@ export const AssetLists: AssetList[] = [
         categories: [],
         transferMethods: [
           {
-            name: "Composable Trustless Zone",
+            name: "Picasso App",
             type: "external_interface",
-            depositUrl: "https://app.trustless.zone/?from=PICASSO&to=OSMOSIS",
-            withdrawUrl: "https://app.trustless.zone/?from=OSMOSIS&to=PICASSO",
+            depositUrl: "https://app.picasso.network/?from=POLKADOT&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -16065,6 +17872,7 @@ export const AssetLists: AssetList[] = [
             symbol: "DOT",
             decimals: 10,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
             },
           },
@@ -16075,6 +17883,7 @@ export const AssetLists: AssetList[] = [
             symbol: "DOT",
             decimals: 10,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
             },
           },
@@ -16085,6 +17894,7 @@ export const AssetLists: AssetList[] = [
             symbol: "DOT",
             decimals: 10,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
             },
           },
@@ -16095,17 +17905,1793 @@ export const AssetLists: AssetList[] = [
             symbol: "DOT",
             decimals: 10,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
             },
           },
         ],
         variantGroupKey: "DOT",
         name: "Polkadot",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/dot.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/C58E5D2571042137CB68B1B9851C4E7211C05F7C2C79E21E0966AF0F063961F8",
+        coinMinimalDenom:
+          "ibc/3A0A392E610A8D477851ABFEA74F3D828F36C015AB8E93B0FBB7566A6D13C4D6",
+        symbol: "TNKR",
+        decimals: 12,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/tinkernet/images/tnkr.svg",
+        },
+        coingeckoId: "tinkernet",
+        price: {
+          poolId: "1664",
+          denom: "uosmo",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl:
+              "https://app.picasso.network/?from=PicassoKusama&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/C58E5D2571042137CB68B1B9851C4E7211C05F7C2C79E21E0966AF0F063961F8",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-2/2125",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/C58E5D2571042137CB68B1B9851C4E7211C05F7C2C79E21E0966AF0F063961F8",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "TNKR",
+            decimals: 12,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/tinkernet/images/tnkr.svg",
+            },
+          },
+          {
+            chainName: "picasso",
+            sourceDenom: "2125",
+            chainType: "non-cosmos",
+            symbol: "TNKR",
+            decimals: 12,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/tinkernet/images/tnkr.svg",
+            },
+          },
+          {
+            chainName: "tinkernet",
+            sourceDenom: "Planck",
+            chainType: "non-cosmos",
+            symbol: "TNKR",
+            decimals: 12,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/tinkernet/images/tnkr.svg",
+            },
+          },
+        ],
+        variantGroupKey: "TNKR",
+        name: "Tinkernet",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-03T16:09:00.000Z",
+        relative_image_url: "/tokens/generated/tnkr.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/F9D075D4079FC56A9C49B601E54A45292C319D8B0E8CC0F8439041130AA7166C",
+        coinMinimalDenom:
+          "ibc/A23E590BA7E0D808706FB5085A449B3B9D6864AE4DDE7DAF936243CEBB2A3D43",
+        symbol: "ETH.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/eth.pica.svg",
+        },
+        coingeckoId: "ethereum",
+        price: {
+          poolId: "1739",
+          denom:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/F9D075D4079FC56A9C49B601E54A45292C319D8B0E8CC0F8439041130AA7166C",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/wei",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/F9D075D4079FC56A9C49B601E54A45292C319D8B0E8CC0F8439041130AA7166C",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "ETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "wei",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            symbol: "ETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.svg",
+            },
+          },
+        ],
+        variantGroupKey: "ETH",
+        name: "Ethereum",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/eth.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/A342F6F8D1CDE1D934C50E8EAFF91E813D971E1BFEED7E557F1674E01004A533",
+        coinMinimalDenom:
+          "ibc/37DFAFDA529FF7D513B0DB23E9728DF9BF73122D38D46824C78BB7F91E6A736B",
+        symbol: "DAI.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/dai.pica.svg",
+        },
+        coingeckoId: "dai",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/A342F6F8D1CDE1D934C50E8EAFF91E813D971E1BFEED7E557F1674E01004A533",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x6b175474e89094c44da98b954eedeac495271d0f",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/A342F6F8D1CDE1D934C50E8EAFF91E813D971E1BFEED7E557F1674E01004A533",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "DAI",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/dai.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x6b175474e89094c44da98b954eedeac495271d0f",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x6b175474e89094c44da98b954eedeac495271d0f",
+            symbol: "DAI",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/dai.svg",
+            },
+          },
+        ],
+        variantGroupKey: "DAI",
+        name: "Dai",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/dai.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/5F9BE030FC355733EC79307409FA98398BBFC747C9430B326C144A74F6808B29",
+        coinMinimalDenom:
+          "ibc/5435437A8C9416B650DDA49C338B63CCFC6465123B715F6BAA9B1B2071E27913",
+        symbol: "FXS.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/fxs.pica.svg",
+        },
+        coingeckoId: "frax-share",
+        price: {
+          poolId: "1719",
+          denom: "uosmo",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/5F9BE030FC355733EC79307409FA98398BBFC747C9430B326C144A74F6808B29",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/5F9BE030FC355733EC79307409FA98398BBFC747C9430B326C144A74F6808B29",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "FXS",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/fxs.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/fxs.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+            symbol: "FXS",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/fxs.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/fxs.svg",
+            },
+          },
+        ],
+        variantGroupKey: "FXS",
+        name: "Frax Shares",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/fxs.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/4F20D68B51ED559F99C3CD658383E91F45486D884BF546E7B25337A058562CDB",
+        coinMinimalDenom:
+          "ibc/9A8CBC029002DC5170E715F93FBF35011FFC9796371F59B1F3C3094AE1B453A9",
+        symbol: "FRAX.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/frax.pica.svg",
+        },
+        coingeckoId: "frax",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/4F20D68B51ED559F99C3CD658383E91F45486D884BF546E7B25337A058562CDB",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x853d955acef822db058eb8505911ed77f175b99e",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/4F20D68B51ED559F99C3CD658383E91F45486D884BF546E7B25337A058562CDB",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "FRAX",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frax.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x853d955acef822db058eb8505911ed77f175b99e",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x853d955acef822db058eb8505911ed77f175b99e",
+            symbol: "FRAX",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frax.svg",
+            },
+          },
+        ],
+        variantGroupKey: "FRAX",
+        name: "Frax",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/frax.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/37CC704EA53E96AB09A9C31D79142DE7DB252420F3AB18015F9870AE219947BD",
+        coinMinimalDenom:
+          "ibc/078AD6F581E8115CDFBD8FFA29D8C71AFE250CE952AFF80040CBC64868D44AD3",
+        symbol: "USDT.pica",
+        decimals: 6,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usdt.pica.svg",
+        },
+        coingeckoId: "tether",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/37CC704EA53E96AB09A9C31D79142DE7DB252420F3AB18015F9870AE219947BD",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0xdac17f958d2ee523a2206206994597c13d831ec7",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/37CC704EA53E96AB09A9C31D79142DE7DB252420F3AB18015F9870AE219947BD",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "USDT",
+            decimals: 6,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            symbol: "USDT",
+            decimals: 6,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg",
+            },
+          },
+        ],
+        variantGroupKey: "USDT",
+        name: "Tether (Ethereum)",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/usdt.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/5BD7F23FE150D9CF3BCC944DB829380BCC51A4022A131151C4D13B3AFAC2D1D9",
+        coinMinimalDenom:
+          "ibc/0EFA07F312E05258A56AE1DD600E39B9151CF7A91C8A94EEBCF4F03ECFE5DD98",
+        symbol: "sFRAX.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sfrax.pica.svg",
+        },
+        coingeckoId: "staked-frax",
+        price: {
+          poolId: "1748",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/5BD7F23FE150D9CF3BCC944DB829380BCC51A4022A131151C4D13B3AFAC2D1D9",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0xa663b02cf0a4b149d2ad41910cb81e23e1c41c32",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/5BD7F23FE150D9CF3BCC944DB829380BCC51A4022A131151C4D13B3AFAC2D1D9",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "sFRAX",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrax.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrax.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xa663b02cf0a4b149d2ad41910cb81e23e1c41c32",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xa663b02cf0a4b149d2ad41910cb81e23e1c41c32",
+            symbol: "sFRAX",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrax.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrax.svg",
+            },
+          },
+        ],
+        variantGroupKey: "sFRAX",
+        name: "Staked FRAX",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/sfrax.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/458032E654E41DB91EF98F13E2CE4F9E0FE86BA3E0CDBEC074A854E9F5229A90",
+        coinMinimalDenom:
+          "ibc/688E70EF567E5D4BA1CF4C54BAD758C288BC1A6C8B0B12979F911A2AE95E27EC",
+        symbol: "frxETH.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/frxeth.pica.svg",
+        },
+        coingeckoId: "frax-ether",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/458032E654E41DB91EF98F13E2CE4F9E0FE86BA3E0CDBEC074A854E9F5229A90",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x5e8422345238f34275888049021821e8e08caa1f",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/458032E654E41DB91EF98F13E2CE4F9E0FE86BA3E0CDBEC074A854E9F5229A90",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "frxETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x5e8422345238f34275888049021821e8e08caa1f",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x5e8422345238f34275888049021821e8e08caa1f",
+            symbol: "frxETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.svg",
+            },
+          },
+        ],
+        variantGroupKey: "frxETH",
+        name: "Frax Ether",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/frxeth.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/4E0ECE7819D77B0F2B49F5C34B5E594A02D2BA8B1B0F103208F847B53EBFB69A",
+        coinMinimalDenom:
+          "ibc/F17CCB4F07948CC2D8B72952C2D0A84F2B763962F698774BB121B872AE4611B5",
+        symbol: "sfrxETH.pica",
+        decimals: 18,
+        logoURIs: {
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/sfrxeth.pica.svg",
+        },
+        coingeckoId: "staked-frax-ether",
+        price: {
+          poolId: "1720",
+          denom: "uosmo",
+        },
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/4E0ECE7819D77B0F2B49F5C34B5E594A02D2BA8B1B0F103208F847B53EBFB69A",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0xac3e018457b222d93114458476f3e3416abbe38f",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/4E0ECE7819D77B0F2B49F5C34B5E594A02D2BA8B1B0F103208F847B53EBFB69A",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "sfrxETH",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrxeth.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xac3e018457b222d93114458476f3e3416abbe38f",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xac3e018457b222d93114458476f3e3416abbe38f",
+            symbol: "sfrxETH",
+            decimals: 18,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrxeth.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x5e8422345238f34275888049021821e8e08caa1f",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x5e8422345238f34275888049021821e8e08caa1f",
+            symbol: "frxETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frxeth.svg",
+            },
+          },
+        ],
+        variantGroupKey: "frxETH",
+        name: "Frax Staked Ether",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-25T15:30:00.000Z",
+        relative_image_url: "/tokens/generated/sfrxeth.pica.svg",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/6367C5AF2E2477FB13DD0C8CB0027FEDDF5AE947EE84C69FB75003E604E29D05",
+        coinMinimalDenom:
+          "ibc/5B5BFCC8A9F0D554A4245117F7798E85BE25B6C73DBFA2D6F369BD9DD6CACC6D",
+        symbol: "PEPE.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/pepe.pica.png",
+        },
+        coingeckoId: "pepe",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/6367C5AF2E2477FB13DD0C8CB0027FEDDF5AE947EE84C69FB75003E604E29D05",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x6982508145454ce325ddbe47a25d4ec3d2311933",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/6367C5AF2E2477FB13DD0C8CB0027FEDDF5AE947EE84C69FB75003E604E29D05",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "PEPE",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+            symbol: "PEPE",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.svg",
+            },
+          },
+        ],
+        variantGroupKey: "PEPE",
+        name: "Pepe",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/pepe.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/52C8C6197989684F891076F228F20CD1659AB6E1776E3B85E65CBBEC67DA5DED",
+        coinMinimalDenom:
+          "ibc/080CE38C1E49595F2199E88BE7281F93FAEEF3FE354EECED0640625E8311C9CF",
+        symbol: "CRV.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/crv.pica.png",
+        },
+        coingeckoId: "curve-dao-token",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/52C8C6197989684F891076F228F20CD1659AB6E1776E3B85E65CBBEC67DA5DED",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/52C8C6197989684F891076F228F20CD1659AB6E1776E3B85E65CBBEC67DA5DED",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "CRV",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/crv.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xd533a949740bb3306d119cc777fa900ba034cd52",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xd533a949740bb3306d119cc777fa900ba034cd52",
+            symbol: "CRV",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/crv.png",
+            },
+          },
+        ],
+        variantGroupKey: "CRV",
+        name: "Curve DAO",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/crv.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/0247E0E2C174135AADF4EA172D97FF5C15A64689A403E83603EAE4F0616DD365",
+        coinMinimalDenom:
+          "ibc/39AAE0F5F918B731BEF1E02E9BAED33C242805F668B0A941AC509FB569FE51CB",
+        symbol: "ezETH.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ezeth.pica.png",
+        },
+        coingeckoId: "renzo-restaked-eth",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/0247E0E2C174135AADF4EA172D97FF5C15A64689A403E83603EAE4F0616DD365",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/0247E0E2C174135AADF4EA172D97FF5C15A64689A403E83603EAE4F0616DD365",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "ezETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ezeth.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+            symbol: "ezETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ezeth.png",
+            },
+          },
+        ],
+        variantGroupKey: "ezETH",
+        name: "Renzo Restaked ETH",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/ezeth.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/FFD9EB71B4480ED4D73F7370A2AEBDB48447A0AAE27265F8060A957F0FF71983",
+        coinMinimalDenom:
+          "ibc/BFFE212A23384C4EB055CF6F95A1F5EC1BE0F9BD286FAA66C3748F0444E67D63",
+        symbol: "USDe.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usde.pica.png",
+        },
+        coingeckoId: "ethena-usde",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/FFD9EB71B4480ED4D73F7370A2AEBDB48447A0AAE27265F8060A957F0FF71983",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/FFD9EB71B4480ED4D73F7370A2AEBDB48447A0AAE27265F8060A957F0FF71983",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "USDe",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usde.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+            symbol: "USDe",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usde.png",
+            },
+          },
+        ],
+        variantGroupKey: "USDe",
+        name: "Ethena USDe",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/usde.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/B089810D5A6316AD5E9C7808733DC4AB11C7BA3033221D28711FC7206BACB929",
+        coinMinimalDenom:
+          "ibc/257FF64F160106F6EE43CEE7C761DA64C1346221895373CC810FFA1BFAC5A7CD",
+        symbol: "ENA.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ena.pica.png",
+        },
+        coingeckoId: "ethena",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/B089810D5A6316AD5E9C7808733DC4AB11C7BA3033221D28711FC7206BACB929",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x57e114b691db790c35207b2e685d4a43181e6061",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/B089810D5A6316AD5E9C7808733DC4AB11C7BA3033221D28711FC7206BACB929",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "ENA",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ena.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x57e114b691db790c35207b2e685d4a43181e6061",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x57e114b691db790c35207b2e685d4a43181e6061",
+            symbol: "ENA",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ena.png",
+            },
+          },
+        ],
+        variantGroupKey: "ENA",
+        name: "Ethena",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/ena.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/34C23BA6BAA2EAE0199D85AD1E2E214F76B0BFAD42BF75542D15F71264EEB05B",
+        coinMinimalDenom:
+          "ibc/8D0FFEA4EDB04E3C1738C9599B66AE49683E0540FC4C1214AC84534C200D818B",
+        symbol: "eETH.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/eeth.pica.png",
+        },
+        coingeckoId: "ether-fi-staked-eth",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/34C23BA6BAA2EAE0199D85AD1E2E214F76B0BFAD42BF75542D15F71264EEB05B",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x35fa164735182de50811e8e2e824cfb9b6118ac2",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/34C23BA6BAA2EAE0199D85AD1E2E214F76B0BFAD42BF75542D15F71264EEB05B",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "eETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eeth.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x35fa164735182de50811e8e2e824cfb9b6118ac2",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x35fa164735182de50811e8e2e824cfb9b6118ac2",
+            symbol: "eETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eeth.png",
+            },
+          },
+        ],
+        variantGroupKey: "eETH",
+        name: "ether.fi Staked ETH",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/eeth.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/36EF1EA47A09689C81D848B08E5240FA9FF13B17DB7DCF48B77D4D0D9B152821",
+        coinMinimalDenom:
+          "ibc/D09BB89B2187EF13EF006B44510749B0F02FD0B34F8BB55C70D812A1FF6148C7",
+        symbol: "pxETH.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/pxeth.pica.png",
+        },
+        coingeckoId: "dinero-staked-eth",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/36EF1EA47A09689C81D848B08E5240FA9FF13B17DB7DCF48B77D4D0D9B152821",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0x04c154b66cb340f3ae24111cc767e0184ed00cc6",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/36EF1EA47A09689C81D848B08E5240FA9FF13B17DB7DCF48B77D4D0D9B152821",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "pxETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pxeth.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x04c154b66cb340f3ae24111cc767e0184ed00cc6",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x04c154b66cb340f3ae24111cc767e0184ed00cc6",
+            symbol: "pxETH",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pxeth.png",
+            },
+          },
+        ],
+        variantGroupKey: "pxETH",
+        name: "Dinero Staked ETH",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/pxeth.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/C9D79BE8E3E75CA2DFDC722C77D7B179C39A4802D59019C790A825FDE34B724A",
+        coinMinimalDenom:
+          "ibc/63551E7BB24008F0AFC1CB051A423A5104F781F035F8B1A191264B7086A0A0F6",
+        symbol: "crvUSD.pica",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/crvUSD.pica.png",
+        },
+        coingeckoId: "crvusd",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
+            withdrawUrl:
+              "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/C9D79BE8E3E75CA2DFDC722C77D7B179C39A4802D59019C790A825FDE34B724A",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-52/0xf939e0a03fb07f59a73314e73794be0e57ac1b4e",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/C9D79BE8E3E75CA2DFDC722C77D7B179C39A4802D59019C790A825FDE34B724A",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "crvUSD",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/crvusd.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e",
+            symbol: "crvUSD",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/crvusd.png",
+            },
+          },
+        ],
+        variantGroupKey: "crvUSD",
+        name: "crvUSD",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/crvusd.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/D105950618E47CA2AEC314282BC401625025F80A4F812808DEEBB1941C685575",
+        coinMinimalDenom:
+          "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
+        symbol: "solana.USDT.pica",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/solana.usdt.pica.png",
+        },
+        coingeckoId: "tether",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/D105950618E47CA2AEC314282BC401625025F80A4F812808DEEBB1941C685575",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/D105950618E47CA2AEC314282BC401625025F80A4F812808DEEBB1941C685575",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "USDT",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            chainType: "non-cosmos",
+            symbol: "USDT",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.png",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            chainType: "evm",
+            chainId: 1,
+            address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            symbol: "USDT",
+            decimals: 6,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg",
+            },
+          },
+        ],
+        variantGroupKey: "USDT",
+        name: "Tether",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/solana.usdt.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/BADB5950C4A81AC201696EBCB33CD295137FA86F0AA620CDDE946D3700E0208C",
+        coinMinimalDenom:
+          "ibc/B83F9E20B4A07FA8846880000BD9D8985D89567A090F5E9390C64E81C39B4607",
+        symbol: "edgeSOL.pica",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/edgesol.pica.png",
+        },
+        coingeckoId: "edgevana-staked-sol",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/BADB5950C4A81AC201696EBCB33CD295137FA86F0AA620CDDE946D3700E0208C",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/edge86g9cVz87xcpKpy3J77vbp4wYd9idEV562CCntt",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/BADB5950C4A81AC201696EBCB33CD295137FA86F0AA620CDDE946D3700E0208C",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "edgeSOL",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/edgesol.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "edge86g9cVz87xcpKpy3J77vbp4wYd9idEV562CCntt",
+            chainType: "non-cosmos",
+            symbol: "edgeSOL",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/edgesol.png",
+            },
+          },
+        ],
+        variantGroupKey: "edgeSOL",
+        name: "Edgevana Staked SOL",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/edgesol.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/55F5B582483FEFA5422794292B079B4D49A5BAB9881E7C801F9F271F1D234F1D",
+        coinMinimalDenom:
+          "ibc/F618D130A2B8203D169811658BD0361F18DC2453085965FA0E5AEB8018DD54EE",
+        symbol: "LST.pica",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/lst.pica.png",
+        },
+        coingeckoId: "liquid-staking-token",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/55F5B582483FEFA5422794292B079B4D49A5BAB9881E7C801F9F271F1D234F1D",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/LSTxxxnJzKDFSLr4dUkPcmCf5VyryEqzPLz5j4bpxFp",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/55F5B582483FEFA5422794292B079B4D49A5BAB9881E7C801F9F271F1D234F1D",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "LST",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/lst.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "LSTxxxnJzKDFSLr4dUkPcmCf5VyryEqzPLz5j4bpxFp",
+            chainType: "non-cosmos",
+            symbol: "LST",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/lst.png",
+            },
+          },
+        ],
+        variantGroupKey: "LST",
+        name: "Liquid Staking Token",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/lst.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/91A2FE07F8BDFC0552B1C9972FCCBF2CFD067DDE5F496D81E5132CE57762B0F2",
+        coinMinimalDenom:
+          "ibc/9A83BDF4C8C5FFDDE735533BC8CD4363714A6474AED1C2C492FB003BB77C7982",
+        symbol: "jitoSOL.pica",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/jitosol.pica.png",
+        },
+        coingeckoId: "jito-staked-sol",
+        categories: ["liquid_staking"],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/91A2FE07F8BDFC0552B1C9972FCCBF2CFD067DDE5F496D81E5132CE57762B0F2",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/91A2FE07F8BDFC0552B1C9972FCCBF2CFD067DDE5F496D81E5132CE57762B0F2",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "jitoSOL",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/jitosol.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+            chainType: "non-cosmos",
+            symbol: "jitoSOL",
+            decimals: 9,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/jitosol.png",
+            },
+          },
+        ],
+        variantGroupKey: "jitoSOL",
+        name: "Jito Staked SOL",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/jitosol.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/2CC39C8141F257EBBA250F65B9D0F31DC8D153C225E51EC192DE6E3F65D43F0C",
+        coinMinimalDenom:
+          "ibc/0F9E9277B61A78CB31014D541ACA5BF6AB06DFC4524C4C836490B131DAAECD78",
+        symbol: "wSOL.pica",
+        decimals: 9,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/wsol.pica.png",
+        },
+        coingeckoId: "wrapped-solana",
+        price: {
+          poolId: "1811",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/2CC39C8141F257EBBA250F65B9D0F31DC8D153C225E51EC192DE6E3F65D43F0C",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/So11111111111111111111111111111111111111112",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/2CC39C8141F257EBBA250F65B9D0F31DC8D153C225E51EC192DE6E3F65D43F0C",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "wSOL",
+            decimals: 9,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/sol.svg",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "So11111111111111111111111111111111111111112",
+            chainType: "non-cosmos",
+            symbol: "WSOL",
+            decimals: 9,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/sol.svg",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "Lamport",
+            chainType: "non-cosmos",
+            symbol: "SOL",
+            decimals: 9,
+            logoURIs: {
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/sol.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SOL",
+        name: "Wrapped Solana",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/wsol.pica.png",
+      },
+      {
+        chainName: "composable",
+        sourceDenom:
+          "ibc/9D5DA3720001F91DD76B8F609A93F96688EC8185B54BF9A1A1450EB34FF2D912",
+        coinMinimalDenom:
+          "ibc/A8C568580D613F16F7E9075EA9FAD69FEBE0CC1F4AF46C60255FEC4459C166F1",
+        symbol: "WHINE",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/whine.png",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Picasso App",
+            type: "external_interface",
+            depositUrl: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
+            withdrawUrl: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "composable",
+              chainId: "centauri-1",
+              sourceDenom:
+                "ibc/9D5DA3720001F91DD76B8F609A93F96688EC8185B54BF9A1A1450EB34FF2D912",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-1279",
+              path: "transfer/channel-1279/transfer/channel-71/ATeTQcUkWGs7AZ15mCiFUWCW9EUL7KpDZEHCN1Y8pump",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "composable",
+            sourceDenom:
+              "ibc/9D5DA3720001F91DD76B8F609A93F96688EC8185B54BF9A1A1450EB34FF2D912",
+            chainType: "cosmos",
+            chainId: "centauri-1",
+            symbol: "WHINE",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/whine.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "ATeTQcUkWGs7AZ15mCiFUWCW9EUL7KpDZEHCN1Y8pump",
+            chainType: "non-cosmos",
+            symbol: "WHINE",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/whine.png",
+            },
+          },
+        ],
+        variantGroupKey: "WHINE",
+        name: "WHINEcoin",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-06-05T03:00:00.000Z",
+        relative_image_url: "/tokens/generated/whine.png",
       },
     ],
   },
@@ -16128,7 +19714,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1314",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["defi", "built_on_osmosis"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -16162,6 +19748,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QSR",
         name: "Quasar",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16187,11 +19774,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "archway",
         price: {
-          poolId: "1298",
+          poolId: "1375",
           denom:
-            "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -16226,6 +19813,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ARCH",
         name: "Archway",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16252,7 +19840,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1065",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -16292,6 +19880,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "MPWR",
         name: "EmpowerChain",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16317,10 +19906,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "kyve-network",
         price: {
-          poolId: "1075",
-          denom: "uosmo",
+          poolId: "1652",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -16355,6 +19945,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "KYVE",
         name: "KYVE",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16383,7 +19974,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1114",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -16426,6 +20017,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SEI",
         name: "Sei",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16442,12 +20034,11 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/oin.png",
         },
-        coingeckoId: "",
         price: {
           poolId: "1210",
           denom: "uosmo",
         },
-        categories: ["meme"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -16483,11 +20074,66 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "OIN",
         name: "OIN STORE OF VALUE",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/oin.png",
+      },
+      {
+        chainName: "sei",
+        sourceDenom:
+          "cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed",
+        coinMinimalDenom:
+          "ibc/86074B8DF625A75C25D52FA6112E3FD5446BA41FE418880C168CA99D10E22F05",
+        symbol: "SEIYAN",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/SEIYAN.png",
+        },
+        categories: ["meme"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "sei",
+              chainId: "pacific-1",
+              sourceDenom:
+                "cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-782",
+              path: "transfer/channel-782/cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "sei",
+            sourceDenom:
+              "cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed",
+            chainType: "cosmos",
+            chainId: "pacific-1",
+            symbol: "SEIYAN",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/SEIYAN.png",
+            },
+          },
+        ],
+        variantGroupKey: "SEIYAN",
+        name: "SEIYAN",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/seiyan.png",
       },
     ],
   },
@@ -16511,7 +20157,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -16545,6 +20191,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PASG",
         name: "Passage",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16576,6 +20223,12 @@ export const AssetLists: AssetList[] = [
         },
         categories: [],
         transferMethods: [
+          {
+            name: "Osmosis Wormhole Connect",
+            type: "external_interface",
+            depositUrl: "/wormhole?from=solana&to=osmosis&token=SOL",
+            withdrawUrl: "/wormhole?from=osmosis&to=solana&token=SOL",
+          },
           {
             name: "Wormhole Portal Bridge",
             type: "external_interface",
@@ -16636,6 +20289,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOL",
         name: "Solana",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16655,12 +20309,18 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "bonk",
         price: {
-          poolId: "1129",
+          poolId: "1814",
           denom:
-            "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+            "factory/osmo1q77cw0mmlluxu0wr29fcdd0tdnh78gzhkvhe4n6ulal9qvrtu43qtd0nh8/wiha",
         },
         categories: ["meme"],
         transferMethods: [
+          {
+            name: "Osmosis Wormhole Connect",
+            type: "external_interface",
+            depositUrl: "/wormhole?from=solana&to=osmosis&token=BONK",
+            withdrawUrl: "/wormhole?from=osmosis&to=solana&token=BONK",
+          },
           {
             name: "Wormhole Portal Bridge",
             type: "external_interface",
@@ -16711,6 +20371,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BONK",
         name: "Bonk",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16733,7 +20394,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -16788,6 +20449,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDT",
         name: "Tether USD (Wormhole)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16807,12 +20469,17 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "sui",
         price: {
-          poolId: "1502",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1503",
+          denom: "uosmo",
         },
         categories: [],
         transferMethods: [
+          {
+            name: "Osmosis Wormhole Connect",
+            type: "external_interface",
+            depositUrl: "/wormhole?from=sui&to=osmosis&token=SUI",
+            withdrawUrl: "/wormhole?from=osmosis&to=sui&token=SUI",
+          },
           {
             name: "Wormhole Portal Bridge",
             type: "external_interface",
@@ -16863,6 +20530,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SUI",
         name: "Sui",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16888,6 +20556,12 @@ export const AssetLists: AssetList[] = [
         },
         categories: [],
         transferMethods: [
+          {
+            name: "Osmosis Wormhole Connect",
+            type: "external_interface",
+            depositUrl: "/wormhole?from=aptos&to=osmosis&token=APT",
+            withdrawUrl: "/wormhole?from=osmosis&to=aptos&token=APT",
+          },
           {
             name: "Wormhole Portal Bridge",
             type: "external_interface",
@@ -16938,6 +20612,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "APT",
         name: "Aptos Coin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -16955,12 +20630,7 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/usdc.hole.svg",
         },
-        price: {
-          poolId: "1262",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
-        },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -17015,6 +20685,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "USD Coin (Wormhole)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17033,11 +20704,10 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/weth.hole.svg",
         },
         price: {
-          poolId: "1214",
-          denom:
-            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          poolId: "1424",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Wormhole Portal Bridge",
@@ -17105,6 +20775,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ETH",
         name: "Wrapped Ether (Wormhole)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17128,7 +20799,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: [],
+        categories: ["oracles"],
         transferMethods: [
           {
             name: "Wormhole Portal Bridge",
@@ -17180,6 +20851,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "PYTH",
         name: "Pyth Network",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17203,7 +20875,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["stablecoin", "defi"],
+        categories: ["stablecoin"],
         pegMechanism: "collateralized",
         transferMethods: [
           {
@@ -17268,6 +20940,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "USDC",
         name: "Solana USD Coin (Wormhole)",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17290,10 +20963,10 @@ export const AssetLists: AssetList[] = [
         categories: ["defi"],
         transferMethods: [
           {
-            name: "Wormhole Portal Bridge",
+            name: "Bskt.fi Wormhole Bridge",
             type: "external_interface",
-            depositUrl: "https://portalbridge.com/cosmos/",
-            withdrawUrl: "https://portalbridge.com/cosmos/",
+            depositUrl: "https://www.bskt.fi/wormhole",
+            withdrawUrl: "https://www.bskt.fi/wormhole",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -17339,11 +21012,90 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BSKT",
         name: "Basket",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
-        preview: true,
+        preview: false,
+        listingDate: "2024-03-21T20:09:00.000Z",
         relative_image_url: "/tokens/generated/bskt.png",
+      },
+      {
+        chainName: "gateway",
+        sourceDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/2Wb6ueMFc9WLc2eyYVha6qnwHKbwzUXdooXsg6XXVvos",
+        coinMinimalDenom:
+          "ibc/AC6EE43E608B5A7EEE460C960480BC1C3708010E32B2071C429DA259836E10C3",
+        symbol: "W",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/w.png",
+        },
+        coingeckoId: "wormhole",
+        price: {
+          poolId: "1651",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["bridges"],
+        transferMethods: [
+          {
+            name: "Osmosis Wormhole Portal",
+            type: "external_interface",
+            depositUrl: "/wormhole?from=solana&to=osmosis&token=W",
+            withdrawUrl: "/wormhole?from=osmosis&to=solana&token=W",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "gateway",
+              chainId: "wormchain",
+              sourceDenom:
+                "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/2Wb6ueMFc9WLc2eyYVha6qnwHKbwzUXdooXsg6XXVvos",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-2186",
+              path: "transfer/channel-2186/factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/2Wb6ueMFc9WLc2eyYVha6qnwHKbwzUXdooXsg6XXVvos",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "gateway",
+            sourceDenom:
+              "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/2Wb6ueMFc9WLc2eyYVha6qnwHKbwzUXdooXsg6XXVvos",
+            chainType: "cosmos",
+            chainId: "wormchain",
+            symbol: "W",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/w.png",
+            },
+          },
+          {
+            chainName: "solana",
+            sourceDenom: "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
+            chainType: "non-cosmos",
+            symbol: "W",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/w.png",
+            },
+          },
+        ],
+        variantGroupKey: "W",
+        name: "Wormhole Token",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-03T17:37:00.000Z",
+        relative_image_url: "/tokens/generated/w.png",
       },
     ],
   },
@@ -17367,7 +21119,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1173",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
           {
             name: "XPLA",
@@ -17407,6 +21159,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "XPLA",
         name: "XPLA",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17436,7 +21189,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["rwa"],
         transferMethods: [
           {
             name: "Realio Network",
@@ -17476,6 +21229,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "RIO",
         name: "Realio Network",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -17505,7 +21259,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["gaming"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17540,6 +21294,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SGE",
         name: "SGE",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -17568,7 +21323,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17602,6 +21357,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FIS",
         name: "StaFi Hub",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17618,13 +21374,12 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stafihub/images/ratom.svg",
         },
-        coingeckoId: "",
         price: {
           poolId: "1227",
           denom:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
         },
-        categories: ["liquid_staking", "defi"],
+        categories: ["liquid_staking"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17658,6 +21413,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "rATOM",
         name: "rATOM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17684,7 +21440,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1239",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17718,6 +21474,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DORA",
         name: "Dora Vota",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17746,7 +21503,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1244",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["bridges"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17781,11 +21538,90 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "COREUM",
         name: "Coreum",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/coreum.svg",
+      },
+      {
+        chainName: "coreum",
+        sourceDenom:
+          "drop-core1zhs909jp9yktml6qqx9f0ptcq2xnhhj99cja03j3lfcsp2pgm86studdrz",
+        coinMinimalDenom:
+          "ibc/63A7CA0B6838AD8CAD6B5103998FF9B9B6A6F06FBB9638BFF51E63E0142339F3",
+        symbol: "XRP.core",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/xrp.core.png",
+        },
+        price: {
+          poolId: "1591",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Sologenic Coreum Bridge",
+            type: "external_interface",
+            depositUrl: "https://sologenic.org/coreum-bridge",
+            withdrawUrl: "https://sologenic.org/coreum-bridge",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "coreum",
+              chainId: "coreum-mainnet-1",
+              sourceDenom:
+                "drop-core1zhs909jp9yktml6qqx9f0ptcq2xnhhj99cja03j3lfcsp2pgm86studdrz",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-2188",
+              path: "transfer/channel-2188/drop-core1zhs909jp9yktml6qqx9f0ptcq2xnhhj99cja03j3lfcsp2pgm86studdrz",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "coreum",
+            sourceDenom:
+              "drop-core1zhs909jp9yktml6qqx9f0ptcq2xnhhj99cja03j3lfcsp2pgm86studdrz",
+            chainType: "cosmos",
+            chainId: "coreum-mainnet-1",
+            symbol: "XRP",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/xrpl/images/xrp.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/xrpl/images/xrp.svg",
+            },
+          },
+          {
+            chainName: "xrpl",
+            sourceDenom: "drop",
+            chainType: "non-cosmos",
+            symbol: "XRP",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/xrpl/images/xrp.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/xrpl/images/xrp.svg",
+            },
+          },
+        ],
+        variantGroupKey: "XRP",
+        name: "Ripple (Coreum)",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-21T20:09:00.000Z",
+        relative_image_url: "/tokens/generated/xrp.core.png",
       },
     ],
   },
@@ -17809,7 +21645,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1248",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -17844,6 +21680,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "TIA",
         name: "Celestia",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17866,10 +21703,11 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dydx/images/dydx-circle.svg",
         },
-        coingeckoId: "dydx",
+        coingeckoId: "dydx-chain",
         price: {
-          poolId: "1245",
-          denom: "uosmo",
+          poolId: "1246",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
         categories: ["defi"],
         transferMethods: [
@@ -17906,6 +21744,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYDX",
         name: "dYdX Protocol",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -17934,7 +21773,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1241",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Starscan",
@@ -17975,11 +21814,85 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "FX",
         name: "f(x)Core",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         relative_image_url: "/tokens/generated/fx.svg",
+      },
+      {
+        chainName: "fxcore",
+        sourceDenom: "eth0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+        coinMinimalDenom:
+          "ibc/46D8D1A6E2A80ECCB7CA6663086A2E749C508B68DA56A077CD26E6F4F9691EEE",
+        symbol: "PUNDIX",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pundix.png",
+        },
+        coingeckoId: "pundi-x-2",
+        categories: ["depin"],
+        transferMethods: [
+          {
+            name: "Starscan",
+            type: "external_interface",
+            depositUrl:
+              "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=PUNDIX",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "fxcore",
+              chainId: "fxcore",
+              sourceDenom: "eth0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+              port: "transfer",
+              channelId: "channel-19",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-2716",
+              path: "transfer/channel-2716/eth0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "fxcore",
+            sourceDenom: "eth0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+            chainType: "cosmos",
+            chainId: "fxcore",
+            symbol: "PUNDIX",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/pundi-x-token-logo.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/pundi-x-token-logo.svg",
+            },
+          },
+          {
+            chainName: "ethereum",
+            sourceDenom: "0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+            chainType: "evm",
+            chainId: 1,
+            address: "0x0FD10b9899882a6f2fcb5c371E17e70FdEe00C38",
+            symbol: "PUNDIX",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/pundi-x-token-logo.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/pundi-x-token-logo.svg",
+            },
+          },
+        ],
+        variantGroupKey: "PUNDIX",
+        name: "Pundi X Token",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-21T16:00:00.000Z",
+        relative_image_url: "/tokens/generated/pundix.png",
       },
     ],
   },
@@ -18048,6 +21961,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "BTC",
         name: "Nomic Bitcoin",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18076,7 +21990,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["dweb"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18111,6 +22025,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NOIS",
         name: "Nois",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18133,12 +22048,13 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/qwoyn/images/qwoyn.png",
         },
+        coingeckoId: "qwoyn",
         price: {
           poolId: "1295",
           denom:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18172,6 +22088,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "QWOYN",
         name: "Qwoyn",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -18197,11 +22114,10 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "source",
         price: {
-          poolId: "1311",
-          denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+          poolId: "1623",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18236,7 +22152,8 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SOURCE",
         name: "Source",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
@@ -18318,6 +22235,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SRCX",
         name: "Source Token",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -18344,11 +22262,11 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "islamic-coin",
         price: {
-          poolId: "1343",
+          poolId: "1637",
           denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18383,6 +22301,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ISLM",
         name: "Haqq Network",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18407,7 +22326,7 @@ export const AssetLists: AssetList[] = [
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/purse-token-logo.svg",
         },
         price: {
-          poolId: "1394",
+          poolId: "1695",
           denom: "uosmo",
         },
         categories: [],
@@ -18451,12 +22370,14 @@ export const AssetLists: AssetList[] = [
             symbol: "PURSE",
             decimals: 18,
             logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/purse-token-logo.png",
               svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/pundix/images/purse-token-logo.svg",
             },
           },
         ],
         variantGroupKey: "PURSE",
         name: "PURSE Token (Function X)",
+        isAlloyed: false,
         verified: false,
         unstable: false,
         disabled: false,
@@ -18479,8 +22400,7 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nyx/images/nyx.png",
         },
-        coingeckoId: "",
-        categories: ["defi"],
+        categories: ["dweb", "privacy"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18514,6 +22434,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "NYX",
         name: "Nym",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18535,7 +22456,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1361",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["dweb", "privacy"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18564,11 +22485,13 @@ export const AssetLists: AssetList[] = [
             decimals: 6,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nyx/images/nym_token_light.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nyx/images/nym_token_light.svg",
             },
           },
         ],
         variantGroupKey: "NYM",
         name: "NYM",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18594,17 +22517,16 @@ export const AssetLists: AssetList[] = [
         },
         coingeckoId: "dymension",
         price: {
-          poolId: "1450",
-          denom:
-            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          poolId: "1449",
+          denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: [],
         transferMethods: [
           {
             name: "Dymension Portal",
             type: "external_interface",
             depositUrl:
-              "https://portal.dymension.xyz/ibc?sourceId=dymension_1100-1&destinationId=osmosis-1",
+              "https://portal.dymension.xyz/ibc/transfer?sourceId=dymension_1100-1&destinationId=osmosis-1",
           },
           {
             name: "Osmosis IBC Transfer",
@@ -18639,12 +22561,88 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "DYM",
         name: "Dymension Hub",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-02-06T08:36:00.000Z",
         relative_image_url: "/tokens/generated/dym.svg",
+      },
+      {
+        chainName: "dymension",
+        sourceDenom:
+          "ibc/FB53D1684F155CBB86D9CE917807E42B59209EBE3AD3A92E15EF66586C073942",
+        coinMinimalDenom:
+          "ibc/279D69A6EF8E37456C8D2DC7A7C1C50F7A566EC4758F6DE17472A9FDE36C4426",
+        symbol: "NIM",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.svg",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Dymension Portal",
+            type: "external_interface",
+            depositUrl:
+              "https://portal.dymension.xyz/ibc/transfer?sourceId=dymension_1100-1&destinationId=osmosis-1",
+          },
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "dymension",
+              chainId: "dymension_1100-1",
+              sourceDenom:
+                "ibc/FB53D1684F155CBB86D9CE917807E42B59209EBE3AD3A92E15EF66586C073942",
+              port: "transfer",
+              channelId: "channel-2",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-19774",
+              path: "transfer/channel-19774/transfer/channel-49/anim",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "dymension",
+            sourceDenom:
+              "ibc/FB53D1684F155CBB86D9CE917807E42B59209EBE3AD3A92E15EF66586C073942",
+            chainType: "cosmos",
+            chainId: "dymension_1100-1",
+            symbol: "NIM",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.svg",
+            },
+          },
+          {
+            chainName: "nim",
+            sourceDenom: "anim",
+            chainType: "cosmos",
+            chainId: "nim_1122-1",
+            symbol: "NIM",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nim/images/nim.svg",
+            },
+          },
+        ],
+        variantGroupKey: "NIM",
+        name: "Nim Network",
+        isAlloyed: false,
+        verified: false,
+        unstable: true,
+        disabled: true,
+        preview: false,
+        listingDate: "2024-05-01T18:25:00.000Z",
+        relative_image_url: "/tokens/generated/nim.svg",
       },
     ],
   },
@@ -18661,6 +22659,7 @@ export const AssetLists: AssetList[] = [
         decimals: 18,
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/humans/images/heart-dark-mode.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/humans/images/heart-dark-mode.svg",
         },
         coingeckoId: "humans-ai",
         price: {
@@ -18668,8 +22667,14 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         },
-        categories: ["defi"],
+        categories: ["ai"],
         transferMethods: [
+          {
+            name: "Osmosis Pro TFM IBC Transfer",
+            type: "external_interface",
+            depositUrl:
+              "https://pro.osmosis.zone/ibc?chainFrom=humans_1089-1&chainTo=osmosis-1&token0=aheart&token1=ibc%2F35CECC330D11DD00FACB555D07687631E0BC7D226260CC5F015F6D7980819533",
+          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -18703,12 +22708,13 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "HEART",
         name: "Humans.ai",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-08T16:25:00.000Z",
-        relative_image_url: "/tokens/generated/heart.png",
+        relative_image_url: "/tokens/generated/heart.svg",
       },
     ],
   },
@@ -18767,10 +22773,12 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "SCR",
         name: "Scorum",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
-        preview: true,
+        preview: false,
+        listingDate: "2024-03-19T19:08:00.000Z",
         relative_image_url: "/tokens/generated/scr.svg",
       },
     ],
@@ -18789,8 +22797,8 @@ export const AssetLists: AssetList[] = [
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/chain4energy/images/c4e.png",
         },
-        coingeckoId: "",
-        categories: ["defi"],
+        coingeckoId: "chain4energy",
+        categories: [],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18824,10 +22832,12 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "C4E",
         name: "C4E",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
-        preview: true,
+        preview: false,
+        listingDate: "2024-03-06T12:52:00.000Z",
         relative_image_url: "/tokens/generated/c4e.png",
       },
     ],
@@ -18850,7 +22860,7 @@ export const AssetLists: AssetList[] = [
           poolId: "1386",
           denom: "uosmo",
         },
-        categories: ["defi"],
+        categories: ["nft_protocol"],
         transferMethods: [
           {
             name: "Osmosis IBC Transfer",
@@ -18884,6 +22894,7 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "ROCK",
         name: "Pylons",
+        isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
@@ -18914,7 +22925,7 @@ export const AssetLists: AssetList[] = [
           denom:
             "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
         },
-        categories: ["defi"],
+        categories: ["ai", "dweb"],
         transferMethods: [
           {
             name: "Osmosis Pro TFM IBC Transfer",
@@ -18955,12 +22966,531 @@ export const AssetLists: AssetList[] = [
         ],
         variantGroupKey: "AIOZ",
         name: "AIOZ Network",
-        verified: false,
+        isAlloyed: false,
+        verified: true,
         unstable: false,
         disabled: false,
         preview: false,
         listingDate: "2024-03-12T23:14:00.000Z",
         relative_image_url: "/tokens/generated/aioz.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "nibiru",
+    chain_id: "cataclysm-1",
+    assets: [
+      {
+        chainName: "nibiru",
+        sourceDenom: "unibi",
+        coinMinimalDenom:
+          "ibc/4017C65CEA338196ECCEC3FE3FE8258F23D1DE88F1D95750CC912C7A1C1016FF",
+        symbol: "NIBI",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nibiru/images/nibiru.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nibiru/images/nibiru.svg",
+        },
+        coingeckoId: "nibiru",
+        price: {
+          poolId: "1605",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["defi"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "nibiru",
+              chainId: "cataclysm-1",
+              sourceDenom: "unibi",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-21113",
+              path: "transfer/channel-21113/unibi",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "nibiru",
+            sourceDenom: "unibi",
+            chainType: "cosmos",
+            chainId: "cataclysm-1",
+            symbol: "NIBI",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nibiru/images/nibiru.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/nibiru/images/nibiru.svg",
+            },
+          },
+        ],
+        variantGroupKey: "NIBI",
+        name: "Nibiru",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-03-25T19:39:00.000Z",
+        relative_image_url: "/tokens/generated/nibi.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "conscious",
+    chain_id: "cvn_2032-1",
+    assets: [
+      {
+        chainName: "conscious",
+        sourceDenom: "acvnt",
+        coinMinimalDenom:
+          "ibc/044B7B28AFE93CEC769CF529ADC626DA09EA0EFA3E0E3284D540E9E00E01E24A",
+        symbol: "CVN",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/conscious/images/cvn.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/conscious/images/cvn.svg",
+        },
+        coingeckoId: "consciousdao",
+        price: {
+          poolId: "1741",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "conscious",
+              chainId: "cvn_2032-1",
+              sourceDenom: "acvnt",
+              port: "transfer",
+              channelId: "channel-6",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-73971",
+              path: "transfer/channel-73971/acvnt",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "conscious",
+            sourceDenom: "acvnt",
+            chainType: "cosmos",
+            chainId: "cvn_2032-1",
+            symbol: "CVN",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/conscious/images/cvn.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/conscious/images/cvn.svg",
+            },
+          },
+        ],
+        variantGroupKey: "CVN",
+        name: "ConsciousDAO",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/cvn.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "dhealth",
+    chain_id: "dhealth",
+    assets: [
+      {
+        chainName: "dhealth",
+        sourceDenom: "udhp",
+        coinMinimalDenom:
+          "ibc/FD506CCA1FC574F2A8175FB574C981E9F6351E194AA48AC219BD67FF934E2F33",
+        symbol: "DHP",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dhealth/images/dhp.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dhealth/images/dhp.svg",
+        },
+        coingeckoId: "dhealth",
+        price: {
+          poolId: "1755",
+          denom: "uosmo",
+        },
+        categories: ["dweb"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "dhealth",
+              chainId: "dhealth",
+              sourceDenom: "udhp",
+              port: "transfer",
+              channelId: "channel-4",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-75030",
+              path: "transfer/channel-75030/udhp",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "dhealth",
+            sourceDenom: "udhp",
+            chainType: "cosmos",
+            chainId: "dhealth",
+            symbol: "DHP",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dhealth/images/dhp.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dhealth/images/dhp.svg",
+            },
+          },
+        ],
+        variantGroupKey: "DHP",
+        name: "dHealth",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-16T17:00:00.000Z",
+        relative_image_url: "/tokens/generated/dhp.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "furya",
+    chain_id: "furya-1",
+    assets: [
+      {
+        chainName: "furya",
+        sourceDenom: "ufury",
+        coinMinimalDenom:
+          "ibc/42D0FBF9DDC72D7359D309A93A6DF9F6FDEE3987EA1C5B3CDE95C06FCE183F12",
+        symbol: "FURY",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/furya/images/ufury.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/furya/images/ufury.svg",
+        },
+        coingeckoId: "fanfury",
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "furya",
+              chainId: "furya-1",
+              sourceDenom: "ufury",
+              port: "transfer",
+              channelId: "channel-3",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-8690",
+              path: "transfer/channel-8690/ufury",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "furya",
+            sourceDenom: "ufury",
+            chainType: "cosmos",
+            chainId: "furya-1",
+            symbol: "FURY",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/furya/images/ufury.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/furya/images/ufury.svg",
+            },
+          },
+        ],
+        variantGroupKey: "FURY",
+        name: "furya",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-29T16:37:00.000Z",
+        relative_image_url: "/tokens/generated/fury.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "saga",
+    chain_id: "ssc-1",
+    assets: [
+      {
+        chainName: "saga",
+        sourceDenom: "usaga",
+        coinMinimalDenom:
+          "ibc/094FB70C3006906F67F5D674073D2DAFAFB41537E7033098F5C752F211E7B6C2",
+        symbol: "SAGA",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/saga/images/saga_white.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/saga/images/saga_white.svg",
+        },
+        coingeckoId: "saga-2",
+        price: {
+          poolId: "1671",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: ["gaming"],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "saga",
+              chainId: "ssc-1",
+              sourceDenom: "usaga",
+              port: "transfer",
+              channelId: "channel-1",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-38946",
+              path: "transfer/channel-38946/usaga",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "saga",
+            sourceDenom: "usaga",
+            chainType: "cosmos",
+            chainId: "ssc-1",
+            symbol: "SAGA",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/saga/images/saga.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/saga/images/saga.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SAGA",
+        name: "Saga",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-04-09T10:30:00.000Z",
+        relative_image_url: "/tokens/generated/saga.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "shido",
+    chain_id: "shido_9008-1",
+    assets: [
+      {
+        chainName: "shido",
+        sourceDenom: "shido",
+        coinMinimalDenom:
+          "ibc/62B50BB1DAEAD2A92D6C6ACAC118F4ED8CBE54265DCF5688E8D0A0A978AA46E7",
+        symbol: "SHIDO",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/shido/images/shido.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/shido/images/shido.svg",
+        },
+        coingeckoId: "shido-2",
+        price: {
+          poolId: "1710",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "shido",
+              chainId: "shido_9008-1",
+              sourceDenom: "shido",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-73755",
+              path: "transfer/channel-73755/shido",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "shido",
+            sourceDenom: "shido",
+            chainType: "cosmos",
+            chainId: "shido_9008-1",
+            symbol: "SHIDO",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/shido/images/shido.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/shido/images/shido.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SHIDO",
+        name: "Shido",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/shido.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "cifer",
+    chain_id: "cifer-2",
+    assets: [
+      {
+        chainName: "cifer",
+        sourceDenom: "ucif",
+        coinMinimalDenom:
+          "ibc/EFC1776BEFB7842F2DC7BABD9A3050E188145C99007ECC5F3526FED45A68D5F5",
+        symbol: "CIF",
+        decimals: 6,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cifer/images/cif.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cifer/images/cif.svg",
+        },
+        price: {
+          poolId: "1678",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "cifer",
+              chainId: "cifer-2",
+              sourceDenom: "ucif",
+              port: "transfer",
+              channelId: "channel-1",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-39205",
+              path: "transfer/channel-39205/ucif",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "cifer",
+            sourceDenom: "ucif",
+            chainType: "cosmos",
+            chainId: "cifer-2",
+            symbol: "CIF",
+            decimals: 6,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cifer/images/cif.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cifer/images/cif.svg",
+            },
+          },
+        ],
+        variantGroupKey: "CIF",
+        name: "Cifer",
+        isAlloyed: false,
+        verified: false,
+        unstable: false,
+        disabled: false,
+        preview: true,
+        relative_image_url: "/tokens/generated/cif.svg",
+      },
+    ],
+  },
+  {
+    chain_name: "seda",
+    chain_id: "seda-1",
+    assets: [
+      {
+        chainName: "seda",
+        sourceDenom: "aseda",
+        coinMinimalDenom:
+          "ibc/956AEF1DA92F70584266E87978C3F30A43B91EE6ABC62F03D097E79F6B99C4D8",
+        symbol: "SEDA",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/seda/images/seda.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/seda/images/seda.svg",
+        },
+        coingeckoId: "seda-2",
+        price: {
+          poolId: "1731",
+          denom:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        },
+        categories: [],
+        transferMethods: [
+          {
+            name: "Osmosis IBC Transfer",
+            type: "ibc",
+            counterparty: {
+              chainName: "seda",
+              chainId: "seda-1",
+              sourceDenom: "aseda",
+              port: "transfer",
+              channelId: "channel-0",
+            },
+            chain: {
+              port: "transfer",
+              channelId: "channel-75016",
+              path: "transfer/channel-75016/aseda",
+            },
+          },
+        ],
+        counterparty: [
+          {
+            chainName: "seda",
+            sourceDenom: "aseda",
+            chainType: "cosmos",
+            chainId: "seda-1",
+            symbol: "SEDA",
+            decimals: 18,
+            logoURIs: {
+              png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/seda/images/seda.png",
+              svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/seda/images/seda.svg",
+            },
+          },
+        ],
+        variantGroupKey: "SEDA",
+        name: "SEDA",
+        isAlloyed: false,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-05-03T13:00:00.000Z",
+        relative_image_url: "/tokens/generated/seda.svg",
       },
     ],
   },

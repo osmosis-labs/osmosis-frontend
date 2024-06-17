@@ -53,8 +53,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Goerli Testnet"].chainName
           : EthereumChainInfo["Ethereum"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Goerli Testnet"].chainId
-          : EthereumChainInfo["Ethereum"].chainId,
+          ? EthereumChainInfo["Goerli Testnet"].id
+          : EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: isTestnet
           ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
           : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
@@ -65,8 +65,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Avalanche Fuji Testnet"].chainName
           : EthereumChainInfo["Avalanche"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Avalanche Fuji Testnet"].chainId
-          : EthereumChainInfo["Avalanche"].chainId,
+          ? EthereumChainInfo["Avalanche Fuji Testnet"].id
+          : EthereumChainInfo["Avalanche"].id,
         erc20ContractAddress: isTestnet
           ? "0x57F1c63497AEe0bE305B8852b354CEc793da43bB"
           : "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
@@ -77,8 +77,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["BSC Testnet"].chainName
           : EthereumChainInfo["Binance Smart Chain"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["BSC Testnet"].chainId
-          : EthereumChainInfo["Binance Smart Chain"].chainId,
+          ? EthereumChainInfo["BSC Testnet"].id
+          : EthereumChainInfo["Binance Smart Chain"].id,
         erc20ContractAddress: isTestnet
           ? "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
           : "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
@@ -89,8 +89,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Fantom Testnet"].chainName
           : EthereumChainInfo["Fantom"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Fantom Testnet"].chainId
-          : EthereumChainInfo["Fantom"].chainId,
+          ? EthereumChainInfo["Fantom Testnet"].id
+          : EthereumChainInfo["Fantom"].id,
         erc20ContractAddress: isTestnet
           ? "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
           : "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
@@ -101,8 +101,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Moonbase Alpha"].chainName
           : EthereumChainInfo["Moonbeam"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Moonbase Alpha"].chainId
-          : EthereumChainInfo["Moonbeam"].chainId,
+          ? EthereumChainInfo["Moonbase Alpha"].id
+          : EthereumChainInfo["Moonbeam"].id,
         erc20ContractAddress: isTestnet
           ? "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
           : "0xCa01a1D0993565291051daFF390892518ACfAD3A",
@@ -113,8 +113,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Mumbai"].chainName
           : EthereumChainInfo["Polygon"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Mumbai"].chainId
-          : EthereumChainInfo["Polygon"].chainId,
+          ? EthereumChainInfo["Mumbai"].id
+          : EthereumChainInfo["Polygon"].id,
         erc20ContractAddress: isTestnet
           ? "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
           : "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
@@ -143,8 +143,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Moonbase Alpha"].chainName
           : EthereumChainInfo["Moonbeam"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Moonbase Alpha"].chainId
-          : EthereumChainInfo["Moonbeam"].chainId,
+          ? EthereumChainInfo["Moonbase Alpha"].id
+          : EthereumChainInfo["Moonbeam"].id,
         erc20ContractAddress: isTestnet
           ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
           : "0xAcc15dC74880C9944775448304B263D191c6077F",
@@ -158,7 +158,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     wbtc: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -166,7 +166,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     dai: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -174,7 +174,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     dot: {
       moonbeam: {
         id: EthereumChainInfo["Moonbeam"].chainName,
-        chainId: EthereumChainInfo["Moonbeam"].chainId,
+        chainId: EthereumChainInfo["Moonbeam"].id,
         erc20ContractAddress: "0xFfFFfFff1FcaCBd218EDc0EbA20Fc2308C778080",
         logoUrl: "/networks/moonbeam.svg",
       },
@@ -182,7 +182,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     usdt: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -190,7 +190,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     frax: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -198,7 +198,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     link: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -206,7 +206,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     aave: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -214,7 +214,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     ape: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -222,7 +222,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     axs: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -230,7 +230,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     mkr: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -238,7 +238,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     rai: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -246,7 +246,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     shib: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -254,7 +254,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     uni: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -262,7 +262,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     xcn: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xA2cd3D43c775978A96BdBf12d733D5A1ED94fb18",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -270,7 +270,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     pepe: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -278,7 +278,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     cbeth: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -286,7 +286,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     reth: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xae78736cd615f374d3085123a210448e74fc6393",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -294,7 +294,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     sfrxeth: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xac3e018457b222d93114458476f3e3416abbe38f",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -302,7 +302,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     wsteth: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -310,7 +310,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     yieldeth: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -321,8 +321,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["BSC Testnet"].chainName
           : EthereumChainInfo["Binance Smart Chain"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["BSC Testnet"].chainId
-          : EthereumChainInfo["Binance Smart Chain"].chainId,
+          ? EthereumChainInfo["BSC Testnet"].id
+          : EthereumChainInfo["Binance Smart Chain"].id,
         erc20ContractAddress: isTestnet
           ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
           : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -339,8 +339,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Mumbai"].chainName
           : EthereumChainInfo["Polygon"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Mumbai"].chainId
-          : EthereumChainInfo["Polygon"].chainId,
+          ? EthereumChainInfo["Mumbai"].id
+          : EthereumChainInfo["Polygon"].id,
         erc20ContractAddress: isTestnet
           ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
           : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -354,7 +354,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     busd: {
       ethereum: {
         id: EthereumChainInfo["Ethereum"].chainName,
-        chainId: EthereumChainInfo["Ethereum"].chainId,
+        chainId: EthereumChainInfo["Ethereum"].id,
         erc20ContractAddress: "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
         logoUrl: "/networks/ethereum.svg",
       },
@@ -365,8 +365,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Avalanche Fuji Testnet"].chainName
           : EthereumChainInfo["Avalanche"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Avalanche Fuji Testnet"].chainId
-          : EthereumChainInfo["Avalanche"].chainId,
+          ? EthereumChainInfo["Avalanche Fuji Testnet"].id
+          : EthereumChainInfo["Avalanche"].id,
         erc20ContractAddress: isTestnet
           ? "0xd00ae08403B9bbb9124bB305C09058E32C39A48c"
           : "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
@@ -396,7 +396,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     polygonusdc: {
       polygon: {
         id: EthereumChainInfo["Polygon"].chainName,
-        chainId: EthereumChainInfo["Polygon"].chainId,
+        chainId: EthereumChainInfo["Polygon"].id,
         erc20ContractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         logoUrl: "/networks/polygon.svg",
       },
@@ -404,7 +404,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     avalancheusdc: {
       avalanche: {
         id: EthereumChainInfo["Avalanche"].chainName,
-        chainId: EthereumChainInfo["Avalanche"].chainId,
+        chainId: EthereumChainInfo["Avalanche"].id,
         erc20ContractAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
         logoUrl: "/networks/avalanche.svg",
       },
@@ -415,8 +415,8 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? EthereumChainInfo["Filecoin Hyperspace"].chainName
           : EthereumChainInfo["Filecoin"].chainName,
         chainId: isTestnet
-          ? EthereumChainInfo["Filecoin Hyperspace"].chainId
-          : EthereumChainInfo["Filecoin"].chainId,
+          ? EthereumChainInfo["Filecoin Hyperspace"].id
+          : EthereumChainInfo["Filecoin"].id,
         erc20ContractAddress: isTestnet
           ? "0x6C297AeD654816dc5d211c956DE816Ba923475D2"
           : "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A",
@@ -430,7 +430,7 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
     arb: {
       arbitrum: {
         id: EthereumChainInfo["Arbitrum"].chainName,
-        chainId: EthereumChainInfo["Arbitrum"].chainId,
+        chainId: EthereumChainInfo["Arbitrum"].id,
         erc20ContractAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
         logoUrl: "/networks/arbitrum.svg",
       },

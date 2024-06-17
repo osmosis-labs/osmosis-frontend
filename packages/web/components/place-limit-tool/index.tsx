@@ -73,10 +73,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
             selectableAssets={[swapState.baseAsset, swapState.quoteAsset]}
-            baseAsset={swapState.baseAsset}
-            quoteAsset={swapState.quoteAsset}
-            baseBalance={swapState.baseTokenBalance}
-            quoteBalance={swapState.quoteTokenBalance}
+            baseAsset={swapState.baseAsset!}
+            quoteAsset={swapState.quoteAsset!}
+            baseBalance={swapState.baseTokenBalance!}
+            quoteBalance={swapState.quoteTokenBalance!}
             onTokenSelect={setBase}
             disabled={false}
             orderDirection={orderDirection}
@@ -163,7 +163,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           )}
           {!account?.isWalletConnected ? (
             <Button
-              onClick={() => onOpenWalletSelect(accountStore.osmosisChainId)}
+              onClick={() =>
+                onOpenWalletSelect({
+                  walletOptions: [
+                    {
+                      walletType: "cosmos",
+                      chainId: accountStore.osmosisChainId,
+                    },
+                  ],
+                })
+              }
             >
               <h6 className="">{t("connectWallet")}</h6>
             </Button>

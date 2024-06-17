@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 
 import { MyPositionCard } from "~/components/cards";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ShowMoreButton } from "~/components/ui/button";
 import { useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";

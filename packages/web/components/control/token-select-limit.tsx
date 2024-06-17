@@ -8,12 +8,12 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
-import PriceSelector from "~/components/swap-tool/price-selector";
+import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
@@ -87,12 +87,13 @@ export const TokenSelectLimit: FunctionComponent<
       onTokenSelect(tokenDenom);
     };
 
-    const { price: baseCoinPrice, isLoading: isLoadingBasePrice } =
-      useCoinPrice(baseBalance);
+    const { price: baseCoinPrice, isLoading: isLoadingBasePrice } = usePrice({
+      coinMinimalDenom: baseAsset.coinMinimalDenom,
+    });
 
     const baseFiatBalance = useMemo(
       () =>
-        !isLoadingBasePrice && baseCoinPrice
+        !isLoadingBasePrice && baseCoinPrice && baseBalance
           ? new PricePretty(DEFAULT_VS_CURRENCY, baseCoinPrice.mul(baseBalance))
           : new PricePretty(DEFAULT_VS_CURRENCY, 0),
       [baseCoinPrice, baseBalance, isLoadingBasePrice]

@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import type { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import moment from "dayjs";
@@ -42,10 +42,10 @@ export const BondCard: FunctionComponent<
 
   const showGoSuperfluid =
     superfluid &&
-    userShares.toDec().gt(new Dec(0)) &&
+    userShares.toDec().isPositive() &&
     !superfluid.delegated &&
     !superfluid.undelegating;
-  const showUnbond = userShares.toDec().gt(new Dec(0));
+  const showUnbond = userShares.toDec().isPositive();
 
   // useful for calculating the height of the card
   const hasThreeButtons = showUnbond && showGoSuperfluid && userUnlockingShares;

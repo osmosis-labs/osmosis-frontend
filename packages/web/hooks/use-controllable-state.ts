@@ -28,7 +28,7 @@ export interface UseControllableStateProps<T> {
  *    onToggle?: (open: boolean) => void;
  *  }
  *
- *  const Modal: React.FC<ModalProps> = ({ isOpen, onToggle }) => {
+ *  export const Modal: React.FC<ModalProps> = ({ isOpen, onToggle }) => {
  *    const [open, setOpen] = useControllableState({
  *      value: isOpen,
  *      defaultValue: false,
@@ -51,8 +51,6 @@ export interface UseControllableStateProps<T> {
  *      </div>
  *    );
  *  };
- *
- *  export default Modal;
  *  ```
  *
  *  To let the component handle its own state, just don't send the `isOpen` prop:

@@ -16,33 +16,18 @@ import {
 import { SkipBridgeProvider } from "..";
 import { SkipMsg } from "../types";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
-  return {
-    ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        send: jest.fn().mockResolvedValue("0x4a817c800"),
-        getFeeData: jest.fn().mockResolvedValue({
-          gasPrice: BigInt("20000000000"),
-          maxFeePerGas: BigInt("30000000000"),
-          maxPriorityFeePerGas: BigInt("1000000000"),
-        }),
-      })),
-      Contract: jest.fn().mockImplementation(() => ({
-        allowance: jest.fn().mockResolvedValue(BigInt("100")),
-        approve: {
-          populateTransaction: jest.fn().mockResolvedValue({
-            to: "0x123",
-            data: "0xabcdef",
-          }),
-        },
-      })),
-    },
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+    request: jest.fn().mockResolvedValue("0x4a817c800"),
+    getGasPrice: jest.fn().mockResolvedValue(BigInt("20000000000")),
+    readContract: jest.fn().mockResolvedValue(BigInt("100")),
+  })),
+  encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
+  encodePacked: jest.fn().mockReturnValue("0xabcdef"),
+  keccak256: jest.fn().mockReturnValue("0xabcdef"),
+}));
 
 beforeEach(() => {
   server.use(
@@ -144,6 +129,10 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("SkipBridgeProvider", () => {
   let provider: SkipBridgeProvider;
   let ctx: BridgeProviderContext;
@@ -155,6 +144,8 @@ describe("SkipBridgeProvider", () => {
         max: 500,
       }),
       assetLists: MockAssetLists,
+      // not used
+      chainList: [],
       getTimeoutHeight: jest.fn().mockResolvedValue({
         revisionNumber: "1",
         revisionHeight: "1000",

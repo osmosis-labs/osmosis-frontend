@@ -9,11 +9,11 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
-import { squidProviderId } from ".";
+import { SquidBridgeProvider } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = squidProviderId;
+  readonly keyPrefix = SquidBridgeProvider.ID;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
