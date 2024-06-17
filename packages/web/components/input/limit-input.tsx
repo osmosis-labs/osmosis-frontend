@@ -1,5 +1,6 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
@@ -13,14 +14,14 @@ export interface LimitInputProps {
   price: Dec;
 }
 
-enum FocusedInput {
+export enum FocusedInput {
   FIAT = "fiat",
   TOKEN = "token",
 }
 
 const nonFocusedClasses =
-  "top-[58%] scale-[20%] text-wosmongton-200 hover:cursor-pointer select-none";
-const focusedClasses = "top-[20%]";
+  "top-[45%] scale-[43%] text-wosmongton-200 hover:cursor-pointer select-none";
+const focusedClasses = "top-[0%] text-wosmongton-400 font-h3 font-normal";
 
 const transformAmount = (value: string) => {
   let updatedValue = value;
@@ -42,19 +43,19 @@ export const LimitInput: FC<LimitInputProps> = ({
   price,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  const [focused, setFocused] = useState<FocusedInput>(FocusedInput.FIAT);
+  const [tab] = useQueryState("tab");
+  const [focused, setFocused] = useState<FocusedInput>(
+    tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN
+  );
 
   const swapFocus = useCallback(() => {
-    switch (focused) {
-      case FocusedInput.FIAT:
-        setFocused(FocusedInput.TOKEN);
-        break;
-      case FocusedInput.TOKEN:
-      default:
-        setFocused(FocusedInput.FIAT);
-        break;
-    }
-  }, [focused]);
+    setFocused((p) =>
+      p === FocusedInput.FIAT ? FocusedInput.TOKEN : FocusedInput.FIAT
+    );
+  }, []);
+
+  // Swap focus every time the tab changes
+  useEffect(() => swapFocus(), [swapFocus, tab]);
 
   const setFiatAmountSafe = useCallback(
     (value: string) => {
@@ -87,7 +88,7 @@ export const LimitInput: FC<LimitInputProps> = ({
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
-    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : "0");
+    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
     const fiatValue = price?.mul(value) ?? new Dec(0);
     setFiatAmountSafe(formatPretty(fiatValue));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,7 +107,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     return (
       <div
         className={classNames(
-          "absolute flex w-full flex-row items-center justify-center text-h1 transition-all",
+          "absolute flex w-full items-center justify-center text-h3 transition-all",
           {
             [nonFocusedClasses]: !isFocused,
             [focusedClasses]: isFocused,
@@ -114,20 +115,20 @@ export const LimitInput: FC<LimitInputProps> = ({
         )}
         onClick={focused === FocusedInput.TOKEN ? swapFocus : undefined}
       >
-        <span className="mr-1">$</span>
+        <span className={classNames({ "font-normal": !isFocused })}>$</span>
         <AutosizeInput
           placeholder="0"
           type="number"
           value={fiatAmount}
           inputClassName={classNames(
             "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-full",
-            { "cursor-pointer": !isFocused }
+            { "cursor-pointer font-normal": !isFocused }
           )}
           injectStyles={false}
           onChange={(e) => setFiatAmountSafe(e.target.value)}
           onClick={!isFocused ? swapFocus : undefined}
         />
-        {focused === FocusedInput.TOKEN && <Icon id="chevron-up" />}
+        {focused === FocusedInput.TOKEN && <SwapArrows />}
       </div>
     );
   }, [fiatAmount, focused, swapFocus, setFiatAmountSafe]);
@@ -137,7 +138,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     return (
       <div
         className={classNames(
-          "absolute flex w-full flex-row items-center justify-center gap-1 text-h1 transition-all",
+          "absolute flex w-full items-center justify-center text-h3 transition-all",
           {
             [nonFocusedClasses]: !isFocused,
             [focusedClasses]: isFocused,
@@ -151,29 +152,50 @@ export const LimitInput: FC<LimitInputProps> = ({
           value={tokenAmount}
           inputClassName={classNames(
             "bg-transparent text-center placeholder:text-white-disabled focus:outline-none",
-            { "cursor-pointer": !isFocused }
+            { "cursor-pointer font-normal": !isFocused }
           )}
           onChange={(e) => setTokenAmountSafe(e.target.value)}
           onClick={!isFocused ? swapFocus : undefined}
         />
         <span
-          className={classNames("ml-2 text-wosmongton-200", {
+          className={classNames("text-wosmongton-200", {
             "opacity-60": focused === FocusedInput.TOKEN,
+            "font-normal": !isFocused,
           })}
         >
           {baseAsset ? baseAsset.denom : ""}
         </span>
-        {focused === FocusedInput.FIAT && (
-          <Icon id="chevron-up" width={16} height={16} />
-        )}
+        {focused === FocusedInput.FIAT && <SwapArrows />}
       </div>
     );
   }, [tokenAmount, setTokenAmountSafe, focused, baseAsset, swapFocus]);
 
   return (
-    <div className="relative h-[200px]">
+    <div className="relative h-[108px]">
       {FiatInput}
       {TokenInput}
+      <button className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
+        <span className="body2 text-wosmongton-200">Max</span>
+      </button>
     </div>
   );
 };
+
+function SwapArrows() {
+  return (
+    <div className="ml-1 flex h-12 w-14 items-center">
+      <Icon
+        id="arrow-right"
+        className="h-full w-auto rotate-90 text-wosmongton-200"
+        width={16}
+        height={24}
+      />
+      <Icon
+        id="arrow-right"
+        className="-ml-1 h-full w-auto -rotate-90 text-wosmongton-200"
+        width={16}
+        height={24}
+      />
+    </div>
+  );
+}
