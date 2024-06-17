@@ -60,9 +60,9 @@ export default function PriceSelector({
   );
 
   const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
-    { userOsmoAddress: wallet?.address },
+    { osmoAddress: wallet?.address },
     {
-      enabled: !!wallet?.address,
+      enabled: Boolean(wallet?.address),
       select: (data) =>
         data.items
           .map((walletAsset) => {
@@ -100,8 +100,8 @@ export default function PriceSelector({
 
   const userQuotesWithoutBalances = useMemo(
     () =>
-      userQuotes
-        ?.map(({ amount, usdValue, ...props }) => ({ ...props }))
+      (userQuotes ?? [])
+        .map(({ amount, usdValue, ...props }) => ({ ...props }))
         .filter(Boolean) as Asset[],
     [userQuotes]
   );
