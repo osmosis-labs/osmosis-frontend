@@ -197,6 +197,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           placeLimitState={swapState}
           orderDirection={orderDirection}
           isOpen={reviewOpen}
+          makerFee={makerFee}
           onRequestClose={() => setReviewOpen(false)}
           orderType="limit"
         />

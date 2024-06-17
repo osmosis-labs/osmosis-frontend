@@ -20,7 +20,7 @@ import {
 import { getBridgeAsset } from "../queries/complex/assets/bridge";
 import { DEFAULT_VS_CURRENCY } from "../queries/complex/assets/config";
 import { getCoinGeckoCoinMarketChart } from "../queries/complex/assets/price/historical";
-import { UserOsmoAddressSchema } from "../queries/complex/parameter-types";
+import { OsmoAddressSchema } from "../queries/complex/parameter-types";
 import {
   AvailableRangeValues,
   AvailableTimeDurations,
@@ -47,10 +47,13 @@ export const assetsRouter = createTRPCRouter({
         .object({
           findMinDenomOrSymbol: z.string(),
         })
-        .merge(UserOsmoAddressSchema)
+        .merge(OsmoAddressSchema)
     )
     .query(
-      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+      async ({
+        input: { findMinDenomOrSymbol, osmoAddress: userOsmoAddress },
+        ctx,
+      }) => {
         const asset = getAsset({
           ...ctx,
           anyDenom: findMinDenomOrSymbol,
@@ -65,7 +68,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+      GetInfiniteAssetsInputSchema.merge(OsmoAddressSchema).merge(
         z.object({
           // Optional poolId to filter assets by pool
           poolId: z.string().optional(),
@@ -76,7 +79,7 @@ export const assetsRouter = createTRPCRouter({
       async ({
         input: {
           search,
-          userOsmoAddress,
+          osmoAddress: userOsmoAddress,
           limit,
           cursor,
           onlyVerified,
@@ -150,10 +153,13 @@ export const assetsRouter = createTRPCRouter({
         .object({
           findMinDenomOrSymbol: z.string(),
         })
-        .merge(UserOsmoAddressSchema)
+        .merge(OsmoAddressSchema)
     )
     .query(
-      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+      async ({
+        input: { findMinDenomOrSymbol, osmoAddress: userOsmoAddress },
+        ctx,
+      }) => {
         const asset = getAsset({
           ...ctx,
           anyDenom: findMinDenomOrSymbol,
@@ -257,7 +263,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
+      GetInfiniteAssetsInputSchema.merge(OsmoAddressSchema).merge(
         z.object({
           sort: createSortSchema([
             "currentPrice",
@@ -272,7 +278,7 @@ export const assetsRouter = createTRPCRouter({
         input: {
           search,
           onlyVerified,
-          userOsmoAddress,
+          osmoAddress: userOsmoAddress,
           sort: sortInput,
           categories,
           cursor,
@@ -344,8 +350,14 @@ export const assetsRouter = createTRPCRouter({
         })
     ),
   getUserAssetsTotal: publicProcedure
-    .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
+    .input(OsmoAddressSchema.required())
+    .query(({ input, ctx }) =>
+      getUserAssetsTotal({
+        ...ctx,
+        ...input,
+        userOsmoAddress: input.osmoAddress,
+      })
+    ),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
