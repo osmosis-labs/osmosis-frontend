@@ -143,7 +143,7 @@ export const TokenSelectLimit: FunctionComponent<
               <div className="flex flex-col">
                 <h6 className="inline-flex items-center gap-2">
                   <span>{baseAsset.coinName}</span>
-                  <span className="md:caption w-32 truncate text-left text-osmoverse-400">
+                  <span className="md:caption truncate text-left text-osmoverse-400">
                     {baseAsset.coinDenom}
                   </span>
                 </h6>

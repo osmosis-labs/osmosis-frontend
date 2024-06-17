@@ -50,7 +50,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       title={`${orderDirection === OrderDirection.Bid ? "Buy" : "Sell"} ${
-        placeLimitState.baseAsset.coinName
+        placeLimitState.baseAsset!.coinName
       }`}
     >
       <div className="mt-6 flex flex-col">
@@ -58,8 +58,8 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           <Image
             width={48}
             height={48}
-            src={placeLimitState.baseAsset.coinImageUrl!}
-            alt={placeLimitState.baseAsset.coinDenom}
+            src={placeLimitState.baseAsset!.coinImageUrl!}
+            alt={placeLimitState.baseAsset!.coinDenom}
           />
         </div>
         <div className="flex w-full flex-col items-center justify-center py-4">
@@ -79,7 +79,8 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           <span className="text-osmoverse-300">Amount</span>
           <span className="text-osmoverse-100">
             ≈{" "}
-            {placeLimitState.inAmountInput.fiatValue
+            {placeLimitState.inAmountInput.fiatValue &&
+            placeLimitState.paymentFiatValue
               ? formatPretty(placeLimitState.paymentFiatValue!)
               : "$0"}
           </span>
@@ -103,11 +104,11 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             <Image
               width={24}
               height={24}
-              src={placeLimitState.quoteAsset.coinImageUrl!}
-              alt={placeLimitState.quoteAsset.coinDenom}
+              src={placeLimitState.quoteAsset!.coinImageUrl!}
+              alt={placeLimitState.quoteAsset!.coinDenom}
               className="inline"
             />{" "}
-            {placeLimitState.quoteAsset.coinDenom}
+            {placeLimitState.quoteAsset!.coinDenom}
           </span>
         </div>
         <div className="flex w-full justify-between py-2 text-body2">
