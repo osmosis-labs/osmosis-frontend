@@ -66,7 +66,7 @@ export const TotalFees: FC<TotalFeesProps> = memo(({ swapState }) => {
         >
           <div className="flex w-full items-center justify-between py-3 text-body2 text-osmoverse-300">
             <div>
-              Total fees when filled (
+              Total fees when filled ( ~
               {formatPretty(swapState.makerFee.mul(new Dec(100)), {
                 maxDecimals: 2,
                 minimumFractionDigits: 2,
@@ -74,6 +74,7 @@ export const TotalFees: FC<TotalFeesProps> = memo(({ swapState }) => {
               %)
             </div>
             <div>
+              ~
               {formatPretty(makerFeeFiat, {
                 maxDecimals: 2,
                 minimumFractionDigits: 2,
@@ -84,12 +85,13 @@ export const TotalFees: FC<TotalFeesProps> = memo(({ swapState }) => {
           <div className="flex w-full items-center justify-between py-3 text-body2 text-osmoverse-300">
             <div>Receive</div>
             <div>
-              {formatPretty(swapState.expectedTokenAmountOut, {
+              ~
+              {formatPretty(swapState.expectedFiatAmountOut, {
                 maxDecimals: 2,
                 minimumFractionDigits: 2,
               })}{" "}
               (
-              {formatPretty(swapState.expectedFiatAmountOut, {
+              {formatPretty(swapState.expectedTokenAmountOut, {
                 maxDecimals: 2,
                 minimumFractionDigits: 2,
               })}
