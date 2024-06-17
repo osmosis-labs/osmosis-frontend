@@ -8,7 +8,7 @@ import { FunctionComponent, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
-import { TotalFees } from "~/components/place-limit-tool/total-fees";
+import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
@@ -163,7 +163,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               )}
             </div>
           </div>
-          <TotalFees swapState={swapState} />
+          <LimitTradeDetails swapState={swapState} />
           <Button
             disabled={
               swapState.insufficientFunds ||
