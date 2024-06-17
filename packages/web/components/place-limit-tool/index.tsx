@@ -10,7 +10,10 @@ import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import { useOrderbookPool } from "~/hooks/limit-orders/use-orderbook-pool";
+import {
+  useOrderbook,
+  useOrderbookSelectableDenoms,
+} from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -30,6 +33,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
+    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
+      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [{ base, quote, tab, type }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
@@ -48,7 +53,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
 
     const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
-      useOrderbookPool({
+      useOrderbook({
         baseDenom: base,
         quoteDenom: quote,
       });
@@ -72,7 +77,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       <>
         <div className="flex flex-col gap-3">
           <TokenSelectLimit
-            selectableAssets={[swapState.baseAsset, swapState.quoteAsset]}
+            selectableAssets={selectableBaseAssets}
             baseAsset={swapState.baseAsset!}
             quoteAsset={swapState.quoteAsset!}
             baseBalance={swapState.baseTokenBalance!}
@@ -185,7 +190,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     !swapState.inAmountInput.inputAmount ||
                     swapState.inAmountInput.inputAmount === "0"
                   }
-                  isLoading={!swapState.isBalancesFetched || isMakerFeeLoading}
+                  isLoading={
+                    !swapState.isBalancesFetched ||
+                    isMakerFeeLoading ||
+                    orderbookAssetsLoading
+                  }
                   loadingText={"Loading..."}
                   onClick={() => setReviewOpen(true)}
                 >
