@@ -265,7 +265,8 @@ export class SquidBridgeProvider implements BridgeProvider {
     const tokens = await this.getTokens();
     const toToken = tokens.find(
       (t) =>
-        (t.address === toAsset.address || t.ibcDenom === toAsset.address) &&
+        (t.address.toLowerCase() === toAsset.address.toLowerCase() ||
+          t.ibcDenom?.toLowerCase() === toAsset.address.toLowerCase()) &&
         // squid uses canonical chain IDs (numerical and string)
         t.chainId === toChain.chainId
     );
@@ -285,7 +286,8 @@ export class SquidBridgeProvider implements BridgeProvider {
       if (
         !tokens.some(
           (t) =>
-            t.address === counterparty.sourceDenom &&
+            t.address.toLowerCase() ===
+              counterparty.sourceDenom.toLowerCase() &&
             t.chainId === counterparty.chainId
         )
       )
@@ -319,13 +321,14 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     // leverage squid's "commonKey" to gather other like source assets for toToken
     const chains = await this.getChains();
-    const commonSourceChainTokens = tokens
+    const tokenVariants = tokens
       .filter(
         (t) =>
-          (t.commonKey === toToken.commonKey ||
-            // common coingeckoIDs can be used to identify the same variants
-            t.coingeckoId === toToken.coingeckoId) &&
-          t.address !== toToken.address
+          t.commonKey &&
+          toToken.commonKey &&
+          t.commonKey === toToken.commonKey &&
+          t.address !== toToken.address &&
+          t.chainId !== toToken.chainId
       )
       .map((t) => {
         const chain = chains.find(({ chainId }) => chainId === t.chainId);
@@ -334,31 +337,27 @@ export class SquidBridgeProvider implements BridgeProvider {
       })
       .filter((t): t is NonNullable<typeof t> => !!t);
 
-    for (const chainToken of commonSourceChainTokens) {
+    for (const variant of tokenVariants) {
       const chainInfo =
-        chainToken.chainType === ChainType.EVM
+        variant.chainType === ChainType.EVM
           ? {
-              chainId: chainToken.chainId as number,
+              chainId: variant.chainId as number,
               chainType: "evm" as const,
             }
           : {
-              chainId: chainToken.chainId as string,
+              chainId: variant.chainId as string,
               chainType: "cosmos" as const,
             };
 
-      foundVariants.setAsset(
-        chainToken.chainId.toString(),
-        chainToken.address,
-        {
-          // squid chain list IDs are canonical
-          ...chainInfo,
-          chainName: chainToken.chainName,
-          denom: chainToken.symbol,
-          address: chainToken.address,
-          decimals: chainToken.decimals,
-          sourceDenom: chainToken.address,
-        }
-      );
+      foundVariants.setAsset(variant.chainId.toString(), variant.address, {
+        // squid chain list IDs are canonical
+        ...chainInfo,
+        chainName: variant.chainName,
+        denom: variant.symbol,
+        address: variant.address,
+        decimals: variant.decimals,
+        sourceDenom: variant.address,
+      });
     }
 
     return foundVariants.assets;

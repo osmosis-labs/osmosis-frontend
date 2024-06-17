@@ -69,6 +69,115 @@ beforeEach(() => {
                   coingecko_id: "asset2",
                   recommended_symbol: "AS2",
                 },
+                {
+                  denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  chain_id: "1",
+                  origin_denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  origin_chain_id: "1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: true,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USD Coin",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/axelarnetwork/axelar-configs/main/images/tokens/usdc.svg",
+                  decimals: 6,
+                  token_contract: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "osmosis-1": {
+              assets: [
+                {
+                  denom:
+                    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                  chain_id: "osmosis-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-750",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description:
+                    "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "agoric-3": {
+              assets: [
+                {
+                  denom:
+                    "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
+                  chain_id: "agoric-3",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-62",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "archway-1": {
+              assets: [
+                {
+                  denom:
+                    "ibc/43897B9739BD63E3A08A88191999C632E052724AB96BD4C74AE31375C991F48D",
+                  chain_id: "archway-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-29",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description: "Native Coin",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "noble-1": {
+              assets: [
+                {
+                  denom: "uusdc",
+                  chain_id: "noble-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description: "USD Coin",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
               ],
             },
           },
@@ -432,5 +541,108 @@ describe("SkipBridgeProvider", () => {
     expect(approvalTxRequest).toBeUndefined();
   });
 
-  describe("getAvailableSourceAssetVariants", () => {});
+  describe("getAvailableSourceAssetVariants", () => {
+    it("gets shared origin assets", async () => {
+      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+        {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        }
+      );
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "uusdc",
+          chainId: "noble-1",
+          chainType: "cosmos",
+          decimals: 6,
+          denom: "USDC",
+          sourceDenom: "uusdc",
+        },
+        {
+          address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          chainId: 1,
+          chainType: "evm",
+          decimals: 6,
+          denom: "USDC",
+          sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        },
+        {
+          address:
+            "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
+          chainId: "agoric-3",
+          chainType: "cosmos",
+          denom: "USDC",
+          sourceDenom: "uusdc",
+          decimals: 6,
+        },
+        {
+          address:
+            "ibc/43897B9739BD63E3A08A88191999C632E052724AB96BD4C74AE31375C991F48D",
+          chainId: "archway-1",
+          chainType: "cosmos",
+          denom: "USDC",
+          sourceDenom: "uusdc",
+          decimals: 6,
+        },
+      ]);
+    });
+
+    it("includes skip supported cosmos counterparty assets from asset list", async () => {
+      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+        {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        }
+      );
+
+      expect(sourceVariants[0]).toEqual({
+        address: "uusdc",
+        chainId: "noble-1",
+        chainType: "cosmos",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "uusdc",
+      });
+    });
+
+    it("includes skip supported evm counterparty assets from asset list", async () => {
+      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+        {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        }
+      );
+
+      expect(sourceVariants[1]).toEqual({
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        chainId: 1,
+        chainType: "evm",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      });
+    });
+  });
 });

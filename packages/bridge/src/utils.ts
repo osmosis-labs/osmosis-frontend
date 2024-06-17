@@ -1,7 +1,7 @@
 /** Useful for collecting a set of assets unique to it's chain ID and denom as represented natively on that chain. */
 export class BridgeAssetMap<Asset> extends Map<string, Asset> {
   static makeKey(chainId: string, denom: string): string {
-    return `${chainId}:${denom}`;
+    return `${chainId.toLowerCase()}:${denom.toLowerCase()}`;
   }
 
   get assets() {

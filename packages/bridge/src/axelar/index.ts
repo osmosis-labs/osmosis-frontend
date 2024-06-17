@@ -259,13 +259,20 @@ export class AxelarBridgeProvider implements BridgeProvider {
   ): Promise<(BridgeChain & BridgeAsset)[]> {
     // get origin axelar asset info from given toAsset
     const axelarAssets = await getAxelarAssets({ env: this.ctx.env });
+
+    // Use of toLowerCase is advised due to registry (Axelar + others) differences
+    // in casing of asset addresses. May be somewhat unsafe.
+
     const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
       Object.keys(addresses).some(
         (address) =>
-          addresses[address]?.ibc_denom === toAsset.address ||
-          addresses[address]?.address === toAsset.address
+          addresses[address]?.ibc_denom?.toLowerCase() ===
+            toAsset.address?.toLowerCase() ||
+          addresses[address]?.address?.toLowerCase() ===
+            toAsset.address?.toLowerCase()
       )
     );
+
     if (!axelarSourceAsset) return [];
 
     // make sure to chain and to asset align (validation)
@@ -274,8 +281,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
     const axelarToAssetAddress = axelarSourceAsset.addresses[toChainAxelarId];
     if (
       !axelarToAssetAddress ||
-      toAsset.address !== axelarToAssetAddress.ibc_denom ||
-      toAsset.address !== axelarToAssetAddress.address
+      (toAsset.address.toLowerCase() !==
+        axelarToAssetAddress.ibc_denom?.toLowerCase() &&
+        toAsset.address.toLowerCase() !==
+          axelarToAssetAddress.address?.toLowerCase())
     )
       return [];
 
@@ -319,39 +328,37 @@ export class AxelarBridgeProvider implements BridgeProvider {
         denom: nativeChainAsset.symbol,
         address: sourceAssetId,
         decimals: axelarSourceAsset.decimals,
-        sourceDenom: axelarSourceAsset.denom,
+        sourceDenom: sourceAssetId,
       }
     );
 
     // there are auto-un/wrapped versions
     if (axelarSourceAsset.denoms) {
       // assume it's the chain native asset
-      const unwrappedDenoms = axelarSourceAsset.denoms.filter(
-        (denom) => denom !== axelarSourceAsset.denom
-      );
+      const unwrappedDenom = axelarSourceAsset.denoms[1];
 
-      if (unwrappedDenoms.length !== 1) return foundVariants.assets;
+      if (!unwrappedDenom) return foundVariants.assets;
 
       const axelarChain = axelarChains.find(
         (chain) => chain.id === axelarSourceAsset.native_chain
       );
 
       if (!axelarChain) return foundVariants.assets;
-      // only handle unwrapping with evm chains due to ERC20 standard
+      // only handle unwrapping with evm chains due to ERC20 standard & EVM account model
       if (axelarChain.chain_type !== "evm") return foundVariants.assets;
 
       foundVariants.setAsset(
         axelarChain.chain_id.toString(),
-        axelarSourceAsset.denom,
+        NativeEVMTokenConstantAddress,
         {
           // axelar chain list IDs are canonical
           chainId: axelarChain.chain_id as number,
           chainType: axelarChain.chain_type,
           chainName: axelarChain.chain_name,
           denom: axelarChain.native_token.symbol,
-          address: NativeEVMTokenConstantAddress,
+          address: unwrappedDenom,
           decimals: axelarChain.native_token.decimals,
-          sourceDenom: unwrappedDenoms[0],
+          sourceDenom: NativeEVMTokenConstantAddress,
         }
       );
     }

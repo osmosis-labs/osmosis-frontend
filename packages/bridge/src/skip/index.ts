@@ -225,6 +225,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     const toChainAsset = await this.getAsset(toChain, toAsset);
     if (!toChainAsset) return [];
 
+    // Use of toLowerCase is advised due to registry (Skip + others) differences
+    // in casing of asset addresses. May be somewhat unsafe.
+    // See original usage in `getAsset` method.
+
     // find variants
     const assets = await this.getAssets();
     const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
@@ -232,14 +236,18 @@ export class SkipBridgeProvider implements BridgeProvider {
     // asset list counterparties
     const asset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find((asset) => asset.coinMinimalDenom === toAsset.address);
+      .find(
+        (asset) =>
+          asset.coinMinimalDenom.toLowerCase() === toAsset.address.toLowerCase()
+      );
 
     for (const counterparty of asset?.counterparty ?? []) {
       // check if supported by skip
       if (!("chainId" in counterparty)) continue;
       if (
         !assets[counterparty.chainId].assets.some(
-          (a) => a.denom === counterparty.sourceDenom
+          (a) =>
+            a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
         )
       )
         continue;
@@ -248,7 +256,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         const c = counterparty as CosmosCounterparty;
 
         // check if supported by skip
-        if (assets[c.chainId].assets.some((a) => a.denom === c.sourceDenom)) {
+        if (
+          assets[c.chainId].assets.some(
+            (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+          )
+        ) {
           foundVariants.setAsset(c.chainId, c.sourceDenom, {
             chainId: c.chainId,
             chainType: "cosmos",
@@ -263,7 +275,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         const c = counterparty as EVMCounterparty;
 
         // check if supported by skip
-        if (assets[c.chainId].assets.some((a) => a.denom === c.sourceDenom)) {
+        if (
+          assets[c.chainId].assets.some(
+            (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+          )
+        ) {
           foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
             chainId: c.chainId,
             chainType: "evm",
@@ -282,9 +298,10 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return chainAssets.filter(
         (asset) =>
-          asset.origin_denom === toChainAsset.origin_denom &&
+          asset.origin_denom.toLowerCase() ===
+            toChainAsset.origin_denom.toLowerCase() &&
           asset.origin_chain_id === toChainAsset.origin_chain_id &&
-          asset.denom !== toChainAsset.denom
+          asset.denom.toLowerCase() !== toChainAsset.denom.toLowerCase()
       );
     });
 
