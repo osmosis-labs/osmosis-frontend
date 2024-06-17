@@ -127,8 +127,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               className="flex h-8 items-center rounded-5xl border border-osmoverse-700 px-3"
               key={`limit-price-adjust-${label}`}
               onClick={() =>
-                swapState.priceState.adjustByPercentage(
-                  orderDirection == OrderDirection.Bid ? value.neg() : value
+                swapState.priceState.setPercentAdjusted(
+                  formatPretty(value.mul(new Dec(100)))
                 )
               }
             >

@@ -138,7 +138,7 @@ export const usePlaceLimit = ({
         )
       : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
   }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
-
+  console.log("paymentFiatValue", paymentFiatValue);
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -313,6 +313,8 @@ const useLimitPrice = ({
           ? adjustment
           : adjustment.mul(new Dec(-1))
       );
+    } else {
+      adjustByPercentage(new Dec(0));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualPercentAdjusted, orderDirection]);
