@@ -21,22 +21,16 @@ import { FunctionComponent, useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
-import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
 import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
 import { TokenDetails } from "~/components/pages/asset-info-page/token-details";
+import { TokenNavigation } from "~/components/pages/asset-info-page/token-navigation";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
 import { YourBalance } from "~/components/pages/asset-info-page/your-balance";
 import { SwapTool } from "~/components/swap-tool";
-import { LinkIconButton } from "~/components/ui/button";
-import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import {
-  useAmplitudeAnalytics,
-  useTranslation,
-  useUserWatchlist,
-} from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
@@ -170,14 +164,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             ariaLabel={t("menu.assets")}
             href="/assets"
           />
-          <Navigation
-            token={token}
-            tokenDetailsByLanguage={tokenDetailsByLanguage}
-            coingeckoCoin={coingeckoCoin}
-          />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
-              <TokenChart />
+              <div className="flex flex-col gap-2">
+                <TokenNavigation
+                  token={token}
+                  tokenDetailsByLanguage={tokenDetailsByLanguage}
+                  coingeckoCoin={coingeckoCoin}
+                />
+                <TokenChart />
+              </div>
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                   {SwapTool_}
@@ -212,86 +208,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     );
   }
 );
-
-interface NavigationProps {
-  token: Asset;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
-  coingeckoCoin?: CoingeckoCoin | null;
-}
-
-const Navigation = observer((props: NavigationProps) => {
-  const { tokenDetailsByLanguage, coingeckoCoin, token } = props;
-  const { t } = useTranslation();
-  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
-
-  const { twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
-    token,
-    tokenDetailsByLanguage,
-    coingeckoCoin,
-  });
-
-  return (
-    <nav className="flex w-full flex-wrap justify-between gap-2">
-      <div className="flex flex-wrap items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{token.coinDenom}</h1>
-        {title ? (
-          <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
-        ) : (
-          false
-        )}
-      </div>
-
-      <div className="flex items-center justify-center gap-2">
-        <Button
-          size="md"
-          variant="ghost"
-          className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
-          aria-label="Add to watchlist"
-          onClick={() => toggleWatchAssetDenom(token.coinDenom)}
-        >
-          <Icon
-            id="star"
-            className={`text-wosmongton-300 ${
-              watchListDenoms.includes(token.coinDenom)
-                ? ""
-                : "opacity-30 group-hover:opacity-100"
-            } `}
-          />
-          {t("tokenInfos.watchlist")}
-        </Button>
-        {twitterUrl && (
-          <LinkIconButton
-            href={twitterUrl}
-            target="_blank"
-            rel="external"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-            icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
-          />
-        )}
-        {websiteURL && (
-          <LinkIconButton
-            href={websiteURL}
-            target="_blank"
-            rel="external"
-            aria-label={t("tokenInfos.ariaView", { name: "website" })}
-            icon={<Icon className="h-6 w-6 text-osmoverse-400" id="web" />}
-          />
-        )}
-        {coingeckoURL && (
-          <LinkIconButton
-            href={coingeckoURL}
-            target="_blank"
-            rel="external"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
-            icon={
-              <Icon className="h-9 w-9 text-osmoverse-300" id="coingecko" />
-            }
-          />
-        )}
-      </div>
-    </nav>
-  );
-});
 
 export default AssetInfoPage;
 

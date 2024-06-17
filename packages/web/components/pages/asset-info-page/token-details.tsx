@@ -2,12 +2,13 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Asset, CoingeckoCoin, TokenCMSData } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { Markdown } from "~/components/markdown";
-import { LinkIconButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
@@ -109,41 +110,47 @@ const _TokenDetails = ({
                 {t("tokenInfos.aboutDenom", { title })}
               </h6>
               <div className="flex items-center gap-2">
-                {twitterUrl && (
-                  <LinkIconButton
-                    href={twitterUrl}
-                    target="_blank"
+                {twitterUrl ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={twitterUrl} target="_blank" rel="external">
                       <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
-                    }
-                  />
-                )}
-                {websiteURL && (
-                  <LinkIconButton
-                    href={websiteURL}
-                    target="_blank"
+                    </Link>
+                  </Button>
+                ) : null}
+                {websiteURL ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={websiteURL} target="_blank" rel="external">
                       <Icon className="h-6 w-6 text-osmoverse-400" id="web" />
-                    }
-                  />
-                )}
-                {coingeckoURL && (
-                  <LinkIconButton
-                    href={coingeckoURL}
-                    target="_blank"
+                    </Link>
+                  </Button>
+                ) : null}
+                {coingeckoURL ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaViewOn", {
                       name: "CoinGecko",
                     })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={coingeckoURL} target="_blank" rel="external">
                       <Icon
-                        className="h-10.5 w-10.5 text-osmoverse-300"
+                        className="h-9 w-9 text-osmoverse-300"
                         id="coingecko"
                       />
-                    }
-                  />
-                )}
+                    </Link>
+                  </Button>
+                ) : null}
                 {shortBase ? (
                   <ClipboardButton
                     aria-label="Clipboard"
