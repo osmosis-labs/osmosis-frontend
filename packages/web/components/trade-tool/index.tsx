@@ -3,7 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import ClientOnly from "~/components/client-only";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
-import { SwapTool } from "~/components/swap-tool";
+import { AltSwapTool } from "~/components/swap-tool/alt";
 import OrderTypeSelector from "~/components/swap-tool/order-type-selector";
 import {
   SwapToolTab,
@@ -37,7 +37,11 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
             case SwapToolTab.SWAP:
             default:
               return (
-                <SwapTool useOtherCurrencies useQueryParams page="Swap Page" />
+                <AltSwapTool
+                  useOtherCurrencies
+                  useQueryParams
+                  page="Swap Page"
+                />
               );
           }
         }, [tab])}
