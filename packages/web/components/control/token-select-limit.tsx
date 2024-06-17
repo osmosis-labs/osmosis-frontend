@@ -173,6 +173,11 @@ export const TokenSelectLimit: FunctionComponent<
           disabled={disabled}
         />
         <TokenSelectModalLimit
+          headerTitle={
+            orderDirection === OrderDirection.Ask
+              ? "Select an asset to sell"
+              : "Select an asset to buy"
+          }
           isOpen={isSelectOpen}
           onClose={() => setIsSelectOpen(false)}
           onSelect={onSelect}
