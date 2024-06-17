@@ -31,6 +31,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
+    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
+      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [{ base, quote, tab, type }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
@@ -38,8 +40,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
     });
-
-    const { selectableBaseAssets } = useOrderbookSelectableDenoms();
 
     const setBase = useCallback((base: string) => set({ base }), [set]);
 
@@ -182,7 +182,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     swapState.inAmountInput.inputAmount === "0"
                   }
                   isLoading={
-                    !swapState.isBalancesFetched || swapState.isMakerFeeLoading
+                    !swapState.isBalancesFetched ||
+                    swapState.isMakerFeeLoading ||
+                    orderbookAssetsLoading
                   }
                   loadingText={"Loading..."}
                   onClick={() => setReviewOpen(true)}
