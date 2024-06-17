@@ -127,7 +127,6 @@ export const usePlaceLimit = ({
     }
 
     const paymentDenom = paymentTokenValue.toCoin().denom;
-
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
     const tickId = priceToTick(

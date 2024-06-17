@@ -16,7 +16,7 @@ interface UITradeType {
 }
 
 // const TRADE_TYPES = ["market", "limit", "recurring"] as const;
-const TRADE_TYPES = ["market", "limit"] as const;
+export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = () => {
   const { t } = useTranslation();
