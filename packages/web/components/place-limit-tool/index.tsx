@@ -6,14 +6,12 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
+import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import {
-  useOrderbook,
-  useOrderbookSelectableDenoms,
-} from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -52,18 +50,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const { onOpenWalletSelect } = useWalletSelect();
 
-    const { poolId, contractAddress, makerFee, isMakerFeeLoading } =
-      useOrderbook({
-        baseDenom: base,
-        quoteDenom: quote,
-      });
-
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
-      poolId,
       orderDirection,
       useQueryParams: false,
-      orderbookContractAddress: contractAddress,
       baseDenom: base,
       quoteDenom: quote,
     });
@@ -166,6 +156,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </span>
             </div>
           )}
+          <LimitTradeDetails swapState={swapState} />
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>
@@ -192,7 +183,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
-                    isMakerFeeLoading ||
+                    swapState.isMakerFeeLoading ||
                     orderbookAssetsLoading
                   }
                   loadingText={"Loading..."}
@@ -214,7 +205,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           placeLimitState={swapState}
           orderDirection={orderDirection}
           isOpen={reviewOpen}
-          makerFee={makerFee}
+          makerFee={swapState.makerFee}
           onRequestClose={() => setReviewOpen(false)}
           orderType="limit"
         />

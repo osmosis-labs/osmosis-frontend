@@ -4,6 +4,8 @@ import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useSwapAsset } from "~/hooks/use-swap";
+import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 interface Orderbook {
@@ -12,16 +14,23 @@ interface Orderbook {
   contractAddress: string;
 }
 
+const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
+  ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
+  : "";
+const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
+const validDenoms = [USDC_DENOM, USDT_DENOM];
+
 const testnetOrderbooks: Orderbook[] = [
   {
-    baseDenom: "OSMO",
-    quoteDenom: "USDC",
+    baseDenom: "uosmo",
+    quoteDenom:
+      "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
     contractAddress:
       "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
   },
   {
-    baseDenom: "ION",
-    quoteDenom: "OSMO",
+    baseDenom: "uion",
+    quoteDenom: "uosmo",
     contractAddress:
       "osmo1ruxn39qj6x44gms8pfzw22kd7kemslc5fahgua3wuz0tkyks0uhq2f25wh",
   },
@@ -42,7 +51,15 @@ export const useOrderbooks = (): {
     isLoading: false,
   };
 
-  return { orderbooks: orderbooks ?? [], isLoading };
+  const onlyStableOrderbooks = useMemo(
+    () =>
+      (orderbooks ?? []).filter(({ quoteDenom }) =>
+        validDenoms.includes(quoteDenom)
+      ),
+    [orderbooks]
+  );
+
+  return { orderbooks: onlyStableOrderbooks, isLoading };
 };
 
 /**
@@ -132,12 +149,61 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
+  const { accountStore } = useStore();
 
-  const orderbook = orderbooks.find(
-    (orderbook) =>
-      orderbook.baseDenom === baseDenom && orderbook.quoteDenom === quoteDenom
+  const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
+  const { data: selectableAssetPages } =
+    api.edge.assets.getUserAssets.useInfiniteQuery(
+      {
+        userOsmoAddress: accountStore.getWallet(accountStore.osmosisChainId)
+          ?.address,
+        includePreview: false,
+        limit: 50, // items per page
+      },
+      {
+        enabled: true,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+
+        // avoid blocking
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+
+  const selectableAssets = useMemo(
+    () =>
+      true
+        ? selectableAssetPages?.pages.flatMap(({ items }) => items) ?? []
+        : [],
+    [selectableAssetPages?.pages]
   );
+  const { asset: baseAsset } = useSwapAsset({
+    minDenomOrSymbol: baseDenom,
+    existingAssets: selectableAssets,
+  });
+  const { asset: quoteAsset } = useSwapAsset({
+    minDenomOrSymbol: quoteDenom,
+    existingAssets: selectableAssets,
+  });
+
+  const orderbook = useMemo(
+    () =>
+      orderbooks.find(
+        (orderbook) =>
+          baseAsset &&
+          quoteAsset &&
+          (orderbook.baseDenom === baseAsset.coinDenom ||
+            orderbook.baseDenom === baseAsset.coinMinimalDenom) &&
+          (orderbook.quoteDenom === quoteAsset.coinDenom ||
+            orderbook.quoteDenom === quoteAsset.coinMinimalDenom)
+      ),
+    [orderbooks, baseAsset, quoteAsset]
+  );
+
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
@@ -151,6 +217,15 @@ export const useOrderbook = ({
   };
 };
 
+/**
+ * Hook to fetch the maker fee for a given orderbook.
+ *
+ * Queries the maker fee using the orderbook's address.
+ * If the data is still loading, it returns a default value of Dec(0) for the maker fee.
+ * Once the data is loaded, it returns the actual maker fee if available, or Dec(0) if not.
+ * @param {string} orderbookAddress - The contract address of the orderbook.
+ * @returns {Object} An object containing the maker fee and the loading state.
+ */
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   const { data: makerFeeData, isLoading } =
     api.edge.orderbooks.getMakerFee.useQuery({
@@ -161,26 +236,62 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
     if (isLoading) return new Dec(0);
     return makerFeeData?.makerFee ?? new Dec(0);
   }, [isLoading, makerFeeData]);
+
   return {
-    makerFee,
+    makerFee: new Dec(0.015),
     isLoading,
   };
 };
 
-export const useActiveLimitOrdersByOrderbook = ({
-  orderbookAddress,
-  userAddress,
-}: {
-  orderbookAddress: string;
-  userAddress: string;
-}) => {
-  const { data: orders, isLoading } =
-    api.edge.orderbooks.getActiveOrders.useQuery({
-      contractOsmoAddress: orderbookAddress,
-      userOsmoAddress: userAddress,
-    });
-  return {
-    orders,
-    isLoading,
-  };
-};
+// export const useActiveLimitOrdersByOrderbook = ({
+//   orderbookAddress,
+//   userAddress,
+// }: {
+//   orderbookAddress: string;
+//   userAddress: string;
+// }) => {
+//   const { data: orders, isLoading } =
+//     api.edge.orderbooks.getActiveOrders.useQuery({
+//       contractOsmoAddress: orderbookAddress,
+//       userOsmoAddress: userAddress,
+//     });
+//   return {
+//     orders,
+//     isLoading,
+//   };
+// };
+
+/**
+ * Hook to fetch the current spot price of a given pair from an orderbook.
+ *
+ * The spot price is determined by the provided quote asset and base asset.
+ *
+ * For a BID the quote asset is the base asset and the base asset is the quote asset of the orderbook.
+ *
+ * For an ASK the quote asset is the quote asset and the base asset is the base asset of the orderbook.
+ *
+ * @param {string} orderbookAddress - The contract address of the orderbook.
+ * @param {string} quoteAssetDenom - The token out asset denom.
+ * @param {string} baseAssetDenom - The token in asset denom.
+ * @returns {Object} An object containing the spot price and the loading state.
+ */
+// export const useOrderbookSpotPrice = ({
+//   orderbookAddress,
+//   quoteAssetDenom,
+//   baseAssetDenom,
+// }: {
+//   orderbookAddress: string;
+//   quoteAssetDenom: string;
+//   baseAssetDenom: string;
+// }) => {
+//   const { data: spotPrice, isLoading } =
+//     api.edge.orderbooks.getSpotPrice.useQuery({
+//       osmoAddress: orderbookAddress,
+//       quoteAssetDenom,
+//       baseAssetDenom,
+//     });
+//   return {
+//     spotPrice,
+//     isLoading,
+//   };
+// };

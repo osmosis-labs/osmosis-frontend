@@ -1109,6 +1109,7 @@
   },
   "place-limit": {
     "reviewOrder": "Review Order",
+    "tradeDetails": "Trade Details",
     "marketOrder": {
       "title": "Market Order",
       "description": "Buy immediately at best available price"
