@@ -166,7 +166,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-5">
                 <TokenNavigation
                   token={token}
                   tokenDetailsByLanguage={tokenDetailsByLanguage}

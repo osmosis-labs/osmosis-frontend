@@ -2,24 +2,23 @@ import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
-import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
-import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
+import { ChartUnavailable } from "~/components/chart";
+import {
+  HistoricalPriceChartHeaderV2,
+  HistoricalPriceChartV2,
+} from "~/components/chart/price-historical-v2";
 import { Spinner } from "~/components/loaders";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
-import { getPriceExtendedFormatOptions } from "~/utils/formatter";
-import { getDecimalCount } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 export const TokenChart = () => {
   const { assetInfoConfig } = useAssetInfoView();
 
   return (
-    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl pb-8 md:pb-6">
-      <div className="p-8 pb-0 md:p-6">
-        <TokenChartHeader />
-      </div>
+    <section className="relative flex flex-col justify-between gap-3">
+      <TokenChartHeader />
 
-      <div className="h-[370px] w-full xl:h-[250px]">
+      <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.isHistoricalDataLoading ? (
           <div className="flex h-full flex-col items-center justify-center">
             <Spinner />
@@ -72,30 +71,13 @@ export const TokenChartHeader = observer(() => {
     assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
     assetPrice?.fiatCurrency.symbol;
 
-  const minimumDecimals = 2;
-  const maxDecimals = Math.max(getDecimalCount(hoverPrice), minimumDecimals);
-
-  const formatOpts = useMemo(
-    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
-    [hoverPrice]
-  );
-
   return (
-    <header>
-      <PriceChartHeader
+    <header className="absolute left-0 top-0 z-10">
+      <HistoricalPriceChartHeaderV2
         isLoading={isLoading}
-        formatOpts={formatOpts}
-        decimal={maxDecimals}
-        showAllRange
         hoverPrice={hoverPrice}
         hoverDate={assetInfoConfig.hoverDate}
-        historicalRange={assetInfoConfig.historicalRange}
-        setHistoricalRange={assetInfoConfig.setHistoricalRange}
         fiatSymbol={fiatSymbol}
-        classes={{
-          priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
-        }}
-        compactZeros
       />
     </header>
   );
