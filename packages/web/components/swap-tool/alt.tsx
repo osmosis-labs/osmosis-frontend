@@ -585,8 +585,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               <div
                 ref={estimateDetailsContentRef}
                 className={classNames(
-                  "absolute flex flex-col gap-4 pt-5 transition-opacity",
-                  fixedWidth ? "w-[94%]" : "w-[358px] md:w-[94%]",
+                  "flex flex-col gap-4 pt-5 transition-opacity",
+                  fixedWidth ? "w-[94%]" : "w-full md:w-[94%]",
                   { "opacity-50": swapState.isQuoteLoading }
                 )}
               >
