@@ -58,7 +58,7 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: prod-e2e-test-results
+          name: ${{ matrix.env }}-e2e-test-results
           path: packages/web/playwright-report
       - name: Send Slack alert if test fails
         id: slack
