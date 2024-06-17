@@ -90,27 +90,24 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           </div>
         )}
         <div className="flex w-full flex-col pt-3">
-          {placeLimitState.quoteAsset && (
-            <RecapRow
-              left={
-                orderDirection === OrderDirection.Ask
-                  ? "Receive Asset"
-                  : "Pay With"
-              }
-              right={
-                <span className="text-osmoverse-100">
-                  <Image
-                    width={24}
-                    height={24}
-                    src={placeLimitState.quoteAsset.coinImageUrl!}
-                    alt={placeLimitState.quoteAsset.coinDenom}
-                    className="inline"
-                  />{" "}
-                  {placeLimitState.quoteAsset.coinDenom}
-                </span>
-              }
-            />
-          )}
+          {placeLimitState.quoteAsset &&
+            orderDirection === OrderDirection.Bid && (
+              <RecapRow
+                left="Pay With"
+                right={
+                  <span className="text-osmoverse-100">
+                    <Image
+                      width={24}
+                      height={24}
+                      src={placeLimitState.quoteAsset.coinImageUrl!}
+                      alt={placeLimitState.quoteAsset.coinDenom}
+                      className="inline"
+                    />{" "}
+                    {placeLimitState.quoteAsset.coinDenom}
+                  </span>
+                }
+              />
+            )}
           <RecapRow
             left="Amount"
             right={
@@ -136,38 +133,58 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               </span>
             }
           />
-          <RecapRow
-            left="Limit Price"
-            right={
-              <div className="flex  items-center justify-center text-osmoverse-100">
-                <div className="mr-2 flex items-center justify-between rounded-xl border border-osmoverse-700 px-3 py-1 text-caption text-osmoverse-300">
-                  {!placeLimitState.priceState.percentAdjusted.isZero() && (
-                    <Icon
-                      id="triangle-down"
-                      style={{
-                        transform:
-                          placeLimitState.priceState.percentAdjusted.isPositive()
-                            ? "rotate(180deg)"
-                            : "rotate(00deg)",
-                      }}
-                      width={10}
-                      height={6}
-                      className="mr-1"
-                    />
-                  )}
-                  <div>
-                    {formatPretty(
-                      placeLimitState.priceState.percentAdjusted
-                        .mul(new Dec(100))
-                        .abs()
+          {placeLimitState.quoteAsset &&
+            orderDirection === OrderDirection.Ask && (
+              <RecapRow
+                left="Recieve asset"
+                right={
+                  <span className="text-osmoverse-100">
+                    <Image
+                      width={24}
+                      height={24}
+                      src={placeLimitState.quoteAsset.coinImageUrl!}
+                      alt={placeLimitState.quoteAsset.coinDenom}
+                      className="inline"
+                    />{" "}
+                    {placeLimitState.quoteAsset.coinDenom}
+                  </span>
+                }
+              />
+            )}
+          {orderType === "limit" && (
+            <RecapRow
+              left="Limit Price"
+              right={
+                <div className="flex  items-center justify-center text-osmoverse-100">
+                  <div className="mr-2 flex items-center justify-between rounded-xl border border-osmoverse-700 px-3 py-1 text-caption text-osmoverse-300">
+                    {!placeLimitState.priceState.percentAdjusted.isZero() && (
+                      <Icon
+                        id="triangle-down"
+                        style={{
+                          transform:
+                            placeLimitState.priceState.percentAdjusted.isPositive()
+                              ? "rotate(180deg)"
+                              : "rotate(00deg)",
+                        }}
+                        width={10}
+                        height={6}
+                        className="mr-1"
+                      />
                     )}
-                    %
+                    <div>
+                      {formatPretty(
+                        placeLimitState.priceState.percentAdjusted
+                          .mul(new Dec(100))
+                          .abs()
+                      )}
+                      %
+                    </div>
                   </div>
+                  <div> ${formatPretty(placeLimitState.priceState.price)}</div>
                 </div>
-                <div> ${formatPretty(placeLimitState.priceState.price)}</div>
-              </div>
-            }
-          />
+              }
+            />
+          )}
           <div className="body2 flex h-8 w-full items-center justify-between">
             <span className="text-osmoverse-300">More details</span>
             <span className="cursor-pointer text-wosmongton-300">Show</span>
