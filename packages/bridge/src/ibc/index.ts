@@ -6,9 +6,9 @@ import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
-  BridgeExternalUrl,
   BridgeAsset,
   BridgeChain,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
