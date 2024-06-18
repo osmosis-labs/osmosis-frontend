@@ -543,19 +543,19 @@ describe("SkipBridgeProvider", () => {
 
   describe("getSupportedAssets", () => {
     it("gets shared origin assets", async () => {
-      const sourceVariants = await provider.getSupportedAssets(
-        {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
         },
-        {
+        asset: {
           denom: "USDC",
           address:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
           decimals: 6,
           sourceDenom: "uusdc",
-        }
-      );
+        },
+      });
 
       expect(sourceVariants).toEqual([
         {
@@ -596,19 +596,19 @@ describe("SkipBridgeProvider", () => {
     });
 
     it("includes skip supported cosmos counterparty assets from asset list", async () => {
-      const sourceVariants = await provider.getSupportedAssets(
-        {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
         },
-        {
+        asset: {
           denom: "USDC",
           address:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
           decimals: 6,
           sourceDenom: "uusdc",
-        }
-      );
+        },
+      });
 
       // makes sure that the first variants are sourced from counterparty array
       expect(sourceVariants[0]).toEqual({
@@ -622,19 +622,19 @@ describe("SkipBridgeProvider", () => {
     });
 
     it("includes skip supported evm counterparty assets from asset list", async () => {
-      const sourceVariants = await provider.getSupportedAssets(
-        {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
           chainId: "osmosis-1",
           chainType: "cosmos",
         },
-        {
+        asset: {
           denom: "USDC",
           address:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
           decimals: 6,
           sourceDenom: "uusdc",
-        }
-      );
+        },
+      });
 
       // makes sure that the first variants are sourced from counterparty array
       expect(sourceVariants[1]).toEqual({
