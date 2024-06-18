@@ -128,7 +128,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           <RecapRow left="Recieve" right={<>{formatPretty(total)}</>} />
           {orderType === "market" && (
             <RecapRow
-              left="Recieve minumum"
+              left="Recieve minimum"
               right={
                 <span className="body2 text-osmoverse-100">
                   {formatPretty(placeLimitState.expectedTokenAmountOut, {
