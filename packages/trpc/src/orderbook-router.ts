@@ -58,6 +58,6 @@ export const orderbookRouter = createTRPCRouter({
         baseAssetDenom: baseAssetDenom,
         chainList: ctx.chainList,
       });
-      return new Dec(spotPrice);
+      return spotPrice;
     }),
 });

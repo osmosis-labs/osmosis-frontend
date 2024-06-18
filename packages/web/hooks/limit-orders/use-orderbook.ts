@@ -287,41 +287,6 @@ export const useOrderbookSpotPrice = ({
   const { data: spotPrice, isLoading } =
     api.edge.orderbooks.getSpotPrice.useQuery({
       osmoAddress: orderbookAddress,
-      tokenInDenom: quoteAssetDenom,
-      tokenOutDenom: baseAssetDenom,
-    });
-  return {
-    spotPrice,
-    isLoading,
-  };
-};
-
-/**
- * Hook to fetch the current spot price of a given pair from an orderbook.
- *
- * The spot price is determined by the provided quote asset and base asset.
- *
- * For a BID the quote asset is the base asset and the base asset is the quote asset of the orderbook.
- *
- * For an ASK the quote asset is the quote asset and the base asset is the base asset of the orderbook.
- *
- * @param {string} orderbookAddress - The contract address of the orderbook.
- * @param {string} quoteAssetDenom - The token out asset denom.
- * @param {string} baseAssetDenom - The token in asset denom.
- * @returns {Object} An object containing the spot price and the loading state.
- */
-export const useOrderbookSpotPrice = ({
-  orderbookAddress,
-  quoteAssetDenom,
-  baseAssetDenom,
-}: {
-  orderbookAddress: string;
-  quoteAssetDenom: string;
-  baseAssetDenom: string;
-}) => {
-  const { data: spotPrice, isLoading } =
-    api.edge.orderbooks.getSpotPrice.useQuery({
-      osmoAddress: orderbookAddress,
       quoteAssetDenom,
       baseAssetDenom,
     });

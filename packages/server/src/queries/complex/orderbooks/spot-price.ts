@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -30,6 +31,6 @@ export function getOrderbookSpotPrice({
         chainList,
         quoteAssetDenom,
         baseAssetDenom,
-      }).then(({ data }) => data.spot_price),
+      }).then(({ data }) => new Dec(data.spot_price)),
   });
 }
