@@ -67,9 +67,11 @@ export class IbcBridgeProvider implements BridgeProvider {
       .find((asset) => asset.coinMinimalDenom === gasFee.denom);
 
     /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount = gasFee.isNeededForTx
-      ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
-      : params.fromAmount;
+    const toAmount =
+      gasFee.isNeededForTx &&
+      gasFee.denom.toLowerCase() === params.fromAsset.address.toLowerCase()
+        ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
+        : params.fromAmount;
 
     if (new Int(toAmount).lte(new Int(0))) {
       throw new BridgeQuoteError([

@@ -3,6 +3,7 @@ import {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -25,6 +26,15 @@ jest.mock("viem", () => ({
     getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
   })),
   http: jest.fn(),
+}));
+
+jest.mock("@osmosis-labs/tx");
+
+jest.mock("@cosmjs/proto-signing", () => ({
+  ...jest.requireActual("@cosmjs/proto-signing"),
+  Registry: jest.fn().mockReturnValue({
+    encodeAsAny: jest.fn().mockReturnValue("any"),
+  }),
 }));
 
 beforeEach(() => {
@@ -156,6 +166,55 @@ describe("AxelarBridgeProvider", () => {
     expect(gasCost?.denom).toBe("ETH");
     expect(gasCost?.sourceDenom).toBe("ETH");
     expect(gasCost?.decimals).toBe(18);
+  });
+
+  it("should estimate gas cost for Cosmos transactions", async () => {
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "1000",
+      amount: [
+        {
+          denom: "uosmo",
+          amount: "1000",
+        },
+      ],
+    });
+
+    const gasCost = await provider.estimateGasCost({
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: 1,
+        chainName: "Ethereum",
+        chainType: "evm",
+      },
+      fromAsset: {
+        denom: "USDC.axl",
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+        sourceDenom: "uusdc",
+      },
+      toAsset: {
+        denom: "USDc",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        decimals: 6,
+        sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      },
+      fromAmount: "1",
+      fromAddress: "cosmos1ABC123",
+      toAddress: "0x123ABC",
+    });
+
+    expect(gasCost).toBeDefined();
+    expect(gasCost!.amount).toBeDefined();
+    // Should be a string representation of a number
+    expect(gasCost!.amount).toBe("1000");
+    expect(gasCost!.denom).toBe("OSMO");
+    expect(gasCost!.sourceDenom).toBe("uosmo");
+    expect(gasCost!.decimals).toBe(6);
   });
 
   it("should create an EVM transaction", async () => {
@@ -291,7 +350,8 @@ describe("AxelarBridgeProvider", () => {
       toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAsset: {
         denom: "USDC.axl",
-        address: "cosmos1...",
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
         sourceDenom: "uusdc",
       },
@@ -322,7 +382,8 @@ describe("AxelarBridgeProvider", () => {
         timeoutTimestamp: "0",
         token: {
           amount: "1000000",
-          denom: "cosmos1...",
+          denom:
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
       },
     });
