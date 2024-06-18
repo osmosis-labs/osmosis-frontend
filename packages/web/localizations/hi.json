@@ -967,7 +967,12 @@
     "circulatingSupply": "परिसंचारी आपूर्ति",
     "buyToken": "खरीदें {coinDenom}",
     "staking": "जताया",
-    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता"
+    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता",
+    "underlyingAssets": {
+      "title": "अंतर्निहित परिसंपत्तियां",
+      "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",
+      "of": "{denom} का"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "ऑस्मोसिस अपडेट!",

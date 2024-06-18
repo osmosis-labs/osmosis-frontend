@@ -142,6 +142,11 @@ export interface Asset {
     sourceDenom: string;
   };
 
+  /** Flag indicating if this asset is an alloyed asset. */
+  isAlloyed: boolean;
+  /** Contract address of alloyed asset CW pool. */
+  contract?: string;
+
   /** "Endorsed", as is currently defined. */
   verified: boolean;
   /** If true is preview only, not ready for production. */

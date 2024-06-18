@@ -967,7 +967,12 @@
     "circulatingSupply": "Approvisionnement en circulation",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",
-    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
+    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}",
+    "underlyingAssets": {
+      "title": "Atouts sous-jacents",
+      "description": "{name} ( {denom} ) sur Osmose est composé de {count} différents types de {name} .",
+      "of": "de {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Mises à jour sur l'osmose !",

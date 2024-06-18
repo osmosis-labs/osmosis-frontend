@@ -14,10 +14,9 @@ import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 
-jest.mock("viem", () => {
-  const originalModule = jest.requireActual("viem");
+jest.mock("viem", function () {
   return {
-    ...originalModule,
+    ...jest.requireActual("viem"),
     createPublicClient: jest.fn().mockImplementation(() => ({
       estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
       getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
@@ -81,8 +80,8 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
     const depositAddress = await provider.getDepositAddress({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0x0",
@@ -99,14 +98,16 @@ describe("AxelarBridgeProvider", () => {
     await expect(
       provider.getDepositAddress({
         fromChain: {
-          chainId: "unsupported",
+          chainId: 989898989898,
           chainName: "Unsupported",
           chainType: "evm",
+          networkName: "unsupported",
         },
         toChain: {
-          chainId: "unsupported",
+          chainId: 989898989898,
           chainName: "Unsupported",
           chainType: "evm",
+          networkName: "unsupported",
         },
         fromAsset: {
           denom: "ETH",
@@ -116,13 +117,15 @@ describe("AxelarBridgeProvider", () => {
         },
         toAddress: "0x456",
       })
-    ).rejects.toThrow("Unsupported chain");
+    ).rejects.toThrow(
+      "Unsupported chain: Chain ID 989898989898 is not supported."
+    );
   });
 
   it("should estimate gas cost for EVM transactions", async () => {
     const gasCost = await provider.estimateGasCost({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0x0",
@@ -161,8 +164,8 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
     const transaction = await provider.createEvmTransaction({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0x0000000000000000000000000000000000000000",
@@ -200,8 +203,8 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
     const transaction = await provider.createEvmTransaction({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: NativeEVMTokenConstantAddress,
@@ -240,8 +243,8 @@ describe("AxelarBridgeProvider", () => {
 
     await expect(
       provider.createEvmTransaction({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,
@@ -279,7 +282,7 @@ describe("AxelarBridgeProvider", () => {
         chainName: "Osmosis",
         chainType: "cosmos",
       },
-      toChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAsset: {
         denom: "USDC.axl",
         address: "cosmos1...",
@@ -341,8 +344,8 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockQueryClient as AxelarQueryAPI);
 
     const quote = await provider.getQuote({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -372,8 +375,8 @@ describe("AxelarBridgeProvider", () => {
         denom: "AVAX",
         priceImpact: "0",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       transferFee: {
         amount: "0.01",
         denom: "ETH",
@@ -412,8 +415,8 @@ describe("AxelarBridgeProvider", () => {
 
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -443,8 +446,8 @@ describe("AxelarBridgeProvider", () => {
 
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: "0x0",
@@ -483,7 +486,7 @@ describe("AxelarBridgeProvider", () => {
           chainName: "Osmosis",
           chainType: "cosmos",
         },
-        toChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,

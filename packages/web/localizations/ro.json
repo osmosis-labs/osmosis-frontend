@@ -967,7 +967,12 @@
     "circulatingSupply": "Aprovizionare în circulație",
     "buyToken": "Cumpărați {coinDenom}",
     "staking": "Miza",
-    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}"
+    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}",
+    "underlyingAssets": {
+      "title": "Activele suport",
+      "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",
+      "of": "din {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Actualizări pentru osmoză!",

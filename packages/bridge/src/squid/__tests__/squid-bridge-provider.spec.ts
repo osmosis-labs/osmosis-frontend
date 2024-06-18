@@ -10,22 +10,19 @@ import { BridgeQuoteError } from "../../errors";
 import { BridgeProviderContext } from "../../interface";
 import { SquidBridgeProvider } from "../index";
 
-jest.mock("viem", () => {
-  const originalModule = jest.requireActual("viem");
-  return {
-    ...originalModule,
-    createPublicClient: jest.fn().mockImplementation(() => ({
-      readContract: jest.fn().mockImplementation(({ functionName }) => {
-        if (functionName === "allowance") {
-          return Promise.resolve(BigInt("100"));
-        }
-        return Promise.reject(new Error("Unknown function"));
-      }),
-    })),
-    encodeFunctionData: jest.fn().mockImplementation(() => "0xabcdef"),
-    http: jest.fn().mockImplementation(() => ({})),
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    readContract: jest.fn().mockImplementation(({ functionName }) => {
+      if (functionName === "allowance") {
+        return Promise.resolve(BigInt("100"));
+      }
+      return Promise.reject(new Error("Unknown function"));
+    }),
+  })),
+  encodeFunctionData: jest.fn().mockImplementation(() => "0xabcdef"),
+  http: jest.fn().mockImplementation(() => ({})),
+}));
 
 beforeEach(() => {
   server.use(
@@ -107,8 +104,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote", async () => {
     const quote = await provider.getQuote({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -137,8 +134,8 @@ describe("SquidBridgeProvider", () => {
         denom: "AVAX",
         priceImpact: "0.000000000000000000",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       transferFee: {
         amount: "0.01",
         denom: "ETH",
@@ -169,12 +166,12 @@ describe("SquidBridgeProvider", () => {
         fromChain: {
           chainId: "unsupported",
           chainName: "Unsupported",
-          chainType: "evm",
+          chainType: "cosmos",
         },
         toChain: {
           chainId: "unsupported",
           chainName: "Unsupported",
-          chainType: "evm",
+          chainType: "cosmos",
         },
         fromAsset: {
           denom: "ETH",
@@ -204,7 +201,7 @@ describe("SquidBridgeProvider", () => {
         decimals: 18,
         sourceDenom: "eth",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
       estimateFromAmount: "1",
       transactionRequest: {
@@ -248,8 +245,8 @@ describe("SquidBridgeProvider", () => {
     });
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: "0x0",
@@ -284,7 +281,7 @@ describe("SquidBridgeProvider", () => {
       isFromAssetNative: false,
       fromAmount: "100",
       fromAddress: "0xFromAddress",
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       targetAddress: "0xTargetAddress",
     });
 
@@ -308,7 +305,7 @@ describe("SquidBridgeProvider", () => {
       isFromAssetNative: false,
       fromAmount: "100",
       fromAddress: "0xFromAddress",
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       targetAddress: "0xTargetAddress",
     });
 
@@ -325,7 +322,7 @@ describe("SquidBridgeProvider", () => {
       isFromAssetNative: true,
       fromAmount: "100",
       fromAddress: "0xFromAddress",
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       targetAddress: "0xTargetAddress",
     });
 
