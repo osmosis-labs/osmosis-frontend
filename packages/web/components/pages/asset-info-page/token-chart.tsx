@@ -8,7 +8,7 @@ import { ChartUnavailable } from "~/components/chart";
 import {
   HistoricalChart,
   HistoricalChartHeader,
-} from "~/components/chart/price-historical-v2";
+} from "~/components/chart/historical-chart";
 import { Spinner } from "~/components/loaders";
 import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
 import {
