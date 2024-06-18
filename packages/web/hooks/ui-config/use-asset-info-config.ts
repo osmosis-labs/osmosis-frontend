@@ -193,10 +193,6 @@ export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
 export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 
-export const AssetChartAvailableChartTypes = ["graph", "candlesticks"] as const;
-
-export type AssetChartType = (typeof AssetChartAvailableChartTypes)[number];
-
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
 
@@ -211,9 +207,6 @@ export class ObservableAssetInfoConfig {
 
   @observable
   protected _dataType: AssetChartDataType = "price";
-
-  @observable
-  protected _chartType: AssetChartType = "graph";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
@@ -309,11 +302,6 @@ export class ObservableAssetInfoConfig {
     return this._dataType;
   }
 
-  @computed
-  get chartType(): AssetChartType {
-    return this._chartType;
-  }
-
   constructor(denom: string, coinMinimalDenom?: string) {
     makeObservable(this);
 
@@ -365,11 +353,6 @@ export class ObservableAssetInfoConfig {
   @action
   setDataType = (data: AssetChartDataType) => {
     this._dataType = data;
-  };
-
-  @action
-  setChartType = (type: AssetChartType) => {
-    this._chartType = type;
   };
 
   dispose() {

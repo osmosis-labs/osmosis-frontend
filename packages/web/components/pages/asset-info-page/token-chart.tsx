@@ -3,7 +3,6 @@ import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
-import { Icon } from "~/components/assets";
 import { ChartUnavailable } from "~/components/chart";
 import {
   HistoricalChart,
@@ -106,28 +105,6 @@ export const TokenChartFooter = observer(() => {
           <SelectContent>
             <SelectItem value="price">Price</SelectItem>
             <SelectItem value="volume">Volume</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          onValueChange={assetInfoConfig.setChartType}
-          defaultValue={assetInfoConfig.chartType}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Chart type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="graph">
-              <Icon className="h-4 w-4" id="graph" width={16} height={16} />
-            </SelectItem>
-            <SelectItem value="candlesticks">
-              <Icon
-                className="h-4 w-4"
-                id="candlesticks"
-                width={16}
-                height={16}
-              />
-            </SelectItem>
           </SelectContent>
         </Select>
       </div>
