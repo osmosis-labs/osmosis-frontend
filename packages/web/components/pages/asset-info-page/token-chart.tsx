@@ -8,6 +8,8 @@ import {
   HistoricalPriceChartV2,
 } from "~/components/chart/price-historical-v2";
 import { Spinner } from "~/components/loaders";
+import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
+import { useTranslation } from "~/hooks";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { api } from "~/utils/trpc";
 
@@ -42,7 +44,39 @@ export const TokenChart = () => {
 };
 
 export const TokenChartFooter = observer(() => {
-  return <footer className="flex justify-between"></footer>;
+  const { assetInfoConfig } = useAssetInfoView();
+  const { t } = useTranslation();
+
+  return (
+    <footer className="flex justify-between">
+      <ButtonGroup
+        onValueChange={assetInfoConfig.setHistoricalRange}
+        defaultValue={assetInfoConfig.historicalRange}
+      >
+        <ButtonGroupItem
+          value="1h"
+          label={t("tokenInfos.chart.xHour", { h: "1" })}
+        />
+        <ButtonGroupItem
+          value="1d"
+          label={t("tokenInfos.chart.xDay", { d: "1" })}
+        />
+        <ButtonGroupItem
+          value="7d"
+          label={t("tokenInfos.chart.xDay", { d: "7" })}
+        />
+        <ButtonGroupItem
+          value="1mo"
+          label={t("tokenInfos.chart.xDay", { d: "30" })}
+        />
+        <ButtonGroupItem
+          value="1y"
+          label={t("tokenInfos.chart.xYear", { y: "1" })}
+        />
+        <ButtonGroupItem value="all" label={t("tokenInfos.chart.all")} />
+      </ButtonGroup>
+    </footer>
+  );
 });
 
 export const TokenChartHeader = observer(() => {
