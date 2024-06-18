@@ -34,11 +34,20 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   },
 };
 
-export const HistoricalPriceChartV2: FunctionComponent<{
-  data: { close: number; time: number }[];
+interface HistoricalChartData {
+  time: UTCTimestamp;
+  value: number;
+}
+
+interface HistoricalChartProps {
+  data: HistoricalChartData[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
-}> = memo(({ data = [], onPointerHover, onPointerOut }) => {
+}
+
+export const HistoricalChart = memo((props: HistoricalChartProps) => {
+  const { data = [], onPointerHover, onPointerOut } = props;
+
   return (
     <Chart
       Controller={AreaChartController}
@@ -46,10 +55,7 @@ export const HistoricalPriceChartV2: FunctionComponent<{
         {
           type: "Area",
           options: seriesOpt,
-          data: data.map((point) => ({
-            time: (point.time / 1000) as UTCTimestamp,
-            value: point.close,
-          })),
+          data,
         },
       ]}
       onCrosshairMove={(params) => {
@@ -65,8 +71,8 @@ export const HistoricalPriceChartV2: FunctionComponent<{
   );
 });
 
-export const HistoricalPriceChartHeaderV2: FunctionComponent<{
-  hoverPrice: Dec;
+export const HistoricalChartHeader: FunctionComponent<{
+  hoverData: Dec;
   hoverDate?: string | null;
   maxDecimal?: number;
   formatOptions?: FormatOptions;
@@ -74,9 +80,9 @@ export const HistoricalPriceChartHeaderV2: FunctionComponent<{
   isLoading?: boolean;
 }> = ({
   hoverDate,
-  hoverPrice,
+  hoverData,
   formatOptions,
-  maxDecimal = Math.max(getDecimalCount(hoverPrice.toString()), 2),
+  maxDecimal = Math.max(getDecimalCount(hoverData.toString()), 2),
   fiatSymbol,
   isLoading = false,
 }) => {
@@ -86,7 +92,7 @@ export const HistoricalPriceChartHeaderV2: FunctionComponent<{
         <h3 className="font-h3 sm:text-h4">
           {fiatSymbol}
           <SubscriptDecimal
-            decimal={hoverPrice}
+            decimal={hoverData}
             maxDecimals={maxDecimal}
             formatOptions={formatOptions}
           />

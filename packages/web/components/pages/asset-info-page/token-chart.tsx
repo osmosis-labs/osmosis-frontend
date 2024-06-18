@@ -1,20 +1,39 @@
 import { Dec } from "@keplr-wallet/unit";
+import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 
+import { Icon } from "~/components/assets";
 import { ChartUnavailable } from "~/components/chart";
 import {
-  HistoricalPriceChartHeaderV2,
-  HistoricalPriceChartV2,
+  HistoricalChart,
+  HistoricalChartHeader,
 } from "~/components/chart/price-historical-v2";
 import { Spinner } from "~/components/loaders";
 import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { useTranslation } from "~/hooks";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { api } from "~/utils/trpc";
 
-export const TokenChart = () => {
+export const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+
+  const data = useMemo(
+    () =>
+      assetInfoConfig.historicalChartData.map((point) => ({
+        time: (point.time / 1000) as UTCTimestamp,
+        value:
+          assetInfoConfig.dataType === "price" ? point.close : point.volume,
+      })),
+    [assetInfoConfig.historicalChartData, assetInfoConfig.dataType]
+  );
 
   return (
     <section className="relative flex flex-col justify-between gap-3">
@@ -26,11 +45,11 @@ export const TokenChart = () => {
             <Spinner />
           </div>
         ) : !assetInfoConfig.historicalChartUnavailable ? (
-          <HistoricalPriceChartV2
-            data={assetInfoConfig.historicalChartData}
-            onPointerHover={assetInfoConfig.setHoverPrice}
+          <HistoricalChart
+            data={data}
+            onPointerHover={assetInfoConfig.setHoverData}
             onPointerOut={() => {
-              assetInfoConfig.setHoverPrice(0, undefined);
+              assetInfoConfig.setHoverData(0, undefined);
             }}
           />
         ) : (
@@ -41,14 +60,14 @@ export const TokenChart = () => {
       <TokenChartFooter />
     </section>
   );
-};
+});
 
 export const TokenChartFooter = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { t } = useTranslation();
 
   return (
-    <footer className="flex justify-between">
+    <footer className="flex justify-between gap-2">
       <ButtonGroup
         onValueChange={assetInfoConfig.setHistoricalRange}
         defaultValue={assetInfoConfig.historicalRange}
@@ -75,6 +94,43 @@ export const TokenChartFooter = observer(() => {
         />
         <ButtonGroupItem value="all" label={t("tokenInfos.chart.all")} />
       </ButtonGroup>
+
+      <div className="flex gap-2">
+        <Select
+          onValueChange={assetInfoConfig.setDataType}
+          defaultValue={assetInfoConfig.dataType}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Data type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="price">Price</SelectItem>
+            <SelectItem value="volume">Volume</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          onValueChange={assetInfoConfig.setChartType}
+          defaultValue={assetInfoConfig.chartType}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Chart type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="graph">
+              <Icon className="h-4 w-4" id="graph" width={16} height={16} />
+            </SelectItem>
+            <SelectItem value="candlesticks">
+              <Icon
+                className="h-4 w-4"
+                id="candlesticks"
+                width={16}
+                height={16}
+              />
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </footer>
   );
 });
@@ -82,38 +138,42 @@ export const TokenChartFooter = observer(() => {
 export const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
-  const { data: assetPrice, isLoading } =
-    api.edge.assets.getAssetPrice.useQuery(
+  const { data: marketAsset, isLoading } =
+    api.edge.assets.getUserMarketAsset.useQuery(
       {
-        coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
+        findMinDenomOrSymbol: assetInfoConfig.coinMinimalDenom!,
       },
       {
         enabled: assetInfoConfig.coinMinimalDenom !== undefined,
       }
     );
 
-  const hoverPrice = useMemo(() => {
-    let price = new Dec(0);
-    const decHoverPrice = assetInfoConfig.hoverPrice?.toDec();
+  const hoverData = useMemo(() => {
+    let data = new Dec(0);
+    const decHoverPrice = assetInfoConfig.hoverData?.toDec();
 
     if (decHoverPrice && !decHoverPrice.isZero()) {
-      price = decHoverPrice;
-    } else if (assetPrice) {
-      price = assetPrice.toDec();
+      data = decHoverPrice;
+    } else {
+      if (assetInfoConfig.dataType === "price") {
+        data = marketAsset?.currentPrice?.toDec() ?? new Dec(0);
+      } else {
+        data = marketAsset?.volume24h?.toDec() ?? new Dec(0);
+      }
     }
 
-    return price;
-  }, [assetInfoConfig.hoverPrice, assetPrice]);
+    return data;
+  }, [assetInfoConfig.hoverData, assetInfoConfig.dataType, marketAsset]);
 
   const fiatSymbol =
-    assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
-    assetPrice?.fiatCurrency.symbol;
+    assetInfoConfig.hoverData?.fiatCurrency?.symbol ??
+    marketAsset?.currentPrice?.symbol;
 
   return (
     <header className="absolute left-0 top-0 z-10">
-      <HistoricalPriceChartHeaderV2
+      <HistoricalChartHeader
         isLoading={isLoading}
-        hoverPrice={hoverPrice}
+        hoverData={hoverData}
         hoverDate={assetInfoConfig.hoverDate}
         fiatSymbol={fiatSymbol}
       />
