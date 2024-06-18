@@ -79,7 +79,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             </div>
             <div className="flex w-full flex-col items-center justify-center">
               <h5>
-                ≈{" "}
+                {orderType === "market" && "≈"}{" "}
                 {placeLimitState.inAmountInput.amount
                   ? formatPretty(placeLimitState.inAmountInput.amount)
                   : "0"}
@@ -113,7 +113,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             left="Value"
             right={
               <span className="text-osmoverse-100">
-                ≈{" "}
+                ~
                 {placeLimitState.paymentFiatValue
                   ? formatPretty(placeLimitState.paymentFiatValue)
                   : "$0"}
@@ -122,10 +122,10 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           />
           <RecapRow
             left={"Total Estimated Fees"}
-            right={<>≈ {formatPretty(fee)}</>}
+            right={<>~{formatPretty(fee)}</>}
           />
           <hr className="my-2 text-osmoverse-700" />
-          <RecapRow left="Recieve" right={<>≈ {formatPretty(total)}</>} />
+          <RecapRow left="Recieve" right={<>{formatPretty(total)}</>} />
           {placeLimitState.quoteAsset &&
             orderDirection === OrderDirection.Ask && (
               <RecapRow
