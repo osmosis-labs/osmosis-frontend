@@ -4,7 +4,6 @@ import {
   AreaSeriesOptions,
   DeepPartial,
   Time,
-  UTCTimestamp,
 } from "lightweight-charts";
 import React, { FunctionComponent, memo } from "react";
 
@@ -34,13 +33,8 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   },
 };
 
-interface HistoricalChartData {
-  time: UTCTimestamp;
-  value: number;
-}
-
 interface HistoricalChartProps {
-  data: HistoricalChartData[];
+  data: AreaData<Time>[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
 }

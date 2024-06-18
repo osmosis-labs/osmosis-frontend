@@ -28,7 +28,7 @@ export const TokenChart = observer(() => {
   const data = useMemo(
     () =>
       assetInfoConfig.historicalChartData.map((point) => ({
-        time: (point.time / 1000) as UTCTimestamp,
+        time: point.time as UTCTimestamp,
         value:
           assetInfoConfig.dataType === "price" ? point.close : point.volume,
       })),

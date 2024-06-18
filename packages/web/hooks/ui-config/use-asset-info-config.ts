@@ -248,7 +248,7 @@ export class ObservableAssetInfoConfig {
   get historicalChartData() {
     return this._historicalData.map((data) => ({
       ...data,
-      time: data.time * 1000,
+      time: data.time,
     }));
   }
 
