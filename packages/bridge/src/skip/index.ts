@@ -1,5 +1,8 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
+import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
@@ -39,6 +42,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   readonly providerName = SkipBridgeProvider.ID;
 
   protected readonly skipClient = new SkipApiClient();
+  protected protoRegistry = new Registry(ibcProtoRegistry);
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
@@ -499,44 +503,70 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest
   ) {
-    if (txData.type !== "evm") {
-      return;
+    if (txData.type === "evm") {
+      const evmChain = Object.values(EthereumChainInfo).find(
+        ({ id: chainId }) => chainId === params.fromChain.chainId
+      );
+
+      if (!evmChain) throw new Error("Could not find EVM chain");
+
+      const provider = createPublicClient({
+        chain: evmChain,
+        transport: http(evmChain.rpcUrls.default.http[0]),
+      });
+
+      const estimatedGas = await this.estimateEvmGasWithStateOverrides(
+        provider,
+        params,
+        txData
+      );
+      if (estimatedGas === BigInt(0)) {
+        return;
+      }
+
+      const gasPrice = await provider.getGasPrice();
+
+      if (!gasPrice) {
+        throw new Error("Failed to get gas price");
+      }
+
+      const gasCost = estimatedGas * gasPrice;
+
+      return {
+        amount: gasCost.toString(),
+        sourceDenom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        denom: evmChain.nativeCurrency.symbol,
+      };
     }
 
-    const evmChain = Object.values(EthereumChainInfo).find(
-      ({ id: chainId }) => chainId === params.fromChain.chainId
-    );
+    if (txData.type === "cosmos") {
+      const txSimulation = await estimateGasFee({
+        chainId: params.fromChain.chainId.toString(),
+        chainList: this.ctx.chainList,
+        body: {
+          messages: [
+            this.protoRegistry.encodeAsAny({
+              typeUrl: txData.msgTypeUrl,
+              value: txData.msg,
+            }),
+          ],
+        },
+        bech32Address: params.fromAddress,
+      });
 
-    if (!evmChain) throw new Error("Could not find EVM chain");
+      const gasFee = txSimulation.amount[0];
+      const gasAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
 
-    const provider = createPublicClient({
-      chain: evmChain,
-      transport: http(evmChain.rpcUrls.default.http[0]),
-    });
-
-    const estimatedGas = await this.estimateEvmGasWithStateOverrides(
-      provider,
-      params,
-      txData
-    );
-    if (estimatedGas === BigInt(0)) {
-      return;
+      return {
+        amount: gasFee.amount,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+      };
     }
-
-    const gasPrice = await provider.getGasPrice();
-
-    if (!gasPrice) {
-      throw new Error("Failed to get gas price");
-    }
-
-    const gasCost = estimatedGas * gasPrice;
-
-    return {
-      amount: gasCost.toString(),
-      sourceDenom: evmChain.nativeCurrency.symbol,
-      decimals: evmChain.nativeCurrency.decimals,
-      denom: evmChain.nativeCurrency.symbol,
-    };
   }
 
   async estimateEvmGasWithStateOverrides(

@@ -1,3 +1,4 @@
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -27,6 +28,15 @@ jest.mock("viem", () => ({
   encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
   encodePacked: jest.fn().mockReturnValue("0xabcdef"),
   keccak256: jest.fn().mockReturnValue("0xabcdef"),
+}));
+
+jest.mock("@osmosis-labs/tx");
+
+jest.mock("@cosmjs/proto-signing", () => ({
+  ...jest.requireActual("@cosmjs/proto-signing"),
+  Registry: jest.fn().mockReturnValue({
+    encodeAsAny: jest.fn().mockReturnValue("any"),
+  }),
 }));
 
 beforeEach(() => {
@@ -127,9 +137,6 @@ beforeEach(() => {
       );
     })
   );
-});
-
-afterEach(() => {
   jest.clearAllMocks();
 });
 
@@ -286,7 +293,7 @@ describe("SkipBridgeProvider", () => {
     expect(txRequest.value).toBe("0x3e8"); // 1000 in hex
   });
 
-  it("should estimate gas cost", async () => {
+  it("should estimate gas cost - EVM transactions", async () => {
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -320,6 +327,64 @@ describe("SkipBridgeProvider", () => {
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBeDefined();
     expect(gasCost?.denom).toBe("ETH");
+  });
+
+  it("should estimate gas cost - Cosmos transactions", async () => {
+    const params: GetBridgeQuoteParams = {
+      fromAmount: "1000",
+      fromAsset: {
+        denom: "asset1",
+        address: "ibc/123",
+        decimals: 6,
+        sourceDenom: "asset1",
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "asset2",
+        address: "0x456",
+        decimals: 6,
+        sourceDenom: "asset2",
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo1ABC123",
+      toAddress: "0xdef",
+      slippage: 0.01,
+    };
+
+    const txData: BridgeTransactionRequest = {
+      type: "cosmos",
+      msgTypeUrl: "cosmos-sdk/MsgTransfer",
+      msg: {
+        // mock data
+        source_channel: "channel-123",
+        source_port: "port-123",
+        sender: "osmo1ABC123",
+        receiver: "0xdef",
+        denom: "asset1",
+        amount: "1000",
+      },
+    };
+
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "1000",
+      amount: [
+        {
+          denom: "uosmo",
+          amount: "1000",
+        },
+      ],
+    });
+
+    const gasCost = await provider.estimateGasCost(params, txData);
+
+    expect(gasCost).toBeDefined();
+    expect(gasCost?.amount).toBe("1000");
+    expect(gasCost?.denom).toBe("OSMO");
+    expect(gasCost?.sourceDenom).toBe("uosmo");
   });
 
   it("should fetch and return the correct skip asset", async () => {

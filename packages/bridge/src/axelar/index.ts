@@ -2,7 +2,10 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
+import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -51,6 +54,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
+  protected protoRegistry = new Registry(ibcProtoRegistry);
 
   protected readonly axelarScanBaseUrl: string;
   protected readonly axelarApiBaseUrl: string;
@@ -260,50 +264,71 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async estimateGasCost(
     params: GetBridgeQuoteParams
   ): Promise<BridgeCoin | undefined> {
-    try {
-      const transactionData = await this.getTransactionData({
-        ...params,
-        fromAmount: "0",
-        simulated: true,
+    const transactionData = await this.getTransactionData({
+      ...params,
+      fromAmount: "0",
+      simulated: true,
+    });
+
+    if (transactionData.type === "evm") {
+      const evmChain = Object.values(EthereumChainInfo).find(
+        ({ id: chainId }) =>
+          String(chainId) === String(params.fromChain.chainId)
+      );
+
+      if (!evmChain) throw new Error("Could not find EVM chain");
+
+      const fromProvider = createPublicClient({
+        chain: evmChain,
+        transport: http(evmChain.rpcUrls.default.http[0]),
       });
 
-      if (transactionData.type === "evm") {
-        const evmChain = Object.values(EthereumChainInfo).find(
-          ({ id: chainId }) =>
-            String(chainId) === String(params.fromChain.chainId)
-        );
-
-        if (!evmChain) throw new Error("Could not find EVM chain");
-
-        const fromProvider = createPublicClient({
-          chain: evmChain,
-          transport: http(evmChain.rpcUrls.default.http[0]),
-        });
-
-        const gasAmountUsed = String(
-          await fromProvider.estimateGas({
-            account: params.fromAddress as Address,
-            to: transactionData.to,
-            value: BigInt(transactionData.value ?? ""),
-            data: transactionData.data,
-          })
-        );
-
-        const gasPrice = (await fromProvider.getGasPrice()).toString();
-
-        const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
-        return {
-          amount: gasCost.truncate().toString(),
-          sourceDenom: evmChain.nativeCurrency.symbol,
-          decimals: evmChain.nativeCurrency.decimals,
-          denom: evmChain.nativeCurrency.symbol,
-        };
-      }
-    } catch (e) {
-      console.warn(
-        `Failed to estimate gas fees for ${params.fromAsset.denom}:${params.fromChain.chainName} -> ${params.toAsset.denom}:${params.toChain.chainName}. Reason: ${e}`
+      const gasAmountUsed = String(
+        await fromProvider.estimateGas({
+          account: params.fromAddress as Address,
+          to: transactionData.to,
+          value: BigInt(transactionData.value ?? ""),
+          data: transactionData.data,
+        })
       );
-      return undefined;
+
+      const gasPrice = (await fromProvider.getGasPrice()).toString();
+
+      const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
+      return {
+        amount: gasCost.truncate().toString(),
+        sourceDenom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        denom: evmChain.nativeCurrency.symbol,
+      };
+    }
+
+    if (transactionData.type === "cosmos") {
+      const txSimulation = await estimateGasFee({
+        chainId: params.fromChain.chainId.toString(),
+        chainList: this.ctx.chainList,
+        body: {
+          messages: [
+            this.protoRegistry.encodeAsAny({
+              typeUrl: transactionData.msgTypeUrl,
+              value: transactionData.msg,
+            }),
+          ],
+        },
+        bech32Address: params.fromAddress,
+      });
+
+      const gasFee = txSimulation.amount[0];
+      const gasAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+
+      return {
+        amount: gasFee.amount,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+      };
     }
   }
 
@@ -433,12 +458,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
         destinationAddress: depositAddress,
       });
 
-      const ibcAssetInfo = getAssetFromAssetList({
+      const ibcAsset = getAssetFromAssetList({
         assetLists: this.ctx.assetLists,
-        sourceDenom: toAsset.sourceDenom,
+        coinMinimalDenom: fromAsset.address,
       });
 
-      if (!ibcAssetInfo) {
+      if (!ibcAsset) {
         throw new BridgeQuoteError([
           {
             errorType: BridgeError.CreateCosmosTxError,
@@ -447,7 +472,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
-      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+      const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
         ({ type }) => type === "ibc"
       ) as IbcTransferMethod | undefined;
 
