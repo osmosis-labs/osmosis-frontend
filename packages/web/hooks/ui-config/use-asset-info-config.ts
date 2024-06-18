@@ -212,7 +212,7 @@ export class ObservableAssetInfoConfig {
   protected _zoom: number = INITIAL_ZOOM;
 
   @observable
-  protected _hoverData: number = 0;
+  protected _hoverData?: number = 0;
 
   @observable
   protected _hoverDate?: Time = undefined;
@@ -261,7 +261,8 @@ export class ObservableAssetInfoConfig {
   @computed
   get hoverData(): PricePretty | undefined {
     const fiat = DEFAULT_VS_CURRENCY;
-    if (!fiat) {
+
+    if (!fiat || this._hoverData === undefined) {
       return undefined;
     }
 
@@ -320,7 +321,7 @@ export class ObservableAssetInfoConfig {
   };
 
   @action
-  readonly setHoverData = (data: number, time?: Time) => {
+  readonly setHoverData = (data?: number, time?: Time) => {
     this._hoverData = data;
     this._hoverDate = time;
   };

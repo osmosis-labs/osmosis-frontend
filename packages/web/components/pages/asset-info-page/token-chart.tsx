@@ -48,7 +48,7 @@ export const TokenChart = observer(() => {
             data={data}
             onPointerHover={assetInfoConfig.setHoverData}
             onPointerOut={() => {
-              assetInfoConfig.setHoverData(0, undefined);
+              assetInfoConfig.setHoverData(undefined, undefined);
             }}
           />
         ) : (
@@ -131,7 +131,7 @@ export const TokenChartHeader = observer(() => {
     let data = new Dec(0);
     const decHoverPrice = assetInfoConfig.hoverData?.toDec();
 
-    if (decHoverPrice && !decHoverPrice.isZero()) {
+    if (decHoverPrice) {
       data = decHoverPrice;
     } else {
       if (assetInfoConfig.dataType === "price") {
