@@ -151,16 +151,18 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               </span>
             }
           />
-          <RecapRow
-            left="Price"
-            right={
-              <span className="text-osmoverse-100">
-                {placeLimitState.priceState
-                  ? `$${formatPretty(placeLimitState.priceState.price)}`
-                  : "N/D"}
-              </span>
-            }
-          />
+          {orderType !== "limit" && (
+            <RecapRow
+              left="Price"
+              right={
+                <span className="text-osmoverse-100">
+                  {placeLimitState.priceState
+                    ? `$${formatPretty(placeLimitState.priceState.price)}`
+                    : "N/D"}
+                </span>
+              }
+            />
+          )}
           {orderType === "limit" && (
             <RecapRow
               left="Limit Price"
@@ -195,10 +197,12 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               }
             />
           )}
-          <div className="body2 flex h-8 w-full items-center justify-between">
-            <span className="text-osmoverse-300">More details</span>
-            <span className="cursor-pointer text-wosmongton-300">Show</span>
-          </div>
+          {orderType !== "limit" && (
+            <div className="body2 flex h-8 w-full items-center justify-between">
+              <span className="text-osmoverse-300">More details</span>
+              <span className="cursor-pointer text-wosmongton-300">Show</span>
+            </div>
+          )}
           <div className="body2 mt-3 flex h-[38px] w-full items-center justify-center">
             <span className="text-caption text-osmoverse-300">
               Disclaimer lorem ipsum.{" "}
