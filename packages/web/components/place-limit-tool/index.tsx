@@ -1,7 +1,13 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
@@ -57,6 +63,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom: base,
       quoteDenom: quote,
     });
+
+    // Adjust price to base price if the type changes to "market"
+    useEffect(() => {
+      if (type === "market") {
+        swapState.priceState.adjustByPercentage(new Dec(0));
+      }
+    }, [swapState.priceState, type]);
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
