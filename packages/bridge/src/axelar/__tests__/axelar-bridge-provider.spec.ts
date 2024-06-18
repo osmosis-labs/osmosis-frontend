@@ -515,9 +515,9 @@ describe("AxelarBridgeProvider", () => {
     );
   });
 
-  describe("getAvailableSourceAssetVariants", () => {
+  describe("getSupportedAssets", () => {
     it("gets source axelar assets - Ethereum USDC", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -545,7 +545,7 @@ describe("AxelarBridgeProvider", () => {
     });
 
     it("gets unwrapped source assets (i.e. ETH from Osmosis WETH) - WETH & ETH", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",

@@ -29,6 +29,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -260,109 +261,121 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
-  async getAvailableSourceAssetVariants(
-    toChain: BridgeChain,
-    toAsset: BridgeAsset
-  ): Promise<(BridgeChain & BridgeAsset)[]> {
-    const tokens = await this.getTokens();
-    const toToken = tokens.find(
-      (t) =>
-        (t.address.toLowerCase() === toAsset.address.toLowerCase() ||
-          t.ibcDenom?.toLowerCase() === toAsset.address.toLowerCase()) &&
-        // squid uses canonical chain IDs (numerical and string)
-        t.chainId === toChain.chainId
-    );
-
-    if (!toToken) return [];
-
-    const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
-
-    // asset list counterparties
-    const asset = this.ctx.assetLists
-      .flatMap(({ assets }) => assets)
-      .find((asset) => asset.coinMinimalDenom === toAsset.address);
-
-    for (const counterparty of asset?.counterparty ?? []) {
-      // check if supported by squid
-      if (!("chainId" in counterparty)) continue;
-      if (
-        !tokens.some(
-          (t) =>
-            t.address.toLowerCase() ===
-              counterparty.sourceDenom.toLowerCase() &&
-            t.chainId === counterparty.chainId
-        )
-      )
-        continue;
-
-      if (counterparty.chainType === "cosmos") {
-        const c = counterparty as CosmosCounterparty;
-
-        foundVariants.setAsset(c.chainId, c.sourceDenom, {
-          chainId: c.chainId,
-          chainType: "cosmos",
-          address: c.sourceDenom,
-          denom: c.symbol,
-          decimals: c.decimals,
-          sourceDenom: c.sourceDenom,
-        });
-      }
-      if (counterparty.chainType === "evm") {
-        const c = counterparty as EVMCounterparty;
-
-        foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
-          chainId: c.chainId,
-          chainType: "evm",
-          address: c.sourceDenom,
-          denom: c.symbol,
-          decimals: c.decimals,
-          sourceDenom: c.sourceDenom,
-        });
-      }
-    }
-
-    // leverage squid's "commonKey" to gather other like source assets for toToken
-    const chains = await this.getChains();
-    const tokenVariants = tokens
-      .filter(
+  async getSupportedAssets({
+    chain,
+    asset,
+  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    try {
+      const [tokens, chains] = await Promise.all([
+        this.getTokens(),
+        this.getChains(),
+      ]);
+      const token = tokens.find(
         (t) =>
-          t.commonKey &&
-          toToken.commonKey &&
-          t.commonKey === toToken.commonKey &&
-          t.address !== toToken.address &&
-          t.chainId !== toToken.chainId
-      )
-      .map((t) => {
-        const chain = chains.find(({ chainId }) => chainId === t.chainId);
-        if (!chain) return;
-        return { ...t, ...chain };
-      })
-      .filter((t): t is NonNullable<typeof t> => !!t);
+          (t.address.toLowerCase() === asset.address.toLowerCase() ||
+            t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
+          // squid uses canonical chain IDs (numerical and string)
+          t.chainId === chain.chainId
+      );
 
-    for (const variant of tokenVariants) {
-      const chainInfo =
-        variant.chainType === ChainType.EVM
-          ? {
-              chainId: variant.chainId as number,
-              chainType: "evm" as const,
-            }
-          : {
-              chainId: variant.chainId as string,
-              chainType: "cosmos" as const,
-            };
+      if (!token) throw new Error("Token not found: " + asset.address);
 
-      foundVariants.setAsset(variant.chainId.toString(), variant.address, {
-        // squid chain list IDs are canonical
-        ...chainInfo,
-        chainName: variant.chainName,
-        denom: variant.symbol,
-        address: variant.address,
-        decimals: variant.decimals,
-        sourceDenom: variant.address,
-      });
+      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+
+      // asset list counterparties
+      const assetListAsset = this.ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((a) => a.coinMinimalDenom === asset.address);
+
+      for (const counterparty of assetListAsset?.counterparty ?? []) {
+        // check if supported by squid
+        if (!("chainId" in counterparty)) continue;
+        if (
+          !tokens.some(
+            (t) =>
+              t.address.toLowerCase() ===
+                counterparty.sourceDenom.toLowerCase() &&
+              t.chainId === counterparty.chainId
+          )
+        )
+          continue;
+
+        if (counterparty.chainType === "cosmos") {
+          const c = counterparty as CosmosCounterparty;
+
+          foundVariants.setAsset(c.chainId, c.sourceDenom, {
+            chainId: c.chainId,
+            chainType: "cosmos",
+            address: c.sourceDenom,
+            denom: c.symbol,
+            decimals: c.decimals,
+            sourceDenom: c.sourceDenom,
+          });
+        }
+        if (counterparty.chainType === "evm") {
+          const c = counterparty as EVMCounterparty;
+
+          foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+            chainId: c.chainId,
+            chainType: "evm",
+            address: c.sourceDenom,
+            denom: c.symbol,
+            decimals: c.decimals,
+            sourceDenom: c.sourceDenom,
+          });
+        }
+      }
+
+      // leverage squid's "commonKey" to gather other like source assets for toToken
+      const tokenVariants = tokens
+        .filter(
+          (t) =>
+            t.commonKey &&
+            token.commonKey &&
+            t.commonKey === token.commonKey &&
+            t.address !== token.address &&
+            t.chainId !== token.chainId
+        )
+        .map((t) => {
+          const chain = chains.find(({ chainId }) => chainId === t.chainId);
+          if (!chain) return;
+          return { ...t, ...chain };
+        })
+        .filter((t): t is NonNullable<typeof t> => !!t);
+
+      for (const variant of tokenVariants) {
+        const chainInfo =
+          variant.chainType === ChainType.EVM
+            ? {
+                chainId: variant.chainId as number,
+                chainType: "evm" as const,
+              }
+            : {
+                chainId: variant.chainId as string,
+                chainType: "cosmos" as const,
+              };
+
+        foundVariants.setAsset(variant.chainId.toString(), variant.address, {
+          // squid chain list IDs are canonical
+          ...chainInfo,
+          chainName: variant.chainName,
+          denom: variant.symbol,
+          address: variant.address,
+          decimals: variant.decimals,
+          sourceDenom: variant.address,
+        });
+      }
+
+      return foundVariants.assets;
+    } catch (e) {
+      // Avoid returning options if there's an unexpected error, such as the provider being down
+      console.error(
+        SquidBridgeProvider.ID,
+        "failed to get supported assets:",
+        e
+      );
+      return [];
     }
-
-    return foundVariants.assets;
   }
 
   async createEvmTransaction({

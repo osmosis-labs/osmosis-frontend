@@ -541,9 +541,9 @@ describe("SkipBridgeProvider", () => {
     expect(approvalTxRequest).toBeUndefined();
   });
 
-  describe("getAvailableSourceAssetVariants", () => {
+  describe("getSupportedAssets", () => {
     it("gets shared origin assets", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -596,7 +596,7 @@ describe("SkipBridgeProvider", () => {
     });
 
     it("includes skip supported cosmos counterparty assets from asset list", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -622,7 +622,7 @@ describe("SkipBridgeProvider", () => {
     });
 
     it("includes skip supported evm counterparty assets from asset list", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",

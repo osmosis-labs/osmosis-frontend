@@ -2761,9 +2761,9 @@ describe("SquidBridgeProvider", () => {
     expect(approvalTx).toBeUndefined();
   });
 
-  describe("getAvailableSourceAssetVariants", () => {
+  describe("getSupportedAssets", () => {
     it("gets multi-issued variants (Noble USDC) with counterparty array", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -2798,7 +2798,7 @@ describe("SquidBridgeProvider", () => {
     });
 
     it("gets multi-issued variants (Axelar USDC)", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",
@@ -3182,7 +3182,7 @@ describe("SquidBridgeProvider", () => {
     });
 
     it("gets EVM gas token variants (ETH & WETH)", async () => {
-      const sourceVariants = await provider.getAvailableSourceAssetVariants(
+      const sourceVariants = await provider.getSupportedAssets(
         {
           chainId: "osmosis-1",
           chainType: "cosmos",

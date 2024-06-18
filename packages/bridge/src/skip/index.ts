@@ -25,6 +25,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -215,134 +216,144 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   /**
-   * Returns the source/origin asset variants that can be used to reach a destination given destination chain and asset.
+   * Returns the source/origin asset variants that can be used to reach a given chain and asset.
    *
    * Currently, just supports IBC shared origin assets. But can be expanded to support EVM-swappable assets
    * and CCTP variants.
    */
-  async getAvailableSourceAssetVariants(
-    toChain: BridgeChain,
-    toAsset: BridgeAsset
-  ): Promise<(BridgeChain & BridgeAsset)[]> {
-    const toChainAsset = await this.getAsset(toChain, toAsset);
-    if (!toChainAsset) return [];
+  async getSupportedAssets({
+    chain,
+    asset,
+  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    try {
+      const chainAsset = await this.getAsset(chain, asset);
+      if (!chainAsset) throw new Error("Asset not found: " + asset.address);
 
-    // Use of toLowerCase is advised due to registry (Skip + others) differences
-    // in casing of asset addresses. May be somewhat unsafe.
-    // See original usage in `getAsset` method.
+      // Use of toLowerCase is advised due to registry (Skip + others) differences
+      // in casing of asset addresses. May be somewhat unsafe.
+      // See original usage in `getAsset` method.
 
-    // find variants
-    const assets = await this.getAssets();
-    const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      // find variants
+      const assets = await this.getAssets();
+      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
 
-    // asset list counterparties
-    const asset = this.ctx.assetLists
-      .flatMap(({ assets }) => assets)
-      .find(
-        (asset) =>
-          asset.coinMinimalDenom.toLowerCase() === toAsset.address.toLowerCase()
-      );
-
-    for (const counterparty of asset?.counterparty ?? []) {
-      // check if supported by skip
-      if (!("chainId" in counterparty)) continue;
-      if (
-        !assets[counterparty.chainId].assets.some(
+      // asset list counterparties
+      const assetListAsset = this.ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find(
           (a) =>
-            a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
+
+      for (const counterparty of assetListAsset?.counterparty ?? []) {
+        // check if supported by skip
+        if (!("chainId" in counterparty)) continue;
+        if (
+          !assets[counterparty.chainId].assets.some(
+            (a) =>
+              a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
+          )
         )
-      )
-        continue;
+          continue;
 
-      if (counterparty.chainType === "cosmos") {
-        const c = counterparty as CosmosCounterparty;
+        if (counterparty.chainType === "cosmos") {
+          const c = counterparty as CosmosCounterparty;
 
-        // check if supported by skip
-        if (
-          assets[c.chainId].assets.some(
-            (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
-          )
-        ) {
-          foundVariants.setAsset(c.chainId, c.sourceDenom, {
-            chainId: c.chainId,
-            chainType: "cosmos",
-            address: c.sourceDenom,
-            denom: c.symbol,
-            decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
-          });
+          // check if supported by skip
+          if (
+            assets[c.chainId].assets.some(
+              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+            )
+          ) {
+            foundVariants.setAsset(c.chainId, c.sourceDenom, {
+              chainId: c.chainId,
+              chainType: "cosmos",
+              address: c.sourceDenom,
+              denom: c.symbol,
+              decimals: c.decimals,
+              sourceDenom: c.sourceDenom,
+            });
+          }
+        }
+        if (counterparty.chainType === "evm") {
+          const c = counterparty as EVMCounterparty;
+
+          // check if supported by skip
+          if (
+            assets[c.chainId].assets.some(
+              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+            )
+          ) {
+            foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+              chainId: c.chainId,
+              chainType: "evm",
+              address: c.sourceDenom,
+              denom: c.symbol,
+              decimals: c.decimals,
+              sourceDenom: c.sourceDenom,
+            });
+          }
         }
       }
-      if (counterparty.chainType === "evm") {
-        const c = counterparty as EVMCounterparty;
 
-        // check if supported by skip
-        if (
-          assets[c.chainId].assets.some(
-            (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
-          )
-        ) {
-          foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
-            chainId: c.chainId,
-            chainType: "evm",
-            address: c.sourceDenom,
-            denom: c.symbol,
-            decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
-          });
-        }
+      // IBC shared origin assets
+      const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
+        const chainAssets = assets[chainID].assets;
+
+        return chainAssets.filter(
+          (asset) =>
+            asset.origin_denom.toLowerCase() ===
+              chainAsset.origin_denom.toLowerCase() &&
+            asset.origin_chain_id === chainAsset.origin_chain_id &&
+            asset.denom.toLowerCase() !== chainAsset.denom.toLowerCase()
+        );
+      });
+
+      for (const sharedOriginAsset of sharedOriginAssets) {
+        const chainInfo = sharedOriginAsset.is_evm
+          ? {
+              chainId: Number(sharedOriginAsset.chain_id),
+              chainType: "evm" as const,
+            }
+          : !sharedOriginAsset.is_svm
+          ? {
+              chainId: sharedOriginAsset.chain_id as string,
+              chainType: "cosmos" as const,
+            }
+          : undefined;
+
+        if (!chainInfo) continue;
+
+        foundVariants.setAsset(
+          sharedOriginAsset.chain_id,
+          sharedOriginAsset.denom,
+          {
+            ...chainInfo,
+            address: sharedOriginAsset.denom,
+            denom:
+              sharedOriginAsset.symbol ??
+              sharedOriginAsset.name ??
+              sharedOriginAsset.denom,
+            decimals: sharedOriginAsset.decimals ?? asset.decimals,
+            sourceDenom: sharedOriginAsset.origin_denom,
+          }
+        );
       }
-    }
 
-    // IBC shared origin assets
-    const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
-      const chainAssets = assets[chainID].assets;
+      // TODO: when Skip supports new features
+      // * CCTP variants
+      // * EVM swappable variants
 
-      return chainAssets.filter(
-        (asset) =>
-          asset.origin_denom.toLowerCase() ===
-            toChainAsset.origin_denom.toLowerCase() &&
-          asset.origin_chain_id === toChainAsset.origin_chain_id &&
-          asset.denom.toLowerCase() !== toChainAsset.denom.toLowerCase()
+      return foundVariants.assets;
+    } catch (e) {
+      // Avoid returning options if there's an unexpected error, such as the provider being down
+      console.error(
+        SkipBridgeProvider.ID,
+        "failed to get supported assets:",
+        e
       );
-    });
-
-    for (const sharedOriginAsset of sharedOriginAssets) {
-      const chainInfo = sharedOriginAsset.is_evm
-        ? {
-            chainId: Number(sharedOriginAsset.chain_id),
-            chainType: "evm" as const,
-          }
-        : !sharedOriginAsset.is_svm
-        ? {
-            chainId: sharedOriginAsset.chain_id as string,
-            chainType: "cosmos" as const,
-          }
-        : undefined;
-
-      if (!chainInfo) continue;
-
-      foundVariants.setAsset(
-        sharedOriginAsset.chain_id,
-        sharedOriginAsset.denom,
-        {
-          ...chainInfo,
-          address: sharedOriginAsset.denom,
-          denom:
-            sharedOriginAsset.symbol ??
-            sharedOriginAsset.name ??
-            sharedOriginAsset.denom,
-          decimals: sharedOriginAsset.decimals ?? toAsset.decimals,
-          sourceDenom: sharedOriginAsset.origin_denom,
-        }
-      );
+      return [];
     }
-
-    // TODO: when Skip supports new features
-    // * CCTP variants
-    // * EVM swappable variants
-
-    return foundVariants.assets;
   }
 
   async getTransactionData(
