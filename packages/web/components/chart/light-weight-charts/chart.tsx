@@ -53,7 +53,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     ticksVisible: false,
     entireTextOnly: true,
     scaleMargins: {
-      top: 0.2,
+      top: 0.25,
       bottom: 0.1,
     },
   },
@@ -63,7 +63,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     ticksVisible: false,
     entireTextOnly: true,
     scaleMargins: {
-      top: 0.2,
+      top: 0.25,
       bottom: 0.1,
     },
   },
