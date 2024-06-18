@@ -383,7 +383,8 @@ describe("SkipBridgeProvider", () => {
 
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBe("1000");
-    expect(gasCost?.denom).toBe("uosmo");
+    expect(gasCost?.denom).toBe("OSMO");
+    expect(gasCost?.sourceDenom).toBe("uosmo");
   });
 
   it("should fetch and return the correct skip asset", async () => {

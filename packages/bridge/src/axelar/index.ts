@@ -318,9 +318,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasFee.amount,
-        denom: gasFee.denom,
+        denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
-        sourceDenom: gasAsset?.sourceDenom ?? gasFee.denom,
+        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
       };
     }
   }
@@ -451,12 +451,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
         destinationAddress: depositAddress,
       });
 
-      const ibcAssetInfo = getAssetFromAssetList({
+      const ibcAsset = getAssetFromAssetList({
         assetLists: this.ctx.assetLists,
-        sourceDenom: toAsset.sourceDenom,
+        coinMinimalDenom: fromAsset.address,
       });
 
-      if (!ibcAssetInfo) {
+      if (!ibcAsset) {
         throw new BridgeQuoteError([
           {
             errorType: BridgeError.CreateCosmosTxError,
@@ -465,7 +465,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
-      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+      const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
         ({ type }) => type === "ibc"
       ) as IbcTransferMethod | undefined;
 
