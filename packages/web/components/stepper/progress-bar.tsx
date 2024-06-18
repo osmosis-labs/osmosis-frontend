@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 
 import { CustomClasses } from "../types";
 
-export type Step = { displayLabel?: string };
+export type Step = { displayLabel?: string; onClick?: () => void };
 
 export const StepProgress: FunctionComponent<
   {
@@ -30,12 +30,12 @@ export const StepProgress: FunctionComponent<
         <div className="absolute inset-y-0 -right-1 m-auto h-2 w-2 rounded-full bg-ammelia-300" />
       </div>
       {showLabels &&
-        steps.map(({ displayLabel }, index) => {
+        steps.map(({ displayLabel, onClick }, index) => {
           const stepPercentage = (index / (steps.length - 1)) * 100;
           const selected = index === currentStep;
 
           return (
-            <div
+            <button
               key={displayLabel}
               className={classNames(
                 "body2 transition-color absolute top-2 -translate-x-1/2 duration-150",
@@ -47,9 +47,10 @@ export const StepProgress: FunctionComponent<
               style={{
                 left: stepPercentage + "%",
               }}
+              onClick={onClick}
             >
               {displayLabel}
-            </div>
+            </button>
           );
         })}
     </div>
