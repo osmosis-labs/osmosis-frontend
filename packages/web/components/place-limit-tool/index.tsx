@@ -33,6 +33,8 @@ const percentAdjustmentOptions = [
   { value: new Dec(0.1), label: "10%" },
 ];
 
+const WHALE_MESSAGE_THRESHOLD = 100;
+
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
@@ -76,6 +78,22 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     // const isSwapToolLoading = false;
     const hasFunds = true;
 
+    const getInputWidgetLabel = () => {
+      switch (true) {
+        case swapState.insufficientFunds:
+          return "Insufficent Funds";
+        case +swapState.inAmountInput.inputAmount > WHALE_MESSAGE_THRESHOLD:
+          return "Watch out! Whale incoming";
+        default:
+          return (
+            <>
+              Enter an amount to{" "}
+              {orderDirection === OrderDirection.Bid ? "buy" : "sell"}
+            </>
+          );
+      }
+    };
+
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -91,14 +109,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
             <p className="body2 p-4 text-center font-light text-osmoverse-400">
-              Enter an amount to{" "}
-              {orderDirection === OrderDirection.Bid ? "buy" : "sell"}
+              {getInputWidgetLabel()}
             </p>
             <LimitInput
               onChange={swapState.inAmountInput.setAmount}
               baseAsset={swapState.inAmountInput.balance!}
               tokenAmount={swapState.inAmountInput.inputAmount}
               price={swapState.priceState.price}
+              insufficentFunds={swapState.insufficientFunds}
             />
           </div>
           {type === "limit" ? (
