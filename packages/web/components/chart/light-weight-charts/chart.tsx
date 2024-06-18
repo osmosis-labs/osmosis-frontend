@@ -54,7 +54,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
-      bottom: 0.1,
+      bottom: 0,
     },
   },
   leftPriceScale: {
@@ -64,7 +64,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
-      bottom: 0.1,
+      bottom: 0,
     },
   },
   crosshair: {
