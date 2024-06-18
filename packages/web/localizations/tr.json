@@ -959,7 +959,9 @@
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}E",
-      "all": "TÜM"
+      "all": "TÜM",
+      "price": "Fiyat",
+      "volume": "Hacim"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",

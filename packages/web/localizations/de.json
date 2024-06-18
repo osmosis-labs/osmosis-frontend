@@ -959,7 +959,9 @@
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ALLE"
+      "all": "ALLE",
+      "price": "Preis",
+      "volume": "Volumen"
     },
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",

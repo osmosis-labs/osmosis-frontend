@@ -100,11 +100,13 @@ export const TokenChartFooter = observer(() => {
           defaultValue={assetInfoConfig.dataType}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Data type" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="price">Price</SelectItem>
-            <SelectItem value="volume">Volume</SelectItem>
+            <SelectItem value="price">{t("tokenInfos.chart.price")}</SelectItem>
+            <SelectItem value="volume">
+              {t("tokenInfos.chart.volume")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
