@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import Image from "next/image";
 import { useQueryState } from "nuqs";
 import { ReactNode, useMemo } from "react";
@@ -172,15 +173,14 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                     {!placeLimitState.priceState.percentAdjusted.isZero() && (
                       <Icon
                         id="triangle-down"
-                        style={{
-                          transform:
-                            placeLimitState.priceState.percentAdjusted.isPositive()
-                              ? "rotate(180deg)"
-                              : "rotate(00deg)",
-                        }}
                         width={10}
                         height={6}
-                        className="mr-1"
+                        className={classNames("mr-1", {
+                          "rotate-180 text-bullish-400":
+                            placeLimitState.priceState.percentAdjusted.isPositive(),
+                          "rotate-0 text-rust-500":
+                            placeLimitState.priceState.percentAdjusted.isNegative(),
+                        })}
                       />
                     )}
                     <div>
