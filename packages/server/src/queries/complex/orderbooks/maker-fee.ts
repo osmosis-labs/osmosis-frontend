@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -20,7 +21,7 @@ export function getOrderbookMakerFee({
     ttl: 1000 * 60 * 60 * 4, // 4 hours
     getFreshValue: () =>
       queryOrderbookMakerFee({ orderbookAddress, chainList }).then(
-        ({ data }: { data: string }) => data
+        ({ data }: { data: string }) => new Dec(data)
       ),
   });
 }

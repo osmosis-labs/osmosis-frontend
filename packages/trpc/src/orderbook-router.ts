@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import {
   getOrderbookMakerFee,
   getOrderbookSpotPrice,
@@ -19,7 +18,7 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return {
-        makerFee: new Dec(makerFee),
+        makerFee,
       };
     }),
   getActiveOrders: publicProcedure
