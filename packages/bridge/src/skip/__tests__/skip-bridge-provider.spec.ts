@@ -610,6 +610,7 @@ describe("SkipBridgeProvider", () => {
         }
       );
 
+      // makes sure that the first variants are sourced from counterparty array
       expect(sourceVariants[0]).toEqual({
         address: "uusdc",
         chainId: "noble-1",
@@ -635,6 +636,7 @@ describe("SkipBridgeProvider", () => {
         }
       );
 
+      // makes sure that the first variants are sourced from counterparty array
       expect(sourceVariants[1]).toEqual({
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         chainId: 1,

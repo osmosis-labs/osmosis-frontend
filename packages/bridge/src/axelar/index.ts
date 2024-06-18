@@ -302,7 +302,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (!sourceAssetId) return [];
 
     const axelarChain = axelarChains.find(
-      (chain) => chain.id === axelarSourceAsset.native_chain
+      (chain) => chain.maintainer_id === axelarSourceAsset.native_chain
     );
 
     if (!axelarChain) return [];
@@ -340,7 +340,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       if (!unwrappedDenom) return foundVariants.assets;
 
       const axelarChain = axelarChains.find(
-        (chain) => chain.id === axelarSourceAsset.native_chain
+        (chain) => chain.maintainer_id === axelarSourceAsset.native_chain
       );
 
       if (!axelarChain) return foundVariants.assets;
