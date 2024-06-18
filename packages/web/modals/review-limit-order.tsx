@@ -109,12 +109,12 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               />
             )}
           <RecapRow
-            left="Amount"
+            left="Value"
             right={
               <span className="text-osmoverse-100">
                 ≈{" "}
-                {placeLimitState.inAmountInput.fiatValue
-                  ? formatPretty(placeLimitState.paymentFiatValue!)
+                {placeLimitState.paymentFiatValue
+                  ? formatPretty(placeLimitState.paymentFiatValue)
                   : "$0"}
               </span>
             }
@@ -124,15 +124,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             right={<>≈ {formatPretty(fee)}</>}
           />
           <hr className="my-2 text-osmoverse-700" />
-          <RecapRow left="Total" right={<>≈ {formatPretty(total)}</>} />
-          <RecapRow
-            left="Order Type"
-            right={
-              <span className="text-osmoverse-100">
-                {orderType === "limit" ? "Limit order" : "Market order"}
-              </span>
-            }
-          />
+          <RecapRow left="Recieve" right={<>≈ {formatPretty(total)}</>} />
           {placeLimitState.quoteAsset &&
             orderDirection === OrderDirection.Ask && (
               <RecapRow
@@ -151,6 +143,24 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                 }
               />
             )}
+          <RecapRow
+            left="Order Type"
+            right={
+              <span className="text-osmoverse-100">
+                {orderType === "limit" ? "Limit order" : "Market order"}
+              </span>
+            }
+          />
+          <RecapRow
+            left="Price"
+            right={
+              <span className="text-osmoverse-100">
+                {placeLimitState.priceState
+                  ? `$${formatPretty(placeLimitState.priceState.price)}`
+                  : "N/D"}
+              </span>
+            }
+          />
           {orderType === "limit" && (
             <RecapRow
               left="Limit Price"
