@@ -126,6 +126,27 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           />
           <hr className="my-2 text-osmoverse-700" />
           <RecapRow left="Recieve" right={<>{formatPretty(total)}</>} />
+          {orderType === "market" && (
+            <RecapRow
+              left="Recieve minumum"
+              right={
+                <span className="body2 text-osmoverse-100">
+                  {formatPretty(placeLimitState.expectedTokenAmountOut, {
+                    maxDecimals: 2,
+                    minimumFractionDigits: 2,
+                  })}{" "}
+                  <span className="text-osmoverse-300">
+                    (~
+                    {formatPretty(placeLimitState.expectedFiatAmountOut, {
+                      maxDecimals: 2,
+                      minimumFractionDigits: 2,
+                    })}
+                    )
+                  </span>
+                </span>
+              }
+            />
+          )}
           {placeLimitState.quoteAsset &&
             orderDirection === OrderDirection.Ask && (
               <RecapRow
@@ -227,7 +248,13 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   );
 };
 
-function RecapRow({ left, right }: { left: ReactNode; right: ReactNode }) {
+export function RecapRow({
+  left,
+  right,
+}: {
+  left: ReactNode;
+  right: ReactNode;
+}) {
   return (
     <div className="body2 flex h-8 w-full items-center justify-between">
       <span className="text-osmoverse-300">{left}</span>
