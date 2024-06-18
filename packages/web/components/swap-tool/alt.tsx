@@ -21,6 +21,7 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import { ReviewSwapModal } from "~/components/modals/review-swap";
 import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { Button } from "~/components/ui/button";
@@ -95,7 +96,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       maxSlippage: slippageConfig.slippage.toDec(),
     });
 
-    const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
+    // const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
     const [
       estimateDetailsContentRef,
       { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
@@ -170,14 +171,17 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setToTokenSelectDropdownLocal(false);
     }, []);
 
+    // reivew swap modal
+    const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
+
     // user action
     const sendSwapTx = () => {
-      // prompt to select wallet insteaad of swapping
-      if (account?.walletStatus !== WalletStatus.Connected) {
-        return onOpenWalletSelect({
-          walletOptions: [{ walletType: "cosmos", chainId: chainId }],
-        });
-      }
+      // // prompt to select wallet insteaad of swapping
+      // if (account?.walletStatus !== WalletStatus.Connected) {
+      //   return onOpenWalletSelect({
+      //     walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+      //   });
+      // }
 
       if (!swapState.inAmountInput.amount) return;
 
@@ -230,6 +234,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         .finally(() => {
           setIsSendingTx(false);
           onRequestModalClose?.();
+          setShowSwapReviewModal(false);
         });
     };
 
@@ -374,7 +379,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           "body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity"
                         )}
                       >{`≈ ${formatPretty(
-                        swapState.tokenOutFiatValue ?? new Dec(0),
+                        swapState.inAmountInput.fiatValue ?? new Dec(0),
                         {
                           maxDecimals: 8,
                         }
@@ -750,7 +755,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 !swapState.inAmountInput.isEmpty
               }
               loadingText={buttonText}
-              onClick={sendSwapTx}
+              onClick={() => {
+                if (account?.walletStatus !== WalletStatus.Connected) {
+                  return onOpenWalletSelect({
+                    walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+                  });
+                }
+
+                setShowSwapReviewModal(true);
+              }}
             >
               <h6>
                 {account?.walletStatus === WalletStatus.Connected ||
@@ -801,6 +814,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
+        />
+        <ReviewSwapModal
+          isOpen={showSwapReviewModal}
+          onClose={() => setShowSwapReviewModal(false)}
+          swapState={swapState}
+          confirmAction={sendSwapTx}
         />
       </>
     );
