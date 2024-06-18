@@ -43,18 +43,21 @@ export const orderbookRouter = createTRPCRouter({
   getSpotPrice: publicProcedure
     .input(
       z
-        .object({ tokenInDenom: z.string(), tokenOutDenom: z.string() })
-        .merge(OsmoAddressSchema.required())
+        .object({
+          quoteAssetDenom: z.string(),
+          baseAssetDenom: z.string(),
+        })
+        .required()
+        .and(OsmoAddressSchema.required())
     )
     .query(async ({ input, ctx }) => {
-      const { tokenInDenom, tokenOutDenom, osmoAddress } = input;
-      const resp = await getOrderbookSpotPrice({
+      const { quoteAssetDenom, baseAssetDenom, osmoAddress } = input;
+      const spotPrice = await getOrderbookSpotPrice({
         orderbookAddress: osmoAddress,
+        quoteAssetDenom: quoteAssetDenom,
+        baseAssetDenom: baseAssetDenom,
         chainList: ctx.chainList,
-        tokenInDenom,
-        tokenOutDenom,
       });
-
-      return new Dec(resp);
+      return new Dec(spotPrice);
     }),
 });

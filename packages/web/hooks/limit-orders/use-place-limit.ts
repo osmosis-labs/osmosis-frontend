@@ -288,8 +288,8 @@ const useLimitPrice = ({
   const { data: spotPrice, isLoading } =
     api.edge.orderbooks.getSpotPrice.useQuery({
       osmoAddress: orderbookContractAddress,
-      tokenInDenom: quoteAssetDenom,
-      tokenOutDenom: baseAssetDenom,
+      quoteAssetDenom,
+      baseAssetDenom,
     });
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");

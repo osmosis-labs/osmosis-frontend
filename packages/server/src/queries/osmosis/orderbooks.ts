@@ -63,15 +63,15 @@ export const queryOrderbookSpotPrice = createNodeQuery<
   OrderbookSpotPriceResponse,
   {
     orderbookAddress: string;
-    tokenInDenom: string;
-    tokenOutDenom: string;
+    quoteAssetDenom: string;
+    baseAssetDenom: string;
   }
 >({
-  path: ({ orderbookAddress, tokenInDenom, tokenOutDenom }) => {
+  path: ({ orderbookAddress, quoteAssetDenom, baseAssetDenom }) => {
     const msg = JSON.stringify({
       spot_price: {
-        quote_asset_denom: tokenInDenom,
-        base_asset_denom: tokenOutDenom,
+        quote_asset_denom: quoteAssetDenom,
+        base_asset_denom: baseAssetDenom,
       },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");

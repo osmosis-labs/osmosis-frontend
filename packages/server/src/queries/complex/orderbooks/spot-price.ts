@@ -5,29 +5,31 @@ import { LRUCache } from "lru-cache";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryOrderbookSpotPrice } from "../../osmosis";
 
-const spotPriceCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const orderbookSpotPriceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
 
 export function getOrderbookSpotPrice({
   orderbookAddress,
   chainList,
-  tokenInDenom,
-  tokenOutDenom,
+  quoteAssetDenom,
+  baseAssetDenom,
 }: {
   orderbookAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
   chainList: Chain[];
-  tokenInDenom: string;
-  tokenOutDenom: string;
 }) {
   return cachified({
-    cache: spotPriceCache,
-    key: `orderbookSpotPrice-${orderbookAddress}-${tokenInDenom}-${tokenOutDenom}`,
+    cache: orderbookSpotPriceCache,
+    key: `orderbookSpotPrice-${orderbookAddress}-${quoteAssetDenom}-${baseAssetDenom}`,
     ttl: 1000 * 60 * 2, // 2 minutes
     getFreshValue: () =>
       queryOrderbookSpotPrice({
         orderbookAddress,
         chainList,
-        tokenInDenom,
-        tokenOutDenom,
-      }).then(({ data }: { data: { spot_price: string } }) => data.spot_price),
+        quoteAssetDenom,
+        baseAssetDenom,
+      }).then(({ data }) => data.spot_price),
   });
 }
