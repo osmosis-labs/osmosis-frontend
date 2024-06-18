@@ -25,12 +25,14 @@ import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
@@ -616,6 +618,29 @@ export class SquidBridgeProvider implements BridgeProvider {
         };
       }
     }
+  }
+
+  async getExternalUrl({
+    fromChain,
+    toChain,
+    fromAsset,
+    toAsset,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    const url = new URL(
+      this.ctx.env === "mainnet"
+        ? "https://app.squidrouter.com/"
+        : "https://testnet.app.squidrouter.com/"
+    );
+    url.searchParams.set(
+      "chains",
+      [fromChain.chainId, toChain.chainId].join(",")
+    );
+    url.searchParams.set(
+      "tokens",
+      [fromAsset.address, toAsset.address].join(",")
+    );
+
+    return { urlProviderName: "Squid", url };
   }
 }
 

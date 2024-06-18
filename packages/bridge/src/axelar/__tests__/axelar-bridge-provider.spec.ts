@@ -11,22 +11,21 @@ import { rest } from "msw";
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
 import { NativeEVMTokenConstantAddress } from "../../ethereum";
+import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 import {
   MockAxelarAssets,
   MockAxelarChains,
 } from "./mock-axelar-assets-and-chains";
 
-jest.mock("viem", function () {
-  return {
-    ...jest.requireActual("viem"),
-    createPublicClient: jest.fn().mockImplementation(() => ({
-      estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
-      getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
-    })),
-    http: jest.fn(),
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+    getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
+  })),
+  http: jest.fn(),
+}));
 
 beforeEach(() => {
   server.use(
@@ -582,5 +581,197 @@ describe("AxelarBridgeProvider", () => {
         },
       ]);
     });
+  });
+});
+
+describe("AxelarBridgeProvider.getExternalUrl", () => {
+  let provider: AxelarBridgeProvider;
+  let ctx: BridgeProviderContext;
+
+  beforeEach(() => {
+    ctx = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({
+        max: 500,
+      }),
+      assetLists: MockAssetLists,
+      // not used
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    provider = new AxelarBridgeProvider(ctx);
+  });
+
+  it("should return the correct URL for Weth <> axlEth", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "ETH",
+        sourceDenom: "weth-wei",
+        decimals: 18,
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      },
+      toAsset: {
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+        denom: "ETH",
+        sourceDenom: "weth-wei",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Skip");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=Ethereum&destination=osmosis&asset_denom=weth-wei&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for Eth <> axlEth", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "ETH",
+        sourceDenom: "weth-wei",
+        decimals: 18,
+        address: NativeEVMTokenConstantAddress,
+      },
+      toAsset: {
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+        denom: "ETH",
+        sourceDenom: "weth-wei",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Skip");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=Ethereum&destination=osmosis&asset_denom=eth&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for USDC <> axlUSDC", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "USDC",
+        sourceDenom: "uusdc",
+        decimals: 6,
+        address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      },
+      toAsset: {
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "uusdc",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Skip");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=Ethereum&destination=osmosis&asset_denom=uusdc&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for USDC <> axlUSDC (Avalanche)", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 43114, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "USDC",
+        sourceDenom: "uusdc",
+        decimals: 6,
+        address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      },
+      toAsset: {
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "uusdc",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Skip");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=Avalanche&destination=osmosis&asset_denom=uusdc&destination_address=destination-address"
+    );
+  });
+
+  it("should throw an error if fromChain is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 9898989898988, chainType: "evm" },
+        toChain: { chainId: "chain2", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Chain not found: 9898989898988");
+  });
+
+  it("should throw an error if toChain is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "nonexistent", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Chain not found: nonexistent");
+  });
+
+  it("should throw an error if toAsset is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          sourceDenom: "sourceDenom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "nonexistent",
+          denom: "denom2",
+          sourceDenom: "sourceDenom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Asset not found: nonexistent");
   });
 });

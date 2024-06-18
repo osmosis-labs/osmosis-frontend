@@ -4,7 +4,11 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList, getKeyByValue } from "@osmosis-labs/utils";
+import {
+  getAssetFromAssetList,
+  getKeyByValue,
+  isNil,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
   Address,
@@ -22,12 +26,14 @@ import {
   BridgeChain,
   BridgeCoin,
   BridgeDepositAddress,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../interface";
@@ -721,6 +727,73 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     return this._assetTransferClient!;
+  }
+
+  async getExternalUrl({
+    fromChain,
+    toChain,
+    toAsset,
+    toAddress,
+    fromAsset,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    const [axelarChains, axelarAssets] = await Promise.all([
+      getAxelarChains({ env: this.ctx.env }),
+      getAxelarAssets({ env: this.ctx.env }),
+    ]);
+
+    const fromAxelarChain = axelarChains.find(
+      (chain) => String(chain.chain_id) === String(fromChain.chainId)
+    );
+
+    if (!fromAxelarChain) {
+      throw new Error(`Chain not found: ${fromChain.chainId}`);
+    }
+
+    const toAxelarChain = axelarChains.find(
+      (chain) => String(chain.chain_id) === String(toChain.chainId)
+    );
+
+    if (!toAxelarChain) {
+      throw new Error(`Chain not found: ${toChain.chainId}`);
+    }
+
+    const fromAxelarAsset = axelarAssets.find((axelarAsset) => {
+      const asset = axelarAsset.addresses[toAxelarChain.chain_name];
+      if (isNil(asset)) return false;
+
+      const ibcDenomMatches =
+        asset.ibc_denom?.toLowerCase() === toAsset.address?.toLowerCase();
+      const addressMatches =
+        asset.address?.toLowerCase() === toAsset.address?.toLowerCase();
+
+      return ibcDenomMatches || addressMatches;
+    });
+
+    if (!fromAxelarAsset) {
+      throw new Error(`Asset not found: ${toAsset.address}`);
+    }
+
+    const url = new URL(
+      this.ctx.env === "mainnet"
+        ? "https://satellite.money/"
+        : "https://testnet.satellite.money/"
+    );
+    url.searchParams.set("source", fromAxelarChain.chain_name);
+    url.searchParams.set("destination", toAxelarChain.chain_name);
+    url.searchParams.set(
+      "asset_denom",
+      // Check if the asset has multiple denoms (indicating wrapped tokens)
+      !isNil(fromAxelarAsset.denoms) && fromAxelarAsset.denoms.length > 1
+        ? // If the fromAsset address is the native EVM token constant address, use the second denom which is the unwrapped token
+          fromAsset.address === NativeEVMTokenConstantAddress
+          ? fromAxelarAsset.denoms[1]
+          : fromAxelarAsset.denoms[0]
+        : // If there are no multiple denoms, use the default denom
+          fromAxelarAsset.denom
+    );
+    url.searchParams.set("destination_address", toAddress);
+
+    return { urlProviderName: "Skip", url };
   }
 }
 
