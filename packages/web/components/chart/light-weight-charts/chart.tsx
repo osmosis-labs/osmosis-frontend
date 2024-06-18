@@ -51,18 +51,20 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
-      top: 0.25,
-      bottom: 0,
+      top: 0.2,
+      bottom: 0.1,
     },
   },
   leftPriceScale: {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
-      top: 0.25,
-      bottom: 0,
+      top: 0.2,
+      bottom: 0.1,
     },
   },
   crosshair: {
