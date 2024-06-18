@@ -21,8 +21,6 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
-import { ReviewSwapModal } from "~/components/modals/review-swap";
-import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
@@ -39,6 +37,8 @@ import {
 import { useBridge } from "~/hooks/bridge";
 import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { ReviewSwapModal } from "~/modals/review-swap";
+import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
