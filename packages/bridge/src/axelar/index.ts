@@ -2,9 +2,16 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
+import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList, getKeyByValue } from "@osmosis-labs/utils";
+import {
+  getAssetFromAssetList,
+  getKeyByValue,
+  isNil,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
   Address,
@@ -21,16 +28,19 @@ import {
   BridgeAsset,
   BridgeCoin,
   BridgeDepositAddress,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { getAxelarAssets, getAxelarChains } from "./queries";
 import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
   AxelarChainIds_SourceChainMap,
@@ -44,6 +54,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
+  protected protoRegistry = new Registry(ibcProtoRegistry);
 
   protected readonly axelarScanBaseUrl: string;
   protected readonly axelarApiBaseUrl: string;
@@ -253,50 +264,71 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async estimateGasCost(
     params: GetBridgeQuoteParams
   ): Promise<BridgeCoin | undefined> {
-    try {
-      const transactionData = await this.getTransactionData({
-        ...params,
-        fromAmount: "0",
-        simulated: true,
+    const transactionData = await this.getTransactionData({
+      ...params,
+      fromAmount: "0",
+      simulated: true,
+    });
+
+    if (transactionData.type === "evm") {
+      const evmChain = Object.values(EthereumChainInfo).find(
+        ({ id: chainId }) =>
+          String(chainId) === String(params.fromChain.chainId)
+      );
+
+      if (!evmChain) throw new Error("Could not find EVM chain");
+
+      const fromProvider = createPublicClient({
+        chain: evmChain,
+        transport: http(evmChain.rpcUrls.default.http[0]),
       });
 
-      if (transactionData.type === "evm") {
-        const evmChain = Object.values(EthereumChainInfo).find(
-          ({ id: chainId }) =>
-            String(chainId) === String(params.fromChain.chainId)
-        );
-
-        if (!evmChain) throw new Error("Could not find EVM chain");
-
-        const fromProvider = createPublicClient({
-          chain: evmChain,
-          transport: http(evmChain.rpcUrls.default.http[0]),
-        });
-
-        const gasAmountUsed = String(
-          await fromProvider.estimateGas({
-            account: params.fromAddress as Address,
-            to: transactionData.to,
-            value: BigInt(transactionData.value ?? ""),
-            data: transactionData.data,
-          })
-        );
-
-        const gasPrice = (await fromProvider.getGasPrice()).toString();
-
-        const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
-        return {
-          amount: gasCost.truncate().toString(),
-          sourceDenom: evmChain.nativeCurrency.symbol,
-          decimals: evmChain.nativeCurrency.decimals,
-          denom: evmChain.nativeCurrency.symbol,
-        };
-      }
-    } catch (e) {
-      console.warn(
-        `Failed to estimate gas fees for ${params.fromAsset.denom}:${params.fromChain.chainName} -> ${params.toAsset.denom}:${params.toChain.chainName}. Reason: ${e}`
+      const gasAmountUsed = String(
+        await fromProvider.estimateGas({
+          account: params.fromAddress as Address,
+          to: transactionData.to,
+          value: BigInt(transactionData.value ?? ""),
+          data: transactionData.data,
+        })
       );
-      return undefined;
+
+      const gasPrice = (await fromProvider.getGasPrice()).toString();
+
+      const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
+      return {
+        amount: gasCost.truncate().toString(),
+        sourceDenom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        denom: evmChain.nativeCurrency.symbol,
+      };
+    }
+
+    if (transactionData.type === "cosmos") {
+      const txSimulation = await estimateGasFee({
+        chainId: params.fromChain.chainId.toString(),
+        chainList: this.ctx.chainList,
+        body: {
+          messages: [
+            this.protoRegistry.encodeAsAny({
+              typeUrl: transactionData.msgTypeUrl,
+              value: transactionData.msg,
+            }),
+          ],
+        },
+        bech32Address: params.fromAddress,
+      });
+
+      const gasFee = txSimulation.amount[0];
+      const gasAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+
+      return {
+        amount: gasFee.amount,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+      };
     }
   }
 
@@ -426,12 +458,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
         destinationAddress: depositAddress,
       });
 
-      const ibcAssetInfo = getAssetFromAssetList({
+      const ibcAsset = getAssetFromAssetList({
         assetLists: this.ctx.assetLists,
-        sourceDenom: toAsset.sourceDenom,
+        coinMinimalDenom: fromAsset.address,
       });
 
-      if (!ibcAssetInfo) {
+      if (!ibcAsset) {
         throw new BridgeQuoteError([
           {
             errorType: BridgeError.CreateCosmosTxError,
@@ -440,7 +472,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
-      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+      const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
         ({ type }) => type === "ibc"
       ) as IbcTransferMethod | undefined;
 
@@ -603,6 +635,73 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     return this._assetTransferClient!;
+  }
+
+  async getExternalUrl({
+    fromChain,
+    toChain,
+    toAsset,
+    toAddress,
+    fromAsset,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    const [axelarChains, axelarAssets] = await Promise.all([
+      getAxelarChains({ env: this.ctx.env }),
+      getAxelarAssets({ env: this.ctx.env }),
+    ]);
+
+    const fromAxelarChain = axelarChains.find(
+      (chain) => String(chain.chain_id) === String(fromChain.chainId)
+    );
+
+    if (!fromAxelarChain) {
+      throw new Error(`Chain not found: ${fromChain.chainId}`);
+    }
+
+    const toAxelarChain = axelarChains.find(
+      (chain) => String(chain.chain_id) === String(toChain.chainId)
+    );
+
+    if (!toAxelarChain) {
+      throw new Error(`Chain not found: ${toChain.chainId}`);
+    }
+
+    const fromAxelarAsset = axelarAssets.find((axelarAsset) => {
+      const asset = axelarAsset.addresses[toAxelarChain.chain_name];
+      if (isNil(asset)) return false;
+
+      const ibcDenomMatches =
+        asset.ibc_denom?.toLowerCase() === toAsset.address?.toLowerCase();
+      const addressMatches =
+        asset.address?.toLowerCase() === toAsset.address?.toLowerCase();
+
+      return ibcDenomMatches || addressMatches;
+    });
+
+    if (!fromAxelarAsset) {
+      throw new Error(`Asset not found: ${toAsset.address}`);
+    }
+
+    const url = new URL(
+      this.ctx.env === "mainnet"
+        ? "https://satellite.money/"
+        : "https://testnet.satellite.money/"
+    );
+    url.searchParams.set("source", fromAxelarChain.chain_name);
+    url.searchParams.set("destination", toAxelarChain.chain_name);
+    url.searchParams.set(
+      "asset_denom",
+      // Check if the asset has multiple denoms (indicating wrapped tokens)
+      !isNil(fromAxelarAsset.denoms) && fromAxelarAsset.denoms.length > 1
+        ? // If the fromAsset address is the native EVM token constant address, use the second denom which is the unwrapped token
+          fromAsset.address === NativeEVMTokenConstantAddress
+          ? fromAxelarAsset.denoms[1]
+          : fromAxelarAsset.denoms[0]
+        : // If there are no multiple denoms, use the default denom
+          fromAxelarAsset.denom
+    );
+    url.searchParams.set("destination_address", toAddress);
+
+    return { urlProviderName: "Skip", url };
   }
 }
 

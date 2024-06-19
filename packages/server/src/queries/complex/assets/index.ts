@@ -19,6 +19,7 @@ export type Asset = {
   isUnstable: boolean;
   isAlloyed: boolean;
   contract?: string;
+  sourceDenom: string;
 };
 
 export const AssetFilterSchema = z.object({

@@ -6,10 +6,12 @@ import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   CosmosBridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
@@ -62,9 +64,11 @@ export class IbcBridgeProvider implements BridgeProvider {
       .find((asset) => asset.coinMinimalDenom === gasFee.denom);
 
     /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount = gasFee.isNeededForTx
-      ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
-      : params.fromAmount;
+    const toAmount =
+      gasFee.isNeededForTx &&
+      gasFee.denom.toLowerCase() === params.fromAsset.address.toLowerCase()
+        ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
+        : params.fromAmount;
 
     if (new Int(toAmount).lte(new Int(0))) {
       throw new BridgeQuoteError([
@@ -226,5 +230,24 @@ export class IbcBridgeProvider implements BridgeProvider {
         },
       ]);
     }
+  }
+
+  async getExternalUrl({
+    fromChain,
+    toChain,
+    fromAsset,
+    toAsset,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    if (fromChain.chainType === "evm" || toChain.chainType === "evm") {
+      return undefined;
+    }
+
+    const url = new URL("https://geo.tfm.com/");
+    url.searchParams.set("chainFrom", fromChain.chainId);
+    url.searchParams.set("token0", fromAsset.sourceDenom);
+    url.searchParams.set("chainTo", toChain.chainId);
+    url.searchParams.set("token1", toAsset.sourceDenom);
+
+    return { urlProviderName: "TFM", url };
   }
 }
