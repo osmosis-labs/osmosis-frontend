@@ -8,6 +8,7 @@ import {
 import React, { FunctionComponent, memo } from "react";
 
 import { AreaChartController } from "~/components/chart/light-weight-charts/area-chart";
+import { priceFormatter } from "~/components/chart/light-weight-charts/utils";
 import { SubscriptDecimal } from "~/components/chart/price-historical";
 import { SkeletonLoader } from "~/components/loaders";
 import { theme } from "~/tailwind.config";
@@ -27,8 +28,8 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   crosshairMarkerBorderColor: theme.colors.osmoverse[900],
   crosshairMarkerRadius: 4,
   priceFormat: {
-    type: "price",
-    precision: 10,
+    type: "custom",
+    formatter: priceFormatter,
     minMove: 0.0000001,
   },
 };
