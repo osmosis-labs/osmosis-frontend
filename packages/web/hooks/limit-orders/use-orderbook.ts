@@ -243,23 +243,57 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   };
 };
 
-// export const useActiveLimitOrdersByOrderbook = ({
-//   orderbookAddress,
-//   userAddress,
-// }: {
-//   orderbookAddress: string;
-//   userAddress: string;
-// }) => {
-//   const { data: orders, isLoading } =
-//     api.edge.orderbooks.getActiveOrders.useQuery({
-//       contractOsmoAddress: orderbookAddress,
-//       userOsmoAddress: userAddress,
-//     });
-//   return {
-//     orders,
-//     isLoading,
-//   };
-// };
+export const useActiveLimitOrdersByOrderbook = ({
+  orderbookAddress,
+  userAddress,
+}: {
+  orderbookAddress: string;
+  userAddress: string;
+}) => {
+  const { data: orders, isLoading } =
+    api.edge.orderbooks.getActiveOrders.useQuery({
+      contractOsmoAddress: orderbookAddress,
+      userOsmoAddress: userAddress,
+    });
+  console.log("ORDERS", orders);
+  return {
+    orders,
+    isLoading,
+  };
+};
+
+export const useOrderbookAllActiveOrders = ({
+  userAddress,
+}: {
+  userAddress: string;
+}) => {
+  const { orderbooks } = useOrderbooks();
+  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const { data: orders, isLoading } =
+    api.edge.orderbooks.getAllActiveOrders.useQuery({
+      contractAddresses: addresses,
+      userOsmoAddress: userAddress,
+    });
+  const ordersWithDenoms = useMemo(() => {
+    return (
+      orders?.map((o) => {
+        const orderbook = orderbooks.find(
+          (ob) => ob.contractAddress === o.orderbookAddress
+        );
+        return {
+          ...o,
+          baseDenom: orderbook?.baseDenom ?? "",
+          quoteDenom: orderbook?.quoteDenom ?? "",
+        };
+      }) ?? []
+    );
+  }, [orders, orderbooks]);
+
+  return {
+    orders: ordersWithDenoms,
+    isLoading,
+  };
+};
 
 /**
  * Hook to fetch the current spot price of a given pair from an orderbook.

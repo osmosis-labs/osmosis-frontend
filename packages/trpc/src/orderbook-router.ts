@@ -1,10 +1,103 @@
 import { Dec } from "@keplr-wallet/unit";
-import { getOrderbookMakerFee } from "@osmosis-labs/server";
-import { queryOrderbookActiveOrders } from "@osmosis-labs/server";
+import {
+  getOrderbookActiveOrders,
+  getOrderbookMakerFee,
+  getOrderbookTickState,
+  getOrderbookTickUnrealizedCancels,
+  LimitOrder,
+} from "@osmosis-labs/server";
+import { Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema } from "./parameter-types";
+
+type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
+  quantity: number;
+  placed_quantity: number;
+  percentClaimed: Dec;
+  totalFilled: number;
+  percentFilled: Dec;
+  orderbookAddress: string;
+};
+
+async function getTickInfoAndTransformOrders(
+  orderbookAddress: string,
+  orders: LimitOrder[],
+  chainList: Chain[]
+): Promise<MappedLimitOrder[]> {
+  const tickIds = [...new Set(orders.map((o) => o.tick_id))];
+  const tickStates = await getOrderbookTickState({
+    orderbookAddress,
+    chainList,
+    tickIds,
+  });
+  const unrealizedTickCancels = await getOrderbookTickUnrealizedCancels({
+    orderbookAddress,
+    chainList,
+    tickIds,
+  });
+
+  const fullTickState = tickStates.map(({ tick_id, tick_state }) => ({
+    tickId: tick_id,
+    tickState: tick_state,
+    unrealizedCancels: unrealizedTickCancels.find((c) => c.tick_id === tick_id),
+  }));
+
+  return orders
+    .map((o) => {
+      const { tickState, unrealizedCancels } = fullTickState.find(
+        ({ tickId }) => tickId === o.tick_id
+      ) ?? { tickState: undefined, unrealizedCancels: undefined };
+      const quantity = parseInt(o.quantity);
+      const placedQuantity = parseInt(o.placed_quantity);
+
+      const percentClaimed = new Dec(
+        (placedQuantity - quantity) / placedQuantity
+      );
+      const [tickEtas, tickCumulativeCancelled, tickUnrealizedCancelled] =
+        o.order_direction === "bid"
+          ? [
+              parseInt(
+                tickState?.bid_values.effective_total_amount_swapped ?? "0"
+              ),
+              parseInt(
+                tickState?.bid_values.cumulative_realized_cancels ?? "0"
+              ),
+              parseInt(
+                unrealizedCancels?.unrealized_cancels.bid_unrealized_cancels ??
+                  "0"
+              ),
+            ]
+          : [
+              parseInt(
+                tickState?.ask_values.effective_total_amount_swapped ?? "0"
+              ),
+              parseInt(
+                tickState?.ask_values.cumulative_realized_cancels ?? "0"
+              ),
+              parseInt(
+                unrealizedCancels?.unrealized_cancels.ask_unrealized_cancels ??
+                  "0"
+              ),
+            ];
+      const tickTotalEtas =
+        tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
+      const totalFilled = Math.max(tickTotalEtas - parseInt(o.etas), 0);
+      const percentFilled = new Dec(totalFilled / placedQuantity);
+
+      return {
+        ...o,
+        quantity,
+        placed_quantity: placedQuantity,
+        percentClaimed,
+        totalFilled,
+        percentFilled,
+        orderbookAddress,
+      };
+    })
+    .sort((a, b) => a.order_id - b.order_id);
+}
 
 export const orderbookRouter = createTRPCRouter({
   getMakerFee: publicProcedure
@@ -30,11 +123,48 @@ export const orderbookRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const { contractOsmoAddress, userOsmoAddress } = input;
-      const resp = await queryOrderbookActiveOrders({
+      const resp = await getOrderbookActiveOrders({
         orderbookAddress: contractOsmoAddress,
-        userAddress: userOsmoAddress,
+        userOsmoAddress: userOsmoAddress,
         chainList: ctx.chainList,
       });
-      return resp.data;
+
+      if (resp.orders.length === 0) return [];
+
+      return getTickInfoAndTransformOrders(
+        contractOsmoAddress,
+        resp.orders,
+        ctx.chainList
+      );
+    }),
+  getAllActiveOrders: publicProcedure
+    .input(
+      z
+        .object({
+          contractAddresses: z.array(z.string().startsWith("osmo")),
+          userOsmoAddress: z.string().startsWith("osmo"),
+        })
+        .required()
+    )
+    .query(async ({ input, ctx }) => {
+      const { contractAddresses, userOsmoAddress } = input;
+      let allOrders: MappedLimitOrder[] = [];
+      for (let i = 0; i < contractAddresses.length; i++) {
+        const contractOsmoAddress = contractAddresses[i];
+        const resp = await getOrderbookActiveOrders({
+          orderbookAddress: contractOsmoAddress,
+          userOsmoAddress: userOsmoAddress,
+          chainList: ctx.chainList,
+        });
+
+        if (resp.orders.length === 0) continue;
+        const mappedOrders = await getTickInfoAndTransformOrders(
+          contractOsmoAddress,
+          resp.orders,
+          ctx.chainList
+        );
+        allOrders = allOrders.concat(mappedOrders);
+      }
+      return allOrders;
     }),
 });

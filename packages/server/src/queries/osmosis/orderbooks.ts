@@ -32,7 +32,7 @@ export interface LimitOrder {
 }
 
 interface OrderbookActiveOrdersResponse {
-  data: LimitOrder[];
+  data: { orders: LimitOrder[]; count: number };
 }
 
 export const queryOrderbookActiveOrders = createNodeQuery<
@@ -63,7 +63,7 @@ interface TickValues {
 
 export interface TickState {
   ask_values: TickValues;
-  vid_values: TickValues;
+  bid_values: TickValues;
 }
 
 interface OrderbookTicksResponse {
@@ -76,13 +76,13 @@ export const queryOrderbookTicks = createNodeQuery<
   OrderbookTicksResponse,
   {
     orderbookAddress: string;
-    ticks: number[];
+    tickIds: number[];
   }
 >({
-  path: ({ ticks, orderbookAddress }) => {
+  path: ({ tickIds, orderbookAddress }) => {
     const msg = JSON.stringify({
       ticks_by_id: {
-        tick_ids: ticks,
+        tick_ids: tickIds,
       },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");
@@ -90,16 +90,15 @@ export const queryOrderbookTicks = createNodeQuery<
   },
 });
 
-export interface TickState {
-  ask_values: TickValues;
-  vid_values: TickValues;
+export interface TickUnrealizedCancelsState {
+  ask_unrealized_cancels: string;
+  bid_unrealized_cancels: string;
 }
-
 interface OrderbookTickUnrealizedCancelsResponse {
   data: {
     ticks: {
       tick_id: number;
-      unrealized_cancels: string;
+      unrealized_cancels: TickUnrealizedCancelsState;
     }[];
   };
 }
@@ -108,13 +107,13 @@ export const queryOrderbookTickUnrealizedCancelsById = createNodeQuery<
   OrderbookTickUnrealizedCancelsResponse,
   {
     orderbookAddress: string;
-    ticks: number[];
+    tickIds: number[];
   }
 >({
-  path: ({ ticks, orderbookAddress }) => {
+  path: ({ tickIds, orderbookAddress }) => {
     const msg = JSON.stringify({
       tick_unrealized_cancels_by_id: {
-        tick_ids: ticks,
+        tick_ids: tickIds,
       },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");
