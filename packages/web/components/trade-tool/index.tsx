@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { FunctionComponent, useMemo } from "react";
@@ -12,10 +13,11 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { OrderDirection } from "~/hooks/limit-orders";
+import { useStore } from "~/stores";
 
 export interface TradeToolProps {}
 
-export const TradeTool: FunctionComponent<TradeToolProps> = () => {
+export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
   const [tab, setTab] = useQueryState(
     "tab",
     parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
@@ -23,10 +25,19 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
     )
   );
 
+  const { accountStore } = useStore();
+  const isWalletConnected = accountStore.getWallet(
+    accountStore.osmosisChainId
+  )?.isWalletConnected;
+
   // Mock
-  const unclaimedOrders = Array(0)
-    .fill(null)
-    .map((i) => i + 1);
+  const unclaimedOrders = useMemo(
+    () =>
+      Array(0)
+        .fill(null)
+        .map((i) => i + 1),
+    []
+  );
 
   return (
     <ClientOnly>
@@ -35,24 +46,26 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
           <SwapToolTabs activeTab={tab} setTab={setTab} />
           <div className="flex items-center gap-3">
             {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
-            <Link
-              href={"/transactions?tab=orders&from=swap"}
-              className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
-            >
-              <Icon
-                id="history-uncolored"
-                width={24}
-                height={24}
-                className="h-6 w-6 text-wosmongton-200"
-              />
-              {unclaimedOrders.length > 0 && (
-                <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="text-xs leading-[14px]">
-                    {unclaimedOrders.length}
-                  </span>
-                </div>
-              )}
-            </Link>
+            {isWalletConnected && (
+              <Link
+                href={"/transactions?tab=orders&from=swap"}
+                className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
+              >
+                <Icon
+                  id="history-uncolored"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6 text-wosmongton-200"
+                />
+                {unclaimedOrders.length > 0 && (
+                  <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
+                    <span className="text-xs leading-[14px]">
+                      {unclaimedOrders.length}
+                    </span>
+                  </div>
+                )}
+              </Link>
+            )}
           </div>
         </div>
         {useMemo(() => {
@@ -75,4 +88,4 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
       </div>
     </ClientOnly>
   );
-};
+});
