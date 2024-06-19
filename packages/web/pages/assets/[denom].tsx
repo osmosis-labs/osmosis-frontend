@@ -1,8 +1,6 @@
 import {
-  Asset,
   CoingeckoCoin,
   getActiveCoingeckoCoins,
-  getAsset,
   getAssetMarketActivity,
   getTokenInfo,
   queryCoingeckoCoin,
@@ -12,12 +10,16 @@ import {
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { GetStaticPathsResult, GetStaticProps } from "next";
+import {
+  GetStaticPathsResult,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+} from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
@@ -35,39 +37,57 @@ import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
+import { trpcHelpers } from "~/utils/helpers";
+import { api } from "~/utils/trpc";
 
-interface AssetInfoPageProps {
-  tweets: RichTweet[];
-  token: Asset | null;
-  tokenDetailsByLanguage?: {
-    [key: string]: TokenCMSData;
-  } | null;
-  coingeckoCoin?: CoingeckoCoin | null;
-}
+type AssetInfoPageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ token, ...rest }) => {
-    const featureFlags = useFeatureFlags();
-    const router = useRouter();
+const AssetInfoPage = observer((props: AssetInfoPageProps) => {
+  const featureFlags = useFeatureFlags();
+  const router = useRouter();
 
-    useEffect(() => {
-      if (
-        (typeof featureFlags.tokenInfo !== "undefined" &&
-          !featureFlags.tokenInfo) ||
-        !token
-      ) {
-        router.push("/assets");
-      }
-    }, [featureFlags.tokenInfo, router, token]);
+  const { data } = api.edge.assets.getUserAsset.useQuery(
+    {
+      findMinDenomOrSymbol: props.tokenDenom,
+    },
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    }
+  );
 
-    return <AssetInfoView token={token} {...rest} />;
-  }
-);
+  useEffect(() => {
+    if (
+      (typeof featureFlags.tokenInfo !== "undefined" &&
+        !featureFlags.tokenInfo) ||
+      !data
+    ) {
+      router.push("/assets");
+    }
+  }, [featureFlags.tokenInfo, router, data]);
 
-const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ token, tweets, tokenDetailsByLanguage, coingeckoCoin }) => {
+  return <AssetInfoView {...props} />;
+});
+
+const AssetInfoView = observer(
+  ({
+    tokenDenom,
+    tweets,
+    tokenDetailsByLanguage,
+    coingeckoCoin,
+  }: AssetInfoPageProps) => {
     const { t } = useTranslation();
     const router = useRouter();
+
+    const { data: token } = api.edge.assets.getUserAsset.useQuery(
+      {
+        findMinDenomOrSymbol: tokenDenom,
+      },
+      {
+        staleTime: Infinity,
+        cacheTime: Infinity,
+      }
+    );
 
     if (!token) {
       return null;
@@ -260,20 +280,20 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
   return { paths, fallback: "blocking" };
 };
 
-export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
-  params,
-}) => {
+export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
-  let token: Asset | null = null;
 
   try {
     /**
      * Lookup for the current token
      */
-    token = getAsset({ anyDenom: tokenDenom, assetLists: AssetLists });
+
+    await trpcHelpers.edge.assets.getUserAsset.prefetch({
+      findMinDenomOrSymbol: tokenDenom,
+    });
 
     if (tokenDenom) {
       try {
@@ -321,13 +341,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      /**
-       * Remove undefined properties because they cannot be serialized
-       */
-      token: JSON.parse(JSON.stringify(token)),
+      tokenDenom,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
+      trpcState: trpcHelpers.dehydrate(),
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
