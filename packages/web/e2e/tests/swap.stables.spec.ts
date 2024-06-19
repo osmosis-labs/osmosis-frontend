@@ -9,8 +9,8 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
   const walletId =
-    process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+    process.env.WALLET_ID_S ?? "osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c";
+  const privateKey = process.env.PRIVATE_KEY_S ?? "private_key_s";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
   let USDC =
@@ -34,6 +34,7 @@ test.describe("Test Swap Stables feature", () => {
         `--load-extension=${pathToExtension}`,
       ],
       viewport: { width: 1280, height: 1024 },
+      slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
