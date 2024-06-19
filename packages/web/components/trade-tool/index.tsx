@@ -12,7 +12,6 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
-import { OrderDirection } from "~/hooks/limit-orders";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {}
@@ -71,9 +70,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
         {useMemo(() => {
           switch (tab) {
             case SwapToolTab.BUY:
-              return <PlaceLimitTool orderDirection={OrderDirection.Bid} />;
+              return <PlaceLimitTool orderDirection={"bid"} />;
             case SwapToolTab.SELL:
-              return <PlaceLimitTool orderDirection={OrderDirection.Ask} />;
+              return <PlaceLimitTool orderDirection={"ask"} />;
             case SwapToolTab.SWAP:
             default:
               return (

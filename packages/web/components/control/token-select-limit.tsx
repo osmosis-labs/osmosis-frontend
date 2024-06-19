@@ -100,11 +100,11 @@ export const TokenSelectLimit: FunctionComponent<
     );
 
     const showBaseBalance = useMemo(
-      () => orderDirection === OrderDirection.Ask && isWalletConnected,
+      () => orderDirection === "ask" && isWalletConnected,
       [isWalletConnected, orderDirection]
     );
     const showQuoteBalance = useMemo(
-      () => orderDirection === OrderDirection.Bid,
+      () => orderDirection === "bid",
       [orderDirection]
     );
 
@@ -174,7 +174,7 @@ export const TokenSelectLimit: FunctionComponent<
         />
         <TokenSelectModalLimit
           headerTitle={
-            orderDirection === OrderDirection.Ask
+            orderDirection === "ask"
               ? "Select an asset to sell"
               : "Select an asset to buy"
           }

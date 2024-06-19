@@ -50,7 +50,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const setBase = useCallback((base: string) => set({ base }), [set]);
 
     const orderDirection = useMemo(
-      () => (tab === "buy" ? OrderDirection.Bid : OrderDirection.Ask),
+      () => (tab === "buy" ? "bid" : "ask"),
       [tab]
     );
 
@@ -91,8 +91,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
             <p className="body2 p-4 text-center font-light text-osmoverse-400">
-              Enter an amount to{" "}
-              {orderDirection === OrderDirection.Bid ? "buy" : "sell"}
+              Enter an amount to {orderDirection === "bid" ? "buy" : "sell"}
             </p>
             <LimitInput
               onChange={swapState.inAmountInput.setAmount}
@@ -115,8 +114,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       .abs()}%`}
                   </span>
                   <span>
-                    {orderDirection === OrderDirection.Bid ? "below" : "above"}{" "}
-                    current price
+                    {orderDirection === "bid" ? "below" : "above"} current price
                   </span>
                   <Icon
                     id="arrows-swap-16"
@@ -144,15 +142,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       key={`limit-price-adjust-${label}`}
                       onClick={() =>
                         swapState.priceState.adjustByPercentage(
-                          orderDirection == OrderDirection.Bid
-                            ? value.neg()
-                            : value
+                          orderDirection == "bid" ? value.neg() : value
                         )
                       }
                     >
                       <span className="body2 text-wosmongton-200">
                         {label !== "0%" &&
-                          (orderDirection === OrderDirection.Bid ? "-" : "+")}
+                          (orderDirection === "bid" ? "-" : "+")}
                         {label}
                       </span>
                     </button>
@@ -202,9 +198,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   loadingText={"Loading..."}
                   onClick={() => setReviewOpen(true)}
                 >
-                  <h6>
-                    {orderDirection === OrderDirection.Bid ? "Buy" : "Sell"}
-                  </h6>
+                  <h6>{orderDirection === "bid" ? "Buy" : "Sell"}</h6>
                 </Button>
               ) : (
                 <Button onClick={() => setReviewOpen(true)}>
