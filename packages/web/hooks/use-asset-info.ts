@@ -22,8 +22,8 @@ export const useAssetInfo = (props: UseAssetInfoProps = {}) => {
       findMinDenomOrSymbol: tokenDenom,
     },
     {
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -33,8 +33,8 @@ export const useAssetInfo = (props: UseAssetInfoProps = {}) => {
       langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
     },
     {
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
 

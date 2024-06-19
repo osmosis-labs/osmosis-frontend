@@ -36,7 +36,6 @@ import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { trpcHelpers } from "~/utils/helpers";
-import { api } from "~/utils/trpc";
 
 type AssetInfoPageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -44,31 +43,23 @@ const AssetInfoPage = observer((props: AssetInfoPageProps) => {
   const featureFlags = useFeatureFlags();
   const router = useRouter();
 
-  const { data } = api.edge.assets.getUserAsset.useQuery(
-    {
-      findMinDenomOrSymbol: props.tokenDenom,
-    },
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    }
-  );
+  const { token } = useAssetInfo();
 
   useEffect(() => {
     if (
       (typeof featureFlags.tokenInfo !== "undefined" &&
         !featureFlags.tokenInfo) ||
-      !data
+      !token
     ) {
       router.push("/assets");
     }
-  }, [featureFlags.tokenInfo, router, data]);
+  }, [featureFlags.tokenInfo, router, token]);
 
   return <AssetInfoView {...props} />;
 });
 
 const AssetInfoView = observer(
-  ({ tokenDenom, tweets, coingeckoCoin }: AssetInfoPageProps) => {
+  ({ tweets, coingeckoCoin }: AssetInfoPageProps) => {
     const { t } = useTranslation();
     const router = useRouter();
 
@@ -300,7 +291,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
   return {
     props: {
-      tokenDenom,
       coingeckoCoin,
       tweets,
       trpcState: trpcHelpers.dehydrate(),

@@ -106,7 +106,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-                {t("tokenInfos.aboutDenom", { title })}
+                {t("tokenInfos.aboutDenom", { name: title })}
               </h6>
               <div className="flex items-center gap-2">
                 {twitterUrl ? (
