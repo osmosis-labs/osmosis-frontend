@@ -959,7 +959,9 @@
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "价格",
+      "volume": "体积"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",

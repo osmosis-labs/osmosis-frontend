@@ -189,6 +189,10 @@ export const AvailablePriceRanges = [
 
 export type PriceRange = (typeof AvailablePriceRanges)[number];
 
+export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
+
+export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
+
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
 
@@ -202,10 +206,13 @@ export class ObservableAssetInfoConfig {
   protected _historicalRange: PriceRange = "7d";
 
   @observable
+  protected _dataType: AssetChartDataType = "price";
+
+  @observable
   protected _zoom: number = INITIAL_ZOOM;
 
   @observable
-  protected _hoverPrice: number = 0;
+  protected _hoverData?: number = undefined;
 
   @observable
   protected _hoverDate?: Time = undefined;
@@ -232,33 +239,11 @@ export class ObservableAssetInfoConfig {
 
   @computed
   get historicalChartData() {
-    return this._historicalData.map((data) => ({
-      ...data,
-      time: data.time * 1000,
-    }));
-  }
+    const currentTime = new Date().getTime();
 
-  @computed
-  get yRange(): [number, number] {
-    const prices = this.historicalChartData?.map(({ close }) => close) || [];
-    const zoom = this._zoom;
-    const padding = 0.1;
-
-    const chartMin = Math.max(0, Math.min(...prices));
-    const chartMax = Math.max(...prices);
-
-    const delta = Math.abs(chartMax - chartMin);
-
-    const minWithPadding = Math.max(0, chartMin - delta * padding);
-    const maxWithPadding = chartMax + delta * padding;
-
-    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
-    const zoomAdjustedMax = chartMax * zoom;
-
-    const finalMin = Math.min(minWithPadding, zoomAdjustedMin);
-    const finalMax = Math.max(maxWithPadding, zoomAdjustedMax);
-
-    return [finalMin, finalMax];
+    return this._historicalData.filter(
+      (data) => data.time * 1000 <= currentTime
+    );
   }
 
   @computed
@@ -275,13 +260,14 @@ export class ObservableAssetInfoConfig {
   }
 
   @computed
-  get hoverPrice(): PricePretty | undefined {
+  get hoverData(): PricePretty | undefined {
     const fiat = DEFAULT_VS_CURRENCY;
-    if (!fiat) {
+
+    if (!fiat || this._hoverData === undefined) {
       return undefined;
     }
 
-    return new PricePretty(fiat, this._hoverPrice);
+    return new PricePretty(fiat, this._hoverData);
   }
 
   @computed
@@ -302,14 +288,20 @@ export class ObservableAssetInfoConfig {
   }
 
   @computed
-  get lastChartPrice(): ChartTick | undefined {
-    const prices: ChartTick[] = [...this.historicalChartData];
+  get lastChartData(): ChartTick | undefined {
+    const data: ChartTick[] = [...this.historicalChartData];
 
-    return prices.pop();
+    return data.pop();
   }
 
+  @computed
   get historicalRange(): PriceRange {
     return this._historicalRange;
+  }
+
+  @computed
+  get dataType(): AssetChartDataType {
+    return this._dataType;
   }
 
   constructor(denom: string, coinMinimalDenom?: string) {
@@ -330,8 +322,8 @@ export class ObservableAssetInfoConfig {
   };
 
   @action
-  readonly setHoverPrice = (price: number, time?: Time) => {
-    this._hoverPrice = price;
+  readonly setHoverData = (data?: number, time?: Time) => {
+    this._hoverData = data;
     this._hoverDate = time;
   };
 
@@ -358,6 +350,11 @@ export class ObservableAssetInfoConfig {
   @action
   setHistoricalRange = (range: PriceRange) => {
     this._historicalRange = range;
+  };
+
+  @action
+  setDataType = (data: AssetChartDataType) => {
+    this._dataType = data;
   };
 
   dispose() {

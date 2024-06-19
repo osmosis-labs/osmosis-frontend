@@ -959,7 +959,9 @@
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "TOATE"
+      "all": "TOATE",
+      "price": "Preț",
+      "volume": "Volum"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",

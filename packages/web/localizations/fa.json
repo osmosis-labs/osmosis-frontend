@@ -959,7 +959,9 @@
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "همه"
+      "all": "همه",
+      "price": "قیمت",
+      "volume": "جلد"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",

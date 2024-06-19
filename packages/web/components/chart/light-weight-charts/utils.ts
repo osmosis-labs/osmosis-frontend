@@ -1,7 +1,11 @@
 import { Dec } from "@keplr-wallet/unit";
 import { isBusinessDay, Time } from "lightweight-charts";
 
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  FormatOptions,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
 export const priceFormatter = (price: number) => {
@@ -10,7 +14,13 @@ export const priceFormatter = (price: number) => {
 
   const priceDec = new Dec(price);
 
-  const formatOpts = getPriceExtendedFormatOptions(priceDec);
+  const formatOpts: FormatOptions = priceDec.gte(new Dec(0.1))
+    ? {
+        notation: "compact",
+        minimumSignificantDigits: 2,
+        minimumFractionDigits: 2,
+      }
+    : getPriceExtendedFormatOptions(priceDec);
 
   return formatPretty(priceDec, {
     maxDecimals,

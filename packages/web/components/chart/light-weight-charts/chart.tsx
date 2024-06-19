@@ -41,9 +41,9 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     fontFamily: theme.fontFamily.subtitle1.join(","),
     background: {
       type: ColorType.Solid,
-      color: theme.colors.osmoverse[850],
+      color: "transparent",
     },
-    textColor: theme.colors.wosmongton[200],
+    textColor: theme.colors.osmoverse[500],
     fontSize: 14,
   },
   grid: { horzLines: { visible: false }, vertLines: { visible: false } },
@@ -51,6 +51,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
       bottom: 0,
@@ -60,6 +61,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
       bottom: 0,
@@ -68,16 +70,16 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
   crosshair: {
     horzLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.LargeDashed,
+      style: LineStyle.Dashed,
       width: 2,
-      color: `${theme.colors.osmoverse[300]}33`,
+      color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
     vertLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.LargeDashed,
+      style: LineStyle.Dashed,
       width: 2,
-      color: `${theme.colors.osmoverse[300]}33`,
+      color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
   },

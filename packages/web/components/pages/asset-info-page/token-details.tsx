@@ -1,48 +1,45 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { CoingeckoCoin, TokenCMSData } from "@osmosis-labs/server";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { Asset, CoingeckoCoin } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { Markdown } from "~/components/markdown";
-import { LinkIconButton } from "~/components/ui/button";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
+import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useCurrentLanguage } from "~/hooks";
+import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
-  denom: string;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
+  token: Asset;
   coingeckoCoin?: CoingeckoCoin | null;
   className?: string;
 }
 
-const _TokenDetails = ({
-  denom,
-  tokenDetailsByLanguage,
-  className,
-  coingeckoCoin,
-}: TokenDetailsProps) => {
+const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
-  const language = useCurrentLanguage();
-  const { queriesExternalStore, priceStore, chainStore } = useStore();
+  const { queriesExternalStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const details = useMemo(() => {
-    return tokenDetailsByLanguage
-      ? tokenDetailsByLanguage[language]
-      : undefined;
-  }, [language, tokenDetailsByLanguage]);
+  const {
+    title,
+    websiteURL,
+    twitterUrl,
+    coingeckoURL,
+    details,
+    coinGeckoId,
+    token,
+  } = useAssetInfo({
+    coingeckoCoin,
+  });
 
   const isExpandable = useMemo(
     () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,
@@ -59,21 +56,8 @@ const _TokenDetails = ({
     return details?.description;
   }, [isExpandable, isExpanded, details]);
 
-  const chain = chainStore.getChainFromCurrency(denom);
-
-  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
-
-  const coinGeckoId = useMemo(
-    () =>
-      details?.coingeckoID
-        ? details?.coingeckoID
-        : balances.find(
-            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
-          )?.coinGeckoId,
-    [balances, details?.coingeckoID, denom]
-  );
-
   const usdFiat = priceStore.getFiatCurrency("usd");
+
   const coingeckoCoinInfo = coinGeckoId
     ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
     : undefined;
@@ -81,85 +65,30 @@ const _TokenDetails = ({
   const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
   const circulatingSupply = coingeckoCoinInfo?.circulatingSupply;
   const marketCap =
-    queriesExternalStore.queryMarketCaps.get(denom) ??
+    queriesExternalStore.queryMarketCaps.get(token.coinDenom) ??
     coingeckoCoinInfo?.marketCap;
 
   const toggleExpand = () => {
-    logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);
+    logEvent([
+      EventName.TokenInfo.viewMoreClicked,
+      { tokenName: token.coinDenom },
+    ]);
     setIsExpanded(!isExpanded);
   };
 
-  const twitterUrl = useMemo(() => {
-    if (details?.twitterURL) {
-      return details.twitterURL;
-    }
-
-    if (coingeckoCoin?.links?.twitter_screen_name) {
-      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
-    }
-  }, [coingeckoCoin?.links?.twitter_screen_name, details?.twitterURL]);
-
-  const websiteURL = useMemo(() => {
-    if (details?.websiteURL) {
-      return details.websiteURL;
-    }
-
-    if (
-      coingeckoCoin?.links?.homepage &&
-      coingeckoCoin.links.homepage.length > 0
-    ) {
-      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
-    }
-  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
-
-  const coingeckoURL = useMemo(() => {
-    if (coinGeckoId) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
-    }
-  }, [coinGeckoId]);
-
-  const currency = useMemo(() => {
-    const currencies = ChainList.map(
-      (info) => info.keplrChain.currencies
-    ).reduce((a, b) => [...a, ...b]);
-
-    const currency = currencies.find(
-      (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
-    );
-
-    return currency;
-  }, [denom]);
-
-  const name = useMemo(() => {
-    if (details) {
-      return details.name;
-    }
-
-    if (!currency) {
-      return undefined;
-    }
-
-    const asset = getAssetFromAssetList({
-      coinMinimalDenom: currency?.coinMinimalDenom,
-      assetLists: AssetLists,
-    });
-
-    return asset?.rawAsset.name;
-  }, [details, currency]);
-
   const shortBase = useMemo(() => {
-    if (currency?.base) {
-      if (!currency.base.includes("/")) {
-        return currency.base;
+    if (token.coinMinimalDenom) {
+      if (!token.coinMinimalDenom.includes("/")) {
+        return token.coinMinimalDenom;
       }
 
-      const [prefix, ...rest] = currency.base.split("/");
+      const [prefix, ...rest] = token.coinMinimalDenom.split("/");
 
       const hash = rest.join("");
 
       return `${prefix}/${hash.slice(0, 2)}...${hash.slice(-5)}`;
     }
-  }, [currency]);
+  }, [token.coinMinimalDenom]);
 
   return (
     <section
@@ -172,54 +101,60 @@ const _TokenDetails = ({
         totalValueLocked={totalValueLocked}
         circulatingSupply={circulatingSupply}
       />
-      {name && (
+      {title && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-                {t("tokenInfos.aboutDenom", { name })}
+                {t("tokenInfos.aboutDenom", { name: title })}
               </h6>
               <div className="flex items-center gap-2">
-                {twitterUrl && (
-                  <LinkIconButton
-                    href={twitterUrl}
-                    target="_blank"
+                {twitterUrl ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={twitterUrl} target="_blank" rel="external">
                       <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
-                    }
-                  />
-                )}
-                {websiteURL && (
-                  <LinkIconButton
-                    href={websiteURL}
-                    target="_blank"
+                    </Link>
+                  </Button>
+                ) : null}
+                {websiteURL ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={websiteURL} target="_blank" rel="external">
                       <Icon className="h-6 w-6 text-osmoverse-400" id="web" />
-                    }
-                  />
-                )}
-                {coingeckoURL && (
-                  <LinkIconButton
-                    href={coingeckoURL}
-                    target="_blank"
+                    </Link>
+                  </Button>
+                ) : null}
+                {coingeckoURL ? (
+                  <Button
+                    size="icon"
+                    variant="secondary"
                     aria-label={t("tokenInfos.ariaViewOn", {
                       name: "CoinGecko",
                     })}
-                    icon={
+                    asChild
+                  >
+                    <Link href={coingeckoURL} target="_blank" rel="external">
                       <Icon
-                        className="h-10.5 w-10.5 text-osmoverse-300"
+                        className="h-9 w-9 text-osmoverse-300"
                         id="coingecko"
                       />
-                    }
-                  />
-                )}
+                    </Link>
+                  </Button>
+                ) : null}
                 {shortBase ? (
                   <ClipboardButton
                     aria-label="Clipboard"
                     defaultIcon="code"
-                    value={currency?.base}
+                    value={token.coinMinimalDenom}
                   >
                     {shortBase}
                   </ClipboardButton>
