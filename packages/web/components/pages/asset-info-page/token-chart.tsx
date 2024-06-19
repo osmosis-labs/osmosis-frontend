@@ -66,7 +66,7 @@ export const TokenChartFooter = observer(() => {
   const { t } = useTranslation();
 
   return (
-    <footer className="flex justify-between gap-2">
+    <footer className="flex flex-wrap justify-between gap-2">
       <ButtonGroup
         onValueChange={assetInfoConfig.setHistoricalRange}
         defaultValue={assetInfoConfig.historicalRange}
@@ -94,7 +94,7 @@ export const TokenChartFooter = observer(() => {
         <ButtonGroupItem value="all" label={t("tokenInfos.chart.all")} />
       </ButtonGroup>
 
-      <div className="flex gap-2">
+      <div className="ml-auto flex gap-2">
         <Select
           onValueChange={assetInfoConfig.setDataType}
           defaultValue={assetInfoConfig.dataType}
