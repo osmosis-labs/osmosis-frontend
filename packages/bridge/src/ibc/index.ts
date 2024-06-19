@@ -6,10 +6,13 @@ import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeError, BridgeQuoteError } from "../errors";
 import {
+  BridgeAsset,
+  BridgeChain,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAssetsParams,
   CosmosBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
@@ -106,6 +109,44 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       transactionRequest: signDoc,
     };
+  }
+
+  async getSupportedAssets({
+    asset,
+  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    try {
+      const assetListAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find(
+          (a) =>
+            a.coinMinimalDenom === asset.address ||
+            a.sourceDenom === asset.sourceDenom
+        );
+
+      const ibcTransferMethod = assetListAsset?.transferMethods.find(
+        ({ type }) => type === "ibc"
+      ) as IbcTransferMethod;
+
+      if (!ibcTransferMethod || !assetListAsset)
+        throw new Error(
+          "IBC transfer method or asset not found for: " + asset.address
+        );
+
+      return [
+        {
+          chainId: ibcTransferMethod.counterparty.chainId,
+          chainType: "cosmos",
+          address: assetListAsset.sourceDenom,
+          denom: assetListAsset.symbol,
+          decimals: assetListAsset.decimals,
+          sourceDenom: ibcTransferMethod.counterparty.sourceDenom,
+        },
+      ];
+    } catch (e) {
+      // Avoid returning options if there's an unexpected error, such as the provider being down
+      console.error(IbcBridgeProvider.ID, "failed to get supported assets:", e);
+      return [];
+    }
   }
 
   /**

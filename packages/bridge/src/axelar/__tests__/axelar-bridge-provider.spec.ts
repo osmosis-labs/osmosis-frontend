@@ -48,11 +48,11 @@ beforeEach(() => {
         return res(ctx.json({}));
       }
     ),
-    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
-      return res(ctx.json(MockAxelarAssets));
-    }),
     rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) => {
       return res(ctx.json(MockAxelarChains));
+    }),
+    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
+      return res(ctx.json(MockAxelarAssets));
     })
   );
 });
@@ -63,10 +63,9 @@ afterEach(() => {
 
 describe("AxelarBridgeProvider", () => {
   let provider: AxelarBridgeProvider;
-  let ctx: BridgeProviderContext;
 
   beforeEach(() => {
-    ctx = {
+    provider = new AxelarBridgeProvider({
       env: "mainnet",
       cache: new LRUCache<string, CacheEntry>({
         max: 500,
@@ -78,8 +77,7 @@ describe("AxelarBridgeProvider", () => {
         revisionNumber: "1",
         revisionHeight: "1000",
       }),
-    };
-    provider = new AxelarBridgeProvider(ctx);
+    });
   });
 
   it("should initialize clients", async () => {
@@ -576,6 +574,74 @@ describe("AxelarBridgeProvider", () => {
     ).rejects.toThrow(
       "When withdrawing native ETH from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom"
     );
+  });
+
+  describe("getSupportedAssets", () => {
+    it("gets source axelar assets - Ethereum USDC", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC.axl",
+          address:
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        },
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 6,
+          denom: "USDC",
+          sourceDenom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        },
+      ]);
+    });
+
+    it("gets unwrapped source assets (i.e. ETH from Osmosis WETH) - WETH & ETH", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "ETH",
+          address:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          decimals: 6,
+          sourceDenom: "weth-wei",
+        },
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 18,
+          denom: "WETH",
+          sourceDenom: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        },
+        {
+          // this is the denom accepted by Axelar APIs
+          address: "eth",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 18,
+          denom: "ETH",
+          sourceDenom: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        },
+      ]);
+    });
   });
 });
 
