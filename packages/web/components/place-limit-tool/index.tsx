@@ -17,10 +17,7 @@ import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import {
-  useOrderbookAllActiveOrders,
-  useOrderbookSelectableDenoms,
-} from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -78,11 +75,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     }, [swapState.priceState, type]);
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
-
-    const { orders } = useOrderbookAllActiveOrders({
-      userAddress: account?.address ?? "",
-    });
-    console.log(orders);
 
     // const isSwapToolLoading = false;
     const hasFunds = true;
