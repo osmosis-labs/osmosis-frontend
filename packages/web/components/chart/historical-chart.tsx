@@ -84,7 +84,7 @@ export const HistoricalChartHeader: FunctionComponent<{
   return (
     <div className="flex flex-col gap-1">
       <SkeletonLoader isLoaded={!isLoading}>
-        <h3 className="font-h3 sm:text-h4">
+        <h3 className="font-h3 sm:text-h4 xs:text-h4">
           {fiatSymbol}
           <SubscriptDecimal
             decimal={hoverData}
