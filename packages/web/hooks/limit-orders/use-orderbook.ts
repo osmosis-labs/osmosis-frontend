@@ -238,7 +238,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   }, [isLoading, makerFeeData]);
 
   return {
-    makerFee: new Dec(0.015),
+    makerFee,
     isLoading,
   };
 };
@@ -251,13 +251,17 @@ export const useActiveLimitOrdersByOrderbook = ({
   userAddress: string;
 }) => {
   const { data: orders, isLoading } =
-    api.edge.orderbooks.getActiveOrders.useQuery({
+    api.edge.orderbooks.getActiveOrders.useInfiniteQuery({
       contractOsmoAddress: orderbookAddress,
       userOsmoAddress: userAddress,
     });
-  console.log("ORDERS", orders);
+
+  const allOrders = useMemo(() => {
+    return orders?.pages.flatMap((page) => page.items) ?? [];
+  }, [orders]);
+
   return {
-    orders,
+    orders: allOrders,
     isLoading,
   };
 };
@@ -269,29 +273,43 @@ export const useOrderbookAllActiveOrders = ({
 }) => {
   const { orderbooks } = useOrderbooks();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
-  const { data: orders, isLoading } =
-    api.edge.orderbooks.getAllActiveOrders.useQuery({
+  const {
+    data: orders,
+    isLoading,
+    fetchNextPage,
+    isFetching,
+  } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
+    {
       contractAddresses: addresses,
       userOsmoAddress: userAddress,
-    });
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+    }
+  );
+
+  const allOrders = useMemo(() => {
+    return orders?.pages.flatMap((page) => page.items) ?? [];
+  }, [orders]);
   const ordersWithDenoms = useMemo(() => {
-    return (
-      orders?.map((o) => {
-        const orderbook = orderbooks.find(
-          (ob) => ob.contractAddress === o.orderbookAddress
-        );
-        return {
-          ...o,
-          baseDenom: orderbook?.baseDenom ?? "",
-          quoteDenom: orderbook?.quoteDenom ?? "",
-        };
-      }) ?? []
-    );
-  }, [orders, orderbooks]);
+    return allOrders.map((o) => {
+      const orderbook = orderbooks.find(
+        (ob) => ob.contractAddress === o.orderbookAddress
+      );
+      return {
+        ...o,
+        baseDenom: orderbook?.baseDenom ?? "",
+        quoteDenom: orderbook?.quoteDenom ?? "",
+      };
+    });
+  }, [allOrders, orderbooks]);
 
   return {
     orders: ordersWithDenoms,
     isLoading,
+    fetchNextPage,
+    isFetching,
   };
 };
 
