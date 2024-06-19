@@ -40,8 +40,21 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         chainList,
       });
 
-      const totalLiquidity = total_pool_liquidity.reduce((acc, asset) => {
-        return acc.add(new Dec(asset.amount));
+      const totalLiquidity = total_pool_liquidity.reduce((acc, coin) => {
+        const asset = captureIfError(() =>
+          getAsset({ assetLists, anyDenom: coin.denom })
+        );
+
+        if (asset) {
+          const coinPretty = new CoinPretty(
+            asset,
+            coin.amount
+          ).moveDecimalPointLeft(asset.coinDecimals);
+
+          return acc.add(coinPretty.toDec());
+        }
+
+        return acc;
       }, new Dec(0));
 
       for (const coin of total_pool_liquidity) {
@@ -50,12 +63,15 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         );
 
         if (asset) {
+          const coinPretty = new CoinPretty(
+            asset,
+            coin.amount
+          ).moveDecimalPointLeft(asset.coinDecimals);
+
           poolLiquidityAssets.push({
             asset,
-            coin: new CoinPretty(asset, coin.amount),
-            percentage: new RatePretty(
-              new Dec(parseInt(coin.amount, 10)).quo(totalLiquidity)
-            ),
+            coin: coinPretty,
+            percentage: new RatePretty(coinPretty.toDec().quo(totalLiquidity)),
           });
         }
       }
