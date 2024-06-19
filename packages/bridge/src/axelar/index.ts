@@ -22,7 +22,7 @@ import {
   numberToHex,
 } from "viem";
 
-import { BridgeError, BridgeQuoteError } from "../errors";
+import { BridgeQuoteError } from "../errors";
 import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
@@ -213,39 +213,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
             }),
           };
         } catch (e) {
-          const error = e as
-            | { message: string; error: Error }
-            | string
-            | BridgeQuoteError
-            | Error;
-
-          if (error instanceof BridgeQuoteError) {
-            throw error;
-          }
-
-          if (error instanceof Error) {
+          if (typeof e === "string" && e.includes("not found")) {
             throw new BridgeQuoteError({
-              errorType: "UnexpectedError",
-              message: error.message,
+              errorType: "UnsupportedQuoteError",
+              message: e,
             });
           }
 
-          if (typeof error === "string") {
-            let errorType: BridgeError = "UnexpectedError";
-            if (error.includes("not found")) {
-              errorType = "UnsupportedQuoteError";
-            }
-
-            throw new BridgeQuoteError({
-              errorType,
-              message: error,
-            });
-          }
-
-          throw new BridgeQuoteError({
-            errorType: "UnexpectedError",
-            message: error.message,
-          });
+          throw e;
         }
       },
       ttl: 20 * 1000, // 20 seconds,

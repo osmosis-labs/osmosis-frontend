@@ -15,7 +15,6 @@ export class BridgeQuoteError extends Error {
 }
 
 export type BridgeError =
-  | "UnexpectedError"
   | "ApprovalTxError"
   | "CreateCosmosTxError"
   | "CreateEVMTxError"

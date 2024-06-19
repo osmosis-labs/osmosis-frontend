@@ -205,7 +205,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!transferAsset)
       throw new BridgeQuoteError({
-        errorType: "UnsupportedQuoteError",
+        errorType: "CreateCosmosTxError",
         message: "IBC asset not found in asset list",
       });
 
@@ -215,7 +215,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!transferMethod)
       throw new BridgeQuoteError({
-        errorType: "UnsupportedQuoteError",
+        errorType: "CreateCosmosTxError",
         message: "IBC transfer method not found",
       });
 

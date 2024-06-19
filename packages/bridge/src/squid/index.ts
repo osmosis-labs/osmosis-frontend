@@ -113,135 +113,117 @@ export class SquidBridgeProvider implements BridgeProvider {
           url.searchParams.append(key, value.toString());
         });
 
-        try {
-          if (fromChain.chainType === "cosmos") {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message:
-                "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
-            });
-          }
-
-          const data = await apiClient<RouteResponse>(url.toString(), {
-            headers: {
-              "x-integrator-id": this.integratorId,
-            },
-          });
-
-          const {
-            fromAmount: estimateFromAmount,
-            toAmount,
-            feeCosts,
-            estimatedRouteDuration,
-            gasCosts,
-            aggregatePriceImpact,
-            fromAmountUSD,
-            toAmountUSD,
-          } = data.route.estimate;
-
-          if (feeCosts.length > 1 || gasCosts.length > 1) {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message:
-                "Osmosis FrontEnd only supports a single fee and gas costs",
-            });
-          }
-
-          if (!data.route.transactionRequest) {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message:
-                "Squid failed to generate a transaction request for this quote",
-            });
-          }
-
-          const transactionRequest = data.route.transactionRequest;
-          const isEvmTransaction = fromChain.chainType === "evm";
-
-          if (!aggregatePriceImpact) {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message: "Squid failed to generate a price impact for this quote",
-            });
-          }
-
-          if (data.route.params.toToken.address !== toAsset.address) {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message: "toAsset mismatch",
-            });
-          }
-
-          if (
-            isNil(toAmountUSD) ||
-            isNil(fromAmountUSD) ||
-            toAmount === "" ||
-            fromAmountUSD === ""
-          ) {
-            throw new BridgeQuoteError({
-              errorType: "UnsupportedQuoteError",
-              message: "USD value not found",
-            });
-          }
-
-          return {
-            input: {
-              amount: estimateFromAmount,
-              sourceDenom: fromAsset.sourceDenom,
-              decimals: fromAsset.decimals,
-              denom: fromAsset.denom,
-            },
-            expectedOutput: {
-              amount: toAmount,
-              sourceDenom: toAsset.sourceDenom ?? toAsset.denom,
-              decimals: toAsset.decimals,
-              denom: toAsset.denom,
-              priceImpact: new Dec(aggregatePriceImpact)
-                .quo(new Dec(100))
-                .toString(),
-            },
-            fromChain,
-            toChain,
-            transferFee: {
-              denom: feeCosts[0].token.symbol,
-              amount: feeCosts[0].amount,
-              decimals: feeCosts[0].token.decimals,
-              sourceDenom: feeCosts[0].token.symbol,
-            },
-            estimatedTime: estimatedRouteDuration,
-            estimatedGasFee: {
-              denom: gasCosts[0].token.symbol,
-              amount: gasCosts[0].amount,
-              decimals: gasCosts[0].token.decimals,
-              sourceDenom: gasCosts[0].token.symbol,
-            },
-            transactionRequest: isEvmTransaction
-              ? await this.createEvmTransaction({
-                  fromAsset,
-                  fromChain,
-                  fromAddress,
-                  estimateFromAmount,
-                  transactionRequest,
-                })
-              : await this.createCosmosTransaction(transactionRequest.data),
-          };
-        } catch (e) {
-          if (e instanceof BridgeQuoteError) {
-            throw e;
-          }
-
-          if (e instanceof ApiClientError) {
-            throw new BridgeQuoteError({
-              errorType: "UnexpectedError",
-              message: e.message,
-            });
-          }
-
+        if (fromChain.chainType === "cosmos") {
           throw new BridgeQuoteError({
-            errorType: "UnexpectedError",
-            message: e?.toString() ?? "",
+            errorType: "UnsupportedQuoteError",
+            message:
+              "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
           });
         }
+
+        const data = await apiClient<RouteResponse>(url.toString(), {
+          headers: {
+            "x-integrator-id": this.integratorId,
+          },
+        });
+
+        const {
+          fromAmount: estimateFromAmount,
+          toAmount,
+          feeCosts,
+          estimatedRouteDuration,
+          gasCosts,
+          aggregatePriceImpact,
+          fromAmountUSD,
+          toAmountUSD,
+        } = data.route.estimate;
+
+        if (feeCosts.length > 1 || gasCosts.length > 1) {
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message:
+              "Osmosis FrontEnd only supports a single fee and gas costs",
+          });
+        }
+
+        if (!data.route.transactionRequest) {
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message:
+              "Squid failed to generate a transaction request for this quote",
+          });
+        }
+
+        const transactionRequest = data.route.transactionRequest;
+        const isEvmTransaction = fromChain.chainType === "evm";
+
+        if (!aggregatePriceImpact) {
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message: "Squid failed to generate a price impact for this quote",
+          });
+        }
+
+        if (data.route.params.toToken.address !== toAsset.address) {
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message: "toAsset mismatch",
+          });
+        }
+
+        if (
+          isNil(toAmountUSD) ||
+          isNil(fromAmountUSD) ||
+          toAmount === "" ||
+          fromAmountUSD === ""
+        ) {
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message: "USD value not found",
+          });
+        }
+
+        return {
+          input: {
+            amount: estimateFromAmount,
+            sourceDenom: fromAsset.sourceDenom,
+            decimals: fromAsset.decimals,
+            denom: fromAsset.denom,
+          },
+          expectedOutput: {
+            amount: toAmount,
+            sourceDenom: toAsset.sourceDenom ?? toAsset.denom,
+            decimals: toAsset.decimals,
+            denom: toAsset.denom,
+            priceImpact: new Dec(aggregatePriceImpact)
+              .quo(new Dec(100))
+              .toString(),
+          },
+          fromChain,
+          toChain,
+          transferFee: {
+            denom: feeCosts[0].token.symbol,
+            amount: feeCosts[0].amount,
+            decimals: feeCosts[0].token.decimals,
+            sourceDenom: feeCosts[0].token.symbol,
+          },
+          estimatedTime: estimatedRouteDuration,
+          estimatedGasFee: {
+            denom: gasCosts[0].token.symbol,
+            amount: gasCosts[0].amount,
+            decimals: gasCosts[0].token.decimals,
+            sourceDenom: gasCosts[0].token.symbol,
+          },
+          transactionRequest: isEvmTransaction
+            ? await this.createEvmTransaction({
+                fromAsset,
+                fromChain,
+                fromAddress,
+                estimateFromAmount,
+                transactionRequest,
+              })
+            : await this.createCosmosTransaction(transactionRequest.data),
+        };
       },
       ttl: 20 * 1000, // 20 seconds,
     });
