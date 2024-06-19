@@ -212,7 +212,7 @@ export class ObservableAssetInfoConfig {
   protected _zoom: number = INITIAL_ZOOM;
 
   @observable
-  protected _hoverData?: number = 0;
+  protected _hoverData?: number = undefined;
 
   @observable
   protected _hoverDate?: Time = undefined;
