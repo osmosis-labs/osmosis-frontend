@@ -1,21 +1,42 @@
-import { Asset, CoingeckoCoin, TokenCMSData } from "@osmosis-labs/server";
-import { AppCurrency } from "@osmosis-labs/types";
+import { CoingeckoCoin } from "@osmosis-labs/server";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 import { COINGECKO_PUBLIC_URL, TWITTER_PUBLIC_URL } from "~/config";
 import { useCurrentLanguage } from "~/hooks/user-settings";
+import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
+import { api } from "~/utils/trpc";
 
 interface UseAssetInfoProps {
-  token: Asset;
   coingeckoCoin?: CoingeckoCoin | null;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
-  currency?: AppCurrency;
 }
 
-export const useAssetInfo = (props: UseAssetInfoProps) => {
-  const { token, coingeckoCoin, tokenDetailsByLanguage } = props;
-
+export const useAssetInfo = (props: UseAssetInfoProps = {}) => {
+  const { coingeckoCoin } = props;
   const language = useCurrentLanguage();
+  const router = useRouter();
+  const tokenDenom = router.query.denom as string;
+
+  const { data: token } = api.edge.assets.getUserAsset.useQuery(
+    {
+      findMinDenomOrSymbol: tokenDenom,
+    },
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    }
+  );
+
+  const { data: tokenDetailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
+    {
+      coinDenom: tokenDenom,
+      langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
+    },
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    }
+  );
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -24,7 +45,7 @@ export const useAssetInfo = (props: UseAssetInfoProps) => {
   }, [language, tokenDetailsByLanguage]);
 
   const coinGeckoId = useMemo(
-    () => (details?.coingeckoID ? details?.coingeckoID : token.coinGeckoId),
+    () => (details?.coingeckoID ? details?.coingeckoID : token?.coinGeckoId),
     [details?.coingeckoID, token]
   );
 
@@ -62,7 +83,7 @@ export const useAssetInfo = (props: UseAssetInfoProps) => {
       return details.name;
     }
 
-    return token.coinName;
+    return token?.coinName;
   }, [details, token]);
 
   return {
@@ -72,5 +93,7 @@ export const useAssetInfo = (props: UseAssetInfoProps) => {
     websiteURL,
     coingeckoURL,
     coinGeckoId,
+    token: token!,
+    tokenDetailsByLanguage,
   };
 };

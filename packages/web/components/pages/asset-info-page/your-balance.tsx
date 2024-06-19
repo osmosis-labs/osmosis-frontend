@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { Asset, TokenCMSData } from "@osmosis-labs/server";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -34,284 +33,268 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface YourBalanceProps {
-  token: Asset;
-  tokenDetailsByLanguage?: {
-    [key: string]: TokenCMSData;
-  } | null;
   className?: string;
 }
 
-export const YourBalance = observer(
-  ({ token, tokenDetailsByLanguage, className }: YourBalanceProps) => {
-    const {
-      queriesStore,
-      chainStore,
-      accountStore,
-      derivedDataStore,
-      priceStore,
-    } = useStore();
-    const featureFlags = useFeatureFlags();
-    const { t } = useTranslation();
-    const { stakingAPR } = useGetApr();
-    const osmosisChainId = chainStore.osmosis.chainId;
-    const account = accountStore.getWallet(osmosisChainId);
-    const address = account?.address ?? "";
-    const osmo = chainStore.osmosis.stakeCurrency;
+export const YourBalance = observer(({ className }: YourBalanceProps) => {
+  const {
+    queriesStore,
+    chainStore,
+    accountStore,
+    derivedDataStore,
+    priceStore,
+  } = useStore();
+  const featureFlags = useFeatureFlags();
+  const { t } = useTranslation();
+  const { stakingAPR } = useGetApr();
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address ?? "";
+  const osmo = chainStore.osmosis.stakeCurrency;
 
-    const { details } = useAssetInfo({
-      token,
-      tokenDetailsByLanguage,
-    });
+  const { details, token } = useAssetInfo();
 
-    const isOsmo = useMemo(
-      () =>
-        token.coinDenom.toLowerCase() ===
-        chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
-      [chainStore.osmosis.stakeCurrency.coinDenom, token]
-    );
+  const isOsmo = useMemo(
+    () =>
+      token.coinDenom.toLowerCase() ===
+      chainStore.osmosis.stakeCurrency.coinDenom.toLowerCase(),
+    [chainStore.osmosis.stakeCurrency.coinDenom, token]
+  );
 
-    const feeConfig = useFakeFeeConfig(
-      chainStore,
-      osmosisChainId,
-      account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
-    );
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    osmosisChainId,
+    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+  );
 
-    const { data } = api.edge.assets.getUserMarketAsset.useQuery(
-      {
-        findMinDenomOrSymbol: token.coinDenom,
-        userOsmoAddress: account?.address,
-      },
-      { enabled: Boolean(account?.address) }
-    );
+  const { data } = api.edge.assets.getUserMarketAsset.useQuery(
+    {
+      findMinDenomOrSymbol: token.coinDenom,
+      userOsmoAddress: account?.address,
+    },
+    { enabled: Boolean(account?.address) }
+  );
 
-    const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent } = useAmplitudeAnalytics();
 
-    const { balance } = useStakedAmountConfig(
-      chainStore,
-      queriesStore,
-      osmosisChainId,
-      address,
-      feeConfig,
-      osmo
-    );
+  const { balance } = useStakedAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
+  );
 
-    const hasStakingBalance = useMemo(
-      () => isOsmo && balance.toDec().gt(new Dec(0)),
-      [balance, isOsmo]
-    );
+  const hasStakingBalance = useMemo(
+    () => isOsmo && balance.toDec().gt(new Dec(0)),
+    [balance, isOsmo]
+  );
 
-    const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+  const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-      account?.address ?? ""
-    );
+  const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
+    account?.address ?? ""
+  );
 
-    const myPoolDetails = myPoolIds
-      .map<
-        | {
-            queryPool: ObservableQueryPool;
-            poolDetail:
-              | ObservableSharePoolDetail
-              | ObservableConcentratedPoolDetail;
-          }
-        | undefined
-      >((myPoolId) => {
-        const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
-
-        if (!queryPool) return undefined;
-
-        return {
-          queryPool,
-          poolDetail:
-            queryPool.type === "concentrated"
-              ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
-              : derivedDataStore.sharePoolDetails.get(myPoolId),
-        };
-      })
-      .filter(
-        (
-          pool
-        ): pool is {
+  const myPoolDetails = myPoolIds
+    .map<
+      | {
           queryPool: ObservableQueryPool;
           poolDetail:
             | ObservableSharePoolDetail
             | ObservableConcentratedPoolDetail;
-        } => {
-          if (pool === undefined) return false;
-
-          // concentrated liquidity liquidity feature flag
-          if (
-            !featureFlags.concentratedLiquidity &&
-            pool.poolDetail instanceof ObservableConcentratedPoolDetail
-          )
-            return false;
-
-          return true;
         }
-      );
+      | undefined
+    >((myPoolId) => {
+      const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
 
-    const dustFilteredPools = useHideDustUserSetting(
-      myPoolDetails,
-      useCallback(
-        (myPool) => {
-          const pool = myPool.poolDetail;
-          // user share value
-          if (pool instanceof ObservableSharePoolDetail) {
-            return pool.totalValueLocked.mul(
-              queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-                account?.address ?? "",
-                (pool as ObservableSharePoolDetail).querySharePool!.pool.id
-              )
-            );
-          }
-          // user positions' assets value
-          if (pool instanceof ObservableConcentratedPoolDetail) {
-            return priceStore.calculateTotalPrice(
-              pool.userPoolAssets.map(({ asset }) => asset)
-            );
-          }
-        },
-        [queryOsmosis, account, priceStore]
-      )
-    ).filter((pool) =>
-      pool.queryPool.poolAssetDenoms.includes(token.coinMinimalDenom)
+      if (!queryPool) return undefined;
+
+      return {
+        queryPool,
+        poolDetail:
+          queryPool.type === "concentrated"
+            ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
+            : derivedDataStore.sharePoolDetails.get(myPoolId),
+      };
+    })
+    .filter(
+      (
+        pool
+      ): pool is {
+        queryPool: ObservableQueryPool;
+        poolDetail:
+          | ObservableSharePoolDetail
+          | ObservableConcentratedPoolDetail;
+      } => {
+        if (pool === undefined) return false;
+
+        // concentrated liquidity liquidity feature flag
+        if (
+          !featureFlags.concentratedLiquidity &&
+          pool.poolDetail instanceof ObservableConcentratedPoolDetail
+        )
+          return false;
+
+        return true;
+      }
     );
 
-    const assetPoolBalance = useMemo(() => {
-      return dustFilteredPools.reduce((total, nextPool) => {
-        const userPool = nextPool.poolDetail.userPoolAssets.find(
-          ({ asset }) => asset.currency.coinDenom === token.coinDenom
-        );
-
-        if (userPool) {
-          return userPool.asset.toDec().add(total);
+  const dustFilteredPools = useHideDustUserSetting(
+    myPoolDetails,
+    useCallback(
+      (myPool) => {
+        const pool = myPool.poolDetail;
+        // user share value
+        if (pool instanceof ObservableSharePoolDetail) {
+          return pool.totalValueLocked.mul(
+            queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+              account?.address ?? "",
+              (pool as ObservableSharePoolDetail).querySharePool!.pool.id
+            )
+          );
         }
+        // user positions' assets value
+        if (pool instanceof ObservableConcentratedPoolDetail) {
+          return priceStore.calculateTotalPrice(
+            pool.userPoolAssets.map(({ asset }) => asset)
+          );
+        }
+      },
+      [queryOsmosis, account, priceStore]
+    )
+  ).filter((pool) =>
+    pool.queryPool.poolAssetDenoms.includes(token.coinMinimalDenom)
+  );
 
-        return total;
-      }, new Dec(0));
-    }, [token, dustFilteredPools]);
+  const assetPoolBalance = useMemo(() => {
+    return dustFilteredPools.reduce((total, nextPool) => {
+      const userPool = nextPool.poolDetail.userPoolAssets.find(
+        ({ asset }) => asset.currency.coinDenom === token.coinDenom
+      );
 
-    const fiatAssetPoolBalance = useMemo(() => {
-      return data?.currentPrice?.mul(assetPoolBalance ?? new Dec(0));
-    }, [assetPoolBalance, data?.currentPrice]);
+      if (userPool) {
+        return userPool.asset.toDec().add(total);
+      }
 
-    return (
-      <section
-        className={`${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
-      >
-        <BalanceStats
-          token={token}
-          tokenDetailsByLanguage={tokenDetailsByLanguage}
-        />
-        <div className="flex flex-col gap-6 self-stretch">
-          <header>
-            <h6 className="text-lg font-h6 leading-6 tracking-wide">
-              {t("tokenInfos.earnWith", { denom: token.coinDenom })}{" "}
-            </h6>
-          </header>
-          <div className="flex gap-6 self-stretch 1.5xl:flex-col">
-            {(details?.stakingURL || isOsmo) && (
-              <Link
-                href={details?.stakingURL ?? "/stake"}
-                target={isOsmo ? undefined : "_blank"}
-                className="w-full grow"
-                passHref
-                onClick={() =>
-                  logEvent([
-                    EventName.TokenInfo.cardClicked,
-                    { tokenName: token.coinDenom, title: "Stake" },
-                  ])
-                }
-              >
-                <ActionButton
-                  title={
-                    hasStakingBalance
-                      ? t("tokenInfos.staking")
-                      : t("menu.stake")
-                  }
-                  largeTitle={
-                    hasStakingBalance
-                      ? formatPretty(
-                          data?.currentPrice?.mul(balance) || balance
-                        )
-                      : undefined
-                  }
-                  shrinkTitle={!Boolean(data?.currentPrice)}
-                  sub={
-                    hasStakingBalance
-                      ? formatPretty(balance)
-                      : !isOsmo
-                      ? t("tokenInfos.stakeYourDenomToEarnNoAPR", {
-                          denom: token.coinDenom,
-                        })
-                      : t("tokenInfos.stakeYourDenomToEarn", {
-                          denom: token.coinDenom,
-                          apr: stakingAPR.truncate().toString(),
-                        })
-                  }
-                  image={
-                    <Image
-                      src={"/images/coin-ring.svg"}
-                      alt={`Stake image`}
-                      className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
-                      width={224}
-                      height={140}
-                    />
-                  }
-                />
-              </Link>
-            )}
+      return total;
+    }, new Dec(0));
+  }, [token, dustFilteredPools]);
+
+  const fiatAssetPoolBalance = useMemo(() => {
+    return data?.currentPrice?.mul(assetPoolBalance ?? new Dec(0));
+  }, [assetPoolBalance, data?.currentPrice]);
+
+  return (
+    <section
+      className={`${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
+    >
+      <BalanceStats />
+      <div className="flex flex-col gap-6 self-stretch">
+        <header>
+          <h6 className="text-lg font-h6 leading-6 tracking-wide">
+            {t("tokenInfos.earnWith", { denom: token.coinDenom })}{" "}
+          </h6>
+        </header>
+        <div className="flex gap-6 self-stretch 1.5xl:flex-col">
+          {(details?.stakingURL || isOsmo) && (
             <Link
-              href={`/pools?searchQuery=${encodeURIComponent(token.coinDenom)}`}
-              passHref
+              href={details?.stakingURL ?? "/stake"}
+              target={isOsmo ? undefined : "_blank"}
               className="w-full grow"
+              passHref
               onClick={() =>
                 logEvent([
                   EventName.TokenInfo.cardClicked,
-                  { tokenName: token.coinDenom, title: "Explore Pools" },
+                  { tokenName: token.coinDenom, title: "Stake" },
                 ])
               }
             >
               <ActionButton
                 title={
-                  dustFilteredPools.length > 0
-                    ? t("tokenInfos.liquidityInOSMOPools", {
-                        number: dustFilteredPools.length.toString(),
-                        denom: token.coinDenom,
-                      })
-                    : t("tokenInfos.explorePools")
+                  hasStakingBalance ? t("tokenInfos.staking") : t("menu.stake")
                 }
                 largeTitle={
-                  dustFilteredPools.length > 0
-                    ? formatPretty(
-                        fiatAssetPoolBalance ?? assetPoolBalance ?? new Dec(0)
-                      )
+                  hasStakingBalance
+                    ? formatPretty(data?.currentPrice?.mul(balance) || balance)
                     : undefined
                 }
                 shrinkTitle={!Boolean(data?.currentPrice)}
                 sub={
-                  dustFilteredPools.length > 0 && assetPoolBalance
-                    ? formatPretty(assetPoolBalance)
-                    : t("tokenInfos.provideLiquidity")
+                  hasStakingBalance
+                    ? formatPretty(balance)
+                    : !isOsmo
+                    ? t("tokenInfos.stakeYourDenomToEarnNoAPR", {
+                        denom: token.coinDenom,
+                      })
+                    : t("tokenInfos.stakeYourDenomToEarn", {
+                        denom: token.coinDenom,
+                        apr: stakingAPR.truncate().toString(),
+                      })
                 }
                 image={
                   <Image
-                    src={"/images/explore-pools.svg"}
-                    alt={`Explore pools image`}
-                    className={`overflow-visible object-cover 2xl:object-contain`}
-                    width={189}
-                    height={126}
+                    src={"/images/coin-ring.svg"}
+                    alt={`Stake image`}
+                    className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
+                    width={224}
+                    height={140}
                   />
                 }
-                needsPadding
               />
             </Link>
-          </div>
+          )}
+          <Link
+            href={`/pools?searchQuery=${encodeURIComponent(token.coinDenom)}`}
+            passHref
+            className="w-full grow"
+            onClick={() =>
+              logEvent([
+                EventName.TokenInfo.cardClicked,
+                { tokenName: token.coinDenom, title: "Explore Pools" },
+              ])
+            }
+          >
+            <ActionButton
+              title={
+                dustFilteredPools.length > 0
+                  ? t("tokenInfos.liquidityInOSMOPools", {
+                      number: dustFilteredPools.length.toString(),
+                      denom: token.coinDenom,
+                    })
+                  : t("tokenInfos.explorePools")
+              }
+              largeTitle={
+                dustFilteredPools.length > 0
+                  ? formatPretty(
+                      fiatAssetPoolBalance ?? assetPoolBalance ?? new Dec(0)
+                    )
+                  : undefined
+              }
+              shrinkTitle={!Boolean(data?.currentPrice)}
+              sub={
+                dustFilteredPools.length > 0 && assetPoolBalance
+                  ? formatPretty(assetPoolBalance)
+                  : t("tokenInfos.provideLiquidity")
+              }
+              image={
+                <Image
+                  src={"/images/explore-pools.svg"}
+                  alt={`Explore pools image`}
+                  className={`overflow-visible object-cover 2xl:object-contain`}
+                  width={189}
+                  height={126}
+                />
+              }
+              needsPadding
+            />
+          </Link>
         </div>
-      </section>
-    );
-  }
-);
+      </div>
+    </section>
+  );
+});
 
 const ActionButton = ({
   title,
@@ -367,11 +350,13 @@ const ActionButton = ({
   </div>
 );
 
-const BalanceStats = observer(({ token }: YourBalanceProps) => {
+const BalanceStats = observer(() => {
   const { t } = useTranslation();
   const { chainStore, accountStore, assetsStore } = useStore();
   const { bridgeAsset, fiatRampSelection } = useBridge();
   const { onOpenWalletSelect } = useWalletSelect();
+
+  const { token } = useAssetInfo();
 
   const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);

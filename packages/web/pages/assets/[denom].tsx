@@ -2,10 +2,8 @@ import {
   CoingeckoCoin,
   getActiveCoingeckoCoins,
   getAssetMarketActivity,
-  getTokenInfo,
   queryCoingeckoCoin,
   RichTweet,
-  TokenCMSData,
   Twitter,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
@@ -70,33 +68,15 @@ const AssetInfoPage = observer((props: AssetInfoPageProps) => {
 });
 
 const AssetInfoView = observer(
-  ({
-    tokenDenom,
-    tweets,
-    tokenDetailsByLanguage,
-    coingeckoCoin,
-  }: AssetInfoPageProps) => {
+  ({ tokenDenom, tweets, coingeckoCoin }: AssetInfoPageProps) => {
     const { t } = useTranslation();
     const router = useRouter();
 
-    const { data: token } = api.edge.assets.getUserAsset.useQuery(
-      {
-        findMinDenomOrSymbol: tokenDenom,
-      },
-      {
-        staleTime: Infinity,
-        cacheTime: Infinity,
-      }
-    );
+    const { title, details, coinGeckoId, token } = useAssetInfo();
 
     if (!token) {
       return null;
     }
-
-    const { title, details, coinGeckoId } = useAssetInfo({
-      token,
-      tokenDetailsByLanguage,
-    });
 
     const assetInfoConfig = useAssetInfoConfig(
       token.coinDenom,
@@ -187,28 +167,16 @@ const AssetInfoView = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-5">
-                <TokenNavigation
-                  token={token}
-                  tokenDetailsByLanguage={tokenDetailsByLanguage}
-                  coingeckoCoin={coingeckoCoin}
-                />
+                <TokenNavigation coingeckoCoin={coingeckoCoin} />
                 <TokenChart />
               </div>
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                   {SwapTool_}
                 </div>
-                <YourBalance
-                  className="xl:flex-grow"
-                  token={token}
-                  tokenDetailsByLanguage={tokenDetailsByLanguage}
-                />
+                <YourBalance className="xl:flex-grow" />
               </div>
-              <TokenDetails
-                token={token}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-                coingeckoCoin={coingeckoCoin}
-              />
+              <TokenDetails token={token} coingeckoCoin={coingeckoCoin} />
               <TwitterSection tweets={tweets} />
             </div>
 
@@ -283,7 +251,6 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const tokenDenom = params?.denom as string;
-  let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
 
   try {
@@ -297,19 +264,11 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
     if (tokenDenom) {
       try {
-        tokenDetailsByLanguage = Object.fromEntries(
-          await Promise.all(
-            SUPPORTED_LANGUAGES.map(async (lang) => {
-              try {
-                const res = await getTokenInfo(tokenDenom, lang.value);
-
-                return [lang.value, res];
-              } catch (error) {}
-
-              return [lang.value, null];
-            })
-          )
-        );
+        const tokenDetailsByLanguage =
+          await trpcHelpers.local.cms.getTokenInfos.fetch({
+            coinDenom: tokenDenom,
+            langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
+          });
 
         const tokenDetails = tokenDetailsByLanguage
           ? tokenDetailsByLanguage["en"]
@@ -342,7 +301,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   return {
     props: {
       tokenDenom,
-      tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
       trpcState: trpcHelpers.dehydrate(),

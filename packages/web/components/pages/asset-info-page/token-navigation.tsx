@@ -1,27 +1,24 @@
-import { Asset, CoingeckoCoin, TokenCMSData } from "@osmosis-labs/server";
+import { CoingeckoCoin } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Icon } from "~/components/assets";
+import { ClientOnly } from "~/components/client-only";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useUserWatchlist } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 
 interface TokenNavigationProps {
-  token: Asset;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
   coingeckoCoin?: CoingeckoCoin | null;
 }
 
 export const TokenNavigation = observer((props: TokenNavigationProps) => {
-  const { tokenDetailsByLanguage, coingeckoCoin, token } = props;
+  const { coingeckoCoin } = props;
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
-    token,
-    tokenDetailsByLanguage,
+  const { token, twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
     coingeckoCoin,
   });
 
@@ -49,14 +46,16 @@ export const TokenNavigation = observer((props: TokenNavigationProps) => {
           aria-label="Add to watchlist"
           onClick={() => toggleWatchAssetDenom(token.coinDenom)}
         >
-          <Icon
-            id="star-outlined"
-            className={`mr-2 h-4 w-4 fill-transparent text-osmoverse-600 transition-all ${
-              watchListDenoms.includes(token.coinDenom)
-                ? "fill-osmoverse-600"
-                : ""
-            } `}
-          />
+          <ClientOnly>
+            <Icon
+              id="star-outlined"
+              className={`mr-2 h-4 w-4 fill-transparent text-osmoverse-600 transition-all ${
+                watchListDenoms.includes(token.coinDenom)
+                  ? "fill-osmoverse-600"
+                  : ""
+              } `}
+            />
+          </ClientOnly>
           {t("tokenInfos.watchlist")}
         </Button>
         {twitterUrl ? (
