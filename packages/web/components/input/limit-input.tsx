@@ -178,7 +178,7 @@ function AutoInput({
         placeholder="0"
         value={amount}
         inputClassName={classNames(
-          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none",
+          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
           { "cursor-pointer font-normal": !isFocused }
         )}
         onChange={(e) => setter(e.target.value)}
