@@ -8,20 +8,18 @@ import { FunctionComponent, useRef, useState } from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { useFilteredData, useWalletSelect } from "~/hooks";
+import { Intersection } from "~/components/intersection";
+import { Spinner } from "~/components/loaders";
+import { useFilteredData, useWalletSelect, useWindowKeyActions } from "~/hooks";
+import { useConst } from "~/hooks/use-const";
+import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
+import { useKeyActions } from "~/hooks/use-key-actions";
+import { useStateRef } from "~/hooks/use-state-ref";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
+import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
-
-import { useConst } from "../../hooks/use-const";
-import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
-import { useKeyActions } from "../../hooks/use-key-actions";
-import { useStateRef } from "../../hooks/use-state-ref";
-import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
-import { useStore } from "../../stores";
-import { Intersection } from "../intersection";
-import { Spinner } from "../loaders/spinner";
 
 const dataAttributeName = "data-token-id";
 
