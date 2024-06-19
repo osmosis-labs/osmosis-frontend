@@ -10,7 +10,7 @@ import {
   TransactionDetailsSlideover,
 } from "~/components/transactions/transaction-details";
 import { EventName } from "~/config";
-import { useFeatureFlags, useNavBar } from "~/hooks";
+import {  useNavBar } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useTranslation,
@@ -26,7 +26,6 @@ const EXAMPLE = {
 };
 
 const Transactions: React.FC = observer(() => {
-  const { transactionsPage, _isInitialized } = useFeatureFlags();
 
   const router = useRouter();
   const {

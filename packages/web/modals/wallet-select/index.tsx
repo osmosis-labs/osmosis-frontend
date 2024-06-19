@@ -23,7 +23,6 @@ import { Button } from "~/components/ui/button";
 import { CosmosWalletRegistry } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
-  useFeatureFlags,
   WalletSelectOption,
   WalletSelectParams,
 } from "~/hooks";
@@ -68,7 +67,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
     } = props;
     const { isMobile } = useWindowSize();
     const { accountStore, chainStore } = useStore();
-    const featureFlags = useFeatureFlags();
+    
     const hasInstalledWallets = useHasInstalledCosmosWallets();
     const [show1CTEditParams, setShow1CTEditParams] = useState(false);
     const [hasBroadcastedTx, setHasBroadcastedTx] = useState(false);

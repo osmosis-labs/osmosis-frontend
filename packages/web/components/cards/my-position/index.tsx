@@ -9,7 +9,7 @@ import { MyPositionCardExpandedSection } from "~/components/cards/my-position/ex
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -33,7 +33,7 @@ export const MyPositionCard: FunctionComponent<{
   } = position;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
-  const featureFlags = useFeatureFlags();
+  
 
   const { data: positionPerformance } =
     api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
 import { PortfolioPage } from "~/components/complex/portfolio-page";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 
 // New assets and portfolio page launches are controlled by 2 separate flags:
 // * New assets page: replace assets page with new assets page, move old assets page to new portfolio page
@@ -13,7 +13,6 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 
 const Portfolio: NextPage = () => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   useRedirectToAssetsPage();
 
@@ -44,7 +43,6 @@ const Portfolio: NextPage = () => {
 /**  Redirect to assets page if neither new assets page (old page moves here)
      or new portfolio page is enabled */
 function useRedirectToAssetsPage() {
-  const featureFlags = useFeatureFlags();
   const router = useRouter();
 
   useEffect(() => {

@@ -25,7 +25,6 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
-  useFeatureFlags,
   useNavBar,
   useTranslation,
   useWalletSelect,
@@ -35,7 +34,7 @@ import { useStore } from "~/stores";
 
 function Earn() {
   const { t } = useTranslation();
-  const { earnPage, _isInitialized } = useFeatureFlags();
+  
   const { accountStore } = useStore();
   const router = useRouter();
   /**

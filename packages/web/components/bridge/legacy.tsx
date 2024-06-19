@@ -13,7 +13,6 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
-  useFeatureFlags,
   useTransferConfig,
   useWindowSize,
 } from "~/hooks";
@@ -44,7 +43,6 @@ export const LegacyBridgeFlow = observer(
     const { assetsStore, userSettings } = useStore();
     const router = useRouter();
     const transferConfig = useTransferConfig();
-    const flags = useFeatureFlags();
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 

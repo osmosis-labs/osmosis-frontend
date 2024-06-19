@@ -34,7 +34,7 @@ import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
+
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import {
   NotifiContextProvider,
@@ -72,7 +72,7 @@ export const NavBar: FunctionComponent<
     } = useStore();
     const { t } = useTranslation();
 
-    const featureFlags = useFeatureFlags();
+    
 
     const {
       isOpen: isSettingsOpen,
@@ -366,7 +366,7 @@ const WalletInfo: FunctionComponent<
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
-  const flags = useFeatureFlags();
+  
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();

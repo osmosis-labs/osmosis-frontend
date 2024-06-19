@@ -45,7 +45,7 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
-import { useFeatureFlags } from "./use-feature-flags";
+
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
@@ -95,7 +95,7 @@ export function useSwap(
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
+  
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
   const { t } = useTranslation();
@@ -786,7 +786,7 @@ function useSwapAmountInput({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
-  const featureFlags = useFeatureFlags();
+  
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
 
@@ -1173,7 +1173,7 @@ function useQueryRouterBestQuote(
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
+  
 
   const availableRouterKeys: RouterKey[] = useMemo(
     () =>

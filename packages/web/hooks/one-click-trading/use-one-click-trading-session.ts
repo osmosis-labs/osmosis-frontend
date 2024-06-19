@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAsync } from "react-use";
 
 import { useTranslation } from "~/hooks/language";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
+
 import { useStore } from "~/stores";
 
 /**
@@ -25,7 +25,7 @@ export const useOneClickTradingSession = ({
   const [isExpired, setIsExpired] = useState(false);
   const { t } = useTranslation();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
+  
 
   const { value, loading } = useAsync(async () => {
     const defaultReturn = {

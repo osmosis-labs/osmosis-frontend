@@ -19,7 +19,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
+
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -89,7 +89,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     [bridgeAsset]
   );
 
-  const flags = useFeatureFlags();
+  
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
@@ -258,7 +258,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const flags = useFeatureFlags();
+    
 
     const pools = poolIds
       .map((poolId) => {

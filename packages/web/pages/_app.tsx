@@ -39,7 +39,6 @@ import {
 } from "~/hooks";
 import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
@@ -109,7 +108,7 @@ const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
 }> = observer(({ children }) => {
   const { t } = useTranslation();
-  const flags = useFeatureFlags();
+  
   const { data: levanaGeoblock, error } = useQuery(
     ["levana-geoblocked"],
     () =>

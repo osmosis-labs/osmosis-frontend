@@ -6,7 +6,6 @@ import { AssetsPageV2 } from "~/components/complex/assets-page-v2";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
-  useFeatureFlags,
   useTranslation,
 } from "~/hooks";
 
@@ -16,7 +15,7 @@ import {
 
 const Assets: NextPage = () => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
+  
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],

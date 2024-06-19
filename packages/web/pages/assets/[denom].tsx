@@ -47,7 +47,7 @@ import {
   useTranslation,
   useUserWatchlist,
 } from "~/hooks";
-import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { useAssetInfoConfig, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getPriceExtendedFormatOptions } from "~/utils/formatter";
@@ -67,7 +67,7 @@ interface AssetInfoPageProps {
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
   ({ tokenDenom, ...rest }) => {
-    const featureFlags = useFeatureFlags();
+    
     const router = useRouter();
 
     useEffect(() => {

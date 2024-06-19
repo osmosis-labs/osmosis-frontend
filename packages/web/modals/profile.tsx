@@ -40,7 +40,7 @@ import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
 import { ArrowButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -67,7 +67,7 @@ export const ProfileModal: FunctionComponent<
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const { fiatRampSelection } = useBridge();
-  const featureFlags = useFeatureFlags();
+  
 
   const {
     isOpen: isAvatarSelectOpen,

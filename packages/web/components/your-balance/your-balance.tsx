@@ -22,7 +22,6 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useFakeFeeConfig,
-  useFeatureFlags,
   useGetApr,
   useHideDustUserSetting,
   useStakedAmountConfig,
@@ -51,7 +50,7 @@ export const YourBalance = observer(
       derivedDataStore,
       priceStore,
     } = useStore();
-    const featureFlags = useFeatureFlags();
+    
     const { t } = useTranslation();
     const { stakingAPR } = useGetApr();
     const language = useCurrentLanguage();
