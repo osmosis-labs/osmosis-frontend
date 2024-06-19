@@ -165,23 +165,26 @@ export const orderbookRouter = createTRPCRouter({
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-          let allOrders: MappedLimitOrder[] = [];
-          for (let i = 0; i < contractAddresses.length; i++) {
-            const contractOsmoAddress = contractAddresses[i];
-            const resp = await getOrderbookActiveOrders({
-              orderbookAddress: contractOsmoAddress,
-              userOsmoAddress: userOsmoAddress,
-              chainList: ctx.chainList,
-            });
+          const promises = contractAddresses.map(
+            async (contractOsmoAddress) => {
+              const resp = await getOrderbookActiveOrders({
+                orderbookAddress: contractOsmoAddress,
+                userOsmoAddress: userOsmoAddress,
+                chainList: ctx.chainList,
+              });
 
-            if (resp.orders.length === 0) continue;
-            const mappedOrders = await getTickInfoAndTransformOrders(
-              contractOsmoAddress,
-              resp.orders,
-              ctx.chainList
-            );
-            allOrders = allOrders.concat(mappedOrders);
-          }
+              if (resp.orders.length === 0) return [];
+
+              const mappedOrders = await getTickInfoAndTransformOrders(
+                contractOsmoAddress,
+                resp.orders,
+                ctx.chainList
+              );
+              return mappedOrders;
+            }
+          );
+          const ordersByContracts = await Promise.all(promises);
+          const allOrders = ordersByContracts.flatMap((p) => p);
           return allOrders;
         },
         cacheKey: JSON.stringify([
