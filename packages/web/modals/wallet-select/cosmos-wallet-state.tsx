@@ -20,7 +20,7 @@ import { Button } from "~/components/ui/button";
 import { ConnectingWalletState } from "~/components/wallet-states";
 import { ErrorWalletState } from "~/components/wallet-states";
 import { CosmosWalletRegistry } from "~/config";
-import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
+import {  useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { ModalView, OnConnectWallet } from "~/modals/wallet-select/utils";
@@ -72,7 +72,7 @@ export const CosmosWalletState: FunctionComponent<
   }) => {
     const { t } = useTranslation();
     const { accountStore, chainStore } = useStore();
-    const featureFlags = useFeatureFlags();
+    
     const hasInstalledWallets = useHasInstalledCosmosWallets();
     const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
       OneClickFloatingBannerDoNotShowKey

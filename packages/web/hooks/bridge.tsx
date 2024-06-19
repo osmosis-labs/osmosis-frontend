@@ -5,7 +5,7 @@ import { LegacyBridgeFlow } from "~/components/bridge/legacy";
 import { FiatRampKey } from "~/integrations";
 import { createContext } from "~/utils/react-context";
 
-import { useFeatureFlags } from "./use-feature-flags";
+
 
 export type BridgeContext = {
   /** Start bridging without knowing the asset to bridge yet. */
@@ -24,7 +24,7 @@ export { useBridge };
 
 /** Provides a globally accessible bridge UX that is initiated via the `useBridge` hook. */
 export const BridgeProvider = ({ children }: PropsWithChildren) => {
-  const featureFlags = useFeatureFlags();
+  
 
   if (!featureFlags._isInitialized)
     return <LoadingContext>{children}</LoadingContext>;

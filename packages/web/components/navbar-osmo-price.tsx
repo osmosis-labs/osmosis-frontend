@@ -10,7 +10,7 @@ import { Sparkline } from "~/components/chart/sparkline";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
@@ -24,7 +24,7 @@ const osmoCurrency = makeMinimalAsset(osmoAsset!);
 export const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
-  const flags = useFeatureFlags();
+  
   const { fiatRampSelection } = useBridge();
 
   const { chainId } = chainStore.osmosis;

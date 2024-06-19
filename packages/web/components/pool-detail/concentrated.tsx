@@ -18,7 +18,7 @@ import { Spinner } from "~/components/loaders/spinner";
 import { ChartButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
+import {  useTranslation, useWalletSelect } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
@@ -455,7 +455,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { derivedDataStore } = useStore();
     const { t } = useTranslation();
-    const featureFlags = useFeatureFlags();
+    
 
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);

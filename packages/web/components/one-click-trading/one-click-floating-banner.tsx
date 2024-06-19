@@ -8,7 +8,7 @@ import { useLocalStorage } from "react-use";
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { ArrowButton, IconButton } from "~/components/ui/button";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
@@ -18,7 +18,7 @@ export const OneClickFloatingBannerDoNotShowKey =
 
 export const OneClickFloatingBanner = observer(() => {
   const { accountStore, chainStore } = useStore();
-  const featureFlags = useFeatureFlags();
+  
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const isConnected = !!account?.address;
   const { isOneClickTradingEnabled } = useOneClickTradingSession();

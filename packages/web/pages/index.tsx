@@ -9,7 +9,6 @@ import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
-  useFeatureFlags,
   useTranslation,
 } from "~/hooks";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
@@ -23,7 +22,7 @@ export type PreviousTrade = {
 };
 
 const Home = () => {
-  const featureFlags = useFeatureFlags();
+  
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
@@ -82,7 +81,6 @@ const Home = () => {
 
 const SwapAdsBanner = () => {
   const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-  const flags = useFeatureFlags();
   const { t } = useTranslation();
   const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
     undefined,

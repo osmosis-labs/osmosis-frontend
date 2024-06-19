@@ -28,7 +28,7 @@ import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -77,7 +77,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
-    const featureFlags = useFeatureFlags();
+    
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const account = accountStore.getWallet(chainId);
 

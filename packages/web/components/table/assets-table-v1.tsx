@@ -25,7 +25,7 @@ import { Switch } from "~/components/ui/switch";
 import { EventName, initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {  useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -110,7 +110,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
-    const featureFlags = useFeatureFlags();
+    
 
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
