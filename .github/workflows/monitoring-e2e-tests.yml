@@ -3,10 +3,7 @@ name: Synthetic Monitoring E2E tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
-  push:
-    branches:
-      - FE-456
+    - cron: "*/15 * * * *"
 
 jobs:
   setup-matrix:
@@ -46,7 +43,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests on Prod
+      - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}
           PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
@@ -169,3 +166,45 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  fe-quote-tests:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    environment:
+      name: prod_swap_test
+    steps:
+      - name: Echo IP
+        run: curl https://api.ipify.org
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests on ${{ matrix.env }}
+        env:
+          BASE_URL: ${{ matrix.base-url }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Select Swap Pair feature"
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.env }}-test-results
+          path: packages/web/playwright-report
