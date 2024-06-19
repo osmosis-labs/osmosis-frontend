@@ -56,7 +56,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     >
       <div className="relative flex h-20 w-full items-center justify-center p-4">
         <h6>
-          {orderDirection === OrderDirection.Bid ? "Buy" : "Sell"}{" "}
+          {orderDirection === "bid" ? "Buy" : "Sell"}{" "}
           {placeLimitState.baseAsset?.coinName}
         </h6>
         <button
@@ -91,24 +91,23 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           </div>
         )}
         <div className="flex w-full flex-col pt-3">
-          {placeLimitState.quoteAsset &&
-            orderDirection === OrderDirection.Bid && (
-              <RecapRow
-                left="Pay With"
-                right={
-                  <span className="text-osmoverse-100">
-                    <Image
-                      width={24}
-                      height={24}
-                      src={placeLimitState.quoteAsset.coinImageUrl!}
-                      alt={placeLimitState.quoteAsset.coinDenom}
-                      className="inline"
-                    />{" "}
-                    {placeLimitState.quoteAsset.coinDenom}
-                  </span>
-                }
-              />
-            )}
+          {placeLimitState.quoteAsset && orderDirection === "bid" && (
+            <RecapRow
+              left="Pay With"
+              right={
+                <span className="text-osmoverse-100">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={placeLimitState.quoteAsset.coinImageUrl!}
+                    alt={placeLimitState.quoteAsset.coinDenom}
+                    className="inline"
+                  />{" "}
+                  {placeLimitState.quoteAsset.coinDenom}
+                </span>
+              }
+            />
+          )}
           <RecapRow
             left="Value"
             right={
@@ -147,24 +146,23 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               }
             />
           )}
-          {placeLimitState.quoteAsset &&
-            orderDirection === OrderDirection.Ask && (
-              <RecapRow
-                left="Recieve asset"
-                right={
-                  <span className="text-osmoverse-100">
-                    <Image
-                      width={24}
-                      height={24}
-                      src={placeLimitState.quoteAsset.coinImageUrl!}
-                      alt={placeLimitState.quoteAsset.coinDenom}
-                      className="inline"
-                    />{" "}
-                    {placeLimitState.quoteAsset.coinDenom}
-                  </span>
-                }
-              />
-            )}
+          {placeLimitState.quoteAsset && orderDirection === "ask" && (
+            <RecapRow
+              left="Recieve asset"
+              right={
+                <span className="text-osmoverse-100">
+                  <Image
+                    width={24}
+                    height={24}
+                    src={placeLimitState.quoteAsset.coinImageUrl!}
+                    alt={placeLimitState.quoteAsset.coinDenom}
+                    className="inline"
+                  />{" "}
+                  {placeLimitState.quoteAsset.coinDenom}
+                </span>
+              }
+            />
+          )}
           <RecapRow
             left="Order Type"
             right={
