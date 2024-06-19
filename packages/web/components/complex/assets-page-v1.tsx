@@ -258,7 +258,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const flags = useFeatureFlags();
+
 
     const pools = poolIds
       .map((poolId) => {
@@ -268,14 +268,6 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
-
-        if (
-          !pool ||
-          (pool.type === "concentrated" && !flags.concentratedLiquidity)
-        ) {
-          return undefined;
-        }
-
         return [
           pool,
           sharePoolDetail.userShareValue,

@@ -22,7 +22,6 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useFakeFeeConfig,
-  useFeatureFlags,
   useGetApr,
   useHideDustUserSetting,
   useStakedAmountConfig,
@@ -51,7 +50,6 @@ export const YourBalance = observer(
       derivedDataStore,
       priceStore,
     } = useStore();
-    const featureFlags = useFeatureFlags();
     const { t } = useTranslation();
     const { stakingAPR } = useGetApr();
     const language = useCurrentLanguage();
@@ -121,48 +119,38 @@ export const YourBalance = observer(
     );
 
     const myPoolDetails = myPoolIds
-      .map<
-        | {
-            queryPool: ObservableQueryPool;
-            poolDetail:
-              | ObservableSharePoolDetail
-              | ObservableConcentratedPoolDetail;
-          }
-        | undefined
-      >((myPoolId) => {
-        const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
+  .map<
+    | {
+        queryPool: ObservableQueryPool;
+        poolDetail:
+          | ObservableSharePoolDetail
+          | ObservableConcentratedPoolDetail;
+      }
+    | undefined
+  >((myPoolId) => {
+    const queryPool = queryOsmosis.queryPools.getPool(myPoolId);
 
-        if (!queryPool) return undefined;
+    if (!queryPool) return undefined;
 
-        return {
-          queryPool,
-          poolDetail:
-            queryPool.type === "concentrated"
-              ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
-              : derivedDataStore.sharePoolDetails.get(myPoolId),
-        };
-      })
-      .filter(
-        (
-          pool
-        ): pool is {
-          queryPool: ObservableQueryPool;
-          poolDetail:
-            | ObservableSharePoolDetail
-            | ObservableConcentratedPoolDetail;
-        } => {
-          if (pool === undefined) return false;
+    return {
+      queryPool,
+      poolDetail:
+        queryPool.type === "concentrated"
+          ? derivedDataStore.concentratedPoolDetails.get(myPoolId)
+          : derivedDataStore.sharePoolDetails.get(myPoolId),
+    };
+  })
+  .filter(
+    (
+      pool
+    ): pool is {
+      queryPool: ObservableQueryPool;
+      poolDetail:
+        | ObservableSharePoolDetail
+        | ObservableConcentratedPoolDetail;
+    } => pool !== undefined
+  );
 
-          // concentrated liquidity liquidity feature flag
-          if (
-            !featureFlags.concentratedLiquidity &&
-            pool.poolDetail instanceof ObservableConcentratedPoolDetail
-          )
-            return false;
-
-          return true;
-        }
-      );
 
     const dustFilteredPools = useHideDustUserSetting(
       myPoolDetails,

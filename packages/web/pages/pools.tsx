@@ -15,7 +15,6 @@ import {
   useCreatePoolConfig,
   useDimension,
 } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -38,7 +37,6 @@ const Pools: NextPage = observer(function () {
   const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
-  const featureFlags = useFeatureFlags();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -153,7 +151,7 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity && account?.address && (
+      {account?.address && (
         <section className="pb-[3.75rem]" ref={myPositionsRef}>
           <h5>{t("clPositions.yourPositions")}</h5>
           <MyPositionsSection />
