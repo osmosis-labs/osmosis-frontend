@@ -25,6 +25,7 @@ export interface UsePlaceLimitParams {
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
+export type OrderType = "market" | "limit";
 
 // TODO: adjust as necessary
 const CLAIM_BOUNTY = "0.001";

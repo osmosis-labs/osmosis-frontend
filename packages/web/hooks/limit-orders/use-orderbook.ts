@@ -12,6 +12,7 @@ interface Orderbook {
   baseDenom: string;
   quoteDenom: string;
   contractAddress: string;
+  poolId: string;
 }
 
 const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
@@ -27,12 +28,14 @@ const testnetOrderbooks: Orderbook[] = [
       "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
     contractAddress:
       "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
+    poolId: "495",
   },
   {
     baseDenom: "uion",
     quoteDenom: "uosmo",
     contractAddress:
       "osmo1ruxn39qj6x44gms8pfzw22kd7kemslc5fahgua3wuz0tkyks0uhq2f25wh",
+    poolId: "496",
   },
 ];
 
@@ -209,7 +212,7 @@ export const useOrderbook = ({
   });
 
   return {
-    poolId: "1",
+    poolId: orderbook?.poolId ?? "",
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,
@@ -275,23 +278,23 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
  * @param {string} baseAssetDenom - The token in asset denom.
  * @returns {Object} An object containing the spot price and the loading state.
  */
-// export const useOrderbookSpotPrice = ({
-//   orderbookAddress,
-//   quoteAssetDenom,
-//   baseAssetDenom,
-// }: {
-//   orderbookAddress: string;
-//   quoteAssetDenom: string;
-//   baseAssetDenom: string;
-// }) => {
-//   const { data: spotPrice, isLoading } =
-//     api.edge.orderbooks.getSpotPrice.useQuery({
-//       osmoAddress: orderbookAddress,
-//       quoteAssetDenom,
-//       baseAssetDenom,
-//     });
-//   return {
-//     spotPrice,
-//     isLoading,
-//   };
-// };
+export const useOrderbookSpotPrice = ({
+  orderbookAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+}: {
+  orderbookAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+}) => {
+  // const { data: spotPrice, isLoading } =
+  //   api.edge.orderbooks.getSpotPrice.useQuery({
+  //     osmoAddress: orderbookAddress,
+  //     quoteAssetDenom,
+  //     baseAssetDenom,
+  //   });
+  return {
+    spotPrice: new Dec(1),
+    isLoading: false,
+  };
+};

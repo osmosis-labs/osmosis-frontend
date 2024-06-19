@@ -23,18 +23,18 @@ export interface TokenSelectLimitProps {
   dropdownOpen?: boolean;
   setDropdownOpen?: (value: boolean) => void;
   selectableAssets: SwapAsset[];
-  baseAsset: SwapAsset &
+  baseAsset?: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  quoteAsset: SwapAsset &
+  quoteAsset?: SwapAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  baseBalance: CoinPretty;
-  quoteBalance: CoinPretty;
+  baseBalance?: CoinPretty;
+  quoteBalance?: CoinPretty;
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
   orderDirection: OrderDirection;
@@ -88,7 +88,7 @@ export const TokenSelectLimit: FunctionComponent<
     };
 
     const { price: baseCoinPrice, isLoading: isLoadingBasePrice } = usePrice({
-      coinMinimalDenom: baseAsset.coinMinimalDenom,
+      coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
     });
 
     const baseFiatBalance = useMemo(

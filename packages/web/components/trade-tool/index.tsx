@@ -3,6 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { ClientOnly } from "~/components/client-only";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
+import { PlaceMarketTool } from "~/components/place-market-tool";
 import { AltSwapTool } from "~/components/swap-tool/alt";
 import { OrderTypeSelector } from "~/components/swap-tool/order-type-selector";
 import {
@@ -20,6 +21,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
       SwapToolTab.SWAP
     )
   );
+  const [type] = useQueryState(
+    "type",
+    parseAsStringEnum(["market", "limit"]).withDefault("market")
+  );
 
   return (
     <ClientOnly>
@@ -31,9 +36,17 @@ export const TradeTool: FunctionComponent<TradeToolProps> = () => {
         {useMemo(() => {
           switch (tab) {
             case SwapToolTab.BUY:
-              return <PlaceLimitTool orderDirection={OrderDirection.Bid} />;
+              return type === "market" ? (
+                <PlaceMarketTool orderDirection={OrderDirection.Bid} />
+              ) : (
+                <PlaceLimitTool orderDirection={OrderDirection.Bid} />
+              );
             case SwapToolTab.SELL:
-              return <PlaceLimitTool orderDirection={OrderDirection.Ask} />;
+              return type === "market" ? (
+                <PlaceMarketTool orderDirection={OrderDirection.Ask} />
+              ) : (
+                <PlaceLimitTool orderDirection={OrderDirection.Ask} />
+              );
             case SwapToolTab.SWAP:
             default:
               return (
