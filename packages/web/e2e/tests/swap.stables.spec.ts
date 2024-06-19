@@ -34,7 +34,7 @@ test.describe("Test Swap Stables feature", () => {
         `--load-extension=${pathToExtension}`,
       ],
       viewport: { width: 1280, height: 1024 },
-      slowMo: 300,
+      slowMo: 400,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
@@ -47,7 +47,7 @@ test.describe("Test Swap Stables feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new SwapPage(await context.newPage());
+    swapPage = new SwapPage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
@@ -72,6 +72,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDCa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDC.axl to USDC", async () => {
@@ -89,6 +90,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDT to USDT.axl", async () => {
@@ -106,6 +108,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDTa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDT.axl to USDT", async () => {
@@ -123,5 +126,6 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 });
