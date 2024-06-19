@@ -26,7 +26,7 @@ import {
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
-import { compareCommon, sort } from "@osmosis-labs/utils";
+import { compareCommon, isNil, sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -497,5 +497,95 @@ export const assetsRouter = createTRPCRouter({
       getUpcomingAssets().then((upcomingAssets) =>
         upcomingAssets.slice(0, topN)
       )
+    ),
+  getImmersiveBridgeAssets: publicProcedure
+    .input(
+      GetInfiniteAssetsInputSchema.omit({
+        categories: true,
+        onlyVerified: true,
+      })
+        .merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            variantsNotToBeExcluded: z.array(z.string()),
+            prioritizedDenoms: z.array(z.string()),
+            type: z.union([z.literal("deposit"), z.literal("withdraw")]),
+          })
+        )
+    )
+    .query(
+      async ({
+        input: {
+          search,
+          userOsmoAddress,
+          limit,
+          cursor,
+          includePreview,
+          variantsNotToBeExcluded,
+          prioritizedDenoms,
+          type,
+        },
+        ctx,
+      }) =>
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            let assets = await mapGetAssetsWithUserBalances({
+              ...ctx,
+              search,
+              // Only get balances for withdraw
+              userOsmoAddress:
+                type === "withdraw" ? userOsmoAddress : undefined,
+              sortFiatValueDirection: "desc",
+              includePreview,
+            });
+
+            if (type === "withdraw") {
+              assets = assets
+                // Filter out all assets without amount
+                .filter((asset) => !isNil(asset.amount));
+            }
+
+            if (type === "deposit") {
+              assets = assets
+                // Filter out all asset variants to encourage users to deposit and convert to the canonical asset
+                .filter((asset) => {
+                  if (
+                    !isNil(asset.variantGroupKey) &&
+                    !variantsNotToBeExcluded.includes(
+                      asset.variantGroupKey as (typeof variantsNotToBeExcluded)[number]
+                    )
+                  ) {
+                    return asset.variantGroupKey === asset.coinDenom;
+                  }
+
+                  return true;
+                });
+            }
+
+            return assets.sort((a, b) => {
+              const aIndex = prioritizedDenoms.indexOf(
+                a.coinDenom as (typeof prioritizedDenoms)[number]
+              );
+              const bIndex = prioritizedDenoms.indexOf(
+                b.coinDenom as (typeof prioritizedDenoms)[number]
+              );
+
+              if (aIndex === -1 && bIndex === -1) return 0; // Both not prioritized
+              if (aIndex === -1) return 1; // a is not prioritized, b is
+              if (bIndex === -1) return -1; // b is not prioritized, a is
+
+              return aIndex - bIndex; // Both are prioritized, sort by their index
+            });
+          },
+          cacheKey: JSON.stringify({
+            search,
+            userOsmoAddress,
+            includePreview,
+            variantsToBeExcluded: variantsNotToBeExcluded,
+            prioritizedDenoms,
+          }),
+          cursor,
+          limit,
+        })
     ),
 });

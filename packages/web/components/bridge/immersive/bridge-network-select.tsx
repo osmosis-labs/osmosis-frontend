@@ -9,34 +9,29 @@ import { api } from "~/utils/trpc";
 
 export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
   const [query, setQuery] = useState("");
-  const {
-    data: chainsPages,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = api.edge.chains.getChains.useInfiniteQuery(
-    {
-      limit: 50,
-      search: query,
-    },
-    {
-      enabled: modalProps.isOpen,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialCursor: 0,
-      keepPreviousData: true,
-
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
+  const { data, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage } =
+    api.edge.chains.getChains.useInfiniteQuery(
+      {
+        limit: 50,
+        search: query,
       },
-    }
-  );
+      {
+        enabled: modalProps.isOpen,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+        keepPreviousData: true,
+
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const chains = useMemo(
-    () => chainsPages?.pages.flatMap((page) => page?.items) ?? [],
-    [chainsPages]
+    () => data?.pages.flatMap((page) => page?.items) ?? [],
+    [data]
   );
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
 
@@ -46,6 +41,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
       className="!max-w-[30rem]"
       {...modalProps}
     >
+      {/* TODO: Add translation */}
       <SearchBox
         onInput={debounce((nextValue) => {
           setQuery(nextValue);

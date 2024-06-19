@@ -179,3 +179,12 @@ export interface Asset {
   /** Denom key of variant of asset this is grouped with. */
   variantGroupKey?: string;
 }
+
+export type MinimalAsset = Currency & {
+  coinGeckoId: string | undefined;
+  coinName: string;
+  isUnstable: boolean;
+  isVerified: boolean;
+  sourceDenom: string;
+  variantGroupKey: string | undefined;
+};

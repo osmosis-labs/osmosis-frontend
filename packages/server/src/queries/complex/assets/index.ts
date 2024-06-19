@@ -1,24 +1,15 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
+import {
+  Asset as AssetListAsset,
+  AssetList,
+  MinimalAsset,
+} from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
 import { isAssetInCategories } from "./categories";
-
-/** An asset with minimal data that conforms to `Currency` type. */
-export type Asset = {
-  coinDenom: string;
-  coinName: string;
-  coinMinimalDenom: string;
-  coinDecimals: number;
-  coinGeckoId: string | undefined;
-  coinImageUrl?: string;
-  isVerified: boolean;
-  isUnstable: boolean;
-  sourceDenom: string;
-};
 
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
@@ -37,7 +28,7 @@ export function getAsset({
 }: {
   assetLists: AssetList[];
   anyDenom: string;
-}): Asset {
+}): MinimalAsset {
   const assets = getAssets({
     assetLists,
     findMinDenomOrSymbol: anyDenom,
@@ -62,7 +53,7 @@ export function getAssets({
   assetLists: AssetList[];
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
-} & AssetFilter): Asset[] {
+} & AssetFilter): MinimalAsset[] {
   return filterAssetList(assetLists, params);
 }
 
@@ -99,7 +90,7 @@ function filterAssetList(
   params: {
     findMinDenomOrSymbol?: string;
   } & AssetFilter
-): Asset[] {
+): MinimalAsset[] {
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 

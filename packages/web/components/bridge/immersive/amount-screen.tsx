@@ -8,8 +8,8 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { BridgeNetworkSelect } from "~/components/bridge/bridge-network-select";
-import { MoreBridgeOptions } from "~/components/bridge/more-bridge-options";
+import { BridgeNetworkSelect } from "~/components/bridge/immersive/bridge-network-select";
+import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
@@ -103,7 +103,7 @@ export const AmountScreen = observer(({ type }: AmountScreenProps) => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[30rem] flex-col items-center justify-center p-4 text-white-full">
+    <div className="mx-auto flex w-full flex-col items-center justify-center p-4 text-white-full">
       <h5 className="mb-6 flex items-center justify-center gap-3">
         <span>
           {type === "deposit" ? t("transfer.deposit") : t("transfer.withdraw")}

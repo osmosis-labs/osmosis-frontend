@@ -1,5 +1,5 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { AssetList, Chain } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import {
   aggregateCoinsByDenom,
   isNil,
@@ -16,7 +16,7 @@ import {
   getUserTotalDelegatedCoin,
   getUserTotalUndelegations,
 } from "../staking/user";
-import { Asset, AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
+import { AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -27,7 +27,7 @@ export type MaybeUserAssetCoin = Partial<{
 }>;
 
 /** Given an asset, appends the user's balance if applicable. */
-export async function getAssetWithUserBalance<TAsset extends Asset>({
+export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
   assetLists,
   chainList,
   asset,
@@ -53,7 +53,9 @@ export async function getAssetWithUserBalance<TAsset extends Asset>({
 /** Maps user coin data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
-export async function mapGetAssetsWithUserBalances<TAsset extends Asset>({
+export async function mapGetAssetsWithUserBalances<
+  TAsset extends MinimalAsset
+>({
   poolId,
   ...params
 }: {

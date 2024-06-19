@@ -661,7 +661,7 @@ export function useSwapAssets({
     Boolean(fromAssetDenom) &&
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
-  // use a separate query for search to maintain pagination in other infinite query
+
   const {
     data: selectableAssetPages,
     isLoading: isLoadingSelectAssets,
