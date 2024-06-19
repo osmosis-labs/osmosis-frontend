@@ -239,10 +239,11 @@ export class ObservableAssetInfoConfig {
 
   @computed
   get historicalChartData() {
-    return this._historicalData.map((data) => ({
-      ...data,
-      time: data.time,
-    }));
+    const currentTime = new Date().getTime();
+
+    return this._historicalData.filter(
+      (data) => data.time * 1000 <= currentTime
+    );
   }
 
   @computed
