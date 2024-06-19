@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Émission de la transaction",
   "transactionFailed": "Échec de la transaction",
   "transactionSuccessful": "Succès de la transaction",
+  "transfer": {
+    "deposit": "Dépôt",
+    "withdraw": "Retirer",
+    "fromNetwork": "Du réseau",
+    "toNetwork": "Pour réseauter",
+    "max": "Max.",
+    "available": "disponible",
+    "transferWith": "Transfert avec",
+    "transferTo": "Transférer à",
+    "receiveAsset": "Recevoir l'actif",
+    "receiveAssetDescription": "Lorsque vous déposez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur Osmosis.",
+    "estimatingTime": "Temps estimé",
+    "calculatingFees": "Calcul des frais",
+    "reviewDeposit": "Vérifier le dépôt",
+    "reviewWithdraw": "Retrait de l'avis",
+    "moreDepositOptions": "Plus d'options de dépôt",
+    "moreWithdrawOptions": "Plus d'options de retrait",
+    "convertTo": "Convertir en",
+    "recommended": "Recommandé",
+    "moreBridgeOptions": {
+      "titleDeposit": "Plus d'options de dépôt",
+      "titleWithdraw": "Plus d'options de retrait",
+      "descriptionDeposit": "Choisissez parmi les fournisseurs alternatifs suivants pour déposer (alias « pont ») votre {asset} vers {chain} .",
+      "descriptionWithdraw": "Choisissez parmi les fournisseurs alternatifs suivants pour retirer (alias « pont ») votre {asset} vers {chain} .",
+      "depositWith": "Dépôt avec",
+      "withdrawWith": "Retirer avec"
+    }
+  },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
@@ -967,7 +995,12 @@
     "circulatingSupply": "Approvisionnement en circulation",
     "buyToken": "Acheter {coinDenom}",
     "staking": "Jalonnement",
-    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}"
+    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}",
+    "underlyingAssets": {
+      "title": "Atouts sous-jacents",
+      "description": "{name} ( {denom} ) sur Osmose est composé de {count} différents types de {name} .",
+      "of": "de {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "Mises à jour sur l'osmose !",

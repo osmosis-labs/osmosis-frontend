@@ -903,6 +903,34 @@
   "transactionBroadcasting": "トランザクションブロードキャスト",
   "transactionFailed": "処理に失敗しました",
   "transactionSuccessful": "トランザクションが成功しました",
+  "transfer": {
+    "deposit": "デポジット",
+    "withdraw": "撤回する",
+    "fromNetwork": "ネットワークから",
+    "toNetwork": "ネットワークに",
+    "max": "マックス",
+    "available": "利用可能",
+    "transferWith": "転送",
+    "transferTo": "転送先",
+    "receiveAsset": "資産を受け取る",
+    "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
+    "estimatingTime": "時間の見積もり",
+    "calculatingFees": "手数料の計算",
+    "reviewDeposit": "預金の確認",
+    "reviewWithdraw": "レビュー撤回",
+    "moreDepositOptions": "その他の入金オプション",
+    "moreWithdrawOptions": "引き出しオプションの追加",
+    "convertTo": "に変換",
+    "recommended": "推奨",
+    "moreBridgeOptions": {
+      "titleDeposit": "その他の入金オプション",
+      "titleWithdraw": "引き出しオプションの追加",
+      "descriptionDeposit": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "depositWith": "入金",
+      "withdrawWith": "撤退する"
+    }
+  },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
@@ -967,7 +995,12 @@
     "circulatingSupply": "循環供給",
     "buyToken": "{coinDenom}を購入する",
     "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性"
+    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
+    "underlyingAssets": {
+      "title": "基礎資産",
+      "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
+      "of": "{denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "浸透圧のアップデート！",
