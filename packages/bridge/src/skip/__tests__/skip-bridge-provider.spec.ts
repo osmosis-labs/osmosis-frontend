@@ -466,7 +466,7 @@ describe("SkipBridgeProvider", () => {
 
     const txData: BridgeTransactionRequest = {
       type: "cosmos",
-      msgTypeUrl: "cosmos-sdk/MsgTransfer",
+      msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
       msg: {
         // mock data
         source_channel: "channel-123",

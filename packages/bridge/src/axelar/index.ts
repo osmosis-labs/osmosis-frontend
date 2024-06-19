@@ -112,12 +112,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const toChainAxelarId = this.getAxelarChainId(toChain);
 
           if (!fromChainAxelarId || !toChainAxelarId) {
-            throw new BridgeQuoteError([
-              {
-                errorType: BridgeError.UnsupportedQuoteError,
-                message: "Axelar Bridge doesn't support this quote",
-              },
-            ]);
+            throw new BridgeQuoteError({
+              errorType: "UnsupportedQuoteError",
+              message: "Axelar Bridge doesn't support this quote",
+            });
           }
 
           const queryClient = await this.getQueryClient();
@@ -144,33 +142,29 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           if (!transferFeeRes.fee) {
-            throw new BridgeQuoteError([
-              {
-                errorType: BridgeError.UnsupportedQuoteError,
-                message: "Axelar Bridge doesn't support this quote",
-              },
-            ]);
+            throw new BridgeQuoteError({
+              errorType: "UnsupportedQuoteError",
+              message: "Axelar Bridge doesn't support this quote",
+            });
           }
 
           if (
             transferLimitAmount &&
             new Dec(fromAmount).gte(new Dec(transferLimitAmount))
           ) {
-            throw new BridgeQuoteError([
-              {
-                errorType: BridgeError.UnsupportedQuoteError,
-                message: `Amount exceeds transfer limit of ${new CoinPretty(
-                  {
-                    coinDecimals: fromAsset.decimals,
-                    coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.sourceDenom,
-                  },
-                  new Dec(transferLimitAmount)
-                )
-                  .trim(true)
-                  .toString()}`,
-              },
-            ]);
+            throw new BridgeQuoteError({
+              errorType: "UnsupportedQuoteError",
+              message: `Amount exceeds transfer limit of ${new CoinPretty(
+                {
+                  coinDecimals: fromAsset.decimals,
+                  coinDenom: fromAsset.denom,
+                  coinMinimalDenom: fromAsset.sourceDenom,
+                },
+                new Dec(transferLimitAmount)
+              )
+                .trim(true)
+                .toString()}`,
+            });
           }
 
           const transferFeeAsset = getAssetFromAssetList({
@@ -230,34 +224,28 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           if (error instanceof Error) {
-            throw new BridgeQuoteError([
-              {
-                errorType: BridgeError.UnexpectedError,
-                message: error.message,
-              },
-            ]);
+            throw new BridgeQuoteError({
+              errorType: "UnexpectedError",
+              message: error.message,
+            });
           }
 
           if (typeof error === "string") {
-            let errorType = BridgeError.UnexpectedError;
+            let errorType: BridgeError = "UnexpectedError";
             if (error.includes("not found")) {
-              errorType = BridgeError.UnsupportedQuoteError;
+              errorType = "UnsupportedQuoteError";
             }
 
-            throw new BridgeQuoteError([
-              {
-                errorType,
-                message: error,
-              },
-            ]);
+            throw new BridgeQuoteError({
+              errorType,
+              message: error,
+            });
           }
 
-          throw new BridgeQuoteError([
-            {
-              errorType: BridgeError.UnexpectedError,
-              message: error.message,
-            },
-          ]);
+          throw new BridgeQuoteError({
+            errorType: "UnexpectedError",
+            message: error.message,
+          });
         }
       },
       ttl: 20 * 1000, // 20 seconds,
@@ -517,12 +505,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
         }
       )
     ) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.CreateEVMTxError,
-          message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "CreateEVMTxError",
+        message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
+      });
     }
 
     const { depositAddress } = simulated
@@ -580,12 +566,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
         }
       )
     ) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.CreateEVMTxError,
-          message: `When withdrawing native ${fromAsset.denom} from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom`,
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "CreateEVMTxError",
+        message: `When withdrawing native ${fromAsset.denom} from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom`,
+      });
     }
 
     try {
@@ -610,12 +594,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
       });
 
       if (!ibcAsset) {
-        throw new BridgeQuoteError([
-          {
-            errorType: BridgeError.CreateCosmosTxError,
-            message: "Could not find IBC asset info",
-          },
-        ]);
+        throw new BridgeQuoteError({
+          errorType: "CreateCosmosTxError",
+          message: "Could not find IBC asset info",
+        });
       }
 
       const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
@@ -623,12 +605,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
       ) as IbcTransferMethod | undefined;
 
       if (!ibcTransferMethod) {
-        throw new BridgeQuoteError([
-          {
-            errorType: BridgeError.CreateCosmosTxError,
-            message: "Could not find IBC asset transfer info",
-          },
-        ]);
+        throw new BridgeQuoteError({
+          errorType: "CreateCosmosTxError",
+          message: "Could not find IBC asset transfer info",
+        });
       }
 
       const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
@@ -656,12 +636,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
       const error = e as Error | BridgeQuoteError;
 
       if (error instanceof Error) {
-        throw new BridgeQuoteError([
-          {
-            errorType: BridgeError.CreateCosmosTxError,
-            message: error.message,
-          },
-        ]);
+        throw new BridgeQuoteError({
+          errorType: "CreateCosmosTxError",
+          message: error.message,
+        });
       }
 
       throw error;
