@@ -25,6 +25,7 @@ export type PreviousTrade = {
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
+  if (!featureFlags._isInitialized) return null;
   return featureFlags.limitOrders ? <HomeNew /> : <HomeV1 />;
 };
 
