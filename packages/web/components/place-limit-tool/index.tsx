@@ -66,7 +66,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     // Adjust price to base price if the type changes to "market"
     useEffect(() => {
-      if (type === "market") {
+      if (
+        type === "market" &&
+        swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
+      ) {
         swapState.priceState.adjustByPercentage(new Dec(0));
       }
     }, [swapState.priceState, type]);
