@@ -62,14 +62,13 @@ export const bridgeTransferRouter = createTRPCRouter({
         ];
 
       if (!bridgeProvider) {
-        throw new Error("Invalid bridge provider id");
+        throw new Error("Invalid bridge provider id: " + input.bridge);
       }
 
       const quoteFn = () => bridgeProvider.getQuote(input);
 
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-      const twentySecondsInMs = 10 * 1000;
-      const quote = await timeout(quoteFn, twentySecondsInMs)();
+      const quote = await timeout(quoteFn, 10 * 1000)();
 
       // Get fiat value of:
       // 1. Expected output
@@ -96,11 +95,18 @@ export const bridgeTransferRouter = createTRPCRouter({
               coinMinimalDenom: quote.transferFee.denom,
               sourceDenom: quote.transferFee.sourceDenom,
             },
-          }).catch(
-            () =>
-              // it's common for bridge providers to not provide correct denoms
-              undefined
-          ),
+          }).catch(() => {
+            // it's common for bridge providers to not provide correct denoms
+            console.warn(
+              "getQuoteByBridge: Failed to get asset price for transfer fee",
+              {
+                coinDenom: quote.transferFee.denom,
+                coinMinimalDenom: quote.transferFee.denom,
+                sourceDenom: quote.transferFee.sourceDenom,
+              }
+            );
+            return undefined;
+          }),
           quote.estimatedGasFee
             ? getAssetPrice({
                 ...ctx,
@@ -109,17 +115,24 @@ export const bridgeTransferRouter = createTRPCRouter({
                   coinMinimalDenom: quote.estimatedGasFee.denom,
                   sourceDenom: quote.estimatedGasFee.sourceDenom,
                 },
-              }).catch(
-                () =>
-                  // it's common for bridge providers to not provide correct denoms
-                  undefined
-              )
+              }).catch(() => {
+                // it's common for bridge providers to not provide correct denoms
+                console.warn(
+                  "getQuoteByBridge: Failed to get asset price for gas fee",
+                  {
+                    coinDenom: quote.estimatedGasFee.denom,
+                    coinMinimalDenom: quote.estimatedGasFee.denom,
+                    sourceDenom: quote.estimatedGasFee.sourceDenom,
+                  }
+                );
+                return undefined;
+              })
             : Promise.resolve(undefined),
         ]
       );
 
       if (!toAssetPrice) {
-        throw new Error("Invalid quote");
+        throw new Error("Invalid quote: Missing toAsset price");
       }
 
       /** Include decimals with decimal-included price. */
