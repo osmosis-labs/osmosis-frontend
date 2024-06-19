@@ -117,14 +117,15 @@ export const bridgeTransferRouter = createTRPCRouter({
                 },
               }).catch(() => {
                 // it's common for bridge providers to not provide correct denoms
-                console.warn(
-                  "getQuoteByBridge: Failed to get asset price for gas fee",
-                  {
-                    coinDenom: quote.estimatedGasFee.denom,
-                    coinMinimalDenom: quote.estimatedGasFee.denom,
-                    sourceDenom: quote.estimatedGasFee.sourceDenom,
-                  }
-                );
+                if (quote.estimatedGasFee)
+                  console.warn(
+                    "getQuoteByBridge: Failed to get asset price for gas fee",
+                    {
+                      coinDenom: quote.estimatedGasFee.denom,
+                      coinMinimalDenom: quote.estimatedGasFee.denom,
+                      sourceDenom: quote.estimatedGasFee.sourceDenom,
+                    }
+                  );
                 return undefined;
               })
             : Promise.resolve(undefined),
