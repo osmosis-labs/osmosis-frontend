@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { TokenSelectModalLimit } from "~/components/modals/token-select-modal-limit";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
@@ -16,6 +15,7 @@ import { OrderDirection } from "~/hooks/limit-orders";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
+import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -100,11 +100,11 @@ export const TokenSelectLimit: FunctionComponent<
     );
 
     const showBaseBalance = useMemo(
-      () => orderDirection === OrderDirection.Ask && isWalletConnected,
+      () => orderDirection === "ask" && isWalletConnected,
       [isWalletConnected, orderDirection]
     );
     const showQuoteBalance = useMemo(
-      () => orderDirection === OrderDirection.Bid,
+      () => orderDirection === "bid",
       [orderDirection]
     );
 
@@ -174,7 +174,7 @@ export const TokenSelectLimit: FunctionComponent<
         />
         <TokenSelectModalLimit
           headerTitle={
-            orderDirection === OrderDirection.Ask
+            orderDirection === "ask"
               ? "Select an asset to sell"
               : "Select an asset to buy"
           }

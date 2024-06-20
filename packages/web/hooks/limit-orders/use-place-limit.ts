@@ -11,10 +11,7 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-export enum OrderDirection {
-  Bid = "bid",
-  Ask = "ask",
-}
+export type OrderDirection = "bid" | "ask";
 
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
@@ -60,11 +57,11 @@ export const usePlaceLimit = ({
   const priceState = useLimitPrice({
     orderbookContractAddress,
     quoteAssetDenom:
-      orderDirection === OrderDirection.Ask
+      orderDirection === "ask"
         ? quoteAsset?.coinMinimalDenom ?? ""
         : baseAsset?.coinMinimalDenom ?? "",
     baseAssetDenom:
-      orderDirection === OrderDirection.Ask
+      orderDirection === "ask"
         ? baseAsset?.coinMinimalDenom ?? ""
         : quoteAsset?.coinMinimalDenom ?? "",
     orderDirection,
@@ -95,7 +92,7 @@ export const usePlaceLimit = ({
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
       inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
-    if (orderDirection === OrderDirection.Ask) {
+    if (orderDirection === "ask") {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
     }
@@ -130,7 +127,7 @@ export const usePlaceLimit = ({
    * In the case of a Bid the fiat amount is the amount of quote asset tokens the user will send multiplied by the current price of the quote asset.
    */
   const paymentFiatValue = useMemo(() => {
-    return orderDirection === OrderDirection.Ask
+    return orderDirection === "ask"
       ? mulPrice(
           paymentTokenValue,
           new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
@@ -138,7 +135,7 @@ export const usePlaceLimit = ({
         )
       : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
   }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
-  
+
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -205,7 +202,7 @@ export const usePlaceLimit = ({
     );
 
   const insufficientFunds =
-    (orderDirection === OrderDirection.Bid
+    (orderDirection === "bid"
       ? quoteTokenBalance
           ?.toDec()
           ?.lt(inAmountInput.amount?.toDec() ?? new Dec(0))
@@ -215,7 +212,7 @@ export const usePlaceLimit = ({
 
   const expectedTokenAmountOut = useMemo(() => {
     const preFeeAmount =
-      orderDirection === OrderDirection.Ask
+      orderDirection === "ask"
         ? new CoinPretty(
             quoteAsset!,
             paymentFiatValue?.quo(quoteAssetPrice?.toDec() ?? new Dec(1)) ??
@@ -234,7 +231,7 @@ export const usePlaceLimit = ({
   ]);
 
   const expectedFiatAmountOut = useMemo(() => {
-    return orderDirection === OrderDirection.Ask
+    return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
           quoteAssetPrice?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
@@ -309,9 +306,7 @@ const useLimitPrice = ({
       if (adjustment.isNegative()) return adjustByPercentage(new Dec(0));
 
       adjustByPercentage(
-        orderDirection === OrderDirection.Ask
-          ? adjustment
-          : adjustment.mul(new Dec(-1))
+        orderDirection === "ask" ? adjustment : adjustment.mul(new Dec(-1))
       );
     } else {
       adjustByPercentage(new Dec(0));

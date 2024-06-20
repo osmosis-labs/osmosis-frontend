@@ -1,7 +1,13 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
@@ -37,7 +43,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const setBase = useCallback((base: string) => set({ base }), [set]);
 
     const orderDirection = useMemo(
-      () => (tab === "buy" ? OrderDirection.Bid : OrderDirection.Ask),
+      () => (tab === "buy" ? "bid" : "ask"),
       [tab]
     );
 
@@ -50,6 +56,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom: base,
       quoteDenom: quote,
     });
+
+    // Adjust price to base price if the type changes to "market"
+    useEffect(() => {
+      if (
+        type === "market" &&
+        swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
+      ) {
+        swapState.priceState.adjustByPercentage(new Dec(0));
+      }
+    }, [swapState.priceState, type]);
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -71,8 +87,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
             <p className="body2 p-4 text-center font-light text-osmoverse-400">
-              Enter an amount to{" "}
-              {orderDirection === OrderDirection.Bid ? "buy" : "sell"}
+              Enter an amount to {orderDirection === "bid" ? "buy" : "sell"}
             </p>
             <LimitInput
               onChange={swapState.inAmountInput.setAmount}
@@ -130,9 +145,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   loadingText={"Loading..."}
                   onClick={() => setReviewOpen(true)}
                 >
-                  <h6>
-                    {orderDirection === OrderDirection.Bid ? "Buy" : "Sell"}
-                  </h6>
+                  <h6>{orderDirection === "bid" ? "Buy" : "Sell"}</h6>
                 </Button>
               ) : (
                 <Button onClick={() => setReviewOpen(true)}>
@@ -148,7 +161,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isOpen={reviewOpen}
           makerFee={swapState.makerFee}
           onRequestClose={() => setReviewOpen(false)}
-          orderType="limit"
         />
       </>
     );

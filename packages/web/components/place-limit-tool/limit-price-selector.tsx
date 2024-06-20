@@ -65,9 +65,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   const inputSuffix = useMemo(() => {
     return inputMode === InputMode.Price
       ? `= 1 ${swapState.baseAsset?.coinDenom}`
-      : `% ${
-          orderDirection === OrderDirection.Bid ? "below" : "above"
-        } current price`;
+      : `% ${orderDirection === "bid" ? "below" : "above"} current price`;
   }, [inputMode, swapState.baseAsset, orderDirection]);
   return (
     <SkeletonLoader isLoaded={priceState.spotPrice && !priceState.isLoading}>
@@ -133,8 +131,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               }
             >
               <span className="body2 text-wosmongton-200">
-                {label !== "0%" &&
-                  (orderDirection === OrderDirection.Bid ? "-" : "+")}
+                {label !== "0%" && (orderDirection === "bid" ? "-" : "+")}
                 {label}
               </span>
             </button>
