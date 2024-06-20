@@ -138,7 +138,7 @@ export const usePlaceLimit = ({
         )
       : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
   }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
-  console.log("paymentFiatValue", paymentFiatValue);
+  
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
