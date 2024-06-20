@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
+import { ClientOnly } from "~/components/client-only";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { OrderHistory } from "~/components/transactions/order-history";
@@ -66,87 +67,92 @@ export const TransactionContent = ({
   const showConnectWallet = !isWalletConnected && !isLoading;
 
   return (
-    <div className="flex w-full flex-col pb-16">
-      <div className="flex w-full justify-between pt-8 pb-4">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-h3 font-h3 md:text-h5 md:font-h5">
-            {t("transactions.title")}
-          </h1>
-          <p className="body2 text-osmoverse-200 opacity-50">
-            {t("transactions.launchAlert")}
-          </p>
+    <ClientOnly>
+      <div className="flex w-full flex-col pb-16">
+        <div className="flex w-full justify-between pt-8 pb-4">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-h3 font-h3 md:text-h5 md:font-h5">
+              {t("transactions.title")}
+            </h1>
+            <p className="body2 text-osmoverse-200 opacity-50">
+              {t("transactions.launchAlert")}
+            </p>
+          </div>
+          <TransactionButtons open={open} address={address} />
         </div>
-        <TransactionButtons open={open} address={address} />
-      </div>
 
-      <Tab.Group
-        manual
-        selectedIndex={TX_PAGE_TABS.indexOf(tab)}
-        onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
-      >
-        <Tab.List className="flex items-center gap-8">
-          {TX_PAGE_TABS.map((defaultTab) => (
-            <Tab key={defaultTab}>
-              <h5
-                className={classNames({
-                  "text-osmoverse-500": defaultTab !== tab,
-                })}
-              >
-                {/**
-                 * TEMP
-                 *
-                 * We will use i18n keys here
-                 */}
-                {defaultTab.slice(0, 1).toUpperCase()}
-                {defaultTab.slice(1)}
-              </h5>
-            </Tab>
-          ))}
-        </Tab.List>
-        <Tab.Panels>
-          <Tab.Panel>
-            <>
-              <div className="-mx-4 flex flex-col">
-                {showConnectWallet ? (
-                  <NoTransactionsSplash variant="connect" />
-                ) : showTransactionContent ? (
-                  <TransactionRows
-                    transactions={transactions}
-                    setSelectedTransactionHash={setSelectedTransactionHash}
-                    selectedTransactionHash={selectedTransactionHash}
-                    setOpen={setOpen}
-                    open={open}
-                  />
-                ) : isLoading ? (
-                  <Spinner className="self-center" />
-                ) : transactions.length === 0 ? (
-                  <NoTransactionsSplash variant="transactions" />
-                ) : null}
-              </div>
-              <div className="py-6">
-                {showPagination && (
-                  <TransactionsPaginaton
-                    showPrevious={+page > 0}
-                    showNext={hasNextPage}
-                    previousHref={{
-                      pathname: router.pathname,
-                      query: { ...router.query, page: Math.max(0, +page - 1) },
-                    }}
-                    nextHref={{
-                      pathname: router.pathname,
-                      query: { ...router.query, page: +page + 1 },
-                    }}
-                  />
-                )}
-              </div>
-              <BackToTopButton />
-            </>
-          </Tab.Panel>
-          <Tab.Panel>
-            <OrderHistory />
-          </Tab.Panel>
-        </Tab.Panels>
-      </Tab.Group>
-    </div>
+        <Tab.Group
+          manual
+          selectedIndex={TX_PAGE_TABS.indexOf(tab)}
+          onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
+        >
+          <Tab.List className="flex items-center gap-8">
+            {TX_PAGE_TABS.map((defaultTab) => (
+              <Tab key={defaultTab}>
+                <h5
+                  className={classNames({
+                    "text-osmoverse-500": defaultTab !== tab,
+                  })}
+                >
+                  {/**
+                   * TEMP
+                   *
+                   * We will use i18n keys here
+                   */}
+                  {defaultTab.slice(0, 1).toUpperCase()}
+                  {defaultTab.slice(1)}
+                </h5>
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <>
+                <div className="-mx-4 flex flex-col">
+                  {showConnectWallet ? (
+                    <NoTransactionsSplash variant="connect" />
+                  ) : showTransactionContent ? (
+                    <TransactionRows
+                      transactions={transactions}
+                      setSelectedTransactionHash={setSelectedTransactionHash}
+                      selectedTransactionHash={selectedTransactionHash}
+                      setOpen={setOpen}
+                      open={open}
+                    />
+                  ) : isLoading ? (
+                    <Spinner className="self-center" />
+                  ) : transactions.length === 0 ? (
+                    <NoTransactionsSplash variant="transactions" />
+                  ) : null}
+                </div>
+                <div className="py-6">
+                  {showPagination && (
+                    <TransactionsPaginaton
+                      showPrevious={+page > 0}
+                      showNext={hasNextPage}
+                      previousHref={{
+                        pathname: router.pathname,
+                        query: {
+                          ...router.query,
+                          page: Math.max(0, +page - 1),
+                        },
+                      }}
+                      nextHref={{
+                        pathname: router.pathname,
+                        query: { ...router.query, page: +page + 1 },
+                      }}
+                    />
+                  )}
+                </div>
+                <BackToTopButton />
+              </>
+            </Tab.Panel>
+            <Tab.Panel>
+              <OrderHistory />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+      </div>
+    </ClientOnly>
   );
 };
