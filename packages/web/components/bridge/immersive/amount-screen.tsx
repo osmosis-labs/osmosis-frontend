@@ -399,6 +399,7 @@ export const AmountScreen = observer(
                 <MoreBridgeOptions
                   type={type}
                   isOpen={isMoreOptionsVisible}
+                  asset={assetInOsmosis}
                   onRequestClose={() => setIsMoreOptionsVisible(false)}
                 />
               </>
