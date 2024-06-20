@@ -9,7 +9,6 @@ export * from "./coin";
 export * from "./common-utils";
 export * from "./compare";
 export * from "./date";
-export * from "./error";
 export * from "./function";
 export * from "./gas-utils";
 export * from "./ibc-utils";

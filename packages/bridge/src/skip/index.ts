@@ -18,7 +18,7 @@ import {
   numberToHex,
 } from "viem";
 
-import { BridgeError, BridgeQuoteError } from "../errors";
+import { BridgeQuoteError } from "../errors";
 import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
@@ -80,23 +80,19 @@ export class SkipBridgeProvider implements BridgeProvider {
         const sourceAsset = await this.getAsset(fromChain, fromAsset);
 
         if (!sourceAsset) {
-          throw new BridgeQuoteError([
-            {
-              errorType: BridgeError.UnsupportedQuoteError,
-              message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
-            },
-          ]);
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
+          });
         }
 
         const destinationAsset = await this.getAsset(toChain, toAsset);
 
         if (!destinationAsset) {
-          throw new BridgeQuoteError([
-            {
-              errorType: BridgeError.UnsupportedQuoteError,
-              message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
-            },
-          ]);
+          throw new BridgeQuoteError({
+            errorType: "UnsupportedQuoteError",
+            message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
+          });
         }
 
         const route = await this.skipClient.route({
