@@ -100,16 +100,18 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               ? "Receive Asset"
               : "Pay With"}
           </span>
-          <span className="text-osmoverse-100">
-            <Image
-              width={24}
-              height={24}
-              src={placeLimitState.quoteAsset!.coinImageUrl!}
-              alt={placeLimitState.quoteAsset!.coinDenom}
-              className="inline"
-            />{" "}
-            {placeLimitState.quoteAsset!.coinDenom}
-          </span>
+          {placeLimitState.quoteAsset && (
+            <span className="text-osmoverse-100">
+              <Image
+                width={24}
+                height={24}
+                src={placeLimitState.quoteAsset!.coinImageUrl!}
+                alt={placeLimitState.quoteAsset!.coinDenom}
+                className="inline"
+              />{" "}
+              {placeLimitState.quoteAsset.coinDenom}
+            </span>
+          )}
         </div>
         <div className="flex w-full justify-between py-2 text-body2">
           <span className="text-osmoverse-300">Order Type</span>
