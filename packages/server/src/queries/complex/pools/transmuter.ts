@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -46,12 +46,11 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         );
 
         if (asset) {
-          const coinPretty = new CoinPretty(
-            asset,
-            coin.amount
-          ).moveDecimalPointLeft(asset.coinDecimals);
+          const amount = new Dec(coin.amount);
 
-          return acc.add(coinPretty.toDec());
+          return acc.add(
+            amount.quo(DecUtils.getTenExponentN(asset.coinDecimals))
+          );
         }
 
         return acc;
@@ -63,15 +62,16 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         );
 
         if (asset) {
-          const coinPretty = new CoinPretty(
-            asset,
-            coin.amount
-          ).moveDecimalPointLeft(asset.coinDecimals);
+          const coinPretty = new CoinPretty(asset, coin.amount);
+
+          const amount = new Dec(coin.amount).quo(
+            DecUtils.getTenExponentN(asset.coinDecimals)
+          );
 
           poolLiquidityAssets.push({
             asset,
             coin: coinPretty,
-            percentage: new RatePretty(coinPretty.toDec().quo(totalLiquidity)),
+            percentage: new RatePretty(amount.quo(totalLiquidity)),
           });
         }
       }
