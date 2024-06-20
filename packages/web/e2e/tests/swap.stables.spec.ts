@@ -19,8 +19,6 @@ test.describe("Test Swap Stables feature", () => {
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
   let USDTa =
     "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4";
-  let USDT =
-    "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB";
   let allUSDT =
     "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
 
@@ -96,7 +94,7 @@ test.describe("Test Swap Stables feature", () => {
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("denom: " + USDT);
+    expect(msgContentAmount).toContain(USDTa);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
     expect(swapPage.isTransactionBroadcasted(10));
