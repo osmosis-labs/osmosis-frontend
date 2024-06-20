@@ -32,10 +32,12 @@ export const AxelarChainIds_SourceChainMap: (env: BridgeEnvironment) => {
         arbitrum: "Arbitrum",
       };
 
+/** Any bridge that we want supported by Axelar provider needs to be added here. */
 const TestnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmo-test-5": "osmosis-7",
 };
 
+/** Any bridge that we want supported by Axelar provider needs to be added here. */
 const MainnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmosis-1": "osmosis",
 };

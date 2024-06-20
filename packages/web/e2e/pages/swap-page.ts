@@ -13,6 +13,7 @@ export class SwapPage {
   readonly exchangeRate: Locator;
   readonly trxSuccessful: Locator;
   readonly trxBroadcasting: Locator;
+  readonly trxLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -29,6 +30,7 @@ export class SwapPage {
     );
     this.exchangeRate = page.locator('//span[contains(@class, "subtitle2")]');
     this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
+    this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
   }
 
@@ -177,7 +179,15 @@ export class SwapPage {
 
   async isTransactionSuccesful(delay: number = 7) {
     console.log("Wait for a transaction success for 7 seconds.");
-    return await this.trxSuccessful.isVisible({ timeout: delay * 1000 });
+    return await this.trxSuccessful.isVisible({
+      timeout: delay * 1000,
+    });
+  }
+
+  async getTransactionUrl() {
+    const trxUrl = await this.trxLink.getAttribute("href");
+    console.log("Trx url: " + trxUrl);
+    return trxUrl;
   }
 
   async isTransactionBroadcasted(delay: number = 5) {

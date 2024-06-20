@@ -2,7 +2,10 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
+import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -23,12 +26,14 @@ import { BridgeError, BridgeQuoteError } from "../errors";
 import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
+  BridgeChain,
   BridgeCoin,
   BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -37,6 +42,7 @@ import {
   GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
+import { BridgeAssetMap } from "../utils";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 import { AxelarSourceChainTokenConfigs } from "./tokens";
 import {
@@ -51,6 +57,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
+  protected protoRegistry = new Registry(ibcProtoRegistry);
 
   protected readonly axelarScanBaseUrl: string;
   protected readonly axelarApiBaseUrl: string;
@@ -257,53 +264,217 @@ export class AxelarBridgeProvider implements BridgeProvider {
     });
   }
 
+  async getSupportedAssets({
+    chain,
+    asset,
+  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    try {
+      // get origin axelar asset info from given toAsset
+      const [axelarAssets, axelarChains] = await Promise.all([
+        getAxelarAssets({ env: this.ctx.env }),
+        getAxelarChains({ env: this.ctx.env }),
+      ]);
+
+      // Use of toLowerCase is advised due to registry (Axelar + others) differences
+      // in casing of asset addresses. May be somewhat unsafe.
+
+      const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
+        Object.keys(addresses).some(
+          (address) =>
+            addresses[address]?.ibc_denom?.toLowerCase() ===
+              asset.address?.toLowerCase() ||
+            addresses[address]?.address?.toLowerCase() ===
+              asset.address?.toLowerCase()
+        )
+      );
+
+      if (!axelarSourceAsset)
+        throw new Error(
+          "Axelar source asset not found given asset address: " + asset.address
+        );
+
+      // make sure to chain and to asset align (validation)
+      const axelarChainId = this.getAxelarChainId(chain);
+      if (!axelarChainId)
+        throw new Error("Axelar chain not ID found: " + chain.chainId);
+      const axelarAssetAddress = axelarSourceAsset.addresses[axelarChainId];
+      if (
+        !axelarAssetAddress ||
+        (asset.address.toLowerCase() !==
+          axelarAssetAddress.ibc_denom?.toLowerCase() &&
+          asset.address.toLowerCase() !==
+            axelarAssetAddress.address?.toLowerCase())
+      )
+        throw new Error(
+          "Axelar asset address not found, axelarChainId: " + axelarChainId
+        );
+
+      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+
+      // return just origin asset and the unwrapped version for now, but
+      // can return other axl-versions later if wanted
+      const nativeChainAsset =
+        axelarSourceAsset.addresses[axelarSourceAsset.native_chain];
+      if (!nativeChainAsset)
+        throw new Error(
+          "Native chain asset not found, asset native_chain: " +
+            axelarSourceAsset.native_chain
+        );
+
+      const sourceAssetId =
+        nativeChainAsset?.address ?? nativeChainAsset?.ibc_denom;
+      if (!sourceAssetId)
+        throw new Error(
+          "Source asset ID not found, native chain asset ID: " +
+            nativeChainAsset?.address ?? nativeChainAsset?.ibc_denom
+        );
+
+      const axelarChain = axelarChains.find(
+        (chain) => chain.maintainer_id === axelarSourceAsset.native_chain
+      );
+
+      if (!axelarChain)
+        throw new Error(
+          "Axelar chain not found, asset native_chain: " +
+            axelarSourceAsset.native_chain
+        );
+
+      // axelar chain list IDs are canonical
+      const chainInfo =
+        axelarChain.chain_type === "evm"
+          ? {
+              chainId: axelarChain.chain_id as number,
+              chainType: axelarChain.chain_type,
+            }
+          : {
+              chainId: axelarChain.chain_id as string,
+              chainType: axelarChain.chain_type,
+            };
+
+      foundVariants.setAsset(
+        axelarChain.chain_id.toString(),
+        axelarSourceAsset.denom,
+        {
+          ...chainInfo,
+          chainName: axelarChain.chain_name,
+          denom: nativeChainAsset.symbol,
+          address: sourceAssetId,
+          decimals: axelarSourceAsset.decimals,
+          sourceDenom: sourceAssetId,
+        }
+      );
+
+      // there are auto-un/wrapped versions
+      if (axelarSourceAsset.denoms) {
+        // assume it's the chain native asset
+        const unwrappedDenom = axelarSourceAsset.denoms[1];
+
+        if (!unwrappedDenom) return foundVariants.assets;
+
+        const axelarChain = axelarChains.find(
+          (chain) => chain.maintainer_id === axelarSourceAsset.native_chain
+        );
+
+        if (!axelarChain) return foundVariants.assets;
+        // only handle unwrapping with evm chains due to ERC20 standard & EVM account model
+        if (axelarChain.chain_type !== "evm") return foundVariants.assets;
+
+        foundVariants.setAsset(
+          axelarChain.chain_id.toString(),
+          NativeEVMTokenConstantAddress,
+          {
+            // axelar chain list IDs are canonical
+            chainId: axelarChain.chain_id as number,
+            chainType: axelarChain.chain_type,
+            chainName: axelarChain.chain_name,
+            denom: axelarChain.native_token.symbol,
+            address: unwrappedDenom,
+            decimals: axelarChain.native_token.decimals,
+            sourceDenom: NativeEVMTokenConstantAddress,
+          }
+        );
+      }
+
+      return foundVariants.assets;
+    } catch (e) {
+      // Avoid returning options if there's an unexpected error, such as the provider being down
+      console.error(
+        AxelarBridgeProvider.ID,
+        "failed to get supported assets:",
+        e
+      );
+      return [];
+    }
+  }
+
   async estimateGasCost(
     params: GetBridgeQuoteParams
   ): Promise<BridgeCoin | undefined> {
-    try {
-      const transactionData = await this.getTransactionData({
-        ...params,
-        fromAmount: "0",
-        simulated: true,
+    const transactionData = await this.getTransactionData({
+      ...params,
+      fromAmount: "0",
+      simulated: true,
+    });
+
+    if (transactionData.type === "evm") {
+      const evmChain = Object.values(EthereumChainInfo).find(
+        ({ id: chainId }) =>
+          String(chainId) === String(params.fromChain.chainId)
+      );
+
+      if (!evmChain) throw new Error("Could not find EVM chain");
+
+      const fromProvider = createPublicClient({
+        chain: evmChain,
+        transport: http(evmChain.rpcUrls.default.http[0]),
       });
 
-      if (transactionData.type === "evm") {
-        const evmChain = Object.values(EthereumChainInfo).find(
-          ({ id: chainId }) =>
-            String(chainId) === String(params.fromChain.chainId)
-        );
-
-        if (!evmChain) throw new Error("Could not find EVM chain");
-
-        const fromProvider = createPublicClient({
-          chain: evmChain,
-          transport: http(evmChain.rpcUrls.default.http[0]),
-        });
-
-        const gasAmountUsed = String(
-          await fromProvider.estimateGas({
-            account: params.fromAddress as Address,
-            to: transactionData.to,
-            value: BigInt(transactionData.value ?? ""),
-            data: transactionData.data,
-          })
-        );
-
-        const gasPrice = (await fromProvider.getGasPrice()).toString();
-
-        const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
-        return {
-          amount: gasCost.truncate().toString(),
-          sourceDenom: evmChain.nativeCurrency.symbol,
-          decimals: evmChain.nativeCurrency.decimals,
-          denom: evmChain.nativeCurrency.symbol,
-        };
-      }
-    } catch (e) {
-      console.warn(
-        `Failed to estimate gas fees for ${params.fromAsset.denom}:${params.fromChain.chainName} -> ${params.toAsset.denom}:${params.toChain.chainName}. Reason: ${e}`
+      const gasAmountUsed = String(
+        await fromProvider.estimateGas({
+          account: params.fromAddress as Address,
+          to: transactionData.to,
+          value: BigInt(transactionData.value ?? ""),
+          data: transactionData.data,
+        })
       );
-      return undefined;
+
+      const gasPrice = (await fromProvider.getGasPrice()).toString();
+
+      const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
+      return {
+        amount: gasCost.truncate().toString(),
+        sourceDenom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        denom: evmChain.nativeCurrency.symbol,
+      };
+    }
+
+    if (transactionData.type === "cosmos") {
+      const txSimulation = await estimateGasFee({
+        chainId: params.fromChain.chainId.toString(),
+        chainList: this.ctx.chainList,
+        body: {
+          messages: [
+            this.protoRegistry.encodeAsAny({
+              typeUrl: transactionData.msgTypeUrl,
+              value: transactionData.msg,
+            }),
+          ],
+        },
+        bech32Address: params.fromAddress,
+      });
+
+      const gasFee = txSimulation.amount[0];
+      const gasAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+
+      return {
+        amount: gasFee.amount,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+      };
     }
   }
 
@@ -433,12 +604,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
         destinationAddress: depositAddress,
       });
 
-      const ibcAssetInfo = getAssetFromAssetList({
+      const ibcAsset = getAssetFromAssetList({
         assetLists: this.ctx.assetLists,
-        sourceDenom: toAsset.sourceDenom,
+        coinMinimalDenom: fromAsset.address,
       });
 
-      if (!ibcAssetInfo) {
+      if (!ibcAsset) {
         throw new BridgeQuoteError([
           {
             errorType: BridgeError.CreateCosmosTxError,
@@ -447,7 +618,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ]);
       }
 
-      const ibcTransferMethod = ibcAssetInfo.rawAsset.transferMethods.find(
+      const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
         ({ type }) => type === "ibc"
       ) as IbcTransferMethod | undefined;
 
@@ -517,7 +688,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     return cachified({
       cache: this.ctx.cache,
-      key: `${fromChainAxelarId}/${toChainAxelarId}/${toAddress}/${
+      key: `${
+        AxelarBridgeProvider.ID
+      }${fromChainAxelarId}_${toChainAxelarId}/${toAddress}/${
         fromAsset.sourceDenom
       }/${Boolean(autoUnwrapIntoNative)}`,
       getFreshValue: async (): Promise<BridgeDepositAddress> => {

@@ -8,28 +8,47 @@ test.describe("Test Select Swap Pair feature", () => {
   let context: BrowserContext;
   let swapPage: SwapPage;
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     context = await chromium.launchPersistentContext("", {
       headless: true,
+      viewport: { width: 1280, height: 1024 },
     });
-    swapPage = new SwapPage(await context.newPage());
+    swapPage = new SwapPage(context.pages()[0]);
     await swapPage.goto();
   });
 
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await context.close();
+  });
+
+  test("User should be able to select nBTC/USDC", async () => {
+    await swapPage.selectPair("nBTC", "USDC");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+  });
+
+  test("User should be able to select WBTC/USDC", async () => {
+    await swapPage.selectPair("WBTC", "USDC");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
   });
 
   test("User should be able to select OSMO/USDC", async () => {
     await swapPage.selectPair("OSMO", "USDC");
+    await swapPage.enterAmount("1");
+    await swapPage.showSwapInfo();
   });
 
   test("User should be able to select INJ/USDC", async () => {
     await swapPage.selectPair("INJ", "USDC");
+    await swapPage.enterAmount("10");
+    await swapPage.showSwapInfo();
   });
 
   test("User should be able to select TIA/USDC", async () => {
     await swapPage.selectPair("TIA", "USDC");
+    await swapPage.enterAmount("100");
+    await swapPage.showSwapInfo();
   });
 
   test("User should be able to select ATOM/USDC", async () => {
@@ -50,10 +69,6 @@ test.describe("Test Select Swap Pair feature", () => {
 
   test("User should be able to select PICA/OSMO", async () => {
     await swapPage.selectPair("PICA", "OSMO");
-  });
-
-  test("User should be able to select WBTC/USDC", async () => {
-    await swapPage.selectPair("WBTC", "USDC");
   });
 
   test("User should be able to select USDC.axl/OSMO", async () => {
