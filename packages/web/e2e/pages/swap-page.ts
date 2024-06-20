@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { expect, Locator, Page } from "@playwright/test";
+import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 export class SwapPage {
   readonly page: Page;
@@ -73,9 +73,26 @@ export class SwapPage {
     console.log("Fliped token pair.");
   }
 
-  async getWalletMsg(promise: Promise<Page>) {
+  async enterAmount(amount: string) {
+    // Just enter an amount for the swap and wait for a quote
+    await this.swapInput.fill(amount, { timeout: 2000 });
+    await this.page.waitForTimeout(2000);
+    await expect(this.swapInput).toHaveValue(amount, { timeout: 3000 });
+    const exchangeRate = await this.getExchangeRate();
+    console.log("Swap " + amount + " with rate: " + exchangeRate);
+  }
+
+  async swapAndGetWalletMsg(context: BrowserContext) {
+    // Make sure to have sufficient balance and swap button is enabled
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
     // Handle Pop-up page ->
-    const approvePage = await promise;
+    const pageApprove = context.waitForEvent("page");
+    await this.swapBtn.click();
+    const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
     const approvePageTitle = approvePage.url();
     console.log("Approve page is opened at: " + approvePageTitle);
@@ -94,25 +111,6 @@ export class SwapPage {
     //await approvePage.close();
     // Handle Pop-up page <-
     return { msgContentAmount };
-  }
-
-  async enterAmount(amount: string) {
-    // Just enter an amount for the swap and wait for a quote
-    await this.swapInput.fill(amount, { timeout: 4000 });
-    await this.page.waitForTimeout(3000);
-    await expect(this.swapInput).toHaveValue(amount);
-    const exchangeRate = await this.getExchangeRate();
-    console.log("Swap " + amount + " with rate: " + exchangeRate);
-  }
-
-  async swap() {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
-    await this.swapBtn.click();
   }
 
   async selectPair(from: string, to: string) {
