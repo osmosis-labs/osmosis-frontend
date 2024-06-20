@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { BridgeAsset } from "@osmosis-labs/bridge";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
@@ -38,7 +38,7 @@ export const ImmersiveBridgeFlow = ({
 
   const apiUtils = api.useUtils();
 
-  const [osmosisAsset, setOsmosisAsset] = useState<BridgeAsset>();
+  const [assetInOsmosis, setAssetInOsmosis] = useState<MinimalAsset>();
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
@@ -59,7 +59,7 @@ export const ImmersiveBridgeFlow = ({
 
   const onClose = () => {
     setIsVisible(false);
-    setOsmosisAsset(undefined);
+    setAssetInOsmosis(undefined);
     setStep(ImmersiveBridgeScreens.Asset);
   };
 
@@ -113,12 +113,7 @@ export const ImmersiveBridgeFlow = ({
             return;
           }
 
-          setOsmosisAsset({
-            address: asset.coinMinimalDenom,
-            decimals: asset.coinDecimals,
-            denom: asset.coinDenom,
-            sourceDenom: asset.sourceDenom,
-          });
+          setAssetInOsmosis(asset);
           console.log("bridgeAsset", anyDenom, direction);
         },
         fiatRamp: ({
@@ -140,97 +135,86 @@ export const ImmersiveBridgeFlow = ({
           return setStep(screen as ImmersiveBridgeScreens);
         }}
       >
-        <Transition
-          show={isVisible}
-          as="div"
-          className="fixed inset-0 z-[999] flex items-center justify-center overflow-auto bg-osmoverse-900"
-          enter="transition-opacity duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <ModalCloseButton onClick={() => onClose()} />
+        {() => (
+          <Transition
+            show={isVisible}
+            as="div"
+            className="fixed inset-0 z-[999] flex items-center justify-center overflow-auto bg-osmoverse-900"
+            enter="transition-opacity duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-150"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <ModalCloseButton onClick={() => onClose()} />
+            {/* <IconButton
+              onClick={() => {
+                setStep(nextScreen);
+              }}
+              className={
+                "absolute left-8 top-[28px] z-50 w-fit text-osmoverse-400 hover:text-osmoverse-100"
+              }
+              icon={<Icon id="chevron-left" width={16} height={16} />}
+              aria-label="Go Back"
+            /> */}
 
-          <div className="flex h-full w-full max-w-[30rem] flex-col gap-10 py-12">
-            <StepProgress
-              className="w-full"
-              steps={[
-                {
-                  displayLabel: "Asset",
-                  onClick:
-                    step !== ImmersiveBridgeScreens.Asset
-                      ? () => setStep(ImmersiveBridgeScreens.Asset)
-                      : undefined,
-                },
-                {
-                  displayLabel: "Amount",
-                  onClick:
-                    step === ImmersiveBridgeScreens.Review
-                      ? () => setStep(ImmersiveBridgeScreens.Amount)
-                      : undefined,
-                },
-                {
-                  displayLabel: "Review",
-                },
-              ]}
-              currentStep={Number(step)}
-            />
+            <div className="flex h-full w-full max-w-[30rem] flex-col gap-10 py-12">
+              <StepProgress
+                className="w-full"
+                steps={[
+                  {
+                    displayLabel: "Asset",
+                    onClick:
+                      step !== ImmersiveBridgeScreens.Asset
+                        ? () => setStep(ImmersiveBridgeScreens.Asset)
+                        : undefined,
+                  },
+                  {
+                    displayLabel: "Amount",
+                    onClick:
+                      step === ImmersiveBridgeScreens.Review
+                        ? () => setStep(ImmersiveBridgeScreens.Amount)
+                        : undefined,
+                  },
+                  {
+                    displayLabel: "Review",
+                  },
+                ]}
+                currentStep={Number(step)}
+              />
 
-            <div className="flex-1">
-              <Screen screenName={ImmersiveBridgeScreens.Asset}>
-                {({ setCurrentScreen }) => (
-                  <AssetsScreen
-                    type={type}
-                    onSelectAsset={(asset) => {
-                      setCurrentScreen(ImmersiveBridgeScreens.Amount);
-                      setOsmosisAsset({
-                        address: asset.coinMinimalDenom,
-                        decimals: asset.coinDecimals,
-                        denom: asset.coinDenom,
-                        sourceDenom: asset.sourceDenom,
-                      });
-                    }}
-                  />
-                )}
-              </Screen>
-              <Screen screenName={ImmersiveBridgeScreens.Amount}>
-                {({ setCurrentScreen, goBack }) => (
-                  <div>
-                    <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <Screen screenName={ImmersiveBridgeScreens.Asset}>
+                  {({ setCurrentScreen }) => (
+                    <AssetsScreen
+                      type={type}
+                      onSelectAsset={(asset) => {
+                        setCurrentScreen(ImmersiveBridgeScreens.Amount);
+                        setAssetInOsmosis(asset);
+                      }}
+                    />
+                  )}
+                </Screen>
+                <Screen screenName={ImmersiveBridgeScreens.Amount}>
+                  {() => (
+                    <AmountScreen
+                      type={type}
+                      assetInOsmosis={assetInOsmosis!}
+                    />
+                  )}
+                </Screen>
+                <Screen screenName={ImmersiveBridgeScreens.Review}>
+                  {({ goBack }) => (
+                    <div>
+                      <h6>Step 3: Review</h6>
                       <Button onClick={goBack}>Back</Button>
-                      <Button
-                        onClick={() =>
-                          setCurrentScreen(ImmersiveBridgeScreens.Review)
-                        }
-                      >
-                        Next
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          setType(type === "deposit" ? "withdraw" : "deposit")
-                        }
-                      >
-                        Type: {type}
-                      </Button>
+                      <Button onClick={() => onClose()}>Close</Button>
                     </div>
-
-                    <AmountScreen type={type} />
-                  </div>
-                )}
-              </Screen>
-              <Screen screenName={ImmersiveBridgeScreens.Review}>
-                {({ goBack }) => (
-                  <div>
-                    <h6>Step 3: Review</h6>
-                    <Button onClick={goBack}>Back</Button>
-                    <Button onClick={() => onClose()}>Close</Button>
-                  </div>
-                )}
-              </Screen>
-            </div>
-            {/* {isConnected ? (
+                  )}
+                </Screen>
+              </div>
+              {/* {isConnected ? (
               <div>
                 <p>Evm Address: {address}</p>
                 <Button onClick={() => disconnect()}>Disconnect</Button>
@@ -251,8 +235,9 @@ export const ImmersiveBridgeFlow = ({
                 Connect EVM Wallet
               </Button>
             )} */}
-          </div>
-        </Transition>
+            </div>
+          </Transition>
+        )}
       </ScreenManager>
 
       {!isNil(fiatRampParams) && (
