@@ -138,7 +138,7 @@ const getHistoricalDatafeed = (): IBasicDataFeed => ({
     try {
       if (!symbolInfo) return;
 
-      const { countBack, from, to, firstDataRequest } = periodParams;
+      const { countBack, firstDataRequest } = periodParams;
 
       const customTimeFrame = {
         timeFrame: 5,
