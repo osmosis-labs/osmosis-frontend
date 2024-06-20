@@ -1,7 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
 import { ChartUnavailable } from "~/components/chart";
@@ -9,6 +8,7 @@ import {
   HistoricalChart,
   HistoricalChartHeader,
 } from "~/components/chart/historical-chart";
+import { AdvancedChart } from "~/components/chart/light-weight-charts/advanced-chart";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
@@ -23,23 +23,6 @@ import { useTranslation } from "~/hooks";
 import { AvailablePriceRanges } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { api } from "~/utils/trpc";
-
-const AdvancedChart = dynamic(
-  () =>
-    import("~/components/chart/light-weight-charts/advanced-chart").then(
-      (mod) => mod.AdvancedChart
-    ),
-  {
-    ssr: false,
-    loading: () => {
-      return (
-        <div className="flex h-full flex-col items-center justify-center">
-          <Spinner />
-        </div>
-      );
-    },
-  }
-);
 
 export const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
@@ -92,6 +75,7 @@ export const TokenChartFooter = observer(() => {
       <ButtonGroup
         onValueChange={assetInfoConfig.setHistoricalRange}
         defaultValue={assetInfoConfig.historicalRange}
+        disabled={assetInfoConfig.mode === "advanced"}
       >
         <ButtonGroupItem
           value={AvailablePriceRanges["1h"]}
@@ -136,6 +120,7 @@ export const TokenChartFooter = observer(() => {
         <Select
           onValueChange={assetInfoConfig.setDataType}
           defaultValue={assetInfoConfig.dataType}
+          disabled={assetInfoConfig.mode === "advanced"}
         >
           <SelectTrigger>
             <SelectValue />
