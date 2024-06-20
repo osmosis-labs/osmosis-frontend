@@ -929,6 +929,15 @@
       "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
       "depositWith": "存款",
       "withdrawWith": "提款"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "选择要存入的资产",
+      "titleWithdraw": "选择要提取的资产",
+      "searchAssets": "搜索资产"
+    },
+    "bridgeNetworkSelect": {
+      "title": "选择网络",
+      "searchPlaceholder": "搜索支持的网络"
     }
   },
   "unknownError": "未知错误",

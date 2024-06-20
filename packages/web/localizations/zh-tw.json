@@ -929,6 +929,15 @@
       "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "選擇要存入的資產",
+      "titleWithdraw": "選擇要提取的資產",
+      "searchAssets": "搜尋資產"
+    },
+    "bridgeNetworkSelect": {
+      "title": "選擇網路",
+      "searchPlaceholder": "搜尋支援的網絡"
     }
   },
   "unknownError": "未知錯誤",

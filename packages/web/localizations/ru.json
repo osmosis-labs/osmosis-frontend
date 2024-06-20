@@ -929,6 +929,15 @@
       "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Выберите актив для депозита",
+      "titleWithdraw": "Выберите актив для вывода",
+      "searchAssets": "Поиск активов"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Выберите сеть",
+      "searchPlaceholder": "Поиск поддерживаемых сетей"
     }
   },
   "unknownError": "Неизвестная ошибка",

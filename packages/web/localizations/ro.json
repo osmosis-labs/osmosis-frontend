@@ -929,6 +929,15 @@
       "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Selectați un activ de depus",
+      "titleWithdraw": "Selectați un activ de retras",
+      "searchAssets": "Căutați active"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Selecteaza reteaua",
+      "searchPlaceholder": "Căutați rețele acceptate"
     }
   },
   "unknownError": "Eroare necunoscuta",

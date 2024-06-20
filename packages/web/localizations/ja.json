@@ -929,6 +929,15 @@
       "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "預ける資産を選択してください",
+      "titleWithdraw": "引き出す資産を選択してください",
+      "searchAssets": "アセットを検索"
+    },
+    "bridgeNetworkSelect": {
+      "title": "ネットワークを選択",
+      "searchPlaceholder": "サポートされているネットワークを検索"
     }
   },
   "unknownError": "不明なエラー",

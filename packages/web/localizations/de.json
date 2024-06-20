@@ -929,6 +929,15 @@
       "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
+      "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",
+      "searchAssets": "Assets suchen"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Netzwerk auswählen",
+      "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     }
   },
   "unknownError": "Unbekannter Fehler",

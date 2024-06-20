@@ -5,13 +5,13 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { Asset, RouterKey } from "@osmosis-labs/server";
+import type { RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
   SignOptions,
 } from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
+import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -961,7 +961,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends Asset>({
+function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -1008,12 +1008,12 @@ function getSwapTxParameters({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1095,12 +1095,12 @@ function getSwapMessages({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1156,12 +1156,12 @@ function useQueryRouterBestQuote(
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
   > & {
-    tokenIn: Asset &
+    tokenIn: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;
       }>;
-    tokenOut: Asset &
+    tokenOut: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;
