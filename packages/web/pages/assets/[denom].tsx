@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
+import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
 import {
@@ -169,17 +170,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         : undefined;
     }, [language, tokenDetailsByLanguage]);
 
-    const title = useMemo(() => {
-      if (details) {
-        return details.name;
-      }
-
+    const asset = useMemo(() => {
       const currencies = ChainList.map(
         (info) => info.keplrChain.currencies
       ).reduce((a, b) => [...a, ...b]);
 
       const currency = currencies.find(
-        (el) => el.coinDenom === denom.toUpperCase()
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
       );
 
       if (!currency) {
@@ -191,8 +188,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         assetLists: AssetLists,
       });
 
+      return asset;
+    }, [denom]);
+
+    const title = useMemo(() => {
+      if (details) {
+        return details.name;
+      }
+
       return asset?.rawAsset.name;
-    }, [denom, details]);
+    }, [details, asset]);
 
     const SwapTool_ = (
       <SwapTool
@@ -253,8 +258,16 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <TwitterSection tweets={tweets} />
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-8">
               <div className="xl:hidden">{SwapTool_}</div>
+
+              {asset?.rawAsset?.isAlloyed && asset?.rawAsset?.contract ? (
+                <AlloyedAssetsSection
+                  title={title ?? denom}
+                  denom={denom}
+                  contractAddress={asset.rawAsset.contract}
+                />
+              ) : null}
             </div>
           </div>
         </main>

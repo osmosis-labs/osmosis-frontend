@@ -9,8 +9,8 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
   const walletId =
-    process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+    process.env.WALLET_ID_S ?? "osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c";
+  const privateKey = process.env.PRIVATE_KEY_S ?? "private_key_s";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
   let USDC =
@@ -33,6 +33,8 @@ test.describe("Test Swap Stables feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
+      viewport: { width: 1280, height: 1024 },
+      slowMo: 400,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
@@ -45,7 +47,7 @@ test.describe("Test Swap Stables feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new SwapPage(await context.newPage());
+    swapPage = new SwapPage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
@@ -70,6 +72,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDCa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDC.axl to USDC", async () => {
@@ -87,6 +90,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDT to USDT.axl", async () => {
@@ -104,6 +108,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDTa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDT.axl to USDT", async () => {
@@ -121,5 +126,6 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 });

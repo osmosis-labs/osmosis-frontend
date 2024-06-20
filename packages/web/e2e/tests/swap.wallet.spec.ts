@@ -35,6 +35,8 @@ test.describe("Test Swap feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
+      viewport: { width: 1280, height: 1024 },
+      slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];

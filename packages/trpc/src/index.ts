@@ -1,6 +1,7 @@
 export * from "./api";
 export * from "./assets";
 export * from "./balances";
+export * from "./chains";
 export * from "./cms";
 export * from "./concentrated-liquidity";
 export * from "./earn";

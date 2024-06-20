@@ -49,6 +49,14 @@ export type QuoteStdFee = {
   }[];
 };
 
+/** Tx body portions relevant for simulation */
+export type SimBody = Partial<
+  Pick<
+    TxBody,
+    "messages" | "memo" | "extensionOptions" | "nonCriticalExtensionOptions"
+  >
+>;
+
 /**
  * Estimates the full gas fee payment for the given encoded messages on the chain specified by given chain ID.
  * Useful for providing the user with an accurate and dynamic fee amount estimate before sending a transaction.
@@ -122,13 +130,6 @@ export async function estimateGasFee({
 }
 
 export class SimulateNotAvailableError extends Error {}
-/** Tx body portions relevant for simulation */
-export type SimBody = Partial<
-  Pick<
-    TxBody,
-    "messages" | "memo" | "extensionOptions" | "nonCriticalExtensionOptions"
-  >
->;
 
 /**
  * Attempts to estimate gas amount of the given messages in a tx via a POST to the
@@ -320,11 +321,11 @@ export async function getGasFeeAmount({
     (balance) => !feeDenomsSpent.includes(balance.denom)
   );
 
-  for (const unspentFeeBalance of unspentFeeBalances) {
+  for (const { denom, amount } of unspentFeeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
-      feeDenom: unspentFeeBalance.denom,
+      feeDenom: denom,
       gasMultiplier,
     });
     const feeAmount = feeDenomGasPrice
@@ -332,14 +333,18 @@ export async function getGasFeeAmount({
       .truncate()
       .toString();
 
-    // Check if this balance is not enough to pay the fee, if so skip.
-    if (new Dec(feeAmount).gt(new Dec(unspentFeeBalance.amount))) continue;
+    // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
+    if (
+      new Dec(feeAmount).gt(new Dec(amount)) ||
+      new Dec(feeAmount).lte(new Dec(0))
+    )
+      continue;
 
     // found enough to pay the fee that is not spent
     return [
       {
         amount: feeAmount,
-        denom: unspentFeeBalance.denom,
+        denom,
       },
     ];
   }
@@ -376,19 +381,19 @@ export async function getGasFeeAmount({
     )
     .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
 
-  for (const spentFeeAmount of spentFees) {
+  for (const { amount, feeAmount, denom } of spentFees) {
+    // check for gas price conversion having too little precision
+    if (new Dec(feeAmount).lte(new Dec(0))) continue;
+
     const spentAmount =
-      coinsSpent.find(({ denom }) => denom === spentFeeAmount.denom)?.amount ||
-      "0";
-    const totalSpent = new Dec(spentAmount).add(
-      new Dec(spentFeeAmount.feeAmount)
-    );
-    const isBalanceNeededForTx = totalSpent.gte(new Dec(spentFeeAmount.amount));
+      coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
+    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
+    const isBalanceNeededForTx = totalSpent.gte(new Dec(amount));
 
     return [
       {
-        amount: spentFeeAmount.feeAmount,
-        denom: spentFeeAmount.denom,
+        amount: feeAmount,
+        denom,
         isNeededForTx: isBalanceNeededForTx,
       },
     ];

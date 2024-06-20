@@ -1,5 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+import { BridgeEnvironment } from "../interface";
 import {
   SkipAsset,
   SkipChain,
@@ -11,13 +12,23 @@ import {
 } from "./types";
 
 export class SkipApiClient {
+  constructor(
+    readonly env: BridgeEnvironment,
+    readonly baseUrl = "https://api.skip.money"
+  ) {}
+
   async assets({ chainID }: { chainID?: string } = {}) {
-    const url = new URL("/v1/fungible/assets", "https://api.skip.money");
+    const url = new URL("/v1/fungible/assets", this.baseUrl);
 
     url.searchParams.append("include_evm_assets", "true");
+    url.searchParams.append("include_cw20_assets", "true");
 
     if (chainID) {
       url.searchParams.set("chain_id", chainID);
+    }
+
+    if (this.env === "testnet") {
+      url.searchParams.append("only_testnets", "true");
     }
 
     const data = await apiClient<{
@@ -28,9 +39,13 @@ export class SkipApiClient {
   }
 
   async chains() {
-    const url = new URL("/v1/info/chains", "https://api.skip.money");
+    const url = new URL("/v1/info/chains", this.baseUrl);
 
     url.searchParams.append("include_evm", "true");
+
+    if (this.env === "testnet") {
+      url.searchParams.append("only_testnets", "true");
+    }
 
     const data = await apiClient<{
       chains: SkipChain[];
@@ -40,30 +55,24 @@ export class SkipApiClient {
   }
 
   async route(options: SkipRouteRequest) {
-    return apiClient<SkipRouteResponse>(
-      "https://api.skip.money/v2/fungible/route",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          ...options,
-          cumulative_affiliate_fee_bps:
-            options.cumulative_affiliate_fee_bps ?? "0",
-        }),
-      }
-    );
+    return apiClient<SkipRouteResponse>(`${this.baseUrl}/v2/fungible/route`, {
+      method: "POST",
+      body: JSON.stringify({
+        ...options,
+        cumulative_affiliate_fee_bps:
+          options.cumulative_affiliate_fee_bps ?? "0",
+      }),
+    });
   }
 
   async messages(options: SkipMsgsRequest) {
-    return apiClient<SkipMsgsResponse>(
-      `https://api.skip.money/v2/fungible/msgs`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          ...options,
-          slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
-        }),
-      }
-    );
+    return apiClient<SkipMsgsResponse>(`${this.baseUrl}/v2/fungible/msgs`, {
+      method: "POST",
+      body: JSON.stringify({
+        ...options,
+        slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
+      }),
+    });
   }
 
   async trackTransaction({
@@ -73,7 +82,7 @@ export class SkipApiClient {
     chainID: string;
     txHash: string;
   }) {
-    return apiClient<{ tx_id: string }>("https://api.skip.money/v2/tx/track", {
+    return apiClient<{ tx_id: string }>(`${this.baseUrl}/v2/tx/track`, {
       method: "POST",
       body: JSON.stringify({
         chain_id: chainID,
@@ -89,7 +98,7 @@ export class SkipApiClient {
     chainID: string;
     txHash: string;
   }) {
-    const url = new URL("/v2/tx/status", "https://api.skip.money");
+    const url = new URL("/v2/tx/status", this.baseUrl);
 
     url.searchParams.append("chain_id", chainID);
     url.searchParams.append("tx_hash", txHash);

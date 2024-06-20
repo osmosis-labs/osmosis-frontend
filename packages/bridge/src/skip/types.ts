@@ -8,6 +8,8 @@ export type SkipAsset = {
   origin_chain_id: string;
   trace: string;
   is_cw20: boolean;
+  is_evm: boolean;
+  is_svm: boolean;
 
   symbol?: string;
   name?: string;
