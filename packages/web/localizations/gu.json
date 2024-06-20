@@ -989,7 +989,9 @@
       "xYear": "{y} Y",
       "all": "બધા",
       "price": "કિંમત",
-      "volume": "વોલ્યુમ"
+      "volume": "વોલ્યુમ",
+      "advanced": "અદ્યતન",
+      "simple": "સરળ"
     },
     "watchlist": "વૉચલિસ્ટ",
     "marketCapRank": "માર્કેટ કેપ રેન્ક",

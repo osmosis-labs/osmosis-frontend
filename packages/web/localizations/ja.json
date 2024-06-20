@@ -989,7 +989,9 @@
       "xYear": "{y} Y",
       "all": "全て",
       "price": "価格",
-      "volume": "音量"
+      "volume": "音量",
+      "advanced": "高度な",
+      "simple": "単純"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",

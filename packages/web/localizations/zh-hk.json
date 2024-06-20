@@ -989,7 +989,9 @@
       "xYear": "{y} Y",
       "all": "全部",
       "price": "價格",
-      "volume": "體積"
+      "volume": "體積",
+      "advanced": "先進的",
+      "simple": "簡單的"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
