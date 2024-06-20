@@ -178,16 +178,17 @@ export const useAssetInfoConfig = (
   return config;
 };
 
-export const AvailablePriceRanges = [
-  "1h",
-  "1d",
-  "7d",
-  "1mo",
-  "1y",
-  "all",
-] as const;
+export const AvailablePriceRanges = {
+  "1h": "1h",
+  "1d": "1d",
+  "7d": "7d",
+  "1mo": "1mo",
+  "1y": "1y",
+  all: "all",
+} as const;
 
-export type PriceRange = (typeof AvailablePriceRanges)[number];
+export type PriceRange =
+  (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
 
 export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 

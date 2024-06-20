@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useTranslation } from "~/hooks";
+import { AvailablePriceRanges } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { api } from "~/utils/trpc";
 
@@ -59,7 +60,7 @@ export const TokenChart = observer(() => {
 
       <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.mode === "advanced" ? (
-          <AdvancedChart symbol="AAPL" load_last_chart />
+          <AdvancedChart coinDenom={assetInfoConfig.denom} load_last_chart />
         ) : assetInfoConfig.isHistoricalDataLoading ? (
           <div className="flex h-full flex-col items-center justify-center">
             <Spinner />
@@ -93,26 +94,29 @@ export const TokenChartFooter = observer(() => {
         defaultValue={assetInfoConfig.historicalRange}
       >
         <ButtonGroupItem
-          value="1h"
+          value={AvailablePriceRanges["1h"]}
           label={t("tokenInfos.chart.xHour", { h: "1" })}
         />
         <ButtonGroupItem
-          value="1d"
+          value={AvailablePriceRanges["1d"]}
           label={t("tokenInfos.chart.xDay", { d: "1" })}
         />
         <ButtonGroupItem
-          value="7d"
+          value={AvailablePriceRanges["7d"]}
           label={t("tokenInfos.chart.xDay", { d: "7" })}
         />
         <ButtonGroupItem
-          value="1mo"
+          value={AvailablePriceRanges["1mo"]}
           label={t("tokenInfos.chart.xDay", { d: "30" })}
         />
         <ButtonGroupItem
-          value="1y"
+          value={AvailablePriceRanges["1y"]}
           label={t("tokenInfos.chart.xYear", { y: "1" })}
         />
-        <ButtonGroupItem value="all" label={t("tokenInfos.chart.all")} />
+        <ButtonGroupItem
+          value={AvailablePriceRanges.all}
+          label={t("tokenInfos.chart.all")}
+        />
       </ButtonGroup>
 
       <div className="ml-auto flex gap-2">
