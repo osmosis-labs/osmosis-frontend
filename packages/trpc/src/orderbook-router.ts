@@ -1,16 +1,24 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookMakerFee,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
   LimitOrder,
+  maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
 import { Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema } from "./parameter-types";
+
+const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
+  z.object({
+    userOsmoAddress: z.string().startsWith("osmo"),
+  })
+);
 
 type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
   quantity: number;
@@ -114,57 +122,78 @@ export const orderbookRouter = createTRPCRouter({
     }),
   getActiveOrders: publicProcedure
     .input(
-      z
-        .object({
-          contractOsmoAddress: z.string().startsWith("osmo"),
-          userOsmoAddress: z.string().startsWith("osmo"),
-        })
-        .required()
+      GetInfiniteLimitOrdersInputSchema.merge(
+        z.object({ contractOsmoAddress: z.string().startsWith("osmo") })
+      )
     )
     .query(async ({ input, ctx }) => {
-      const { contractOsmoAddress, userOsmoAddress } = input;
-      const resp = await getOrderbookActiveOrders({
-        orderbookAddress: contractOsmoAddress,
-        userOsmoAddress: userOsmoAddress,
-        chainList: ctx.chainList,
+      return maybeCachePaginatedItems({
+        getFreshItems: async () => {
+          const { contractOsmoAddress, userOsmoAddress } = input;
+          if (contractOsmoAddress.length === 0 || userOsmoAddress.length === 0)
+            return [];
+          const resp = await getOrderbookActiveOrders({
+            orderbookAddress: contractOsmoAddress,
+            userOsmoAddress: userOsmoAddress,
+            chainList: ctx.chainList,
+          });
+
+          if (resp.orders.length === 0) return [];
+
+          return getTickInfoAndTransformOrders(
+            contractOsmoAddress,
+            resp.orders,
+            ctx.chainList
+          );
+        },
+        cacheKey: JSON.stringify([
+          "active-orders",
+          input.contractOsmoAddress,
+          input.userOsmoAddress,
+        ]),
       });
-
-      if (resp.orders.length === 0) return [];
-
-      return getTickInfoAndTransformOrders(
-        contractOsmoAddress,
-        resp.orders,
-        ctx.chainList
-      );
     }),
   getAllActiveOrders: publicProcedure
     .input(
-      z
-        .object({
-          contractAddresses: z.array(z.string().startsWith("osmo")),
-          userOsmoAddress: z.string().startsWith("osmo"),
-        })
-        .required()
+      GetInfiniteLimitOrdersInputSchema.merge(
+        z.object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
+      )
     )
     .query(async ({ input, ctx }) => {
-      const { contractAddresses, userOsmoAddress } = input;
-      let allOrders: MappedLimitOrder[] = [];
-      for (let i = 0; i < contractAddresses.length; i++) {
-        const contractOsmoAddress = contractAddresses[i];
-        const resp = await getOrderbookActiveOrders({
-          orderbookAddress: contractOsmoAddress,
-          userOsmoAddress: userOsmoAddress,
-          chainList: ctx.chainList,
-        });
+      return maybeCachePaginatedItems({
+        getFreshItems: async () => {
+          const { contractAddresses, userOsmoAddress } = input;
+          if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
+            return [];
+          const promises = contractAddresses.map(
+            async (contractOsmoAddress) => {
+              const resp = await getOrderbookActiveOrders({
+                orderbookAddress: contractOsmoAddress,
+                userOsmoAddress: userOsmoAddress,
+                chainList: ctx.chainList,
+              });
 
-        if (resp.orders.length === 0) continue;
-        const mappedOrders = await getTickInfoAndTransformOrders(
-          contractOsmoAddress,
-          resp.orders,
-          ctx.chainList
-        );
-        allOrders = allOrders.concat(mappedOrders);
-      }
-      return allOrders;
+              if (resp.orders.length === 0) return [];
+
+              const mappedOrders = await getTickInfoAndTransformOrders(
+                contractOsmoAddress,
+                resp.orders,
+                ctx.chainList
+              );
+              return mappedOrders;
+            }
+          );
+          const ordersByContracts = await Promise.all(promises);
+          const allOrders = ordersByContracts.flatMap((p) => p);
+          return allOrders;
+        },
+        cacheKey: JSON.stringify([
+          "all-active-orders",
+          input.contractAddresses,
+          input.userOsmoAddress,
+        ]),
+        cursor: input.cursor,
+        limit: input.limit,
+      });
     }),
 });
