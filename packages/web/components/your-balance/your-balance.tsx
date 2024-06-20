@@ -142,13 +142,23 @@ export const YourBalance = observer(
   })
   .filter(
     (
-      pool
-    ): pool is {
-      queryPool: ObservableQueryPool;
-      poolDetail:
-        | ObservableSharePoolDetail
-        | ObservableConcentratedPoolDetail;
-    } => pool !== undefined
+          pool
+        ): pool is {
+          queryPool: ObservableQueryPool;
+          poolDetail:
+            | ObservableSharePoolDetail
+            | ObservableConcentratedPoolDetail;
+        } => {
+          if (pool === undefined) return false;
+
+          // concentrated liquidity liquidity feature flag
+          if (
+            pool.poolDetail instanceof ObservableConcentratedPoolDetail
+          )
+            return false;
+
+          return true;
+        }
   );
 
 
