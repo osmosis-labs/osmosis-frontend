@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -40,8 +40,20 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         chainList,
       });
 
-      const totalLiquidity = total_pool_liquidity.reduce((acc, asset) => {
-        return acc.add(new Dec(asset.amount));
+      const totalLiquidity = total_pool_liquidity.reduce((acc, coin) => {
+        const asset = captureIfError(() =>
+          getAsset({ assetLists, anyDenom: coin.denom })
+        );
+
+        if (asset) {
+          const amount = new Dec(coin.amount);
+
+          return acc.add(
+            amount.quo(DecUtils.getTenExponentN(asset.coinDecimals))
+          );
+        }
+
+        return acc;
       }, new Dec(0));
 
       for (const coin of total_pool_liquidity) {
@@ -50,12 +62,16 @@ export async function getCachedTransmuterTotalPoolLiquidity(
         );
 
         if (asset) {
+          const coinPretty = new CoinPretty(asset, coin.amount);
+
+          const amount = new Dec(coin.amount).quo(
+            DecUtils.getTenExponentN(asset.coinDecimals)
+          );
+
           poolLiquidityAssets.push({
             asset,
-            coin: new CoinPretty(asset, coin.amount),
-            percentage: new RatePretty(
-              new Dec(parseInt(coin.amount, 10)).quo(totalLiquidity)
-            ),
+            coin: coinPretty,
+            percentage: new RatePretty(amount.quo(totalLiquidity)),
           });
         }
       }

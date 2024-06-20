@@ -21,7 +21,8 @@ test.describe("Test Select Swap Pair feature", () => {
     await context.close();
   });
 
-  test("User should be able to select nBTC/USDC", async () => {
+  // Price Impact-54.768% -> no liquidity
+  test.skip("User should be able to select nBTC/USDC", async () => {
     await swapPage.selectPair("nBTC", "USDC");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
