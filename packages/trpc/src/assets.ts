@@ -540,9 +540,15 @@ export const assetsRouter = createTRPCRouter({
             });
 
             if (type === "withdraw") {
-              assets = assets
-                // Filter out all assets without amount
-                .filter((asset) => !isNil(asset.amount));
+              const hasBalance = assets.some((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
+
+              assets = hasBalance
+                ? assets
+                    // Filter out all assets without amount
+                    .filter((asset) => !isNil(asset.amount))
+                : assets; // display all assets if no balance
             }
 
             if (type === "deposit") {

@@ -39,13 +39,13 @@ const prioritizedDenoms = [
   "TIA",
 ] satisfies (MainnetAssetSymbols | TestnetAssetSymbols)[];
 
-interface AssetsScreenProps {
+interface AssetSelectScreenProps {
   type: "deposit" | "withdraw";
   onSelectAsset: (asset: MinimalAsset) => void;
 }
 
-export const AssetsScreen = observer(
-  ({ type, onSelectAsset }: AssetsScreenProps) => {
+export const AssetSelectScreen = observer(
+  ({ type, onSelectAsset }: AssetSelectScreenProps) => {
     const { accountStore, userSettings } = useStore();
     const { showPreviewAssets } = useShowPreviewAssets();
     const { t } = useTranslation();
@@ -116,12 +116,20 @@ export const AssetsScreen = observer(
           }}
         />
 
+        <h1 className="text-center text-h5 font-h5">
+          {t(
+            type === "deposit"
+              ? "transfer.assetSelectScreen.titleDeposit"
+              : "transfer.assetSelectScreen.titleWithdraw"
+          )}
+        </h1>
+
         <SearchBox
           onInput={debounce((nextValue) => {
             setSearch(nextValue);
           }, 300)}
           className="my-4 flex-shrink-0"
-          placeholder="Search assets"
+          placeholder={t("transfer.assetSelectScreen.searchAssets")}
           size="full"
         />
 

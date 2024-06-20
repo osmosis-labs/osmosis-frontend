@@ -4,10 +4,13 @@ import React, { useMemo, useState } from "react";
 import { SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { api } from "~/utils/trpc";
 
 export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
+  const { t } = useTranslation();
+
   const [query, setQuery] = useState("");
   const { data, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage } =
     api.edge.chains.getChains.useInfiniteQuery(
@@ -37,7 +40,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
 
   return (
     <ModalBase
-      title="Select network"
+      title={t("bridgeNetworkSelect.title")}
       className="!max-w-[30rem]"
       {...modalProps}
     >
@@ -47,7 +50,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
           setQuery(nextValue);
         }, 300)}
         className="my-4 flex-shrink-0"
-        placeholder="Search supported networks"
+        placeholder={t("bridgeNetworkSelect.searchPlaceholder")}
         size="full"
       />
       <div className="flex flex-col gap-1">

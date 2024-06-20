@@ -12,7 +12,7 @@ import { Icon } from "~/components/assets";
 import { BridgeNetworkSelect } from "~/components/bridge/immersive/bridge-network-select";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
 import { InputBox } from "~/components/input";
-import { Spinner } from "~/components/loaders";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
@@ -54,7 +54,7 @@ export const AmountScreen = observer(
       !osmosisChain ||
       !nobleChain
     ) {
-      return null;
+      return <AmountScreenSkeletonLoader />;
     }
 
     const cryptoAmountPretty = new CoinPretty(
@@ -152,15 +152,15 @@ export const AmountScreen = observer(
         </div>
 
         <div className="flex w-full flex-col gap-6">
-          <div className="relative flex items-center justify-center px-16">
-            <div className="flex flex-col items-center justify-self-center">
-              <div className="flex items-center text-center text-4xl font-bold">
+          <div className="relative flex items-center justify-center">
+            <div className="flex flex-col items-center">
+              <div className="text-center text-4xl font-bold">
                 {inputUnit === "fiat" ? (
                   <>
                     <InputBox
-                      inputClassName="text-center"
                       currentValue={formatFiatAmount(fiatAmount)}
                       onInput={onInput("fiat")}
+                      classes={{ input: "text-center" }}
                       className="mr-4 border-none bg-transparent text-center"
                     />
                   </>
@@ -171,11 +171,11 @@ export const AmountScreen = observer(
                       currentValue={cryptoAmount}
                       onInput={onInput("crypto")}
                       className="border-none bg-transparent text-center"
-                      trailingSymbol={
-                        <span className="ml-1 mr-6 align-middle text-2xl text-osmoverse-500">
-                          {cryptoAmountPretty?.denom}
-                        </span>
-                      }
+                      classes={{
+                        trailingSymbol:
+                          "ml-1 align-middle text-2xl text-osmoverse-500 w-full text-left",
+                      }}
+                      trailingSymbol={cryptoAmountPretty?.denom}
                     />
                   </>
                 )}
@@ -425,5 +425,20 @@ const ChainSelectorButton: FunctionComponent<{
         onRequestClose={() => setIsNetworkSelectVisible(false)}
       />
     </>
+  );
+};
+
+const AmountScreenSkeletonLoader = () => {
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <SkeletonLoader className="h-8 w-full max-w-sm" />
+      <SkeletonLoader className="h-20 w-full" />
+      <SkeletonLoader className="h-24 w-full" />
+      <SkeletonLoader className="h-24 w-full" />
+      <SkeletonLoader className="h-6 w-full" />
+      <SkeletonLoader className="h-6 w-full" />
+      <SkeletonLoader className="h-14 w-full" />
+      <SkeletonLoader className="h-14 w-full" />
+    </div>
   );
 };

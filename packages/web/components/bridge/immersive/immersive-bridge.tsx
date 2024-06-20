@@ -1,11 +1,11 @@
 import { Transition } from "@headlessui/react";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { PropsWithChildren, useState } from "react";
+import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
-import { AssetsScreen } from "~/components/bridge/immersive/assets-screen";
+import { AssetSelectScreen } from "~/components/bridge/immersive/asset-select-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button } from "~/components/ui/button";
@@ -24,6 +24,10 @@ enum ImmersiveBridgeScreens {
   Amount = "1",
   Review = "2",
 }
+
+const MemoizedChildren = memo(({ children }: PropsWithChildren<{}>) => {
+  return <>{children}</>;
+});
 
 export const ImmersiveBridgeFlow = ({
   Provider,
@@ -59,8 +63,6 @@ export const ImmersiveBridgeFlow = ({
 
   const onClose = () => {
     setIsVisible(false);
-    setAssetInOsmosis(undefined);
-    setStep(ImmersiveBridgeScreens.Asset);
   };
 
   const onOpen = (direction: "deposit" | "withdraw") => {
@@ -73,7 +75,6 @@ export const ImmersiveBridgeFlow = ({
       value={{
         startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
           onOpen(direction);
-          console.log("startBridge", direction);
         },
         bridgeAsset: async ({
           anyDenom,
@@ -83,6 +84,7 @@ export const ImmersiveBridgeFlow = ({
           direction: "deposit" | "withdraw";
         }) => {
           onOpen(direction);
+          setStep(ImmersiveBridgeScreens.Amount);
 
           const fetchAssetWithRetry = async (retries = 3) => {
             for (let attempt = 1; attempt <= retries; attempt++) {
@@ -114,7 +116,6 @@ export const ImmersiveBridgeFlow = ({
           }
 
           setAssetInOsmosis(asset);
-          console.log("bridgeAsset", anyDenom, direction);
         },
         fiatRamp: ({
           fiatRampKey,
@@ -128,7 +129,7 @@ export const ImmersiveBridgeFlow = ({
         fiatRampSelection: onOpenFiatOnrampSelection,
       }}
     >
-      {children}
+      <MemoizedChildren>{children}</MemoizedChildren>
       <ScreenManager
         currentScreen={String(step)}
         onChangeScreen={(screen) => {
@@ -146,6 +147,10 @@ export const ImmersiveBridgeFlow = ({
             leave="transition-opacity duration-150"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
+            afterLeave={() => {
+              setAssetInOsmosis(undefined);
+              setStep(ImmersiveBridgeScreens.Asset);
+            }}
           >
             <ModalCloseButton onClick={() => onClose()} />
             {/* <IconButton
@@ -187,7 +192,7 @@ export const ImmersiveBridgeFlow = ({
               <div className="flex-1">
                 <Screen screenName={ImmersiveBridgeScreens.Asset}>
                   {({ setCurrentScreen }) => (
-                    <AssetsScreen
+                    <AssetSelectScreen
                       type={type}
                       onSelectAsset={(asset) => {
                         setCurrentScreen(ImmersiveBridgeScreens.Amount);
