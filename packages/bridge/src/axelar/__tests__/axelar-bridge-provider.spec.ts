@@ -102,7 +102,6 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: "0x0",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAddress: "0x456",
     });
@@ -129,7 +128,6 @@ describe("AxelarBridgeProvider", () => {
           denom: "ETH",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAddress: "0x456",
       })
@@ -146,13 +144,11 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: "0x0",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0x0",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -164,7 +160,7 @@ describe("AxelarBridgeProvider", () => {
     // Should be a string representation of a number
     expect(gasCost?.amount).toMatch(/^\d+(\.\d+)?$/);
     expect(gasCost?.denom).toBe("ETH");
-    expect(gasCost?.sourceDenom).toBe("ETH");
+    expect(gasCost?.address).toBe("ETH");
     expect(gasCost?.decimals).toBe(18);
   });
 
@@ -195,13 +191,11 @@ describe("AxelarBridgeProvider", () => {
         address:
           "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
-        sourceDenom: "uusdc",
       },
       toAsset: {
         denom: "USDc",
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         decimals: 6,
-        sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       },
       fromAmount: "1",
       fromAddress: "cosmos1ABC123",
@@ -213,7 +207,7 @@ describe("AxelarBridgeProvider", () => {
     // Should be a string representation of a number
     expect(gasCost!.amount).toBe("1000");
     expect(gasCost!.denom).toBe("OSMO");
-    expect(gasCost!.sourceDenom).toBe("uosmo");
+    expect(gasCost!.address).toBe("uosmo");
     expect(gasCost!.decimals).toBe(6);
   });
 
@@ -235,13 +229,11 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: "0x0000000000000000000000000000000000000000",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0x0000000000000000000000000000000000000000",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -274,13 +266,11 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: NativeEVMTokenConstantAddress,
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0x0000000000000000000000000000000000000000",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -314,13 +304,11 @@ describe("AxelarBridgeProvider", () => {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,
           decimals: 6,
-          sourceDenom: "weth",
         },
         toAsset: {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,
           decimals: 6,
-          sourceDenom: "eth",
         },
         fromAmount: "1",
         fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -353,13 +341,11 @@ describe("AxelarBridgeProvider", () => {
         address:
           "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
-        sourceDenom: "uusdc",
       },
       toAsset: {
         denom: "USDC",
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         decimals: 6,
-        sourceDenom: "uusdc",
       },
       fromAmount: "1000000",
       fromAddress: "cosmos1...",
@@ -417,13 +403,11 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
@@ -488,13 +472,11 @@ describe("AxelarBridgeProvider", () => {
           denom: "ETH",
           address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "AVAX",
           address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1.1",
         fromAddress: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
@@ -519,13 +501,11 @@ describe("AxelarBridgeProvider", () => {
           denom: "ETH",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "AVAX",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1",
         fromAddress: "0x123",
@@ -558,13 +538,11 @@ describe("AxelarBridgeProvider", () => {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,
           decimals: 6,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "ETH",
           address: NativeEVMTokenConstantAddress,
           decimals: 6,
-          sourceDenom: "eth",
         },
         fromAmount: "1000000",
         fromAddress: "cosmos1...",
@@ -588,7 +566,6 @@ describe("AxelarBridgeProvider", () => {
           address:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
           decimals: 6,
-          sourceDenom: "uusdc",
         },
       });
 
@@ -616,7 +593,6 @@ describe("AxelarBridgeProvider", () => {
           address:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
           decimals: 6,
-          sourceDenom: "weth-wei",
         },
       });
 
@@ -672,7 +648,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
         denom: "ETH",
-        sourceDenom: "weth-wei",
         decimals: 18,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       },
@@ -681,7 +656,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "weth-wei",
       },
       toAddress: "destination-address",
     });
@@ -698,7 +672,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
         denom: "ETH",
-        sourceDenom: "weth-wei",
         decimals: 18,
         address: NativeEVMTokenConstantAddress,
       },
@@ -707,7 +680,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "weth-wei",
       },
       toAddress: "destination-address",
     });
@@ -724,7 +696,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
         denom: "USDC",
-        sourceDenom: "uusdc",
         decimals: 6,
         address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       },
@@ -733,7 +704,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
           "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
         denom: "USDC",
-        sourceDenom: "uusdc",
       },
       toAddress: "destination-address",
     });
@@ -750,7 +720,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
       toChain: { chainId: "osmosis-1", chainType: "cosmos" },
       fromAsset: {
         denom: "USDC",
-        sourceDenom: "uusdc",
+
         decimals: 6,
         address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
       },
@@ -759,7 +729,6 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
           "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
         denom: "USDC",
-        sourceDenom: "uusdc",
       },
       toAddress: "destination-address",
     });
@@ -778,13 +747,11 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         fromAsset: {
           address: "address1",
           denom: "denom1",
-          sourceDenom: "sourceDenom1",
           decimals: 18,
         },
         toAsset: {
           address: "address2",
           denom: "denom2",
-          sourceDenom: "sourceDenom2",
           decimals: 18,
         },
         toAddress: "destination-address",
@@ -800,13 +767,11 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         fromAsset: {
           address: "address1",
           denom: "denom1",
-          sourceDenom: "sourceDenom1",
           decimals: 18,
         },
         toAsset: {
           address: "address2",
           denom: "denom2",
-          sourceDenom: "sourceDenom2",
           decimals: 18,
         },
         toAddress: "destination-address",
@@ -822,13 +787,11 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
         fromAsset: {
           address: "address1",
           denom: "denom1",
-          sourceDenom: "sourceDenom1",
           decimals: 18,
         },
         toAsset: {
           address: "nonexistent",
           denom: "denom2",
-          sourceDenom: "sourceDenom2",
           decimals: 18,
         },
         toAddress: "destination-address",

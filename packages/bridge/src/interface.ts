@@ -156,22 +156,17 @@ export interface BridgeStatus {
 
 const bridgeAssetSchema = z.object({
   /**
-   * The denomination of the asset.
+   * The displayable denomination of the asset.
    */
   denom: z.string(),
   /**
-   * The address of the asset, represented as an IBC denom or EVM contract address.
+   * The address of the asset, represented as an IBC denom, origin denom, or EVM contract address.
    */
   address: z.string(),
   /**
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
-
-  /**
-   * Global identifier for denom on origin chain.
-   */
-  sourceDenom: z.string(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
@@ -317,8 +312,8 @@ export type BridgeTransactionRequest =
 export type BridgeCoin = {
   amount: string;
   denom: string;
-  /** Global identifier for denom on origin chain. */
-  sourceDenom: string;
+  /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
+  address: string;
   decimals: number;
 };
 

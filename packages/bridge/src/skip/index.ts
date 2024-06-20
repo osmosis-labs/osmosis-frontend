@@ -121,10 +121,8 @@ export class SkipBridgeProvider implements BridgeProvider {
         );
 
         let transferFee: BridgeCoin = {
+          ...fromAsset,
           amount: "0",
-          denom: fromAsset.denom,
-          sourceDenom: fromAsset.sourceDenom,
-          decimals: fromAsset.decimals,
         };
 
         for (const operation of route.operations) {
@@ -145,7 +143,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               denom:
                 operation.axelar_transfer.fee_asset.symbol ??
                 operation.axelar_transfer.fee_asset.denom,
-              sourceDenom: operation.axelar_transfer.fee_asset.denom,
+              address: operation.axelar_transfer.fee_asset.denom,
               decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
             };
           }
@@ -191,16 +189,12 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            ...fromAsset,
             amount: fromAmount,
-            denom: fromAsset.denom,
-            sourceDenom: fromAsset.sourceDenom,
-            decimals: fromAsset.decimals,
           },
           expectedOutput: {
             amount: amountOut.toCoin().amount,
-            denom: toAsset.denom,
-            sourceDenom: toAsset.sourceDenom,
-            decimals: toAsset.decimals,
+            ...toAsset,
             priceImpact: "0",
           },
           fromChain,
@@ -271,7 +265,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: c.sourceDenom,
               denom: c.symbol,
               decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
             });
           }
         }
@@ -290,7 +283,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: c.sourceDenom,
               denom: c.symbol,
               decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
             });
           }
         }
@@ -329,13 +321,12 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
-            address: sharedOriginAsset.denom,
+            address: sharedOriginAsset.origin_denom,
             denom:
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
             decimals: sharedOriginAsset.decimals ?? asset.decimals,
-            sourceDenom: sharedOriginAsset.origin_denom,
           }
         );
       }
@@ -668,9 +659,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasCost.toString(),
-        sourceDenom: evmChain.nativeCurrency.symbol,
-        decimals: evmChain.nativeCurrency.decimals,
         denom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        address: evmChain.nativeCurrency.symbol,
       };
     }
 
@@ -698,7 +689,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         amount: gasFee.amount,
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
-        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
       };
     }
   }

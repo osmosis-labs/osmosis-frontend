@@ -6,7 +6,7 @@ import {
   type TokensResponse,
   type TransactionRequest,
 } from "@0xsquid/sdk";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
@@ -86,38 +86,37 @@ export class SquidBridgeProvider implements BridgeProvider {
         slippage,
       }),
       getFreshValue: async (): Promise<BridgeQuote> => {
-        const url = new URL(`${this.apiURL}/v1/route`);
-
-        const amount = new CoinPretty(
-          {
-            coinDecimals: fromAsset.decimals,
-            coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.sourceDenom ?? fromAsset.denom,
-          },
-          fromAmount
-        ).toCoin().amount;
-
-        const getRouteParams: SquidGetRouteParams = {
-          fromChain: fromChain.chainId.toString(),
-          toChain: toChain.chainId.toString(),
-          fromAddress,
-          toAddress,
-          fromAmount: amount,
-          fromToken: fromAsset.address,
-          toToken: toAsset.address,
-          slippage,
-          quoteOnly: false,
-        };
-
-        Object.entries(getRouteParams).forEach(([key, value]) => {
-          url.searchParams.append(key, value.toString());
-        });
-
         if (fromChain.chainType === "cosmos") {
-          throw new BridgeQuoteError({
-            errorType: "UnsupportedQuoteError",
-            message:
-              "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
+          throw new BridgeQuoteError([
+            {
+              errorType: BridgeError.UnsupportedQuoteError,
+              message:
+                "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
+            },
+          ]);
+        }
+
+        try {
+          const getRouteParams: SquidGetRouteParams = {
+            fromChain: fromChain.chainId.toString(),
+            toChain: toChain.chainId.toString(),
+            fromAddress,
+            toAddress,
+            fromAmount,
+            fromToken: fromAsset.address,
+            toToken: toAsset.address,
+            slippage,
+            quoteOnly: false,
+          };
+
+          const url = new URL(`${this.apiURL}/v1/route`);
+          Object.entries(getRouteParams).forEach(([key, value]) => {
+            url.searchParams.append(key, value.toString());
+          });
+          const data = await apiClient<RouteResponse>(url.toString(), {
+            headers: {
+              "x-integrator-id": this.integratorId,
+            },
           });
         }
 
@@ -277,7 +276,6 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: c.sourceDenom,
             denom: c.symbol,
             decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
           });
         }
         if (counterparty.chainType === "evm") {
@@ -289,7 +287,6 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: c.sourceDenom,
             denom: c.symbol,
             decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
           });
         }
       }
@@ -330,7 +327,6 @@ export class SquidBridgeProvider implements BridgeProvider {
           denom: variant.symbol,
           address: variant.address,
           decimals: variant.decimals,
-          sourceDenom: variant.address,
         });
       }
 

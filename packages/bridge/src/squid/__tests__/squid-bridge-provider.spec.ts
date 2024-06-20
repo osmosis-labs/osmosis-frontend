@@ -112,13 +112,11 @@ describe("SquidBridgeProvider", () => {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x742d35Cc6634C0532925a3b",
@@ -179,13 +177,11 @@ describe("SquidBridgeProvider", () => {
           denom: "ETH",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "AVAX",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1",
         fromAddress: "0x123",
@@ -201,7 +197,6 @@ describe("SquidBridgeProvider", () => {
         denom: "ETH",
         address: "0x0000000000000000000000000000000000000000",
         decimals: 18,
-        sourceDenom: "eth",
       },
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -2683,13 +2678,11 @@ describe("SquidBridgeProvider", () => {
           denom: "ETH",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "AVAX",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1",
         fromAddress: "0x123",
@@ -2773,7 +2766,6 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
           decimals: 6,
-          sourceDenom: "uusdc",
         },
       });
 
@@ -2808,7 +2800,6 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
           decimals: 6,
-          sourceDenom: "uusdc",
         },
       });
 
@@ -3192,7 +3183,6 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
           decimals: 6,
-          sourceDenom: "weth-wei",
         },
       });
 
@@ -3533,14 +3523,12 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "eth",
       },
       toAsset: {
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "eth",
       },
       toAddress: "destination-address",
     });
@@ -3559,14 +3547,12 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
         address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "eth",
       },
       toAsset: {
         address:
           "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         decimals: 18,
         denom: "ETH",
-        sourceDenom: "eth",
       },
       toAddress: "destination-address",
     });
@@ -3585,14 +3571,12 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
         address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
         decimals: 18,
         denom: "USDC",
-        sourceDenom: "usdc",
       },
       toAsset: {
         address:
           "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
         decimals: 18,
         denom: "USDC",
-        sourceDenom: "usdc",
       },
       toAddress: "destination-address",
     });

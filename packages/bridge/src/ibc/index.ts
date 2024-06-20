@@ -100,7 +100,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         amount: gasFee.amount,
         denom: gasFee.denom,
         // should be same as denom since it's on the same chain
-        sourceDenom: gasFee.denom,
+        address: gasFee.denom,
         decimals: gasAsset?.decimals ?? 6,
       },
       transactionRequest: signDoc,

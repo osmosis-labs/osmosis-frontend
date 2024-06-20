@@ -99,15 +99,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
       }),
       getFreshValue: async (): Promise<BridgeQuote> => {
         try {
-          const amount = new CoinPretty(
-            {
-              coinDecimals: fromAsset.decimals,
-              coinDenom: fromAsset.denom,
-              coinMinimalDenom: fromAsset.sourceDenom ?? fromAsset.denom,
-            },
-            fromAmount
-          ).toCoin().amount;
-
           const fromChainAxelarId = this.getAxelarChainId(fromChain);
           const toChainAxelarId = this.getAxelarChainId(toChain);
 
@@ -119,12 +110,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const queryClient = await this.getQueryClient();
-          const [transferFeeRes, gasCost] = await Promise.all([
+          const [transferFeeRes, estimatedGasFee] = await Promise.all([
             queryClient.getTransferFee(
               fromChainAxelarId,
               toChainAxelarId,
-              fromAsset.sourceDenom,
-              amount as any
+              fromAsset.address,
+              Number(fromAmount)
             ),
             this.estimateGasCost(params),
           ]);
@@ -133,7 +124,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           try {
             /** Returns value in denom */
             transferLimitAmount = await queryClient.getTransferLimit({
-              denom: fromAsset.sourceDenom,
+              denom: fromAsset.address,
               fromChainId: fromChainAxelarId.toLowerCase(),
               toChainId: toChainAxelarId.toLowerCase(),
             });
@@ -158,7 +149,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 {
                   coinDecimals: fromAsset.decimals,
                   coinDenom: fromAsset.denom,
-                  coinMinimalDenom: fromAsset.sourceDenom,
+                  coinMinimalDenom: fromAsset.address,
                 },
                 new Dec(transferLimitAmount)
               )
@@ -180,37 +171,25 @@ export class AxelarBridgeProvider implements BridgeProvider {
           return {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
             input: {
+              ...fromAsset,
               amount: fromAmount,
-              sourceDenom: fromAsset.sourceDenom,
-              decimals: fromAsset.decimals,
-              denom: fromAsset.denom,
             },
             expectedOutput: {
+              ...toAsset,
               amount: expectedOutputAmount.toString(),
-              sourceDenom: toAsset.sourceDenom,
-              decimals: toAsset.decimals,
-              denom: toAsset.denom,
               priceImpact: "0",
             },
             fromChain,
             toChain,
             transferFee: {
+              ...fromAsset,
               amount: transferFeeRes.fee.amount,
               denom:
                 transferFeeAsset?.symbol ??
                 fromAsset.denom ??
                 transferFeeRes.fee.denom,
-              sourceDenom: fromAsset.sourceDenom,
-              decimals: fromAsset.decimals,
             },
-            ...(gasCost && {
-              estimatedGasFee: {
-                amount: gasCost.amount,
-                denom: gasCost.denom,
-                sourceDenom: gasCost.sourceDenom,
-                decimals: gasCost.decimals,
-              },
-            }),
+            estimatedGasFee,
           };
         } catch (e) {
           if (typeof e === "string" && e.includes("not found")) {
@@ -323,7 +302,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
           denom: nativeChainAsset.symbol,
           address: sourceAssetId,
           decimals: axelarSourceAsset.decimals,
-          sourceDenom: sourceAssetId,
         }
       );
 
@@ -351,9 +329,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
             chainType: axelarChain.chain_type,
             chainName: axelarChain.chain_name,
             denom: axelarChain.native_token.symbol,
-            address: unwrappedDenom,
+            address: NativeEVMTokenConstantAddress,
             decimals: axelarChain.native_token.decimals,
-            sourceDenom: NativeEVMTokenConstantAddress,
           }
         );
       }
@@ -406,7 +383,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
       return {
         amount: gasCost.truncate().toString(),
-        sourceDenom: evmChain.nativeCurrency.symbol,
+        address: evmChain.nativeCurrency.symbol,
         decimals: evmChain.nativeCurrency.decimals,
         denom: evmChain.nativeCurrency.symbol,
       };
@@ -436,7 +413,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         amount: gasFee.amount,
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
-        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
       };
     }
   }
@@ -475,14 +452,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
           return Object.values(chain).some(
             ({ nativeWrapEquivalent }) =>
               nativeWrapEquivalent &&
-              nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
+              nativeWrapEquivalent.tokenMinDenom === fromAsset.address
           );
         }
       )
     ) {
       throw new BridgeQuoteError({
         errorType: "CreateEVMTxError",
-        message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
+        message: `${fromAsset.address} is not a native token on Axelar`,
       });
     }
 
@@ -536,7 +513,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           return Object.values(chain).some(
             ({ nativeWrapEquivalent }) =>
               nativeWrapEquivalent &&
-              nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
+              nativeWrapEquivalent.tokenMinDenom === toAsset.address
           );
         }
       )
@@ -644,7 +621,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       key: `${
         AxelarBridgeProvider.ID
       }${fromChainAxelarId}_${toChainAxelarId}/${toAddress}/${
-        fromAsset.sourceDenom
+        fromAsset.address
       }/${Boolean(autoUnwrapIntoNative)}`,
       getFreshValue: async (): Promise<BridgeDepositAddress> => {
         const depositClient = await this.getAssetTransferClient();
@@ -654,7 +631,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromChain: fromChainAxelarId,
             toChain: toChainAxelarId,
             destinationAddress: toAddress,
-            asset: fromAsset.sourceDenom,
+            asset: fromAsset.address,
             options: autoUnwrapIntoNative
               ? {
                   shouldUnwrapIntoNative: autoUnwrapIntoNative,
