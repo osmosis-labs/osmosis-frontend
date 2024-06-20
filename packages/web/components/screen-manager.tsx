@@ -25,6 +25,7 @@ interface ScreenManagerProps {
   defaultScreen?: string;
   currentScreen?: string;
   children: React.ReactNode | ((arg: ScreenManagerState) => React.ReactNode);
+  onChangeScreen?: (screen: string) => void;
 }
 
 /**
@@ -70,14 +71,16 @@ interface ScreenManagerProps {
 export const ScreenManager = ({
   defaultScreen,
   currentScreen: currentScreenProp,
+  onChangeScreen,
   ...otherProps
 }: ScreenManagerProps) => {
   const [history, { push, pop, peek }] = useStack<string>();
   const [currentScreen, setCurrentScreen] = useControllableState({
     defaultValue: defaultScreen,
     value: currentScreenProp,
-    onChange: () => {
+    onChange: (nextScreen) => {
       push(currentScreen);
+      onChangeScreen?.(nextScreen);
     },
   });
 
