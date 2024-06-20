@@ -21,9 +21,10 @@ import { trpcHelpers } from "~/utils/helpers";
 const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
   theme: "dark",
   overrides: {
-    "paneProperties.background": theme.colors.bullish[600],
-    /* 'paneProperties.horzGridProperties.color': theme.layer3,
-		'paneProperties.vertGridProperties.color': theme.layer3, */
+    "paneProperties.background": theme.colors.osmoverse[900],
+    "paneProperties.horzGridProperties.color": theme.colors.osmoverse[900],
+    "paneProperties.vertGridProperties.color": theme.colors.osmoverse[900],
+    "linetoolarc.backgroundColor": theme.colors.osmoverse[900],
     "paneProperties.crossHairProperties.style": 1,
     "paneProperties.legendProperties.showBarChange": false,
     "paneProperties.backgroundType": "solid",
@@ -32,24 +33,15 @@ const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
     "mainSeriesProperties.candleStyle.upColor": theme.colors.bullish[400],
     "mainSeriesProperties.candleStyle.borderUpColor": theme.colors.bullish[400],
     "mainSeriesProperties.candleStyle.wickUpColor": theme.colors.bullish[400],
-    "mainSeriesProperties.candleStyle.downColor": theme.colors.osmoverse[500],
-    "mainSeriesProperties.candleStyle.borderDownColor":
-      theme.colors.osmoverse[500],
-    "mainSeriesProperties.candleStyle.wickDownColor":
-      theme.colors.osmoverse[500],
     "mainSeriesProperties.statusViewStyle.symbolTextSource": "ticker",
 
     "scalesProperties.textColor": theme.colors.white.full,
-    /* 'scalesProperties.backgroundColor': theme.layer2,
-		'scalesProperties.lineColor': theme.layer3, */
+    "scalesProperties.backgroundColor": theme.colors.osmoverse[900],
+    "scalesProperties.lineColor": theme.colors.osmoverse[900],
   },
   studies_overrides: {
-    "volume.volume.color.0": theme.colors.osmoverse[500],
     "volume.volume.color.1": theme.colors.bullish[400],
     "volume.volume ma.visible": false,
-    /* 'relative strength index.plot.color': theme.accent, */
-    "relative strength index.plot.linewidth": 1.5,
-    "relative strength index.hlines background.color": "#134A9F",
   },
   loading_screen: {
     backgroundColor: theme.colors.osmoverse[900],
@@ -216,6 +208,8 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       interval: "1d" as ResolutionString,
       container,
       library_path: "/tradingview/",
+      custom_css_url: "/tradingview/custom.css",
+      custom_font_family: '"Inter", sans-serif',
       locale: "en",
       debug: true,
       disabled_features: [
@@ -230,6 +224,7 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
         "symbol_search_hot_key",
         "compare_symbol_search_spread_operators",
         "studies_symbol_search_spread_operators",
+        "use_localstorage_for_settings",
       ],
       enabled_features: [
         "remove_library_container_border",

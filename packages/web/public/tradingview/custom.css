@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
+:root {
+  --tv-color-platform-background: #140f34;
+  --tv-color-pane-background: #140f34;
+  --tv-color-toolbar-toggle-button-background-active: #462adf;
+  --tv-color-toolbar-toggle-button-background-active-hover: #462adf;
+  --tv-color-toolbar-button-text: #b0aadc;
+  --tv-color-toolbar-button-text-hover: #462adf;
+  --tv-color-toolbar-button-text-active: #462adf;
+  --tv-color-toolbar-button-text-active-hover: #462adf;
+}
