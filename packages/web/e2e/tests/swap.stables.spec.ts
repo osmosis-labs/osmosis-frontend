@@ -98,7 +98,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDT);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("token_out_denom: " + USDTa);
+    expect(msgContentAmount).toContain(allUSDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
     expect(swapPage.getTransactionUrl()).toBeTruthy();
