@@ -55,6 +55,7 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
   coinName: string;
   isUnstable: boolean;
   isVerified: boolean;
+  sourceDenom: string;
 } {
   const {
     decimals,
@@ -65,6 +66,7 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     name,
     unstable,
     verified,
+    sourceDenom,
   } = assetListAsset;
 
   return {
@@ -73,6 +75,7 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     coinMinimalDenom,
     coinDecimals: decimals,
     coinGeckoId: coingeckoId,
+    sourceDenom,
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
     isVerified: verified,

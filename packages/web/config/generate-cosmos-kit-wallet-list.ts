@@ -32,10 +32,10 @@ const CosmosKitWalletList: Wallet[] = [
   keplrMobileInfo,
   leapExtensionInfo,
   leapMobileInfo,
-  trustExtensionInfo,
-  cosmostationExtensionInfo,
   okxWalletExtensionInfo,
+  trustExtensionInfo,
   xdefiExtensionInfo,
+  cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
 ];

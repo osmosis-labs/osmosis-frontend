@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Ejecutando transacción",
   "transactionFailed": "Transacción fallida",
   "transactionSuccessful": "Transacción exitosa",
+  "transfer": {
+    "deposit": "Depósito",
+    "withdraw": "Retirar",
+    "fromNetwork": "De la red",
+    "toNetwork": "A la red",
+    "max": "máx.",
+    "available": "disponible",
+    "transferWith": "Transferir con",
+    "transferTo": "Transferir a",
+    "receiveAsset": "Recibir activo",
+    "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
+    "estimatingTime": "tiempo estimado",
+    "calculatingFees": "Calcular tarifas",
+    "reviewDeposit": "Revisar depósito",
+    "reviewWithdraw": "Revisar retirar",
+    "moreDepositOptions": "Más opciones de depósito",
+    "moreWithdrawOptions": "Más opciones de retiro",
+    "convertTo": "Convertir a",
+    "recommended": "Recomendado",
+    "moreBridgeOptions": {
+      "titleDeposit": "Más opciones de depósito",
+      "titleWithdraw": "Más opciones de retiro",
+      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
+      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
+      "depositWith": "Depositar con",
+      "withdrawWith": "Retirarse con"
+    }
+  },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
@@ -967,7 +995,12 @@
     "circulatingSupply": "Suministro circulante",
     "buyToken": "Comprar {coinDenom}",
     "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}"
+    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
+    "underlyingAssets": {
+      "title": "Activos subyacentes",
+      "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",
+      "of": "de {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",

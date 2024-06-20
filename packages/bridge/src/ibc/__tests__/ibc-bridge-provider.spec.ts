@@ -232,4 +232,102 @@ describe("IbcBridgeProvider", () => {
       );
     });
   });
+
+  describe("getSupportedAssets", () => {
+    it("should return the correct supported assets", async () => {
+      const supportedAssets = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "ATOM",
+          address:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          decimals: 6,
+          sourceDenom: "uatom",
+        },
+      });
+
+      expect(supportedAssets).toEqual([
+        {
+          chainId: "cosmoshub-4",
+          chainType: "cosmos",
+          denom: "ATOM",
+          address: "uatom",
+          decimals: 6,
+          sourceDenom: "uatom",
+        },
+      ]);
+    });
+  });
+});
+
+describe("IbcBridgeProvider.getExternalUrl", () => {
+  let provider: IbcBridgeProvider;
+
+  beforeEach(() => {
+    provider = new IbcBridgeProvider(mockContext);
+    jest.clearAllMocks();
+  });
+
+  it("should return undefined for EVM fromChain", async () => {
+    const url = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      fromAsset: {
+        sourceDenom: "weth-wei",
+        address: "weth-wei",
+        decimals: 18,
+        denom: "WETH",
+      },
+      toAsset: {
+        sourceDenom: "uatom",
+        address: "uatom",
+        decimals: 6,
+        denom: "ATOM",
+      },
+      toAddress: "cosmos1...",
+    });
+
+    expect(url).toBeUndefined();
+  });
+
+  it("should return undefined for EVM toChain", async () => {
+    const params = {
+      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      toChain: { chainId: 1, chainType: "evm" },
+      fromAsset: { sourceDenom: "uosmo" },
+      toAsset: { sourceDenom: "weth-wei" },
+    } as Parameters<typeof provider.getExternalUrl>[0];
+
+    const url = await provider.getExternalUrl(params);
+
+    expect(url).toBeUndefined();
+  });
+
+  it("should generate the correct URL for given parameters", async () => {
+    const expectedUrl =
+      "https://geo.tfm.com/?chainFrom=osmosis-1&token0=uosmo&chainTo=cosmoshub-4&token1=uatom";
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
+      fromAsset: {
+        sourceDenom: "uosmo",
+        address: "uosmo",
+        decimals: 6,
+        denom: "OSMO",
+      },
+      toAsset: {
+        sourceDenom: "uatom",
+        address: "uatom",
+        decimals: 6,
+        denom: "ATOM",
+      },
+      toAddress: "cosmos1...",
+    });
+
+    expect(result?.urlProviderName).toBe("TFM");
+    expect(result?.url.toString()).toBe(expectedUrl);
+  });
 });
