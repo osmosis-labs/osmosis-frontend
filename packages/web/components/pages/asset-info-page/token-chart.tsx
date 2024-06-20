@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
 import { ChartUnavailable } from "~/components/chart";
@@ -9,6 +10,7 @@ import {
   HistoricalChartHeader,
 } from "~/components/chart/historical-chart";
 import { Spinner } from "~/components/loaders";
+import { Button } from "~/components/ui/button";
 import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
 import {
   Select,
@@ -20,6 +22,23 @@ import {
 import { useTranslation } from "~/hooks";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { api } from "~/utils/trpc";
+
+const AdvancedChart = dynamic(
+  () =>
+    import("~/components/chart/light-weight-charts/advanced-chart").then(
+      (mod) => mod.AdvancedChart
+    ),
+  {
+    ssr: false,
+    loading: () => {
+      return (
+        <div className="flex h-full flex-col items-center justify-center">
+          <Spinner />
+        </div>
+      );
+    },
+  }
+);
 
 export const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
@@ -36,10 +55,12 @@ export const TokenChart = observer(() => {
 
   return (
     <section className="relative flex flex-col justify-between gap-3">
-      <TokenChartHeader />
+      {assetInfoConfig.mode === "simple" ? <TokenChartHeader /> : null}
 
       <div className="h-[400px] w-full xl:h-[476px]">
-        {assetInfoConfig.isHistoricalDataLoading ? (
+        {assetInfoConfig.mode === "advanced" ? (
+          <AdvancedChart symbol="AAPL" load_last_chart />
+        ) : assetInfoConfig.isHistoricalDataLoading ? (
           <div className="flex h-full flex-col items-center justify-center">
             <Spinner />
           </div>
@@ -95,6 +116,19 @@ export const TokenChartFooter = observer(() => {
       </ButtonGroup>
 
       <div className="ml-auto flex gap-2">
+        <Button
+          size="xsm"
+          variant="secondary-outline"
+          onClick={() => {
+            assetInfoConfig.setMode(
+              assetInfoConfig.mode === "simple" ? "advanced" : "simple"
+            );
+          }}
+        >
+          {assetInfoConfig.mode === "simple"
+            ? t("tokenInfos.chart.advanced")
+            : t("tokenInfos.chart.simple")}
+        </Button>
         <Select
           onValueChange={assetInfoConfig.setDataType}
           defaultValue={assetInfoConfig.dataType}
