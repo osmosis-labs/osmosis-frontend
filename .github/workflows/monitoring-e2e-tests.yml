@@ -43,6 +43,8 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Random sleep to prevent running in the same time
+        run: sleep $(shuf -i 10-60 -n 1)
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}
@@ -206,5 +208,5 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.env }}-test-results
+          name: ${{ matrix.env }}-quote-test-results
           path: packages/web/playwright-report
