@@ -4,11 +4,12 @@ import { isNil } from "@osmosis-labs/utils";
 import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
+import { Icon } from "~/components/assets";
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
 import { AssetSelectScreen } from "~/components/bridge/immersive/asset-select-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
-import { Button } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -153,16 +154,20 @@ export const ImmersiveBridgeFlow = ({
             }}
           >
             <ModalCloseButton onClick={() => onClose()} />
-            {/* <IconButton
-              onClick={() => {
-                setStep(nextScreen);
-              }}
-              className={
-                "absolute left-8 top-[28px] z-50 w-fit text-osmoverse-400 hover:text-osmoverse-100"
-              }
-              icon={<Icon id="chevron-left" width={16} height={16} />}
-              aria-label="Go Back"
-            /> */}
+            {step !== ImmersiveBridgeScreens.Asset && (
+              <IconButton
+                onClick={() => {
+                  const previousStep = Number(step) - 1;
+                  // @ts-expect-error
+                  setStep(previousStep);
+                }}
+                className={
+                  "absolute left-8 top-[28px] z-50 w-fit text-osmoverse-400 hover:text-osmoverse-100"
+                }
+                icon={<Icon id="chevron-left" width={16} height={16} />}
+                aria-label="Go Back"
+              />
+            )}
 
             <div className="flex h-full w-full max-w-[30rem] flex-col gap-10 py-12">
               <StepProgress

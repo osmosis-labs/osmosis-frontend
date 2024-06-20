@@ -40,7 +40,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
 
   return (
     <ModalBase
-      title={t("bridgeNetworkSelect.title")}
+      title={t("transfer.bridgeNetworkSelect.title")}
       className="!max-w-[30rem]"
       {...modalProps}
     >
@@ -50,7 +50,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
           setQuery(nextValue);
         }, 300)}
         className="my-4 flex-shrink-0"
-        placeholder={t("bridgeNetworkSelect.searchPlaceholder")}
+        placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
         size="full"
       />
       <div className="flex flex-col gap-1">

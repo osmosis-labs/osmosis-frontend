@@ -2,7 +2,7 @@ import { Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isNumeric, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -15,7 +15,7 @@ import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
@@ -32,6 +32,14 @@ export const AmountScreen = observer(
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
     const { t } = useTranslation();
+
+    const { accountActionButton: connectWalletButton, walletConnected } =
+      useConnectWalletModalRedirect(
+        {
+          className: "w-full",
+        },
+        noop
+      );
 
     const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
       findChainNameOrId: "osmosis",
@@ -59,8 +67,13 @@ export const AmountScreen = observer(
 
     const cryptoAmountPretty = new CoinPretty(
       assetInOsmosis,
-      cryptoAmount === "" ? new Dec(0) : cryptoAmount
+      cryptoAmount === ""
+        ? new Dec(0)
+        : new Dec(cryptoAmount).mul(
+            DecUtils.getTenExponentN(assetInOsmosis.coinDecimals)
+          )
     );
+
     const fiatAmountPretty = new PricePretty(
       DEFAULT_VS_CURRENCY,
       new Dec(fiatAmount === "" ? 0 : fiatAmount)
@@ -92,10 +105,7 @@ export const AmountScreen = observer(
         // Update the crypto amount based on the fiat amount
         const priceInFiat = assetInOsmosisPrice.toDec();
         const nextFiatAmount = new Dec(nextValue);
-        const nextCryptoAmount = nextFiatAmount
-          .quo(priceInFiat)
-          .mul(DecUtils.getTenExponentN(assetInOsmosis.coinDecimals))
-          .toString();
+        const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
 
         setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
       } else {
@@ -165,53 +175,58 @@ export const AmountScreen = observer(
                     />
                   </>
                 ) : (
-                  <>
+                  <div className="flex items-center">
+                    <p className="ml-1 w-full text-right align-middle text-2xl text-osmoverse-500">
+                      {cryptoAmountPretty?.denom}
+                    </p>
                     <InputBox
-                      rightEntry
                       currentValue={cryptoAmount}
                       onInput={onInput("crypto")}
-                      className="border-none bg-transparent text-center"
+                      className="w-full border-none bg-transparent text-center"
                       classes={{
+                        input: "px-0",
                         trailingSymbol:
-                          "ml-1 align-middle text-2xl text-osmoverse-500 w-full text-left",
+                          "ml-1 align-middle text-2xl text-osmoverse-500 text-left absolute right-0",
                       }}
-                      trailingSymbol={cryptoAmountPretty?.denom}
                     />
-                  </>
+                  </div>
                 )}
               </div>
-              <button
-                className="body1 flex items-center gap-2 text-center text-wosmongton-200"
-                onClick={() => {
-                  setInputUnit(inputUnit === "fiat" ? "crypto" : "fiat");
-                }}
-              >
-                <span>
-                  {inputUnit === "fiat" ? (
-                    <>
-                      {trimPlaceholderZeros(
-                        cryptoAmountPretty?.toDec().toString(2) ?? "0"
-                      )}{" "}
-                      {cryptoAmountPretty?.denom}
-                    </>
-                  ) : (
-                    fiatAmountPretty.maxDecimals(2).toString()
-                  )}
-                </span>
-                <span>
-                  <Icon
-                    id="switch"
-                    className="text-wosmongton-200"
-                    width={16}
-                    height={16}
-                  />
-                </span>
-              </button>
-            </div>
 
-            <button className="body2 absolute right-0 rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full">
-              {t("transfer.max")}
-            </button>
+              <div className="relative flex w-full justify-center">
+                <button
+                  className="body1 flex items-center gap-2 text-center text-wosmongton-200"
+                  onClick={() => {
+                    setInputUnit(inputUnit === "fiat" ? "crypto" : "fiat");
+                  }}
+                >
+                  <span>
+                    {inputUnit === "fiat" ? (
+                      <>
+                        {trimPlaceholderZeros(
+                          cryptoAmountPretty?.toDec().toString(2) ?? "0"
+                        )}{" "}
+                        {cryptoAmountPretty?.denom}
+                      </>
+                    ) : (
+                      fiatAmountPretty.maxDecimals(2).toString()
+                    )}
+                  </span>
+                  <span>
+                    <Icon
+                      id="switch"
+                      className="text-wosmongton-200"
+                      width={16}
+                      height={16}
+                    />
+                  </span>
+                </button>
+
+                <button className="body2 absolute right-0 top-1/2 -translate-y-1/2 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full">
+                  {t("transfer.max")}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center justify-between rounded-2xl bg-osmoverse-1000">
@@ -363,25 +378,31 @@ export const AmountScreen = observer(
           </div>
 
           <div className="flex flex-col items-center gap-4">
-            <Button className="w-full text-h6 font-h6">
-              {type === "deposit"
-                ? t("transfer.reviewDeposit")
-                : t("transfer.reviewWithdraw")}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
-              onClick={() => setIsMoreOptionsVisible(true)}
-            >
-              {type === "deposit"
-                ? t("transfer.moreDepositOptions")
-                : t("transfer.moreWithdrawOptions")}
-            </Button>
-            <MoreBridgeOptions
-              type={type}
-              isOpen={isMoreOptionsVisible}
-              onRequestClose={() => setIsMoreOptionsVisible(false)}
-            />
+            {!walletConnected ? (
+              connectWalletButton
+            ) : (
+              <>
+                <Button className="w-full text-h6 font-h6">
+                  {type === "deposit"
+                    ? t("transfer.reviewDeposit")
+                    : t("transfer.reviewWithdraw")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
+                  onClick={() => setIsMoreOptionsVisible(true)}
+                >
+                  {type === "deposit"
+                    ? t("transfer.moreDepositOptions")
+                    : t("transfer.moreWithdrawOptions")}
+                </Button>
+                <MoreBridgeOptions
+                  type={type}
+                  isOpen={isMoreOptionsVisible}
+                  onRequestClose={() => setIsMoreOptionsVisible(false)}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
