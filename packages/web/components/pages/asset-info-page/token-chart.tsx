@@ -22,6 +22,7 @@ import {
 import { useTranslation } from "~/hooks";
 import { AvailablePriceRanges } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
+import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
 export const TokenChart = observer(() => {
@@ -43,7 +44,11 @@ export const TokenChart = observer(() => {
 
       <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.mode === "advanced" ? (
-          <AdvancedChart coinDenom={assetInfoConfig.denom} load_last_chart />
+          <AdvancedChart
+            datafeed={historicalDatafeed}
+            coinDenom={assetInfoConfig.denom}
+            load_last_chart
+          />
         ) : assetInfoConfig.isHistoricalDataLoading ? (
           <div className="flex h-full flex-col items-center justify-center">
             <Spinner />
