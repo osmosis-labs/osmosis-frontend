@@ -43,8 +43,6 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Random sleep to prevent running in the same time
-        run: sleep $(shuf -i 10-60 -n 1)
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}
