@@ -77,36 +77,37 @@ export const TokenChartFooter = observer(() => {
 
   return (
     <footer className="flex flex-wrap justify-between gap-2">
-      <ButtonGroup
-        onValueChange={assetInfoConfig.setHistoricalRange}
-        defaultValue={assetInfoConfig.historicalRange}
-        disabled={assetInfoConfig.mode === "advanced"}
-      >
-        <ButtonGroupItem
-          value={AvailablePriceRanges["1h"]}
-          label={t("tokenInfos.chart.xHour", { h: "1" })}
-        />
-        <ButtonGroupItem
-          value={AvailablePriceRanges["1d"]}
-          label={t("tokenInfos.chart.xDay", { d: "1" })}
-        />
-        <ButtonGroupItem
-          value={AvailablePriceRanges["7d"]}
-          label={t("tokenInfos.chart.xDay", { d: "7" })}
-        />
-        <ButtonGroupItem
-          value={AvailablePriceRanges["1mo"]}
-          label={t("tokenInfos.chart.xDay", { d: "30" })}
-        />
-        <ButtonGroupItem
-          value={AvailablePriceRanges["1y"]}
-          label={t("tokenInfos.chart.xYear", { y: "1" })}
-        />
-        <ButtonGroupItem
-          value={AvailablePriceRanges.all}
-          label={t("tokenInfos.chart.all")}
-        />
-      </ButtonGroup>
+      {assetInfoConfig.mode === "simple" ? (
+        <ButtonGroup
+          onValueChange={assetInfoConfig.setHistoricalRange}
+          defaultValue={assetInfoConfig.historicalRange}
+        >
+          <ButtonGroupItem
+            value={AvailablePriceRanges["1h"]}
+            label={t("tokenInfos.chart.xHour", { h: "1" })}
+          />
+          <ButtonGroupItem
+            value={AvailablePriceRanges["1d"]}
+            label={t("tokenInfos.chart.xDay", { d: "1" })}
+          />
+          <ButtonGroupItem
+            value={AvailablePriceRanges["7d"]}
+            label={t("tokenInfos.chart.xDay", { d: "7" })}
+          />
+          <ButtonGroupItem
+            value={AvailablePriceRanges["1mo"]}
+            label={t("tokenInfos.chart.xDay", { d: "30" })}
+          />
+          <ButtonGroupItem
+            value={AvailablePriceRanges["1y"]}
+            label={t("tokenInfos.chart.xYear", { y: "1" })}
+          />
+          <ButtonGroupItem
+            value={AvailablePriceRanges.all}
+            label={t("tokenInfos.chart.all")}
+          />
+        </ButtonGroup>
+      ) : null}
 
       <div className="ml-auto flex gap-2">
         <Button
