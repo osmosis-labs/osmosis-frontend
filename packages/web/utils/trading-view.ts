@@ -16,9 +16,9 @@ const configurationData: DatafeedConfiguration = {
   supported_resolutions: ["60", "1D", "1W", "1M", "12M"] as ResolutionString[],
   exchanges: [
     {
-      value: "dYdX", // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
-      name: "dYdX", // filter name
-      desc: "dYdX v4 exchange", // full exchange name displayed in the filter popup
+      value: "Osmosis", // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
+      name: "Osmosis", // filter name
+      desc: "Osmosis DEX", // full exchange name displayed in the filter popup
     },
   ],
   symbols_types: [
