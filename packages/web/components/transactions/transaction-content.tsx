@@ -12,9 +12,9 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { ClientOnly } from "~/components/client-only";
+import { OrderHistory } from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
-import { OrderHistory } from "~/components/transactions/order-history";
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
