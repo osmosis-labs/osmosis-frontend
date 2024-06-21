@@ -124,6 +124,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (feeCosts.length > 1 || gasCosts.length > 1) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message:
               "Osmosis FrontEnd only supports a single fee and gas costs",
@@ -132,6 +133,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (!data.route.transactionRequest) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message:
               "Squid failed to generate a transaction request for this quote",
@@ -143,6 +145,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (!aggregatePriceImpact) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "Squid failed to generate a price impact for this quote",
           });
@@ -150,6 +153,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (data.route.params.toToken.address !== toAsset.address) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "toAsset mismatch",
           });
@@ -162,6 +166,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           fromAmountUSD === ""
         ) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "USD value not found",
           });
@@ -184,6 +189,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           transferFee: {
             denom: feeCosts[0].token.symbol,
             amount: feeCosts[0].amount,
+            chainId: feeCosts[0].token.chainId,
             decimals: feeCosts[0].token.decimals,
             address: feeCosts[0].token.address,
           },
@@ -343,6 +349,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     if (!squidFromChain) {
       throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
         message: "Error getting approval Tx",
       });
@@ -374,6 +381,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       });
     } catch (e) {
       throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
         message: `Error creating approval Tx: ${e}`,
       });
@@ -432,6 +440,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer"
       ) {
         throw new BridgeQuoteError({
+          bridgeId: SquidBridgeProvider.ID,
           errorType: "CreateCosmosTxError",
           message:
             "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
@@ -470,6 +479,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       if (error instanceof Error) {
         throw new BridgeQuoteError({
+          bridgeId: SquidBridgeProvider.ID,
           errorType: "CreateCosmosTxError",
           message: error.message,
         });

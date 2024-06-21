@@ -81,6 +81,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         if (!sourceAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
           });
@@ -90,6 +91,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         if (!destinationAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
           });
@@ -111,9 +113,10 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain
         );
 
-        let transferFee: BridgeCoin = {
+        let transferFee: BridgeCoin & { chainId: number | string } = {
           ...fromAsset,
           amount: "0",
+          chainId: fromChain.chainId,
         };
 
         for (const operation of route.operations) {
@@ -123,6 +126,9 @@ export class SkipBridgeProvider implements BridgeProvider {
             transferFee = {
               amount: operation.axelar_transfer.fee_amount,
               denom: feeAsset.symbol ?? feeAsset.denom,
+              chainId: feeAsset.is_evm
+                ? Number(feeAsset.chain_id)
+                : feeAsset.chain_id,
               address:
                 feeAsset.is_evm && !Boolean(feeAsset.token_contract)
                   ? NativeEVMTokenConstantAddress
@@ -686,53 +692,54 @@ export class SkipBridgeProvider implements BridgeProvider {
   ) {
     try {
       if (!txData.approvalTransactionRequest) {
-        const estimatedGas = await provider.estimateGas({
-          account: params.fromAddress as Address,
-          to: txData.to,
-          data: txData.data,
-          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
-        });
-
-        return BigInt(estimatedGas);
+        return await provider
+          .estimateGas({
+            account: params.fromAddress as Address,
+            to: txData.to,
+            data: txData.data,
+            value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          })
+          .then((gas) => BigInt(gas));
       }
 
-      const slot = 10; // Allowance slot (differs from contract to contract but is usually 10)
+      // Adding a stateDiff override allows us to estimate the gas without the user having first approved the ERC20 transfer
+      // Otherwise, the estimate call would fail with an error indicating the user has not approved the transfer
 
-      const temp = keccak256(
+      /* Allowance slot (differs from contract to contract but is usually 10) */
+      const slot = 10;
+
+      const erc20Balance = keccak256(
         encodePacked(
           ["uint256", "uint256"],
           [BigInt(params.fromAddress), BigInt(slot)]
         )
       );
       const index = keccak256(
-        encodePacked(["uint256", "uint256"], [BigInt(txData.to), BigInt(temp)])
+        encodePacked(
+          ["uint256", "uint256"],
+          [BigInt(txData.to), BigInt(erc20Balance)]
+        )
       );
 
-      const callParams = [
-        {
-          from: params.fromAddress,
+      return await provider
+        .estimateGas({
+          account: params.fromAddress as Address,
           to: txData.to,
           data: txData.data,
-          value: txData.value,
-        },
-        "latest",
-      ];
-
-      const stateDiff = {
-        [txData.approvalTransactionRequest.to]: {
-          stateDiff: {
-            [index]: `0x${maxUint256.toString(16)}`,
-          },
-        },
-      };
-
-      // Call with no state overrides
-      const callResult = await provider.request({
-        method: "eth_estimateGas",
-        params: [...callParams, stateDiff],
-      });
-
-      return BigInt(callResult);
+          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          stateOverride: [
+            {
+              address: txData.approvalTransactionRequest.to as Address,
+              stateDiff: [
+                {
+                  slot: index,
+                  value: `0x${maxUint256.toString(16)}`,
+                },
+              ],
+            },
+          ],
+        })
+        .then((gas) => BigInt(gas));
     } catch (err) {
       console.error("failed to estimate gas:", err);
       return BigInt(0);

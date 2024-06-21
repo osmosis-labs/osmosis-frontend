@@ -97,6 +97,7 @@ export const useFeatureFlags = () => {
       !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
       launchdarklyFlags.oneClickTrading,
+    newDepositWithdrawFlow: false,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;

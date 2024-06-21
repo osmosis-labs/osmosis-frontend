@@ -88,6 +88,8 @@ export const bridgeTransferRouter = createTRPCRouter({
             asset: {
               coinMinimalDenom: input.toAsset.address,
               sourceDenom: input.toAsset.address,
+              chainId: input.toChain.chainId,
+              address: input.toAsset.address,
             },
           }),
           getAssetPrice({
@@ -95,14 +97,19 @@ export const bridgeTransferRouter = createTRPCRouter({
             asset: {
               coinMinimalDenom: quote.transferFee.address,
               sourceDenom: quote.transferFee.address,
+              chainId: quote.transferFee.chainId,
+              address: quote.transferFee.address,
             },
           }).catch(() => {
             // it's common for bridge providers to not provide correct denoms
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
               {
+                bridge: input.bridge,
                 coinMinimalDenom: quote.transferFee.address,
                 sourceDenom: quote.transferFee.address,
+                chainId: quote.transferFee.chainId,
+                address: quote.transferFee.address,
               }
             );
             return undefined;
@@ -113,6 +120,8 @@ export const bridgeTransferRouter = createTRPCRouter({
                 asset: {
                   coinMinimalDenom: quote.estimatedGasFee.address,
                   sourceDenom: quote.estimatedGasFee.address,
+                  chainId: quote.fromChain.chainId,
+                  address: quote.estimatedGasFee.address,
                 },
               }).catch(() => {
                 // it's common for bridge providers to not provide correct denoms
@@ -120,8 +129,11 @@ export const bridgeTransferRouter = createTRPCRouter({
                   console.warn(
                     "getQuoteByBridge: Failed to get asset price for gas fee",
                     {
+                      bridge: input.bridge,
                       coinMinimalDenom: quote.estimatedGasFee.address,
                       sourceDenom: quote.estimatedGasFee.address,
+                      chainId: quote.fromChain.chainId,
+                      address: quote.estimatedGasFee.address,
                     }
                   );
                 return undefined;

@@ -173,7 +173,7 @@ describe("AxelarBridgeProvider", () => {
     // Should be a string representation of a number
     expect(gasCost?.amount).toMatch(/^\d+(\.\d+)?$/);
     expect(gasCost?.denom).toBe("ETH");
-    expect(gasCost?.address).toBe("ETH");
+    expect(gasCost?.address).toBe("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE");
     expect(gasCost?.decimals).toBe(18);
   });
 
@@ -416,13 +416,14 @@ describe("AxelarBridgeProvider", () => {
       transferFee: {
         amount: "0.01",
         denom: "ETH",
+        chainId: 1,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
       },
       estimatedGasFee: {
         amount: "420000000000000",
         denom: "ETH",
-        address: "ETH",
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },
     });
@@ -605,7 +606,7 @@ describe("AxelarBridgeProvider.getExternalUrl", () => {
 
     expect(result?.urlProviderName).toBe("Satellite Money");
     expect(result?.url.toString()).toBe(
-      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=eth-wei&destination_address=destination-address"
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei&destination_address=destination-address"
     );
   });
 

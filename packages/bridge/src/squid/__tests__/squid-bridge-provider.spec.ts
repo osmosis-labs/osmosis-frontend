@@ -155,6 +155,7 @@ describe("SquidBridgeProvider", () => {
       transferFee: {
         amount: "551234033843310",
         denom: "ETH",
+        chainId: 1,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },
@@ -238,6 +239,7 @@ describe("SquidBridgeProvider", () => {
       transferFee: {
         amount: "4179305998974229",
         denom: "axlETH",
+        chainId: "osmosis-1",
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,

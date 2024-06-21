@@ -149,6 +149,7 @@ describe("SkipBridgeProvider", () => {
       transferFee: {
         amount: "7725420487422623",
         denom: "WETH",
+        chainId: 1,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
       },
@@ -243,6 +244,7 @@ describe("SkipBridgeProvider", () => {
       transferFee: {
         amount: "73924361079993",
         denom: "ETH",
+        chainId: 1,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },

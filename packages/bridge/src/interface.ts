@@ -331,7 +331,7 @@ export interface BridgeQuote {
   /**
    * The fee for the transfer.
    */
-  transferFee: BridgeCoin;
+  transferFee: BridgeCoin & { chainId: number | string };
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */

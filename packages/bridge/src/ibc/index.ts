@@ -38,6 +38,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.toChain.chainType !== "cosmos"
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge only supports cosmos chains",
       });
@@ -73,6 +74,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (new Int(toAmount).lte(new Int(0))) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "InsufficientAmountError",
         message: "Insufficient amount for fees",
       });
@@ -93,6 +95,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       // currently subsidized by relayers, but could be paid by user in future by charging the user the gas cost of
       transferFee: {
         ...params.fromAsset,
+        chainId: fromChainId,
         amount: "0",
       },
       estimatedTime: 6,
@@ -199,6 +202,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!transferAsset)
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "CreateCosmosTxError",
         message: "IBC asset not found in asset list",
       });
@@ -209,6 +213,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!transferMethod)
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "CreateCosmosTxError",
         message: "IBC transfer method not found",
       });
@@ -239,6 +244,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.toAsset.address.startsWith("cw20")
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge doesn't support cw20 standard",
       });
@@ -249,6 +255,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.toChain.chainType !== "cosmos"
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge only supports cosmos chains",
       });
