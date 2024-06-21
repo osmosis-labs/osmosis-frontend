@@ -94,28 +94,33 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     );
   }, [orderDirection, t]);
   return (
-    <SkeletonLoader isLoaded={priceState.spotPrice && !priceState.isLoading}>
+    <>
       <div className="inline-flex w-full items-center justify-between gap-1 pt-6">
-        <div>
-          <span className="body2 text-osmoverse-300">
-            When {swapState.baseDenom} price is{" "}
-          </span>
-          <button
-            className={classNames("body2 inline-flex items-center gap-1", {
-              "text-rust-400": isAboveBelowMarketPrice,
-              "text-wosmongton-300": !isAboveBelowMarketPrice,
-            })}
-            onClick={swapInputMode}
-          >
-            <span>{priceLabel}</span>
-            <Icon
-              id="arrows-swap-16"
-              className="h-4 w-4"
-              width={16}
-              height={16}
-            />
-          </button>
-        </div>
+        <SkeletonLoader
+          isLoaded={priceState.spotPrice && !priceState.isLoading}
+        >
+          <div>
+            <span className="body2 text-osmoverse-300">
+              When {swapState.baseDenom} price is{" "}
+            </span>
+
+            <button
+              className={classNames("body2 inline-flex items-center gap-1", {
+                "text-rust-400": isAboveBelowMarketPrice,
+                "text-wosmongton-300": !isAboveBelowMarketPrice,
+              })}
+              onClick={swapInputMode}
+            >
+              <span>{priceLabel}</span>
+              <Icon
+                id="arrows-swap-16"
+                className="h-4 w-4"
+                width={16}
+                height={16}
+              />
+            </button>
+          </div>
+        </SkeletonLoader>
         <div className="">
           {isAboveBelowMarketPrice && (
             <span className="body2 text-rust-400">
@@ -129,49 +134,55 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           )}
         </div>
       </div>
-      <div className="flex w-full items-center justify-between rounded-2xl bg-osmoverse-1000 py-3 px-5">
-        <div className="inline-flex items-center gap-1 py-1">
-          {/** TODO: Dynamic width */}
-          {inputMode === InputMode.Price && <span>$</span>}
-          {inputMode === InputMode.Price ? (
-            <AutosizeInput
-              type="number"
-              min={0}
-              extraWidth={0}
-              inputClassName="bg-transparent text-white-full"
-              value={swapState.priceState.orderPrice}
-              placeholder={formatPretty(
-                swapState.priceState.spotPrice ?? new Dec(0)
-              )}
-              onChange={(e) => swapState.priceState.setPrice(e.target.value)}
-            />
-          ) : (
-            <AutosizeInput
-              type="number"
-              min={0}
-              extraWidth={0}
-              inputClassName="bg-transparent text-white-full"
-              value={swapState.priceState.manualPercentAdjusted}
-              placeholder={formatPretty(
-                swapState.priceState.percentAdjusted.mul(new Dec(100)).abs()
-              )}
-              onChange={(e) =>
-                swapState.priceState.setPercentAdjusted(e.target.value)
-              }
-            />
-          )}
-          <span className="text-osmoverse-400">{inputSuffix}</span>
-        </div>
-        <div className="flex items-center gap-1">
+      <div className="flex w-full flex-col items-start justify-start rounded-2xl bg-osmoverse-1000 py-3 px-5">
+        <SkeletonLoader
+          isLoaded={priceState.spotPrice && !priceState.isLoading}
+        >
+          <div className="inline-flex items-center gap-1 py-1">
+            {/** TODO: Dynamic width */}
+            {inputMode === InputMode.Price && <span>$</span>}
+            {inputMode === InputMode.Price ? (
+              <AutosizeInput
+                type="number"
+                min={0}
+                extraWidth={0}
+                inputClassName="bg-transparent text-white-full"
+                value={swapState.priceState.orderPrice}
+                placeholder={formatPretty(
+                  swapState.priceState.spotPrice ?? new Dec(0)
+                )}
+                onChange={(e) => swapState.priceState.setPrice(e.target.value)}
+              />
+            ) : (
+              <AutosizeInput
+                type="number"
+                min={0}
+                extraWidth={0}
+                inputClassName="bg-transparent text-white-full"
+                value={swapState.priceState.manualPercentAdjusted}
+                placeholder={formatPretty(
+                  swapState.priceState.percentAdjusted.mul(new Dec(100)).abs()
+                )}
+                onChange={(e) =>
+                  swapState.priceState.setPercentAdjusted(e.target.value)
+                }
+              />
+            )}
+            <span className="text-osmoverse-400">{inputSuffix}</span>
+          </div>
+        </SkeletonLoader>
+
+        <div className="mt-1 flex items-center">
           {percentAdjustmentOptions.map(({ label, value }) => (
             <button
-              className="flex h-8 items-center rounded-5xl border border-osmoverse-700 px-3"
+              className="mr-1 flex h-8 items-center rounded-5xl border border-osmoverse-700 px-3"
               key={`limit-price-adjust-${label}`}
               onClick={() =>
                 swapState.priceState.setPercentAdjusted(
                   formatPretty(value.mul(new Dec(100)))
                 )
               }
+              disabled={!priceState.spotPrice || priceState.isLoading}
             >
               <span className="body2 text-wosmongton-200">
                 {label !== "0%" && (orderDirection === "bid" ? "-" : "+")}
@@ -181,6 +192,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           ))}
         </div>
       </div>
-    </SkeletonLoader>
+    </>
   );
 };
