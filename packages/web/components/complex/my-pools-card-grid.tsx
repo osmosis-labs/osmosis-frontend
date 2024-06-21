@@ -84,7 +84,10 @@ export const MyPoolsCardsGrid = observer(() => {
               ({
                 id,
                 type,
-                apr = new RatePretty(0),
+                apr = {
+                  lower: new RatePretty(0),
+                  upper: new RatePretty(0),
+                },
                 poolLiquidity,
                 userValue,
                 reserveCoins,
@@ -96,9 +99,9 @@ export const MyPoolsCardsGrid = observer(() => {
                   {
                     label: t("pools.APR"),
                     value: isMobile ? (
-                      apr.maxDecimals(0).toString()
+                      apr.upper!.maxDecimals(0).toString()
                     ) : (
-                      <h6>{apr.maxDecimals(2).toString()}</h6>
+                      <h6>{apr.upper!.maxDecimals(2).toString()}</h6>
                     ),
                   },
                   {
