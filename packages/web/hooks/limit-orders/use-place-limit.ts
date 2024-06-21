@@ -294,7 +294,7 @@ const useLimitPrice = ({
   const adjustByPercentage = useCallback(
     (percentage: Dec) => {
       setOrderPrice(
-        formatPretty((spotPrice ?? new Dec(1)).mul(new Dec(1).add(percentage)))
+        formatPretty((spotPrice ?? new Dec(0)).mul(new Dec(1).add(percentage)))
       );
     },
     [spotPrice]
