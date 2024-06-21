@@ -13,7 +13,7 @@ import type {
 import { trpcHelpers } from "~/utils/helpers";
 
 const configurationData: DatafeedConfiguration = {
-  supported_resolutions: ["60", "1D", "1W", "1M", "12M"] as ResolutionString[],
+  supported_resolutions: ["5", "15", "60", "240", "480"] as ResolutionString[],
   exchanges: [
     {
       value: "Osmosis", // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
