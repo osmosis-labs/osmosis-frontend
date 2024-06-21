@@ -52,7 +52,6 @@ export const queryOrderbookActiveOrders = createNodeQuery<
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
 });
-
 interface TickValues {
   total_amount_of_liquidity: string;
   cumulative_total_value: string;
@@ -114,6 +113,32 @@ export const queryOrderbookTickUnrealizedCancelsById = createNodeQuery<
     const msg = JSON.stringify({
       tick_unrealized_cancels_by_id: {
         tick_ids: tickIds,
+      },
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
+interface OrderbookSpotPriceResponse {
+  data: {
+    spot_price: string;
+  };
+}
+
+export const queryOrderbookSpotPrice = createNodeQuery<
+  OrderbookSpotPriceResponse,
+  {
+    orderbookAddress: string;
+    quoteAssetDenom: string;
+    baseAssetDenom: string;
+  }
+>({
+  path: ({ orderbookAddress, quoteAssetDenom, baseAssetDenom }) => {
+    const msg = JSON.stringify({
+      spot_price: {
+        quote_asset_denom: quoteAssetDenom,
+        base_asset_denom: baseAssetDenom,
       },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");

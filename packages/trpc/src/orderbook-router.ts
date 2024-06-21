@@ -3,6 +3,7 @@ import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookMakerFee,
+  getOrderbookSpotPrice,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
   LimitOrder,
@@ -117,7 +118,7 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return {
-        makerFee: new Dec(makerFee),
+        makerFee,
       };
     }),
   getActiveOrders: publicProcedure
@@ -195,5 +196,25 @@ export const orderbookRouter = createTRPCRouter({
         cursor: input.cursor,
         limit: input.limit,
       });
+    }),
+  getSpotPrice: publicProcedure
+    .input(
+      z
+        .object({
+          quoteAssetDenom: z.string(),
+          baseAssetDenom: z.string(),
+        })
+        .required()
+        .and(OsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { quoteAssetDenom, baseAssetDenom, osmoAddress } = input;
+      const spotPrice = await getOrderbookSpotPrice({
+        orderbookAddress: osmoAddress,
+        quoteAssetDenom: quoteAssetDenom,
+        baseAssetDenom: baseAssetDenom,
+        chainList: ctx.chainList,
+      });
+      return spotPrice;
     }),
 });
