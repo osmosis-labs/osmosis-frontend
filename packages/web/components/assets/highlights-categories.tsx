@@ -27,7 +27,6 @@ type Highlight = "new" | "topGainers" | "upcoming";
 
 type HighlightsProps = {
   isCategorySelected: boolean;
-  onSelectCategory: (category: string, highlight: Highlight) => void;
   onSelectAllTopGainers: () => void;
 } & CustomClasses;
 
@@ -40,7 +39,6 @@ export const HighlightsCategories: FunctionComponent<HighlightsProps> = (
 };
 
 const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
-  onSelectCategory,
   onSelectAllTopGainers,
   className,
 }) => {
@@ -74,7 +72,6 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         title={t("assets.highlights.new")}
         isLoading={isTopNewAssetsLoading}
         assets={(topNewAssets ?? []).map(highlightPrice24hChangeAsset)}
-        onClickSeeAll={() => onSelectCategory("new", "new")}
         highlight="new"
       />
       <AssetHighlights

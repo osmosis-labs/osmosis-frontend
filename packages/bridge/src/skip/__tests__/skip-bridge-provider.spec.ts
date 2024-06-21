@@ -1,3 +1,4 @@
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -27,6 +28,15 @@ jest.mock("viem", () => ({
   encodeFunctionData: jest.fn().mockReturnValue("0xabcdef"),
   encodePacked: jest.fn().mockReturnValue("0xabcdef"),
   keccak256: jest.fn().mockReturnValue("0xabcdef"),
+}));
+
+jest.mock("@osmosis-labs/tx");
+
+jest.mock("@cosmjs/proto-signing", () => ({
+  ...jest.requireActual("@cosmjs/proto-signing"),
+  Registry: jest.fn().mockReturnValue({
+    encodeAsAny: jest.fn().mockReturnValue("any"),
+  }),
 }));
 
 beforeEach(() => {
@@ -68,6 +78,115 @@ beforeEach(() => {
                   description: "Description of asset2",
                   coingecko_id: "asset2",
                   recommended_symbol: "AS2",
+                },
+                {
+                  denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  chain_id: "1",
+                  origin_denom: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  origin_chain_id: "1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: true,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USD Coin",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/axelarnetwork/axelar-configs/main/images/tokens/usdc.svg",
+                  decimals: 6,
+                  token_contract: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "osmosis-1": {
+              assets: [
+                {
+                  denom:
+                    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+                  chain_id: "osmosis-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-750",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description:
+                    "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "agoric-3": {
+              assets: [
+                {
+                  denom:
+                    "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
+                  chain_id: "agoric-3",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-62",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "archway-1": {
+              assets: [
+                {
+                  denom:
+                    "ibc/43897B9739BD63E3A08A88191999C632E052724AB96BD4C74AE31375C991F48D",
+                  chain_id: "archway-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "transfer/channel-29",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description: "Native Coin",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
+                },
+              ],
+            },
+            "noble-1": {
+              assets: [
+                {
+                  denom: "uusdc",
+                  chain_id: "noble-1",
+                  origin_denom: "uusdc",
+                  origin_chain_id: "noble-1",
+                  trace: "",
+                  is_cw20: false,
+                  is_evm: false,
+                  is_svm: false,
+                  symbol: "USDC",
+                  name: "USDC",
+                  logo_uri:
+                    "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+                  decimals: 6,
+                  description: "USD Coin",
+                  coingecko_id: "usd-coin",
+                  recommended_symbol: "USDC",
                 },
               ],
             },
@@ -127,9 +246,6 @@ beforeEach(() => {
       );
     })
   );
-});
-
-afterEach(() => {
   jest.clearAllMocks();
 });
 
@@ -286,7 +402,7 @@ describe("SkipBridgeProvider", () => {
     expect(txRequest.value).toBe("0x3e8"); // 1000 in hex
   });
 
-  it("should estimate gas cost", async () => {
+  it("should estimate gas cost - EVM transactions", async () => {
     const params: GetBridgeQuoteParams = {
       fromAmount: "1000",
       fromAsset: {
@@ -322,6 +438,64 @@ describe("SkipBridgeProvider", () => {
     expect(gasCost?.denom).toBe("ETH");
   });
 
+  it("should estimate gas cost - Cosmos transactions", async () => {
+    const params: GetBridgeQuoteParams = {
+      fromAmount: "1000",
+      fromAsset: {
+        denom: "asset1",
+        address: "ibc/123",
+        decimals: 6,
+        sourceDenom: "asset1",
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "asset2",
+        address: "0x456",
+        decimals: 6,
+        sourceDenom: "asset2",
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo1ABC123",
+      toAddress: "0xdef",
+      slippage: 0.01,
+    };
+
+    const txData: BridgeTransactionRequest = {
+      type: "cosmos",
+      msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+      msg: {
+        // mock data
+        source_channel: "channel-123",
+        source_port: "port-123",
+        sender: "osmo1ABC123",
+        receiver: "0xdef",
+        denom: "asset1",
+        amount: "1000",
+      },
+    };
+
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "1000",
+      amount: [
+        {
+          denom: "uosmo",
+          amount: "1000",
+        },
+      ],
+    });
+
+    const gasCost = await provider.estimateGasCost(params, txData);
+
+    expect(gasCost).toBeDefined();
+    expect(gasCost?.amount).toBe("1000");
+    expect(gasCost?.denom).toBe("OSMO");
+    expect(gasCost?.sourceDenom).toBe("uosmo");
+  });
+
   it("should fetch and return the correct skip asset", async () => {
     const chain: BridgeChain = {
       chainId: 1,
@@ -335,7 +509,7 @@ describe("SkipBridgeProvider", () => {
       sourceDenom: "asset1",
     };
 
-    const skipAsset = await provider.getSkipAsset(chain, asset);
+    const skipAsset = await provider.getAsset(chain, asset);
 
     expect(skipAsset).toBeDefined();
     expect(skipAsset?.denom).toBe("asset1");
@@ -343,7 +517,7 @@ describe("SkipBridgeProvider", () => {
 
   it("should fetch and cache skip assets", async () => {
     const chainID = "1";
-    const assets = await provider.getSkipAssets(chainID);
+    const assets = await provider.getAssets(chainID);
 
     expect(assets).toBeDefined();
     expect(assets[chainID].assets.length).toBeGreaterThan(0);
@@ -430,6 +604,113 @@ describe("SkipBridgeProvider", () => {
     );
 
     expect(approvalTxRequest).toBeUndefined();
+  });
+
+  describe("getSupportedAssets", () => {
+    it("gets shared origin assets", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        },
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "uusdc",
+          chainId: "noble-1",
+          chainType: "cosmos",
+          decimals: 6,
+          denom: "USDC",
+          sourceDenom: "uusdc",
+        },
+        {
+          address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          chainId: 1,
+          chainType: "evm",
+          decimals: 6,
+          denom: "USDC",
+          sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        },
+        {
+          address:
+            "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
+          chainId: "agoric-3",
+          chainType: "cosmos",
+          denom: "USDC",
+          sourceDenom: "uusdc",
+          decimals: 6,
+        },
+        {
+          address:
+            "ibc/43897B9739BD63E3A08A88191999C632E052724AB96BD4C74AE31375C991F48D",
+          chainId: "archway-1",
+          chainType: "cosmos",
+          denom: "USDC",
+          sourceDenom: "uusdc",
+          decimals: 6,
+        },
+      ]);
+    });
+
+    it("includes skip supported cosmos counterparty assets from asset list", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        },
+      });
+
+      // makes sure that the first variants are sourced from counterparty array
+      expect(sourceVariants[0]).toEqual({
+        address: "uusdc",
+        chainId: "noble-1",
+        chainType: "cosmos",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "uusdc",
+      });
+    });
+
+    it("includes skip supported evm counterparty assets from asset list", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+          sourceDenom: "uusdc",
+        },
+      });
+
+      // makes sure that the first variants are sourced from counterparty array
+      expect(sourceVariants[1]).toEqual({
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        chainId: 1,
+        chainType: "evm",
+        decimals: 6,
+        denom: "USDC",
+        sourceDenom: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      });
+    });
   });
 });
 

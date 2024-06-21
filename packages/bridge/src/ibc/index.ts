@@ -4,12 +4,15 @@ import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 
-import { BridgeError, BridgeQuoteError } from "../errors";
+import { BridgeQuoteError } from "../errors";
 import {
+  BridgeAsset,
+  BridgeChain,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAssetsParams,
   CosmosBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
@@ -34,12 +37,10 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.fromChain.chainType !== "cosmos" ||
       params.toChain.chainType !== "cosmos"
     ) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC Bridge only supports cosmos chains",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "UnsupportedQuoteError",
+        message: "IBC Bridge only supports cosmos chains",
+      });
     }
 
     const signDoc = await this.getTransactionData(params);
@@ -64,17 +65,17 @@ export class IbcBridgeProvider implements BridgeProvider {
       .find((asset) => asset.coinMinimalDenom === gasFee.denom);
 
     /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount = gasFee.isNeededForTx
-      ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
-      : params.fromAmount;
+    const toAmount =
+      gasFee.isNeededForTx &&
+      gasFee.denom.toLowerCase() === params.fromAsset.address.toLowerCase()
+        ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
+        : params.fromAmount;
 
     if (new Int(toAmount).lte(new Int(0))) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.InsufficientAmount,
-          message: "Insufficient amount for fees",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "InsufficientAmountError",
+        message: "Insufficient amount for fees",
+      });
     }
 
     return {
@@ -104,6 +105,44 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       transactionRequest: signDoc,
     };
+  }
+
+  async getSupportedAssets({
+    asset,
+  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    try {
+      const assetListAsset = this.ctx.assetLists
+        .flatMap((list) => list.assets)
+        .find(
+          (a) =>
+            a.coinMinimalDenom === asset.address ||
+            a.sourceDenom === asset.sourceDenom
+        );
+
+      const ibcTransferMethod = assetListAsset?.transferMethods.find(
+        ({ type }) => type === "ibc"
+      ) as IbcTransferMethod;
+
+      if (!ibcTransferMethod || !assetListAsset)
+        throw new Error(
+          "IBC transfer method or asset not found for: " + asset.address
+        );
+
+      return [
+        {
+          chainId: ibcTransferMethod.counterparty.chainId,
+          chainType: "cosmos",
+          address: assetListAsset.sourceDenom,
+          denom: assetListAsset.symbol,
+          decimals: assetListAsset.decimals,
+          sourceDenom: ibcTransferMethod.counterparty.sourceDenom,
+        },
+      ];
+    } catch (e) {
+      // Avoid returning options if there's an unexpected error, such as the provider being down
+      console.error(IbcBridgeProvider.ID, "failed to get supported assets:", e);
+      return [];
+    }
   }
 
   /**
@@ -165,24 +204,20 @@ export class IbcBridgeProvider implements BridgeProvider {
       );
 
     if (!transferAsset)
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC asset not found in asset list",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "CreateCosmosTxError",
+        message: "IBC asset not found in asset list",
+      });
 
     const transferMethod = transferAsset.transferMethods.find(
       ({ type }) => type === "ibc"
     ) as IbcTransferMethod;
 
     if (!transferMethod)
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC transfer method not found",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "CreateCosmosTxError",
+        message: "IBC transfer method not found",
+      });
 
     if (fromAsset.address === transferMethod.counterparty.sourceDenom) {
       // transfer from counterparty
@@ -209,24 +244,20 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.fromAsset.address.startsWith("cw20") ||
       params.toAsset.address.startsWith("cw20")
     ) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC Bridge doesn't support cw20 standard",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "UnsupportedQuoteError",
+        message: "IBC Bridge doesn't support cw20 standard",
+      });
     }
 
     if (
       params.fromChain.chainType !== "cosmos" ||
       params.toChain.chainType !== "cosmos"
     ) {
-      throw new BridgeQuoteError([
-        {
-          errorType: BridgeError.UnsupportedQuoteError,
-          message: "IBC Bridge only supports cosmos chains",
-        },
-      ]);
+      throw new BridgeQuoteError({
+        errorType: "UnsupportedQuoteError",
+        message: "IBC Bridge only supports cosmos chains",
+      });
     }
   }
 

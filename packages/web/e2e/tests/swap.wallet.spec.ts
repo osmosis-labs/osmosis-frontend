@@ -36,6 +36,7 @@ test.describe("Test Swap feature", () => {
         `--load-extension=${pathToExtension}`,
       ],
       viewport: { width: 1280, height: 1024 },
+      slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
@@ -44,11 +45,11 @@ test.describe("Test Swap feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test", password);
+    await walletPage.setWalletNameAndPassword("Test Swaps", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new SwapPage(await context.newPage());
+    swapPage = new SwapPage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
@@ -59,14 +60,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap OSMO to ATOM", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("OSMO", "ATOM");
     await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -75,14 +73,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap ATOM to OSMO", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("ATOM", "OSMO");
     await swapPage.enterAmount("0.001");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -91,14 +86,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap OSMO to USDC", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("OSMO", "USDC");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -107,14 +99,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to OSMO", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("USDC", "OSMO");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -123,14 +112,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap ATOM to USDC", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("ATOM", "USDC");
     await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -139,14 +125,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to ATOM", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("USDC", "ATOM");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -155,14 +138,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to TIA", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("USDC", "TIA");
     await swapPage.enterAmount("0.2");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -171,14 +151,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap TIA to USDC", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("TIA", "USDC");
     await swapPage.enterAmount("0.02");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + TIA);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -187,14 +164,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to INJ", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("USDC", "INJ");
     await swapPage.enterAmount("0.2");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -203,14 +177,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap INJ to USDC", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("INJ", "USDC");
     await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + INJ);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -219,14 +190,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap USDC to AKT", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("USDC", "AKT");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
@@ -235,14 +203,11 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap AKT to USDC", async () => {
+    await swapPage.goto();
     await swapPage.selectPair("AKT", "USDC");
     await swapPage.enterAmount("0.02");
     await swapPage.showSwapInfo();
-    await swapPage.swap();
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent("page");
-    const { msgContentAmount } = await swapPage.getWalletMsg(pageApprove);
-    // Handle Pop-up page <-
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + AKT);
     expect(msgContentAmount).toContain("sender: " + walletId);

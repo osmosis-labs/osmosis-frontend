@@ -1,6 +1,6 @@
 import { superjson } from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { Errors, timeout } from "@osmosis-labs/utils";
+import { timeout } from "@osmosis-labs/utils";
 import {
   httpBatchLink,
   httpLink,
@@ -54,7 +54,6 @@ const t = initTRPC.context<typeof createInnerTRPCContext>().create({
         ...shape.data,
         zodError:
           error.cause instanceof ZodError ? error.cause.flatten() : null,
-        errors: error.cause instanceof Errors ? error.cause.errors : null,
       },
     };
   },
