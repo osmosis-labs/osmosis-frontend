@@ -9,6 +9,7 @@ import React from "react";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import { useAggregatedOrders } from "~/hooks/order-history/use-aggregated-orders";
 import { useStore } from "~/stores";
 
 export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
@@ -18,9 +19,11 @@ export const OrderHistory = observer(() => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
   // In the future we need to merge in the past orders
-  const { orders, isLoading } = useOrderbookAllActiveOrders({
+  const { orders: _orders, isLoading } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
   });
+
+  const { orders } = useAggregatedOrders({ orders: _orders });
 
   const table = useReactTable<Order>({
     data: orders,
