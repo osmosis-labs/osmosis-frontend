@@ -238,28 +238,80 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   }, [isLoading, makerFeeData]);
 
   return {
-    makerFee: new Dec(0.015),
+    makerFee,
     isLoading,
   };
 };
 
-// export const useActiveLimitOrdersByOrderbook = ({
-//   orderbookAddress,
-//   userAddress,
-// }: {
-//   orderbookAddress: string;
-//   userAddress: string;
-// }) => {
-//   const { data: orders, isLoading } =
-//     api.edge.orderbooks.getActiveOrders.useQuery({
-//       contractOsmoAddress: orderbookAddress,
-//       userOsmoAddress: userAddress,
-//     });
-//   return {
-//     orders,
-//     isLoading,
-//   };
-// };
+export const useActiveLimitOrdersByOrderbook = ({
+  orderbookAddress,
+  userAddress,
+}: {
+  orderbookAddress: string;
+  userAddress: string;
+}) => {
+  const { data: orders, isLoading } =
+    api.edge.orderbooks.getActiveOrders.useInfiniteQuery({
+      contractOsmoAddress: orderbookAddress,
+      userOsmoAddress: userAddress,
+    });
+
+  const allOrders = useMemo(() => {
+    return orders?.pages.flatMap((page) => page.items) ?? [];
+  }, [orders]);
+
+  return {
+    orders: allOrders,
+    isLoading,
+  };
+};
+
+export const useOrderbookAllActiveOrders = ({
+  userAddress,
+}: {
+  userAddress: string;
+}) => {
+  const { orderbooks } = useOrderbooks();
+  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const {
+    data: orders,
+    isLoading,
+    fetchNextPage,
+    isFetching,
+  } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
+    {
+      contractAddresses: addresses,
+      userOsmoAddress: userAddress,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+    }
+  );
+
+  const allOrders = useMemo(() => {
+    return orders?.pages.flatMap((page) => page.items) ?? [];
+  }, [orders]);
+  const ordersWithDenoms = useMemo(() => {
+    return allOrders.map((o) => {
+      const orderbook = orderbooks.find(
+        (ob) => ob.contractAddress === o.orderbookAddress
+      );
+      return {
+        ...o,
+        baseDenom: orderbook?.baseDenom ?? "",
+        quoteDenom: orderbook?.quoteDenom ?? "",
+      };
+    });
+  }, [allOrders, orderbooks]);
+
+  return {
+    orders: ordersWithDenoms,
+    isLoading,
+    fetchNextPage,
+    isFetching,
+  };
+};
 
 /**
  * Hook to fetch the current spot price of a given pair from an orderbook.
@@ -275,23 +327,23 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
  * @param {string} baseAssetDenom - The token in asset denom.
  * @returns {Object} An object containing the spot price and the loading state.
  */
-// export const useOrderbookSpotPrice = ({
-//   orderbookAddress,
-//   quoteAssetDenom,
-//   baseAssetDenom,
-// }: {
-//   orderbookAddress: string;
-//   quoteAssetDenom: string;
-//   baseAssetDenom: string;
-// }) => {
-//   const { data: spotPrice, isLoading } =
-//     api.edge.orderbooks.getSpotPrice.useQuery({
-//       osmoAddress: orderbookAddress,
-//       quoteAssetDenom,
-//       baseAssetDenom,
-//     });
-//   return {
-//     spotPrice,
-//     isLoading,
-//   };
-// };
+export const useOrderbookSpotPrice = ({
+  orderbookAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+}: {
+  orderbookAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+}) => {
+  const { data: spotPrice, isLoading } =
+    api.edge.orderbooks.getSpotPrice.useQuery({
+      osmoAddress: orderbookAddress,
+      quoteAssetDenom,
+      baseAssetDenom,
+    });
+  return {
+    spotPrice,
+    isLoading,
+  };
+};

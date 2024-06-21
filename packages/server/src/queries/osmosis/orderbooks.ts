@@ -32,7 +32,7 @@ export interface LimitOrder {
 }
 
 interface OrderbookActiveOrdersResponse {
-  data: LimitOrder[];
+  data: { orders: LimitOrder[]; count: number };
 }
 
 export const queryOrderbookActiveOrders = createNodeQuery<
@@ -46,6 +46,99 @@ export const queryOrderbookActiveOrders = createNodeQuery<
     const msg = JSON.stringify({
       orders_by_owner: {
         owner: userAddress,
+      },
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+interface TickValues {
+  total_amount_of_liquidity: string;
+  cumulative_total_value: string;
+  effective_total_amount_swapped: string;
+  cumulative_realized_cancels: string;
+  last_tick_sync_etas: string;
+}
+
+export interface TickState {
+  ask_values: TickValues;
+  bid_values: TickValues;
+}
+
+interface OrderbookTicksResponse {
+  data: {
+    ticks: { tick_id: number; tick_state: TickState }[];
+  };
+}
+
+export const queryOrderbookTicks = createNodeQuery<
+  OrderbookTicksResponse,
+  {
+    orderbookAddress: string;
+    tickIds: number[];
+  }
+>({
+  path: ({ tickIds, orderbookAddress }) => {
+    const msg = JSON.stringify({
+      ticks_by_id: {
+        tick_ids: tickIds,
+      },
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
+export interface TickUnrealizedCancelsState {
+  ask_unrealized_cancels: string;
+  bid_unrealized_cancels: string;
+}
+interface OrderbookTickUnrealizedCancelsResponse {
+  data: {
+    ticks: {
+      tick_id: number;
+      unrealized_cancels: TickUnrealizedCancelsState;
+    }[];
+  };
+}
+
+export const queryOrderbookTickUnrealizedCancelsById = createNodeQuery<
+  OrderbookTickUnrealizedCancelsResponse,
+  {
+    orderbookAddress: string;
+    tickIds: number[];
+  }
+>({
+  path: ({ tickIds, orderbookAddress }) => {
+    const msg = JSON.stringify({
+      tick_unrealized_cancels_by_id: {
+        tick_ids: tickIds,
+      },
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
+interface OrderbookSpotPriceResponse {
+  data: {
+    spot_price: string;
+  };
+}
+
+export const queryOrderbookSpotPrice = createNodeQuery<
+  OrderbookSpotPriceResponse,
+  {
+    orderbookAddress: string;
+    quoteAssetDenom: string;
+    baseAssetDenom: string;
+  }
+>({
+  path: ({ orderbookAddress, quoteAssetDenom, baseAssetDenom }) => {
+    const msg = JSON.stringify({
+      spot_price: {
+        quote_asset_denom: quoteAssetDenom,
+        base_asset_denom: baseAssetDenom,
       },
     });
     const encodedMsg = Buffer.from(msg).toString("base64");

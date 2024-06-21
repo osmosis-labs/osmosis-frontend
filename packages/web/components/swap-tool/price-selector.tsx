@@ -79,12 +79,6 @@ export const PriceSelector = memo(
                 usdValue: walletAsset.usdValue,
               };
 
-              /**
-               * TEMP
-               *
-               * Waiting for fix on the assetlist for USDC not
-               * having "stablecoin" value in the "categories" array
-               */
               if (asset?.symbol === "USDC") return returnAsset;
 
               // In the future, we might want to pass every coin instead of just stables.
