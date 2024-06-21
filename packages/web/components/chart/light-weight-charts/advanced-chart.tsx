@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import {
+import type {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
-  widget,
 } from "~/public/tradingview";
 import { theme } from "~/tailwind.config";
 
@@ -86,7 +85,7 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       ...props,
     };
 
-    chart.current = new widget(widgetOptions);
+    chart.current = new TradingView.widget(widgetOptions);
   }
 
   useEffect(() => {

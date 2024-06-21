@@ -1,4 +1,4 @@
-import {
+import type {
   DatafeedConfiguration,
   ErrorCallback,
   HistoryCallback,
