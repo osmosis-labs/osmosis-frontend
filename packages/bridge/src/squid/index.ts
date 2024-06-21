@@ -29,12 +29,12 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -85,41 +85,26 @@ export class SquidBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
+      ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
-        if (fromChain.chainType === "cosmos") {
-          throw new BridgeQuoteError([
-            {
-              errorType: BridgeError.UnsupportedQuoteError,
-              message:
-                "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
-            },
-          ]);
-        }
+        const getRouteParams: SquidGetRouteParams = {
+          fromChain: fromChain.chainId.toString(),
+          toChain: toChain.chainId.toString(),
+          fromAddress,
+          toAddress,
+          fromAmount,
+          fromToken: fromAsset.address,
+          toToken: toAsset.address,
+          slippage,
+          quoteOnly: false,
+          enableExpress: false,
+          receiveGasOnDestination: false,
+        };
 
-        try {
-          const getRouteParams: SquidGetRouteParams = {
-            fromChain: fromChain.chainId.toString(),
-            toChain: toChain.chainId.toString(),
-            fromAddress,
-            toAddress,
-            fromAmount,
-            fromToken: fromAsset.address,
-            toToken: toAsset.address,
-            slippage,
-            quoteOnly: false,
-          };
-
-          const url = new URL(`${this.apiURL}/v1/route`);
-          Object.entries(getRouteParams).forEach(([key, value]) => {
-            url.searchParams.append(key, value.toString());
-          });
-          const data = await apiClient<RouteResponse>(url.toString(), {
-            headers: {
-              "x-integrator-id": this.integratorId,
-            },
-          });
-        }
-
+        const url = new URL(`${this.apiURL}/v1/route`);
+        Object.entries(getRouteParams).forEach(([key, value]) => {
+          url.searchParams.append(key, value.toString());
+        });
         const data = await apiClient<RouteResponse>(url.toString(), {
           headers: {
             "x-integrator-id": this.integratorId,
@@ -184,16 +169,12 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            ...fromAsset,
             amount: estimateFromAmount,
-            sourceDenom: fromAsset.sourceDenom,
-            decimals: fromAsset.decimals,
-            denom: fromAsset.denom,
           },
           expectedOutput: {
+            ...toAsset,
             amount: toAmount,
-            sourceDenom: toAsset.sourceDenom ?? toAsset.denom,
-            decimals: toAsset.decimals,
-            denom: toAsset.denom,
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
               .toString(),
@@ -204,14 +185,14 @@ export class SquidBridgeProvider implements BridgeProvider {
             denom: feeCosts[0].token.symbol,
             amount: feeCosts[0].amount,
             decimals: feeCosts[0].token.decimals,
-            sourceDenom: feeCosts[0].token.symbol,
+            address: feeCosts[0].token.address,
           },
           estimatedTime: estimatedRouteDuration,
           estimatedGasFee: {
             denom: gasCosts[0].token.symbol,
             amount: gasCosts[0].amount,
             decimals: gasCosts[0].token.decimals,
-            sourceDenom: gasCosts[0].token.symbol,
+            address: gasCosts[0].token.address,
           },
           transactionRequest: isEvmTransaction
             ? await this.createEvmTransaction({
@@ -224,14 +205,13 @@ export class SquidBridgeProvider implements BridgeProvider {
             : await this.createCosmosTransaction(transactionRequest.data),
         };
       },
-      ttl: 20 * 1000, // 20 seconds,
     });
   }
 
   async getSupportedAssets({
     chain,
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
     try {
       const [tokens, chains] = await Promise.all([
         this.getTokens(),
@@ -509,7 +489,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_chains",
-      ttl: 30 * 60 * 1000, // 30 minutes
+      ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
           const data = await apiClient<ChainsResponse>(
@@ -528,7 +508,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_tokens",
-      ttl: 30 * 60 * 1000, // 30 minutes
+      ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
           const data = await apiClient<TokensResponse>(
@@ -595,6 +575,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    // TODO get axelar ID for both assets
     const url = new URL(
       this.ctx.env === "mainnet"
         ? "https://app.squidrouter.com/"

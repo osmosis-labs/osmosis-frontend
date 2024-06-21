@@ -1,6 +1,5 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
@@ -28,12 +27,12 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -76,6 +75,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
+      ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
         const sourceAsset = await this.getAsset(fromChain, fromAsset);
 
@@ -111,15 +111,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain
         );
 
-        const amountOut = new CoinPretty(
-          {
-            coinDecimals: toAsset.decimals,
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom,
-          },
-          route.amount_out
-        );
-
         let transferFee: BridgeCoin = {
           ...fromAsset,
           amount: "0",
@@ -127,24 +118,16 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
-            const feeAmount = new CoinPretty(
-              {
-                coinDecimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
-                coinDenom:
-                  operation.axelar_transfer.fee_asset.symbol ??
-                  operation.axelar_transfer.fee_asset.denom,
-                coinMinimalDenom: operation.axelar_transfer.fee_asset.denom,
-              },
-              operation.axelar_transfer.fee_amount
-            );
+            const feeAsset = operation.axelar_transfer.fee_asset;
 
             transferFee = {
-              amount: feeAmount.toCoin().amount,
-              denom:
-                operation.axelar_transfer.fee_asset.symbol ??
-                operation.axelar_transfer.fee_asset.denom,
-              address: operation.axelar_transfer.fee_asset.denom,
-              decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
+              amount: operation.axelar_transfer.fee_amount,
+              denom: feeAsset.symbol ?? feeAsset.denom,
+              address:
+                feeAsset.is_evm && !Boolean(feeAsset.token_contract)
+                  ? NativeEVMTokenConstantAddress
+                  : feeAsset.token_contract!,
+              decimals: feeAsset.decimals ?? 6,
             };
           }
         }
@@ -177,10 +160,10 @@ export class SkipBridgeProvider implements BridgeProvider {
           destinationAsset.chain_id
         );
 
-        const estimatedTime =
-          sourceChainFinalityTime > destinationChainFinalityTime
-            ? sourceChainFinalityTime
-            : destinationChainFinalityTime;
+        const estimatedTime = Math.max(
+          sourceChainFinalityTime,
+          destinationChainFinalityTime
+        );
 
         const estimatedGasFee = await this.estimateGasCost(
           params,
@@ -193,7 +176,7 @@ export class SkipBridgeProvider implements BridgeProvider {
             amount: fromAmount,
           },
           expectedOutput: {
-            amount: amountOut.toCoin().amount,
+            amount: route.amount_out,
             ...toAsset,
             priceImpact: "0",
           },
@@ -205,7 +188,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           estimatedGasFee,
         };
       },
-      ttl: 20 * 1000, // 20 seconds,
     });
   }
 
@@ -218,7 +200,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -321,7 +303,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
-            address: sharedOriginAsset.origin_denom,
+            address: sharedOriginAsset.denom,
             denom:
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
@@ -633,7 +615,10 @@ export class SkipBridgeProvider implements BridgeProvider {
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 
-      if (!evmChain) throw new Error("Could not find EVM chain");
+      if (!evmChain)
+        throw new Error(
+          "Could not find EVM chain: " + params.fromChain.chainId
+        );
 
       const provider = createPublicClient({
         chain: evmChain,
@@ -661,7 +646,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         amount: gasCost.toString(),
         denom: evmChain.nativeCurrency.symbol,
         decimals: evmChain.nativeCurrency.decimals,
-        address: evmChain.nativeCurrency.symbol,
+        address: NativeEVMTokenConstantAddress,
       };
     }
 

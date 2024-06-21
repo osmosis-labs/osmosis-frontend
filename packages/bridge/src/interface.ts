@@ -55,7 +55,7 @@ export interface BridgeProvider {
    * @returns A promise that resolves to an array of assets combined with each assets' chain info.
    */
   getSupportedAssets(
-    params: BridgeSupportedAssetsParams
+    params: GetBridgeSupportedAssetsParams
   ): Promise<(BridgeChain & BridgeAsset)[]>;
 
   /**
@@ -171,7 +171,7 @@ const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
-const bridgeSupportedAssetsSchema = z.object({
+const getBridgeSupportedAssetsParams = z.object({
   /**
    * The originating chain information.
    */
@@ -182,8 +182,8 @@ const bridgeSupportedAssetsSchema = z.object({
   asset: bridgeAssetSchema,
 });
 
-export type BridgeSupportedAssetsParams = z.infer<
-  typeof bridgeSupportedAssetsSchema
+export type GetBridgeSupportedAssetsParams = z.infer<
+  typeof getBridgeSupportedAssetsParams
 >;
 
 export interface BridgeDepositAddress {
@@ -204,10 +204,13 @@ export interface GetDepositAddressParams {
    */
   fromAsset: BridgeAsset;
   /**
+   * The asset on the destination chain.
+   */
+  toAsset: BridgeAsset;
+  /**
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: string;
-  autoUnwrapIntoNative?: boolean;
 }
 
 export const getBridgeExternalUrlSchema = z.object({
@@ -255,7 +258,7 @@ export const getBridgeQuoteSchema = z.object({
    */
   toAsset: bridgeAssetSchema,
   /**
-   * The amount to be transferred from the originating chain, represented as a string.
+   * The amount to be transferred from the originating chain, represented as a string integer.
    */
   fromAmount: z.string(),
   /**

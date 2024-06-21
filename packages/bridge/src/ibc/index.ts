@@ -12,10 +12,10 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
   CosmosBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 
@@ -109,15 +109,11 @@ export class IbcBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
     try {
       const assetListAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
-        .find(
-          (a) =>
-            a.coinMinimalDenom === asset.address ||
-            a.sourceDenom === asset.sourceDenom
-        );
+        .find((a) => a.coinMinimalDenom === asset.address);
 
       const ibcTransferMethod = assetListAsset?.transferMethods.find(
         ({ type }) => type === "ibc"
@@ -135,7 +131,6 @@ export class IbcBridgeProvider implements BridgeProvider {
           address: assetListAsset.sourceDenom,
           denom: assetListAsset.symbol,
           decimals: assetListAsset.decimals,
-          sourceDenom: ibcTransferMethod.counterparty.sourceDenom,
         },
       ];
     } catch (e) {
@@ -155,8 +150,7 @@ export class IbcBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     this.validate(params);
 
-    const { sourceChannel, sourcePort, sourceDenom } =
-      this.getIbcSource(params);
+    const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
       destinationAddress: params.toAddress,
@@ -172,7 +166,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       timeoutHeight,
       token: {
         amount: params.fromAmount,
-        denom: sourceDenom,
+        denom: address,
       },
     });
 
@@ -191,16 +185,16 @@ export class IbcBridgeProvider implements BridgeProvider {
   protected getIbcSource({ fromAsset, toAsset }: GetBridgeQuoteParams): {
     sourceChannel: string;
     sourcePort: string;
-    sourceDenom: string;
+    address: string;
   } {
     const transferAsset = this.ctx.assetLists
       .flatMap((list) => list.assets)
       .find(
         (asset) =>
-          asset.coinMinimalDenom === toAsset.sourceDenom ||
-          asset.sourceDenom === toAsset.sourceDenom ||
-          asset.coinMinimalDenom === fromAsset.sourceDenom ||
-          asset.sourceDenom === fromAsset.sourceDenom
+          asset.coinMinimalDenom === toAsset.address ||
+          asset.sourceDenom === toAsset.address ||
+          asset.coinMinimalDenom === fromAsset.address ||
+          asset.sourceDenom === fromAsset.address
       );
 
     if (!transferAsset)
@@ -225,7 +219,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       return {
         sourceChannel: channelId,
         sourcePort: port,
-        sourceDenom,
+        address: sourceDenom,
       };
     } else {
       // transfer from source
@@ -233,7 +227,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       return {
         sourceChannel: channelId,
         sourcePort: port,
-        sourceDenom: fromAsset.address,
+        address: fromAsset.address,
       };
     }
   }
@@ -273,9 +267,9 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     const url = new URL("https://geo.tfm.com/");
     url.searchParams.set("chainFrom", fromChain.chainId);
-    url.searchParams.set("token0", fromAsset.sourceDenom);
+    url.searchParams.set("token0", fromAsset.address);
     url.searchParams.set("chainTo", toChain.chainId);
-    url.searchParams.set("token1", toAsset.sourceDenom);
+    url.searchParams.set("token1", toAsset.address);
 
     return { urlProviderName: "TFM", url };
   }
