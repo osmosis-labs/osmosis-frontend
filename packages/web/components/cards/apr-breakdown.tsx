@@ -167,10 +167,7 @@ const BreakdownRow: FunctionComponent<{
 }> = ({ label, value }) => (
   <div className="body2 flex w-full place-content-between items-center px-3">
     <p className="text-white-full">{label}</p>
-    {value.lower
-      ?.maxDecimals(3)
-      .toDec()
-      .equals(value.upper?.maxDecimals(3).toDec() ?? new Dec(0)) ? (
+    {value.lower?.toDec().equals(value.upper?.toDec() ?? new Dec(0)) ? (
       <p className="text-osmoverse-200">
         {value.upper?.maxDecimals(1).toString()}
       </p>
