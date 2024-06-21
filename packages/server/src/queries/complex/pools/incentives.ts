@@ -10,7 +10,10 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { queryPoolAprs } from "../../data-services/pool-aprs";
+import {
+  PoolDataRange,
+  queryPoolAprsRange,
+} from "../../data-services/pool-aprs";
 import { Gauge, queryGauges } from "../../osmosis";
 import { Epochs } from "../../osmosis/epochs";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
@@ -35,12 +38,11 @@ export type PoolIncentiveType = (typeof allPoolIncentiveTypes)[number];
 
 export type PoolIncentives = Partial<{
   aprBreakdown: Partial<{
-    total: RatePretty;
-
-    swapFee: RatePretty;
-    superfluid: RatePretty;
-    osmosis: RatePretty;
-    boost: RatePretty;
+    total: PoolDataRange<RatePretty | undefined>;
+    swapFee: PoolDataRange<RatePretty | undefined>;
+    superfluid: PoolDataRange<RatePretty | undefined>;
+    osmosis: PoolDataRange<RatePretty | undefined>;
+    boost: PoolDataRange<RatePretty | undefined>;
   }>;
   incentiveTypes: PoolIncentiveType[];
 }>;
@@ -95,42 +97,88 @@ export function getCachedPoolIncentivesMap(): Promise<
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
     getFreshValue: async () => {
-      const aprs = await queryPoolAprs();
+      const aprs = await queryPoolAprsRange();
 
       return aprs.reduce((map, apr) => {
-        let total = maybeMakeRatePretty(apr.total_apr);
-        const swapFee = maybeMakeRatePretty(apr.swap_fees);
-        const superfluid = maybeMakeRatePretty(apr.superfluid);
-        const osmosis = maybeMakeRatePretty(apr.osmosis);
-        let boost = maybeMakeRatePretty(apr.boost);
+        let totalUpper = maybeMakeRatePretty(apr.total_apr.upper);
+        let totalLower = maybeMakeRatePretty(apr.total_apr.lower);
+        const swapFeeUpper = maybeMakeRatePretty(apr.swap_fees.upper);
+        const swapFeeLower = maybeMakeRatePretty(apr.swap_fees.lower);
+        const superfluidUpper = maybeMakeRatePretty(apr.superfluid.upper);
+        const superfluidLower = maybeMakeRatePretty(apr.superfluid.lower);
+        const osmosisUpper = maybeMakeRatePretty(apr.osmosis.upper);
+        const osmosisLower = maybeMakeRatePretty(apr.osmosis.lower);
+        let boostUpper = maybeMakeRatePretty(apr.boost.upper);
+        let boostLower = maybeMakeRatePretty(apr.boost.lower);
 
         // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
         if (
           ExcludedExternalBoostPools.includes(apr.pool_id) &&
-          total &&
-          boost
+          totalUpper &&
+          totalLower &&
+          boostUpper &&
+          boostLower
         ) {
-          total = new RatePretty(total.toDec().sub(boost.toDec()));
-          boost = undefined;
+          totalUpper = new RatePretty(
+            totalUpper.toDec().sub(totalUpper.toDec())
+          );
+          totalLower = new RatePretty(
+            totalLower.toDec().sub(totalLower.toDec())
+          );
+          boostUpper = undefined;
+          boostLower = undefined;
         }
 
         // add list of incentives that are defined
         const incentiveTypes: PoolIncentiveType[] = [];
-        if (superfluid) incentiveTypes.push("superfluid");
-        if (osmosis) incentiveTypes.push("osmosis");
-        if (boost) incentiveTypes.push("boost");
-        if (!superfluid && !osmosis && !boost) incentiveTypes.push("none");
+        if (superfluidUpper && superfluidLower)
+          incentiveTypes.push("superfluid");
+        if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
+        if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+        if (
+          !superfluidUpper &&
+          !superfluidLower &&
+          !osmosisUpper &&
+          !osmosisLower &&
+          !boostUpper &&
+          !boostLower
+        )
+          incentiveTypes.push("none");
         const hasBreakdownData =
-          total || swapFee || superfluid || osmosis || boost;
+          totalUpper ||
+          totalLower ||
+          swapFeeUpper ||
+          swapFeeLower ||
+          superfluidUpper ||
+          superfluidLower ||
+          osmosisUpper ||
+          osmosisLower ||
+          boostUpper ||
+          boostLower;
 
         map.set(apr.pool_id, {
           aprBreakdown: hasBreakdownData
             ? {
-                total,
-                swapFee,
-                superfluid,
-                osmosis,
-                boost,
+                total: {
+                  upper: totalUpper,
+                  lower: totalLower,
+                },
+                swapFee: {
+                  upper: swapFeeUpper,
+                  lower: swapFeeLower,
+                },
+                superfluid: {
+                  upper: superfluidUpper,
+                  lower: superfluidLower,
+                },
+                osmosis: {
+                  upper: osmosisUpper,
+                  lower: osmosisLower,
+                },
+                boost: {
+                  upper: boostUpper,
+                  lower: boostLower,
+                },
               }
             : undefined,
           incentiveTypes,

@@ -17,13 +17,13 @@ export function queryPoolAprs(): Promise<PoolApr[]> {
   return apiClient(url.toString());
 }
 
-type Range = {
-  lower: number;
-  upper: number;
+export type PoolDataRange<T = number> = {
+  lower: T;
+  upper: T;
 };
 
-/** Queries numia for a breakdown of APRs per pool. */
-export function queryPoolAprsRange(): Promise<PoolApr<Range>[]> {
+/** Queries numia for a breakdown of APRs per pool with range. */
+export function queryPoolAprsRange(): Promise<PoolApr<PoolDataRange>[]> {
   const url = new URL("/pools_apr_range", NUMIA_BASE_URL);
   return apiClient(url.toString());
 }
