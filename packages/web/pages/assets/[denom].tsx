@@ -136,7 +136,7 @@ const AssetInfoView = observer(
       <AssetInfoViewProvider value={contextValue}>
         <Script
           src="/tradingview/charting_library.standalone.js"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
         <NextSeo
           title={`${
