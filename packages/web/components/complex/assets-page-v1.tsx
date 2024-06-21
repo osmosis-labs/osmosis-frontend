@@ -268,6 +268,12 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
+        
+        if (
+          !pool ||
+          (pool.type === "concentrated")){
+          return undefined;
+        }
         return [
           pool,
           sharePoolDetail.userShareValue,
