@@ -231,8 +231,7 @@ export const assetsRouter = createTRPCRouter({
                   return compareCommon(a.volume24h, b.volume24h);
                 });
               } else {
-                // default sort by volume24h desc
-                return sort(assets, "volume24h");
+                return assets;
               }
             }
           },

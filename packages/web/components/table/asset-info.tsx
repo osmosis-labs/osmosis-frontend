@@ -170,7 +170,7 @@ export const AssetsInfoTable: FunctionComponent<{
     fetchNextPage,
   } = api.edge.assets.getMarketAssets.useInfiniteQuery(
     {
-      limit: 50,
+      limit: 100,
       search: searchQuery,
       onlyVerified: showUnverifiedAssets === false && !searchQuery,
       includePreview,

@@ -126,6 +126,8 @@ function filterAssetList(
     }
   });
 
+  console.log("params.search: ", params.search);
+
   // Search raw asset list before reducing type to minimal Asset type
   if (params.search && !params.findMinDenomOrSymbol) {
     // search for exact match for coinMinimalDenom first
@@ -136,6 +138,8 @@ function filterAssetList(
       0.0 // Exact match
     );
 
+    console.log("coinMinimalDemonMatches: ", coinMinimalDemonMatches);
+
     // if not exact match for coinMinimalDenom, search by symbol or name
     if (coinMinimalDemonMatches.length > 0) {
       assetListAssets = coinMinimalDemonMatches;
@@ -143,9 +147,14 @@ function filterAssetList(
       const symbolOrNameMatches = search(
         assetListAssets,
         /** Search is performed on the raw asset list data, instead of `Asset` type. */
-        ["symbol", "name"] as (keyof AssetListAsset)[],
+        [
+          { name: "name", weight: 2 },
+          // { name: "coingeckoId", weight: 2 },
+          { name: "symbol", weight: 1 },
+        ] as { name: keyof AssetListAsset; weight: number }[],
         params.search
       );
+      console.log("symbolOrNameMatches: ", symbolOrNameMatches);
       assetListAssets = symbolOrNameMatches;
     }
   }
