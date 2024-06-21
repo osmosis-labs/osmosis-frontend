@@ -271,7 +271,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         
         if (
           !pool ||
-          (pool.type === "concentrated")){
+          pool.type === "concentrated"){
           return undefined;
         }
         return [
