@@ -52,6 +52,7 @@ export const OrderHistory = observer(() => {
                 <th
                   key={header.id}
                   style={{ width: `${header.getSize()}px` }}
+                  className="!px-0"
                   colSpan={header.colSpan}
                 >
                   {flexRender(
@@ -67,7 +68,7 @@ export const OrderHistory = observer(() => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="!px-0">
+                <td key={cell.id} className="!px-0 !text-left">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
