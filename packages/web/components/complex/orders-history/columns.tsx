@@ -86,17 +86,47 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Price</small>;
     },
+    cell: ({
+      row: {
+        original: { baseAsset },
+      },
+    }) => {
+      return (
+        <div className="flex flex-col gap-1">
+          <p className="body2 text-osmoverse-300">
+            {baseAsset?.symbol} · Limit
+          </p>
+          <p>$67,890.10</p>
+        </div>
+      );
+    },
   }),
   columnHelper.display({
     id: "orderPlaced",
     header: () => {
       return <small className="body2">Order Placed</small>;
     },
+    cell: () => {
+      return (
+        <div className="flex flex-col gap-1">
+          <p className="body2 text-osmoverse-300">2:14 PM</p>
+          <p>Apr 1st</p>
+        </div>
+      );
+    },
   }),
   columnHelper.display({
     id: "status",
     header: () => {
       return <small className="body2">Status</small>;
+    },
+    cell: () => {
+      return (
+        <div className="flex flex-col gap-1">
+          <p className="body2 text-osmoverse-300">2h ago</p>
+          <p className="text-bullish-400">Filled</p>
+        </div>
+      );
     },
   }),
   columnHelper.display({
