@@ -128,7 +128,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 content={TooltipContent}
                 rootClassNames="!bg-osmoverse-1000 border border-[#E4E1FB33] rounded-2xl"
               >
-                <Icon id="alert-circle" width={16} height={16} />
+                <Icon id="alert-circle-filled" width={16} height={16} />
               </Tooltip>
             </span>
           )}
