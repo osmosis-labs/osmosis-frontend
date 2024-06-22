@@ -46,7 +46,11 @@ export const OrderHistory = observer(() => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr className="!border-0 bg-transparent" key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  style={{ width: `${header.getSize()}px` }}
+                  colSpan={header.colSpan}
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()

@@ -12,6 +12,7 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Order</small>;
     },
+    size: 400,
     cell: ({
       row: {
         original: {
