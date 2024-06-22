@@ -4,28 +4,33 @@ import { useMemo } from "react";
 import { Order } from "~/components/complex/orders-history";
 import { AssetLists } from "~/config/generated/asset-lists";
 
-export function useAggregatedOrders({ orders }: { orders: Order[] }) {
-  const aggregated: Order[] = useMemo(
+export type AggregatedOrder = Order & {
+  baseAsset: ReturnType<typeof getAssetFromAssetList>;
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>;
+};
+
+export function useAggregatedOrders({
+  orders,
+}: {
+  orders: Order[];
+}): AggregatedOrder[] {
+  const aggregated: AggregatedOrder[] = useMemo(
     () =>
       orders.map((order) => {
         return {
           ...order,
-          baseDenom:
-            getAssetFromAssetList({
-              assetLists: AssetLists,
-              coinMinimalDenom: order.baseDenom,
-            })?.symbol ?? order.baseDenom,
-          quoteDenom:
-            getAssetFromAssetList({
-              assetLists: AssetLists,
-              coinMinimalDenom: order.quoteDenom,
-            })?.symbol ?? order.quoteDenom,
+          baseAsset: getAssetFromAssetList({
+            assetLists: AssetLists,
+            coinMinimalDenom: order.baseDenom,
+          }),
+          quoteAsset: getAssetFromAssetList({
+            assetLists: AssetLists,
+            coinMinimalDenom: order.quoteDenom,
+          }),
         };
       }),
     [orders]
   );
 
-  return {
-    orders: aggregated,
-  };
+  return aggregated;
 }

@@ -9,7 +9,10 @@ import React from "react";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
-import { useAggregatedOrders } from "~/hooks/order-history/use-aggregated-orders";
+import {
+  AggregatedOrder,
+  useAggregatedOrders,
+} from "~/hooks/order-history/use-aggregated-orders";
 import { useStore } from "~/stores";
 
 export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
@@ -23,10 +26,10 @@ export const OrderHistory = observer(() => {
     userAddress: wallet?.address ?? "",
   });
 
-  const { orders } = useAggregatedOrders({ orders: _orders });
+  const aggregated = useAggregatedOrders({ orders: _orders });
 
-  const table = useReactTable<Order>({
-    data: orders,
+  const table = useReactTable<AggregatedOrder>({
+    data: aggregated,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });

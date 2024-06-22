@@ -1,10 +1,11 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
+import Image from "next/image";
 
 import { Icon } from "~/components/assets";
-import { Order } from "~/components/complex/orders-history";
+import { AggregatedOrder } from "~/hooks/order-history/use-aggregated-orders";
 
-const columnHelper = createColumnHelper<Order>();
+const columnHelper = createColumnHelper<AggregatedOrder>();
 
 export const tableColumns = [
   columnHelper.display({
@@ -17,8 +18,8 @@ export const tableColumns = [
       row: {
         original: {
           order_direction,
-          baseDenom,
-          quoteDenom,
+          quoteAsset,
+          baseAsset,
           // placed_quantity,
           // quantity,
           // tick_id,
@@ -28,12 +29,20 @@ export const tableColumns = [
         },
       },
     }) => {
+      const baseAssetLogo =
+        baseAsset?.rawAsset.logoURIs.svg ??
+        baseAsset?.rawAsset.logoURIs.png ??
+        "";
+
       return (
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800">
             <Icon
               id="exchange"
-              className={classNames("h-6 w-6 text-bullish-400")}
+              className={classNames("h-6 w-6", {
+                "text-bullish-400": order_direction === "bid",
+                "text-rust-400": order_direction === "ask",
+              })}
               width={24}
               height={24}
             />
@@ -41,22 +50,32 @@ export const tableColumns = [
           <div className="flex flex-col gap-1">
             <p
               className={classNames(
-                "body2 inline-flex items-center gap-1 text-osmoverse-300",
+                "body2 inline-flex w-fit items-center gap-1 text-osmoverse-300",
                 { "flex-row-reverse": order_direction === "bid" }
               )}
             >
-              <span>1000 {baseDenom}</span>
+              <span>1000 {baseAsset?.symbol}</span>
               <Icon
                 id="arrow-right"
                 className="h-4 w-4"
                 width={16}
                 height={16}
               />
-              <span>
-                0.123
-                {quoteDenom}
-              </span>
+              <span>0.123 {quoteAsset?.symbol}</span>
             </p>
+            <div className="inline-flex items-center gap-2">
+              <span className="subtitle1 font-bold">
+                {order_direction === "bid" ? "Buy" : "Sell"} $1000 of
+              </span>
+              <Image
+                src={baseAssetLogo}
+                alt={`${baseAsset?.symbol} icon`}
+                width={20}
+                height={20}
+                className="h-5 w-5"
+              />
+              <span className="subtitle1">{baseAsset?.symbol}</span>
+            </div>
           </div>
         </div>
       );
