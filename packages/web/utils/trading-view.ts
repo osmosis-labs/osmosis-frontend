@@ -51,7 +51,7 @@ export const historicalDatafeed: IBasicDataFeed = {
         findMinDenomOrSymbol: denom,
       });
 
-      const pricescale = 10 ** asset.coinDecimals;
+      const pricescale = 10 ** 6;
 
       const symbolInfo: LibrarySymbolInfo = {
         ticker: asset.coinName,
