@@ -1,8 +1,6 @@
 import {
-  CoingeckoCoin,
   getActiveCoingeckoCoins,
   getAssetMarketActivity,
-  queryCoingeckoCoin,
   RichTweet,
   Twitter,
 } from "@osmosis-labs/server";
@@ -58,36 +56,87 @@ const AssetInfoPage = observer((props: AssetInfoPageProps) => {
   return <AssetInfoView {...props} />;
 });
 
-const AssetInfoView = observer(
-  ({ tweets, coingeckoCoin }: AssetInfoPageProps) => {
-    const { t } = useTranslation();
-    const router = useRouter();
+const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
+  const { t } = useTranslation();
+  const router = useRouter();
 
-    const { title, details, coinGeckoId, token } = useAssetInfo();
+  const { title, details, coinGeckoId, token } = useAssetInfo();
 
-    if (!token) {
-      return null;
+  if (!token) {
+    return null;
+  }
+
+  const assetInfoConfig = useAssetInfoConfig(
+    token.coinDenom,
+    token.coinMinimalDenom,
+    coinGeckoId
+  );
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [
+      EventName.TokenInfo.pageViewed,
+      { tokenName: router.query.denom as string },
+    ],
+  });
+
+  const [ref] = useQueryState("ref");
+
+  useNavBar({
+    title: (
+      <LinkButton
+        className="mr-auto md:invisible"
+        icon={
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+            className="text-osmoverse-200"
+          />
+        }
+        label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+        ariaLabel={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+        href={ref === "portfolio" ? "/portfolio" : "/assets"}
+      />
+    ),
+    ctas: [],
+  });
+
+  useUnmount(() => {
+    if (process.env.NODE_ENV === "production") {
+      assetInfoConfig.dispose();
     }
+  });
 
-    const assetInfoConfig = useAssetInfoConfig(
-      token.coinDenom,
-      token.coinMinimalDenom,
-      coinGeckoId
-    );
+  const contextValue = useMemo(
+    () => ({
+      assetInfoConfig,
+    }),
+    [assetInfoConfig]
+  );
 
-    useAmplitudeAnalytics({
-      onLoadEvent: [
-        EventName.TokenInfo.pageViewed,
-        { tokenName: router.query.denom as string },
-      ],
-    });
+  const SwapTool_ = (
+    <SwapTool
+      fixedWidth
+      useQueryParams={false}
+      useOtherCurrencies={true}
+      initialSendTokenDenom={token.coinDenom === "USDC" ? "OSMO" : "USDC"}
+      initialOutTokenDenom={token.coinDenom}
+      page="Token Info Page"
+    />
+  );
 
-    const [ref] = useQueryState("ref");
-
-    useNavBar({
-      title: (
+  return (
+    <AssetInfoViewProvider value={contextValue}>
+      <NextSeo
+        title={`${
+          title ? `${title} (${token.coinDenom})` : token.coinDenom
+        } | Osmosis`}
+        description={details?.description}
+      />
+      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 xs:px-2">
         <LinkButton
-          className="mr-auto md:invisible"
+          className="mr-auto hidden md:flex"
           icon={
             <Image
               alt="left"
@@ -97,96 +146,41 @@ const AssetInfoView = observer(
               className="text-osmoverse-200"
             />
           }
-          label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
-          ariaLabel={
-            ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")
-          }
-          href={ref === "portfolio" ? "/portfolio" : "/assets"}
+          label={t("menu.assets")}
+          ariaLabel={t("menu.assets")}
+          href="/assets"
         />
-      ),
-      ctas: [],
-    });
-
-    useUnmount(() => {
-      if (process.env.NODE_ENV === "production") {
-        assetInfoConfig.dispose();
-      }
-    });
-
-    const contextValue = useMemo(
-      () => ({
-        assetInfoConfig,
-      }),
-      [assetInfoConfig]
-    );
-
-    const SwapTool_ = (
-      <SwapTool
-        fixedWidth
-        useQueryParams={false}
-        useOtherCurrencies={true}
-        initialSendTokenDenom={token.coinDenom === "USDC" ? "OSMO" : "USDC"}
-        initialOutTokenDenom={token.coinDenom}
-        page="Token Info Page"
-      />
-    );
-
-    return (
-      <AssetInfoViewProvider value={contextValue}>
-        <NextSeo
-          title={`${
-            title ? `${title} (${token.coinDenom})` : token.coinDenom
-          } | Osmosis`}
-          description={details?.description}
-        />
-        <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 xs:px-2">
-          <LinkButton
-            className="mr-auto hidden md:flex"
-            icon={
-              <Image
-                alt="left"
-                src="/icons/arrow-left.svg"
-                width={24}
-                height={24}
-                className="text-osmoverse-200"
-              />
-            }
-            label={t("menu.assets")}
-            ariaLabel={t("menu.assets")}
-            href="/assets"
-          />
-          <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-5">
-                <TokenNavigation coingeckoCoin={coingeckoCoin} />
-                <TokenChart />
-              </div>
-              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
-                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                  {SwapTool_}
-                </div>
-                <YourBalance className="xl:flex-grow" />
-              </div>
-              <TokenDetails token={token} coingeckoCoin={coingeckoCoin} />
-              <TwitterSection tweets={tweets} />
+        <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
+              <TokenNavigation />
+              <TokenChart />
             </div>
-
-            <div className="flex flex-col gap-8">
-              <div className="xl:hidden">{SwapTool_}</div>
-              {token.isAlloyed && token.contract ? (
-                <AlloyedAssetsSection
-                  title={title ?? token.coinDenom}
-                  denom={token.coinDenom}
-                  contractAddress={token.contract}
-                />
-              ) : null}
+            <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+              <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
+                {SwapTool_}
+              </div>
+              <YourBalance className="xl:flex-grow" />
             </div>
+            <TokenDetails token={token} />
+            <TwitterSection tweets={tweets} />
           </div>
-        </main>
-      </AssetInfoViewProvider>
-    );
-  }
-);
+
+          <div className="flex flex-col gap-8">
+            <div className="xl:hidden">{SwapTool_}</div>
+            {token.isAlloyed && token.contract ? (
+              <AlloyedAssetsSection
+                title={title ?? token.coinDenom}
+                denom={token.coinDenom}
+                contractAddress={token.contract}
+              />
+            ) : null}
+          </div>
+        </div>
+      </main>
+    </AssetInfoViewProvider>
+  );
+});
 
 export default AssetInfoPage;
 
@@ -242,7 +236,6 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const tokenDenom = params?.denom as string;
-  let coingeckoCoin: CoingeckoCoin | null = null;
 
   try {
     /**
@@ -266,11 +259,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
           : undefined;
 
         if (tokenDetails) {
-          if (tokenDetails.coingeckoID) {
-            coingeckoCoin =
-              (await queryCoingeckoCoin(tokenDetails.coingeckoID)) ?? null;
-          }
-
           if (tokenDetails.twitterURL) {
             const userId = tokenDetails.twitterURL.split("/").pop();
 
@@ -291,7 +279,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
   return {
     props: {
-      coingeckoCoin,
       tweets,
       trpcState: trpcHelpers.dehydrate(),
     },

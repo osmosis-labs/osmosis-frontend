@@ -1,6 +1,6 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { Asset, CoingeckoCoin } from "@osmosis-labs/server";
+import { Asset } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React, { FunctionComponent, useMemo, useState } from "react";
@@ -19,11 +19,10 @@ const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
   token: Asset;
-  coingeckoCoin?: CoingeckoCoin | null;
   className?: string;
 }
 
-const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
+const _TokenDetails = ({ className }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
   const { queriesExternalStore, priceStore } = useStore();
@@ -37,9 +36,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
     details,
     coinGeckoId,
     token,
-  } = useAssetInfo({
-    coingeckoCoin,
-  });
+  } = useAssetInfo();
 
   const isExpandable = useMemo(
     () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,

@@ -1,4 +1,3 @@
-import { CoingeckoCoin } from "@osmosis-labs/server";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
@@ -7,12 +6,7 @@ import { useCurrentLanguage } from "~/hooks/user-settings";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { api } from "~/utils/trpc";
 
-interface UseAssetInfoProps {
-  coingeckoCoin?: CoingeckoCoin | null;
-}
-
-export const useAssetInfo = (props: UseAssetInfoProps = {}) => {
-  const { coingeckoCoin } = props;
+export const useAssetInfo = () => {
   const language = useCurrentLanguage();
   const router = useRouter();
   const tokenDenom = router.query.denom as string;
@@ -47,6 +41,13 @@ export const useAssetInfo = (props: UseAssetInfoProps = {}) => {
   const coinGeckoId = useMemo(
     () => (details?.coingeckoID ? details?.coingeckoID : token?.coinGeckoId),
     [details?.coingeckoID, token]
+  );
+
+  const { data: coingeckoCoin } = api.edge.assets.getCoingeckoCoin.useQuery(
+    { coinGeckoId: coinGeckoId! },
+    {
+      enabled: coinGeckoId !== undefined,
+    }
   );
 
   const twitterUrl = useMemo(() => {

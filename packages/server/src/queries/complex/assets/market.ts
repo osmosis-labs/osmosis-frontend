@@ -6,7 +6,12 @@ import { LRUCache } from "lru-cache";
 import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
-import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
+import {
+  CoingeckoCoin,
+  queryCoingeckoCoin,
+  queryCoingeckoCoinIds,
+  queryCoingeckoCoins,
+} from "../../coingecko";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -103,6 +108,24 @@ async function getAssetMarketCap({
     marketCapsMap.get(coinDenom.toUpperCase()) ??
     (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
   );
+}
+
+const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Fetches coingecko coin data. */
+export async function getAssetCoingeckoCoin({
+  coinGeckoId,
+}: {
+  coinGeckoId: string;
+}): Promise<CoingeckoCoin | undefined> {
+  return cachified({
+    cache: assetCoingeckoCoinCache,
+    key: `assetCoingeckoCoinCache-${coinGeckoId}`,
+    ttl: 1000 * 60 * 15, // 15 minutes
+    getFreshValue: () => queryCoingeckoCoin(coinGeckoId),
+  });
 }
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
