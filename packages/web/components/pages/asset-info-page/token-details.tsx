@@ -87,7 +87,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                     asChild
                   >
                     <Link href={twitterUrl} target="_blank" rel="external">
-                      <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
+                      <Icon className="h-5 w-5 text-osmoverse-400" id="X" />
                     </Link>
                   </Button>
                 ) : null}
@@ -99,7 +99,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                     asChild
                   >
                     <Link href={websiteURL} target="_blank" rel="external">
-                      <Icon className="h-6 w-6 text-osmoverse-400" id="web" />
+                      <Icon className="h-5 w-5 text-osmoverse-400" id="web" />
                     </Link>
                   </Button>
                 ) : null}
@@ -114,7 +114,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                   >
                     <Link href={coingeckoURL} target="_blank" rel="external">
                       <Icon
-                        className="h-9 w-9 text-osmoverse-300"
+                        className="h-5 w-5 text-osmoverse-300"
                         id="coingecko"
                       />
                     </Link>
