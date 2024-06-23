@@ -43,12 +43,13 @@ export const useAssetInfo = () => {
     [details?.coingeckoID, token]
   );
 
-  const { data: coingeckoCoin } = api.edge.assets.getCoingeckoCoin.useQuery(
-    { coinGeckoId: coinGeckoId! },
-    {
-      enabled: coinGeckoId !== undefined,
-    }
-  );
+  const { data: coingeckoCoin, isLoading: isLoadingCoingeckoCoin } =
+    api.edge.assets.getCoingeckoCoin.useQuery(
+      { coinGeckoId: coinGeckoId! },
+      {
+        enabled: coinGeckoId !== undefined,
+      }
+    );
 
   const twitterUrl = useMemo(() => {
     if (details?.twitterURL) {
@@ -96,5 +97,7 @@ export const useAssetInfo = () => {
     coinGeckoId,
     token: token!,
     tokenDetailsByLanguage,
+    coingeckoCoin,
+    isLoadingCoingeckoCoin,
   };
 };

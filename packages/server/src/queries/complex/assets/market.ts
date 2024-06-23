@@ -7,7 +7,6 @@ import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
 import {
-  CoingeckoCoin,
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
   queryCoingeckoCoins,
@@ -119,12 +118,32 @@ export async function getAssetCoingeckoCoin({
   coinGeckoId,
 }: {
   coinGeckoId: string;
-}): Promise<CoingeckoCoin | undefined> {
+}) {
   return cachified({
     cache: assetCoingeckoCoinCache,
     key: `assetCoingeckoCoinCache-${coinGeckoId}`,
     ttl: 1000 * 60 * 15, // 15 minutes
-    getFreshValue: () => queryCoingeckoCoin(coinGeckoId),
+    getFreshValue: async () => {
+      const coingeckoCoin = await queryCoingeckoCoin(coinGeckoId);
+
+      return {
+        links: coingeckoCoin?.links,
+        marketCapRank: coingeckoCoin?.market_cap_rank,
+        totalValueLocked: coingeckoCoin?.market_data.total_value_locked?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.total_value_locked.usd)
+            )
+          : undefined,
+        circulatingSupply: coingeckoCoin?.market_data.circulating_supply,
+        marketCap: coingeckoCoin?.market_data.market_cap?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.market_cap.usd)
+            )
+          : undefined,
+      };
+    },
   });
 }
 
