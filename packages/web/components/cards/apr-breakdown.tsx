@@ -1,71 +1,14 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import type { PoolDataRange, PoolIncentives } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
 import { Icon } from "../assets";
 import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 import { CustomClasses } from "../types";
-
-/**
- * Pools that are excluded from showing external boost incentives APRs.
- */
-const ExcludedExternalBoostPools: string[] =
-  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
-
-/** @deprecated uses Mobx query stores, do not use */
-export const AprBreakdownLegacy: FunctionComponent<
-  { poolId: string; showDisclaimerTooltip?: boolean } & CustomClasses
-> = observer(({ poolId, className, showDisclaimerTooltip }) => {
-  const { queriesExternalStore } = useStore();
-  const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
-
-  let totalApr = poolAprs?.totalApr;
-  let boostApr = poolAprs?.boost;
-
-  if (
-    poolAprs?.poolId &&
-    ExcludedExternalBoostPools.includes(poolAprs.poolId) &&
-    totalApr &&
-    boostApr
-  ) {
-    totalApr = new RatePretty(totalApr.toDec().sub(boostApr.toDec()));
-    boostApr = undefined;
-  }
-
-  return (
-    <AprBreakdown
-      total={{
-        lower: totalApr,
-        upper: totalApr,
-      }}
-      swapFee={{
-        lower: poolAprs?.swapFees,
-        upper: poolAprs?.swapFees,
-      }}
-      superfluid={{
-        lower: poolAprs?.superfluid,
-        upper: poolAprs?.superfluid,
-      }}
-      osmosis={{
-        lower: poolAprs?.osmosis,
-        upper: poolAprs?.osmosis,
-      }}
-      boost={{
-        lower: boostApr,
-        upper: boostApr,
-      }}
-      className={className}
-      showDisclaimerTooltip={showDisclaimerTooltip}
-    />
-  );
-});
 
 export const AprBreakdown: FunctionComponent<
   PoolIncentives["aprBreakdown"] &
