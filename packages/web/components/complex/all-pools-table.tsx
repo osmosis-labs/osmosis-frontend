@@ -686,7 +686,16 @@ const AprBreakdownCell: PoolCellComponent = ({
         ) : (
           <Icon id="info" className="h-4 w-4" />
         )}
-        {aprBreakdown.total?.upper?.maxDecimals(0).toString() ?? ""}
+        {aprBreakdown?.total?.upper
+          .toDec()
+          .equals(aprBreakdown?.total?.lower.toDec()) ? (
+          <p>{aprBreakdown?.total?.upper.maxDecimals(1).toString()}</p>
+        ) : (
+          <p>
+            {aprBreakdown?.total?.lower.maxDecimals(1).toString()} -{" "}
+            {aprBreakdown?.total?.upper.maxDecimals(1).toString()}
+          </p>
+        )}
       </p>
     </Tooltip>
   )) ??
