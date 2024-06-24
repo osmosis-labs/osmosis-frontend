@@ -1,6 +1,9 @@
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 
 import { Icon } from "~/components/assets";
+import { SkeletonLoader } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
@@ -21,7 +24,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
 
-  const { data } = api.edge.assets.getUserAsset.useQuery(
+  const { data, isLoading } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: token.coinDenom,
       userOsmoAddress: account?.address,
@@ -43,13 +46,19 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
         </h5>
       </header>
 
-      <p className="mb-2 text-h4 font-h4">
-        {data?.usdValue?.toString() ?? "-"}
-      </p>
+      <SkeletonLoader isLoaded={!isLoading}>
+        <p className="mb-2 text-h4 font-h4">
+          {data?.usdValue?.toString() ??
+            new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)).toString()}
+        </p>
+      </SkeletonLoader>
 
-      <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
-        {data?.amount?.toString() ?? "-"} {t("tokenInfos.onOsmosis")}
-      </p>
+      <SkeletonLoader isLoaded={!isLoading}>
+        <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
+          {data?.amount?.toString() ?? `0 ${token.coinDenom}`}{" "}
+          {t("tokenInfos.onOsmosis")}
+        </p>
+      </SkeletonLoader>
 
       <div className="flex gap-3">
         <Button
