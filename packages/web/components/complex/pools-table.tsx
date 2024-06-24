@@ -583,11 +583,14 @@ export const AprBreakdownCell: PoolCellComponent = ({
       content={<AprBreakdown {...aprBreakdown} />}
     >
       <p
-        className={classNames("ml-auto flex items-center gap-1.5", {
-          "text-bullish-500": Boolean(
-            aprBreakdown.boost || aprBreakdown.osmosis
-          ),
-        })}
+        className={classNames(
+          "ml-auto flex items-center gap-1.5 whitespace-nowrap",
+          {
+            "text-bullish-500": Boolean(
+              aprBreakdown.boost || aprBreakdown.osmosis
+            ),
+          }
+        )}
       >
         {aprBreakdown.boost || aprBreakdown.osmosis ? (
           <div className="rounded-full bg-[#003F4780]">
