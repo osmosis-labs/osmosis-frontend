@@ -23,6 +23,7 @@ import { LinkButton } from "~/components/buttons/link-button";
 import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
 import { TokenDetails } from "~/components/pages/asset-info-page/token-details";
 import { TokenNavigation } from "~/components/pages/asset-info-page/token-navigation";
+import { TokenPools } from "~/components/pages/asset-info-page/token-pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
 import { YourBalance } from "~/components/pages/asset-info-page/your-balance";
 import { SwapTool } from "~/components/swap-tool";
@@ -151,11 +152,12 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
           href="/assets"
         />
         <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-12 sm:gap-4">
             <div className="flex flex-col gap-5">
               <TokenNavigation />
               <TokenChart />
             </div>
+            <TokenPools denom={token.coinDenom} />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                 {SwapTool_}
