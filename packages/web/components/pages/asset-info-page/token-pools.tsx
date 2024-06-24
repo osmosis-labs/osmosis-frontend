@@ -32,7 +32,8 @@ export const TokenPools = (props: TokenPoolsProps) => {
   const filters = useMemo(
     () => ({
       ...defaultFilters,
-      searchQuery: denom,
+      // Exact match search
+      searchQuery: `=${denom}`,
     }),
     [denom]
   );
