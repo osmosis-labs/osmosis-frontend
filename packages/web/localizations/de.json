@@ -973,9 +973,6 @@
   },
   "tokenInfos": {
     "explorePools": "Entdecken Sie Pools",
-    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
-    "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
-    "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
     "yourBalance": "Dein Kontostand",
     "onOsmosis": "auf Osmosis",
     "aboutDenom": "Über {name}",

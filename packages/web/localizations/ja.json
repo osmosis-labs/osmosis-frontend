@@ -973,9 +973,6 @@
   },
   "tokenInfos": {
     "explorePools": "プールを探索する",
-    "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
-    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
-    "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
     "yourBalance": "あなたのバランス",
     "onOsmosis": "浸透について",
     "aboutDenom": "{name}について",

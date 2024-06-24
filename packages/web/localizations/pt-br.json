@@ -973,9 +973,6 @@
   },
   "tokenInfos": {
     "explorePools": "Explorar piscinas",
-    "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
-    "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
     "onOsmosis": "em osmose",
     "aboutDenom": "Sobre {name}",
