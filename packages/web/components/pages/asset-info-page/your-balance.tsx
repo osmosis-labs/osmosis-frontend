@@ -24,7 +24,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
 
-  const { data, isLoading } = api.edge.assets.getUserAsset.useQuery(
+  const { data, isLoading } = api.edge.assets.getUserBridgeAsset.useQuery(
     {
       findMinDenomOrSymbol: token.coinDenom,
       userOsmoAddress: account?.address,
@@ -65,6 +65,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           size="lg-full"
           className="flex flex-1 items-center"
           onClick={() => bridgeAsset(token.coinMinimalDenom, "deposit")}
+          disabled={!data?.transferMethods.length}
         >
           <Icon className="mr-2" id="deposit" height={16} width={16} />
           {t("assets.historyTable.colums.deposit")}
@@ -74,7 +75,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           className="flex flex-1 items-center"
           variant="secondary"
           onClick={() => bridgeAsset(token.coinMinimalDenom, "withdraw")}
-          disabled={!data?.amount}
+          disabled={!data?.amount || !data?.transferMethods.length}
         >
           <Icon className="mr-2" id="withdraw" height={16} width={16} />
           {t("assets.historyTable.colums.withdraw")}
