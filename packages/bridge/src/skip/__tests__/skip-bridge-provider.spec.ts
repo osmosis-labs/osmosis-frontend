@@ -48,10 +48,10 @@ jest.mock("@cosmjs/proto-signing", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://api.skip.money/v1/fungible/assets", (_req, res, ctx) => {
+    rest.get("https://api.skip.money/v2/fungible/assets", (_req, res, ctx) => {
       return res(ctx.json(SkipAssets));
     }),
-    rest.get("https://api.skip.money/v1/info/chains", (_req, res, ctx) => {
+    rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
       return res(ctx.json(SkipChains));
     })
   );
@@ -271,7 +271,7 @@ describe("SkipBridgeProvider", () => {
   it("should handle unsupported asset error", async () => {
     server.use(
       rest.get(
-        "https://api.skip.money/v1/fungible/assets",
+        "https://api.skip.money/v2/fungible/assets",
         (_req, res, ctx) => {
           return res(
             ctx.json({
