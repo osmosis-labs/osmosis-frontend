@@ -1,45 +1,33 @@
-import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { Asset, CoingeckoCoin } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
+import { Asset } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
+import { SkeletonLoader } from "~/components/loaders";
 import { Markdown } from "~/components/markdown";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
-import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
   token: Asset;
-  coingeckoCoin?: CoingeckoCoin | null;
   className?: string;
 }
 
-const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
+const _TokenDetails = ({ className }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
-  const { queriesExternalStore, priceStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const {
-    title,
-    websiteURL,
-    twitterUrl,
-    coingeckoURL,
-    details,
-    coinGeckoId,
-    token,
-  } = useAssetInfo({
-    coingeckoCoin,
-  });
+  const { title, websiteURL, twitterUrl, coingeckoURL, details, token } =
+    useAssetInfo();
 
   const isExpandable = useMemo(
     () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,
@@ -55,18 +43,6 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
 
     return details?.description;
   }, [isExpandable, isExpanded, details]);
-
-  const usdFiat = priceStore.getFiatCurrency("usd");
-
-  const coingeckoCoinInfo = coinGeckoId
-    ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
-    : undefined;
-  const marketCapRank = coingeckoCoinInfo?.marketCapRank;
-  const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
-  const circulatingSupply = coingeckoCoinInfo?.circulatingSupply;
-  const marketCap =
-    queriesExternalStore.queryMarketCaps.get(token.coinDenom) ??
-    coingeckoCoinInfo?.marketCap;
 
   const toggleExpand = () => {
     logEvent([
@@ -94,13 +70,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
     <section
       className={`flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6 ${className}`}
     >
-      <TokenStats
-        usdFiat={usdFiat}
-        marketCap={marketCap}
-        marketCapRank={marketCapRank}
-        totalValueLocked={totalValueLocked}
-        circulatingSupply={circulatingSupply}
-      />
+      <TokenStats />
       {title && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
@@ -117,7 +87,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
                     asChild
                   >
                     <Link href={twitterUrl} target="_blank" rel="external">
-                      <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
+                      <Icon className="h-5 w-5 text-osmoverse-400" id="X" />
                     </Link>
                   </Button>
                 ) : null}
@@ -129,7 +99,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
                     asChild
                   >
                     <Link href={websiteURL} target="_blank" rel="external">
-                      <Icon className="h-6 w-6 text-osmoverse-400" id="web" />
+                      <Icon className="h-5 w-5 text-osmoverse-400" id="web" />
                     </Link>
                   </Button>
                 ) : null}
@@ -144,7 +114,7 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
                   >
                     <Link href={coingeckoURL} target="_blank" rel="external">
                       <Icon
-                        className="h-9 w-9 text-osmoverse-300"
+                        className="h-5 w-5 text-osmoverse-300"
                         id="coingecko"
                       />
                     </Link>
@@ -207,44 +177,43 @@ const _TokenDetails = ({ className, coingeckoCoin }: TokenDetailsProps) => {
 
 export const TokenDetails = observer(_TokenDetails);
 
-interface TokenStatsProps {
-  usdFiat?: FiatCurrency;
-  marketCapRank?: number;
-  totalValueLocked?: number;
-  marketCap?: number;
-  circulatingSupply?: number;
-}
+const TokenStats = observer(() => {
+  const { t } = useTranslation();
 
-const TokenStats: FunctionComponent<TokenStatsProps> = observer(
-  ({ usdFiat, marketCap, marketCapRank, circulatingSupply }) => {
-    const { t } = useTranslation();
-    return (
-      <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
-        <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.marketCapRank")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">
-            {marketCapRank ? `#${marketCapRank}` : "-"}
-          </h5>
-        </li>
-        <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.marketCap")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">
-            {marketCap && usdFiat
-              ? formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))
+  const { coingeckoCoin, isLoadingCoingeckoCoin } = useAssetInfo();
+
+  return (
+    <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.marketCapRank")}
+        </p>
+        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
+          <h5 className="w-full text-xl font-h5 leading-8">
+            {coingeckoCoin?.marketCapRank
+              ? `#${coingeckoCoin.marketCapRank}`
               : "-"}
           </h5>
-        </li>
-        <li className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.circulatingSupply")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">
-            {circulatingSupply
-              ? formatPretty(new Dec(circulatingSupply), {
+        </SkeletonLoader>
+      </li>
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.marketCap")}
+        </p>
+        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
+          <h5 className="w-full text-xl font-h5 leading-8">
+            {coingeckoCoin?.marketCap?.toString() ?? "-"}
+          </h5>
+        </SkeletonLoader>
+      </li>
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.circulatingSupply")}
+        </p>
+        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
+          <h5 className="w-full text-xl font-h5 leading-8">
+            {coingeckoCoin?.circulatingSupply
+              ? formatPretty(new Dec(coingeckoCoin.circulatingSupply), {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                   compactDisplay: "short",
@@ -252,8 +221,8 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
                 })
               : "-"}
           </h5>
-        </li>
-      </ul>
-    );
-  }
-);
+        </SkeletonLoader>
+      </li>
+    </ul>
+  );
+});

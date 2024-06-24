@@ -6,7 +6,11 @@ import { LRUCache } from "lru-cache";
 import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
-import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
+import {
+  queryCoingeckoCoin,
+  queryCoingeckoCoinIds,
+  queryCoingeckoCoins,
+} from "../../coingecko";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -103,6 +107,44 @@ async function getAssetMarketCap({
     marketCapsMap.get(coinDenom.toUpperCase()) ??
     (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
   );
+}
+
+const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Fetches coingecko coin data. */
+export async function getAssetCoingeckoCoin({
+  coinGeckoId,
+}: {
+  coinGeckoId: string;
+}) {
+  return cachified({
+    cache: assetCoingeckoCoinCache,
+    key: `assetCoingeckoCoinCache-${coinGeckoId}`,
+    ttl: 1000 * 60 * 15, // 15 minutes
+    getFreshValue: async () => {
+      const coingeckoCoin = await queryCoingeckoCoin(coinGeckoId);
+
+      return {
+        links: coingeckoCoin?.links,
+        marketCapRank: coingeckoCoin?.market_cap_rank,
+        totalValueLocked: coingeckoCoin?.market_data.total_value_locked?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.total_value_locked.usd)
+            )
+          : undefined,
+        circulatingSupply: coingeckoCoin?.market_data.circulating_supply,
+        marketCap: coingeckoCoin?.market_data.market_cap?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.market_cap.usd)
+            )
+          : undefined,
+      };
+    },
+  });
 }
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name

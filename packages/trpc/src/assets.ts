@@ -8,6 +8,7 @@ import {
   CursorPaginationSchema,
   DEFAULT_VS_CURRENCY,
   getAsset,
+  getAssetCoingeckoCoin,
   getAssetHistoricalPrice,
   getAssetListingDate,
   getAssetMarketActivity,
@@ -247,6 +248,15 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+    ),
+  getCoingeckoCoin: publicProcedure
+    .input(
+      z.object({
+        coinGeckoId: z.string(),
+      })
+    )
+    .query(({ input: { coinGeckoId } }) =>
+      getAssetCoingeckoCoin({ coinGeckoId })
     ),
   getUserBridgeAssets: publicProcedure
     .input(

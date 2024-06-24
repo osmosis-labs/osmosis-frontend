@@ -1,4 +1,3 @@
-import { CoingeckoCoin } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,18 +8,11 @@ import { Button } from "~/components/ui/button";
 import { useTranslation, useUserWatchlist } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 
-interface TokenNavigationProps {
-  coingeckoCoin?: CoingeckoCoin | null;
-}
-
-export const TokenNavigation = observer((props: TokenNavigationProps) => {
-  const { coingeckoCoin } = props;
+export const TokenNavigation = observer(() => {
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { token, twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo({
-    coingeckoCoin,
-  });
+  const { token, twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo();
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
