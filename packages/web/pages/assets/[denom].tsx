@@ -151,7 +151,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
           ariaLabel={t("menu.assets")}
           href="/assets"
         />
-        <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
+        <div className="grid grid-cols-tokenpage gap-16 xl:flex xl:flex-col sm:gap-4">
           <div className="flex flex-col gap-12 sm:gap-4">
             <div className="flex flex-col gap-5">
               <TokenNavigation />

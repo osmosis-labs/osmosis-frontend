@@ -64,24 +64,26 @@ export const incentiveTypes: PoolIncentiveFilter[] = [
   "none",
 ];
 
-interface PoolsTableFilters {
+export interface PoolsTableFilters {
   searchQuery: string | null;
   poolIncentivesFilter: PoolIncentiveFilter[];
   poolTypesFilter: PoolTypeFilter[];
 }
 
-interface PoolsTabelSortParams {
+export interface PoolsTabelSortParams {
   allPoolsSort: MarketIncentivePoolsSortKey;
   allPoolsSortDir: SortDirection;
 }
 
-interface PoolsTableProps {
+export interface PoolsTableProps {
   topOffset?: number;
   quickAddLiquidity?: (poolId: string) => void;
+  limit?: number;
+  disablePagination?: boolean;
   filters?: PoolsTableFilters;
   sortParams?: PoolsTabelSortParams;
-  setSortDirection?: (dir: SortDirection) => void;
-  setSortKey?: (key?: MarketIncentivePoolsSortKey) => void;
+  setSortDirection: (dir: SortDirection) => void;
+  setSortKey: (key?: MarketIncentivePoolsSortKey) => void;
 }
 
 export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
@@ -89,8 +91,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const { width } = useWindowSize();
   const router = useRouter();
   const {
-    topOffset = 0,
+    topOffset,
     quickAddLiquidity,
+    limit = 100,
+    disablePagination = false,
     filters = {
       searchQuery: undefined,
       poolTypesFilter: poolFilterTypes,
@@ -121,7 +125,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     fetchNextPage,
   } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
     {
-      limit: 100,
+      limit,
       search: filters.searchQuery
         ? {
             query: filters.searchQuery,
@@ -198,7 +202,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     ];
 
     // Only show volume if more than half of the pools have volume data.
-    if (shouldDisplayVolumeData && setSortDirection && setSortKey) {
+    if (shouldDisplayVolumeData) {
       allColumns.push(
         columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
           id: "volume24hUsd",
@@ -217,30 +221,28 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       );
     }
 
-    if (setSortDirection && setSortKey) {
-      allColumns.push(
-        columnHelper.accessor(
-          (row) => row.totalFiatValueLocked?.toString() ?? "0",
-          {
-            id: "totalFiatValueLocked",
-            header: () => (
-              <SortHeader
-                label={t("pools.allPools.sort.liquidity")}
-                sortKey="totalFiatValueLocked"
-                disabled={isLoading}
-                currentSortKey={sortKey}
-                currentDirection={sortParams.allPoolsSortDir}
-                setSortDirection={setSortDirection}
-                setSortKey={setSortKey}
-              />
-            ),
-          }
-        ) as (typeof allColumns)[number]
-      );
-    }
+    allColumns.push(
+      columnHelper.accessor(
+        (row) => row.totalFiatValueLocked?.toString() ?? "0",
+        {
+          id: "totalFiatValueLocked",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.liquidity")}
+              sortKey="totalFiatValueLocked"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ) as (typeof allColumns)[number]
+    );
 
     // Only show fees if more than half of the pools have fees data.
-    if (shouldDisplayFeesData && setSortDirection && setSortKey) {
+    if (shouldDisplayFeesData) {
       allColumns.push(
         columnHelper.accessor(
           (row) => row.feesSpent7dUsd?.toString() ?? "N/A",
@@ -264,40 +266,40 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
 
     let remainingColumns = [
       columnHelper.accessor((row) => row, {
-        id: "poolQuickActions",
-        header: "",
-        cell: ({ row }) => (
-          <PoolQuickActionCell
-            poolId={row.original.id}
-            cellGroupEventEmitter={cellGroupEventEmitter}
-            onAddLiquidity={
-              quickAddLiquidity
-                ? () => quickAddLiquidity(row.original.id)
-                : undefined
-            }
-          />
+        id: "aprBreakdown.total",
+        header: () => (
+          <SortHeader
+            label={t("pools.allPools.sort.APRIncentivized")}
+            sortKey="aprBreakdown.total"
+            disabled={isLoading}
+            currentSortKey={sortKey}
+            currentDirection={sortParams.allPoolsSortDir}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          >
+            <AprDisclaimerTooltip />
+          </SortHeader>
         ),
+        cell: AprBreakdownCell,
       }),
     ] as (typeof allColumns)[number][];
 
-    if (setSortDirection && setSortKey) {
-      remainingColumns.unshift(
+    if (quickAddLiquidity) {
+      remainingColumns.push(
         columnHelper.accessor((row) => row, {
-          id: "aprBreakdown.total",
-          header: () => (
-            <SortHeader
-              label={t("pools.allPools.sort.APRIncentivized")}
-              sortKey="aprBreakdown.total"
-              disabled={isLoading}
-              currentSortKey={sortKey}
-              currentDirection={sortParams.allPoolsSortDir}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            >
-              <AprDisclaimerTooltip />
-            </SortHeader>
+          id: "poolQuickActions",
+          header: "",
+          cell: ({ row }) => (
+            <PoolQuickActionCell
+              poolId={row.original.id}
+              cellGroupEventEmitter={cellGroupEventEmitter}
+              onAddLiquidity={
+                quickAddLiquidity
+                  ? () => quickAddLiquidity(row.original.id)
+                  : undefined
+              }
+            />
           ),
-          cell: AprBreakdownCell,
         })
       );
     }
@@ -363,10 +365,11 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       lastRow &&
       lastVirtualRow &&
       lastRow.index === lastVirtualRow.index &&
-      canLoadMore
+      canLoadMore &&
+      !disablePagination
     )
       fetchNextPage();
-  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
+  }, [lastRow, lastVirtualRow, canLoadMore, disablePagination, fetchNextPage]);
 
   return (
     <div className="w-full">
@@ -396,11 +399,13 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           ))}
         </thead>
         <tbody>
-          {paddingTop > 0 && paddingTop - topOffset > 0 && (
-            <tr>
-              <td style={{ height: paddingTop - topOffset }} />
-            </tr>
-          )}
+          {topOffset !== undefined &&
+            paddingTop > 0 &&
+            paddingTop - topOffset > 0 && (
+              <tr>
+                <td style={{ height: paddingTop - topOffset }} />
+              </tr>
+            )}
           {isLoading && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -453,7 +458,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
               </td>
             </tr>
           )}
-          {paddingBottom > 0 && (
+          {topOffset !== undefined && paddingBottom > 0 && (
             <tr>
               <td style={{ height: paddingBottom - topOffset }} />
             </tr>
