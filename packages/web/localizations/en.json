@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
+    "onOsmosis": "on Osmosis",
     "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "Market Cap Rank",
     "marketCap": "Market Cap",
     "circulatingSupply": "Circulating Supply",
-    "buyToken": "Buy {coinDenom}",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools",
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",

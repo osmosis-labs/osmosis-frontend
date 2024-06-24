@@ -45,6 +45,7 @@ const buttonVariants = cva(
         sm: "h-6 py-1 px-1.5 rounded-md text-caption",
         xsm: "h-8 px-3 py-1.5 rounded-full",
         md: "h-10 py-2 px-3 rounded-xl",
+        "lg-full": "h-12 py-3 rounded-full",
         "sm-icon": "h-8 w-8 rounded-full",
         icon: "h-10 w-10 rounded-full",
       },

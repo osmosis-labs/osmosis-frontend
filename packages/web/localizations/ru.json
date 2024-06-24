@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Зарабатывайте с помощью {denom}",
     "explorePools": "Исследуйте бассейны",
-    "stakeYourDenomToEarn": "Сделайте ставку на свой {denom} чтобы заработать {apr} % годовых",
-    "stakeYourDenomToEarnNoAPR": "Сделайте ставку на свой {denom} чтобы получить вознаграждение",
-    "provideLiquidity": "Обеспечьте ликвидность и зарабатывайте на комиссиях и свопах",
     "yourBalance": "Ваш баланс",
+    "onOsmosis": "по осмосу",
     "aboutDenom": "О {name}",
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
     "circulatingSupply": "Оборотное снабжение",
-    "buyToken": "Купить {coinDenom}",
-    "staking": "Стейкинг",
-    "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}",
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",

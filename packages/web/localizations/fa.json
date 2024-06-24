@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
-    "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
-    "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
-    "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
+    "onOsmosis": "در اسمز",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
-    "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی",
-    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",

@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
-    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
-    "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
-    "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
     "yourBalance": "Dein Kontostand",
+    "onOsmosis": "auf Osmosis",
     "aboutDenom": "Über {name}",
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
-    "buyToken": "Kaufen Sie {coinDenom}",
-    "staking": "Abstecken",
-    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",

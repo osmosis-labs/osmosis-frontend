@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
-    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
+    "onOsmosis": "论渗透",
     "aboutDenom": "关于{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "市值排名",
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
-    "buyToken": "购买{coinDenom}",
-    "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性",
     "underlyingAssets": {
       "title": "基础资产",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",

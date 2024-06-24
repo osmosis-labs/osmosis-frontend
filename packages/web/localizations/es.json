@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Gana con {denom}",
     "explorePools": "Explorar piscinas",
-    "stakeYourDenomToEarn": "Apuesta tu {denom} para ganar un {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Apuesta tu {denom} para ganar recompensas",
-    "provideLiquidity": "Proporcione liquidez y gane con comisiones y swaps",
     "yourBalance": "Tu balance",
+    "onOsmosis": "en ósmosis",
     "aboutDenom": "Acerca de {name}",
     "ariaView": "Ver {name}",
     "ariaViewOn": "Ver en {name}",
@@ -995,9 +992,6 @@
     "marketCapRank": "Rango de capitalización de mercado",
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
-    "buyToken": "Comprar {coinDenom}",
-    "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
     "underlyingAssets": {
       "title": "Activos subyacentes",
       "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",

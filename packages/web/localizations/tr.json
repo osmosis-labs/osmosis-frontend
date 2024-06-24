@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
-    "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
-    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
-    "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
+    "onOsmosis": "Osmoz üzerinde",
     "aboutDenom": "{name} hakkında",
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
@@ -995,9 +992,6 @@
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "buyToken": "{coinDenom} satın alın",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",
