@@ -74,6 +74,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           className="flex flex-1 items-center"
           variant="secondary"
           onClick={() => bridgeAsset(token.coinMinimalDenom, "withdraw")}
+          disabled={!data?.amount}
         >
           <Icon className="mr-2" id="withdraw" height={16} width={16} />
           {t("assets.historyTable.colums.withdraw")}
