@@ -258,6 +258,30 @@ export const assetsRouter = createTRPCRouter({
     .query(({ input: { coinGeckoId } }) =>
       getAssetCoingeckoCoin({ coinGeckoId })
     ),
+  getUserBridgeAsset: publicProcedure
+    .input(
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
+        })
+        .merge(UserOsmoAddressSchema)
+    )
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
+
+        const bridgeAsset = getBridgeAsset(ctx.assetLists, asset);
+
+        return await getAssetWithUserBalance({
+          ...ctx,
+          asset: bridgeAsset,
+          userOsmoAddress,
+        });
+      }
+    ),
   getUserBridgeAssets: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
