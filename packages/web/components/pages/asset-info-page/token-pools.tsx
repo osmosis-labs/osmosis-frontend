@@ -9,6 +9,7 @@ import {
   PoolsTable,
   PoolsTableFilters,
 } from "~/components/complex/pools-table";
+import { useTranslation } from "~/hooks";
 
 interface TokenPoolsProps {
   denom: string;
@@ -22,6 +23,7 @@ const defaultFilters: PoolsTableFilters = {
 
 export const TokenPools = (props: TokenPoolsProps) => {
   const { denom } = props;
+  const { t } = useTranslation();
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [sortKey, setSortKey] =
     useState<MarketIncentivePoolsSortKey>("volume24hUsd");
@@ -45,7 +47,7 @@ export const TokenPools = (props: TokenPoolsProps) => {
 
   return (
     <section>
-      <h5 className="mb-6">Pools</h5>
+      <h5 className="mb-6">{t("menu.pools")}</h5>
 
       <PoolsTable
         limit={4}
