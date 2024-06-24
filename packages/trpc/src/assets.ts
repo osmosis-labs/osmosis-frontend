@@ -8,6 +8,7 @@ import {
   CursorPaginationSchema,
   DEFAULT_VS_CURRENCY,
   getAsset,
+  getAssetCoingeckoCoin,
   getAssetHistoricalPrice,
   getAssetListingDate,
   getAssetMarketActivity,
@@ -247,6 +248,39 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+    ),
+  getCoingeckoCoin: publicProcedure
+    .input(
+      z.object({
+        coinGeckoId: z.string(),
+      })
+    )
+    .query(({ input: { coinGeckoId } }) =>
+      getAssetCoingeckoCoin({ coinGeckoId })
+    ),
+  getUserBridgeAsset: publicProcedure
+    .input(
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
+        })
+        .merge(UserOsmoAddressSchema)
+    )
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
+
+        const bridgeAsset = getBridgeAsset(ctx.assetLists, asset);
+
+        return await getAssetWithUserBalance({
+          ...ctx,
+          asset: bridgeAsset,
+          userOsmoAddress,
+        });
+      }
     ),
   getUserBridgeAssets: publicProcedure
     .input(

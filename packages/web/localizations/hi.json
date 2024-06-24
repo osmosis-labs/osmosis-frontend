@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
-    "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
-    "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",
-    "provideLiquidity": "तरलता प्रदान करें और फीस और स्वैप पर कमाई करें",
     "yourBalance": "आपका बैलेंस",
+    "onOsmosis": "परासरण पर",
     "aboutDenom": "{name} के बारे में",
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
@@ -997,9 +994,6 @@
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "buyToken": "खरीदें {coinDenom}",
-    "staking": "जताया",
-    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",

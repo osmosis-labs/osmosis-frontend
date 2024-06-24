@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
-    "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
-    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
-    "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
+    "onOsmosis": "삼투에",
     "aboutDenom": "{name} 정보",
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
@@ -997,9 +994,6 @@
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
-    "buyToken": "{coinDenom} 구매",
-    "staking": "스테이킹",
-    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성",
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",

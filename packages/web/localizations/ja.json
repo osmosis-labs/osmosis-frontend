@@ -972,12 +972,9 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
-    "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
-    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
-    "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
     "yourBalance": "あなたのバランス",
+    "onOsmosis": "浸透について",
     "aboutDenom": "{name}について",
     "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
@@ -997,9 +994,6 @@
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
-    "buyToken": "{coinDenom}を購入する",
-    "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
