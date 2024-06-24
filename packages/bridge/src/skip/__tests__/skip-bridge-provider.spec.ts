@@ -260,7 +260,7 @@ describe("SkipBridgeProvider", () => {
         },
       },
       estimatedGasFee: {
-        amount: "400000000000000000000",
+        amount: "420000000000000",
         denom: "ETH",
         decimals: 18,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
