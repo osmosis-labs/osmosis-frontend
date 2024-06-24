@@ -978,6 +978,7 @@
     "stakeYourDenomToEarnNoAPR": "Сделайте ставку на свой {denom} чтобы получить вознаграждение",
     "provideLiquidity": "Обеспечьте ликвидность и зарабатывайте на комиссиях и свопах",
     "yourBalance": "Ваш баланс",
+    "onOsmosis": "по осмосу",
     "aboutDenom": "О {name}",
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",

@@ -160,14 +160,14 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                 {SwapTool_}
               </div>
-              <YourBalance className="xl:flex-grow" />
             </div>
             <TokenDetails token={token} />
             <TwitterSection tweets={tweets} />
           </div>
 
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-6">
             <div className="xl:hidden">{SwapTool_}</div>
+            <YourBalance />
             {token.isAlloyed && token.contract ? (
               <AlloyedAssetsSection
                 title={title ?? token.coinDenom}

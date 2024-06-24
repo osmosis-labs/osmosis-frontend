@@ -978,6 +978,7 @@
     "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",
     "provideLiquidity": "तरलता प्रदान करें और फीस और स्वैप पर कमाई करें",
     "yourBalance": "आपका बैलेंस",
+    "onOsmosis": "परासरण पर",
     "aboutDenom": "{name} के बारे में",
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
