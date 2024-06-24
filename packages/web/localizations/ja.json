@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
     "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",

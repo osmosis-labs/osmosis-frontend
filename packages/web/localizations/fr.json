@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
     "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",

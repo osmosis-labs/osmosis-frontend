@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Zarabiaj dzięki {denom}",
     "explorePools": "Przeglądaj baseny",
     "stakeYourDenomToEarn": "Postaw swój {denom} aby zarobić {apr} % RRSO",
     "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",

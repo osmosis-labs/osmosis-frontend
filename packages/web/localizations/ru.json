@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Зарабатывайте с помощью {denom}",
     "explorePools": "Исследуйте бассейны",
     "stakeYourDenomToEarn": "Сделайте ставку на свой {denom} чтобы заработать {apr} % годовых",
     "stakeYourDenomToEarnNoAPR": "Сделайте ставку на свой {denom} чтобы получить вознаграждение",

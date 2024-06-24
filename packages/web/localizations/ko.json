@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
     "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",

@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
     "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
     "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",

@@ -972,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
     "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
