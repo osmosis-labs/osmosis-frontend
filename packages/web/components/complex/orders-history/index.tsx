@@ -9,6 +9,10 @@ import React from "react";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import {
+  AggregatedOrder,
+  useAggregatedOrders,
+} from "~/hooks/order-history/use-aggregated-orders";
 import { useStore } from "~/stores";
 
 export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
@@ -18,12 +22,14 @@ export const OrderHistory = observer(() => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
   // In the future we need to merge in the past orders
-  const { orders, isLoading } = useOrderbookAllActiveOrders({
+  const { orders: _orders, isLoading } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
   });
 
-  const table = useReactTable<Order>({
-    data: orders,
+  const aggregated = useAggregatedOrders({ orders: _orders });
+
+  const table = useReactTable<AggregatedOrder>({
+    data: aggregated,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -43,7 +49,12 @@ export const OrderHistory = observer(() => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr className="!border-0 bg-transparent" key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  style={{ width: `${header.getSize()}px` }}
+                  className="!px-0"
+                  colSpan={header.colSpan}
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -57,7 +68,7 @@ export const OrderHistory = observer(() => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="!px-0">
+                <td key={cell.id} className="!px-0 !text-left">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
