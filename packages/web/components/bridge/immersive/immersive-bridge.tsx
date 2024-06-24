@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { MinimalAsset } from "@osmosis-labs/types";
+import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
@@ -26,7 +26,7 @@ enum ImmersiveBridgeScreens {
   Review = "2",
 }
 
-const MemoizedChildren = memo(({ children }: PropsWithChildren<{}>) => {
+const MemoizedChildren = memo(({ children }: PropsWithChildren) => {
   return <>{children}</>;
 });
 
@@ -38,12 +38,23 @@ export const ImmersiveBridgeFlow = ({
   const [step, setStep] = useState<ImmersiveBridgeScreens>(
     ImmersiveBridgeScreens.Asset
   );
-  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
+  const [direction, setDirection] =
+    useState<BridgeTransactionDirection>("deposit");
   const { logEvent } = useAmplitudeAnalytics();
 
-  const apiUtils = api.useUtils();
+  const [selectedAssetDenom, setSelectedAssetDenom] = useState<string>();
 
-  const [assetInOsmosis, setAssetInOsmosis] = useState<MinimalAsset>();
+  const apiUtils = api.useUtils();
+  const { data: assetInOsmosis } = api.edge.assets.getUserAsset.useQuery(
+    {
+      findMinDenomOrSymbol: selectedAssetDenom!,
+    },
+    {
+      enabled: !isNil(selectedAssetDenom),
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 10 * 60 * 1000, // 10 minutes
+    }
+  );
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
@@ -66,15 +77,19 @@ export const ImmersiveBridgeFlow = ({
     setIsVisible(false);
   };
 
-  const onOpen = (direction: "deposit" | "withdraw") => {
+  const onOpen = (direction: BridgeTransactionDirection) => {
     setIsVisible(true);
-    setType(direction);
+    setDirection(direction);
   };
 
   return (
     <Provider
       value={{
-        startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
+        startBridge: ({
+          direction,
+        }: {
+          direction: BridgeTransactionDirection;
+        }) => {
           onOpen(direction);
         },
         bridgeAsset: async ({
@@ -82,41 +97,11 @@ export const ImmersiveBridgeFlow = ({
           direction,
         }: {
           anyDenom: string;
-          direction: "deposit" | "withdraw";
+          direction: BridgeTransactionDirection;
         }) => {
           onOpen(direction);
           setStep(ImmersiveBridgeScreens.Amount);
-
-          const fetchAssetWithRetry = async (retries = 3) => {
-            for (let attempt = 1; attempt <= retries; attempt++) {
-              try {
-                const asset = await apiUtils.edge.assets.getUserAsset.fetch({
-                  findMinDenomOrSymbol: anyDenom,
-                });
-
-                if (!asset) {
-                  console.error("Asset not found", anyDenom);
-                  return undefined;
-                }
-
-                return asset;
-              } catch (error) {
-                console.error(`Attempt ${attempt} failed:`, error);
-                if (attempt === retries) {
-                  console.error("All attempts to fetch asset failed");
-                  return undefined;
-                }
-              }
-            }
-          };
-
-          const asset = await fetchAssetWithRetry();
-
-          if (!asset) {
-            return;
-          }
-
-          setAssetInOsmosis(asset);
+          setSelectedAssetDenom(anyDenom);
         },
         fiatRamp: ({
           fiatRampKey,
@@ -149,7 +134,7 @@ export const ImmersiveBridgeFlow = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
             afterLeave={() => {
-              setAssetInOsmosis(undefined);
+              setSelectedAssetDenom(undefined);
               setStep(ImmersiveBridgeScreens.Asset);
             }}
           >
@@ -198,10 +183,19 @@ export const ImmersiveBridgeFlow = ({
                 <Screen screenName={ImmersiveBridgeScreens.Asset}>
                   {({ setCurrentScreen }) => (
                     <AssetSelectScreen
-                      type={type}
+                      type={direction}
                       onSelectAsset={(asset) => {
                         setCurrentScreen(ImmersiveBridgeScreens.Amount);
-                        setAssetInOsmosis(asset);
+
+                        // Set data to avoid waiting for the root assets query to fetch the data
+                        apiUtils.edge.assets.getUserAsset.setData(
+                          {
+                            findMinDenomOrSymbol: asset.coinDenom,
+                          },
+                          asset
+                        );
+
+                        setSelectedAssetDenom(asset.coinDenom);
                       }}
                     />
                   )}
@@ -209,8 +203,8 @@ export const ImmersiveBridgeFlow = ({
                 <Screen screenName={ImmersiveBridgeScreens.Amount}>
                   {() => (
                     <AmountScreen
-                      type={type}
-                      assetInOsmosis={assetInOsmosis!}
+                      type={direction}
+                      assetInOsmosis={assetInOsmosis}
                     />
                   )}
                 </Screen>

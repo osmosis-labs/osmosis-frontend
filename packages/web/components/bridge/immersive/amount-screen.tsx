@@ -23,7 +23,7 @@ import { api } from "~/utils/trpc";
 
 interface AmountScreenProps {
   type: "deposit" | "withdraw";
-  assetInOsmosis: MinimalAsset;
+  assetInOsmosis: MinimalAsset | undefined;
 }
 
 export const AmountScreen = observer(

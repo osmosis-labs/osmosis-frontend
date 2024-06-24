@@ -180,7 +180,7 @@ export interface Asset {
   variantGroupKey?: string;
 }
 
-export type MinimalAsset = Currency & {
+export type MinimalAsset = KeplrBaseCurrency & {
   coinGeckoId: string | undefined;
   coinName: string;
   isUnstable: boolean;

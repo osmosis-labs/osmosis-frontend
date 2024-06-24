@@ -44,7 +44,6 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
       className="!max-w-[30rem]"
       {...modalProps}
     >
-      {/* TODO: Add translation */}
       <SearchBox
         onInput={debounce((nextValue) => {
           setQuery(nextValue);
