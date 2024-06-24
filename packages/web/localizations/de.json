@@ -986,7 +986,9 @@
       "xYear": "{y} Y",
       "all": "ALLE",
       "price": "Preis",
-      "volume": "Volumen"
+      "volume": "Volumen",
+      "advanced": "Fortschrittlich",
+      "simple": "Einfach"
     },
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",

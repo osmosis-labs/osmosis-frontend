@@ -986,7 +986,9 @@
       "xYear": "{y} Y",
       "all": "सभी",
       "price": "कीमत",
-      "volume": "आयतन"
+      "volume": "आयतन",
+      "advanced": "विकसित",
+      "simple": "सरल"
     },
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",

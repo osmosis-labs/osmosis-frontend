@@ -986,7 +986,9 @@
       "xYear": "{y} Y",
       "all": "همه",
       "price": "قیمت",
-      "volume": "جلد"
+      "volume": "جلد",
+      "advanced": "پیشرفته",
+      "simple": "ساده"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",

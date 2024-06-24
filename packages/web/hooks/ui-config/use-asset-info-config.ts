@@ -178,20 +178,29 @@ export const useAssetInfoConfig = (
   return config;
 };
 
-export const AvailablePriceRanges = [
-  "1h",
-  "1d",
-  "7d",
-  "1mo",
-  "1y",
-  "all",
-] as const;
+export const AvailablePriceRanges = {
+  "1h": "1h",
+  "1d": "1d",
+  "7d": "7d",
+  "1mo": "1mo",
+  "1y": "1y",
+  all: "all",
+} as const;
 
-export type PriceRange = (typeof AvailablePriceRanges)[number];
+export type PriceRange =
+  (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
 
 export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
 export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
+
+export const AssetChartModes = {
+  advanced: "advanced",
+  simple: "simple",
+} as const;
+
+export type AssetChartMode =
+  (typeof AssetChartModes)[keyof typeof AssetChartModes];
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
@@ -207,6 +216,9 @@ export class ObservableAssetInfoConfig {
 
   @observable
   protected _dataType: AssetChartDataType = "price";
+
+  @observable
+  protected _mode: AssetChartMode = "simple";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
@@ -304,6 +316,11 @@ export class ObservableAssetInfoConfig {
     return this._dataType;
   }
 
+  @computed
+  get mode(): AssetChartMode {
+    return this._mode;
+  }
+
   constructor(denom: string, coinMinimalDenom?: string) {
     makeObservable(this);
 
@@ -355,6 +372,11 @@ export class ObservableAssetInfoConfig {
   @action
   setDataType = (data: AssetChartDataType) => {
     this._dataType = data;
+  };
+
+  @action
+  setMode = (mode: AssetChartMode) => {
+    this._mode = mode;
   };
 
   dispose() {

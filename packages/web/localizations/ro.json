@@ -986,7 +986,9 @@
       "xYear": "{y} Y",
       "all": "TOATE",
       "price": "Preț",
-      "volume": "Volum"
+      "volume": "Volum",
+      "advanced": "Avansat",
+      "simple": "Simplu"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",

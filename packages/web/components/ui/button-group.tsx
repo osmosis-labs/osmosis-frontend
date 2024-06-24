@@ -31,7 +31,7 @@ const ButtonGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={classNames(
-        "rounded-full px-3 py-1.5 text-center text-sm font-medium text-wosmongton-100 hover:text-wosmongton-200 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-700 data-[state=checked]:text-white-full",
+        "rounded-full px-3 py-1 text-center text-sm font-medium text-wosmongton-100 hover:text-wosmongton-200 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-700 data-[state=checked]:text-white-full",
         className
       )}
       {...props}

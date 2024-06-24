@@ -986,7 +986,9 @@
       "xYear": "{y} Y",
       "all": "모두",
       "price": "가격",
-      "volume": "용량"
+      "volume": "용량",
+      "advanced": "고급의",
+      "simple": "단순한"
     },
     "watchlist": "관심 목록",
     "marketCapRank": "시가총액 순위",

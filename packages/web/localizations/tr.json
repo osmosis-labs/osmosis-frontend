@@ -986,7 +986,9 @@
       "xYear": "{y}E",
       "all": "TÜM",
       "price": "Fiyat",
-      "volume": "Hacim"
+      "volume": "Hacim",
+      "advanced": "Gelişmiş",
+      "simple": "Basit"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
