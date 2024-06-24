@@ -196,6 +196,7 @@ export const ImmersiveBridgeFlow = ({
                     <AmountScreen
                       type={direction}
                       assetsInOsmosis={canonicalAssetsWithVariants}
+                      selectedDenom={selectedAssetDenom!}
                     />
                   )}
                 </Screen>

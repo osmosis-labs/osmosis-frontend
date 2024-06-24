@@ -1,16 +1,18 @@
 import { Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { BridgeChain } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
-import { isNumeric, noop } from "@osmosis-labs/utils";
+import { isNil, isNumeric, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, ReactNode, useState } from "react";
+import { FunctionComponent, ReactNode, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { BridgeNetworkSelect } from "~/components/bridge/immersive/bridge-network-select";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
+import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
@@ -23,6 +25,7 @@ import { api } from "~/utils/trpc";
 
 interface AmountScreenProps {
   type: "deposit" | "withdraw";
+  selectedDenom: string;
 
   /**
    * Includes both the canonical asset and its variants.
@@ -31,7 +34,7 @@ interface AmountScreenProps {
 }
 
 export const AmountScreen = observer(
-  ({ type, assetsInOsmosis }: AmountScreenProps) => {
+  ({ type, assetsInOsmosis, selectedDenom }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
@@ -52,15 +55,38 @@ export const AmountScreen = observer(
       findChainNameOrId: "noble",
     });
 
+    const [receiveAsset, setReceiveAsset] = useState<MinimalAsset>();
+
     const canonicalAsset = assetsInOsmosis?.[0];
-    const { price: assetInOsmosisPrice, isLoading } = usePrice(canonicalAsset);
+    const {
+      price: assetInOsmosisPrice,
+      isLoading: isLoadingCanonicalAssetPrice,
+    } = usePrice(receiveAsset);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
+    const { supportedAssets, supportedChains } = useBridgesSupportedAssets({
+      assets: assetsInOsmosis,
+      chain: {
+        chainId: accountStore.osmosisChainId,
+        chainType: "cosmos",
+      },
+    });
+
+    useEffect(() => {
+      if (!isNil(assetsInOsmosis) && setReceiveAsset) {
+        // TODO: Get canonical asset from supported assets
+        setReceiveAsset(
+          assetsInOsmosis.find((asset) => asset.coinDenom === selectedDenom)!
+        );
+      }
+    }, [assetsInOsmosis, selectedDenom]);
+
     if (
-      isLoading ||
+      isLoadingCanonicalAssetPrice ||
+      isNil(supportedAssets) ||
       !assetsInOsmosis ||
       !canonicalAsset ||
       !assetInOsmosisPrice ||
@@ -125,6 +151,12 @@ export const AmountScreen = observer(
       type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
     };
 
+    const dropdownActiveItemIcon = (
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ammelia-400">
+        <Icon id="check-mark" className="text-osmoverse-700" width={14} />
+      </div>
+    );
+
     return (
       <div className="mx-auto flex w-full flex-col items-center justify-center p-4 text-white-full">
         <h5 className="mb-6 flex items-center justify-center gap-3">
@@ -154,7 +186,11 @@ export const AmountScreen = observer(
           </div>
 
           <div className="flex items-center gap-2">
-            <ChainSelectorButton chainLogo={""}>
+            <ChainSelectorButton
+              chainLogo={""}
+              chains={supportedChains}
+              onSelectChain={() => {}}
+            >
               {nobleChain.pretty_name}
             </ChainSelectorButton>
 
@@ -282,92 +318,129 @@ export const AmountScreen = observer(
             </div>
           </div>
 
-          <Menu>
-            {({ open }) => (
-              <div className="relative w-full">
-                <Menu.Button className="w-full">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="body1 text-osmoverse-300">
-                        {t("transfer.receiveAsset")}
-                      </span>
-                      <Tooltip
-                        content={
-                          <div>
-                            <h1 className="caption mb-1">
-                              {t("transfer.receiveAsset")}
-                            </h1>
-                            <p className="caption text-osmoverse-300">
-                              {t("transfer.receiveAssetDescription")}
-                            </p>
-                          </div>
-                        }
-                      >
-                        <Icon id="info" width={16} />
-                      </Tooltip>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="body1 text-white-full">USDC</span>
-                      <Icon
-                        id="chevron-down"
-                        width={12}
-                        height={12}
-                        className={classNames(
-                          "text-osmoverse-300 transition-transform duration-150",
-                          {
-                            "rotate-180": open,
+          {!isNil(assetsInOsmosis) && assetsInOsmosis.length > 1 && (
+            <Menu>
+              {({ open }) => (
+                <div className="relative w-full">
+                  <Menu.Button className="w-full">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-osmoverse-300">
+                          {t("transfer.receiveAsset")}
+                        </span>
+                        <Tooltip
+                          content={
+                            <div>
+                              <h1 className="caption mb-1">
+                                {t("transfer.receiveAsset")}
+                              </h1>
+                              <p className="caption text-osmoverse-300">
+                                {t("transfer.receiveAssetDescription")}
+                              </p>
+                            </div>
                           }
-                        )}
-                      />
-                    </div>
-                  </div>
-                </Menu.Button>
-
-                <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex flex-col gap-1 rounded-2xl bg-osmoverse-825 px-2 py-2">
-                  <Menu.Item>
-                    <button className="flex items-center gap-3 rounded-lg bg-osmoverse-700 py-2 px-3 text-left">
-                      <Image
-                        src={canonicalAsset.coinImageUrl ?? "/"}
-                        alt={`${canonicalAsset.coinDenom} logo`}
-                        width={32}
-                        height={32}
-                      />
-                      <div className="flex flex-col">
-                        <p className="body1">
-                          {t("transfer.convertTo")} {canonicalAsset.coinDenom}
-                        </p>
-                        <p className="body2 text-osmoverse-300">
-                          {t("transfer.recommended")}
-                        </p>
+                        >
+                          <Icon id="info" width={16} />
+                        </Tooltip>
                       </div>
-                      <div className="ml-10 flex h-6 w-6 items-center justify-center rounded-full bg-ammelia-400">
+
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-white-full">
+                          {receiveAsset?.coinDenom}
+                        </span>
                         <Icon
-                          id="check-mark"
-                          className="text-osmoverse-700"
-                          width={14}
+                          id="chevron-down"
+                          width={12}
+                          height={12}
+                          className={classNames(
+                            "text-osmoverse-300 transition-transform duration-150",
+                            {
+                              "rotate-180": open,
+                            }
+                          )}
                         />
                       </div>
-                    </button>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <button className="flex items-center gap-3 rounded-lg py-2 px-3 hover:bg-osmoverse-800">
-                      {/* TODO: Add network suffix icon */}
-                      <Image
-                        src={canonicalAsset.coinImageUrl ?? "/"}
-                        alt={`${canonicalAsset.coinDenom} logo`}
-                        width={32}
-                        height={32}
-                      />
-                      <p className="body1">
-                        {t("transfer.convertTo")} {canonicalAsset.coinDenom}.e
-                      </p>
-                    </button>
-                  </Menu.Item>
-                </Menu.Items>
-              </div>
-            )}
-          </Menu>
+                    </div>
+                  </Menu.Button>
+
+                  <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                    {assetsInOsmosis.map((asset, index) => {
+                      const onClick = () => {
+                        setReceiveAsset(asset);
+                      };
+
+                      const isConvert =
+                        asset.coinDenom === asset.variantGroupKey;
+                      const isSelected =
+                        receiveAsset?.coinDenom === asset.coinDenom;
+
+                      // Is canonical asset
+                      if (index === 0) {
+                        return (
+                          <Menu.Item key={asset.coinDenom}>
+                            <button
+                              className={classNames(
+                                "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left hover:bg-osmoverse-800",
+                                isSelected && "bg-osmoverse-700"
+                              )}
+                              onClick={onClick}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={asset.coinImageUrl ?? "/"}
+                                  alt={`${asset.coinDenom} logo`}
+                                  width={32}
+                                  height={32}
+                                />
+                                <div className="flex flex-col">
+                                  <p className="body1">
+                                    {isConvert
+                                      ? t("transfer.convertTo")
+                                      : t("transfer.depositAs")}{" "}
+                                    {asset.coinDenom}
+                                  </p>
+                                  <p className="body2 text-osmoverse-300">
+                                    {t("transfer.recommended")}
+                                  </p>
+                                </div>
+                              </div>
+                              {isSelected && dropdownActiveItemIcon}
+                            </button>
+                          </Menu.Item>
+                        );
+                      }
+
+                      return (
+                        <Menu.Item key={asset.coinDenom}>
+                          <button
+                            className={classNames(
+                              "flex items-center gap-3 rounded-lg py-2 px-3 hover:bg-osmoverse-800",
+                              isSelected && "bg-osmoverse-700"
+                            )}
+                            onClick={onClick}
+                          >
+                            <Image
+                              src={asset.coinImageUrl ?? "/"}
+                              alt={`${asset.coinDenom} logo`}
+                              width={32}
+                              height={32}
+                            />
+                            <p className="body1">
+                              {isConvert
+                                ? t("transfer.convertTo")
+                                : t("transfer.depositAs")}{" "}
+                              {asset.coinDenom}
+                            </p>
+                            {isSelected && dropdownActiveItemIcon}
+                          </button>
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu.Items>
+                </div>
+              )}
+            </Menu>
+          )}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -421,7 +494,9 @@ const ChainSelectorButton: FunctionComponent<{
   readonly?: boolean;
   children: ReactNode;
   chainLogo: string;
-}> = ({ readonly, children, chainLogo: _chainLogo }) => {
+  chains?: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  onSelectChain?: (chain: BridgeChain) => void;
+}> = ({ readonly, children, chainLogo: _chainLogo, chains, onSelectChain }) => {
   const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
 
   if (readonly) {
@@ -448,10 +523,17 @@ const ChainSelectorButton: FunctionComponent<{
           height={12}
         />
       </button>
-      <BridgeNetworkSelect
-        isOpen={isNetworkSelectVisible}
-        onRequestClose={() => setIsNetworkSelectVisible(false)}
-      />
+      {!isNil(chains) && !isNil(onSelectChain) && (
+        <BridgeNetworkSelect
+          isOpen={isNetworkSelectVisible}
+          chains={chains}
+          onSelectChain={(chain) => {
+            onSelectChain(chain);
+            setIsNetworkSelectVisible(false);
+          }}
+          onRequestClose={() => setIsNetworkSelectVisible(false)}
+        />
+      )}
     </>
   );
 };

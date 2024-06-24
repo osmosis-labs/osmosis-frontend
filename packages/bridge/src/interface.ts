@@ -176,7 +176,7 @@ const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
-const bridgeSupportedAssetsSchema = z.object({
+export const bridgeSupportedAssetsSchema = z.object({
   /**
    * The originating chain information.
    */
