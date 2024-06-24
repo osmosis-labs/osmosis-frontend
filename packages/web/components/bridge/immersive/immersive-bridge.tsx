@@ -44,17 +44,17 @@ export const ImmersiveBridgeFlow = ({
 
   const [selectedAssetDenom, setSelectedAssetDenom] = useState<string>();
 
-  const apiUtils = api.useUtils();
-  const { data: assetInOsmosis } = api.edge.assets.getUserAsset.useQuery(
-    {
-      findMinDenomOrSymbol: selectedAssetDenom!,
-    },
-    {
-      enabled: !isNil(selectedAssetDenom),
-      cacheTime: 10 * 60 * 1000, // 10 minutes
-      staleTime: 10 * 60 * 1000, // 10 minutes
-    }
-  );
+  const { data: canonicalAssetsWithVariants } =
+    api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+      {
+        findMinDenomOrSymbol: selectedAssetDenom!,
+      },
+      {
+        enabled: !isNil(selectedAssetDenom),
+        cacheTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 10 * 60 * 1000, // 10 minutes
+      }
+    );
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
@@ -186,15 +186,6 @@ export const ImmersiveBridgeFlow = ({
                       type={direction}
                       onSelectAsset={(asset) => {
                         setCurrentScreen(ImmersiveBridgeScreens.Amount);
-
-                        // Set data to avoid waiting for the root assets query to fetch the data
-                        apiUtils.edge.assets.getUserAsset.setData(
-                          {
-                            findMinDenomOrSymbol: asset.coinDenom,
-                          },
-                          asset
-                        );
-
                         setSelectedAssetDenom(asset.coinDenom);
                       }}
                     />
@@ -204,7 +195,7 @@ export const ImmersiveBridgeFlow = ({
                   {() => (
                     <AmountScreen
                       type={direction}
-                      assetInOsmosis={assetInOsmosis}
+                      assetsInOsmosis={canonicalAssetsWithVariants}
                     />
                   )}
                 </Screen>

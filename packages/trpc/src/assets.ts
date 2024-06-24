@@ -14,6 +14,7 @@ import {
   getAssetPrice,
   getAssets,
   getAssetWithUserBalance,
+  getAssetWithVariants,
   getBridgeAsset,
   getCoinGeckoCoinMarketChart,
   getMarketAsset,
@@ -104,6 +105,15 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+    ),
+  getCanonicalAssetWithVariants: publicProcedure
+    .input(
+      z.object({
+        findMinDenomOrSymbol: z.string(),
+      })
+    )
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) =>
+      getAssetWithVariants({ ...ctx, anyDenom: findMinDenomOrSymbol })
     ),
   getAssetPrice: publicProcedure
     .input(

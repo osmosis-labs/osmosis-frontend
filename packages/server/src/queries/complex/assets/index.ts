@@ -39,6 +39,38 @@ export function getAsset({
   return asset;
 }
 
+/**
+ * Retrieves an asset along with its variants from the provided asset lists.
+ * Canonical asset is placed at the beginning of the array.
+ *
+ * @throws Will throw an error if the asset is not found in the asset lists.
+ */
+export function getAssetWithVariants({
+  assetLists,
+  anyDenom,
+}: {
+  assetLists: AssetList[];
+  anyDenom: string;
+}) {
+  const asset = getAsset({
+    assetLists,
+    anyDenom,
+  });
+
+  if (!asset) throw new Error(anyDenom + " not found in asset list");
+
+  const variants = getAssets({
+    assetLists,
+    includePreview: true,
+  }).filter((a) => a?.variantGroupKey === asset.variantGroupKey);
+
+  return (
+    variants
+      // place the canonical asset at the beginning
+      .sort((a) => (a.coinDenom === asset.variantGroupKey ? -1 : 1))
+  );
+}
+
 /** Returns minimal asset information for assets in asset list. Return values can double as the `Currency` type.
  *  Search was added to this function since members of the asset list type are search before mapped
  *  into minimal assets. See `searchableAssetListAssetKeys` for the keys that are searched.

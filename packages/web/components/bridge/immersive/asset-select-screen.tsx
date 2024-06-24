@@ -8,7 +8,7 @@ import React, { useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
-import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import {
   MainnetAssetSymbols,
@@ -22,7 +22,7 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverifie
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
 import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 const variantsNotToBeExcluded = ["WBTC", "BTC"] satisfies (
   | MainnetVariantGroupKeys
@@ -41,7 +41,9 @@ const prioritizedDenoms = [
 
 interface AssetSelectScreenProps {
   type: "deposit" | "withdraw";
-  onSelectAsset: (asset: MinimalAsset) => void;
+  onSelectAsset: (
+    asset: RouterOutputs["edge"]["assets"]["getImmersiveBridgeAssets"]["items"][number]
+  ) => void;
 }
 
 export const AssetSelectScreen = observer(
@@ -136,9 +138,7 @@ export const AssetSelectScreen = observer(
         <div className="flex flex-col gap-1">
           {isLoading ? (
             <>
-              {new Array(7).fill(undefined).map((_, i) => (
-                <SkeletonLoader key={i} className="h-[80px] w-full" />
-              ))}
+              <Spinner />
             </>
           ) : (
             <>

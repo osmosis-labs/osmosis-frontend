@@ -23,11 +23,15 @@ import { api } from "~/utils/trpc";
 
 interface AmountScreenProps {
   type: "deposit" | "withdraw";
-  assetInOsmosis: MinimalAsset | undefined;
+
+  /**
+   * Includes both the canonical asset and its variants.
+   */
+  assetsInOsmosis: MinimalAsset[] | undefined;
 }
 
 export const AmountScreen = observer(
-  ({ type, assetInOsmosis }: AmountScreenProps) => {
+  ({ type, assetsInOsmosis }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
@@ -48,16 +52,17 @@ export const AmountScreen = observer(
       findChainNameOrId: "noble",
     });
 
-    const { price: assetInOsmosisPrice, isLoading } = usePrice(assetInOsmosis);
+    const canonicalAsset = assetsInOsmosis?.[0];
+    const { price: assetInOsmosisPrice, isLoading } = usePrice(canonicalAsset);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
-    // TODO: Add skeleton loaders
     if (
       isLoading ||
-      !assetInOsmosis ||
+      !assetsInOsmosis ||
+      !canonicalAsset ||
       !assetInOsmosisPrice ||
       !osmosisChain ||
       !nobleChain
@@ -66,11 +71,11 @@ export const AmountScreen = observer(
     }
 
     const cryptoAmountPretty = new CoinPretty(
-      assetInOsmosis,
+      canonicalAsset,
       cryptoAmount === ""
         ? new Dec(0)
         : new Dec(cryptoAmount).mul(
-            DecUtils.getTenExponentN(assetInOsmosis.coinDecimals)
+            DecUtils.getTenExponentN(canonicalAsset.coinDecimals)
           )
     );
 
@@ -131,10 +136,10 @@ export const AmountScreen = observer(
           <Image
             width={32}
             height={32}
-            src={assetInOsmosis.coinImageUrl ?? "/"}
+            src={canonicalAsset.coinImageUrl ?? "/"}
             alt="token image"
           />{" "}
-          <span>{assetInOsmosis.coinDenom}</span>
+          <span>{canonicalAsset.coinDenom}</span>
         </h5>
 
         <div className="mb-6 flex w-full flex-col gap-2">
@@ -323,14 +328,14 @@ export const AmountScreen = observer(
                   <Menu.Item>
                     <button className="flex items-center gap-3 rounded-lg bg-osmoverse-700 py-2 px-3 text-left">
                       <Image
-                        src={assetInOsmosis.coinImageUrl ?? "/"}
-                        alt={`${assetInOsmosis.coinDenom} logo`}
+                        src={canonicalAsset.coinImageUrl ?? "/"}
+                        alt={`${canonicalAsset.coinDenom} logo`}
                         width={32}
                         height={32}
                       />
                       <div className="flex flex-col">
                         <p className="body1">
-                          {t("transfer.convertTo")} {assetInOsmosis.coinDenom}
+                          {t("transfer.convertTo")} {canonicalAsset.coinDenom}
                         </p>
                         <p className="body2 text-osmoverse-300">
                           {t("transfer.recommended")}
@@ -349,13 +354,13 @@ export const AmountScreen = observer(
                     <button className="flex items-center gap-3 rounded-lg py-2 px-3 hover:bg-osmoverse-800">
                       {/* TODO: Add network suffix icon */}
                       <Image
-                        src={assetInOsmosis.coinImageUrl ?? "/"}
-                        alt={`${assetInOsmosis.coinDenom} logo`}
+                        src={canonicalAsset.coinImageUrl ?? "/"}
+                        alt={`${canonicalAsset.coinDenom} logo`}
                         width={32}
                         height={32}
                       />
                       <p className="body1">
-                        {t("transfer.convertTo")} {assetInOsmosis.coinDenom}.e
+                        {t("transfer.convertTo")} {canonicalAsset.coinDenom}.e
                       </p>
                     </button>
                   </Menu.Item>
@@ -399,7 +404,8 @@ export const AmountScreen = observer(
                 <MoreBridgeOptions
                   type={type}
                   isOpen={isMoreOptionsVisible}
-                  asset={assetInOsmosis}
+                  // TODO: Use the receive asset when implemented
+                  asset={canonicalAsset}
                   onRequestClose={() => setIsMoreOptionsVisible(false)}
                 />
               </>
