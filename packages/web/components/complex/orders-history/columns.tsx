@@ -3,9 +3,9 @@ import classNames from "classnames";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
-import { AggregatedOrder } from "~/hooks/order-history/use-aggregated-orders";
+import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 
-const columnHelper = createColumnHelper<AggregatedOrder>();
+const columnHelper = createColumnHelper<DisplayableLimitOrder>();
 
 export const tableColumns = [
   columnHelper.display({
