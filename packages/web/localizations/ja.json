@@ -992,9 +992,6 @@
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
-    "buyToken": "{coinDenom}を購入する",
-    "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",

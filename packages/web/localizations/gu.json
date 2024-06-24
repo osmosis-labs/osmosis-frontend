@@ -992,9 +992,6 @@
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
-    "buyToken": "{coinDenom} ખરીદો",
-    "staking": "સ્ટેકિંગ",
-    "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા",
     "underlyingAssets": {
       "title": "અંતર્ગત અસ્કયામતો",
       "description": "ઓસ્મોસિસ પર {name} ( {denom} ) એ {count} વિવિધ પ્રકારના {name} .",

@@ -992,9 +992,6 @@
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "buyToken": "{coinDenom} satın alın",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",

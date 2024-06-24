@@ -992,9 +992,6 @@
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "buyToken": "खरीदें {coinDenom}",
-    "staking": "जताया",
-    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",

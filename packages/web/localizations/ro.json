@@ -992,9 +992,6 @@
     "marketCapRank": "Poziția de capitalizare a pieței",
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
-    "buyToken": "Cumpărați {coinDenom}",
-    "staking": "Miza",
-    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}",
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",

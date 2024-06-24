@@ -992,9 +992,6 @@
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
     "circulatingSupply": "Оборотное снабжение",
-    "buyToken": "Купить {coinDenom}",
-    "staking": "Стейкинг",
-    "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}",
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",

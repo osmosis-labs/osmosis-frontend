@@ -992,9 +992,6 @@
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
-    "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی",
-    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",

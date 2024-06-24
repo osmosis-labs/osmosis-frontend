@@ -992,9 +992,6 @@
     "marketCapRank": "Rango de capitalización de mercado",
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
-    "buyToken": "Comprar {coinDenom}",
-    "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
     "underlyingAssets": {
       "title": "Activos subyacentes",
       "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",

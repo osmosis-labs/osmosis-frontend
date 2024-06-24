@@ -992,9 +992,6 @@
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
     "circulatingSupply": "Umlaufversorgung",
-    "buyToken": "Kaufen Sie {coinDenom}",
-    "staking": "Abstecken",
-    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",
