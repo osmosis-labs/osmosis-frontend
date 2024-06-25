@@ -3,6 +3,7 @@ import classNames from "classnames";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
+import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
@@ -160,15 +161,7 @@ export const tableColumns = [
   }),
   columnHelper.display({
     id: "actions",
-    cell: () => {
-      return (
-        <div className="flex w-full justify-end">
-          <button className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700">
-            <span className="body2 text-wosmongton-200">Claim and close</span>
-          </button>
-        </div>
-      );
-    },
+    cell: ActionsCell,
   }),
 ];
 
