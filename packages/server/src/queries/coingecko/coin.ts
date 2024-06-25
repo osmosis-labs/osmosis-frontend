@@ -80,6 +80,9 @@ export interface CoingeckoCoin {
   market_data: {
     market_cap_rank: number;
     circulating_supply: number;
+    fully_diluted_valuation: {
+      usd: number;
+    };
     total_value_locked: {
       usd: number;
     };

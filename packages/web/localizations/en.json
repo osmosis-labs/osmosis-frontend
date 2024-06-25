@@ -998,6 +998,10 @@
     "watchlist": "Watchlist",
     "marketCapRank": "Market Cap Rank",
     "marketCap": "Market Cap",
+    "fullyDilutedValuation": "Fully Diluted Valuation",
+    "volume24h": "24h volume",
+    "volumeOnOsmosis": "24h volume on Osmosis",
+    "liquidityOnOsmosis": "Liquidity on Osmosis",
     "circulatingSupply": "Circulating Supply",
     "underlyingAssets": {
       "title": "Underlying assets",

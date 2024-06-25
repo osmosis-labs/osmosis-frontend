@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 const TEXT_CHAR_LIMIT = 450;
 
@@ -172,6 +173,15 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
 
 export const TokenDetails = observer(_TokenDetails);
 
+const formatCompact = (value: PricePretty | number) => {
+  return formatPretty(value instanceof PricePretty ? value : new Dec(value), {
+    maximumSignificantDigits: 3,
+    notation: "compact",
+    compactDisplay: "short",
+    scientificMagnitudeThreshold: 30,
+  });
+};
+
 export const TokenStats = observer(() => {
   const { t } = useTranslation();
 
@@ -179,7 +189,20 @@ export const TokenStats = observer(() => {
     coinGeckoId,
     coingeckoCoin,
     isLoadingCoingeckoCoin = true,
+    tokenDenom,
   } = useAssetInfo();
+
+  const { data: tokenMarket, isLoading: isLoadingTokenMarket } =
+    api.edge.assets.getUserMarketAsset.useQuery(
+      {
+        findMinDenomOrSymbol: tokenDenom,
+      },
+      {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        staleTime: 1_000 * 60 * 15,
+      }
+    );
 
   const stats: TokenStatProps[] = useMemo(
     () => [
@@ -201,29 +224,54 @@ export const TokenStats = observer(() => {
       {
         title: t("tokenInfos.marketCap"),
         value: coingeckoCoin?.marketCap
-          ? formatPretty(coingeckoCoin.marketCap, {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-              compactDisplay: "short",
-              scientificMagnitudeThreshold: 30,
-            })
+          ? formatCompact(coingeckoCoin.marketCap)
           : "-",
         isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
       },
       {
-        title: t("tokenInfos.circulatingSupply"),
-        value: coingeckoCoin?.circulatingSupply
-          ? formatPretty(new Dec(coingeckoCoin.circulatingSupply), {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-              compactDisplay: "short",
-              scientificMagnitudeThreshold: 30,
-            })
+        title: t("tokenInfos.fullyDilutedValuation"),
+        value: coingeckoCoin?.fullyDilutedValuation
+          ? formatCompact(coingeckoCoin.fullyDilutedValuation)
           : "-",
         isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
       },
+      {
+        title: t("tokenInfos.volume24h"),
+        value: coingeckoCoin?.volume24h
+          ? formatCompact(coingeckoCoin?.volume24h)
+          : "-",
+        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+      {
+        title: t("tokenInfos.volumeOnOsmosis"),
+        value: tokenMarket?.volume24h
+          ? formatCompact(tokenMarket?.volume24h)
+          : "-",
+        isLoading: isLoadingTokenMarket,
+      },
+      {
+        title: t("tokenInfos.circulatingSupply"),
+        value: coingeckoCoin?.circulatingSupply
+          ? formatCompact(coingeckoCoin.circulatingSupply)
+          : "-",
+        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+      {
+        title: t("tokenInfos.liquidityOnOsmosis"),
+        value: tokenMarket?.liquidity
+          ? formatCompact(tokenMarket?.liquidity)
+          : "-",
+        isLoading: isLoadingTokenMarket,
+      },
     ],
-    [coingeckoCoin, isLoadingCoingeckoCoin, coinGeckoId, t]
+    [
+      tokenMarket,
+      coingeckoCoin,
+      isLoadingCoingeckoCoin,
+      coinGeckoId,
+      isLoadingTokenMarket,
+      t,
+    ]
   );
 
   return (

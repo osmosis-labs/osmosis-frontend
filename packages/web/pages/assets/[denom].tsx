@@ -143,7 +143,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
         } | Osmosis`}
         description={details?.description}
       />
-      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 xs:px-2">
+      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
         <LinkButton
           className="mr-auto hidden md:flex"
           icon={

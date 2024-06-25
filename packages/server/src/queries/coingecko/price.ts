@@ -25,3 +25,27 @@ export async function querySimplePrice(
 
   return apiClient<SimplePriceResponse>(url.toString());
 }
+
+interface SimpleTokenPriceResponse {
+  /**
+   * price of coin for this currency
+   */
+  [coinGeckoId: string]: Partial<
+    Record<CoingeckoVsCurrencies, number> & Record<"usd_24h_vol", number>
+  >;
+}
+
+export async function querySimpleTokenPrice(
+  id: string,
+  vsCurrencies: CoingeckoVsCurrencies[] = ["usd"],
+  includeVolume: boolean = true
+): Promise<SimpleTokenPriceResponse> {
+  const url = new URL(`/api/v3/simple/token_price/${id}`, PRICES_API_URL);
+
+  const vsCurrenciesString = vsCurrencies.join(",");
+
+  url.searchParams.append("vs_currencies", vsCurrenciesString);
+  url.searchParams.append("include_24hr_vol", includeVolume ? "true" : "false");
+
+  return apiClient<SimplePriceResponse>(url.toString());
+}

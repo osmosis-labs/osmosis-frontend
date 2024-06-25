@@ -998,6 +998,10 @@
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
+    "fullyDilutedValuation": "完全希薄化後評価額",
+    "volume24h": "24時間ボリューム",
+    "volumeOnOsmosis": "Osmosisの24時間ボリューム",
+    "liquidityOnOsmosis": "浸透による流動性",
     "circulatingSupply": "循環供給",
     "underlyingAssets": {
       "title": "基礎資産",

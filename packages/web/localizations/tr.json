@@ -998,6 +998,10 @@
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
+    "fullyDilutedValuation": "Tamamen Seyreltilmiş Değerleme",
+    "volume24h": "24 saatlik hacim",
+    "volumeOnOsmosis": "Osmosis'te 24 saatlik hacim",
+    "liquidityOnOsmosis": "Osmozda Likidite",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",

@@ -10,6 +10,7 @@ import {
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
   queryCoingeckoCoins,
+  querySimpleTokenPrice,
 } from "../../coingecko";
 import {
   queryAllTokenData,
@@ -26,6 +27,7 @@ export type AssetMarketInfo = Partial<{
   priceChange24h: RatePretty;
   priceChange7d: RatePretty;
   volume24h: PricePretty;
+  liquidity: PricePretty;
 }>;
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -54,6 +56,7 @@ export async function getMarketAsset<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        liquidity: assetMarketActivity?.liquidity,
         priceChange1h: assetMarketActivity?.price1hChange,
         priceChange24h: assetMarketActivity?.price24hChange,
         priceChange7d: assetMarketActivity?.price7dChange,
@@ -122,9 +125,21 @@ export async function getAssetCoingeckoCoin({
   return cachified({
     cache: assetCoingeckoCoinCache,
     key: `assetCoingeckoCoinCache-${coinGeckoId}`,
-    ttl: 1000 * 60 * 15, // 15 minutes
+    ttl: 1000 * 60 * 30, // 15 minutes
     getFreshValue: async () => {
-      const coingeckoCoin = await queryCoingeckoCoin(coinGeckoId);
+      const [coingeckoCoinResponse, priceResponse] = await Promise.allSettled([
+        queryCoingeckoCoin(coinGeckoId),
+        querySimpleTokenPrice(coinGeckoId),
+      ]);
+
+      const coingeckoCoin =
+        coingeckoCoinResponse.status === "fulfilled"
+          ? coingeckoCoinResponse.value
+          : undefined;
+      const price =
+        priceResponse.status === "fulfilled" ? priceResponse.value : undefined;
+
+      const volume24h = price?.[coinGeckoId]?.usd_24h_vol;
 
       return {
         links: coingeckoCoin?.links,
@@ -135,6 +150,13 @@ export async function getAssetCoingeckoCoin({
               new Dec(coingeckoCoin?.market_data.total_value_locked.usd)
             )
           : undefined,
+        fullyDilutedValuation: coingeckoCoin?.market_data
+          .fully_diluted_valuation?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.fully_diluted_valuation.usd)
+            )
+          : undefined,
         circulatingSupply: coingeckoCoin?.market_data.circulating_supply,
         marketCap: coingeckoCoin?.market_data.market_cap?.usd
           ? new PricePretty(
@@ -142,6 +164,10 @@ export async function getAssetCoingeckoCoin({
               new Dec(coingeckoCoin?.market_data.market_cap.usd)
             )
           : undefined,
+        volume24h:
+          volume24h !== undefined
+            ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(volume24h))
+            : undefined,
       };
     },
   });

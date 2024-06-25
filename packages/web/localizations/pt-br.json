@@ -998,6 +998,10 @@
     "watchlist": "Lista de observação",
     "marketCapRank": "Classificação de capitalização de mercado",
     "marketCap": "Valor de mercado",
+    "fullyDilutedValuation": "Avaliação Totalmente Diluída",
+    "volume24h": "Volume 24h",
+    "volumeOnOsmosis": "Volume 24h em Osmose",
+    "liquidityOnOsmosis": "Liquidez em Osmose",
     "circulatingSupply": "Fornecimento Circulante",
     "underlyingAssets": {
       "title": "Ativos subjacentes",

@@ -96,6 +96,7 @@ export const useAssetInfo = () => {
     coingeckoURL,
     coinGeckoId,
     token: token!,
+    tokenDenom,
     tokenDetailsByLanguage,
     coingeckoCoin,
     isLoadingCoingeckoCoin,
