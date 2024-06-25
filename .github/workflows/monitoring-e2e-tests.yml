@@ -1,0 +1,210 @@
+name: Synthetic Monitoring E2E tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+
+  frontend-e2e-tests:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    environment:
+      name: prod_swap_test
+    steps:
+      - name: Echo IP
+        run: curl https://api.ipify.org
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests on ${{ matrix.env }}
+        env:
+          BASE_URL: ${{ matrix.base-url }}
+          PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Swap Stables feature"
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.env }}-e2e-test-results
+          path: packages/web/playwright-report
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Synthetic Monitoring Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Synthetic Monitoring Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* ${{ matrix.env }}\n*App URL:* ${{ matrix.base-url }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  server-e2e-tests:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Echo Current Server URL
+        run: echo "SQS Server URL:${{ matrix.server-url }}"
+
+      - name: Run Tests
+        id: tests
+        run: yarn test:e2e --filter=server
+        env:
+          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
+
+      # Send Slack alert if 'server-e2e-tests' job fails
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Server to SQS E2E Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Server to SQS E2E Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* ${{ matrix.env }}\n*Server URL:* ${{ matrix.server-url }}\n*Timeseries URL:* ${{ matrix.timeseries-url }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  fe-quote-tests:
+    name: ${{ matrix.env }}
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    environment:
+      name: prod_swap_test
+    steps:
+      - name: Echo IP
+        run: curl https://api.ipify.org
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests on ${{ matrix.env }}
+        env:
+          BASE_URL: ${{ matrix.base-url }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Select Swap Pair feature"
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.env }}-quote-test-results
+          path: packages/web/playwright-report

@@ -1,27 +1,13 @@
 import { Popover } from "@headlessui/react";
-import { isAssetNew } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo, useRef } from "react";
 
-import { AssetLists } from "~/config/generated/asset-lists";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
 import { CustomClasses } from "../types";
 import { Icon } from "./icon";
 
 const staticCategoryAssetImageSamples = {
-  new: AssetLists.flatMap(({ assets }) => assets).reduce((acc, asset) => {
-    if (
-      asset.verified &&
-      !asset.preview &&
-      asset.listingDate &&
-      isAssetNew(asset.listingDate) &&
-      acc.length < 3
-    ) {
-      acc.push(asset.relative_image_url);
-    }
-    return acc;
-  }, [] as string[]),
   defi: [
     "/tokens/generated/osmo.svg",
     "/tokens/generated/mars.svg",
