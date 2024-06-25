@@ -1,8 +1,10 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookMakerFee,
+  getOrderbookSpotPrice,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
   LimitOrder,
@@ -27,6 +29,7 @@ type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
   totalFilled: number;
   percentFilled: Dec;
   orderbookAddress: string;
+  price: Dec;
 };
 
 async function getTickInfoAndTransformOrders(
@@ -93,9 +96,10 @@ async function getTickInfoAndTransformOrders(
         tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
       const totalFilled = Math.max(tickTotalEtas - parseInt(o.etas), 0);
       const percentFilled = new Dec(totalFilled / placedQuantity);
-
+      const price = tickToPrice(new Int(o.tick_id));
       return {
         ...o,
+        price,
         quantity,
         placed_quantity: placedQuantity,
         percentClaimed,
@@ -117,7 +121,7 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return {
-        makerFee: new Dec(makerFee),
+        makerFee,
       };
     }),
   getActiveOrders: publicProcedure
@@ -195,5 +199,25 @@ export const orderbookRouter = createTRPCRouter({
         cursor: input.cursor,
         limit: input.limit,
       });
+    }),
+  getSpotPrice: publicProcedure
+    .input(
+      z
+        .object({
+          quoteAssetDenom: z.string(),
+          baseAssetDenom: z.string(),
+        })
+        .required()
+        .and(OsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { quoteAssetDenom, baseAssetDenom, osmoAddress } = input;
+      const spotPrice = await getOrderbookSpotPrice({
+        orderbookAddress: osmoAddress,
+        quoteAssetDenom: quoteAssetDenom,
+        baseAssetDenom: baseAssetDenom,
+        chainList: ctx.chainList,
+      });
+      return spotPrice;
     }),
 });

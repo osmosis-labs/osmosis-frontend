@@ -1,13 +1,14 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export type OrderDirection = "bid" | "ask";
@@ -53,7 +54,18 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const priceState = useLimitPrice();
+  const priceState = useLimitPrice({
+    orderbookContractAddress,
+    quoteAssetDenom:
+      orderDirection === "ask"
+        ? quoteAsset?.coinMinimalDenom ?? ""
+        : baseAsset?.coinMinimalDenom ?? "",
+    baseAssetDenom:
+      orderDirection === "ask"
+        ? baseAsset?.coinMinimalDenom ?? ""
+        : quoteAsset?.coinMinimalDenom ?? "",
+    orderDirection,
+  });
   const inAmountInput = useSwapAmountInput({
     swapAssets,
     forceSwapInPoolId: undefined,
@@ -258,19 +270,114 @@ export const usePlaceLimit = ({
   };
 };
 
-const useLimitPrice = () => {
+const useLimitPrice = ({
+  orderbookContractAddress,
+  quoteAssetDenom,
+  baseAssetDenom,
+  orderDirection,
+}: {
+  orderbookContractAddress: string;
+  quoteAssetDenom: string;
+  baseAssetDenom: string;
+  orderDirection: OrderDirection;
+}) => {
   // TODO: Fetch spot price from SQS
-  const spotPrice = useMemo(() => new Dec(1), []);
-  const [percentAdjusted, setPercentAdjusted] = useState(new Dec(0));
+  const { data: spotPrice, isLoading } =
+    api.edge.orderbooks.getSpotPrice.useQuery({
+      osmoAddress: orderbookContractAddress,
+      quoteAssetDenom,
+      baseAssetDenom,
+    });
+  const [orderPrice, setOrderPrice] = useState("");
+  const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
 
-  const adjustByPercentage = useCallback((percentage: Dec) => {
-    setPercentAdjusted(percentage);
-  }, []);
-
-  const price = useMemo(
-    () => spotPrice.mul(new Dec(1).add(percentAdjusted)),
-    [spotPrice, percentAdjusted]
+  const adjustByPercentage = useCallback(
+    (percentage: Dec) => {
+      setOrderPrice(
+        formatPretty((spotPrice ?? new Dec(0)).mul(new Dec(1).add(percentage)))
+      );
+    },
+    [spotPrice]
   );
 
-  return { spotPrice, price, adjustByPercentage, percentAdjusted };
+  useEffect(() => {
+    if (manualPercentAdjusted.length > 0) {
+      const adjustment = new Dec(manualPercentAdjusted).quo(new Dec(100));
+      if (adjustment.isNegative()) return adjustByPercentage(new Dec(0));
+
+      adjustByPercentage(
+        orderDirection === "ask" ? adjustment : adjustment.mul(new Dec(-1))
+      );
+    } else {
+      adjustByPercentage(new Dec(0));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [manualPercentAdjusted, orderDirection]);
+
+  const isValidPrice = useMemo(
+    () =>
+      Boolean(orderPrice) &&
+      orderPrice.length > 0 &&
+      !new Dec(orderPrice).isZero() &&
+      new Dec(orderPrice).isPositive(),
+    [orderPrice]
+  );
+
+  const percentAdjusted = useMemo(
+    () =>
+      isValidPrice
+        ? new Dec(orderPrice).quo(spotPrice ?? new Dec(1)).sub(new Dec(1))
+        : new Dec(0),
+    [isValidPrice, orderPrice, spotPrice]
+  );
+  const price = useMemo(
+    () => (isValidPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
+    [isValidPrice, orderPrice, spotPrice]
+  );
+
+  const priceFiat = useMemo(() => {
+    return new PricePretty(DEFAULT_VS_CURRENCY, price);
+  }, [price]);
+
+  const reset = useCallback(() => {
+    setManualPercentAdjusted("");
+    setOrderPrice("");
+  }, []);
+
+  const setPrice = useCallback((price: string) => {
+    if (!price) {
+      setOrderPrice("");
+    } else {
+      setOrderPrice(price);
+    }
+  }, []);
+
+  const setPercentAdjusted = useCallback(
+    (percentAdjusted: string) => {
+      if (!percentAdjusted) {
+        setManualPercentAdjusted("");
+      } else {
+        setManualPercentAdjusted(percentAdjusted);
+      }
+    },
+    [setManualPercentAdjusted]
+  );
+
+  useEffect(() => {
+    reset();
+  }, [orderDirection, reset]);
+  return {
+    spotPrice,
+    orderPrice,
+    price,
+    priceFiat,
+    adjustByPercentage,
+    manualPercentAdjusted,
+    setPercentAdjusted,
+    percentAdjusted,
+    isLoading,
+    reset,
+    setPrice,
+    isValidPrice,
+  };
 };

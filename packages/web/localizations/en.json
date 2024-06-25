@@ -1121,6 +1121,14 @@
     "recurringOrder": {
       "title": "Recurring Order",
       "description": "Buy at average price over time"
+    },
+    "aboveMarket": {
+      "title": "Limit price above market price",
+      "description": "If you proceed, your order will be processed as a market order at market price."
+    },
+    "belowMarket": {
+      "title": "Limit price below market price",
+      "description": "If you proceed, your order will be processed as a market order at market price."
     }
   }
 }
