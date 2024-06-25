@@ -336,7 +336,9 @@ const TokenStat = (props: TokenStatProps) => {
       <SkeletonLoader isLoaded={!isLoading}>
         <div className="flex items-center gap-2">
           {slotLeft}
-          <p className="text-body1 font-body1 text-osmoverse-100">{value}</p>
+          <p className="min-w-10 text-body1 font-body1 text-osmoverse-100">
+            {value}
+          </p>
           {slotRight}
         </div>
       </SkeletonLoader>

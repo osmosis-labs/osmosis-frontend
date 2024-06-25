@@ -41,21 +41,25 @@ async function batchFetchCoingeckoPrices(
   const pricesObject = await querySimplePrice(coinGeckoIds as string[], [
     currency,
   ]);
-  return coinGeckoIds.map(
-    (key) =>
-      pricesObject[key][currency] ??
-      new Error(`No CoinGecko price result for ${key} and ${currency}`)
-  );
+
+  return coinGeckoIds.map((key) => {
+    if (pricesObject[key][currency]) {
+      return {
+        price: pricesObject[key][currency]!,
+        volume24h: pricesObject[key].usd_24h_vol,
+      };
+    }
+
+    return new Error(`No CoinGecko price result for ${key} and ${currency}`);
+  });
 }
-export async function getCoingeckoPrice({
-  coinGeckoId,
+
+export async function getBatchFetchCoingeckoPrices({
   currency,
 }: {
-  coinGeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
-  // Create a loader per given currency.
-  const currencyBatchLoader = await cachified({
+  return cachified({
     cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
     getFreshValue: async () => {
@@ -64,6 +68,17 @@ export async function getCoingeckoPrice({
       );
     },
   });
+}
+
+export async function getCoingeckoPrice({
+  coinGeckoId,
+  currency,
+}: {
+  coinGeckoId: string;
+  currency: CoingeckoVsCurrencies;
+}) {
+  // Create a loader per given currency.
+  const currencyBatchLoader = await getBatchFetchCoingeckoPrices({ currency });
 
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
@@ -71,7 +86,7 @@ export async function getCoingeckoPrice({
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute
     getFreshValue: () =>
-      currencyBatchLoader.load(coinGeckoId).then((price) => new Dec(price)),
+      currencyBatchLoader.load(coinGeckoId).then((stat) => new Dec(stat.price)),
   });
 }
 

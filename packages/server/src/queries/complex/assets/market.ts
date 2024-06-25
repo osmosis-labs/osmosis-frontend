@@ -7,10 +7,10 @@ import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn } from "../../../utils/error";
 import {
+  CoingeckoVsCurrencies,
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
   queryCoingeckoCoins,
-  querySimpleTokenPrice,
 } from "../../coingecko";
 import {
   queryAllTokenData,
@@ -19,6 +19,7 @@ import {
 } from "../../data-services";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getBatchFetchCoingeckoPrices } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
@@ -119,27 +120,37 @@ const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
 /** Fetches coingecko coin data. */
 export async function getAssetCoingeckoCoin({
   coinGeckoId,
+  currency = "usd",
 }: {
   coinGeckoId: string;
+  currency?: CoingeckoVsCurrencies;
 }) {
   return cachified({
     cache: assetCoingeckoCoinCache,
-    key: `assetCoingeckoCoinCache-${coinGeckoId}`,
+    key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60 * 30, // 15 minutes
     getFreshValue: async () => {
-      const [coingeckoCoinResponse, priceResponse] = await Promise.allSettled([
-        queryCoingeckoCoin(coinGeckoId),
-        querySimpleTokenPrice(coinGeckoId),
-      ]);
+      const [coingeckoCoinResponse, volumesResponse] = await Promise.allSettled(
+        [
+          queryCoingeckoCoin(coinGeckoId),
+          getBatchFetchCoingeckoPrices({
+            currency,
+          }),
+        ]
+      );
 
       const coingeckoCoin =
         coingeckoCoinResponse.status === "fulfilled"
           ? coingeckoCoinResponse.value
           : undefined;
-      const price =
-        priceResponse.status === "fulfilled" ? priceResponse.value : undefined;
+      const volumes =
+        volumesResponse.status === "fulfilled"
+          ? volumesResponse.value
+          : undefined;
 
-      const volume24h = price?.[coinGeckoId]?.usd_24h_vol;
+      const volume24h = volumes
+        ? (await volumes.load(coinGeckoId)).volume24h
+        : undefined;
 
       return {
         links: coingeckoCoin?.links,
