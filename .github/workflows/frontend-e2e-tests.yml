@@ -112,6 +112,13 @@ jobs:
         with:
           name: preview-e2e-test-results
           path: packages/web/playwright-report
+      - name: Run Portfolio tests on Stage
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Portfolio feature"
       - name: Send Slack alert if test fails
         id: slack
         if: failure()

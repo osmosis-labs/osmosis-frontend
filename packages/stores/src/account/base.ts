@@ -1257,7 +1257,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[];
     initialFee?: Optional<StdFee, "gas">;
     signOptions?: SignOptions;
-  }): Promise<QuoteStdFee> {
+  }): Promise<StdFee> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
@@ -1295,7 +1295,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       }
 
-      return estimate;
+      // avoid returning isNeededForTx, a utility returned from the estimateGasFee function that is not used here
+      // Also, for now, only single-token fee payments are supported.
+      return {
+        gas: estimate.gas,
+        amount: [
+          {
+            denom: estimate.amount[0].denom,
+            amount: estimate.amount[0].amount,
+          },
+        ],
+      };
     } catch (e) {
       if (e instanceof ApiClientError) {
         const apiClientError = e as ApiClientError<{

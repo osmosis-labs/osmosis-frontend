@@ -5,7 +5,6 @@ import { useWindowSize } from "~/hooks";
 
 // NOTE: Please add a default value to any new flag you add to this list
 export type AvailableFlags =
-  | "concentratedLiquidity"
   | "staking"
   | "swapsAdBanner"
   | "notifications"
@@ -36,7 +35,6 @@ type ModifiedFlags =
   | "_isClientIDPresent";
 
 const defaultFlags: Record<ModifiedFlags, boolean> = {
-  concentratedLiquidity: true,
   staking: true,
   swapsAdBanner: true,
   notifications: true,
