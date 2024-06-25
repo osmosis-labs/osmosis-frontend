@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
@@ -31,6 +32,7 @@ export type MappedLimitOrder = Omit<
   totalFilled: number;
   percentFilled: Dec;
   orderbookAddress: string;
+  price: Dec;
 };
 
 async function getTickInfoAndTransformOrders(
@@ -97,9 +99,10 @@ async function getTickInfoAndTransformOrders(
         tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
       const totalFilled = Math.max(tickTotalEtas - parseInt(o.etas), 0);
       const percentFilled = new Dec(totalFilled / placedQuantity);
-
+      const price = tickToPrice(new Int(o.tick_id));
       return {
         ...o,
+        price,
         quantity,
         placed_quantity: placedQuantity,
         percentClaimed,

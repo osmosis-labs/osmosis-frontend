@@ -6,6 +6,7 @@ import {
 import { observer } from "mobx-react-lite";
 import React from "react";
 
+import { Icon } from "~/components/assets";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import {
@@ -62,6 +63,61 @@ export const OrderHistory = observer(() => {
           ))}
         </thead>
         <tbody className="bg-transparent">
+          <tr>
+            <td colSpan={5} className="!p-0">
+              <div className="flex w-full items-end justify-between pr-4">
+                <div className="relative flex items-end gap-3 pt-5">
+                  <div className="flex items-center gap-2 pb-3">
+                    <h6>Filled orders to claim</h6>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
+                      <span className="caption">1</span>
+                    </div>
+                  </div>
+                  <div className="flex h-12 w-12 items-center justify-center">
+                    <Icon
+                      id="question"
+                      className="h-6 w-6 text-wosmongton-200"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                </div>
+                <button className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4">
+                  <span className="subtitle1">Claim all</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="!px-0 !text-left">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+          {/**
+           * When we will have the data available,
+           * we will filter the data from the mapping
+           * by a parameter which tells us the order type
+           */}
+          <h6 className="pb-4 pt-8">Pending</h6>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="!px-0 !text-left">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+          {/**
+           * When we will have the data available,
+           * we will filter the data from the mapping
+           * by a parameter which tells us the order type
+           */}
+          <h6 className="pb-4 pt-8">Past</h6>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
