@@ -20,14 +20,12 @@ export const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
 
   return tweets.length ? (
     <section
-      className={`flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 px-8 py-10 md:px-4 md:py-6 ${className}`}
+      className={`flex flex-1 flex-col items-start gap-11 self-stretch ${className}`}
     >
       <header>
-        <h6 className="text-lg font-h6 leading-6">
-          {t("tokenInfos.followTheConversation")}
-        </h6>
+        <h5>{t("tokenInfos.followTheConversation")}</h5>
       </header>
-      <ul className="flex flex-col items-start gap-4 self-stretch">
+      <ul className="flex flex-col items-start gap-3 self-stretch">
         {tweets.map((tweet, index) => (
           <React.Fragment key={index}>
             {index > 0 && <Spacer />}
@@ -40,7 +38,7 @@ export const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
 };
 
 const Spacer = () => {
-  return <div className="h-[1px] self-stretch bg-osmoverse-825" />;
+  return <div className="h-[1px] self-stretch bg-osmoverse-700" />;
 };
 
 const Tweet: FunctionComponent<RichTweet> = ({
@@ -62,9 +60,9 @@ const Tweet: FunctionComponent<RichTweet> = ({
 
   return (
     <li className="flex flex-col items-start gap-4 self-stretch py-3">
-      <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
+      <div className="flex-start flex gap-3 self-stretch 1.5xs:flex-col">
         <div
-          className={`flex h-12 w-12 items-center gap-3 overflow-hidden 1.5xs:self-center ${
+          className={`flex h-10 w-10 items-center gap-3 overflow-hidden 1.5xs:self-center ${
             !user.profilePictureUrl ? "bg-white-high" : ""
           }`}
         >
@@ -79,25 +77,28 @@ const Tweet: FunctionComponent<RichTweet> = ({
             />
           ) : null}
         </div>
-        <div className="flex flex-[1_0_0] flex-col items-start gap-3 1.5xs:gap-y-6">
-          <div className="flex items-center justify-between self-stretch 1.5xs:flex-col 1.5xs:gap-y-2">
+        <div className="flex flex-[1_0_0] flex-col items-start gap-1 1.5xs:gap-y-6">
+          <div className="flex items-center gap-1 self-stretch 1.5xs:flex-col 1.5xs:gap-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-body2 font-subtitle1 leading-6 text-osmoverse-100">
+              <p className="text-subtitle1 font-subtitle1 leading-6">
                 {user.name}
               </p>
               <Link
                 href={user.url ?? `${TWITTER_PUBLIC_URL}/${user.username}`}
                 passHref
                 target="_blank"
-                className="text-body2 text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
+                className="text-body2 font-body2 leading-5 text-osmoverse-500 hover:underline"
                 onClick={onTweetLinkClick}
               >
                 @{user.username}
               </Link>
             </div>
+            <span className="text-body2 font-body2 font-medium leading-5 text-osmoverse-500 1.5xs:hidden">
+              ·
+            </span>
             <time
               dateTime={createdAt}
-              className="text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
+              className="text-body2 font-body2 font-medium leading-5 text-osmoverse-500"
             >
               {new Date(createdAt).toDateString()}
             </time>
@@ -105,14 +106,14 @@ const Tweet: FunctionComponent<RichTweet> = ({
           <Link
             href={`${TWITTER_PUBLIC_URL}/${user.username}/status/${id}`}
             target="_blank"
-            className="breakspaces self-stretch text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
+            className="breakspaces self-stretch text-body1 font-body1 text-osmoverse-200"
             passHref
             onClick={onTweetLinkClick}
           >
             {text}
             {previewImage && (
               <Image
-                className="relative mt-4 h-auto w-full max-w-2xl self-stretch rounded-3xl object-cover"
+                className="relative mt-3 h-auto w-full max-w-lg self-stretch rounded-xl object-cover"
                 src={previewImage}
                 quality={100}
                 alt="Tweet image"
