@@ -111,11 +111,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     children,
   } = props;
 
-  /** Won't sort when searching is happening. */
-  const sortKey = useMemo(
-    () => (Boolean(filters.searchQuery) ? undefined : sortParams.allPoolsSort),
-    [filters.searchQuery, sortParams.allPoolsSort]
-  );
+  const sortKey = sortParams.allPoolsSort;
 
   const {
     data: poolsPagesData,

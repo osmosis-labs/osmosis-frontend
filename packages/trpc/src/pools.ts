@@ -146,14 +146,11 @@ export const poolsRouter = createTRPCRouter({
               })
               .filter((pool): pool is NonNullable<typeof pool> => !!pool);
 
-            // won't sort if searching
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
+            return sort(
+              marketIncentivePools,
+              sortInput.keyPath,
+              sortInput.direction
+            );
           },
           cacheKey: JSON.stringify({
             search,
