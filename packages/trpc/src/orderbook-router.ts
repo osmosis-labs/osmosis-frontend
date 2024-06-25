@@ -29,7 +29,10 @@ export type OrderStatus =
   | "fullyClaimed"
   | "cancelled";
 
-type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
+export type MappedLimitOrder = Omit<
+  LimitOrder,
+  "quantity" | "placed_quantity"
+> & {
   quantity: number;
   placed_quantity: number;
   percentClaimed: Dec;

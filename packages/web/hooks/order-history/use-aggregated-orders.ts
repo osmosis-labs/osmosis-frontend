@@ -1,10 +1,11 @@
+import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
 import { Order } from "~/components/complex/orders-history";
 import { AssetLists } from "~/config/generated/asset-lists";
 
-export type AggregatedOrder = Order & {
+export type AggregatedOrder = MappedLimitOrder & {
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
   quoteAsset: ReturnType<typeof getAssetFromAssetList>;
 };
