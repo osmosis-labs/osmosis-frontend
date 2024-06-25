@@ -529,10 +529,6 @@ export const TransferContent: FunctionComponent<
     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
   };
 
-  console.log({
-    fromAsset: quoteParams.fromAsset,
-    toAsset: quoteParams.toAsset,
-  });
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
     useState<Bridge | null>(null);
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
