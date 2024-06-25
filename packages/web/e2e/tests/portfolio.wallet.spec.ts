@@ -8,7 +8,9 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+  const privateKey =
+    process.env.PRIVATE_KEY ??
+    "0x9866a7f11faf50d5ccc36b0ce57e6fa72c5032367c44279b9ca829713c78bab8";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
 
@@ -40,19 +42,37 @@ test.describe("Test Portfolio feature", () => {
     portfolioPage = new PortfolioPage(context.pages()[0]);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
+    await portfolioPage.hideZeroBalances();
+    await portfolioPage.viewMoreBalances();
   });
 
   test.afterAll(async () => {
     await context.close();
   });
 
-  test("User should be able to see balances", async () => {
-    await portfolioPage.hideZeroBalances();
+  test("User should be able to see native balances", async () => {
     const osmoBalance = await portfolioPage.getBalanceFor("OSMO");
-    expect(osmoBalance).toBeTruthy();
-    expect(osmoBalance).toContain("$");
+    expect(osmoBalance).toMatch(/\$\d+\.\d+/);
+    const atomBalance = await portfolioPage.getBalanceFor("ATOM");
+    expect(atomBalance).toMatch(/\$\d+\.\d+/);
     const usdtBalance = await portfolioPage.getBalanceFor("USDT");
-    expect(usdtBalance).toBeTruthy();
-    expect(usdtBalance).toContain("$");
+    expect(usdtBalance).toMatch(/\$\d+\.\d+/);
+    const usdcBalance = await portfolioPage.getBalanceFor("USDC");
+    expect(usdcBalance).toMatch(/\$\d+\.\d+/);
+    const tiaBalance = await portfolioPage.getBalanceFor("TIA");
+    expect(tiaBalance).toMatch(/\$\d+\.\d+/);
+    const daiBalance = await portfolioPage.getBalanceFor("DAI");
+    expect(daiBalance).toMatch(/\$\d+\.\d/);
+  });
+
+  test("User should be able to see bridged balances", async () => {
+    const injBalance = await portfolioPage.getBalanceFor("INJ");
+    expect(injBalance).toMatch(/\$\d+\.\d+/);
+    const ethBalance = await portfolioPage.getBalanceFor("ETH");
+    expect(ethBalance).toMatch(/\$\d+\.\d+/);
+    const kujiBalance = await portfolioPage.getBalanceFor("KUJI");
+    expect(kujiBalance).toMatch(/\$\d+\.\d/);
+    const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
+    expect(abtcBalance).toMatch(/\d+\.\d+/);
   });
 });
