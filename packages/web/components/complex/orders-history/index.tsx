@@ -37,6 +37,7 @@ export const OrderHistory = observer(() => {
       table
         .getRowModel()
         .rows.filter((row) => row.original.status === "filled"),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [table, orders]
   );
 
@@ -49,6 +50,8 @@ export const OrderHistory = observer(() => {
             row.original.status === "open" ||
             row.original.status === "partiallyFilled"
         ),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [table, orders]
   );
 
@@ -61,6 +64,7 @@ export const OrderHistory = observer(() => {
             row.original.status === "cancelled" ||
             row.original.status === "fullyClaimed"
         ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [table, orders]
   );
 
