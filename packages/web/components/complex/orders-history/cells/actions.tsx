@@ -8,11 +8,22 @@ import { useStore } from "~/stores";
 export function ActionsCell({
   row,
 }: CellContext<DisplayableLimitOrder, unknown>) {
-  return (
-    <div className="flex w-full justify-end">
-      <ClaimAndCloseButton order={row.original} />
-    </div>
-  );
+  const component = (() => {
+    switch (row.original.status) {
+      case "open":
+        return <CancelButton order={row.original} />;
+      case "partiallyFilled":
+        // TODO: swap to cancel button for partially filled but entirely claimed orders
+        return <ClaimAndCloseButton order={row.original} />;
+      case "filled":
+        return (
+          <span className="text-body-1 text-osmoverse-300">Claimable</span>
+        );
+      default:
+        return null;
+    }
+  })();
+  return <div className="flex w-full justify-end">{component}</div>;
 }
 
 const ClaimAndCloseButton = observer(
@@ -20,7 +31,6 @@ const ClaimAndCloseButton = observer(
     const { accountStore } = useStore();
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-    console.log(order);
     const claimAndClose = useCallback(async () => {
       if (!account) return;
       const { tick_id, order_id, orderbookAddress } = order;
@@ -64,3 +74,39 @@ const ClaimAndCloseButton = observer(
     );
   }
 );
+
+const CancelButton = observer(({ order }: { order: DisplayableLimitOrder }) => {
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+  const cancel = useCallback(async () => {
+    if (!account) return;
+    const { tick_id, order_id, orderbookAddress } = order;
+    const claimMsg = {
+      msg: {
+        cancel_limit: { order_id, tick_id },
+      },
+      contractAddress: orderbookAddress,
+      funds: [],
+    };
+
+    try {
+      await account.cosmwasm.sendMultiExecuteContractMsg(
+        "executeWasm",
+        [claimMsg],
+        undefined
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }, [account, order]);
+
+  return (
+    <button
+      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
+      onClick={cancel}
+    >
+      <span className="body2 text-wosmongton-200">Cancel</span>
+    </button>
+  );
+});
