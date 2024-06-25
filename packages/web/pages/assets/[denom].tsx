@@ -22,7 +22,10 @@ import { useUnmount } from "react-use";
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { LinkButton } from "~/components/buttons/link-button";
 import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
-import { TokenDetails } from "~/components/pages/asset-info-page/token-details";
+import {
+  TokenDetails,
+  TokenStats,
+} from "~/components/pages/asset-info-page/token-details";
 import { TokenNavigation } from "~/components/pages/asset-info-page/token-navigation";
 import { TokenPools } from "~/components/pages/asset-info-page/token-pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
@@ -157,24 +160,25 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
           href="/assets"
         />
         <div className="grid grid-cols-tokenpage gap-16 xl:flex xl:flex-col sm:gap-4">
-          <div className="flex flex-col gap-12 sm:gap-4">
+          <div className="flex flex-col gap-12 sm:gap-6">
             <div className="flex flex-col gap-5">
               <TokenNavigation />
               <TokenChart />
             </div>
+            <TokenDetails token={token} />
             <TokenPools denom={token.coinDenom} />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                 {SwapTool_}
               </div>
             </div>
-            <TokenDetails token={token} />
             <TwitterSection tweets={tweets} />
           </div>
 
           <div className="flex flex-col gap-6">
             <div className="xl:hidden">{SwapTool_}</div>
             <YourBalance />
+            <TokenStats />
             {token.isAlloyed && token.contract ? (
               <AlloyedAssetsSection
                 title={title ?? token.coinDenom}
