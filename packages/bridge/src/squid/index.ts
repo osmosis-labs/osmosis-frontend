@@ -8,7 +8,13 @@ import {
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
 import {
@@ -21,7 +27,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,

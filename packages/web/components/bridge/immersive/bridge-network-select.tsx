@@ -35,6 +35,9 @@ export const BridgeNetworkSelect = ({
       title={t("transfer.bridgeNetworkSelect.title")}
       className="!max-w-[30rem]"
       {...modalProps}
+      onAfterClose={() => {
+        setQuery("");
+      }}
     >
       <SearchBox
         onInput={debounce((nextValue) => {
@@ -50,17 +53,11 @@ export const BridgeNetworkSelect = ({
             key={chain.chainId}
             className="subtitle1 flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
             onClick={() =>
-              onSelectChain(
-                chain.chainType === "cosmos"
-                  ? {
-                      chainId: String(chain.chainId),
-                      chainType: chain.chainType,
-                    }
-                  : {
-                      chainId: Number(chain.chainId),
-                      chainType: chain.chainType,
-                    }
-              )
+              onSelectChain({
+                chainId: chain.chainId,
+                chainType: chain.chainType,
+                chainName: chain.prettyName,
+              } as BridgeChain)
             }
           >
             {chain.prettyName}

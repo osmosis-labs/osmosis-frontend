@@ -4,7 +4,11 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
   Address,
@@ -19,7 +23,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -331,6 +334,7 @@ export class SkipBridgeProvider implements BridgeProvider {
             ...chainInfo,
             address: sharedOriginAsset.denom,
             denom:
+              sharedOriginAsset.recommended_symbol ??
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,

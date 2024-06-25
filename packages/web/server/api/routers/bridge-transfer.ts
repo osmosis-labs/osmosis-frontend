@@ -217,17 +217,20 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
 
-      /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
+      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
       const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
 
       const assetsByChainId = supportedAssets.reduce<
-        Record<BridgeChain["chainId"], (typeof supportedAssets)[number][]>
+        Record<
+          BridgeChain["chainId"],
+          ((typeof supportedAssets)[number] & { providerName: string })[]
+        >
       >((acc, asset) => {
         if (!acc[asset.chainId]) {
           acc[asset.chainId] = [];
         }
 
-        acc[asset.chainId].push(asset);
+        acc[asset.chainId].push({ ...asset, providerName: input.bridge });
 
         return acc;
       }, {});
@@ -260,10 +263,13 @@ export const bridgeTransferRouter = createTRPCRouter({
               chainType,
             };
           } else if (chainType === "cosmos") {
-            const cosmosChain = getChain({
-              chainList: ctx.chainList,
-              chainNameOrId: String(chainId),
-            });
+            let cosmosChain: ReturnType<typeof getChain> | undefined;
+            try {
+              cosmosChain = getChain({
+                chainList: ctx.chainList,
+                chainNameOrId: String(chainId),
+              });
+            } catch {}
 
             if (!cosmosChain) {
               return undefined;
@@ -282,11 +288,9 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       return {
         supportedAssets: {
-          provider: {
-            id: bridgeProvider.providerName as Bridge,
-            logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
-          },
-          assets: assetsByChainId,
+          providerName: bridgeProvider.providerName as Bridge,
+          inputAssetAddress: input.asset.address,
+          assetsByChainId,
           availableChains,
         },
       };

@@ -45,7 +45,8 @@
     "jest-util": "^29.7.0",
     "lru-cache": "^10.0.1",
     "superjson": "^2.2.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "viem": "2.13.3"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",

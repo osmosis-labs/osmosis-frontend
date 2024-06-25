@@ -67,7 +67,7 @@ export function getAssetWithVariants({
   return (
     variants
       // place the canonical asset at the beginning
-      .sort((a) => (a.coinDenom === asset.variantGroupKey ? -1 : 1))
+      .sort((a) => (a.coinMinimalDenom === asset.variantGroupKey ? -1 : 1))
   );
 }
 

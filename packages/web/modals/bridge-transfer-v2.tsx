@@ -6,12 +6,15 @@ import type {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetTransferStatusParams,
-  SourceChain,
   SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import {
+  AxelarSourceChain,
+  getKeyByValue,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { noop } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -45,7 +48,6 @@ import {
 import {
   ChainNames,
   EthWallet,
-  NativeEVMTokenConstantAddress,
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
@@ -63,7 +65,7 @@ interface BridgeTransferContext {
   useNativeToken: boolean;
   setUseWrappedToken: (nextValue: boolean) => void;
   sourceChainConfig?: SourceChainTokenConfig;
-  sourceChainKeyMapped: SourceChain;
+  sourceChainKeyMapped: AxelarSourceChain;
   originCurrency: Currency;
 }
 
@@ -76,7 +78,7 @@ const [BridgeTransferModalProvider, useBridgeTransfer] =
 interface BridgeTransferModalProps extends ModalBaseProps {
   isWithdraw: boolean;
   balance: IBCBalance;
-  sourceChainKey: SourceChain;
+  sourceChainKey: AxelarSourceChain;
   walletClient?: ObservableWallet;
   onRequestSwitchWallet: () => void;
 }
@@ -321,7 +323,7 @@ export const TransferContent: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChain;
+    sourceChainKey: AxelarSourceChain;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
     isCounterpartyAddressValid?: boolean;

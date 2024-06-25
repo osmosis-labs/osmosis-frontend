@@ -1,5 +1,5 @@
-import { SourceChain } from "../chain";
-import { EthereumChainInfo } from "../ethereum";
+import { EthereumChainInfo, SourceChain } from "@osmosis-labs/utils";
+
 import { BridgeEnvironment } from "../interface";
 
 export type SourceChainTokenConfig = {

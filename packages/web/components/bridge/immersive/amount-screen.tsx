@@ -24,7 +24,7 @@ import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 interface AmountScreenProps {
-  type: "deposit" | "withdraw";
+  direction: "deposit" | "withdraw";
   selectedDenom: string;
 
   /**
@@ -34,7 +34,7 @@ interface AmountScreenProps {
 }
 
 export const AmountScreen = observer(
-  ({ type, assetsInOsmosis, selectedDenom }: AmountScreenProps) => {
+  ({ direction, assetsInOsmosis, selectedDenom }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
@@ -48,14 +48,18 @@ export const AmountScreen = observer(
         noop
       );
 
-    const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
-      findChainNameOrId: "osmosis",
-    });
-    const { data: nobleChain } = api.edge.chains.getChain.useQuery({
-      findChainNameOrId: "noble",
-    });
-
+    const [sourceAsset, setSourceAsset] = useState<MinimalAsset>();
     const [receiveAsset, setReceiveAsset] = useState<MinimalAsset>();
+    const [fromChain, setFromChain] = useState<BridgeChain>();
+    const [toChain, setToChain] = useState<BridgeChain>();
+
+    const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
+    const [cryptoAmount, setCryptoAmount] = useState<string>("0");
+    const [fiatAmount, setFiatAmount] = useState<string>("0");
+
+    const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
+      findChainNameOrId: accountStore.osmosisChainId,
+    });
 
     const canonicalAsset = assetsInOsmosis?.[0];
     const {
@@ -63,17 +67,14 @@ export const AmountScreen = observer(
       isLoading: isLoadingCanonicalAssetPrice,
     } = usePrice(receiveAsset);
 
-    const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
-    const [cryptoAmount, setCryptoAmount] = useState<string>("0");
-    const [fiatAmount, setFiatAmount] = useState<string>("0");
-
-    const { supportedAssets, supportedChains } = useBridgesSupportedAssets({
-      assets: assetsInOsmosis,
-      chain: {
-        chainId: accountStore.osmosisChainId,
-        chainType: "cosmos",
-      },
-    });
+    const { supportedAssetsByChainId, supportedChains } =
+      useBridgesSupportedAssets({
+        assets: assetsInOsmosis,
+        chain: {
+          chainId: accountStore.osmosisChainId,
+          chainType: "cosmos",
+        },
+      });
 
     useEffect(() => {
       if (!isNil(assetsInOsmosis) && setReceiveAsset) {
@@ -84,14 +85,45 @@ export const AmountScreen = observer(
       }
     }, [assetsInOsmosis, selectedDenom]);
 
+    useEffect(() => {
+      if (isNil(toChain) && !isNil(osmosisChain)) {
+        setToChain({
+          chainId: osmosisChain.chain_id,
+          chainName: osmosisChain.pretty_name,
+          chainType: "cosmos",
+        });
+      }
+    }, [accountStore.osmosisChainId, osmosisChain, toChain]);
+
+    useEffect(() => {
+      if (isNil(toChain) && !isNil(osmosisChain)) {
+        setToChain({
+          chainId: osmosisChain.chain_id,
+          chainName: osmosisChain.pretty_name,
+          chainType: "cosmos",
+        });
+      }
+    }, [accountStore.osmosisChainId, osmosisChain, toChain]);
+
+    useEffect(() => {
+      if (isNil(fromChain) && !isNil(supportedChains)) {
+        const firstChain = supportedChains[0];
+        setFromChain({
+          chainId: firstChain.chainId,
+          chainName: firstChain.prettyName,
+          chainType: firstChain.chainType,
+        } as BridgeChain);
+      }
+    }, [fromChain, supportedChains]);
+
     if (
       isLoadingCanonicalAssetPrice ||
-      isNil(supportedAssets) ||
+      isNil(supportedAssetsByChainId) ||
       !assetsInOsmosis ||
       !canonicalAsset ||
       !assetInOsmosisPrice ||
-      !osmosisChain ||
-      !nobleChain
+      !fromChain ||
+      !toChain
     ) {
       return <AmountScreenSkeletonLoader />;
     }
@@ -109,6 +141,11 @@ export const AmountScreen = observer(
       DEFAULT_VS_CURRENCY,
       new Dec(fiatAmount === "" ? 0 : fiatAmount)
     );
+
+    const supportedAssets =
+      supportedAssetsByChainId[
+        direction === "deposit" ? fromChain.chainId : toChain.chainId
+      ];
 
     const parseFiatAmount = (value: string) => {
       return value.replace("$", "");
@@ -161,7 +198,7 @@ export const AmountScreen = observer(
       <div className="mx-auto flex w-full flex-col items-center justify-center p-4 text-white-full">
         <h5 className="mb-6 flex items-center justify-center gap-3">
           <span>
-            {type === "deposit"
+            {direction === "deposit"
               ? t("transfer.deposit")
               : t("transfer.withdraw")}
           </span>{" "}
@@ -189,15 +226,25 @@ export const AmountScreen = observer(
             <ChainSelectorButton
               chainLogo={""}
               chains={supportedChains}
-              onSelectChain={() => {}}
+              onSelectChain={(nextChain) => {
+                setFromChain(nextChain);
+              }}
+              readonly={direction === "withdraw"}
             >
-              {nobleChain.pretty_name}
+              {fromChain.chainName}
             </ChainSelectorButton>
 
             <Icon id="arrow-right" className="text-osmoverse-300" />
 
-            <ChainSelectorButton chainLogo="" readonly>
-              {osmosisChain.pretty_name}
+            <ChainSelectorButton
+              chainLogo=""
+              chains={supportedChains}
+              onSelectChain={(nextChain) => {
+                setToChain(nextChain);
+              }}
+              readonly={direction === "deposit"}
+            >
+              {toChain.chainName}
             </ChainSelectorButton>
           </div>
         </div>
@@ -270,35 +317,32 @@ export const AmountScreen = observer(
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-2xl bg-osmoverse-1000">
-            {[
-              {
-                label: "USDC.e",
-                amount: `$80.00 ${t("transfer.available")}`,
-                active: true,
-              },
-              { label: "USDC", amount: "$30.00", active: false },
-              { label: "USDC.axl", amount: "$10.00", active: false },
-            ].map(({ label, amount, active }, index) => (
-              <button
-                key={index}
-                className={classNames(
-                  "subtitle1 flex w-full flex-col items-center rounded-lg p-2",
-                  {
-                    "bg-osmoverse-825 text-wosmongton-100": active,
-                    "text-osmoverse-100": !active,
-                  }
-                )}
-              >
-                <span>{label}</span>
-                <span className="body2 text-osmoverse-300">{amount}</span>
-              </button>
-            ))}
-          </div>
+          {supportedAssets.length > 1 && (
+            <div className="flex flex-wrap items-center justify-between rounded-2xl bg-osmoverse-1000">
+              {supportedAssets.map(({ denom }, index) => {
+                const isActive = denom === supportedAssets[0].denom;
+                return (
+                  <button
+                    key={index}
+                    className={classNames(
+                      "subtitle1 flex w-1/3 flex-col items-center rounded-lg py-3 px-2",
+                      {
+                        "bg-osmoverse-825 text-wosmongton-100": isActive,
+                        "text-osmoverse-100": !isActive,
+                      }
+                    )}
+                  >
+                    <span>{denom}</span>
+                    <span className="body2 text-osmoverse-300">0.00$</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="flex items-center justify-between">
             <span className="body1 text-osmoverse-300">
-              {type === "deposit"
+              {direction === "deposit"
                 ? t("transfer.transferWith")
                 : t("transfer.transferTo")}
             </span>
@@ -370,7 +414,7 @@ export const AmountScreen = observer(
                       };
 
                       const isConvert =
-                        asset.coinDenom === asset.variantGroupKey;
+                        asset.coinMinimalDenom === asset.variantGroupKey;
                       const isSelected =
                         receiveAsset?.coinDenom === asset.coinDenom;
 
@@ -461,7 +505,7 @@ export const AmountScreen = observer(
             ) : (
               <>
                 <Button className="w-full text-h6 font-h6">
-                  {type === "deposit"
+                  {direction === "deposit"
                     ? t("transfer.reviewDeposit")
                     : t("transfer.reviewWithdraw")}
                 </Button>
@@ -470,12 +514,12 @@ export const AmountScreen = observer(
                   className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
                   onClick={() => setIsMoreOptionsVisible(true)}
                 >
-                  {type === "deposit"
+                  {direction === "deposit"
                     ? t("transfer.moreDepositOptions")
                     : t("transfer.moreWithdrawOptions")}
                 </Button>
                 <MoreBridgeOptions
-                  type={type}
+                  type={direction}
                   isOpen={isMoreOptionsVisible}
                   // TODO: Use the receive asset when implemented
                   asset={canonicalAsset}
@@ -491,11 +535,11 @@ export const AmountScreen = observer(
 );
 
 const ChainSelectorButton: FunctionComponent<{
-  readonly?: boolean;
+  readonly: boolean;
   children: ReactNode;
   chainLogo: string;
-  chains?: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
-  onSelectChain?: (chain: BridgeChain) => void;
+  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  onSelectChain: (chain: BridgeChain) => void;
 }> = ({ readonly, children, chainLogo: _chainLogo, chains, onSelectChain }) => {
   const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
 
