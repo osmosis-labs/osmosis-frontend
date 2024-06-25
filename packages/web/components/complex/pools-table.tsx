@@ -82,6 +82,7 @@ export interface PoolsTableProps {
   disablePagination?: boolean;
   filters?: PoolsTableFilters;
   sortParams?: PoolsTabelSortParams;
+  emptyResultsText?: string;
   setSortDirection: (dir: SortDirection) => void;
   setSortKey: (key?: MarketIncentivePoolsSortKey) => void;
 }
@@ -104,6 +105,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       allPoolsSort: "volume24hUsd",
       allPoolsSortDir: "desc",
     },
+    emptyResultsText,
     setSortDirection,
     setSortKey,
     children,
@@ -118,6 +120,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const {
     data: poolsPagesData,
     isLoading,
+    isSuccess,
+    isError,
     isFetching,
     isPreviousData,
     isFetchingNextPage,
@@ -374,97 +378,112 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   return (
     <div className="w-full">
       {children}
-      <table
-        className={classNames(
-          "table-auto",
-          isPreviousData &&
-            isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
-        )}
-      >
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {topOffset !== undefined &&
-            paddingTop > 0 &&
-            paddingTop - topOffset > 0 && (
-              <tr>
-                <td style={{ height: paddingTop - topOffset }} />
-              </tr>
-            )}
-          {isLoading && (
-            <tr>
-              <td className="!text-center" colSpan={collapsedColumns.length}>
-                <Spinner />
-              </td>
-            </tr>
-          )}
-          {virtualRows.map((virtualRow) => {
-            const row = rows[virtualRow.index];
 
-            return (
-              <tr
-                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-                key={row.id}
-                onClick={() => router.push("/pool/" + row.original.id)}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    className={classNames(
-                      "transition-colors duration-200 ease-in-out",
-                      isPreviousData && isFetching && "cursor-progress"
-                    )}
-                    key={cell.id}
-                  >
-                    <Link
-                      href={getPoolLink(row.original)}
-                      key={virtualRow.index}
-                      target={getPoolTypeTarget(row.original)}
-                      onClick={(e) => e.stopPropagation()}
-                      passHref
-                      prefetch={false}
-                      className={classNames(
-                        isPreviousData && isFetching && "cursor-progress"
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Link>
-                  </td>
+      {(isSuccess && virtualRows.length === 0) || isError ? (
+        <div className="flex w-full flex-col items-center justify-center py-8">
+          <h6 className="mb-2">{t("search.noPools")}</h6>
+          <p className=" text-body1 font-body1 text-osmoverse-300">
+            {isError
+              ? t("errors.fallbackText1")
+              : emptyResultsText ??
+                t("search.noResultsFor", {
+                  query: filters.searchQuery ?? "",
+                })}
+          </p>
+        </div>
+      ) : (
+        <table
+          className={classNames(
+            "table-auto",
+            isPreviousData &&
+              isFetching &&
+              "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+          )}
+        >
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
                 ))}
               </tr>
-            );
-          })}
-          {isFetchingNextPage && (
-            <tr>
-              <td className="!text-center" colSpan={collapsedColumns.length}>
-                <Spinner />
-              </td>
-            </tr>
-          )}
-          {topOffset !== undefined && paddingBottom > 0 && (
-            <tr>
-              <td style={{ height: paddingBottom - topOffset }} />
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody>
+            {topOffset !== undefined &&
+              paddingTop > 0 &&
+              paddingTop - topOffset > 0 && (
+                <tr>
+                  <td style={{ height: paddingTop - topOffset }} />
+                </tr>
+              )}
+            {isLoading && (
+              <tr>
+                <td className="!text-center" colSpan={collapsedColumns.length}>
+                  <Spinner />
+                </td>
+              </tr>
+            )}
+            {virtualRows.map((virtualRow) => {
+              const row = rows[virtualRow.index];
+
+              return (
+                <tr
+                  className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                  key={row.id}
+                  onClick={() => router.push("/pool/" + row.original.id)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className={classNames(
+                        "transition-colors duration-200 ease-in-out",
+                        isPreviousData && isFetching && "cursor-progress"
+                      )}
+                      key={cell.id}
+                    >
+                      <Link
+                        href={getPoolLink(row.original)}
+                        key={virtualRow.index}
+                        target={getPoolTypeTarget(row.original)}
+                        onClick={(e) => e.stopPropagation()}
+                        passHref
+                        prefetch={false}
+                        className={classNames(
+                          isPreviousData && isFetching && "cursor-progress"
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+            {isFetchingNextPage && (
+              <tr>
+                <td className="!text-center" colSpan={collapsedColumns.length}>
+                  <Spinner />
+                </td>
+              </tr>
+            )}
+            {topOffset !== undefined && paddingBottom > 0 && (
+              <tr>
+                <td style={{ height: paddingBottom - topOffset }} />
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

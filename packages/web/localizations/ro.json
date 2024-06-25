@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Niciun rezultat pentru \" {query} \"",
-    "adjust": "Încercați să ajustați interogarea de căutare"
+    "adjust": "Încercați să ajustați interogarea de căutare",
+    "noPools": "Fara piscine",
+    "poolsEmpty": "În prezent, nu există pool-uri pentru {denom} pe osmoză"
   },
   "stake": {
     "available": "Disponibil",

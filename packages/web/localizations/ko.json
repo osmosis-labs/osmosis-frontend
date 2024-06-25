@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \"에 대한 결과가 없습니다.",
-    "adjust": "검색어를 조정해 보세요."
+    "adjust": "검색어를 조정해 보세요.",
+    "noPools": "수영장 없음",
+    "poolsEmpty": "현재 Osmosis에는 {denom} 에 대한 풀이 없습니다."
   },
   "stake": {
     "available": "사용 가능",

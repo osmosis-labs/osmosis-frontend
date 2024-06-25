@@ -72,6 +72,7 @@ export const TokenPools = (props: TokenPoolsProps) => {
         sortParams={sortParams}
         setSortDirection={setSortDirection}
         setSortKey={(key) => setSortKey(key ?? "volume24hUsd")}
+        emptyResultsText={t("search.poolsEmpty", { denom })}
       />
     </section>
   );
