@@ -2,6 +2,7 @@
 import * as fs from "node:fs";
 import path from "node:path";
 
+import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
@@ -36,6 +37,7 @@ const CosmosKitWalletList: Wallet[] = [
   xdefiExtensionInfo,
   cosmostationExtensionInfo,
   stationExtensionInfo,
+  cdcwalletExtensionInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {
@@ -97,7 +99,10 @@ async function generateCosmosKitWalletList() {
   const content = `
       import {Wallet} from "@cosmos-kit/core"
       export enum AvailableCosmosWallets {${CosmosKitWalletList.map(
-        (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
+        (wallet) =>
+          `${wallet.prettyName.replace(/\s/g, "").replace(/\./g, "")} = "${
+            wallet.name
+          }"`
       ).join(",")}}
       export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet> = ${getStringifiedWallet(
         registryObject

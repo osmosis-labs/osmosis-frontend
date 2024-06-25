@@ -255,6 +255,26 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   //   mode: "extension", // Add mode property with correct value
   // },
   {
+    ...CosmosKitWalletList["cdcwallet-extension"],
+    logo: "/wallets/crypto-com.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cdcwallet-extension").then(
+        (m) => m.CdcwalletExtensionWallet
+      ),
+    async supportsChain(chainId) {
+      const cdcAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "crypto-org-chain-mainnet-1",
+      ];
+      return cdcAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    windowPropertyName: "cdc_wallet",
+    stakeUrl: "https://crypto.com/staking",
+    features: [],
+    mode: "extension",
+  },
+  {
     ...CosmosKitWalletList["xdefi-extension"],
     logo: "/wallets/xdefi.png",
     lazyInstall: () =>

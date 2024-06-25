@@ -1,13 +1,13 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import {
-  type Bridge,
+import type {
+  Bridge,
   BridgeError,
-  type CosmosBridgeTransactionRequest,
-  type EvmBridgeTransactionRequest,
-  type GetTransferStatusParams,
-  type SourceChain,
-  type SourceChainTokenConfig,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
+  SourceChain,
+  SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
@@ -1021,8 +1021,9 @@ export const TransferContent: FunctionComponent<
     } catch (e) {}
   };
 
-  const errors = someError?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === BridgeError.NoQuotesError;
+  const hasNoQuotes = someError?.message.includes(
+    "NoQuotesError" as BridgeError
+  );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 

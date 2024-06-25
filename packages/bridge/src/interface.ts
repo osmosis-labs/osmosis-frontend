@@ -42,6 +42,23 @@ export interface BridgeProvider {
   ) => Promise<BridgeTransactionRequest>;
 
   /**
+   * Requests the available source assets for a given chain and coin.
+   * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
+   * In practice, this can be used to offer a list of selectable assets for the user to choose from.
+   *
+   * In general should avoid throwing errors, but return an empty array if no source assets are available with the given input.
+   * If an unexpected error occurs, perhaps if the provider is down, then no assets will be returned to prevent the user from selecting an asset that cannot be transferred.
+   *
+   * @param params The parameters for the supported assets request.
+   * @param params.chain The chain the asset is on.
+   * @param asset.asset The asset to derive sources from.
+   * @returns A promise that resolves to an array of assets combined with each assets' chain info.
+   */
+  getSupportedAssets(
+    params: BridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeAsset)[]>;
+
+  /**
    * If the provider supports deposit address transfers:
    * Requests for a deposit address generated from the given params.
    * Sending to the deposit address automatically triggers the transfer.
@@ -158,6 +175,21 @@ const bridgeAssetSchema = z.object({
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
+
+const bridgeSupportedAssetsSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  chain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  asset: bridgeAssetSchema,
+});
+
+export type BridgeSupportedAssetsParams = z.infer<
+  typeof bridgeSupportedAssetsSchema
+>;
 
 export interface BridgeDepositAddress {
   depositAddress: string;
