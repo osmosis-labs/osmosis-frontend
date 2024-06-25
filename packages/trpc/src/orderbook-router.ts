@@ -115,7 +115,10 @@ async function getTickInfoAndTransformOrders(
             ];
       const tickTotalEtas =
         tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
-      const totalFilled = Math.max(tickTotalEtas - parseInt(o.etas), 0);
+      const totalFilled = Math.max(
+        tickTotalEtas - (parseInt(o.etas) - (placedQuantity - quantity)),
+        0
+      );
       const percentFilled = new Dec(totalFilled / placedQuantity);
       const price = tickToPrice(new Int(o.tick_id));
       const status = mapOrderStatus(o);

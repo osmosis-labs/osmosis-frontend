@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
+import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
@@ -121,11 +122,8 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Status</small>;
     },
-    cell: ({
-      row: {
-        original: { status },
-      },
-    }) => {
+    cell: ({ row: { original: order } }) => {
+      const { status } = order;
       const statusString = (() => {
         switch (status) {
           case "open":
@@ -138,9 +136,20 @@ export const tableColumns = [
             return "Cancelled";
         }
       })();
+
+      const statusComponent = (() => {
+        switch (status) {
+          case "open":
+          case "partiallyFilled":
+            return <OrderProgressBar order={order} />;
+          default:
+            return;
+        }
+      })();
+
       return (
         <div className="flex flex-col gap-1">
-          <div></div>
+          {statusComponent}
           <p
             className={classNames({
               "text-bullish-400":
