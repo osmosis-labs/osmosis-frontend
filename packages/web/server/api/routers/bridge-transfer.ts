@@ -1,6 +1,7 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
+  BridgeChain,
   BridgeCoin,
   BridgeProviders,
   bridgeSupportedAssetsSchema,
@@ -219,6 +220,18 @@ export const bridgeTransferRouter = createTRPCRouter({
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
 
+      const assetsByChainId = supportedAssets.reduce<
+        Record<BridgeChain["chainId"], (typeof supportedAssets)[number][]>
+      >((acc, asset) => {
+        if (!acc[asset.chainId]) {
+          acc[asset.chainId] = [];
+        }
+
+        acc[asset.chainId].push(asset);
+
+        return acc;
+      }, {});
+
       const eventualChains = Array.from(
         // Remove duplicate chains
         new Map(
@@ -273,8 +286,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             id: bridgeProvider.providerName as Bridge,
             logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
           },
-          originalAsset: input.asset,
-          assets: supportedAssets,
+          assets: assetsByChainId,
           availableChains,
         },
       };

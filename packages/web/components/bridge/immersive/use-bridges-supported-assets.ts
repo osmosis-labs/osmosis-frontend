@@ -3,7 +3,7 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
-import { api } from "~/utils/trpc";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 const bridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar", "IBC"];
 
@@ -63,9 +63,30 @@ export const useBridgesSupportedAssets = ({
   );
 
   const supportedAssets = useMemo(() => {
-    return successfulQueries.flatMap(
-      ({ data }) => data?.supportedAssets.assets ?? []
-    );
+    return successfulQueries.reduce((acc, { data }) => {
+      if (!data) return acc;
+
+      // Merge all assets from providers by chain id
+      Object.entries(data.supportedAssets.assets).forEach(([key, value]) => {
+        if (acc[key]) {
+          acc[key] = acc[key].concat(value);
+        } else {
+          acc[key] = value;
+        }
+      });
+
+      // Remove duplicates
+      Object.keys(acc).forEach((key) => {
+        if (Array.isArray(acc[key])) {
+          acc[key] = acc[key].filter(
+            (value, index, self) =>
+              index === self.findIndex((t) => t.address === value.address)
+          );
+        }
+      });
+
+      return acc;
+    }, {} as RouterOutputs["bridgeTransfer"]["getSupportedAssetsByBridge"]["supportedAssets"]["assets"]);
   }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
