@@ -22,6 +22,13 @@ const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   })
 );
 
+export type OrderStatus =
+  | "open"
+  | "partiallyFilled"
+  | "filled"
+  | "fullyClaimed"
+  | "cancelled";
+
 type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
   quantity: number;
   placed_quantity: number;
@@ -30,7 +37,18 @@ type MappedLimitOrder = Omit<LimitOrder, "quantity" | "placed_quantity"> & {
   percentFilled: Dec;
   orderbookAddress: string;
   price: Dec;
+  status: OrderStatus;
 };
+
+function mapOrderStatus(order: LimitOrder): OrderStatus {
+  const quantInt = parseInt(order.quantity);
+  const placedQuantInt = parseInt(order.placed_quantity);
+  if (quantInt === 0) return "filled";
+  if (quantInt === placedQuantInt) return "open";
+  if (quantInt < placedQuantInt) return "partiallyFilled";
+
+  return "open";
+}
 
 async function getTickInfoAndTransformOrders(
   orderbookAddress: string,
@@ -97,6 +115,7 @@ async function getTickInfoAndTransformOrders(
       const totalFilled = Math.max(tickTotalEtas - parseInt(o.etas), 0);
       const percentFilled = new Dec(totalFilled / placedQuantity);
       const price = tickToPrice(new Int(o.tick_id));
+      const status = mapOrderStatus(o);
       return {
         ...o,
         price,
@@ -106,6 +125,7 @@ async function getTickInfoAndTransformOrders(
         totalFilled,
         percentFilled,
         orderbookAddress,
+        status,
       };
     })
     .sort((a, b) => a.order_id - b.order_id);
