@@ -1,5 +1,6 @@
 import {
   AxelarTransferStatusProvider,
+  IbcTransferStatusProvider,
   SkipTransferStatusProvider,
   SquidTransferStatusProvider,
 } from "@osmosis-labs/bridge";
@@ -256,6 +257,7 @@ export class RootStore {
         new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
         new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
         new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new IbcTransferStatusProvider(ChainList, AssetLists),
       ]
     );
 
