@@ -982,7 +982,10 @@
     "ariaViewOn": "{name} 에 대한 보기",
     "collapse": "무너지다",
     "info": {
-      "title": "정보"
+      "title": "정보",
+      "show": "보여주다",
+      "collapse": "무너지다",
+      "moreStats": "더 많은 통계"
     },
     "followTheConversation": "대화를 따라가세요",
     "chart": {

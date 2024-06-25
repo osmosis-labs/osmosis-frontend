@@ -982,7 +982,10 @@
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
     "info": {
-      "title": "信息"
+      "title": "信息",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多统计数据"
     },
     "followTheConversation": "关注对话",
     "chart": {

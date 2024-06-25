@@ -982,7 +982,10 @@
     "ariaViewOn": "{name} पर देखें",
     "collapse": "गिर जाना",
     "info": {
-      "title": "जानकारी"
+      "title": "जानकारी",
+      "show": "दिखाओ",
+      "collapse": "गिर जाना",
+      "moreStats": "अधिक आँकड़े"
     },
     "followTheConversation": "बातचीत का पालन करें",
     "chart": {

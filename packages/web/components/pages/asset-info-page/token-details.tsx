@@ -184,6 +184,7 @@ const formatCompact = (value: PricePretty | number) => {
 
 export const TokenStats = observer(() => {
   const { t } = useTranslation();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const {
     coinGeckoId,
@@ -205,70 +206,72 @@ export const TokenStats = observer(() => {
     );
 
   const stats: TokenStatProps[] = useMemo(
-    () => [
-      {
-        title: t("tokenInfos.marketCapRank"),
-        value: coingeckoCoin?.marketCapRank
-          ? `#${coingeckoCoin.marketCapRank}`
-          : "-",
-        slotLeft: (
-          <Icon
-            id="trophy"
-            width={24}
-            height={24}
-            className="text-ammelia-400"
-          />
-        ),
-        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
-      },
-      {
-        title: t("tokenInfos.marketCap"),
-        value: coingeckoCoin?.marketCap
-          ? formatCompact(coingeckoCoin.marketCap)
-          : "-",
-        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
-      },
-      {
-        title: t("tokenInfos.fullyDilutedValuation"),
-        value: coingeckoCoin?.fullyDilutedValuation
-          ? formatCompact(coingeckoCoin.fullyDilutedValuation)
-          : "-",
-        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
-      },
-      {
-        title: t("tokenInfos.volume24h"),
-        value: coingeckoCoin?.volume24h
-          ? formatCompact(coingeckoCoin?.volume24h)
-          : "-",
-        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
-      },
-      {
-        title: t("tokenInfos.volumeOnOsmosis"),
-        value: tokenMarket?.volume24h
-          ? formatCompact(tokenMarket?.volume24h)
-          : "-",
-        isLoading: isLoadingTokenMarket,
-      },
-      {
-        title: t("tokenInfos.circulatingSupply"),
-        value: coingeckoCoin?.circulatingSupply
-          ? formatCompact(coingeckoCoin.circulatingSupply)
-          : "-",
-        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
-      },
-      {
-        title: t("tokenInfos.liquidityOnOsmosis"),
-        value: tokenMarket?.liquidity
-          ? formatCompact(tokenMarket?.liquidity)
-          : "-",
-        isLoading: isLoadingTokenMarket,
-      },
-    ],
+    () =>
+      [
+        {
+          title: t("tokenInfos.marketCapRank"),
+          value: coingeckoCoin?.marketCapRank
+            ? `#${coingeckoCoin.marketCapRank}`
+            : "-",
+          slotLeft: (
+            <Icon
+              id="trophy"
+              width={24}
+              height={24}
+              className="text-ammelia-400"
+            />
+          ),
+          isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+        },
+        {
+          title: t("tokenInfos.marketCap"),
+          value: coingeckoCoin?.marketCap
+            ? formatCompact(coingeckoCoin.marketCap)
+            : "-",
+          isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+        },
+        {
+          title: t("tokenInfos.fullyDilutedValuation"),
+          value: coingeckoCoin?.fullyDilutedValuation
+            ? formatCompact(coingeckoCoin.fullyDilutedValuation)
+            : "-",
+          isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+        },
+        {
+          title: t("tokenInfos.volume24h"),
+          value: coingeckoCoin?.volume24h
+            ? formatCompact(coingeckoCoin?.volume24h)
+            : "-",
+          isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+        },
+        {
+          title: t("tokenInfos.volumeOnOsmosis"),
+          value: tokenMarket?.volume24h
+            ? formatCompact(tokenMarket?.volume24h)
+            : "-",
+          isLoading: isLoadingTokenMarket,
+        },
+        {
+          title: t("tokenInfos.circulatingSupply"),
+          value: coingeckoCoin?.circulatingSupply
+            ? formatCompact(coingeckoCoin.circulatingSupply)
+            : "-",
+          isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+        },
+        {
+          title: t("tokenInfos.liquidityOnOsmosis"),
+          value: tokenMarket?.liquidity
+            ? formatCompact(tokenMarket?.liquidity)
+            : "-",
+          isLoading: isLoadingTokenMarket,
+        },
+      ].slice(0, isExpanded ? -1 : 4),
     [
       tokenMarket,
       coingeckoCoin,
       isLoadingCoingeckoCoin,
       coinGeckoId,
+      isExpanded,
       isLoadingTokenMarket,
       t,
     ]
@@ -283,6 +286,33 @@ export const TokenStats = observer(() => {
         {stats.map((stat, index) => (
           <TokenStat key={index} {...stat} />
         ))}
+
+        <TokenStat
+          title={t("tokenInfos.info.moreStats")}
+          value={
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex gap-2 px-0 text-wosmongton-300 hover:no-underline"
+            >
+              <div>
+                {isExpanded
+                  ? t("tokenInfos.info.collapse")
+                  : t("tokenInfos.info.show")}
+              </div>
+
+              <div className={`${isExpanded && "rotate-180"}`}>
+                <Icon
+                  id="caret-down"
+                  className="text-wosmongton-300"
+                  height={16}
+                  width={16}
+                />
+              </div>
+            </Button>
+          }
+        />
       </ul>
     </section>
   );
@@ -290,7 +320,7 @@ export const TokenStats = observer(() => {
 
 interface TokenStatProps {
   title: string;
-  value: string;
+  value: ReactNode;
   isLoading?: boolean;
   slotLeft?: ReactNode;
   slotRight?: ReactNode;

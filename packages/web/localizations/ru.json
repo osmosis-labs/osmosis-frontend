@@ -982,7 +982,10 @@
     "ariaViewOn": "Просмотр {name}",
     "collapse": "Крах",
     "info": {
-      "title": "Информация"
+      "title": "Информация",
+      "show": "Показывать",
+      "collapse": "Крах",
+      "moreStats": "Больше статистики"
     },
     "followTheConversation": "Следите за разговором",
     "chart": {

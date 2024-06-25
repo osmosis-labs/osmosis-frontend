@@ -982,7 +982,10 @@
     "ariaViewOn": "{name} પર જુઓ",
     "collapse": "સંકુચિત કરો",
     "info": {
-      "title": "માહિતી"
+      "title": "માહિતી",
+      "show": "બતાવો",
+      "collapse": "સંકુચિત કરો",
+      "moreStats": "વધુ આંકડા"
     },
     "followTheConversation": "વાતચીત અનુસરો",
     "chart": {

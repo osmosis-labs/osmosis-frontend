@@ -982,7 +982,10 @@
     "ariaViewOn": "Afficher sur {name}",
     "collapse": "Effondrement",
     "info": {
-      "title": "Info"
+      "title": "Info",
+      "show": "Montrer",
+      "collapse": "Effondrement",
+      "moreStats": "Plus de statistiques"
     },
     "followTheConversation": "Suivez la conversation",
     "chart": {

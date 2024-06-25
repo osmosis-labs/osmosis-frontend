@@ -982,7 +982,10 @@
     "ariaViewOn": "Vedeți pe {name}",
     "collapse": "Colaps",
     "info": {
-      "title": "Info"
+      "title": "Info",
+      "show": "Spectacol",
+      "collapse": "Colaps",
+      "moreStats": "Mai multe statistici"
     },
     "followTheConversation": "Urmăriți conversația",
     "chart": {

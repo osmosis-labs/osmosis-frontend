@@ -982,7 +982,10 @@
     "ariaViewOn": "Wyświetl na {name}",
     "collapse": "Zawalić się",
     "info": {
-      "title": "Informacje"
+      "title": "Informacje",
+      "show": "Pokazywać",
+      "collapse": "Zawalić się",
+      "moreStats": "Więcej statystyk"
     },
     "followTheConversation": "Śledź rozmowę",
     "chart": {

@@ -982,7 +982,10 @@
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
     "info": {
-      "title": "情報"
+      "title": "情報",
+      "show": "見せる",
+      "collapse": "崩壊",
+      "moreStats": "詳しい統計"
     },
     "followTheConversation": "会話に従ってください",
     "chart": {

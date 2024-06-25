@@ -982,7 +982,10 @@
     "ariaViewOn": "{name} üzerinde görüntüle",
     "collapse": "Yıkılmak",
     "info": {
-      "title": "Bilgi"
+      "title": "Bilgi",
+      "show": "Göstermek",
+      "collapse": "Yıkılmak",
+      "moreStats": "Daha fazla istatistik"
     },
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {

@@ -982,7 +982,10 @@
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
     "info": {
-      "title": "اطلاعات"
+      "title": "اطلاعات",
+      "show": "نمایش دهید",
+      "collapse": "سقوط - فروپاشی",
+      "moreStats": "آمار بیشتر"
     },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
