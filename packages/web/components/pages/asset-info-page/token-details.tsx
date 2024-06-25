@@ -2,7 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
@@ -175,56 +175,93 @@ export const TokenDetails = observer(_TokenDetails);
 export const TokenStats = observer(() => {
   const { t } = useTranslation();
 
-  const { coingeckoCoin, isLoadingCoingeckoCoin } = useAssetInfo();
+  const {
+    coinGeckoId,
+    coingeckoCoin,
+    isLoadingCoingeckoCoin = true,
+  } = useAssetInfo();
+
+  const stats: TokenStatProps[] = useMemo(
+    () => [
+      {
+        title: t("tokenInfos.marketCapRank"),
+        value: coingeckoCoin?.marketCapRank
+          ? `#${coingeckoCoin.marketCapRank}`
+          : "-",
+        slotLeft: (
+          <Icon
+            id="trophy"
+            width={24}
+            height={24}
+            className="text-ammelia-400"
+          />
+        ),
+        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+      {
+        title: t("tokenInfos.marketCap"),
+        value: coingeckoCoin?.marketCap
+          ? formatPretty(coingeckoCoin.marketCap, {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+              compactDisplay: "short",
+              scientificMagnitudeThreshold: 30,
+            })
+          : "-",
+        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+      {
+        title: t("tokenInfos.circulatingSupply"),
+        value: coingeckoCoin?.circulatingSupply
+          ? formatPretty(new Dec(coingeckoCoin.circulatingSupply), {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+              compactDisplay: "short",
+              scientificMagnitudeThreshold: 30,
+            })
+          : "-",
+        isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+    ],
+    [coingeckoCoin, isLoadingCoingeckoCoin, coinGeckoId, t]
+  );
 
   return (
-    <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.marketCapRank")}
-        </p>
-        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
-          <h5 className="w-full text-xl font-h5 leading-8">
-            {coingeckoCoin?.marketCapRank
-              ? `#${coingeckoCoin.marketCapRank}`
-              : "-"}
-          </h5>
-        </SkeletonLoader>
-      </li>
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.marketCap")}
-        </p>
-        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
-          <h5 className="w-full text-xl font-h5 leading-8">
-            {coingeckoCoin?.marketCap
-              ? formatPretty(coingeckoCoin.marketCap, {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                  compactDisplay: "short",
-                  scientificMagnitudeThreshold: 30,
-                })
-              : "-"}
-          </h5>
-        </SkeletonLoader>
-      </li>
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.circulatingSupply")}
-        </p>
-        <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
-          <h5 className="w-full text-xl font-h5 leading-8">
-            {coingeckoCoin?.circulatingSupply
-              ? formatPretty(new Dec(coingeckoCoin.circulatingSupply), {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                  compactDisplay: "short",
-                  scientificMagnitudeThreshold: 30,
-                })
-              : "-"}
-          </h5>
-        </SkeletonLoader>
-      </li>
-    </ul>
+    <section className="flex flex-col gap-8">
+      <header>
+        <h6>{t("tokenInfos.info.title")}</h6>
+      </header>
+      <ul className="flex flex-col gap-6">
+        {stats.map((stat, index) => (
+          <TokenStat key={index} {...stat} />
+        ))}
+      </ul>
+    </section>
   );
 });
+
+interface TokenStatProps {
+  title: string;
+  value: string;
+  isLoading?: boolean;
+  slotLeft?: ReactNode;
+  slotRight?: ReactNode;
+}
+
+const TokenStat = (props: TokenStatProps) => {
+  const { title, value, slotLeft, slotRight, isLoading = false } = props;
+
+  return (
+    <li className="flex items-center justify-between gap-4">
+      <h5 className="text-body1 font-body1 text-osmoverse-300">{title}</h5>
+
+      <SkeletonLoader isLoaded={!isLoading}>
+        <div className="flex items-center gap-2">
+          {slotLeft}
+          <p className="text-body1 font-body1 text-osmoverse-100">{value}</p>
+          {slotRight}
+        </div>
+      </SkeletonLoader>
+    </li>
+  );
+};

@@ -981,6 +981,9 @@
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
     "collapse": "무너지다",
+    "info": {
+      "title": "정보"
+    },
     "followTheConversation": "대화를 따라가세요",
     "chart": {
       "xHour": "{h} H",

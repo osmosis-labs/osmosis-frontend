@@ -981,6 +981,9 @@
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",
     "collapse": "Крах",
+    "info": {
+      "title": "Информация"
+    },
     "followTheConversation": "Следите за разговором",
     "chart": {
       "xHour": "{h} H",

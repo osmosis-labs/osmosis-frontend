@@ -981,6 +981,9 @@
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
     "collapse": "Yıkılmak",
+    "info": {
+      "title": "Bilgi"
+    },
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {
       "xHour": "{h} H",

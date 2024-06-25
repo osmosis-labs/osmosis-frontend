@@ -981,6 +981,9 @@
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "資訊"
+    },
     "followTheConversation": "關注對話",
     "chart": {
       "xHour": "{h} H",

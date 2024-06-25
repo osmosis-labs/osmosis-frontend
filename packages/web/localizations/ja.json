@@ -981,6 +981,9 @@
     "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
+    "info": {
+      "title": "情報"
+    },
     "followTheConversation": "会話に従ってください",
     "chart": {
       "xHour": "{h} H",

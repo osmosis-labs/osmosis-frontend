@@ -981,6 +981,9 @@
     "ariaView": "Wyświetl {name}",
     "ariaViewOn": "Wyświetl na {name}",
     "collapse": "Zawalić się",
+    "info": {
+      "title": "Informacje"
+    },
     "followTheConversation": "Śledź rozmowę",
     "chart": {
       "xHour": "{h} H",

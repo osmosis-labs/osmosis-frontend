@@ -981,6 +981,9 @@
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
     "collapse": "गिर जाना",
+    "info": {
+      "title": "जानकारी"
+    },
     "followTheConversation": "बातचीत का पालन करें",
     "chart": {
       "xHour": "{h} एच",

@@ -981,6 +981,9 @@
     "ariaView": "Vedeți {name}",
     "ariaViewOn": "Vedeți pe {name}",
     "collapse": "Colaps",
+    "info": {
+      "title": "Info"
+    },
     "followTheConversation": "Urmăriți conversația",
     "chart": {
       "xHour": "{h} H",

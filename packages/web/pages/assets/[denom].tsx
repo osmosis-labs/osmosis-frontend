@@ -159,7 +159,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
           ariaLabel={t("menu.assets")}
           href="/assets"
         />
-        <div className="grid grid-cols-tokenpage gap-16 xl:flex xl:flex-col sm:gap-4">
+        <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-6">
           <div className="flex flex-col gap-12 sm:gap-6">
             <div className="flex flex-col gap-5">
               <TokenNavigation />
@@ -175,7 +175,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
             <TwitterSection tweets={tweets} />
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-11 sm:gap-6">
             <div className="xl:hidden">{SwapTool_}</div>
             <YourBalance />
             <TokenStats />

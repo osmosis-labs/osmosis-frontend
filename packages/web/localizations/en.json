@@ -981,6 +981,9 @@
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
     "collapse": "Collapse",
+    "info": {
+      "title": "Info"
+    },
     "followTheConversation": "Follow the conversation",
     "chart": {
       "xHour": "{h}H",

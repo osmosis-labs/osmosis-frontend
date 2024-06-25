@@ -981,6 +981,9 @@
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
     "collapse": "Zusammenbruch",
+    "info": {
+      "title": "Die Info"
+    },
     "followTheConversation": "Verfolgen Sie das Gespräch",
     "chart": {
       "xHour": "{h} H",

@@ -981,6 +981,9 @@
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
+    "info": {
+      "title": "اطلاعات"
+    },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
       "xHour": "{h} H",
