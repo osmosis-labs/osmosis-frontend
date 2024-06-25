@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "没有找到“ {query} ”的结果",
-    "adjust": "尝试调整您的搜索查询"
+    "adjust": "尝试调整您的搜索查询",
+    "noPools": "没有泳池",
+    "poolsEmpty": "目前 Osmosis 上没有适用于{denom}池"
   },
   "stake": {
     "available": "可用的",

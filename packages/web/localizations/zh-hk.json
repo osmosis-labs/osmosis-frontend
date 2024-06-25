@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "沒有“ {query} ”的結果",
-    "adjust": "嘗試調整您的搜尋查詢"
+    "adjust": "嘗試調整您的搜尋查詢",
+    "noPools": "沒有泳池",
+    "poolsEmpty": "目前 Osmosis 上沒有{denom}"
   },
   "stake": {
     "available": "可用的",

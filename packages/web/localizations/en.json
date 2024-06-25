@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "No results for \"{query}\"",
-    "adjust": "Try adjusting your search query"
+    "adjust": "Try adjusting your search query",
+    "noPools": "No pools",
+    "poolsEmpty": "Currently there are no pools for {denom} on Osmosis"
   },
   "stake": {
     "available": "Available",

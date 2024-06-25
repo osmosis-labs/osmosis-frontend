@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Keine Ergebnisse für \" {query} \"",
-    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen",
+    "noPools": "Keine Pools",
+    "poolsEmpty": "Derzeit gibt es keine Pools für {denom} auf Osmosis"
   },
   "stake": {
     "available": "Verfügbar",

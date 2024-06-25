@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" için sonuç yok",
-    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin",
+    "noPools": "Havuz yok",
+    "poolsEmpty": "Şu anda Osmosis'te {denom} için havuz yok"
   },
   "stake": {
     "available": "Mevcut",

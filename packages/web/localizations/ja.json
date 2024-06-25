@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "「 {query}に該当する結果はありません",
-    "adjust": "検索クエリを調整してみてください"
+    "adjust": "検索クエリを調整してみてください",
+    "noPools": "プールなし",
+    "poolsEmpty": "現在、Osmosis には{denom}のプールはありません"
   },
   "stake": {
     "available": "利用可能",

@@ -202,7 +202,14 @@ const TokenStats = observer(() => {
         </p>
         <SkeletonLoader className="w-full" isLoaded={!isLoadingCoingeckoCoin}>
           <h5 className="w-full text-xl font-h5 leading-8">
-            {coingeckoCoin?.marketCap?.toString() ?? "-"}
+            {coingeckoCoin?.marketCap
+              ? formatPretty(coingeckoCoin.marketCap, {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                  compactDisplay: "short",
+                  scientificMagnitudeThreshold: 30,
+                })
+              : "-"}
           </h5>
         </SkeletonLoader>
       </li>

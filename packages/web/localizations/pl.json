@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Brak wyników dla „ {query} „",
-    "adjust": "Spróbuj dostosować zapytanie"
+    "adjust": "Spróbuj dostosować zapytanie",
+    "noPools": "Żadnych basenów",
+    "poolsEmpty": "Obecnie w serwisie Osmosis nie ma puli dla {denom}"
   },
   "stake": {
     "available": "Dostępny",
