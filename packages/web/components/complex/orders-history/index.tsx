@@ -67,29 +67,28 @@ export const OrderHistory = observer(() => {
         </thead>
         <tbody className="bg-transparent">
           <tr>
-            <td className="relative flex items-end gap-3 !px-0 !pb-0 pt-5">
-              <div className="flex items-center gap-2 pb-3">
-                <h6>Filled orders to claim</h6>
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="caption">1</span>
+            <td colSpan={5} className="!p-0">
+              <div className="flex w-full items-end justify-between pr-4">
+                <div className="relative flex items-end gap-3 pt-5">
+                  <div className="flex items-center gap-2 pb-3">
+                    <h6>Filled orders to claim</h6>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
+                      <span className="caption">1</span>
+                    </div>
+                  </div>
+                  <div className="flex h-12 w-12 items-center justify-center">
+                    <Icon
+                      id="question"
+                      className="h-6 w-6 text-wosmongton-200"
+                      width={24}
+                      height={24}
+                    />
+                  </div>
                 </div>
+                <button className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4">
+                  <span className="subtitle1">Claim all</span>
+                </button>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center">
-                <Icon
-                  id="question"
-                  className="h-6 w-6 text-wosmongton-200"
-                  width={24}
-                  height={24}
-                />
-              </div>
-            </td>
-            <td />
-            <td />
-            <td />
-            <td className="flex justify-end !pl-0 pt-5 pr-4 !pb-0">
-              <button className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4">
-                <span className="subtitle1">Claim all</span>
-              </button>
             </td>
           </tr>
           {table.getRowModel().rows.map((row) => (
