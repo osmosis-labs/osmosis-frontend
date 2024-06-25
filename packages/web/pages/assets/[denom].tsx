@@ -131,8 +131,8 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
   return (
     <AssetInfoViewProvider value={contextValue}>
       <Script
-          src="/tradingview/charting_library.standalone.js"
-          strategy="afterInteractive"
+        src="/tradingview/charting_library.standalone.js"
+        strategy="afterInteractive"
       />
       <NextSeo
         title={`${
