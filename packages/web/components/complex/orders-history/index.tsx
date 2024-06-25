@@ -37,7 +37,7 @@ export const OrderHistory = observer(() => {
       table
         .getRowModel()
         .rows.filter((row) => row.original.status === "filled"),
-    [table]
+    [table, orders]
   );
 
   const pendingOrders = useMemo(
@@ -49,7 +49,7 @@ export const OrderHistory = observer(() => {
             row.original.status === "open" ||
             row.original.status === "partiallyFilled"
         ),
-    [table]
+    [table, orders]
   );
 
   const pastOrders = useMemo(
@@ -61,7 +61,7 @@ export const OrderHistory = observer(() => {
             row.original.status === "cancelled" ||
             row.original.status === "fullyClaimed"
         ),
-    [table]
+    [table, orders]
   );
 
   if (isLoading) {
@@ -166,7 +166,7 @@ export const OrderHistory = observer(() => {
           {pastOrders.length > 0 && (
             <>
               <h6 className="pb-4 pt-8">Past</h6>
-              {pasOrders.map((row) => (
+              {pastOrders.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="!px-0 !text-left">

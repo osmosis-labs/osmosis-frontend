@@ -120,11 +120,37 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Status</small>;
     },
-    cell: () => {
+    cell: ({
+      row: {
+        original: { status },
+      },
+    }) => {
+      const statusString = (() => {
+        switch (status) {
+          case "open":
+          case "partiallyFilled":
+            return "Open";
+          case "filled":
+          case "fullyClaimed":
+            return "Filled";
+          case "cancelled":
+            return "Cancelled";
+        }
+      })();
       return (
         <div className="flex flex-col gap-1">
-          <p className="body2 text-osmoverse-300">2h ago</p>
-          <p className="text-bullish-400">Filled</p>
+          <div></div>
+          <p
+            className={classNames({
+              "text-bullish-400":
+                status === "filled" || status === "fullyClaimed",
+              "text-wosmongton-300":
+                status === "open" || status === "partiallyFilled",
+              "text-rust-400": status === "cancelled",
+            })}
+          >
+            {statusString}
+          </p>
         </div>
       );
     },
