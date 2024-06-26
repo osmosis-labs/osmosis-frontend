@@ -303,16 +303,25 @@ export const useOrderbookAllActiveOrders = ({
       const orderbook = orderbooks.find(
         (ob) => ob.contractAddress === o.orderbookAddress
       );
+      const baseAsset = getAssetFromAssetList({
+        coinMinimalDenom: orderbook?.baseDenom ?? "",
+        assetLists: AssetLists,
+      });
+      const quoteAsset = getAssetFromAssetList({
+        coinMinimalDenom: orderbook?.quoteDenom ?? "",
+        assetLists: AssetLists,
+      });
+      const placedQuantity =
+        o.placed_quantity /
+        10 **
+          (o.order_direction === "bid"
+            ? baseAsset?.decimals ?? 1
+            : quoteAsset?.decimals ?? 1);
       return {
         ...o,
-        baseAsset: getAssetFromAssetList({
-          coinMinimalDenom: orderbook?.baseDenom ?? "",
-          assetLists: AssetLists,
-        }),
-        quoteAsset: getAssetFromAssetList({
-          coinMinimalDenom: orderbook?.quoteDenom ?? "",
-          assetLists: AssetLists,
-        }),
+        baseAsset,
+        quoteAsset,
+        placed_quantity: placedQuantity,
       };
     });
   }, [allOrders, orderbooks]);
