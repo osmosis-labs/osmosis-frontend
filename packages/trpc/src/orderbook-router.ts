@@ -3,6 +3,7 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
+  getOrderbookDenoms,
   getOrderbookMakerFee,
   getOrderbookSpotPrice,
   getOrderbookTickState,
@@ -11,6 +12,7 @@ import {
   maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
 import { Chain } from "@osmosis-labs/types";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -41,6 +43,9 @@ export type MappedLimitOrder = Omit<
   orderbookAddress: string;
   price: Dec;
   status: OrderStatus;
+  output: number;
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>;
+  baseAsset: ReturnType<typeof getAssetFromAssetList>;
 };
 
 function mapOrderStatus(order: LimitOrder): OrderStatus {
@@ -56,7 +61,9 @@ function mapOrderStatus(order: LimitOrder): OrderStatus {
 async function getTickInfoAndTransformOrders(
   orderbookAddress: string,
   orders: LimitOrder[],
-  chainList: Chain[]
+  chainList: Chain[],
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>,
+  baseAsset: ReturnType<typeof getAssetFromAssetList>
 ): Promise<MappedLimitOrder[]> {
   const tickIds = [...new Set(orders.map((o) => o.tick_id))];
   const tickStates = await getOrderbookTickState({
@@ -81,11 +88,20 @@ async function getTickInfoAndTransformOrders(
       const { tickState, unrealizedCancels } = fullTickState.find(
         ({ tickId }) => tickId === o.tick_id
       ) ?? { tickState: undefined, unrealizedCancels: undefined };
-      const quantity = parseInt(o.quantity);
-      const placedQuantity = parseInt(o.placed_quantity);
+
+      const [tokenInAsset, tokenOutAsset] =
+        o.order_direction === "bid"
+          ? [quoteAsset, baseAsset]
+          : [baseAsset, quoteAsset];
+
+      const quantityMin = parseInt(o.quantity);
+      const placedQuantityMin = parseInt(o.placed_quantity);
+      const placedQuantity =
+        placedQuantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
+      const quantity = quantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
 
       const percentClaimed = new Dec(
-        (placedQuantity - quantity) / placedQuantity
+        (placedQuantityMin - quantityMin) / placedQuantityMin
       );
       const [tickEtas, tickCumulativeCancelled, tickUnrealizedCancelled] =
         o.order_direction === "bid"
@@ -116,12 +132,23 @@ async function getTickInfoAndTransformOrders(
       const tickTotalEtas =
         tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
       const totalFilled = Math.max(
-        tickTotalEtas - (parseInt(o.etas) - (placedQuantity - quantity)),
+        tickTotalEtas - (parseInt(o.etas) - (placedQuantityMin - quantityMin)),
         0
       );
-      const percentFilled = new Dec(totalFilled / placedQuantity);
+      const percentFilled = new Dec(totalFilled / placedQuantityMin);
       const price = tickToPrice(new Int(o.tick_id));
       const status = mapOrderStatus(o);
+
+      const outputMin =
+        o.order_direction === "bid"
+          ? new Dec(placedQuantityMin).quo(price)
+          : new Dec(placedQuantityMin).mul(price);
+      const output = parseInt(
+        outputMin
+          .quo(new Dec(10 ** (tokenOutAsset?.decimals ?? 0)))
+          .truncate()
+          .toString()
+      );
       return {
         ...o,
         price,
@@ -132,6 +159,9 @@ async function getTickInfoAndTransformOrders(
         percentFilled,
         orderbookAddress,
         status,
+        output,
+        quoteAsset,
+        baseAsset,
       };
     })
     .sort((a, b) => a.order_id - b.order_id);
@@ -169,11 +199,24 @@ export const orderbookRouter = createTRPCRouter({
           });
 
           if (resp.orders.length === 0) return [];
-
+          const { quote_denom, base_denom } = await getOrderbookDenoms({
+            orderbookAddress: contractOsmoAddress,
+            chainList: ctx.chainList,
+          });
+          const quoteAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: quote_denom,
+          });
+          const baseAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: base_denom,
+          });
           return getTickInfoAndTransformOrders(
             contractOsmoAddress,
             resp.orders,
-            ctx.chainList
+            ctx.chainList,
+            quoteAsset,
+            baseAsset
           );
         },
         cacheKey: JSON.stringify([
@@ -195,8 +238,9 @@ export const orderbookRouter = createTRPCRouter({
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
+
           const promises = contractAddresses.map(
-            async (contractOsmoAddress) => {
+            async (contractOsmoAddress: string) => {
               const resp = await getOrderbookActiveOrders({
                 orderbookAddress: contractOsmoAddress,
                 userOsmoAddress: userOsmoAddress,
@@ -204,11 +248,25 @@ export const orderbookRouter = createTRPCRouter({
               });
 
               if (resp.orders.length === 0) return [];
-
+              const { base_denom } = await getOrderbookDenoms({
+                orderbookAddress: contractOsmoAddress,
+                chainList: ctx.chainList,
+              });
+              // TODO: Use actual quote denom here
+              const quoteAsset = getAssetFromAssetList({
+                assetLists: ctx.assetLists,
+                sourceDenom: "uusdc",
+              });
+              const baseAsset = getAssetFromAssetList({
+                assetLists: ctx.assetLists,
+                sourceDenom: base_denom,
+              });
               const mappedOrders = await getTickInfoAndTransformOrders(
                 contractOsmoAddress,
                 resp.orders,
-                ctx.chainList
+                ctx.chainList,
+                quoteAsset,
+                baseAsset
               );
               return mappedOrders;
             }

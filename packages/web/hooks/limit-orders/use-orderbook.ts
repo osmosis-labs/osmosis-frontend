@@ -267,10 +267,7 @@ export const useActiveLimitOrdersByOrderbook = ({
   };
 };
 
-export type DisplayableLimitOrder = MappedLimitOrder & {
-  baseAsset: ReturnType<typeof getAssetFromAssetList>;
-  quoteAsset: ReturnType<typeof getAssetFromAssetList>;
-};
+export type DisplayableLimitOrder = MappedLimitOrder;
 
 export const useOrderbookAllActiveOrders = ({
   userAddress,
@@ -298,27 +295,8 @@ export const useOrderbookAllActiveOrders = ({
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
-  const ordersWithDenoms: DisplayableLimitOrder[] = useMemo(() => {
-    return allOrders.map((o) => {
-      const orderbook = orderbooks.find(
-        (ob) => ob.contractAddress === o.orderbookAddress
-      );
-      return {
-        ...o,
-        baseAsset: getAssetFromAssetList({
-          coinMinimalDenom: orderbook?.baseDenom ?? "",
-          assetLists: AssetLists,
-        }),
-        quoteAsset: getAssetFromAssetList({
-          coinMinimalDenom: orderbook?.quoteDenom ?? "",
-          assetLists: AssetLists,
-        }),
-      };
-    });
-  }, [allOrders, orderbooks]);
-
   return {
-    orders: ordersWithDenoms,
+    orders: allOrders,
     isLoading,
     fetchNextPage,
     isFetching,
