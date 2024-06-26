@@ -140,11 +140,6 @@ export const OrderHistory = observer(() => {
               ))}
             </>
           )}
-          {/*
-           * When we will have the data available,
-           * we will filter the data from the mapping
-           * by a parameter which tells us the order type
-           */}
           {pendingOrders.length > 0 && (
             <>
               <h6 className="pb-4 pt-8">Pending</h6>
@@ -162,11 +157,6 @@ export const OrderHistory = observer(() => {
               ))}
             </>
           )}
-          {/**
-           * When we will have the data available,
-           * we will filter the data from the mapping
-           * by a parameter which tells us the order type
-           */}
           {pastOrders.length > 0 && (
             <>
               <h6 className="pb-4 pt-8">Past</h6>
