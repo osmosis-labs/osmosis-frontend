@@ -280,3 +280,5 @@ export class IbcBridgeProvider implements BridgeProvider {
     return { urlProviderName: "TFM", url };
   }
 }
+
+export * from "./transfer-status";
