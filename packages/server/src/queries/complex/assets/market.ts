@@ -5,7 +5,7 @@ import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
+import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoCoin,
@@ -130,23 +130,14 @@ export async function getAssetCoingeckoCoin({
     key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60 * 30, // 15 minutes
     getFreshValue: async () => {
-      const [coingeckoCoinResponse, volumesResponse] = await Promise.allSettled(
-        [
-          queryCoingeckoCoin(coinGeckoId),
+      const [coingeckoCoin, volumes] = await Promise.all([
+        captureIfError(() => queryCoingeckoCoin(coinGeckoId)),
+        captureIfError(() =>
           getBatchFetchCoingeckoPrices({
             currency,
-          }),
-        ]
-      );
-
-      const coingeckoCoin =
-        coingeckoCoinResponse.status === "fulfilled"
-          ? coingeckoCoinResponse.value
-          : undefined;
-      const volumes =
-        volumesResponse.status === "fulfilled"
-          ? volumesResponse.value
-          : undefined;
+          })
+        ),
+      ]);
 
       const volume24h = volumes
         ? (await volumes.load(coinGeckoId)).volume24h
