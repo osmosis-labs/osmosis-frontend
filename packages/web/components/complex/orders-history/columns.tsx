@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
+import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
@@ -121,11 +122,45 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Status</small>;
     },
-    cell: () => {
+    cell: ({ row: { original: order } }) => {
+      const { status } = order;
+      const statusString = (() => {
+        switch (status) {
+          case "open":
+          case "partiallyFilled":
+            return "Open";
+          case "filled":
+          case "fullyClaimed":
+            return "Filled";
+          case "cancelled":
+            return "Cancelled";
+        }
+      })();
+
+      const statusComponent = (() => {
+        switch (status) {
+          case "open":
+          case "partiallyFilled":
+            return <OrderProgressBar order={order} />;
+          default:
+            return;
+        }
+      })();
+
       return (
         <div className="flex flex-col gap-1">
-          <p className="body2 text-osmoverse-300">2h ago</p>
-          <p className="text-bullish-400">Filled</p>
+          {statusComponent}
+          <p
+            className={classNames({
+              "text-bullish-400":
+                status === "filled" || status === "fullyClaimed",
+              "text-wosmongton-300":
+                status === "open" || status === "partiallyFilled",
+              "text-rust-400": status === "cancelled",
+            })}
+          >
+            {statusString}
+          </p>
         </div>
       );
     },
