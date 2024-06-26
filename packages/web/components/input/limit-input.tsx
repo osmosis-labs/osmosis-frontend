@@ -13,6 +13,7 @@ export interface LimitInputProps {
   tokenAmount: string;
   price: Dec;
   insufficentFunds?: boolean;
+  disableSwitching?: boolean;
 }
 
 export enum FocusedInput {
@@ -43,6 +44,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   tokenAmount,
   price,
   insufficentFunds,
+  disableSwitching,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   const [tab] = useQueryState("tab");
@@ -114,6 +116,7 @@ export const LimitInput: FC<LimitInputProps> = ({
           insufficentFunds={insufficentFunds}
           amount={type === "fiat" ? fiatAmount : tokenAmount}
           setter={type === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
+          disableSwitching={disableSwitching}
         />
       ))}
       <button className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
@@ -139,6 +142,7 @@ function AutoInput({
   amount,
   setter,
   type,
+  disableSwitching,
 }: AutoInputProps) {
   const currentTypeEnum = useMemo(
     () => (type === "fiat" ? FocusedInput.FIAT : FocusedInput.TOKEN),
@@ -167,8 +171,13 @@ function AutoInput({
           "text-white-full": isFocused && +amount > 0,
         }
       )}
-      onClick={focused === oppositeTypeEnum ? swapFocus : undefined}
+      onClick={
+        !disableSwitching && focused === oppositeTypeEnum
+          ? swapFocus
+          : undefined
+      }
     >
+      {disableSwitching && !isFocused && <span>~</span>}
       {type === "fiat" && (
         <span className={classNames({ "font-normal": !isFocused })}>$</span>
       )}
@@ -194,7 +203,7 @@ function AutoInput({
           {baseAsset ? baseAsset.denom : ""}
         </span>
       )}
-      {focused === oppositeTypeEnum && <SwapArrows />}
+      {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
     </div>
   );
 }
