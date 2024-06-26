@@ -78,11 +78,7 @@ export const OrderHistory = observer(() => {
     );
   }
 
-  if (
-    pendingOrders.length === 0 &&
-    pastOrders.length === 0 &&
-    filledOrders.length === 0
-  ) {
+  if (orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
         <Image
