@@ -1,3 +1,5 @@
+import { PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import Image from "next/image";
@@ -6,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
+import { formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
 
@@ -18,17 +21,7 @@ export const tableColumns = [
     size: 400,
     cell: ({
       row: {
-        original: {
-          order_direction,
-          quoteAsset,
-          baseAsset,
-          // placed_quantity,
-          // quantity,
-          // tick_id,
-          // percentFilled,
-          // if 100 -> order filled
-          // an order is claimable when percent filled is gt percent claimed
-        },
+        original: { order_direction, quoteAsset, baseAsset },
       },
     }) => {
       const baseAssetLogo =
@@ -90,7 +83,7 @@ export const tableColumns = [
     },
     cell: ({
       row: {
-        original: { baseAsset },
+        original: { baseAsset, price },
       },
     }) => {
       return (
@@ -98,7 +91,7 @@ export const tableColumns = [
           <p className="body2 text-osmoverse-300">
             {baseAsset?.symbol} · Limit
           </p>
-          <p>$67,890.10</p>
+          <p>{formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price))}</p>
         </div>
       );
     },
