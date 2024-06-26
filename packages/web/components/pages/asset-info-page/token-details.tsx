@@ -194,7 +194,7 @@ export const TokenStats = observer(() => {
   } = useAssetInfo();
 
   const { data: tokenMarket, isLoading: isLoadingTokenMarket } =
-    api.edge.assets.getUserMarketAsset.useQuery(
+    api.edge.assets.getMarketAsset.useQuery(
       {
         findMinDenomOrSymbol: tokenDenom,
       },

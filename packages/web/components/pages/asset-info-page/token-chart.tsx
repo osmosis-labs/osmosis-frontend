@@ -147,7 +147,7 @@ export const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
   const { data: marketAsset, isLoading } =
-    api.edge.assets.getUserMarketAsset.useQuery(
+    api.edge.assets.getMarketAsset.useQuery(
       {
         findMinDenomOrSymbol: assetInfoConfig.coinMinimalDenom!,
       },
