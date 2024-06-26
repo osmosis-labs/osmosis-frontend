@@ -1,3 +1,5 @@
+import { PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import Image from "next/image";
@@ -6,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
+import { formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
 
@@ -22,7 +25,8 @@ export const tableColumns = [
           order_direction,
           quoteAsset,
           baseAsset,
-          // placed_quantity,
+          placed_quantity,
+          output,
           // quantity,
           // tick_id,
           // percentFilled,
@@ -35,7 +39,6 @@ export const tableColumns = [
         baseAsset?.rawAsset.logoURIs.svg ??
         baseAsset?.rawAsset.logoURIs.png ??
         "";
-
       return (
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800">
@@ -56,18 +59,31 @@ export const tableColumns = [
                 { "flex-row-reverse": order_direction === "bid" }
               )}
             >
-              <span>1000 {baseAsset?.symbol}</span>
+              <span>
+                {order_direction === "bid" ? output : placed_quantity}{" "}
+                {baseAsset?.symbol}
+              </span>
               <Icon
                 id="arrow-right"
                 className="h-4 w-4"
                 width={16}
                 height={16}
               />
-              <span>0.123 {quoteAsset?.symbol}</span>
+              <span>
+                {order_direction === "bid" ? placed_quantity : output}{" "}
+                {quoteAsset?.symbol}
+              </span>
             </p>
             <div className="inline-flex items-center gap-2">
               <span className="subtitle1 font-bold">
-                {order_direction === "bid" ? "Buy" : "Sell"} $1000 of
+                {order_direction === "bid" ? "Buy" : "Sell"}{" "}
+                {formatPretty(
+                  new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    order_direction === "bid" ? placed_quantity : output
+                  )
+                )}{" "}
+                of
               </span>
               <Image
                 src={baseAssetLogo}
@@ -90,7 +106,7 @@ export const tableColumns = [
     },
     cell: ({
       row: {
-        original: { baseAsset },
+        original: { baseAsset, price },
       },
     }) => {
       return (
@@ -98,7 +114,7 @@ export const tableColumns = [
           <p className="body2 text-osmoverse-300">
             {baseAsset?.symbol} · Limit
           </p>
-          <p>$67,890.10</p>
+          <p>{formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price))}</p>
         </div>
       );
     },

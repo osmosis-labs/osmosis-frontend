@@ -91,8 +91,8 @@ async function getTickInfoAndTransformOrders(
 
       const [tokenInAsset, tokenOutAsset] =
         o.order_direction === "bid"
-          ? [baseAsset, quoteAsset]
-          : [quoteAsset, baseAsset];
+          ? [quoteAsset, baseAsset]
+          : [baseAsset, quoteAsset];
 
       const quantityMin = parseInt(o.quantity);
       const placedQuantityMin = parseInt(o.placed_quantity);
