@@ -5,7 +5,6 @@ import {
   BridgeCoin,
   BridgeProviders,
   bridgeSupportedAssetsSchema,
-  EthereumChainInfo,
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
 } from "@osmosis-labs/bridge";
@@ -16,7 +15,7 @@ import {
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
-import { isNil, timeout } from "@osmosis-labs/utils";
+import { EthereumChainInfo, isNil, timeout } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";

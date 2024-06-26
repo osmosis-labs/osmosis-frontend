@@ -156,14 +156,19 @@ export const useBridgesSupportedAssets = ({
               assetAddress_supportedProviders[asset.address.toLowerCase()]
             ),
           }))
-          // Remove Duplicates
+
           .filter(
             (asset, index, originalArray) =>
+              // Make sure the asset has at least one supported variant
+              asset.supportedVariants.length > 0 &&
+              // Make sure the asset has at least one supported provider
+              asset.supportedProviders.length > 0 &&
+              // Remove Duplicates
               index ===
-              // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
-              originalArray.findIndex(
-                (t) => t.address.toLowerCase() === asset.address.toLowerCase()
-              )
+                // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
+                originalArray.findIndex(
+                  (t) => t.address.toLowerCase() === asset.address.toLowerCase()
+                )
           ),
       ]
     );
@@ -176,8 +181,6 @@ export const useBridgesSupportedAssets = ({
       })[]
     >;
   }, [successfulQueries]);
-
-  console.log(supportedAssetsByChainId);
 
   const supportedChains = useMemo(() => {
     return Array.from(

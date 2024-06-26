@@ -8,9 +8,11 @@ import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
+  EthereumChainInfo,
   getAssetFromAssetList,
   getKeyByValue,
   isNil,
+  NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
@@ -23,7 +25,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
