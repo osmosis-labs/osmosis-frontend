@@ -371,7 +371,7 @@ export const TransferContent: FunctionComponent<
     chainStore,
     accountStore,
     queriesStore,
-    nonIbcBridgeHistoryStore,
+    transferHistoryStore,
   } = useStore();
   const {
     showModalBase,
@@ -772,7 +772,7 @@ export const TransferContent: FunctionComponent<
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
-        nonIbcBridgeHistoryStore.pushTxNow(
+        transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
@@ -782,7 +782,7 @@ export const TransferContent: FunctionComponent<
     },
     [
       inputAmountRaw,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
       originCurrency,
       inputAmount,
       isWithdraw,

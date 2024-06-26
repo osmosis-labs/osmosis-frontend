@@ -5,7 +5,6 @@ import {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "@osmosis-labs/bridge";
-import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   action,
   autorun,
@@ -30,11 +29,11 @@ type TxSnapshot = {
 
 const STORE_KEY = "nonibc_history_tx_snapshots";
 
-/** Stores and tracks status for non-IBC bridge transfers.
- *  Supports querying state from arbitrary remote chains via dependency injection.
- *  NOTE: source keyPrefix values must be unique.
+/**
+ * Stores and tracks status for bridge transfers.
+ * NOTE: source keyPrefix values must be unique.
  */
-export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
+export class TransferHistoryStore implements TransferStatusReceiver {
   /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
   @observable
   protected snapshots: TxSnapshot[] = [];
@@ -42,13 +41,14 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
   private isRestoredFromLocalStorage = false;
 
   constructor(
-    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
-    protected readonly chainId: string,
+    protected readonly onAccountTransferSuccess: (
+      accountAddress: string
+    ) => void,
     protected readonly kvStore: KVStore,
-    protected readonly txStatusSources: TransferStatusProvider[] = [],
+    protected readonly transferStatusProviders: TransferStatusProvider[] = [],
     protected readonly historyExpireDays = 3
   ) {
-    this.txStatusSources.forEach(
+    this.transferStatusProviders.forEach(
       (source) => (source.statusReceiverDelegate = this)
     );
 
@@ -64,10 +64,6 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     this.restoreSnapshots();
   }
 
-  addStatusSource(source: TransferStatusProvider) {
-    this.txStatusSources.push(source);
-  }
-
   getHistoriesByAccount = computedFn((accountAddress: string) => {
     const histories: {
       key: string;
@@ -80,7 +76,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
       isWithdraw: boolean;
     }[] = [];
     this.snapshots.forEach((snapshot) => {
-      const statusSource = this.txStatusSources.find((source) =>
+      const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
       if (statusSource && snapshot.accountAddress === accountAddress) {
@@ -116,7 +112,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     isWithdraw: boolean,
     accountAddress: string
   ) {
-    const statusSource = this.txStatusSources.find((source) =>
+    const statusSource = this.transferStatusProviders.find((source) =>
       prefixedKey.startsWith(source.keyPrefix)
     );
 
@@ -135,6 +131,10 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     });
   }
 
+  /**
+   * Forward tx info the relevant status source to start tracking the transfer status
+   * of an initiated transfer.
+   */
   @action
   receiveNewTxStatus(
     prefixedKey: string,
@@ -152,10 +152,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
 
     // update balances if successful
     if (status === "success") {
-      this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(snapshot.accountAddress)
-        .fetch();
+      this.onAccountTransferSuccess(snapshot.accountAddress);
     }
 
     snapshot.status = status;
@@ -173,7 +170,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
       if (this.isSnapshotExpired(snapshot)) {
         return;
       }
-      const statusSource = this.txStatusSources.find((source) =>
+      const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
 
