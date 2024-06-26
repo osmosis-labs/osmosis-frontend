@@ -19,7 +19,7 @@ import {
 } from "../../data-services";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
-import { getBatchFetchCoingeckoPrices } from "./price/providers/coingecko";
+import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
@@ -133,7 +133,7 @@ export async function getAssetCoingeckoCoin({
       const [coingeckoCoin, volumes] = await Promise.all([
         captureIfError(() => queryCoingeckoCoin(coinGeckoId)),
         captureIfError(() =>
-          getBatchFetchCoingeckoPrices({
+          getCoinGeckoPricesBatchLoader({
             currency,
           })
         ),

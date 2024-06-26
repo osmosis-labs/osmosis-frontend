@@ -54,7 +54,7 @@ async function batchFetchCoingeckoPrices(
   });
 }
 
-export async function getBatchFetchCoingeckoPrices({
+export async function getCoinGeckoPricesBatchLoader({
   currency,
 }: {
   currency: CoingeckoVsCurrencies;
@@ -78,7 +78,7 @@ export async function getCoingeckoPrice({
   currency: CoingeckoVsCurrencies;
 }) {
   // Create a loader per given currency.
-  const currencyBatchLoader = await getBatchFetchCoingeckoPrices({ currency });
+  const currencyBatchLoader = await getCoinGeckoPricesBatchLoader({ currency });
 
   // Cache a result per CoinGecko ID *and* currency ID.
   return cachified({
