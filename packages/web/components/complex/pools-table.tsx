@@ -68,6 +68,7 @@ export interface PoolsTableFilters {
   searchQuery: string | null;
   poolIncentivesFilter: PoolIncentiveFilter[];
   poolTypesFilter: PoolTypeFilter[];
+  denoms?: string[];
 }
 
 export interface PoolsTabelSortParams {
@@ -100,6 +101,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       searchQuery: undefined,
       poolTypesFilter: poolFilterTypes,
       poolIncentivesFilter: incentiveTypes,
+      denoms: [],
     },
     sortParams = {
       allPoolsSort: "volume24hUsd",
@@ -111,7 +113,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     children,
   } = props;
 
-  const sortKey = sortParams.allPoolsSort;
+  const sortKey = useMemo(
+    () => (Boolean(filters.searchQuery) ? undefined : sortParams.allPoolsSort),
+    [filters.searchQuery, sortParams.allPoolsSort]
+  );
 
   const {
     data: poolsPagesData,
@@ -131,6 +136,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             query: filters.searchQuery,
           }
         : undefined,
+      denoms: filters.denoms,
       // These are all of the pools that we support fetching.
       // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
       types: [

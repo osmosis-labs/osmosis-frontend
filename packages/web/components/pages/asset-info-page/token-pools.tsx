@@ -17,7 +17,7 @@ interface TokenPoolsProps {
 }
 
 const defaultFilters: PoolsTableFilters = {
-  searchQuery: "",
+  searchQuery: null,
   poolTypesFilter: poolFilterTypes,
   poolIncentivesFilter: incentiveTypes,
 };
@@ -36,8 +36,7 @@ export const TokenPools = (props: TokenPoolsProps) => {
   const filters = useMemo(
     () => ({
       ...defaultFilters,
-      // Exact match search
-      searchQuery: `=${denom}`,
+      denoms: [denom],
     }),
     [denom]
   );
