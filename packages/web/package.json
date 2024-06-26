@@ -35,6 +35,7 @@
     "@cosmos-kit/cdcwallet": "^2.12.0",
     "@cosmos-kit/core": "2.7.2",
     "@cosmos-kit/cosmostation": "2.4.4",
+    "@cosmos-kit/galaxy-station": "2.10.0",
     "@cosmos-kit/keplr": "2.4.4",
     "@cosmos-kit/leap": "2.4.3",
     "@cosmos-kit/okxwallet": "2.3.3",

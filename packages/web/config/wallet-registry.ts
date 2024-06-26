@@ -334,4 +334,29 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["galaxy-station-extension"],
+    mobileDisabled: true,
+    logo: "/wallets/galaxy-station.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/galaxy-station-extension").then(
+        (m) => m.GalaxyStationExtensionWallet
+      ),
+    windowPropertyName: "galaxyStation",
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const galaxyStationWallet = (window as any)?.galaxyStation?.keplr as {
+        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
+      };
+
+      if (!galaxyStationWallet) return true;
+
+      const chainInfos = await galaxyStationWallet.getChainInfosWithoutEndpoints();
+      return chainInfos.some((info) => info.chainId === chainId);
+    },
+    stakeUrl: "https://station.hexxagon.io/stake",
+    governanceUrl: "https://station.hexxagon.io/gov",
+    features: [],
+  },
 ];
