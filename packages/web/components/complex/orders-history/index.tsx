@@ -4,6 +4,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import Link from "next/link";
 import React, { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -72,6 +74,30 @@ export const OrderHistory = observer(() => {
     return (
       <div className="flex items-center justify-center py-10">
         <Spinner className="!h-10 !w-10" />
+      </div>
+    );
+  }
+
+  if (
+    pendingOrders.length === 0 &&
+    pastOrders.length === 0 &&
+    filledOrders.length === 0
+  ) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6">
+        <Image
+          src="/images/ion-thumbs-up.svg"
+          alt="ion thumbs up"
+          width={120}
+          height={80}
+        />
+        <h6>No recent orders</h6>
+        <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
+          Your trade order history will appear here.
+          <Link href={"/"} className="text-wosmongton-300">
+            Start trading
+          </Link>
+        </p>
       </div>
     );
   }
