@@ -108,15 +108,10 @@ export async function getPools(
   }));
 
   if (params.denoms) {
-    const query = params.denoms.map((denom) => `=${denom}`).join("|");
+    const denoms = params.denoms;
 
-    denomPools = search(
-      denomPools,
-      ["coinDenoms"],
-      {
-        query,
-      },
-      0.0 // Exact match
+    denomPools = denomPools.filter((denomPool) =>
+      denomPool.coinDenoms.some((denom) => denoms.includes(denom))
     );
   }
 
