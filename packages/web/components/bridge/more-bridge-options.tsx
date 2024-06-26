@@ -36,13 +36,11 @@ export const MoreBridgeOptions = observer(
             address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
             decimals: asset!.coinDecimals,
             denom: asset!.coinDenom,
-            sourceDenom: asset!.sourceDenom,
           },
           toAsset: {
             address: asset!.coinMinimalDenom,
             decimals: asset!.coinDecimals,
             denom: asset!.coinDenom,
-            sourceDenom: asset!.sourceDenom,
           },
           fromChain: { chainId: 43114, chainType: "evm" },
           toChain: {
