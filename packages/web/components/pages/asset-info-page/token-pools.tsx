@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   incentiveTypes,
-  MarketIncentivePoolsSortKey,
   poolFilterTypes,
   PoolsTabelSortParams,
   PoolsTable,
@@ -30,8 +29,6 @@ const sortParams: PoolsTabelSortParams = {
 export const TokenPools = (props: TokenPoolsProps) => {
   const { denom } = props;
   const { t } = useTranslation();
-  useState<MarketIncentivePoolsSortKey>("volume24hUsd");
-  const [] = useState();
 
   const filters = useMemo(
     () => ({
