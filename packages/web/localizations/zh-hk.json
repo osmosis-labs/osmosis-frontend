@@ -981,6 +981,12 @@
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "資訊",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多統計數據"
+    },
     "followTheConversation": "關注對話",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全攤薄估值",
+    "volume24h": "24小時成交量",
+    "volumeOnOsmosis": "24 小時滲透體積",
+    "liquidityOnOsmosis": "滲透流動性",
     "circulatingSupply": "循環供應",
     "underlyingAssets": {
       "title": "基礎資產",

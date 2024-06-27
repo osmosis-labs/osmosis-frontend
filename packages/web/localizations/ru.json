@@ -981,6 +981,12 @@
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",
     "collapse": "Крах",
+    "info": {
+      "title": "Информация",
+      "show": "Показывать",
+      "collapse": "Крах",
+      "moreStats": "Больше статистики"
+    },
     "followTheConversation": "Следите за разговором",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "Список наблюдения",
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
+    "fullyDilutedValuation": "Полностью разводненная оценка",
+    "volume24h": "24-часовой объем",
+    "volumeOnOsmosis": "24-часовой объем по осмосу",
+    "liquidityOnOsmosis": "Ликвидность по осмосу",
     "circulatingSupply": "Оборотное снабжение",
     "underlyingAssets": {
       "title": "Базовые активы",

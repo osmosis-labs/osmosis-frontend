@@ -981,6 +981,12 @@
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
     "collapse": "Zusammenbruch",
+    "info": {
+      "title": "Die Info",
+      "show": "Zeigen",
+      "collapse": "Zusammenbruch",
+      "moreStats": "Weitere Statistiken"
+    },
     "followTheConversation": "Verfolgen Sie das Gespräch",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
+    "fullyDilutedValuation": "Vollständig verwässerte Bewertung",
+    "volume24h": "24h Volumen",
+    "volumeOnOsmosis": "24h Volumen auf Osmose",
+    "liquidityOnOsmosis": "Liquidität durch Osmose",
     "circulatingSupply": "Umlaufversorgung",
     "underlyingAssets": {
       "title": "Basiswerte",

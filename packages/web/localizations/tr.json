@@ -981,6 +981,12 @@
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
     "collapse": "Yıkılmak",
+    "info": {
+      "title": "Bilgi",
+      "show": "Göstermek",
+      "collapse": "Yıkılmak",
+      "moreStats": "Daha fazla istatistik"
+    },
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
+    "fullyDilutedValuation": "Tamamen Seyreltilmiş Değerleme",
+    "volume24h": "24 saatlik hacim",
+    "volumeOnOsmosis": "Osmosis'te 24 saatlik hacim",
+    "liquidityOnOsmosis": "Osmozda Likidite",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",

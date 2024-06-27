@@ -138,6 +138,31 @@ export const assetsRouter = createTRPCRouter({
         currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
       };
     }),
+  getMarketAsset: publicProcedure
+    .input(
+      z.object({
+        findMinDenomOrSymbol: z.string(),
+      })
+    )
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const asset = getAsset({
+        ...ctx,
+        anyDenom: findMinDenomOrSymbol,
+      });
+
+      const userAsset = await getAssetWithUserBalance({
+        ...ctx,
+        asset,
+      });
+      const userMarketAsset = await getMarketAsset({
+        asset: userAsset,
+      });
+
+      return {
+        ...userAsset,
+        ...userMarketAsset,
+      };
+    }),
   getUserMarketAsset: publicProcedure
     .input(
       z

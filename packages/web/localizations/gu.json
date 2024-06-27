@@ -981,6 +981,12 @@
     "ariaView": "જુઓ {name}",
     "ariaViewOn": "{name} પર જુઓ",
     "collapse": "સંકુચિત કરો",
+    "info": {
+      "title": "માહિતી",
+      "show": "બતાવો",
+      "collapse": "સંકુચિત કરો",
+      "moreStats": "વધુ આંકડા"
+    },
     "followTheConversation": "વાતચીત અનુસરો",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "વૉચલિસ્ટ",
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
+    "fullyDilutedValuation": "સંપૂર્ણપણે પાતળું મૂલ્યાંકન",
+    "volume24h": "24 કલાક વોલ્યુમ",
+    "volumeOnOsmosis": "ઓસ્મોસિસ પર 24 કલાક વોલ્યુમ",
+    "liquidityOnOsmosis": "ઓસ્મોસિસ પર તરલતા",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
     "underlyingAssets": {
       "title": "અંતર્ગત અસ્કયામતો",

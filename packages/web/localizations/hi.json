@@ -981,6 +981,12 @@
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
     "collapse": "गिर जाना",
+    "info": {
+      "title": "जानकारी",
+      "show": "दिखाओ",
+      "collapse": "गिर जाना",
+      "moreStats": "अधिक आँकड़े"
+    },
     "followTheConversation": "बातचीत का पालन करें",
     "chart": {
       "xHour": "{h} एच",
@@ -995,6 +1001,10 @@
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
+    "fullyDilutedValuation": "पूर्णतया तनुकृत मूल्यांकन",
+    "volume24h": "24 घंटे का वॉल्यूम",
+    "volumeOnOsmosis": "ओस्मोसिस पर 24 घंटे का वॉल्यूम",
+    "liquidityOnOsmosis": "ऑस्मोसिस पर तरलता",
     "circulatingSupply": "परिसंचारी आपूर्ति",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",

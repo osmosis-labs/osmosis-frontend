@@ -981,6 +981,12 @@
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
+    "info": {
+      "title": "اطلاعات",
+      "show": "نمایش دهید",
+      "collapse": "سقوط - فروپاشی",
+      "moreStats": "آمار بیشتر"
+    },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
+    "fullyDilutedValuation": "ارزش گذاری کاملا رقیق شده",
+    "volume24h": "حجم 24 ساعت",
+    "volumeOnOsmosis": "جلد 24 ساعته اسمز",
+    "liquidityOnOsmosis": "نقدینگی در اسمز",
     "circulatingSupply": "عرضه در گردش",
     "underlyingAssets": {
       "title": "دارایی های اساسی",

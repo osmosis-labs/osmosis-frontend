@@ -981,6 +981,12 @@
     "ariaView": "Vedeți {name}",
     "ariaViewOn": "Vedeți pe {name}",
     "collapse": "Colaps",
+    "info": {
+      "title": "Info",
+      "show": "Spectacol",
+      "collapse": "Colaps",
+      "moreStats": "Mai multe statistici"
+    },
     "followTheConversation": "Urmăriți conversația",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",
     "marketCap": "Capitalizarea pieței",
+    "fullyDilutedValuation": "Evaluare complet diluată",
+    "volume24h": "Volum 24h",
+    "volumeOnOsmosis": "Volum 24h pe osmoză",
+    "liquidityOnOsmosis": "Lichiditate pe osmoză",
     "circulatingSupply": "Aprovizionare în circulație",
     "underlyingAssets": {
       "title": "Activele suport",

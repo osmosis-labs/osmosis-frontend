@@ -981,6 +981,12 @@
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
     "collapse": "무너지다",
+    "info": {
+      "title": "정보",
+      "show": "보여주다",
+      "collapse": "무너지다",
+      "moreStats": "더 많은 통계"
+    },
     "followTheConversation": "대화를 따라가세요",
     "chart": {
       "xHour": "{h} H",
@@ -995,6 +1001,10 @@
     "watchlist": "관심 목록",
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
+    "fullyDilutedValuation": "완전희석평가",
+    "volume24h": "24시간 볼륨",
+    "volumeOnOsmosis": "Osmosis의 24시간 볼륨",
+    "liquidityOnOsmosis": "삼투의 유동성",
     "circulatingSupply": "순환 공급",
     "underlyingAssets": {
       "title": "기초자산",

@@ -1,4 +1,3 @@
-import { SortDirection } from "@osmosis-labs/utils";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -18,34 +17,28 @@ interface TokenPoolsProps {
 }
 
 const defaultFilters: PoolsTableFilters = {
-  searchQuery: "",
+  searchQuery: null,
   poolTypesFilter: poolFilterTypes,
   poolIncentivesFilter: incentiveTypes,
+};
+
+const sortParams: PoolsTabelSortParams = {
+  allPoolsSort: "volume24hUsd",
+  allPoolsSortDir: "desc",
 };
 
 export const TokenPools = (props: TokenPoolsProps) => {
   const { denom } = props;
   const { t } = useTranslation();
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [sortKey, setSortKey] =
-    useState<MarketIncentivePoolsSortKey>("volume24hUsd");
+  useState<MarketIncentivePoolsSortKey>("volume24hUsd");
   const [] = useState();
 
   const filters = useMemo(
     () => ({
       ...defaultFilters,
-      // Exact match search
-      searchQuery: `=${denom}`,
+      denoms: [denom],
     }),
     [denom]
-  );
-
-  const sortParams: PoolsTabelSortParams = useMemo(
-    () => ({
-      allPoolsSort: sortKey,
-      allPoolsSortDir: sortDirection,
-    }),
-    [sortDirection, sortKey]
   );
 
   return (
@@ -70,8 +63,8 @@ export const TokenPools = (props: TokenPoolsProps) => {
         filters={filters}
         disablePagination
         sortParams={sortParams}
-        setSortDirection={setSortDirection}
-        setSortKey={(key) => setSortKey(key ?? "volume24hUsd")}
+        setSortDirection={() => {}}
+        setSortKey={() => {}}
         emptyResultsText={t("search.poolsEmpty", { denom })}
       />
     </section>
