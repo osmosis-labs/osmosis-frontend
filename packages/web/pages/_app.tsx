@@ -1,14 +1,12 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "~/utils/superjson";
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
-// import superflow
-import { initSuperflow } from "@usesuperflow/client";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
+import isBetween from "dayjs/plugin/isBetween";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
@@ -20,38 +18,39 @@ import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
-import { useMount } from "react-use";
+import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
-import ErrorBoundary from "~/components/error/error-boundary";
-import ErrorFallback from "~/components/error/error-fallback";
+import { ErrorBoundary } from "~/components/error/error-boundary";
+import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
-import { MainLayoutMenu } from "~/components/types";
+import { MainLayoutMenu } from "~/components/main-menu";
+import { OneClickFloatingBanner } from "~/components/one-click-trading/one-click-floating-banner";
 import { AmplitudeEvent, EventName } from "~/config";
+import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
+  useDisclosure,
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
+import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
-import { ExternalLinkModal } from "~/modals";
-import DefaultSeo from "~/next-seo.config";
-import MarginIcon from "~/public/icons/margin-icon.svg";
-import PerpsIcon from "~/public/icons/perps-icon.svg";
+import { WalletSelectProvider } from "~/hooks/use-wallet-select";
+import { ExternalLinkModal, handleExternalLink } from "~/modals";
+import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
+import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
-import LevanaLogo from "../public/logos/levana-logo.png";
-import MarsLogo from "../public/logos/mars-logo.png";
 import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
@@ -60,6 +59,7 @@ dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
+dayjs.extend(isBetween);
 dayjs.updateLocale("es", dayjsLocaleEs);
 dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
@@ -69,264 +69,275 @@ const DEFAULT_LANGUAGE = "en";
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
-  useMount(() => {
-    initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
-  });
-
   return (
-    <MultiLanguageProvider
-      defaultLanguage={DEFAULT_LANGUAGE}
-      defaultTranslations={{ en }}
-    >
-      <StoreProvider>
-        <WalletSelectProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: "#2d2755",
-            }}
-            transition={Bounce}
-          />
-          <MainLayoutWrapper>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayoutWrapper>
-        </WalletSelectProvider>
-      </StoreProvider>
-    </MultiLanguageProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <MultiLanguageProvider
+        defaultLanguage={DEFAULT_LANGUAGE}
+        defaultTranslations={{ en }}
+      >
+        <StoreProvider>
+          <WalletSelectProvider>
+            <BridgeProvider>
+              <SEO />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                <ErrorBoundary fallback={<ErrorFallback />}>
+                  {Component && <Component {...pageProps} />}
+                </ErrorBoundary>
+              </MainLayoutWrapper>
+            </BridgeProvider>
+          </WalletSelectProvider>
+        </StoreProvider>
+      </MultiLanguageProvider>
+    </WagmiProvider>
   );
 }
 
-interface LevanaGeoBlockedResponse {
+export interface LevanaGeoBlockedResponse {
   allowed: boolean;
   countryCode: string;
 }
 
-const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
-  ({ children }) => {
-    const { t } = useTranslation();
-    const flags = useFeatureFlags();
-    const { data: levanaGeoblock, error } = useQuery(
-      ["levana-geoblocked"],
-      () =>
-        apiClient<LevanaGeoBlockedResponse>(
-          "https://geoblocked.levana.finance/"
-        ),
-      {
-        staleTime: Infinity,
-        cacheTime: Infinity,
-        retry: false,
-      }
-    );
+const MainLayoutWrapper: FunctionComponent<{
+  children: ReactNode;
+}> = observer(({ children }) => {
+  const { t } = useTranslation();
+  const flags = useFeatureFlags();
+  const { data: levanaGeoblock, error } = useQuery(
+    ["levana-geoblocked"],
+    () =>
+      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      retry: false,
+    }
+  );
 
-    const { accountStore, chainStore } = useStore();
-    const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
-    // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
-    const [showExternalMarsModal, setShowExternalMarsModal] = useState(false);
-    const [showExternalLevanaModal, setShowExternalLevanaModal] =
-      useState(false);
+  const { accountStore, chainStore } = useStore();
+  const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+  // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
+  const {
+    isOpen: isLeavingOsmosisToMarsOpen,
+    onOpen: onOpenLeavingOsmosisToMars,
+    onClose: onCloseLeavingOsmosisToMars,
+  } = useDisclosure();
+  const {
+    isOpen: isLeavingOsmosisToLevanaOpen,
+    onOpen: onOpenLeavingOsmosisToLevana,
+    onClose: onCloseLeavingOsmosisToLevana,
+  } = useDisclosure();
 
-    const menus = useMemo(() => {
-      let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
+  const menus = useMemo(() => {
+    let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
-      if (!levanaGeoblock && !error) {
-        return [];
-      }
+    if (!flags._isInitialized) {
+      return [];
+    }
 
-      if (levanaGeoblock?.allowed) {
-        conditionalMenuItems.push(
-          {
-            label: t("menu.margin"),
-            link: (e) => {
-              e.preventDefault();
-              // try/catch in case user is in private mode
-              try {
-                const doNotShowModal = localStorage.getItem(
-                  "doNotShowExternalLinkModal"
-                );
-                if (doNotShowModal) {
-                  window.open("https://osmosis.marsprotocol.io/", "_blank");
-                } else {
-                  setShowExternalMarsModal(true);
-                }
-              } catch (error) {
-                console.error("Error accessing localStorage:", error);
-                setShowExternalMarsModal(true);
-              }
-            },
-            icon: (
-              <Image
-                src={MarginIcon}
-                width={20}
-                height={20}
-                alt="margin icon"
-              />
-            ),
-            amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
-            secondaryLogo: (
-              <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
-            ),
-            subtext: t("menu.marsSubtext"),
+    if (!levanaGeoblock && !error) {
+      return [];
+    }
+
+    if (levanaGeoblock?.allowed) {
+      conditionalMenuItems.push(
+        {
+          label: t("menu.margin"),
+          link: (e) => {
+            e.preventDefault();
+            handleExternalLink({
+              url: "https://osmosis.marsprotocol.io/",
+              openModal: onOpenLeavingOsmosisToMars,
+            });
           },
-          {
-            label: t("menu.perpetuals"),
-            link: (e) => {
-              e.preventDefault();
-              // try/catch in case user is in private mode
-              try {
-                const doNotShowModal = localStorage.getItem(
-                  "doNotShowExternalLinkModal"
-                );
-                if (doNotShowModal) {
-                  window.open(
-                    "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
-                    "_blank"
-                  );
-                } else {
-                  setShowExternalLevanaModal(true);
-                }
-              } catch (error) {
-                console.error("Error accessing localStorage:", error);
-                setShowExternalLevanaModal(true);
-              }
+          icon: <Icon id="margin" className="h-6 w-6" />,
+          amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
+          secondaryLogo: (
+            <Image
+              src="/logos/mars-logo.png"
+              width={24}
+              height={24}
+              alt="mars logo"
+            />
+          ),
+          subtext: t("menu.marsSubtext"),
+        },
+        {
+          label: t("menu.perpetuals"),
+          link: (e) => {
+            e.preventDefault();
+            handleExternalLink({
+              url: "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+              openModal: onOpenLeavingOsmosisToLevana,
+            });
+          },
+          icon: <Icon id="perps" className="h-6 w-6" />,
+          amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
+          secondaryLogo: (
+            <Image
+              src="/logos/levana-logo.png"
+              width={24}
+              height={24}
+              alt="mars logo"
+            />
+          ),
+          subtext: t("menu.levanaSubtext"),
+        }
+      );
+    }
+
+    let menuItems: (MainLayoutMenu | null)[] = [
+      {
+        label: t("menu.swap"),
+        link: "/",
+        icon: <Icon id="trade" className="h-6 w-6" />,
+        selectionTest: /\/$/,
+      },
+      ...(flags.portfolioPageAndNewAssetsPage || flags.newAssetsPage
+        ? [
+            {
+              label: t("menu.portfolio"),
+              link: "/portfolio",
+              icon: <Icon id="portfolio" className="h-6 w-6" />,
+              selectionTest: /\/portfolio/,
             },
-            icon: (
-              <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
-            ),
-            amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
-            secondaryLogo: (
-              <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
-            ),
-            subtext: t("menu.levanaSubtext"),
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets" className="h-6 w-6" />,
+              selectionTest: /\/assets/,
+            },
+          ]
+        : [
+            {
+              label: t("menu.assets"),
+              link: "/assets",
+              icon: <Icon id="assets" className="h-6 w-6" />,
+              selectionTest: /\/assets/,
+            },
+          ]),
+      flags.earnPage
+        ? {
+            label: t("earnPage.title"),
+            link: "/earn",
+            icon: <Icon id="earn" className="h-6 w-6" />,
+            selectionTest: /\/earn/,
           }
-        );
-      }
-
-      let menuItems: (MainLayoutMenu | null)[] = [
-        {
-          label: t("menu.swap"),
-          link: "/",
-          icon: <Icon id="trade" className="h-5 w-5" />,
-          selectionTest: /\/$/,
-        },
-        flags.earnPage
-          ? {
-              label: t("earnPage.title"),
-              link: "/earn",
-              icon: <Icon id="trade" className="h-5 w-5" />,
-              selectionTest: /\/earn/,
-            }
-          : null,
-        {
-          label: t("menu.assets"),
-          link: "/assets",
-          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-          selectionTest: /\/assets/,
-        },
-        flags.staking
-          ? {
-              label: t("menu.stake"),
-              link: "/stake",
-              icon: <Icon id="ticket" className="h-5 w-5" />,
-              selectionTest: /\/stake/,
-              isNew: true,
-              amplitudeEvent: [
-                EventName.Sidebar.stakeClicked,
-              ] as AmplitudeEvent,
-            }
-          : {
-              label: t("menu.stake"),
-              link:
-                osmosisWallet?.walletInfo?.stakeUrl ??
-                "https://wallet.keplr.app/chains/osmosis",
-              icon: <Icon id="ticket" className="h-5 w-5" />,
-              amplitudeEvent: [
-                EventName.Sidebar.stakeClicked,
-              ] as AmplitudeEvent,
-            },
-        ...conditionalMenuItems,
-        {
-          label: t("menu.pools"),
-          link: "/pools",
-          icon: <Icon id="pool" className="h-5 w-5" />,
-          selectionTest: /\/pools/,
-        },
-        {
-          label: t("menu.store"),
-          link: "/apps",
-          icon: <Icon id="apps" className="h-5 w-5" />,
-          selectionTest: /\/apps/,
-          badge: <AppsBadge appsLink="/apps" />,
-        },
-        {
-          label: t("menu.more"),
-          icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
-          link: "/",
-          showMore: true,
-        },
-      ];
-
-      return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [
-      levanaGeoblock,
-      error,
-      t,
-      flags.earnPage,
-      flags.staking,
-      osmosisWallet?.walletInfo?.stakeUrl,
-    ]);
-
-    const secondaryMenuItems: MainLayoutMenu[] = [
+        : null,
+      flags.staking
+        ? {
+            label: t("menu.stake"),
+            link: "/stake",
+            icon: <Icon id="ticket" className="h-6 w-6" />,
+            selectionTest: /\/stake/,
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          }
+        : {
+            label: t("menu.stake"),
+            link:
+              osmosisWallet?.walletInfo?.stakeUrl ??
+              "https://wallet.keplr.app/chains/osmosis",
+            icon: <Icon id="ticket" className="h-6 w-6" />,
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          },
+      ...conditionalMenuItems,
       {
-        label: t("menu.help"),
-        link: "https://support.osmosis.zone/",
-        icon: <Icon id="help-circle" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+        label: t("menu.pools"),
+        link: "/pools",
+        icon: <Icon id="pool" className="h-6 w-6" />,
+        selectionTest: /\/pools/,
       },
       {
-        label: t("menu.vote"),
-        link:
-          osmosisWallet?.walletInfo?.governanceUrl ??
-          "https://wallet.keplr.app/chains/osmosis?tab=governance",
-        icon: <Icon id="vote" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+        label: t("menu.store"),
+        link: "/apps",
+        icon: <Icon id="apps" className="h-6 w-6" />,
+        selectionTest: /\/apps/,
+        badge: <AppsBadge appsLink="/apps" />,
       },
       {
-        label: t("menu.info"),
-        link: "https://www.datalenses.zone/chain/osmosis/overview",
-        icon: <Icon id="chart" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.featureRequests"),
-        link: "https://forum.osmosis.zone/c/site-feedback/2",
-        icon: <Icon id="gift" className="h-5 w-5" />,
+        label: t("menu.more"),
+        icon: <Icon id="dots-three-vertical" className="h-6 w-6" />,
+        link: "/",
+        showMore: true,
       },
     ];
 
-    return (
-      <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
-        {children}
-        <ExternalLinkModal
-          url="https://osmosis.marsprotocol.io/"
-          isOpen={showExternalMarsModal}
-          onRequestClose={() => {
-            setShowExternalMarsModal(false);
-          }}
-        />
-        <ExternalLinkModal
-          url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
-          isOpen={showExternalLevanaModal}
-          onRequestClose={() => {
-            setShowExternalLevanaModal(false);
-          }}
-        />
-      </MainLayout>
-    );
-  }
-);
+    return menuItems.filter(Boolean) as MainLayoutMenu[];
+  }, [
+    levanaGeoblock,
+    error,
+    flags.earnPage,
+    flags.staking,
+    flags.portfolioPageAndNewAssetsPage,
+    flags.newAssetsPage,
+    flags._isInitialized,
+    osmosisWallet?.walletInfo?.stakeUrl,
+    t,
+    onOpenLeavingOsmosisToLevana,
+    onOpenLeavingOsmosisToMars,
+  ]);
+
+  const secondaryMenuItems: MainLayoutMenu[] = [
+    {
+      label: t("menu.help"),
+      link: "https://support.osmosis.zone/",
+      icon: <Icon id="help-circle" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.vote"),
+      link:
+        osmosisWallet?.walletInfo?.governanceUrl ??
+        "https://wallet.keplr.app/chains/osmosis?tab=governance",
+      icon: <Icon id="vote" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.info"),
+      link: "https://www.datalenses.zone/chain/osmosis/overview",
+      icon: <Icon id="chart" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.featureRequests"),
+      link: "https://forum.osmosis.zone/c/site-feedback/2",
+      icon: <Icon id="gift" className="h-6 w-6" />,
+    },
+  ];
+
+  return (
+    <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
+      {children}
+      <ExternalLinkModal
+        url="https://osmosis.marsprotocol.io/"
+        isOpen={isLeavingOsmosisToMarsOpen}
+        onRequestClose={() => {
+          onCloseLeavingOsmosisToMars();
+        }}
+      />
+      <ExternalLinkModal
+        url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
+        isOpen={isLeavingOsmosisToLevanaOpen}
+        onRequestClose={() => {
+          onCloseLeavingOsmosisToLevana();
+        }}
+      />
+      {flags.oneClickTrading && (
+        <>
+          <OneClickTradingIntroModal />
+          <OneClickFloatingBanner />
+        </>
+      )}
+    </MainLayout>
+  );
+});
 
 export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
   ({ appsLink }) => {

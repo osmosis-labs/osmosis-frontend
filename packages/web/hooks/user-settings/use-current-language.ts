@@ -26,7 +26,7 @@ export function useCurrentLanguage() {
       };
       load();
     }
-  }, [currentLanguage]);
+  }, [changeLanguage, changeTranslations, currentLanguage]);
 
   return currentLanguage ?? "en";
 }

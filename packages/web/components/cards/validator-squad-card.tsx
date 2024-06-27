@@ -1,27 +1,27 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
 
 import { FallbackImg } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import OsmoverseCard from "~/components/cards/osmoverse-card";
+import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
-import { useTranslation } from "~/hooks";
+import { Button } from "~/components/ui/button";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
-const maxVisibleValidators = 8;
-
 export const ValidatorSquadCard: React.FC<{
+  hasInsufficientBalance: boolean;
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
 }> = observer(
   ({
+    hasInsufficientBalance,
     setShowValidatorModal,
     validators,
-    // @ts-ignore
     usersValidatorsMap,
   }) => {
     const { t } = useTranslation();
@@ -29,8 +29,12 @@ export const ValidatorSquadCard: React.FC<{
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
 
+    const { width } = useWindowSize();
+
+    const maxVisibleValidators = width > Breakpoint.xl ? 8 : 3;
+
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
+      BondStatus.Bonded
     );
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
@@ -96,7 +100,7 @@ export const ValidatorSquadCard: React.FC<{
                 <Tooltip
                   content={
                     <div className="flex flex-col gap-1 p-1">
-                      <span className="text-osmoverse-white-100">
+                      <span className="text-osmoverse-100">
                         {validatorName}
                       </span>
                       <span className="text-xs text-osmoverse-200">
@@ -108,7 +112,7 @@ export const ValidatorSquadCard: React.FC<{
                   <FallbackImg
                     alt={validatorName}
                     src={imageUrl}
-                    fallbacksrc="/icons/superfluid-osmo.svg"
+                    fallbacksrc="/icons/question-mark.svg"
                     height={40}
                     width={40}
                   />
@@ -128,22 +132,20 @@ export const ValidatorSquadCard: React.FC<{
 
     return (
       <>
-        <div className="mx-2 flex items-center">
+        <div className="flex items-center">
           <span className="caption text-sm text-osmoverse-200 md:text-xs">
             {t("stake.validatorHeader")}
           </span>
         </div>
-        <OsmoverseCard containerClasses="!rounded-[28px]">
-          <div className="flex-column flex items-center justify-between">
+        <OsmoverseCard containerClasses="!rounded-3xl">
+          <div className="flex items-center justify-between space-x-2">
             {validatorBlock}
             <div className="flex items-center">
               <Button
-                mode="bullish-special"
-                size="normal"
-                className="rounded-[19px]"
-                onClick={() => {
-                  setShowValidatorModal(true);
-                }}
+                variant="outline"
+                size="md"
+                disabled={hasInsufficientBalance}
+                onClick={() => setShowValidatorModal(true)}
               >
                 {t("stake.viewOrEdit")}
               </Button>
@@ -170,5 +172,3 @@ const AvatarIcon: React.FC<{ extraValidators?: number }> = ({
     </div>
   );
 };
-
-export default AvatarIcon;

@@ -1,17 +1,18 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React from "react";
 import { useMemo } from "react";
 
-import { Button } from "~/components/buttons";
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
 import { StakeOrUnstake } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
+  hasInsufficientBalance: boolean;
   inputAmount?: string;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
@@ -26,7 +27,9 @@ export const StakeTool: React.FC<{
   availableAmount?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
+  stakingAPR: Dec;
 }> = ({
+  hasInsufficientBalance,
   inputAmount,
   handleHalfButtonClick,
   handleMaxButtonClick,
@@ -40,16 +43,25 @@ export const StakeTool: React.FC<{
   isWalletConnected,
   onStakeButtonClick,
   disabled,
+  stakingAPR,
 }) => {
   const { t } = useTranslation();
 
   const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");
 
+    const showInsufficientText =
+      inputAmount?.toString() !== "" && hasInsufficientBalance;
+
+    if (showInsufficientText)
+      return activeTab === "Stake"
+        ? t("errors.insufficientBal")
+        : t("errors.insufficientAmount");
+
     return activeTab === "Stake"
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
-  }, [activeTab, isWalletConnected, t]);
+  }, [activeTab, isWalletConnected, t, hasInsufficientBalance, inputAmount]);
 
   return (
     <GenericMainCard title={t("stake.stake")}>
@@ -75,17 +87,20 @@ export const StakeTool: React.FC<{
         availableAmount={availableAmount}
         setInputAmount={setInputAmount}
         inputAmount={inputAmount}
+        activeTab={activeTab}
       />
       {activeTab === "Stake" ? (
-        <EstimatedEarningCard stakeAmount={stakeAmount} />
+        <EstimatedEarningCard
+          stakeAmount={stakeAmount}
+          stakingAPR={stakingAPR}
+        />
       ) : (
         <UnbondingCard />
       )}
       <Button
-        mode="special-1"
+        variant="success"
         onClick={onStakeButtonClick}
         disabled={disabled}
-        className="disabled:cursor-not-allowed disabled:opacity-75"
       >
         {buttonText}
       </Button>

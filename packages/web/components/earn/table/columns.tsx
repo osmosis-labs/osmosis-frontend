@@ -1,43 +1,75 @@
-import { createColumnHelper, FilterFn } from "@tanstack/react-table";
+import { EarnStrategy } from "@osmosis-labs/server";
+import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
+import Image from "next/image";
 import { PropsWithChildren } from "react";
 
 import {
   ActionsCell,
+  APYCell,
   LockCell,
+  RiskCell,
   StrategyNameCell,
+  StrategyTooltip,
   TVLCell,
 } from "~/components/earn/table/cells";
-import { Strategy } from "~/components/earn/table/types/strategy";
+import {
+  arrLengthEquals,
+  boolEqualsString,
+  listOptionValueEquals,
+  lockDurationFilter,
+  multiListOptionValueEquals,
+  sortDecValues,
+  sortDurationValues,
+} from "~/components/earn/table/utils";
+import { Tooltip } from "~/components/tooltip";
 import { TranslationPath, useTranslation } from "~/hooks";
+import { formatPretty } from "~/utils/formatter";
 
-declare module "@tanstack/table-core" {
-  interface FilterFns {
-    strictEqualFilter?: FilterFn<Strategy>;
-    arrLengthEquals?: FilterFn<Strategy>;
-    listOptionValueEquals?: FilterFn<Strategy>;
-    boolEquals?: FilterFn<Strategy>;
-    boolEqualsString?: FilterFn<Strategy>;
-  }
-}
-
-const columnHelper = createColumnHelper<Strategy>();
+const columnHelper = createColumnHelper<EarnStrategy>();
 
 export const ColumnCellHeader = ({
   className,
   tKey,
-}: PropsWithChildren<{ tKey: TranslationPath; className?: string }>) => {
+  /**
+   * Translation Key
+   */
+  tooltipDescription,
+  tooltipClassname,
+}: PropsWithChildren<{
+  tKey: TranslationPath;
+  tooltipDescription?: string;
+  className?: string;
+  tooltipClassname?: string;
+}>) => {
   const { t } = useTranslation();
 
   return (
-    <small
-      className={classNames(
-        "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
-        className
-      )}
+    <Tooltip
+      enablePropagation
+      className={classNames("justify-end", tooltipClassname)}
+      content={
+        <StrategyTooltip
+          header={t(tKey)}
+          body={
+            tooltipDescription && (
+              <p className="whitespace-pre-line text-caption text-osmoverse-300">
+                {t(tooltipDescription)}
+              </p>
+            )
+          }
+        />
+      }
     >
-      {t(tKey)}
-    </small>
+      <small
+        className={classNames(
+          "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
+          className
+        )}
+      >
+        {t(tKey)}
+      </small>
+    </Tooltip>
   );
 };
 export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
@@ -47,127 +79,156 @@ export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
 );
 
 export const tableColumns = [
-  columnHelper.accessor("involvedTokens", {
+  columnHelper.accessor("depositAssets", {
     header: () => {},
     cell: (item) => (
-      <div className="relative flex items-center justify-end">
-        {item.getValue().map((coin, i) => (
-          <div
-            key={`${coin} ${i} ${item.cell.id}`}
-            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
+      <div
+        className={classNames(
+          "relative flex min-w-[56px] items-center justify-center"
+        )}
+      >
+        {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
+          <Image
+            src={coinImageUrl ?? ""}
+            alt={`${coinDenom} image`}
+            key={`${coinDenom} ${i} ${item.cell.id}`}
+            className={classNames("h-9 min-w-[36px] rounded-full", {
               "-ml-4": i > 0,
-              "mr-2": item.getValue().length === 1,
             })}
+            width={36}
+            height={36}
           />
         ))}
       </div>
     ),
     enableHiding: true,
   }),
-  columnHelper.accessor("strategyName", {
-    header: () => <ColumnCellHeader tKey={"earnPage.strategyPlatform"} />,
-    cell: (item) => (
-      <StrategyNameCell
-        name={item.getValue()}
-        platformName={item.row.original.platform.displayName}
-        strategyMethod={item.row.original.strategyMethod.displayName}
+  columnHelper.accessor("name", {
+    header: () => (
+      <ColumnCellHeader
+        tooltipClassname="!justify-start"
+        tooltipDescription={"earnPage.tooltips.strategy.description"}
+        tKey={"earnPage.strategyPlatform"}
       />
     ),
+    cell: StrategyNameCell,
+    /* cell: (item) => (
+      <StrategyNameCell
+        name={item.getValue()}
+        platformName={item.row.original.provider}
+        strategyMethod={item.row.original.category}
+      />
+    ), */
   }),
-  columnHelper.accessor("tvl.value", {
-    header: () => <ColumnCellHeader tKey={"pools.TVL"} />,
+  columnHelper.accessor("tvl.tvlUsd", {
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.tvl.description"}
+        tKey={"pools.TVL"}
+      />
+    ),
     cell: TVLCell,
+    sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("apy", {
-    header: () => <ColumnCellHeader tKey={"earnPage.apy"} />,
-    cell: (item) => <ColumnCellCell>{item.getValue()}%</ColumnCellCell>,
+  columnHelper.accessor("annualPercentages.apy", {
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.apr.description"}
+        tKey={"earnPage.apy"}
+      />
+    ),
+    cell: APYCell,
+    sortingFn: sortDecValues,
   }),
-  columnHelper.accessor("daily", {
-    header: () => <ColumnCellHeader tKey={"earnPage.daily"} />,
-    cell: (item) => <ColumnCellCell>{item.getValue()}%</ColumnCellCell>,
-  }),
-  columnHelper.accessor("reward", {
-    header: () => <ColumnCellHeader tKey={"earnPage.reward"} />,
+  columnHelper.accessor("rewardAssets", {
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.reward.description"}
+        tKey={"earnPage.reward"}
+      />
+    ),
     cell: (item) => (
       <div className="relative flex items-center justify-end">
-        {item.getValue().map((coin, i) => (
-          <div
-            key={`${coin} ${i} ${item.cell.id}`}
-            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
-              "-ml-4": i > 0,
+        {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
+          <Image
+            src={coinImageUrl ?? ""}
+            alt={`${coinDenom} image`}
+            key={`${coinDenom} ${i} ${item.cell.id}`}
+            className={classNames("h-6 w-6 rounded-full", {
+              "-ml-2": i > 0,
               "mr-2": item.getValue().length === 1,
             })}
+            width={24}
+            height={24}
           />
         ))}
       </div>
     ),
-    filterFn: "arrLengthEquals",
+    filterFn: arrLengthEquals,
+    enableSorting: false,
   }),
-  columnHelper.accessor("lock", {
-    header: () => <ColumnCellHeader tKey={"earnPage.lock"} />,
-    cell: LockCell,
-  }),
-  columnHelper.accessor("risk", {
-    header: () => <ColumnCellHeader tKey={"earnPage.risk"} />,
-    cell: (item) => (
-      <div className="flex items-center justify-end gap-1">
-        {Array(3)
-          .fill(null)
-          .map((_, i) => (
-            <div
-              key={`${item.cell.id} ${i} risk indicator`}
-              className={classNames(`h-5 w-2 rounded-[10px] bg-osmoverse-700`, {
-                "!bg-ion-400": i + 1 <= item.getValue(),
-              })}
-            />
-          ))}
-      </div>
+  columnHelper.accessor("lockDuration", {
+    header: () => (
+      <ColumnCellHeader
+        tooltipDescription={"earnPage.tooltips.lock.description"}
+        tKey={"earnPage.lock"}
+      />
     ),
+    cell: LockCell,
+    sortingFn: sortDurationValues,
   }),
-  columnHelper.accessor("balance.quantity", {
+  columnHelper.accessor("riskLevel", {
+    header: () => (
+      <ColumnCellHeader
+        tKey={"earnPage.risk"}
+        tooltipDescription={"earnPage.tooltips.risk.description"}
+        tooltipClassname="!justify-center"
+      />
+    ),
+    cell: RiskCell,
+  }),
+  columnHelper.accessor("balance", {
     header: () => <ColumnCellHeader tKey={"assets.table.columns.balance"} />,
     cell: (item) => (
       <div className="flex flex-col">
-        <ColumnCellCell>{item.getValue()}</ColumnCellCell>
-        <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
+        <ColumnCellCell>{formatPretty(item.getValue())}</ColumnCellCell>
+        {/* <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
           {item.row.original.balance.converted}
-        </small>
+        </small> */}
       </div>
     ),
     enableHiding: true,
   }),
-  columnHelper.accessor("actions", {
-    header: () => {},
+  columnHelper.display({
+    id: "strategyActions",
     cell: ActionsCell,
   }),
-  columnHelper.accessor("strategyMethod.id", {
-    header: () => {},
-    cell: () => {},
-    filterFn: "strictEqualFilter",
+  columnHelper.accessor("type", {
+    filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
-  columnHelper.accessor("platform.id", {
+  columnHelper.accessor("depositAssets.coinDenom", {
     header: () => {},
     cell: () => {},
-    filterFn: "strictEqualFilter",
+    filterFn: boolEqualsString,
     enableHiding: true,
   }),
-  columnHelper.accessor("hasLockingDuration", {
+  columnHelper.accessor("platform", {
     header: () => {},
     cell: () => {},
-    filterFn: "boolEquals",
+    filterFn: listOptionValueEquals,
     enableHiding: true,
   }),
   columnHelper.accessor("holdsTokens", {
-    header: () => {},
-    cell: () => {},
-    filterFn: "boolEqualsString",
+    filterFn: boolEqualsString,
     enableHiding: true,
   }),
-  columnHelper.accessor("chainType", {
-    header: () => {},
-    cell: () => {},
-    filterFn: "listOptionValueEquals",
+  columnHelper.accessor("hasLockingDuration", {
+    filterFn: lockDurationFilter,
+    enableHiding: true,
+  }),
+  columnHelper.accessor("categories", {
+    filterFn: multiListOptionValueEquals,
     enableHiding: true,
   }),
 ];

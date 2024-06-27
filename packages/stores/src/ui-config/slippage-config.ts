@@ -5,12 +5,12 @@ import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
   static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
+    // 0.05%
+    new Dec("0.005"),
     // 1%
     new Dec("0.01"),
     // 3%
     new Dec("0.03"),
-    // 5%
-    new Dec("0.05"),
   ];
 
   @observable.shallow
@@ -24,7 +24,7 @@ export class ObservableSlippageConfig {
   protected _isManualSlippage: boolean = false;
 
   @observable
-  protected _manualSlippage: string = "2.5";
+  protected _manualSlippage: string = "5.0";
 
   constructor() {
     makeObservable(this);
@@ -64,15 +64,16 @@ export class ObservableSlippageConfig {
 
   @action
   setManualSlippage(str: string) {
+    if (isNaN(Number(str))) return;
+
     if (str.startsWith(".")) {
       str = "0" + str;
     }
 
-    if (str !== "" && isNaN(Number(str))) {
-      const strDec = new Dec(str);
+    // within bound
+    const strDec = new Dec(str);
+    if (strDec.gte(new Dec(100)) || strDec.lt(new Dec(0))) return;
 
-      if (strDec.gte(new Dec(100)) || new Dec(str).lt(new Dec(0))) return;
-    }
     this._isManualSlippage = true;
     this._manualSlippage = str;
   }

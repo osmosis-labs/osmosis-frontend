@@ -1,19 +1,22 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 
-import { Button } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
+import { Spinner } from "~/components/loaders";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export const SuperfluidValidatorModal: FunctionComponent<
   {
@@ -32,27 +35,41 @@ export const SuperfluidValidatorModal: FunctionComponent<
     ctaLabel,
   } = props;
   const { t } = useTranslation();
-  const { chainStore, queriesStore, accountStore } = useStore();
+  const { accountStore } = useStore();
   const { isMobile } = useWindowSize();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const queries = queriesStore.get(chainId);
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const activeValidators = queryValidators.validators;
-  const userValidatorDelegations =
-    queries.cosmos.queryDelegations.getQueryBech32Address(
-      account?.address ?? ""
-    ).delegations;
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { data: validators, isLoading: isLoadingAllValidators } =
+    api.edge.staking.getValidators.useQuery({
+      status: BondStatus.Bonded,
+    });
+
+  const { data: userValidatorDelegations, isLoading: isLoadingUserValidators } =
+    api.edge.staking.getUserDelegations.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
+      {
+        enabled: !!account?.address,
+      }
+    );
+
+  const isLoadingValidators = isLoadingAllValidators || isLoadingUserValidators;
+
+  const { data: osmoEquivalent, isLoading: isLoadingOsmoEquivalent } =
+    api.edge.staking.getOsmoEquivalent.useQuery(
+      availableBondAmount?.toCoin() ?? { denom: "", amount: "" },
+      {
+        enabled:
+          !!availableBondAmount && availableBondAmount.toDec().isPositive(),
+      }
+    );
 
   // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
   const randomSortVals = useMemo(
-    () => activeValidators.map(() => Math.random()),
-    [activeValidators]
+    () => validators?.map(() => Math.random()) ?? [],
+    [validators]
   );
 
   // get minimum info for display, mark validators users are delegated to
@@ -62,25 +79,33 @@ export const SuperfluidValidatorModal: FunctionComponent<
     validatorImgSrc?: string;
     validatorCommission: RatePretty;
     isDelegated: number;
-  }[] = activeValidators.map(
-    ({ operator_address, description, commission }, index) => {
-      const validatorImg =
-        queryValidators.getValidatorThumbnail(operator_address);
-      return {
-        address: operator_address,
-        validatorName: description.moniker,
-        validatorImgSrc: validatorImg === "" ? undefined : validatorImg,
-        validatorCommission: new RatePretty(commission.commission_rates.rate),
-        isDelegated: !showDelegated
-          ? 1
-          : userValidatorDelegations.some(
-              ({ delegation }) =>
-                delegation.validator_address === operator_address
-            )
-          ? 1 // = new Dec(1)
-          : randomSortVals[index], // = new Dec(0..<1)
-      };
-    }
+  }[] = useMemo(
+    () =>
+      validators?.map(
+        (
+          { operator_address, description, commission, validatorImgSrc },
+          index
+        ) => {
+          return {
+            address: operator_address,
+            validatorName: description.moniker,
+            validatorImgSrc:
+              validatorImgSrc === "" ? undefined : validatorImgSrc,
+            validatorCommission: new RatePretty(
+              commission.commission_rates.rate
+            ),
+            isDelegated: !showDelegated
+              ? 1
+              : userValidatorDelegations?.some(
+                  ({ delegation }) =>
+                    delegation.validator_address === operator_address
+                )
+              ? 1 // = new Dec(1)
+              : randomSortVals[index], // = new Dec(0..<1)
+          };
+        }
+      ) ?? [],
+    [validators, userValidatorDelegations, showDelegated, randomSortVals]
   );
 
   const [
@@ -118,65 +143,71 @@ export const SuperfluidValidatorModal: FunctionComponent<
           />
         </div>
         <div className="h-72 overflow-x-clip overflow-y-scroll">
-          <Table
-            className="w-full"
-            tHeadClassName="sticky top-0"
-            headerTrClassName="!h-11"
-            columnDefs={[
-              {
-                display: t("superfluidValidator.columns.validator"),
-                className: classNames(
-                  "text-left",
-                  isMobile ? "caption" : undefined
-                ),
-                sort:
-                  sortKey === "validatorName"
-                    ? {
-                        onClickHeader: toggleSortDirection,
-                        currentDirection: sortDirection,
-                      }
-                    : { onClickHeader: () => setSortKey("validatorName") },
-                displayCell: ValidatorInfoCell,
-              },
-              {
-                display: t("superfluidValidator.columns.commission"),
-                className: classNames(
-                  "text-right !pr-3",
-                  isMobile ? "caption" : undefined
-                ),
-                sort:
-                  sortKey === "validatorCommission"
-                    ? {
-                        onClickHeader: toggleSortDirection,
-                        currentDirection: sortDirection,
-                      }
-                    : {
-                        onClickHeader: () => setSortKey("validatorCommission"),
-                      },
-              },
-            ]}
-            rowDefs={searchedValidators.map(({ address, isDelegated }) => ({
-              makeClass: () =>
-                `!h-fit ${
-                  address === selectedValidatorAddress
-                    ? "bg-osmoverse-800 border border-osmoverse-500"
-                    : isDelegated === 1
-                    ? "bg-osmoverse-800"
-                    : "bg-osmoverse-900"
-                }`,
-              makeHoverClass: () => "bg-osmoverse-900",
-              onClick: () => setSelectedValidatorAddress(address),
-            }))}
-            data={searchedValidators.map(
-              ({ validatorName, validatorImgSrc, validatorCommission }) => [
-                { value: validatorName, imgSrc: validatorImgSrc },
-                { value: validatorCommission.toString() },
-              ]
-            )}
-          />
+          {isLoadingValidators ? (
+            <div className="mx-auto w-fit pt-4">
+              <Spinner />
+            </div>
+          ) : (
+            <Table
+              className="w-full"
+              headerTrClassName="!bg-osmoverse-800 top-0 !h-11"
+              columnDefs={[
+                {
+                  display: t("superfluidValidator.columns.validator"),
+                  className: classNames(
+                    "text-left",
+                    isMobile ? "caption" : undefined
+                  ),
+                  sort:
+                    sortKey === "validatorName"
+                      ? {
+                          onClickHeader: toggleSortDirection,
+                          currentDirection: sortDirection,
+                        }
+                      : { onClickHeader: () => setSortKey("validatorName") },
+                  displayCell: ValidatorInfoCell,
+                },
+                {
+                  display: t("superfluidValidator.columns.commission"),
+                  className: classNames(
+                    "text-right !pr-3",
+                    isMobile ? "caption" : undefined
+                  ),
+                  sort:
+                    sortKey === "validatorCommission"
+                      ? {
+                          onClickHeader: toggleSortDirection,
+                          currentDirection: sortDirection,
+                        }
+                      : {
+                          onClickHeader: () =>
+                            setSortKey("validatorCommission"),
+                        },
+                },
+              ]}
+              rowDefs={searchedValidators.map(({ address, isDelegated }) => ({
+                makeClass: () =>
+                  `!h-fit ${
+                    address === selectedValidatorAddress
+                      ? "border border-osmoverse-500"
+                      : isDelegated === 1
+                      ? "bg-osmoverse-800"
+                      : "bg-osmoverse-900"
+                  }`,
+                makeHoverClass: () => "bg-osmoverse-900",
+                onClick: () => setSelectedValidatorAddress(address),
+              }))}
+              data={searchedValidators.map(
+                ({ validatorName, validatorImgSrc, validatorCommission }) => [
+                  { value: validatorName, imgSrc: validatorImgSrc },
+                  { value: validatorCommission.toString() },
+                ]
+              )}
+            />
+          )}
         </div>
         {availableBondAmount && (
-          <div className="caption flex flex-col gap-4 py-3 px-4 text-osmoverse-300 md:gap-2">
+          <div className="caption flex flex-col gap-4 px-4 py-3 text-osmoverse-300 md:gap-2">
             <div className="flex place-content-between items-center">
               <span>{t("superfluidValidator.bondedAmount")}</span>
               <span>{availableBondAmount.trim(true).toString()}</span>
@@ -188,12 +219,13 @@ export const SuperfluidValidatorModal: FunctionComponent<
                   : t("superfluidValidator.estimation")}
               </span>
               <span className="flex items-center">
-                ~
-                {queries.osmosis?.querySuperfluidOsmoEquivalent
-                  .calculateOsmoEquivalent(availableBondAmount)
-                  .maxDecimals(3)
-                  .trim(true)
-                  .toString() ?? "0"}
+                <SkeletonLoader
+                  className={classNames({ "w-6": isLoadingOsmoEquivalent })}
+                  isLoaded={!isLoadingOsmoEquivalent}
+                >
+                  ~
+                  {osmoEquivalent?.maxDecimals(3).trim(true).toString() ?? null}
+                </SkeletonLoader>
                 <InfoTooltip
                   className="ml-1"
                   content={t("superfluidValidator.estimationInfo")}
@@ -203,7 +235,12 @@ export const SuperfluidValidatorModal: FunctionComponent<
           </div>
         )}
         <Button
-          disabled={selectedValidatorAddress === null || isSendingMsg}
+          disabled={
+            selectedValidatorAddress === null ||
+            account?.txTypeInProgress !== "" ||
+            isLoadingAllValidators ||
+            isLoadingUserValidators
+          }
           onClick={() => {
             if (selectedValidatorAddress !== null) {
               onSelectValidator(selectedValidatorAddress);

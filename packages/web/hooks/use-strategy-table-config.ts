@@ -1,57 +1,58 @@
+import { EarnStrategy } from "@osmosis-labs/server";
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   TableOptions,
 } from "@tanstack/react-table";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 
-import { MOCK_tableData } from "~/components/earn/_mock-data";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
-import { Strategy } from "~/components/earn/table/types/strategy";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  getDefaultFiltersState,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
+import { getDefaultFiltersState } from "~/components/earn/table/utils";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 
-export const useStrategyTableConfig = (showBalance: boolean) => {
+export const useStrategyTableConfig = (
+  data: EarnStrategy[],
+  showBalance: boolean
+) => {
   const { filters, setFilter } = useContext(FilterContext);
   const columnFilters = useMemo(
     () => getDefaultFiltersState(filters!),
     [filters]
   );
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      desc: true,
+      id: "tvl_tvlUsd",
+    },
+  ]);
   const { isMobile } = useWindowSize();
 
-  const tableConfig: TableOptions<Strategy> = {
-    data: MOCK_tableData,
+  const tableConfig: TableOptions<EarnStrategy> = {
+    data,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility: {
-        balance_quantity: showBalance,
-        involvedTokens: !isMobile,
-        strategyMethod_id: false,
-        platform_id: false,
-        hasLockingDuration: false,
+        balance: showBalance,
+        depositAssets: !isMobile,
+        provider: false,
         holdsTokens: false,
-        chainType: false,
+        hasLockingDuration: false,
+        type: false,
+        categories: false,
+        platform: false,
+        depositAssets_coinDenom: false,
       },
       globalFilter: filters!.search,
       columnFilters,
+      sorting,
     },
-    filterFns: {
-      strictEqualFilter,
-      arrLengthEquals,
-      listOptionValueEquals,
-      boolEqualsString,
-      boolEquals,
-    },
+    onSortingChange: setSorting,
     globalFilterFn: "includesString",
     onGlobalFilterChange: (e) => setFilter("search", e),
   };

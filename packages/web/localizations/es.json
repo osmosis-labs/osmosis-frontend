@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
     "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
     "singleAsset": "Un activo",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
     "title": "Agregar liquidez",
     "titleInPool": "Agregue liquidez a la piscina {poolId}",
     "priceImpact": "Impacto en el precio"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "Este activo no es compatible con esta cartera.",
-  "convertToStake": {
-    "adTitle": "Hemos detectado una mejor estrategia de ingresos.",
-    "adSubtitle": "Algunas de sus posiciones ganan menos de lo que ganaría apostando OSMO por un",
-    "title": "Convertir a OSMO replanteado",
-    "description": "Las posiciones seleccionadas se convertirán completamente a OSMO. Todos los OSMO se apostarán automáticamente en su conjunto de validadores existente.",
-    "stakedOsmo": "OSMO apostado",
-    "APR": "ABR",
-    "currentApr": "APR actual",
-    "pool": "PISCINA #{poolId}",
-    "position": "POSICIÓN # {positionId}",
-    "convertAndStake": "Convertir y apostar"
-  },
   "clPositions": {
     "inRange": "EN EL RANGO",
     "nearBounds": "CERCA DE LOS LÍMITES",
@@ -100,7 +87,7 @@
     "pendingRewards": "Recompensas pendientes",
     "superfluidValidator": "Validador",
     "superfluidUnstake": "Una vez no apostado, disponible después",
-    "superfluidUnstaking": "Unstake, disponible en",
+    "superfluidUnstaking": "Unstake, disponible en {fromNow}",
     "superfluidCommission": "comisión",
     "unstake": "Quitar liquidez",
     "unbondingFromNow": "Desvinculación, disponible en",
@@ -108,7 +95,7 @@
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
     "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #"
+    "goToPool": "Ir a la piscina #{poolId}"
   },
   "app": {
     "banner": {
@@ -117,7 +104,8 @@
       "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
       "externalLinkModalTitle": "Saliendo de Osmosis",
       "goToSite": "Ir al sitio",
-      "doNotShowAgain": "No muestres esto de nuevo"
+      "doNotShowAgain": "No muestres esto de nuevo",
+      "chainHalted": "Se detiene la cadena de ósmosis, las transacciones se inhabilitan temporalmente."
     }
   },
   "store": {
@@ -130,18 +118,6 @@
     "applyButton": "Aplicar",
     "storeDisclaimer": "Ciertos contenidos han sido preparados por terceros no afiliados a Osmosis Labs ni a ninguna de sus filiales, y Osmosis Labs no se hace responsable de dicho contenido. Osmosis Labs no es responsable de ningún error o retraso en el contenido, ni de ninguna acción tomada en función de dicho contenido. La información se proporciona únicamente con fines informativos y no constituye asesoramiento de inversión. Esto no es una recomendación para comprar o vender un activo digital en particular o emplear una estrategia de inversión en particular. Osmosis Labs no se hace responsable de la exactitud, idoneidad o validez de ninguna información proporcionada o de un activo en particular. Los precios mostrados son solo con fines ilustrativos. Los precios reales de las criptomonedas y las estadísticas asociadas pueden variar. Los datos presentados pueden reflejar los activos negociados en el intercambio de Osmosis Labs y en otros intercambios de criptomonedas seleccionados.",
     "allAppsHeader": "Todas las aplicaciones"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Supercargue su",
-    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprende cómo funciona en 30 segundos o mejora tu posición con unos pocos clics.",
-    "primaryCta": "Actualízate a Supercargado",
-    "secondaryCta": "Aprende en 30 segundos"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Gana más con tu liquidez",
-    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprenda cómo funciona en 30 segundos o mejore su liquidez con unos pocos clics.",
-    "primaryCta": "Actualízate a Supercargado",
-    "secondaryCta": "Aprende en 30 segundos"
   },
   "createFirstPositionCta": {
     "title": "Crea tu primera posición Supercharged",
@@ -169,9 +145,16 @@
       "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
-      "title": "Historial de transferencias"
+      "title": "Historial de transferencias",
+      "pendingDeposit": "Deposito pendiente",
+      "pendingWithdraw": "A la espera de Retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
     },
     "ibcTransfer": {
+      "buttonAdd": "Agregar",
       "buttonEdit": "Editar",
       "buttonEnter": "Ingresar",
       "channelCongestedDeposit": "Depositar (Canal impugnado)",
@@ -223,14 +206,22 @@
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
-      "activate": "Activar"
+      "activate": "Activar",
+      "marketCap": "Tapa del mercado",
+      "volume24h": "Volumen",
+      "price": "Precio",
+      "balance": "Balance",
+      "lastWeek": "Los últimos 7 días",
+      "asset": "Activo"
     },
     "totalAssets": "Los activos totales",
+    "totalBalance": "Balance total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
       "givePermission": "Dar permisos para usar tokens",
+      "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
@@ -239,7 +230,9 @@
         "seeRequest": "Ver solicitud en {walletName}",
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
+        "invalidAddress": "Dirección inválida",
+        "missingAddress": "Dirección faltante"
       },
       "from": "De",
       "loading": "Cargando",
@@ -287,22 +280,67 @@
       "undergoAudit": "mientras se somete a auditoría (finalización estimada en enero de 2024).",
       "warning": "ADVERTENCIA:",
       "loading": "Cargando..."
-    }
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "Activar activos no verificados",
+      "description": "es un token no verificado. ¿Quieres activarlo? Asegúrese de investigar a fondo antes de operar.",
+      "reminder": "Siempre puedes desactivar esta configuración en el modal de configuración."
+    },
+    "categories": {
+      "new": "El más nuevo",
+      "defi": "DeFi",
+      "stablecoin": "Monedas estables",
+      "meme": "meme",
+      "liquid_staking": "Estaca liquida",
+      "built_on_osmosis": "Construido sobre ósmosis",
+      "sail_initiative": "Iniciativa de vela",
+      "bridges": "Puentes",
+      "nft_protocol": "Protocolo NFT",
+      "ai": "AI",
+      "privacy": "Privacidad",
+      "social": "Social",
+      "oracles": "Oráculos",
+      "dweb": "Web descentralizada",
+      "rwa": "Emisión de activos en el mundo real",
+      "gaming": "Juego de azar",
+      "topGainers": "Principales ganadores",
+      "more": "Más categorías"
+    },
+    "seeAll": "Ver todo",
+    "highlights": {
+      "new": "Nuevo",
+      "topGainers": "Principales ganadores",
+      "upcoming": "Próximo"
+    },
+    "balancesMovedTitle": "¿Buscas tus saldos?",
+    "balancesMovedDescription": "Dirígete a la página Portafolio, el nuevo hogar para tus saldos y más."
+  },
+  "portfolio": {
+    "buy": "Comprar",
+    "yourAssets": "Tus activos",
+    "yourPositions": "Tus posiciones",
+    "recentTransfers": "Transferencias recientes",
+    "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
+    "yourLiquidityPools": "Tus fondos de liquidez",
+    "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis.",
+    "noAssets": "No tienes saldos en {osmosis}",
+    "getStarted": "Deposite activos para comenzar",
+    "noPositions": "no tienes posiciones",
+    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez"
   },
   "buyTokens": "Comprar fichas",
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
-      "transakSubtitle": "Soporta OSMO"
+      "transakSubtitle": "Soporta OSMO",
+      "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
     "incentive": {
-      "mobileTitle": "Incentivo",
       "title": "Tipos de incentivos"
     },
     "MAX": "Máximo",
     "pool": {
-      "mobileTitle": "Piscina",
       "title": "Tipos de piscinas"
     },
     "searchTokens": "Buscar",
@@ -326,9 +364,6 @@
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
       "transmuter": "transmutador",
-      "internal": "Incentivos internos",
-      "external": "Incentivos externos",
-      "superfluid": "Superfluid",
       "noIncentives": "Sin incentivos"
     }
   },
@@ -341,6 +376,7 @@
     "highSwapFee": "Cuota de intercambio demasiado alta",
     "insufficientAmount": "Cantidad insuficiente",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientBalForFee": "Saldo insuficiente para la tarifa",
     "insufficientLiquidity": "Liquidez insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Dirección de controlador de factor de escala no válida",
@@ -355,7 +391,7 @@
     "noAvailableShares": "No hay acciones disponibles {denom}",
     "noRoute": "No hay ruta para este cambio",
     "noSendCurrency": "Moneda para enviar no establecida",
-    "notInitialized": "No inicializado",
+    "notInitialized": "Cargando...",
     "percentageSum": "La suma de porcentajes no es 100",
     "scalingFactorTooLow": "Factor de escala demasiado bajo",
     "zeroAmount": "La cantidad es cero",
@@ -368,7 +404,9 @@
     "chartUnavailable": "Gráfico no disponible",
     "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
-    "invalidAmounts": "Montos no válidos"
+    "invalidAmounts": "Montos no válidos",
+    "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -395,6 +433,7 @@
   },
   "menu": {
     "assets": "Activos",
+    "portfolio": "portafolio",
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
@@ -409,7 +448,9 @@
     "marsSubtext": "Impulsado por Marte",
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
-    "new": "NUEVO"
+    "new": "NUEVO",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -449,9 +490,102 @@
     "discardButton": "Descartar los cambios",
     "clearAllHistory": "Limpiar todo"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "Comercio con 1 clic activo",
+      "oneClickTradingExpired": "El comercio con 1 clic expiró",
+      "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
+      "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
+      "networkFeeTooHigh": "Tarifa de red demasiado alta",
+      "enableOneClickTrading": "Habilite el comercio con 1 clic",
+      "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
+      "approveManually": "Aprobar manualmente en {walletName}",
+      "continueWithWallet": "Continuar con la billetera",
+      "sessionEnded": "La sesión finalizó en este dispositivo",
+      "errorEndingSession": "Error al finalizar la sesión",
+      "pleaseTryAgain": "Error inesperado. Inténtalo de nuevo."
+    },
+    "introduction": {
+      "newFeature": "Nueva caracteristica",
+      "introducingTitle": "Presentamos el comercio con 1 clic",
+      "introducingSubtitle": "Realice transacciones más rápidas y sencillas sin la molestia de múltiples aprobaciones de billetera.",
+      "learnMore": "Aprende más",
+      "startTradingButton": "Comience a operar con 1 clic",
+      "defaultParameters": "El comercio con 1 clic estará activo durante 1 hora en este dispositivo con un límite de gasto de $5,000 USD",
+      "changeButton": "Cambiar"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "Opere más rápido y más fácilmente",
+      "startOneClickTradingNow": "Comience a operar con 1 clic ahora",
+      "iconAlt": "Logotipo pequeño comercial con 1 clic"
+    },
+    "floatingBanner": {
+      "newPill": "Nuevo",
+      "title": "Comercio con 1 clic",
+      "tradeFasterButton": "Opere más rápido"
+    },
+    "settings": {
+      "header": "Comercio con 1 clic",
+      "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
+      "enableTitle": "Habilite el comercio con 1 clic",
+      "spendLimitTitle": "Límite de gasto",
+      "networkFeeLimitTitle": "Límite de tarifa de red",
+      "sessionPeriodTitle": "Período de sesión",
+      "startButton": "Comience a operar con 1 clic",
+      "editSessionButton": "Guardar cambios",
+      "endingSession": "Finalizando sesión",
+      "feeToDisable": "Tarifa para desactivar el comercio con 1 clic:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "Establezca la cantidad máxima que puede gastar dentro de un período de sesión de negociación con 1 clic.",
+        "fixedAmount": "Cantidad fija",
+        "shareOfBalance": "Participación del saldo",
+        "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente",
+        "fluctuationNotice": "Tenga en cuenta que el valor en USD de su límite de gasto se basa en el valor de sus activos, que pueden fluctuar."
+      },
+      "networkFeeLimitScreen": {
+        "title": "Límite de tarifa de red",
+        "description": "Establezca el monto máximo que puede gastar en tarifas de red para cualquier transacción durante su sesión de Trading con 1 clic.",
+        "info": "Si una tarifa excede este monto, puede proceder firmando manualmente las transacciones en su billetera.",
+        "low": "Bajo",
+        "average": "Promedio",
+        "high": "Alto",
+        "recommended": "Recomendado"
+      },
+      "sessionPeriodScreen": {
+        "title": "Período de sesión",
+        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
+        "periods": {
+          "10min": "10 minutos",
+          "30min": "30 minutos",
+          "1hour": "1 hora",
+          "3hours": "3 horas",
+          "12hours": "12 horas"
+        }
+      },
+      "discardChanges": {
+        "title": "¿Descartar los cambios?",
+        "message": "¿Desea mantener su configuración actual de Trading con 1 clic?",
+        "cancelButton": "Cancelar",
+        "discardButton": "Desechar"
+      }
+    },
+    "welcomeBack": {
+      "title": "Bienvenido de nuevo",
+      "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
+      "toggleLabel": "Comercio con 1 clic",
+      "editParamsAriaLabel": "Cambiar parámetros 1CT"
+    },
+    "connectToContinue": {
+      "altText": "Gráfico de operaciones con un clic",
+      "header": "Conecte una billetera para continuar",
+      "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
+    },
+    "profile": {
+      "sessionExpired": "Sesión expirada"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
-    "7davg": "(7d Promedio)",
     "amountDaysUnbonding": "{numDays} día para desabonar",
     "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "APR": "TPA",
@@ -465,12 +599,9 @@
     "checkBackForBondingRewards": "Vuelva a consultar las recompensas de vinculación",
     "collapseDetails": "Ocultar detalles",
     "commission": "comisión",
-    "currentDailyEarn": "Actualmente estás ganando",
     "dailyEarnAmount": "{amount} / día",
-    "day": "día",
     "delegated": "delegado",
     "details": "Detalles",
-    "earnMore": "Gane {amount} más por abonar",
     "earnSwapFees": "Ganar tarifas de intercambio",
     "earnSwapFeesCaption": "Convierta sus tokens en participaciones y gane en cada intercambio.",
     "from": "de",
@@ -478,7 +609,6 @@
     "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "liquidity": "Liquidez",
-    "numDaysRemaining": "{numDays} días restantes",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para obtener TPAs increíbles. Mientras más tiempo sea su período para desabonarse, más generará.",
     "rewardDistribution": "Recompensas distribuidas a todos los proveedores de liquidez",
@@ -499,11 +629,11 @@
     "unbonding": "Desabonando",
     "undelegating": "desautorizando",
     "yourStats": "Su saldo de la piscina",
-    "onlyInRangePositions": "Solo para posiciones en rango"
+    "onlyInRangePositions": "Solo para posiciones en rango",
+    "custom": "Costumbre"
   },
   "pools": {
     "allPools": {
-      "search": "Buscar piscinas",
       "sort": {
         "APRIncentivized": "TPA",
         "fees": "Tarifas (7d)",
@@ -551,19 +681,28 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
-      "total": "TAE total"
+      "superfluid": "superfluido",
+      "externalBoost": "Impulso externo",
+      "total": "TAE total",
+      "explainer": {
+        "title": "¿Cómo se calculan las APR?",
+        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
+        "p2": "En grupos sobrealimentados, la mayoría de los usuarios recibirán recompensas más bajas. Esto se debe a posiciones más concentradas, que captan una mayor parte de los incentivos.",
+        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+      }
     }
   },
   "profile": {
     "balance": "Balance",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos los activos",
-    "wallet": "Billetera"
+    "wallet": "Billetera",
+    "transactions": "Actas",
+    "oneClickTrading": "Comercio con 1 clic"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participaciones",
-    "title": "Retirar liquidez",
-    "titleInPool": "Sacar la liquidez de {PoolId}"
+    "title": "Retirar liquidez"
   },
   "requestRejected": "Solicitud rechazada",
   "settings": {
@@ -577,8 +716,13 @@
     "titleHideBalances": "Saldos de máscaras para la privacidad",
     "hideBalances": "Saldos enmascarados"
   },
+  "search": {
+    "noResultsFor": "No hay resultados para \" {query} \"",
+    "adjust": "Intente ajustar su consulta de búsqueda"
+  },
   "stake": {
     "available": "Disponible",
+    "staked": "Apostado",
     "MAX": "MÁX.",
     "validatorHeader": "escuadrón validador",
     "stake": "Estaca OSMO",
@@ -588,6 +732,7 @@
     "amount": "Cantidad",
     "availableIn": "Disponible en",
     "day": "día",
+    "days": "días",
     "month": "mes",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "OSMO apostado",
@@ -606,10 +751,7 @@
     "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
     "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
     "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
-    "collectRewardsTooltip": "Recoge todas tus recompensas no reclamadas. Estos tokens estarán disponibles de inmediato en Osmosis.",
     "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas. Vuelva a intentarlo una vez que su saldo no reclamado haya alcanzado el umbral mínimo de {collectRewardsMinimumOsmo} OSMO.",
-    "collectAndReinvestTooltip": "Recoge y vuelve a apostar automáticamente tus ganancias no reclamadas con un solo clic. La capitalización es una excelente manera de ganar más con sus activos.",
-    "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
       "step1": {
@@ -683,11 +825,14 @@
       "hide": "Ocultar",
       "show": "Mostrar"
     },
+    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
+    "networkFee": "Tarifa de red",
+    "totalFee": "Costo total",
     "HALF": "Mitad",
     "MAX": "Máximo",
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
@@ -695,18 +840,23 @@
     "priceImpact": "Impacto sobre el precio",
     "routerTooltipFee": "Tarifa",
     "routerTooltipSpreadFactor": "Factor de dispersión",
+    "continueAnyway": "De todas maneras, continúe",
+    "warning": {
+      "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
+      "exceedsNetworkFeeLimit": "Este intercambio excede el límite de tarifa de su red para 1-Click Trading.",
+      "increaseSpendLimit": "Aumentar el límite de gasto",
+      "increaseNetworkFeeLimit": "Aumentar el límite de la tarifa de red"
+    },
     "settings": {
       "slippage": "Tolerancia de deslizamiento",
       "slippageInfo": "Su transacción se revertirá si el precio cambia desfavorablemente en más de este porcentaje.",
       "title": "Configuración de transacción"
     },
     "title": "Intercambio",
-    "promo": {
-      "newOpportunity": "Nueva oportunidad de ganar con",
-      "discoverSuperchargedPools": "Descubre piscinas sobrealimentadas"
-    }
+    "dynamicSpreadFactor": "Dinámica"
   },
   "walletSelect": {
+    "gettingStarted": "Empezando",
     "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
@@ -718,6 +868,12 @@
     "reconnect": "Reconectar",
     "connectingWallet": "Conectando Billetera",
     "approveWalletConnect": "Aprobar la solicitud de conexión {walletName} en su dispositivo móvil.",
+    "enablingOneClickTrading": "Habilitación del comercio con 1 clic.",
+    "approveOneClickTradingSession": "Aprobar operaciones con 1 clic en {walletName}",
+    "errorInitializingOneClickTradingSession": "No se pudo habilitar el comercio con 1 clic.",
+    "retryInWalletOrContinue": "Vuelva a intentarlo en {walletName} o continúe sin 1-Click Trading.",
+    "continueWithoutOneClickTrading": "Continuar sin operar con 1 clic",
+    "retry": "Rever",
     "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",
     "initializingWallet": "Inicializando Cliente de Billetera",
     "clickToRefresh": "Haga clic para actualizar.",
@@ -747,25 +903,37 @@
   "transactionBroadcasting": "Ejecutando transacción",
   "transactionFailed": "Transacción fallida",
   "transactionSuccessful": "Transacción exitosa",
+  "transfer": {
+    "deposit": "Depósito",
+    "withdraw": "Retirar",
+    "fromNetwork": "De la red",
+    "toNetwork": "A la red",
+    "max": "máx.",
+    "available": "disponible",
+    "transferWith": "Transferir con",
+    "transferTo": "Transferir a",
+    "receiveAsset": "Recibir activo",
+    "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
+    "estimatingTime": "tiempo estimado",
+    "calculatingFees": "Calcular tarifas",
+    "reviewDeposit": "Revisar depósito",
+    "reviewWithdraw": "Revisar retirar",
+    "moreDepositOptions": "Más opciones de depósito",
+    "moreWithdrawOptions": "Más opciones de retiro",
+    "convertTo": "Convertir a",
+    "recommended": "Recomendado",
+    "moreBridgeOptions": {
+      "titleDeposit": "Más opciones de depósito",
+      "titleWithdraw": "Más opciones de retiro",
+      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
+      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
+      "depositWith": "Depositar con",
+      "withdrawWith": "Retirarse con"
+    }
+  },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "upgrades": {
-    "title": "Mejoras disponibles",
-    "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
-    "positionUpgrade": "Mejora de posición",
-    "superchargedLiquidity": "Liquidez sobrealimentada",
-    "newSuperchargedPool": "Este nuevo grupo viene con un mayor potencial de ganancias y una APR estimada más alta.",
-    "upgrade": "Mejora",
-    "pool": "PISCINA",
-    "new": "NUEVO",
-    "current": "ACTUAL",
-    "success": "¡Actualización exitosa!",
-    "clickHereToView": "Haga clic aquí para ver",
-    "foundHere": "Las actualizaciones se pueden encontrar aquí",
-    "availableHereCaption": "Las actualizaciones disponibles se pueden ver aquí. Puede optar por actualizar en cualquier momento."
-  },
   "seo": {
     "404": {
       "title": "404 Pagina no encontrada",
@@ -787,6 +955,10 @@
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
+    "portfolio": {
+      "title": "Portafolio de Ósmosis",
+      "description": "Vea sus activos en Osmosis, el principal intercambio descentralizado de Cosmos"
+    },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -800,16 +972,12 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "Activos relacionados",
     "earnWith": "Gana con {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Apuesta tu {denom} para ganar un {apr} % APR",
     "stakeYourDenomToEarnNoAPR": "Apuesta tu {denom} para ganar recompensas",
     "provideLiquidity": "Proporcione liquidez y gane con comisiones y swaps",
     "yourBalance": "Tu balance",
-    "pastDaysReturns": "Devoluciones del día anterior",
-    "allTimeReturns": "Todo el tiempo regresa",
-    "averagePrice": "Precio promedio",
     "aboutDenom": "Acerca de {name}",
     "ariaView": "Ver {name}",
     "ariaViewOn": "Ver en {name}",
@@ -825,44 +993,41 @@
     "marketCapRank": "Rango de capitalización de mercado",
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
-    "tvl": "TVL",
-    "backButton": "Todas las fichas",
-    "ariaBackButton": "Botón de retroceso de todos los tokens",
-    "noData": "N.D."
+    "buyToken": "Comprar {coinDenom}",
+    "staking": "Replanteo",
+    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
+    "underlyingAssets": {
+      "title": "Activos subyacentes",
+      "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",
+      "of": "de {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
     "seeWhatsNew": "Ver qué hay de nuevo"
   },
-  "unlistedAssetsEnabled": "Activos no listados habilitados",
-  "unlistedAssetsDisabled": "Activos no listados inhabilitados",
-  "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`.",
+  "previewAssetsEnabled": "Vista previa de recursos habilitada",
+  "previewAssetsDisabled": "Vista previa de recursos deshabilitada",
+  "previewAssetsEnabledForSession": "Vista previa de recursos habilitados para esta sesión. Para deshabilitarlo, abra una nueva pestaña o agregue `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganar",
-    "position": "Posición",
     "positions": "Posiciones",
-    "allocation": "Asignación",
-    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estrategias",
-    "value": "Valor",
-    "method": "Método",
-    "platform": "Plataforma",
-    "scrollToSeeMore": "desplácese para ver más",
+    "oneStrategy": "1 estrategia",
     "discoverStrategies": "Descubra estrategias",
-    "myStrategies": "Mis estrategias",
-    "strategyPlatform": "Estrategia / Plataforma",
-    "apy": "APY",
-    "daily": "A diario",
+    "myStrategies": "Tus estrategias",
+    "strategyPlatform": "Estrategia",
+    "apy": "ABR",
     "reward": "Premio",
-    "lock": "Cerrar",
+    "lock": "Desvinculado",
     "days": "días",
+    "day": "día",
     "risk": "Riesgo",
-    "strategyMethod": "Método de estrategia",
-    "allMethods": "Todo el método",
+    "strategyMethod": "Tipos",
+    "allMethods": "Todos los tipos",
     "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
-    "lockingDuration": "Duración del bloqueo",
-    "specialTokens": "Fichas especiales",
+    "allCategories": "Todas las categorias",
     "filters": "Filtros",
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
@@ -872,18 +1037,102 @@
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
     "tokenFilterOptions": {
-      "my": "Mis fichas",
-      "all": "Todas las fichas"
+      "my": "Tus activos",
+      "all": "Todos los activos"
     },
     "rewardTypes": {
       "all": "Todo",
       "single": "Soltero",
       "multi": "Multi"
+    },
+    "totalValueInvested": "Valor total",
+    "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
+    "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
+    "loadingStrategies": "Cargando estrategias...",
+    "sorryErrorOccurred": "Lo sentimos, ocurrió un error.",
+    "sorryNoResultsWithAssets": "No se encontraron estrategias asociadas con sus activos.",
+    "sorryNoResults": "No se encontraron estrategias.",
+    "tryChangingFilters": "Prueba a cambiar filtros",
+    "retry": "Rever",
+    "manage": "Administrar",
+    "noLock": "Sin bloqueo",
+    "riskDisclaimer": "El riesgo se calcula con un conjunto combinado de criterios sobre una estrategia y sus activos subyacentes.",
+    "strategyGeoblocked": "Lo sentimos, esta estrategia no está disponible en tu país.",
+    "instantUnbondOnly": "Solo desvinculación instantánea",
+    "tooltips": {
+      "apr": {
+        "description": "La tasa de porcentaje anual (APR) se refiere al rendimiento porcentual anualizado de una estrategia.\n\nNota: El rendimiento de una estrategia puede fluctuar según la participación y el rendimiento.\n\nDescargo de responsabilidad: Estas APR las informan los propios proyectos y pueden ser inexactas."
+      },
+      "tvl": {
+        "description": "El valor total bloqueado (TVL) se refiere al valor total en dólares estadounidenses de los activos depositados en la estrategia."
+      },
+      "reward": {
+        "description": "El tipo de activos obtenidos a través de las operaciones y/o incentivos de la estrategia."
+      },
+      "lock": {
+        "description": "El período de tiempo que una posición está vinculada antes de que se pueda salir de ella. Nota: No todos los períodos de desvinculación de estrategias* tienen distribuciones de recompensas."
+      },
+      "strategy": {
+        "description": "En Osmosis hay disponibles oportunidades de ingresos de varios tipos, alojadas en varias plataformas. Acceder a una estrategia requiere el depósito de activos específicos."
+      },
+      "risk": {
+        "description": "La evaluación de riesgos implica considerar una combinación de criterios relacionados con una estrategia y sus activos subyacentes."
+      }
+    },
+    "riskLabels": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "veryHigh": "Muy alto"
     }
   },
   "disclaimer": "Descargo de responsabilidad",
-  "namada": {
-    "description": "Los usuarios de Osmosis pueden ser elegibles para la reclamación del lanzamiento de Namada.",
-    "link": "¡Verifica tu elegibilidad para $NAM aquí!"
+  "remaining": "restantes",
+  "timeUnits": {
+    "second": "segundo",
+    "seconds": "segundos",
+    "minute": "minuto",
+    "minutes": "minutos",
+    "hour": "hora",
+    "hours": "horas"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} depósitos inestables",
+    "titleWithdraw": "{coinDenom} retiros inestables",
+    "description": "Debido a problemas técnicos inciertos, las transferencias entre Osmosis y {prettyChainName} pueden experimentar retrasos importantes o fallas en la transacción. Proceda bajo su propio riesgo.",
+    "buttonContinue": "De todas maneras, continúe",
+    "buttonCancel": "Cancelar"
+  },
+  "transactions": {
+    "noRecent": "Sin transferencias recientes",
+    "recentShownHere": "Los depósitos y retiros de los últimos 3 días en este dispositivo (entre ciertas redes) aparecerán aquí.",
+    "noTransactions": "Sin transacciones",
+    "pastShownHere": "Tus operaciones anteriores en Osmosis aparecerán aquí.",
+    "connectToSee": "Conéctese para ver su historial de transacciones",
+    "connectWallet": "Conectar billetera",
+    "title": "Actas",
+    "swapping": "Intercambio",
+    "swapped": "Intercambiado",
+    "swapFailed": "El intercambio falló",
+    "taxReports": "Informes de impuestos",
+    "explorer": "Explorador",
+    "sold": "Vendido",
+    "bought": "Compró",
+    "executionPrice": "Precio de ejecución",
+    "totalFees": "Tarifas totales",
+    "transactionHash": "Hash de transacción",
+    "viewOnExplorer": "Ver en el explorador",
+    "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
+    "noPriceData": "Datos de precios no disponibles",
+    "viewAll": "Ver todo"
+  },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer"
+  },
+  "backToTop": "Volver arriba",
+  "pagination": {
+    "older": "Más viejo",
+    "newer": "Más nuevo"
   }
 }

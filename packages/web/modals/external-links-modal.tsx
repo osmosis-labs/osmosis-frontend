@@ -1,20 +1,65 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
+import { useState } from "react";
 
-import { CheckBox } from "~/components/control";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
-import { Button } from "../components/buttons";
+const DoNotShowAgainExcludedUrlsKey = "do-not-show-again-excluded-urls";
+type DoNotShowAgainExcludedUrls = Record<string, boolean>;
+
+export function getDoNotShowAgainExcludedUrls(): DoNotShowAgainExcludedUrls {
+  const value = localStorage.getItem(DoNotShowAgainExcludedUrlsKey);
+  return value ? JSON.parse(value) : {};
+}
+
+function setDoNotShowAgainExcludedUrls(url: string, value: boolean) {
+  const excludedUrls = getDoNotShowAgainExcludedUrls();
+  excludedUrls[url] = value;
+  return localStorage.setItem(
+    DoNotShowAgainExcludedUrlsKey,
+    JSON.stringify(excludedUrls)
+  );
+}
+
+export function handleExternalLink({
+  url,
+  openModal,
+}: {
+  url: string;
+  openModal: () => void;
+}) {
+  try {
+    const doNotShowModalExcludedUrls = getDoNotShowAgainExcludedUrls();
+
+    if (doNotShowModalExcludedUrls[url]) {
+      window.open(url, "_blank");
+    } else {
+      openModal();
+    }
+  } catch (error) {
+    console.error("Error accessing localStorage:", error);
+    openModal();
+  }
+}
 
 export const ExternalLinkModal: FunctionComponent<
-  { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({ url, ...modalBaseProps }) => {
+  {
+    url: string;
+    /** Force the user to see this modal every time, they can't opt out of showing again (saved in localstorage). */
+    forceShowAgain?: boolean;
+  } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = ({ url, forceShowAgain = false, ...modalBaseProps }) => {
   const { t } = useTranslation();
   const [doNotShowAgain, setDoNotShowAgain] = useState(false);
 
-  const handleDoNotShowAgainChange = () => {
-    setDoNotShowAgain(!doNotShowAgain);
-    localStorage.setItem("doNotShowExternalLinkModal", String(!doNotShowAgain));
+  const onToggleDoNotShowAgain = () => {
+    setDoNotShowAgain((prevDoNotShowAgain) => {
+      const nextValue = !prevDoNotShowAgain;
+      setDoNotShowAgainExcludedUrls(url, nextValue);
+      return nextValue;
+    });
   };
 
   return (
@@ -38,38 +83,31 @@ export const ExternalLinkModal: FunctionComponent<
             </a>
           </p>
 
-          <p className="body2 mt-4 mb-6 text-osmoverse-300">
+          <p className="body2 mb-6 mt-4 text-osmoverse-300">
             {t("app.banner.externalLinkDisclaimer")}
           </p>
         </div>
 
-        <label className="mb-6 flex items-center space-x-2">
-          <CheckBox
-            isOn={doNotShowAgain}
-            onToggle={handleDoNotShowAgainChange}
-          />
-          <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
-        </label>
+        {!forceShowAgain && (
+          <label className="mb-6 flex items-center space-x-2">
+            <Checkbox
+              checked={doNotShowAgain}
+              onClick={onToggleDoNotShowAgain}
+            />
+            <span className="text-md">{t("app.banner.doNotShowAgain")}</span>
+          </label>
+        )}
 
         <div className="flex w-full justify-between gap-4">
           <Button
-            mode="secondary"
+            variant="outline"
             className="flex-1"
             onClick={modalBaseProps.onRequestClose}
           >
             {t("app.banner.backToOsmosis")}
           </Button>
-          <Button
-            mode="primary"
-            className="flex-1"
-            onClick={modalBaseProps.onRequestClose}
-          >
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white"
-            >
+          <Button className="flex-1">
+            <a href={url} target="_blank" rel="noopener noreferrer">
               {t("app.banner.goToSite")}
             </a>
           </Button>

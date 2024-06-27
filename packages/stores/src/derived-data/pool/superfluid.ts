@@ -4,8 +4,8 @@ import {
   CosmosQueries,
   HasMapStore,
   IQueriesStore,
-  Staking,
 } from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/types";
 import dayjs from "dayjs";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
@@ -307,12 +307,12 @@ export class ObservableSuperfluidPoolDetail {
       let jailed = false;
       let inactive = false;
       let validator = this.cosmosQueries.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
+        .getQueryStatus(BondStatus.Bonded)
         .getValidator(validatorBech32Address);
 
       if (!validator) {
         validator = this.cosmosQueries.queryValidators
-          .getQueryStatus(Staking.BondStatus.Unbonded)
+          .getQueryStatus(BondStatus.Unbonded)
           .getValidator(validatorBech32Address);
         inactive = true;
         if (validator?.jailed) jailed = true;
@@ -321,9 +321,7 @@ export class ObservableSuperfluidPoolDetail {
       let thumbnail: string | undefined;
       if (validator) {
         thumbnail = this.cosmosQueries.queryValidators
-          .getQueryStatus(
-            inactive ? Staking.BondStatus.Unbonded : Staking.BondStatus.Bonded
-          )
+          .getQueryStatus(inactive ? BondStatus.Unbonded : BondStatus.Bonded)
           .getValidatorThumbnail(validatorBech32Address);
       }
 

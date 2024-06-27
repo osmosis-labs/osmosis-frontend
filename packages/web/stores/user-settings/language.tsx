@@ -59,6 +59,26 @@ export const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     value: "fa",
     display: "فارسی",
   },
+  {
+    value: "ja",
+    display: "日本語",
+  },
+  {
+    value: "de",
+    display: "Deutsch",
+  },
+  {
+    value: "hi",
+    display: "हिन्दी",
+  },
+  {
+    value: "ru",
+    display: "Русский",
+  },
+  {
+    value: "gu",
+    display: "ગુજરાતી",
+  },
 ];
 
 export class LanguageUserSetting implements UserSetting<LanguageState> {

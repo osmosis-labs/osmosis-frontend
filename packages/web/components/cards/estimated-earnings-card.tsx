@@ -27,18 +27,12 @@ const PriceCaption: FunctionComponent<{
 
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
-}> = observer(({ stakeAmount }) => {
+  stakingAPR: Dec;
+}> = observer(({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
-  const { queriesStore, chainStore, priceStore } = useStore();
-
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const { chainStore, priceStore } = useStore();
 
   const osmo = chainStore.osmosis.stakeCurrency;
-
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-
-  // staking APR, despite the name.
-  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const calculatedInflationAmountPerYear = stakeAmount
     ?.moveDecimalPointRight(osmo.coinDecimals)
@@ -76,7 +70,7 @@ export const EstimatedEarningCard: FunctionComponent<{
             <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </Tooltip>
         </span>
-        <div className="mt-5 mb-2 flex items-center gap-2">
+        <div className="mb-2 mt-5 flex items-center gap-2">
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}

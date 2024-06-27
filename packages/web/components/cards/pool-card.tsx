@@ -8,9 +8,6 @@ import { CustomClasses } from "~/components/types";
 import { Metric } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
-// <Link /> notes: turn off prefetch to avoid loading tons of pools and lagging the client, many pools will be in viewport. They will still be fetched on hover.
-// See : https://nextjs.org/docs/api-reference/next/link
-
 export const PoolCard: FunctionComponent<
   {
     poolId: string;
@@ -35,7 +32,6 @@ export const PoolCard: FunctionComponent<
     <Link
       href={`/pool/${poolId}`}
       passHref
-      prefetch={false}
       className={classNames(
         "rounded-4xl p-[2px] text-left hover:bg-wosmongton-200",
         {
@@ -47,7 +43,7 @@ export const PoolCard: FunctionComponent<
         onClick?.();
       }}
     >
-      <div className="flex h-full w-full cursor-pointer flex-col place-content-between gap-14 rounded-[27px] bg-osmoverse-800 px-9 py-7 transition-colors hover:bg-osmoverse-700">
+      <div className="flex h-full w-full cursor-pointer flex-col place-content-between gap-14 rounded-[1.688rem] bg-osmoverse-800 px-9 py-7 transition-colors hover:bg-osmoverse-700">
         <div className="flex place-content-between items-center">
           <PoolAssetsIcon assets={poolAssets} />
           <div className="ml-5 flex flex-col">

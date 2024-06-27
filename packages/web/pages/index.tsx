@@ -1,35 +1,32 @@
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import type { GetStaticProps, InferGetStaticPropsType } from "next";
+import { useLocalStorage } from "react-use";
 
-import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
+import { Ad, AdBanners } from "~/components/ad-banner";
+import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
-import adCMSData from "~/config/ads-banner.json";
-import { useAmplitudeAnalytics } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { theme } from "~/tailwind.config";
+import { api } from "~/utils/trpc";
 
-interface HomeProps {
-  ads: Ad[];
-}
-
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  let ads: Ad[] = [];
-
-  const adCMS = adCMSData as AdCMS;
-
-  try {
-    // const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
-    //   ADS_BANNER_URL
-    // );
-    ads = adCMS.banners.filter(({ featured }) => featured);
-  } catch (error) {
-    console.error("Error fetching ads:", error);
-  }
-
-  return { props: { ads } };
+export const SwapPreviousTradeKey = "swap-previous-trade";
+export type PreviousTrade = {
+  sendTokenDenom: string;
+  outTokenDenom: string;
 };
 
-const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home = () => {
+  const featureFlags = useFeatureFlags();
+  const [previousTrade, setPreviousTrade] =
+    useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
@@ -54,10 +51,10 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
               height="725.6817"
             />
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
+              lowResXlinkHref={"/images/bitcoin-props-low.png"}
+              xlinkHref={"/images/bitcoin-props.png"}
               x={"61"}
-              y={"682"}
+              y={"600"}
               width={"448.8865"}
               height={"285.1699"}
             />
@@ -66,10 +63,76 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
       </div>
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool ads={ads} />
+          {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          <SwapTool
+            useQueryParams
+            useOtherCurrencies
+            onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
+              setPreviousTrade({ sendTokenDenom, outTokenDenom });
+            }}
+            initialSendTokenDenom={previousTrade?.sendTokenDenom}
+            initialOutTokenDenom={previousTrade?.outTokenDenom}
+            page="Swap Page"
+          />
         </div>
       </div>
     </main>
+  );
+};
+
+const SwapAdsBanner = () => {
+  const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+  const flags = useFeatureFlags();
+  const { t } = useTranslation();
+  const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
+    undefined,
+    {
+      staleTime: 1000 * 60 * 30, // 30 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      select: (data) => ({
+        ...data,
+        banners: data.banners.filter((banner) =>
+          banner.startDate || banner.endDate
+            ? dayjs().isBetween(banner.startDate, banner.endDate)
+            : true
+        ),
+      }),
+    }
+  );
+
+  if (!data?.banners || isLoading) return null;
+
+  const banners: Ad[] = flags.oneClickTrading
+    ? [
+        // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
+        {
+          name: "one-click-trading",
+          headerOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.tradeQuickerAndEasier"
+          ),
+          subheaderOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.startOneClickTradingNow"
+          ),
+          iconImageAltOrTranslationKey: t(
+            "oneClickTrading.swapRotatingBanner.iconAlt"
+          ),
+          iconImageUrl: "/images/1ct-small-icon.svg",
+          gradient: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+          fontColor: theme.colors.osmoverse["900"],
+          arrowColor: theme.colors.ammelia["900"],
+          onClick() {
+            set1CTIntroModalScreen("settings-no-back-button");
+          },
+        } satisfies Ad,
+        ...data.banners,
+      ]
+    : data.banners;
+
+  return (
+    // If there is an error, we don't want to show the banner
+    <ErrorBoundary fallback={null}>
+      <AdBanners ads={banners} localization={data.localization} />
+    </ErrorBoundary>
   );
 };
 

@@ -8,7 +8,7 @@ export interface ParamsProtoMsg {
   value: Uint8Array;
 }
 export interface ParamsAmino {
-  force_unlock_allowed_addresses: string[];
+  force_unlock_allowed_addresses?: string[];
 }
 export interface ParamsAminoMsg {
   type: "osmosis/lockup/params";
@@ -58,13 +58,10 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      forceUnlockAllowedAddresses: Array.isArray(
-        object?.force_unlock_allowed_addresses
-      )
-        ? object.force_unlock_allowed_addresses.map((e: any) => e)
-        : [],
-    };
+    const message = createBaseParams();
+    message.forceUnlockAllowedAddresses =
+      object.force_unlock_allowed_addresses?.map((e) => e) || [];
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
@@ -72,7 +69,7 @@ export const Params = {
       obj.force_unlock_allowed_addresses =
         message.forceUnlockAllowedAddresses.map((e) => e);
     } else {
-      obj.force_unlock_allowed_addresses = [];
+      obj.force_unlock_allowed_addresses = message.forceUnlockAllowedAddresses;
     }
     return obj;
   },

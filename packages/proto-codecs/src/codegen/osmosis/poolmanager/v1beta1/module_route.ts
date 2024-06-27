@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../../binary";
-import { isSet } from "../../../helpers";
 /** PoolType is an enumeration of all supported pool types. */
 export enum PoolType {
   /** Balancer - Balancer is the standard xy=k curve. Its pool model is defined in x/gamm. */
@@ -82,8 +81,8 @@ export interface ModuleRouteProtoMsg {
  */
 export interface ModuleRouteAmino {
   /** pool_type specifies the type of the pool */
-  pool_type: PoolType;
-  pool_id: string;
+  pool_type?: PoolType;
+  pool_id?: string;
 }
 export interface ModuleRouteAminoMsg {
   type: "osmosis/poolmanager/module-route";
@@ -150,17 +149,20 @@ export const ModuleRoute = {
     return message;
   },
   fromAmino(object: ModuleRouteAmino): ModuleRoute {
-    return {
-      poolType: isSet(object.pool_type)
-        ? poolTypeFromJSON(object.pool_type)
-        : -1,
-      poolId: object?.pool_id ? BigInt(object.pool_id) : undefined,
-    };
+    const message = createBaseModuleRoute();
+    if (object.pool_type !== undefined && object.pool_type !== null) {
+      message.poolType = object.pool_type;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: ModuleRoute): ModuleRouteAmino {
     const obj: any = {};
-    obj.pool_type = message.poolType;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.pool_type = message.poolType === 0 ? undefined : message.poolType;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ModuleRouteAminoMsg): ModuleRoute {

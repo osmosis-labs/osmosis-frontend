@@ -1,10 +1,10 @@
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { SplitTokenInQuote } from "@osmosis-labs/pools";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -14,15 +14,17 @@ import { useTranslation } from "~/hooks";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
+import type { RouterOutputs } from "~/utils/trpc";
 
-type Route = SplitTokenInQuote["split"][0];
+type Split =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
+type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 
 export const SplitRoute: FunctionComponent<
-  { split: SplitTokenInQuote["split"] } & Pick<
-    UseDisclosureReturn,
-    "isOpen" | "onToggle"
-  > & { isLoading?: boolean }
+  { split: Split } & Pick<UseDisclosureReturn, "isOpen" | "onToggle"> & {
+      isLoading?: boolean;
+    }
 > = ({ split, isOpen, onToggle, isLoading = false }) => {
   const { t } = useTranslation();
 
@@ -138,117 +140,150 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
   />
 );
 
-const Pools: FunctionComponent<Route> = observer(
-  ({ pools, effectiveSwapFees }) => {
-    const { isMobile } = useWindowSize();
+const Pools: FunctionComponent<Route> = observer(({ pools }) => {
+  const { isMobile } = useWindowSize();
+  const router = useRouter();
 
-    const { t } = useTranslation();
-    /** Share same tippy instance to handle animation */
-    const [source, target] = useSingleton();
+  const { t } = useTranslation();
+  /** Share same tippy instance to handle animation */
+  const [source, target] = useSingleton();
 
-    return (
-      <>
-        <Tooltip
-          singleton={source}
-          moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
-          content=""
-        />
-        <div className="absolute mx-4 flex w-full justify-evenly">
-          {pools.map(({ id, type, inCurrency, outCurrency }, index) => {
-            const fee = effectiveSwapFees
-              ? new RatePretty(effectiveSwapFees[index])
-              : undefined;
-            if (!inCurrency || !outCurrency) return null;
-
-            const currencies = [inCurrency, outCurrency];
-
-            return (
-              <Tooltip
-                key={`${id}${index}`}
-                singleton={target}
-                content={
-                  <div className="space-y-3">
+  return (
+    <>
+      <Tooltip
+        singleton={source}
+        moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
+        content=""
+      />
+      <div className="absolute mx-4 flex w-full justify-evenly">
+        {pools.map(
+          (
+            {
+              id,
+              type,
+              inCurrency,
+              outCurrency,
+              spreadFactor,
+              dynamicSpreadFactor,
+            },
+            index
+          ) => (
+            <Tooltip
+              key={`${id}${index}`}
+              singleton={target}
+              content={
+                <div className="space-y-3">
+                  {inCurrency && outCurrency && (
                     <div className="flex space-x-2">
                       <div className="flex">
                         <div className="h-[20px] w-[20px]">
-                          <DenomImage currency={currencies[0]} size={20} />
+                          <DenomImage currency={inCurrency} size={20} />
                         </div>
                         <div className="-ml-3 h-[20px] w-[20px]">
-                          <DenomImage currency={currencies[1]} size={20} />
+                          <DenomImage currency={outCurrency} size={20} />
                         </div>
                       </div>
 
                       <p className="space-x-1.5 text-base font-semibold">
-                        <span>{currencies[0].coinDenom}</span>
+                        <span>{inCurrency.coinDenom}</span>
                         <span className="text-osmoverse-400">/</span>
-                        <span>{currencies[1].coinDenom}</span>
+                        <span>{outCurrency.coinDenom}</span>
                       </p>
                     </div>
+                  )}
 
-                    <div className="flex justify-center space-x-1 text-center text-xs font-medium">
-                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.pool", { id })}
+                  <div className="flex justify-center space-x-1 text-center text-xs font-medium">
+                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
+                      {t("swap.pool", { id })}
+                    </p>
+
+                    {spreadFactor && (
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
+                        {type === "concentrated"
+                          ? t("swap.routerTooltipSpreadFactor")
+                          : t("swap.routerTooltipFee")}{" "}
+                        {dynamicSpreadFactor
+                          ? t("swap.dynamicSpreadFactor")
+                          : spreadFactor.maxDecimals(2).toString()}
                       </p>
-                      {fee && (
-                        <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                          {type === "concentrated"
-                            ? t("swap.routerTooltipSpreadFactor")
-                            : t("swap.routerTooltipFee")}{" "}
-                          {fee.maxDecimals(2).toString()}
-                        </p>
-                      )}
-                    </div>
-                    {(type === "concentrated" ||
-                      type === "stable" ||
-                      type === "transmuter") && (
-                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
-                        {type === "concentrated" && (
-                          <Icon id="lightning-small" height={16} width={16} />
-                        )}
-                        {(type === "stable" || type === "transmuter") && (
-                          <Image
-                            alt="stable-pool"
-                            src="/icons/stableswap-pool.svg"
-                            width={16}
-                            height={16}
-                          />
-                        )}
-                        {t(
-                          type === "concentrated"
-                            ? "clPositions.supercharged"
-                            : type === "transmuter"
-                            ? "pool.transmuter"
-                            : "pool.stableswapEnabled"
-                        )}
-                      </div>
                     )}
                   </div>
-                }
-              >
-                <div className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700">
-                  <div className="flex">
-                    <div className="h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[0]} />
+                  {(type === "concentrated" ||
+                    type === "stable" ||
+                    type === "cosmwasm-transmuter" ||
+                    type === "cosmwasm-astroport-pcl" ||
+                    type === "cosmwasm-whitewhale" ||
+                    type === "cosmwasm") && (
+                    <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                      {type === "concentrated" && (
+                        <Icon id="lightning-small" height={16} width={16} />
+                      )}
+                      {(type === "stable" ||
+                        type === "cosmwasm-transmuter") && (
+                        <Image
+                          alt="stable-pool"
+                          src="/icons/stableswap-pool.svg"
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      {type === "cosmwasm" && (
+                        <Icon id="setting" height={16} width={16} />
+                      )}
+                      {t(
+                        type === "concentrated"
+                          ? "clPositions.supercharged"
+                          : type === "cosmwasm-transmuter"
+                          ? "pool.transmuter"
+                          : type === "cosmwasm-astroport-pcl"
+                          ? "Astroport PCL"
+                          : type === "cosmwasm-whitewhale"
+                          ? "White Whale"
+                          : type === "cosmwasm"
+                          ? "pool.custom"
+                          : "pool.stableswapEnabled"
+                      )}
                     </div>
-                    <div className="-ml-3 h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[1]} />
-                    </div>
-                  </div>
-
-                  {pools.length < 4 && !isMobile && fee && (
-                    <p className="text-caption">
-                      {fee.maxDecimals(1).toString()}
-                    </p>
                   )}
                 </div>
-              </Tooltip>
-            );
-          })}
-        </div>
-      </>
-    );
-  }
-);
+              }
+            >
+              <button
+                className={classNames(
+                  "flex items-center space-x-2 rounded-full bg-osmoverse-800 hover:bg-osmoverse-700",
+                  inCurrency && outCurrency ? "p-1" : "p-2"
+                )}
+                onClick={() => {
+                  if (!isMobile) router.push("/pool/" + id);
+                }}
+              >
+                {inCurrency && outCurrency && (
+                  <div className="flex">
+                    <div className="h-[20px] w-[20px]">
+                      <DenomImage currency={inCurrency} />
+                    </div>
+                    <div className="-ml-3 h-[20px] w-[20px]">
+                      <DenomImage currency={outCurrency} />
+                    </div>
+                  </div>
+                )}
+
+                {pools.length < 4 &&
+                  !isMobile &&
+                  spreadFactor &&
+                  !dynamicSpreadFactor && (
+                    <p className="text-caption">
+                      {spreadFactor.maxDecimals(1).toString()}
+                    </p>
+                  )}
+              </button>
+            </Tooltip>
+          )
+        )}
+      </div>
+    </>
+  );
+});
 
 const DenomImage: FunctionComponent<{
   currency: AppCurrency | Currency;

@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from "react";
 
-import { Button } from "~/components/buttons";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import {
   Step,
@@ -9,14 +8,14 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
   isWalletConnected,
   setShowValidatorModal,
-  modal,
 }) => {
   const { t } = useTranslation();
   const { chainStore } = useStore();
@@ -27,7 +26,9 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
     if (isWalletConnected) {
       setShowValidatorModal();
     } else {
-      onOpenWalletSelect(osmosisChainId);
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: osmosisChainId }],
+      });
     }
   }, [
     isWalletConnected,
@@ -38,12 +39,12 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
 
   const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");
-    return "Build Stake Squad";
+    return t("stake.validatorNextStep.newUser.button");
   }, [isWalletConnected, t]);
 
   return (
     <Button
-      mode={modal ? "quaternary-modal" : "quaternary"}
+      variant="success"
       className={"w-1/2 self-center lg:w-full"}
       onClick={onStakeButtonClick}
     >
@@ -98,7 +99,6 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
       className="relative flex flex-1 flex-col text-center text-osmoverse-100"
       autoplay={{ stopOnHover: true, delayInMs: 4000, stopOnLastSlide: true }}
     >
-      <StepsIndicator className="order-1 mt-8" />
       {steps.map(({ title, bodyText, image }, index) => {
         const isFirstStep = index === 0;
         const isLastStep = index === steps.length - 1;
@@ -116,7 +116,6 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
                 <BuildStakeSquadButton
                   isWalletConnected={isWalletConnected}
                   setShowValidatorModal={setShowValidatorModal}
-                  modal={modal}
                 />
               )}
             </div>
@@ -124,6 +123,7 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
           </Step>
         );
       })}
+      <StepsIndicator className="mt-8" />
     </Stepper>
   );
 

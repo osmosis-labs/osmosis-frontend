@@ -60,7 +60,8 @@ export const OsmosisQueries = {
     osmosisChainId: string,
     webApiBaseUrl: string,
     poolIdBlacklist: string[] = [],
-    transmuterCodeIds: string[] = []
+    transmuterCodeIds: string[] = [],
+    isTestnet = false
   ): (
     queriesSetBase: QueriesSetBase,
     kvStore: KVStore,
@@ -83,7 +84,8 @@ export const OsmosisQueries = {
                 chainGetter,
                 webApiBaseUrl,
                 poolIdBlacklist,
-                transmuterCodeIds
+                transmuterCodeIds,
+                isTestnet
               )
             : undefined,
       };
@@ -144,7 +146,8 @@ export class OsmosisQueriesImpl {
     chainGetter: ChainGetter,
     webApiBaseUrl: string,
     poolIdBlacklist: string[] = [],
-    transmuterCodeIds: string[] = []
+    transmuterCodeIds: string[] = [],
+    isTestnet = false
   ) {
     this.queryNodeInfo = new ObservableQueryNodeInfo(
       kvStore,
@@ -223,7 +226,8 @@ export class OsmosisQueriesImpl {
       queries.queryBalances,
       this.queryGammNumPools,
       poolIdBlacklist,
-      transmuterCodeIds
+      transmuterCodeIds,
+      isTestnet
     );
 
     this.queryCfmmConcentratedPoolLinks =

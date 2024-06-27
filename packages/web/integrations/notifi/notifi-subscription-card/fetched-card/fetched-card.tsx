@@ -3,6 +3,7 @@ import { useNotifiSubscriptionContext } from "@notifi-network/notifi-react-card"
 import { FunctionComponent } from "react";
 
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { ExpiredCard } from "~/integrations/notifi/notifi-subscription-card/expired-card";
 import { EditView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/edit-view";
 import { HistoryDetailView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-detail-view";
 import { HistoryView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-view";
@@ -23,6 +24,8 @@ export const FetchedCard: FunctionComponent<{
     return <SignupView />;
   } else if (cardView.state === "edit") {
     return <EditView />;
+  } else if (cardView.state === "expired") {
+    return <ExpiredCard />;
   } else {
     return null;
   }

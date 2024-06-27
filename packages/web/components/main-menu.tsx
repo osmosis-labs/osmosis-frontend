@@ -1,23 +1,44 @@
 import { Popover } from "@headlessui/react";
+import { runIfFn } from "@osmosis-labs/utils";
+import { isFunction } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  MouseEventHandler,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 import { Pill } from "~/components/indicators/pill";
-import { MainLayoutMenu } from "~/components/types";
+import { AmplitudeEvent } from "~/config";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { isFunction } from "~/utils/assertion";
-import { MaybeRenderProp, runIfFn } from "~/utils/function";
+
+export type MainLayoutMenu = {
+  label: string;
+  link: string | MouseEventHandler;
+  icon: ReactNode;
+  selectionTest?: RegExp;
+  amplitudeEvent?: AmplitudeEvent;
+  isNew?: Boolean;
+  badge?: ReactNode;
+  secondaryLogo?: ReactNode;
+  subtext?: string;
+  showMore?: boolean;
+};
+
+export type MaybeRenderProp<P> =
+  | React.ReactNode
+  | ((props: P) => React.ReactNode);
 
 export const MainMenu: FunctionComponent<{
-  onClickItem?: () => void;
   menus: MainLayoutMenu[];
   secondaryMenuItems: MainLayoutMenu[];
   className?: string;
-}> = ({ menus, onClickItem, className, secondaryMenuItems }) => {
+}> = ({ menus, className, secondaryMenuItems }) => {
   return (
     <ul
       className={classNames(
@@ -33,7 +54,6 @@ export const MainMenu: FunctionComponent<{
             key={index}
             className="flex cursor-pointer items-center"
             onClick={(e) => {
-              onClickItem?.();
               if (isFunction(link)) link(e);
             }}
           >
@@ -43,22 +63,20 @@ export const MainMenu: FunctionComponent<{
               selectionTest={selectionTest}
               showMore={showMore}
             >
-              {({ showSubTitle, selected }) => (
-                <>
-                  {showMore ? (
-                    <MorePopover
-                      item={menu}
-                      secondaryMenus={secondaryMenuItems}
-                    />
-                  ) : (
-                    <MenuItemContent
-                      menu={menu}
-                      selected={selected}
-                      showSubTitle={showSubTitle}
-                    />
-                  )}
-                </>
-              )}
+              {({ showSubTitle, selected }) =>
+                showMore ? (
+                  <MorePopover
+                    item={menu}
+                    secondaryMenus={secondaryMenuItems}
+                  />
+                ) : (
+                  <MenuItemContent
+                    menu={menu}
+                    selected={selected}
+                    showSubTitle={showSubTitle}
+                  />
+                )
+              }
             </MenuLink>
           </li>
         );
@@ -105,18 +123,14 @@ const MenuLink: FunctionComponent<{
       href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
-      className={classNames("h-full w-full flex-shrink flex-grow", {
-        "rounded-full bg-osmoverse-700": selected,
+      className={classNames("flex w-full items-center", {
+        "h-12 px-5 py-3 md:px-3 md:py-2": !showMore,
       })}
+      onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
+      onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
+      onClick={onClickLink}
     >
-      <div
-        className={showMore ? undefined : "flex h-12 items-center px-4 py-3"}
-        onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
-        onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
-        onClick={onClickLink}
-      >
-        {runIfFn(children, { showSubTitle, selected })}
-      </div>
+      {runIfFn(children, { showSubTitle, selected })}
     </Link>
   );
 };
@@ -126,18 +140,13 @@ const MorePopover: FunctionComponent<{
   secondaryMenus: MainLayoutMenu[];
 }> = ({ item, secondaryMenus }) => {
   return (
-    <Popover className="relative flex">
+    <Popover className="relative flex h-full w-full items-center px-5 py-3">
       {({ open }) => (
         <>
-          <Popover.Button
-            className={classNames(
-              "h-full w-full px-4 py-3 focus:outline-none",
-              open && "rounded-full bg-osmoverse-800"
-            )}
-          >
+          <Popover.Button className="focus:outline-none">
             <MenuItemContent menu={item} selected={open} />
           </Popover.Button>
-          <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+          <Popover.Panel className="absolute bottom-full -left-1 flex w-full flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2">
             {secondaryMenus.map((menu: MainLayoutMenu) => {
               const { link, selectionTest, secondaryLogo, showMore } = menu;
               return (
@@ -160,31 +169,23 @@ const MorePopover: FunctionComponent<{
 };
 
 const MenuItemContent: React.FC<{
-  selected?: Boolean;
-  showSubTitle?: Boolean;
+  selected?: boolean;
+  showSubTitle?: boolean;
   menu: MainLayoutMenu;
 }> = ({ selected, showSubTitle, menu }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const {
-    label,
-    icon,
-    iconSelected,
-    amplitudeEvent,
-    isNew,
-    badge,
-    secondaryLogo,
-    subtext,
-  } = menu;
+  const { label, icon, amplitudeEvent, isNew, badge, secondaryLogo, subtext } =
+    menu;
 
   return (
     <div
-      role="link" // this makes it keyboard accessible
-      tabIndex={0}
       className={classNames(
-        "flex h-7 w-full items-center hover:opacity-100",
-        selected ? "opacity-100" : "opacity-75"
+        "flex h-7 w-full items-center gap-4 transition-all duration-100 ease-in-out md:gap-2",
+        selected
+          ? "text-white-high"
+          : "text-osmoverse-300 hover:text-white-high"
       )}
       onClick={() => {
         if (amplitudeEvent) {
@@ -192,68 +193,63 @@ const MenuItemContent: React.FC<{
         }
       }}
     >
-      <div className="relative h-5 w-5">
+      <div className="relative h-6 w-6">
         {/* Main Icon */}
         <div
-          className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
+          className={classNames(
+            "transition-all duration-100 ease-in-out",
             showSubTitle ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          {typeof icon === "string" ? (
-            <Image
-              src={iconSelected ?? icon}
-              width={20}
-              height={20}
-              alt="menu icon"
-            />
-          ) : (
-            icon
           )}
+        >
+          {icon}
         </div>
         {/* Secondary Logo */}
-        <div
-          className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
-            showSubTitle ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {secondaryLogo}
-        </div>
+        {secondaryLogo && (
+          <div
+            className={classNames(
+              "absolute top-0 left-0 transition-all duration-100 ease-in-out",
+              showSubTitle ? "opacity-100" : "opacity-0"
+            )}
+          >
+            {secondaryLogo}
+          </div>
+        )}
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden font-semibold transition-all duration-300 ease-in-out",
-          {
-            "text-white-full/60 group-hover:text-white-mid": !selected,
-            "w-full": isNew || Boolean(badge),
-          }
+          "body2 w-full overflow-hidden overflow-x-hidden transition-all duration-100 ease-in-out"
         )}
       >
         {isNew ? (
           <div className="flex w-full items-center justify-between">
             {label}
             <Pill>
-              <span className="button px-[8px] py-[2px]">{t("menu.new")}</span>
+              <span className="button px-2 py-[2px]">{t("menu.new")}</span>
             </Pill>
           </div>
         ) : (
           <>
             <div
-              className={`flex items-center justify-between transition-transform duration-300 ease-in-out ${
-                showSubTitle && subtext ? "-translate-y-0.5 transform" : ""
-              }`}
+              className={classNames(
+                "flex w-full place-content-between items-center transition-transform duration-100 ease-in-out",
+                { "-translate-y-0.5 transform": showSubTitle && subtext }
+              )}
             >
               {label}
               {badge}
             </div>
-            <div
-              className={`transition-visibility mt-0 transition-opacity duration-300 ease-in-out ${
-                showSubTitle && subtext
-                  ? "visible h-5 opacity-100"
-                  : "invisible h-0 opacity-0"
-              } text-white-opacity-70 text-xs font-medium`}
-            >
-              {subtext}
-            </div>
+            {subtext && (
+              <div
+                className={classNames(
+                  "transition-visibility text-white-opacity-70 text-xs font-medium transition-opacity duration-100 ease-in-out",
+                  showSubTitle && subtext
+                    ? "visible h-5 opacity-100"
+                    : "invisible h-0 opacity-0"
+                )}
+              >
+                {subtext}
+              </div>
+            )}
           </>
         )}
       </div>

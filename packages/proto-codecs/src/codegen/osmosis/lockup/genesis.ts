@@ -22,9 +22,9 @@ export interface GenesisStateProtoMsg {
 }
 /** GenesisState defines the lockup module's genesis state. */
 export interface GenesisStateAmino {
-  last_lock_id: string;
-  locks: PeriodLockAmino[];
-  synthetic_locks: SyntheticLockAmino[];
+  last_lock_id?: string;
+  locks?: PeriodLockAmino[];
+  synthetic_locks?: SyntheticLockAmino[];
   params?: ParamsAmino;
 }
 export interface GenesisStateAminoMsg {
@@ -111,35 +111,37 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      lastLockId: BigInt(object.last_lock_id),
-      locks: Array.isArray(object?.locks)
-        ? object.locks.map((e: any) => PeriodLock.fromAmino(e))
-        : [],
-      syntheticLocks: Array.isArray(object?.synthetic_locks)
-        ? object.synthetic_locks.map((e: any) => SyntheticLock.fromAmino(e))
-        : [],
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-    };
+    const message = createBaseGenesisState();
+    if (object.last_lock_id !== undefined && object.last_lock_id !== null) {
+      message.lastLockId = BigInt(object.last_lock_id);
+    }
+    message.locks = object.locks?.map((e) => PeriodLock.fromAmino(e)) || [];
+    message.syntheticLocks =
+      object.synthetic_locks?.map((e) => SyntheticLock.fromAmino(e)) || [];
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
-    obj.last_lock_id = message.lastLockId
-      ? message.lastLockId.toString()
-      : undefined;
+    obj.last_lock_id =
+      message.lastLockId !== BigInt(0)
+        ? message.lastLockId.toString()
+        : undefined;
     if (message.locks) {
       obj.locks = message.locks.map((e) =>
         e ? PeriodLock.toAmino(e) : undefined
       );
     } else {
-      obj.locks = [];
+      obj.locks = message.locks;
     }
     if (message.syntheticLocks) {
       obj.synthetic_locks = message.syntheticLocks.map((e) =>
         e ? SyntheticLock.toAmino(e) : undefined
       );
     } else {
-      obj.synthetic_locks = [];
+      obj.synthetic_locks = message.syntheticLocks;
     }
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     return obj;

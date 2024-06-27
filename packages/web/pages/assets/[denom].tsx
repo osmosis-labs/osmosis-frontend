@@ -1,70 +1,68 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import {
+  CoingeckoCoin,
+  getActiveCoingeckoCoins,
+  getAsset,
+  getAssetMarketActivity,
+  getTokenInfo,
+  queryCoingeckoCoin,
+  RichTweet,
+  TokenCMSData,
+  Twitter,
+} from "@osmosis-labs/server";
+import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback } from "react";
+import { NextSeo } from "next-seo";
+import { useQueryState } from "nuqs";
+import { FunctionComponent } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
+import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import LinkButton from "~/components/buttons/link-button";
-import LinkIconButton from "~/components/buttons/link-icon-button";
-import TokenPairHistoricalChart, {
+import { LinkButton } from "~/components/buttons/link-button";
+import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
-import RelatedAssets from "~/components/related-assets/related-assets";
-import SkeletonLoader from "~/components/skeleton-loader";
-import Spinner from "~/components/spinner";
+} from "~/components/chart/price-historical";
+import { HistoricalPriceChartV2 } from "~/components/chart/price-historical-v2";
+import { Spinner } from "~/components/loaders/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import TokenDetails from "~/components/token-details/token-details";
-import TwitterSection from "~/components/twitter-section/twitter-section";
-import YourBalance from "~/components/your-balance/your-balance";
+import { TokenDetails } from "~/components/token-details";
+import { TwitterSection } from "~/components/twitter-section";
+import { LinkIconButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
+import { YourBalance } from "~/components/your-balance";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import {
+  ObservableAssetInfoConfig,
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
-  useWindowSize,
+  useUserWatchlist,
 } from "~/hooks";
-import {
-  useAssetInfoConfig,
-  useFeatureFlags,
-  useLocalStorageState,
-  useNavBar,
-} from "~/hooks";
-import { useRoutablePools } from "~/hooks/data/use-routable-pools";
-import {
-  CoingeckoCoin,
-  queryCoingeckoCoin,
-} from "~/server/queries/coingecko/detail";
-import {
-  getTokenInfo,
-  RichTweet,
-  TokenCMSData,
-  Twitter,
-} from "~/server/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
+import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
+import { getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
+import { api } from "~/utils/trpc";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
-  tokenDenom?: string;
+  tokenDenom: string;
+  tokenMinimalDenom?: string;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   } | null;
   coingeckoCoin?: CoingeckoCoin | null;
-  imperatorDenom: string | null;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -74,12 +72,13 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
 
     useEffect(() => {
       if (
-        typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
+        (typeof featureFlags.tokenInfo !== "undefined" &&
+          !featureFlags.tokenInfo) ||
+        !tokenDenom
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router]);
+    }, [featureFlags.tokenInfo, router, tokenDenom]);
 
     if (!tokenDenom) {
       return null; // TODO: Add skeleton loader
@@ -97,16 +96,20 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets, tokenDetailsByLanguage, imperatorDenom, coingeckoCoin }) => {
+  ({
+    tokenDenom,
+    tokenMinimalDenom,
+    tweets,
+    tokenDetailsByLanguage,
+    coingeckoCoin,
+  }) => {
     const { t } = useTranslation();
+    const language = useCurrentLanguage();
     const router = useRouter();
-    const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
-      router.query.denom as string,
-      queriesExternalStore,
-      priceStore,
-      imperatorDenom,
+      tokenDenom,
+      tokenMinimalDenom,
       coingeckoCoin?.id
     );
 
@@ -116,6 +119,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         { tokenName: router.query.denom as string },
       ],
     });
+
+    const [ref] = useQueryState("ref");
 
     useNavBar({
       title: (
@@ -130,9 +135,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={t("tokenInfos.backButton")}
-          ariaLabel={t("tokenInfos.ariaBackButton")}
-          href="/assets"
+          label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+          ariaLabel={
+            ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")
+          }
+          href={ref === "portfolio" ? "/portfolio" : "/assets"}
         />
       ),
       ctas: [],
@@ -151,16 +158,80 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       [assetInfoConfig]
     );
 
-    const routablePools = useRoutablePools();
-    const memoedPools = routablePools ?? [];
+    // const routablePools = useRoutablePools();
 
     const denom = useMemo(() => {
-      return router.query.denom as string;
-    }, [router.query.denom]);
+      return tokenDenom as string;
+    }, [tokenDenom]);
+
+    const details = useMemo(() => {
+      return tokenDetailsByLanguage
+        ? tokenDetailsByLanguage[language]
+        : undefined;
+    }, [language, tokenDetailsByLanguage]);
+
+    const asset = useMemo(() => {
+      const currencies = ChainList.map(
+        (info) => info.keplrChain.currencies
+      ).reduce((a, b) => [...a, ...b]);
+
+      const currency = currencies.find(
+        (el) => el.coinDenom.toUpperCase() === denom.toUpperCase()
+      );
+
+      if (!currency) {
+        return undefined;
+      }
+
+      const asset = getAssetFromAssetList({
+        coinMinimalDenom: currency?.coinMinimalDenom,
+        assetLists: AssetLists,
+      });
+
+      return asset;
+    }, [denom]);
+
+    const title = useMemo(() => {
+      if (details) {
+        return details.name;
+      }
+
+      return asset?.rawAsset.name;
+    }, [details, asset]);
+
+    const SwapTool_ = (
+      <SwapTool
+        fixedWidth
+        useQueryParams={false}
+        useOtherCurrencies={true}
+        initialSendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+        initialOutTokenDenom={denom}
+        page="Token Info Page"
+      />
+    );
 
     return (
       <AssetInfoViewProvider value={contextValue}>
+        <NextSeo
+          title={`${title ? `${title} (${denom})` : denom} | Osmosis`}
+          description={details?.description}
+        />
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
+          <LinkButton
+            className="mr-auto hidden md:flex"
+            icon={
+              <Image
+                alt="left"
+                src="/icons/arrow-left.svg"
+                width={24}
+                height={24}
+                className="text-osmoverse-200"
+              />
+            }
+            label={t("menu.assets")}
+            ariaLabel={t("menu.assets")}
+            href="/assets"
+          />
           <Navigation
             denom={denom}
             tokenDetailsByLanguage={tokenDetailsByLanguage}
@@ -169,32 +240,34 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
-
-              <YourBalance
-                denom={denom}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-              />
-
+              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
+                  {SwapTool_}
+                </div>
+                <YourBalance
+                  className="xl:flex-grow"
+                  denom={denom}
+                  tokenDetailsByLanguage={tokenDetailsByLanguage}
+                />
+              </div>
               <TokenDetails
                 denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
               />
-
               <TwitterSection tweets={tweets} />
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="xl:hidden">
-                <SwapTool
-                  isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  outTokenDenom={denom}
-                  page="Token Info Page"
-                />
-              </div>
+            <div className="flex flex-col gap-8">
+              <div className="xl:hidden">{SwapTool_}</div>
 
-              <RelatedAssets memoedPools={memoedPools} tokenDenom={denom} />
+              {asset?.rawAsset?.isAlloyed && asset?.rawAsset?.contract ? (
+                <AlloyedAssetsSection
+                  title={title ?? denom}
+                  denom={denom}
+                  contractAddress={asset.rawAsset.contract}
+                />
+              ) : null}
             </div>
           </div>
         </main>
@@ -214,10 +287,7 @@ const Navigation = observer((props: NavigationProps) => {
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
-  const [favoritesList, setFavoritesList] = useLocalStorageState(
-    "favoritesList",
-    ["OSMO", "ATOM"]
-  );
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const details = useMemo(() => {
     return tokenDetailsByLanguage
@@ -225,34 +295,24 @@ const Navigation = observer((props: NavigationProps) => {
       : undefined;
   }, [language, tokenDetailsByLanguage]);
 
-  const isFavorite = useMemo(
-    () => favoritesList.includes(denom),
-    [denom, favoritesList]
-  );
-
-  const toggleFavoriteList = useCallback(() => {
-    if (isFavorite) {
-      setFavoritesList(favoritesList.filter((item) => item !== denom));
-    } else {
-      setFavoritesList([...favoritesList, denom]);
-    }
-  }, [isFavorite, favoritesList, denom, setFavoritesList]);
-
   const chain = useMemo(
     () => chainStore.getChainFromCurrency(denom),
     [denom, chainStore]
   );
 
-  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
+  const currencies = useMemo(
+    () => chain?.currencies ?? [],
+    [chain?.currencies]
+  );
 
   const coinGeckoId = useMemo(
     () =>
       details?.coingeckoID
         ? details?.coingeckoID
-        : balances.find(
+        : currencies.find(
             (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
           )?.coinGeckoId,
-    [balances, details?.coingeckoID, denom]
+    [currencies, details?.coingeckoID, denom]
   );
 
   const title = useMemo(() => {
@@ -320,17 +380,20 @@ const Navigation = observer((props: NavigationProps) => {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2">
         <Button
-          mode="unstyled"
+          size="md"
+          variant="ghost"
           className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
-          onClick={toggleFavoriteList}
+          onClick={() => toggleWatchAssetDenom(denom)}
         >
           <Icon
             id="star"
             className={`text-wosmongton-300 ${
-              isFavorite ? "" : "opacity-30 group-hover:opacity-100"
+              watchListDenoms.includes(denom)
+                ? ""
+                : "opacity-30 group-hover:opacity-100"
             } `}
           />
           {t("tokenInfos.watchlist")}
@@ -338,8 +401,6 @@ const Navigation = observer((props: NavigationProps) => {
         {twitterUrl && (
           <LinkIconButton
             href={twitterUrl}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -349,27 +410,20 @@ const Navigation = observer((props: NavigationProps) => {
         {websiteURL && (
           <LinkIconButton
             href={websiteURL}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaView", { name: "website" })}
-            icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
+            icon={<Icon className="h-6 w-6 text-osmoverse-400" id="web" />}
           />
         )}
         {coingeckoURL && (
           <LinkIconButton
             href={coingeckoURL}
-            mode="icon-social"
-            size="md-icon-social"
             target="_blank"
             rel="external"
             aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
             icon={
-              <Icon
-                className="h-10.5 w-10.5 text-osmoverse-300"
-                id="coingecko"
-              />
+              <Icon className="h-9 w-9 text-osmoverse-300" id="coingecko" />
             }
           />
         )}
@@ -380,8 +434,10 @@ const Navigation = observer((props: NavigationProps) => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
-      <TokenChartHeader />
+    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 pb-8 md:pb-6">
+      <div className="p-8 pb-0 md:p-6">
+        <TokenChartHeader />
+      </div>
       <TokenChart />
     </section>
   );
@@ -390,105 +446,78 @@ const TokenChartSection = () => {
 const TokenChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
+  const { data: assetPrice, isLoading } =
+    api.edge.assets.getAssetPrice.useQuery(
+      {
+        coinMinimalDenom: assetInfoConfig.coinMinimalDenom!,
+      },
+      {
+        enabled: assetInfoConfig.coinMinimalDenom !== undefined,
+      }
+    );
+
+  const hoverPrice = useMemo(() => {
+    let price = new Dec(0);
+    const decHoverPrice = assetInfoConfig.hoverPrice?.toDec();
+
+    if (decHoverPrice && !decHoverPrice.isZero()) {
+      price = decHoverPrice;
+    } else if (assetPrice) {
+      price = assetPrice.toDec();
+    }
+
+    return Number(price.toString());
+  }, [assetInfoConfig.hoverPrice, assetPrice]);
+
+  const fiatSymbol =
+    assetInfoConfig.hoverPrice?.fiatCurrency?.symbol ??
+    assetPrice?.fiatCurrency.symbol;
+
   const minimumDecimals = 2;
-  const maxDecimals = Math.max(
-    getDecimalCount(
-      (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
-    ),
-    minimumDecimals
+  const maxDecimals = Math.max(getDecimalCount(hoverPrice), minimumDecimals);
+
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
   );
 
   return (
     <header>
-      <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
-        <PriceChartHeader
-          decimal={maxDecimals}
-          showAllRange
-          hoverPrice={Number(
-            (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
-          )}
-          historicalRange={assetInfoConfig.historicalRange}
-          setHistoricalRange={assetInfoConfig.setHistoricalRange}
-          fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
-          classes={{
-            priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
-          }}
-        />
-      </SkeletonLoader>
+      <PriceChartHeader
+        isLoading={isLoading}
+        formatOpts={formatOpts}
+        decimal={maxDecimals}
+        showAllRange
+        hoverPrice={hoverPrice}
+        hoverDate={assetInfoConfig.hoverDate}
+        historicalRange={assetInfoConfig.historicalRange}
+        setHistoricalRange={assetInfoConfig.setHistoricalRange}
+        fiatSymbol={fiatSymbol}
+        classes={{
+          priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
+        }}
+        compactZeros
+      />
     </header>
   );
 });
 
-const useNumTicks = () => {
-  const { assetInfoConfig } = useAssetInfoView();
-  const { isMobile, isLargeDesktop, isExtraLargeDesktop } = useWindowSize();
-
-  const numTicks = useMemo(() => {
-    let ticks: number | undefined = isMobile ? 3 : 6;
-
-    if (isExtraLargeDesktop) {
-      return 10;
-    }
-
-    if (isLargeDesktop) {
-      return 8;
-    }
-
-    switch (assetInfoConfig.historicalRange) {
-      case "7d":
-        ticks = isMobile ? 1 : 8;
-        break;
-      case "1mo":
-        ticks = isMobile ? 2 : 6;
-        break;
-      case "1d":
-        ticks = isMobile ? 3 : 10;
-        break;
-      case "1y":
-      case "all":
-        ticks = isMobile ? 4 : 6;
-        break;
-    }
-
-    return ticks;
-  }, [
-    assetInfoConfig.historicalRange,
-    isMobile,
-    isLargeDesktop,
-    isExtraLargeDesktop,
-  ]);
-
-  return numTicks;
-};
-
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
-  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
-      {assetInfoConfig.isHistoricalChartLoading ? (
+      {assetInfoConfig.isHistoricalDataLoading ? (
         <div className="flex h-full flex-col items-center justify-center">
           <Spinner />
         </div>
-      ) : !assetInfoConfig.isHistoricalChartUnavailable ? (
+      ) : !assetInfoConfig.historicalChartUnavailable ? (
         <>
-          <TokenPairHistoricalChart
-            minimal
-            showTooltip
-            showGradient
-            xNumTicks={xNumTicks}
+          <HistoricalPriceChartV2
             data={assetInfoConfig.historicalChartData}
-            fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
-            annotations={[]}
-            domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
             onPointerOut={() => {
-              if (assetInfoConfig.lastChartPrice) {
-                assetInfoConfig.setHoverPrice(
-                  assetInfoConfig.lastChartPrice.close
-                );
-              }
+              assetInfoConfig.setHoverPrice(0, undefined);
             }}
           />
         </>
@@ -501,47 +530,49 @@ const TokenChart = observer(() => {
 
 export default AssetInfoPage;
 
-const findIBCToken = (imperatorToken: ImperatorToken) => {
-  const ibcAsset = AssetLists.flatMap(({ assets }) => assets).find(
-    (asset) => asset.base === imperatorToken.denom
-  );
-
-  return ibcAsset;
-};
-
-/* const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
-  const native = !imperatorToken.denom.includes("ibc/");
-
-  if (native) {
-    return imperatorToken.symbol;
-  } else {
-    const token = findIBCToken(imperatorToken);
-
-    if (token) {
-      return token.coinDenom;
-    }
-  }
-}; */
-
-let cachedTokens: ImperatorToken[] = [];
+/** Number of assets, sorted by volume, to generate static paths for. */
+const TOP_VOLUME_ASSETS_COUNT = 50;
 
 /**
- * Prerender all the denoms, we can also filter this value to reduce
- * build time
+ * Prerender important denoms. See function body for what we consider "important".
  */
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
   let paths: { params: { denom: string } }[] = [];
 
-  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
-    (a, b) => [...a, ...b]
+  const assets = AssetLists.flatMap((list) => list.assets);
+  const activeCoinGeckoIds = await getActiveCoingeckoCoins();
+
+  const importantAssets = assets.filter(
+    (asset) =>
+      asset.verified &&
+      !asset.unstable &&
+      !asset.preview &&
+      // Prevent repeated "coin not found" errors from CoinGecko coin query downsteram
+      asset.coingeckoId &&
+      activeCoinGeckoIds.has(asset.coingeckoId)
   );
 
+  const marketAssets = (
+    await Promise.all(
+      importantAssets.map((asset) =>
+        getAssetMarketActivity(asset).then((activity) => ({
+          ...activity,
+          ...asset,
+        }))
+      )
+    )
+  ).filter((asset): asset is NonNullable<typeof asset> => asset !== undefined);
+
+  const topVolumeAssets = sort(marketAssets, "volume7d").slice(
+    0,
+    TOP_VOLUME_ASSETS_COUNT
+  );
   /**
    * Add cache for all available currencies
    */
-  paths = currencies.map((currency) => ({
+  paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: currency.coinDenom,
+      denom: asset.symbol,
     },
   }));
 
@@ -555,52 +586,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
-  let imperatorDenom: string | null = null;
-
-  if (cachedTokens.length === 0) {
-    try {
-      cachedTokens = await queryAllTokens();
-    } catch (e) {
-      console.error("Failed to retrieved tokens from imperator api: ", e);
-    }
-  }
-
-  /**
-   * Get all the availables currencies
-   */
-  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
-    (a, b) => [...a, ...b]
-  );
 
   /**
    * Lookup for the current token
    */
-  const token = currencies.find(
-    (currency) =>
-      currency.coinDenom.toUpperCase() === tokenDenom.toLocaleUpperCase()
-  );
-
-  /**
-   * Lookup token denom on imperator registry
-   *
-   * We'll use it for query such as chart timeframe ecc.
-   */
-  imperatorDenom =
-    cachedTokens.find((cachedToken) => {
-      const ibcToken = findIBCToken(cachedToken);
-
-      return ibcToken?.symbol.toUpperCase() === token?.coinDenom.toUpperCase();
-    })?.symbol ?? null;
-
-  /**
-   * If not found lookup for native asset
-   */
-  if (!imperatorDenom) {
-    imperatorDenom =
-      cachedTokens.find(
-        (el) => el.display.toUpperCase() === tokenDenom.toUpperCase()
-      )?.symbol ?? null;
-  }
+  const token = getAsset({ anyDenom: tokenDenom, assetLists: AssetLists });
 
   if (tokenDenom) {
     try {
@@ -624,7 +614,8 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
       if (tokenDetails) {
         if (tokenDetails.coingeckoID) {
-          coingeckoCoin = await queryCoingeckoCoin(tokenDetails.coingeckoID);
+          coingeckoCoin =
+            (await queryCoingeckoCoin(tokenDetails.coingeckoID)) ?? null;
         }
 
         if (tokenDetails.twitterURL) {
@@ -644,11 +635,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
 
   return {
     props: {
-      tokenDenom,
+      tokenDenom: token?.coinDenom ?? tokenDenom,
+      tokenMinimalDenom: token.coinMinimalDenom,
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
-      imperatorDenom,
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in

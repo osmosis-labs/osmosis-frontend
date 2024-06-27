@@ -4,8 +4,9 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback } from "react";
 
-import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
+import { StakeOrUnstake } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -20,6 +21,7 @@ export const StakeInfoCard: FunctionComponent<{
   handleMaxButtonClick: () => void;
   isMax?: boolean;
   isHalf?: boolean;
+  activeTab: StakeOrUnstake;
 }> = observer(
   ({
     availableAmount,
@@ -29,6 +31,7 @@ export const StakeInfoCard: FunctionComponent<{
     handleMaxButtonClick,
     isMax = false,
     isHalf = false,
+    activeTab,
   }) => {
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
@@ -75,16 +78,19 @@ export const StakeInfoCard: FunctionComponent<{
       <OsmoverseCard>
         <div className="flex place-content-between items-center transition-opacity">
           <div className="caption flex">
-            <span className="text-white-full">{t("stake.available")}</span>
+            <span className="text-white-full">
+              {activeTab === "Stake" ? t("stake.available") : t("stake.staked")}
+            </span>
             <span className="ml-1.5 text-wosmongton-300">
               {formattedAvailableAmount}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <Button
-              mode="amount"
+              variant="outline"
+              size="sm"
               className={classNames(
-                "caption py-1 px-1.5",
+                "text-wosmongton-300",
                 isHalf ? "bg-wosmongton-100/20" : "bg-transparent"
               )}
               onClick={handleHalfButtonClick}
@@ -92,9 +98,10 @@ export const StakeInfoCard: FunctionComponent<{
               {t("swap.HALF")}
             </Button>
             <Button
-              mode="amount"
+              variant="outline"
+              size="sm"
               className={classNames(
-                "caption py-1 px-1.5",
+                "text-wosmongton-300",
                 isMax ? "bg-wosmongton-100/20" : "bg-transparent"
               )}
               onClick={handleMaxButtonClick}

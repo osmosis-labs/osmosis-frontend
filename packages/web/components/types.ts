@@ -1,20 +1,4 @@
-import { MouseEventHandler, ReactElement, ReactNode } from "react";
-
-import { AmplitudeEvent } from "~/config";
-
-export type MainLayoutMenu = {
-  label: string;
-  link: string | MouseEventHandler;
-  icon: string | ReactNode;
-  iconSelected?: string;
-  selectionTest?: RegExp;
-  amplitudeEvent?: AmplitudeEvent;
-  isNew?: Boolean;
-  badge?: ReactNode;
-  secondaryLogo?: ReactNode;
-  subtext?: string;
-  showMore?: boolean;
-};
+import { ReactElement } from "react";
 
 /** PROPS */
 export interface InputProps<T> {
@@ -48,21 +32,6 @@ export interface Metric {
 
 export interface MobileProps {
   isMobile?: boolean;
-}
-
-/** Should match settings in tailwind.config.js
- *
- *  https://tailwindcss.com/docs/responsive-design
- */
-export const enum Breakpoint {
-  SM = 640,
-  MD = 768,
-  LG = 1024,
-  XLG = 1152,
-  XL = 1280,
-  XLHALF = 1408,
-  XXL = 1536,
-  XXXL = 1792,
 }
 
 export type StakeOrUnstake = "Stake" | "Unstake";

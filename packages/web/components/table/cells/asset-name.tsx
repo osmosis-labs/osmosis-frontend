@@ -5,8 +5,7 @@ import React, { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AssetCell as Cell } from "~/components/table/cells/types";
-import { InfoTooltip, Tooltip } from "~/components/tooltip";
-import { UNSTABLE_MSG } from "~/config";
+import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -16,7 +15,6 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
     coinDenom,
     assetName,
     coinImageUrl,
-    isUnstable,
     isFavorite,
     isVerified,
     onToggleFavorite,
@@ -39,22 +37,23 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
         onMouseLeave={() => setShowStar(false)}
       >
         {showStar || isFavorite ? (
-          <div className="cursor-pointer">
-            <Image
-              alt="star"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
+          <Icon
+            id="star"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
 
-                if (onToggleFavorite) {
-                  onToggleFavorite();
-                }
-              }}
-              src={`/icons/star${isFavorite ? "-filled" : ""}.svg`}
-              height={24}
-              width={24}
-            />
-          </div>
+              if (onToggleFavorite) {
+                onToggleFavorite();
+              }
+            }}
+            className={classNames(
+              "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
+              isFavorite ? "text-wosmongton-400" : "text-osmoverse-600"
+            )}
+            height={24}
+            width={24}
+          />
         ) : (
           <div style={{ height: 24, width: 24 }} />
         )}
@@ -88,7 +87,6 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
                 />
               </Tooltip>
             )}
-            {isUnstable && <InfoTooltip content={UNSTABLE_MSG} />}
           </div>
         ) : (
           <span>{coinDenom}</span>

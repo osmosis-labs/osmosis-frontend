@@ -3,7 +3,7 @@ import type { PointOptionsObject, SeriesPieOptions } from "highcharts";
 
 import { HIGHCHART_GRADIENTS } from "~/components/chart/gradients";
 
-export const generateSeries = (
+export const generateCoinProportionSeries = (
   data: {
     currency: AppCurrency;
     percentage: string;

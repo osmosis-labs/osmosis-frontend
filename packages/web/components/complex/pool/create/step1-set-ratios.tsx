@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Button } from "~/components/buttons";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { TokenSelect } from "~/components/control";
 import { InputBox } from "~/components/input";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
@@ -47,13 +47,11 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 <div className="md:subtitle1 flex items-center gap-2.5 text-h6 font-h6 md:gap-1">
                   {config.poolType === "weighted" && (
                     <Button
-                      mode="amount"
-                      className={classNames(
-                        "!h-auto !text-subtitle1 md:p-1 md:py-0",
-                        {
-                          hidden: config.assets.length < 2,
-                        }
-                      )}
+                      size="sm"
+                      variant="outline"
+                      className={classNames({
+                        hidden: config.assets.length < 2,
+                      })}
                       onClick={() => config.setBalancedPercentages()}
                     >
                       {config.balancedPercentage.maxDecimals(0).toString()}
@@ -110,6 +108,43 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
               {t("pools.createPool.buttonAddToken")}
             </span>
           </button>
+        </div>
+        <div className="flex flex-col gap-4 p-3.5 md:p-2.5">
+          <div className="flex place-content-between items-center rounded-2xl">
+            <span className="md:subtitle2">
+              {t("pools.createPool.swapFee")}
+            </span>
+            <div className="flex items-center gap-4 md:gap-1">
+              <InputBox
+                className="w-44 md:w-20"
+                type="number"
+                inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                currentValue={config.swapFee}
+                onInput={(value) => config.setSwapFee(value)}
+                placeholder=""
+                trailingSymbol="%"
+              />
+            </div>
+          </div>
+          {config.poolType === "stable" && (
+            <div className="flex place-content-between items-center rounded-2xl">
+              <span className="md:subtitle2">
+                {t("pools.createPool.scalingFactorController")}
+              </span>
+              <div className="flex items-center gap-4 md:gap-1">
+                <InputBox
+                  className="w-44 md:w-20"
+                  type="text"
+                  inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                  currentValue={config.scalingFactorControllerAddress}
+                  onInput={(value) =>
+                    config.setScalingFactorControllerAddress(value)
+                  }
+                  placeholder="osmo..."
+                />
+              </div>
+            </div>
+          )}
         </div>
       </StepBase>
     );

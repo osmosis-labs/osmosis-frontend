@@ -1,5 +1,7 @@
 export * from "./data";
 export * from "./language";
+export * from "./one-click-trading";
+export * from "./staking/use-get-apr";
 export * from "./ui-config";
 export * from "./use-amplitude-analytics";
 export * from "./use-boolean-with-window-event";
@@ -11,8 +13,8 @@ export * from "./use-feature-flags";
 export * from "./use-ibc-transfer";
 export * from "./use-nav-bar";
 export * from "./use-previous-when";
+export * from "./use-wallet-select";
 export * from "./user-settings";
-export * from "./wallet-select";
 export * from "./window/use-localstorage-state";
 export * from "./window/use-visibility-state";
 export * from "./window/use-window-key-actions";

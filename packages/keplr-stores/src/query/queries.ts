@@ -74,9 +74,11 @@ export class QueriesStore<Injects extends Array<IObject>> {
         const merged = mergeStores(
           queriesSetBase,
           [this.kvStore, chainId, this.chainGetter],
+          // @ts-ignore
           ...this.queriesCreators
         );
 
+        // @ts-ignore
         this.queriesMap.set(chainId, merged);
       });
     }

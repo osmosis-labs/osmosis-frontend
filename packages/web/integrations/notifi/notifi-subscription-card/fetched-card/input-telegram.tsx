@@ -10,8 +10,8 @@ import {
   useState,
 } from "react";
 
-import { Button } from "~/components/buttons";
-import { Switch } from "~/components/control";
+import { Button } from "~/components/ui/button";
+import { Switch } from "~/components/ui/switch";
 import { SpriteIconId } from "~/config";
 import { TargetGroupFragment } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
@@ -122,26 +122,23 @@ export const InputTelegram: FunctionComponent<Props> = ({
         }
       />
       <Switch
-        labelClassName=""
-        containerClassName={`${
+        className={
           !selected || targetGroup?.telegramTargets?.[0]?.isConfirmed
             ? ""
             : "hidden"
-        }`}
-        labelPosition="left"
-        isOn={selected}
-        onToggle={(toggled) => setSelected(toggled)}
-      ></Switch>
+        }
+        checked={selected}
+        onCheckedChange={(toggled) => setSelected(toggled)}
+      />
 
       <Button
-        className={`${
+        size="sm"
+        variant="outline"
+        className={
           selected && !targetGroup?.telegramTargets?.[0]?.isConfirmed
             ? ""
             : "hidden"
-        } h-7 ${
-          isVerificationRequested ? "w-[5.5625rem]" : "w-[4.625rem]"
-        } rounded-[50rem] text-button`}
-        size={"unstyled"}
+        }
         disabled={
           !telegramRegex.test(inputProps.value?.toString() ?? "") ||
           isVerificationRequested

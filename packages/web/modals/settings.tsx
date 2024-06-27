@@ -1,11 +1,12 @@
+import { noop } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { Fragment, FunctionComponent } from "react";
 
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
-import { noop } from "~/utils/function";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -37,11 +38,22 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
 
 const SettingsContent = observer(() => {
   const { userSettings } = useStore();
+  const { t } = useTranslation();
+  const languageSetting = userSettings.getUserSettingById(
+    "language"
+  ) as LanguageUserSetting;
 
   return (
-    <div className="relative mt-8 overflow-auto">
+    <div
+      className={classNames("relative mt-8", {
+        "overflow-auto": !languageSetting.state.isControlOpen,
+        "overflow-hidden": languageSetting.state.isControlOpen,
+      })}
+    >
       {userSettings.userSettings.map((setting) => (
-        <>{setting.controlComponent(setting.state as any, setting.setState)}</>
+        <Fragment key={setting.getLabel(t)}>
+          {setting.controlComponent(setting.state as any, setting.setState)}
+        </Fragment>
       ))}
     </div>
   );

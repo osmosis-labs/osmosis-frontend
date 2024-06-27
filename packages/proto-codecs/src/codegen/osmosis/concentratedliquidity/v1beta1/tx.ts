@@ -29,19 +29,19 @@ export interface MsgCreatePositionProtoMsg {
 }
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePositionAmino {
-  pool_id: string;
-  sender: string;
-  lower_tick: string;
-  upper_tick: string;
+  pool_id?: string;
+  sender?: string;
+  lower_tick?: string;
+  upper_tick?: string;
   /**
    * tokens_provided is the amount of tokens provided for the position.
    * It must at a minimum be of length 1 (for a single sided position)
    * and at a maximum be of length 2 (for a position that straddles the current
    * tick).
    */
-  tokens_provided: CoinAmino[];
-  token_min_amount0: string;
-  token_min_amount1: string;
+  tokens_provided?: CoinAmino[];
+  token_min_amount0?: string;
+  token_min_amount1?: string;
 }
 export interface MsgCreatePositionAminoMsg {
   type: "osmosis/cl-create-position";
@@ -76,18 +76,18 @@ export interface MsgCreatePositionResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgCreatePositionResponseAmino {
-  position_id: string;
-  amount0: string;
-  amount1: string;
-  liquidity_created: string;
+  position_id?: string;
+  amount0?: string;
+  amount1?: string;
+  liquidity_created?: string;
   /**
    * the lower and upper tick are in the response because there are
    * instances in which multiple ticks represent the same price, so
    * we may move their provided tick to the canonical tick that represents
    * the same price.
    */
-  lower_tick: string;
-  upper_tick: string;
+  lower_tick?: string;
+  upper_tick?: string;
 }
 export interface MsgCreatePositionResponseAminoMsg {
   type: "osmosis/concentratedliquidity/create-position-response";
@@ -130,26 +130,26 @@ export interface MsgAddToPositionProtoMsg {
 }
 /** ===================== MsgAddToPosition */
 export interface MsgAddToPositionAmino {
-  position_id: string;
-  sender: string;
+  position_id?: string;
+  sender?: string;
   /** amount0 represents the amount of token0 willing to put in. */
-  amount0: string;
+  amount0?: string;
   /** amount1 represents the amount of token1 willing to put in. */
-  amount1: string;
+  amount1?: string;
   /**
    * token_min_amount0 represents the minimum amount of token0 desired from the
    * new position being created. Note that this field indicates the min amount0
    * corresponding to the liquidity that is being added, not the total
    * liquidity of the position.
    */
-  token_min_amount0: string;
+  token_min_amount0?: string;
   /**
    * token_min_amount1 represents the minimum amount of token1 desired from the
    * new position being created. Note that this field indicates the min amount1
    * corresponding to the liquidity that is being added, not the total
    * liquidity of the position.
    */
-  token_min_amount1: string;
+  token_min_amount1?: string;
 }
 export interface MsgAddToPositionAminoMsg {
   type: "osmosis/cl-add-to-position";
@@ -174,9 +174,9 @@ export interface MsgAddToPositionResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgAddToPositionResponseAmino {
-  position_id: string;
-  amount0: string;
-  amount1: string;
+  position_id?: string;
+  amount0?: string;
+  amount1?: string;
 }
 export interface MsgAddToPositionResponseAminoMsg {
   type: "osmosis/concentratedliquidity/add-to-position-response";
@@ -199,9 +199,9 @@ export interface MsgWithdrawPositionProtoMsg {
 }
 /** ===================== MsgWithdrawPosition */
 export interface MsgWithdrawPositionAmino {
-  position_id: string;
-  sender: string;
-  liquidity_amount: string;
+  position_id?: string;
+  sender?: string;
+  liquidity_amount?: string;
 }
 export interface MsgWithdrawPositionAminoMsg {
   type: "osmosis/cl-withdraw-position";
@@ -222,8 +222,8 @@ export interface MsgWithdrawPositionResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgWithdrawPositionResponseAmino {
-  amount0: string;
-  amount1: string;
+  amount0?: string;
+  amount1?: string;
 }
 export interface MsgWithdrawPositionResponseAminoMsg {
   type: "osmosis/concentratedliquidity/withdraw-position-response";
@@ -244,8 +244,8 @@ export interface MsgCollectSpreadRewardsProtoMsg {
 }
 /** ===================== MsgCollectSpreadRewards */
 export interface MsgCollectSpreadRewardsAmino {
-  position_ids: string[];
-  sender: string;
+  position_ids?: string[];
+  sender?: string;
 }
 export interface MsgCollectSpreadRewardsAminoMsg {
   type: "osmosis/cl-col-sp-rewards";
@@ -264,7 +264,7 @@ export interface MsgCollectSpreadRewardsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgCollectSpreadRewardsResponseAmino {
-  collected_spread_rewards: CoinAmino[];
+  collected_spread_rewards?: CoinAmino[];
 }
 export interface MsgCollectSpreadRewardsResponseAminoMsg {
   type: "osmosis/concentratedliquidity/collect-spread-rewards-response";
@@ -284,8 +284,8 @@ export interface MsgCollectIncentivesProtoMsg {
 }
 /** ===================== MsgCollectIncentives */
 export interface MsgCollectIncentivesAmino {
-  position_ids: string[];
-  sender: string;
+  position_ids?: string[];
+  sender?: string;
 }
 export interface MsgCollectIncentivesAminoMsg {
   type: "osmosis/cl-collect-incentives";
@@ -305,8 +305,8 @@ export interface MsgCollectIncentivesResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgCollectIncentivesResponseAmino {
-  collected_incentives: CoinAmino[];
-  forfeited_incentives: CoinAmino[];
+  collected_incentives?: CoinAmino[];
+  forfeited_incentives?: CoinAmino[];
 }
 export interface MsgCollectIncentivesResponseAminoMsg {
   type: "osmosis/concentratedliquidity/collect-incentives-response";
@@ -327,8 +327,8 @@ export interface MsgFungifyChargedPositionsProtoMsg {
 }
 /** ===================== MsgFungifyChargedPositions */
 export interface MsgFungifyChargedPositionsAmino {
-  position_ids: string[];
-  sender: string;
+  position_ids?: string[];
+  sender?: string;
 }
 export interface MsgFungifyChargedPositionsAminoMsg {
   type: "osmosis/cl-fungify-charged-positions";
@@ -347,7 +347,7 @@ export interface MsgFungifyChargedPositionsResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgFungifyChargedPositionsResponseAmino {
-  new_position_id: string;
+  new_position_id?: string;
 }
 export interface MsgFungifyChargedPositionsResponseAminoMsg {
   type: "osmosis/concentratedliquidity/fungify-charged-positions-response";
@@ -368,9 +368,9 @@ export interface MsgTransferPositionsProtoMsg {
 }
 /** ===================== MsgTransferPositions */
 export interface MsgTransferPositionsAmino {
-  position_ids: string[];
-  sender: string;
-  new_owner: string;
+  position_ids?: string[];
+  sender?: string;
+  new_owner?: string;
 }
 export interface MsgTransferPositionsAminoMsg {
   type: "osmosis/cl-transfer-positions";
@@ -491,37 +491,59 @@ export const MsgCreatePosition = {
     return message;
   },
   fromAmino(object: MsgCreatePositionAmino): MsgCreatePosition {
-    return {
-      poolId: BigInt(object.pool_id),
-      sender: object.sender,
-      lowerTick: BigInt(object.lower_tick),
-      upperTick: BigInt(object.upper_tick),
-      tokensProvided: Array.isArray(object?.tokens_provided)
-        ? object.tokens_provided.map((e: any) => Coin.fromAmino(e))
-        : [],
-      tokenMinAmount0: object.token_min_amount0,
-      tokenMinAmount1: object.token_min_amount1,
-    };
+    const message = createBaseMsgCreatePosition();
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lower_tick !== undefined && object.lower_tick !== null) {
+      message.lowerTick = BigInt(object.lower_tick);
+    }
+    if (object.upper_tick !== undefined && object.upper_tick !== null) {
+      message.upperTick = BigInt(object.upper_tick);
+    }
+    message.tokensProvided =
+      object.tokens_provided?.map((e) => Coin.fromAmino(e)) || [];
+    if (
+      object.token_min_amount0 !== undefined &&
+      object.token_min_amount0 !== null
+    ) {
+      message.tokenMinAmount0 = object.token_min_amount0;
+    }
+    if (
+      object.token_min_amount1 !== undefined &&
+      object.token_min_amount1 !== null
+    ) {
+      message.tokenMinAmount1 = object.token_min_amount1;
+    }
+    return message;
   },
   toAmino(message: MsgCreatePosition): MsgCreatePositionAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.lower_tick = message.lowerTick
-      ? message.lowerTick.toString()
-      : undefined;
-    obj.upper_tick = message.upperTick
-      ? message.upperTick.toString()
-      : undefined;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lower_tick =
+      message.lowerTick !== BigInt(0)
+        ? message.lowerTick.toString()
+        : undefined;
+    obj.upper_tick =
+      message.upperTick !== BigInt(0)
+        ? message.upperTick.toString()
+        : undefined;
     if (message.tokensProvided) {
       obj.tokens_provided = message.tokensProvided.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.tokens_provided = [];
+      obj.tokens_provided = message.tokensProvided;
     }
-    obj.token_min_amount0 = message.tokenMinAmount0;
-    obj.token_min_amount1 = message.tokenMinAmount1;
+    obj.token_min_amount0 =
+      message.tokenMinAmount0 === "" ? undefined : message.tokenMinAmount0;
+    obj.token_min_amount1 =
+      message.tokenMinAmount1 === "" ? undefined : message.tokenMinAmount1;
     return obj;
   },
   fromAminoMsg(object: MsgCreatePositionAminoMsg): MsgCreatePosition {
@@ -645,29 +667,48 @@ export const MsgCreatePositionResponse = {
     return message;
   },
   fromAmino(object: MsgCreatePositionResponseAmino): MsgCreatePositionResponse {
-    return {
-      positionId: BigInt(object.position_id),
-      amount0: object.amount0,
-      amount1: object.amount1,
-      liquidityCreated: object.liquidity_created,
-      lowerTick: BigInt(object.lower_tick),
-      upperTick: BigInt(object.upper_tick),
-    };
+    const message = createBaseMsgCreatePositionResponse();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.amount0 !== undefined && object.amount0 !== null) {
+      message.amount0 = object.amount0;
+    }
+    if (object.amount1 !== undefined && object.amount1 !== null) {
+      message.amount1 = object.amount1;
+    }
+    if (
+      object.liquidity_created !== undefined &&
+      object.liquidity_created !== null
+    ) {
+      message.liquidityCreated = object.liquidity_created;
+    }
+    if (object.lower_tick !== undefined && object.lower_tick !== null) {
+      message.lowerTick = BigInt(object.lower_tick);
+    }
+    if (object.upper_tick !== undefined && object.upper_tick !== null) {
+      message.upperTick = BigInt(object.upper_tick);
+    }
+    return message;
   },
   toAmino(message: MsgCreatePositionResponse): MsgCreatePositionResponseAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
-    obj.liquidity_created = message.liquidityCreated;
-    obj.lower_tick = message.lowerTick
-      ? message.lowerTick.toString()
-      : undefined;
-    obj.upper_tick = message.upperTick
-      ? message.upperTick.toString()
-      : undefined;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+    obj.liquidity_created =
+      message.liquidityCreated === "" ? undefined : message.liquidityCreated;
+    obj.lower_tick =
+      message.lowerTick !== BigInt(0)
+        ? message.lowerTick.toString()
+        : undefined;
+    obj.upper_tick =
+      message.upperTick !== BigInt(0)
+        ? message.upperTick.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -784,25 +825,46 @@ export const MsgAddToPosition = {
     return message;
   },
   fromAmino(object: MsgAddToPositionAmino): MsgAddToPosition {
-    return {
-      positionId: BigInt(object.position_id),
-      sender: object.sender,
-      amount0: object.amount0,
-      amount1: object.amount1,
-      tokenMinAmount0: object.token_min_amount0,
-      tokenMinAmount1: object.token_min_amount1,
-    };
+    const message = createBaseMsgAddToPosition();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.amount0 !== undefined && object.amount0 !== null) {
+      message.amount0 = object.amount0;
+    }
+    if (object.amount1 !== undefined && object.amount1 !== null) {
+      message.amount1 = object.amount1;
+    }
+    if (
+      object.token_min_amount0 !== undefined &&
+      object.token_min_amount0 !== null
+    ) {
+      message.tokenMinAmount0 = object.token_min_amount0;
+    }
+    if (
+      object.token_min_amount1 !== undefined &&
+      object.token_min_amount1 !== null
+    ) {
+      message.tokenMinAmount1 = object.token_min_amount1;
+    }
+    return message;
   },
   toAmino(message: MsgAddToPosition): MsgAddToPositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.sender = message.sender;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
-    obj.token_min_amount0 = message.tokenMinAmount0;
-    obj.token_min_amount1 = message.tokenMinAmount1;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+    obj.token_min_amount0 =
+      message.tokenMinAmount0 === "" ? undefined : message.tokenMinAmount0;
+    obj.token_min_amount1 =
+      message.tokenMinAmount1 === "" ? undefined : message.tokenMinAmount1;
     return obj;
   },
   fromAminoMsg(object: MsgAddToPositionAminoMsg): MsgAddToPosition {
@@ -891,19 +953,26 @@ export const MsgAddToPositionResponse = {
     return message;
   },
   fromAmino(object: MsgAddToPositionResponseAmino): MsgAddToPositionResponse {
-    return {
-      positionId: BigInt(object.position_id),
-      amount0: object.amount0,
-      amount1: object.amount1,
-    };
+    const message = createBaseMsgAddToPositionResponse();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.amount0 !== undefined && object.amount0 !== null) {
+      message.amount0 = object.amount0;
+    }
+    if (object.amount1 !== undefined && object.amount1 !== null) {
+      message.amount1 = object.amount1;
+    }
+    return message;
   },
   toAmino(message: MsgAddToPositionResponse): MsgAddToPositionResponseAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
     return obj;
   },
   fromAminoMsg(
@@ -1004,19 +1073,30 @@ export const MsgWithdrawPosition = {
     return message;
   },
   fromAmino(object: MsgWithdrawPositionAmino): MsgWithdrawPosition {
-    return {
-      positionId: BigInt(object.position_id),
-      sender: object.sender,
-      liquidityAmount: object.liquidity_amount,
-    };
+    const message = createBaseMsgWithdrawPosition();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (
+      object.liquidity_amount !== undefined &&
+      object.liquidity_amount !== null
+    ) {
+      message.liquidityAmount = object.liquidity_amount;
+    }
+    return message;
   },
   toAmino(message: MsgWithdrawPosition): MsgWithdrawPositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.sender = message.sender;
-    obj.liquidity_amount = message.liquidityAmount;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.liquidity_amount =
+      message.liquidityAmount === "" ? undefined : message.liquidityAmount;
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawPositionAminoMsg): MsgWithdrawPosition {
@@ -1096,17 +1176,21 @@ export const MsgWithdrawPositionResponse = {
   fromAmino(
     object: MsgWithdrawPositionResponseAmino
   ): MsgWithdrawPositionResponse {
-    return {
-      amount0: object.amount0,
-      amount1: object.amount1,
-    };
+    const message = createBaseMsgWithdrawPositionResponse();
+    if (object.amount0 !== undefined && object.amount0 !== null) {
+      message.amount0 = object.amount0;
+    }
+    if (object.amount1 !== undefined && object.amount1 !== null) {
+      message.amount1 = object.amount1;
+    }
+    return message;
   },
   toAmino(
     message: MsgWithdrawPositionResponse
   ): MsgWithdrawPositionResponseAmino {
     const obj: any = {};
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
     return obj;
   },
   fromAminoMsg(
@@ -1203,21 +1287,21 @@ export const MsgCollectSpreadRewards = {
     return message;
   },
   fromAmino(object: MsgCollectSpreadRewardsAmino): MsgCollectSpreadRewards {
-    return {
-      positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => BigInt(e))
-        : [],
-      sender: object.sender,
-    };
+    const message = createBaseMsgCollectSpreadRewards();
+    message.positionIds = object.position_ids?.map((e) => BigInt(e)) || [];
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    return message;
   },
   toAmino(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(
@@ -1301,11 +1385,10 @@ export const MsgCollectSpreadRewardsResponse = {
   fromAmino(
     object: MsgCollectSpreadRewardsResponseAmino
   ): MsgCollectSpreadRewardsResponse {
-    return {
-      collectedSpreadRewards: Array.isArray(object?.collected_spread_rewards)
-        ? object.collected_spread_rewards.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseMsgCollectSpreadRewardsResponse();
+    message.collectedSpreadRewards =
+      object.collected_spread_rewards?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(
     message: MsgCollectSpreadRewardsResponse
@@ -1316,7 +1399,7 @@ export const MsgCollectSpreadRewardsResponse = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.collected_spread_rewards = [];
+      obj.collected_spread_rewards = message.collectedSpreadRewards;
     }
     return obj;
   },
@@ -1412,21 +1495,21 @@ export const MsgCollectIncentives = {
     return message;
   },
   fromAmino(object: MsgCollectIncentivesAmino): MsgCollectIncentives {
-    return {
-      positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => BigInt(e))
-        : [],
-      sender: object.sender,
-    };
+    const message = createBaseMsgCollectIncentives();
+    message.positionIds = object.position_ids?.map((e) => BigInt(e)) || [];
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    return message;
   },
   toAmino(message: MsgCollectIncentives): MsgCollectIncentivesAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(object: MsgCollectIncentivesAminoMsg): MsgCollectIncentives {
@@ -1513,14 +1596,12 @@ export const MsgCollectIncentivesResponse = {
   fromAmino(
     object: MsgCollectIncentivesResponseAmino
   ): MsgCollectIncentivesResponse {
-    return {
-      collectedIncentives: Array.isArray(object?.collected_incentives)
-        ? object.collected_incentives.map((e: any) => Coin.fromAmino(e))
-        : [],
-      forfeitedIncentives: Array.isArray(object?.forfeited_incentives)
-        ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseMsgCollectIncentivesResponse();
+    message.collectedIncentives =
+      object.collected_incentives?.map((e) => Coin.fromAmino(e)) || [];
+    message.forfeitedIncentives =
+      object.forfeited_incentives?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(
     message: MsgCollectIncentivesResponse
@@ -1531,14 +1612,14 @@ export const MsgCollectIncentivesResponse = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.collected_incentives = [];
+      obj.collected_incentives = message.collectedIncentives;
     }
     if (message.forfeitedIncentives) {
       obj.forfeited_incentives = message.forfeitedIncentives.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.forfeited_incentives = [];
+      obj.forfeited_incentives = message.forfeitedIncentives;
     }
     return obj;
   },
@@ -1638,12 +1719,12 @@ export const MsgFungifyChargedPositions = {
   fromAmino(
     object: MsgFungifyChargedPositionsAmino
   ): MsgFungifyChargedPositions {
-    return {
-      positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => BigInt(e))
-        : [],
-      sender: object.sender,
-    };
+    const message = createBaseMsgFungifyChargedPositions();
+    message.positionIds = object.position_ids?.map((e) => BigInt(e)) || [];
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    return message;
   },
   toAmino(
     message: MsgFungifyChargedPositions
@@ -1652,9 +1733,9 @@ export const MsgFungifyChargedPositions = {
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     return obj;
   },
   fromAminoMsg(
@@ -1739,17 +1820,23 @@ export const MsgFungifyChargedPositionsResponse = {
   fromAmino(
     object: MsgFungifyChargedPositionsResponseAmino
   ): MsgFungifyChargedPositionsResponse {
-    return {
-      newPositionId: BigInt(object.new_position_id),
-    };
+    const message = createBaseMsgFungifyChargedPositionsResponse();
+    if (
+      object.new_position_id !== undefined &&
+      object.new_position_id !== null
+    ) {
+      message.newPositionId = BigInt(object.new_position_id);
+    }
+    return message;
   },
   toAmino(
     message: MsgFungifyChargedPositionsResponse
   ): MsgFungifyChargedPositionsResponseAmino {
     const obj: any = {};
-    obj.new_position_id = message.newPositionId
-      ? message.newPositionId.toString()
-      : undefined;
+    obj.new_position_id =
+      message.newPositionId !== BigInt(0)
+        ? message.newPositionId.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1852,23 +1939,25 @@ export const MsgTransferPositions = {
     return message;
   },
   fromAmino(object: MsgTransferPositionsAmino): MsgTransferPositions {
-    return {
-      positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => BigInt(e))
-        : [],
-      sender: object.sender,
-      newOwner: object.new_owner,
-    };
+    const message = createBaseMsgTransferPositions();
+    message.positionIds = object.position_ids?.map((e) => BigInt(e)) || [];
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.new_owner !== undefined && object.new_owner !== null) {
+      message.newOwner = object.new_owner;
+    }
+    return message;
   },
   toAmino(message: MsgTransferPositions): MsgTransferPositionsAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
-      obj.position_ids = [];
+      obj.position_ids = message.positionIds;
     }
-    obj.sender = message.sender;
-    obj.new_owner = message.newOwner;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.new_owner = message.newOwner === "" ? undefined : message.newOwner;
     return obj;
   },
   fromAminoMsg(object: MsgTransferPositionsAminoMsg): MsgTransferPositions {
@@ -1932,7 +2021,8 @@ export const MsgTransferPositionsResponse = {
   fromAmino(
     _: MsgTransferPositionsResponseAmino
   ): MsgTransferPositionsResponse {
-    return {};
+    const message = createBaseMsgTransferPositionsResponse();
+    return message;
   },
   toAmino(_: MsgTransferPositionsResponse): MsgTransferPositionsResponseAmino {
     const obj: any = {};

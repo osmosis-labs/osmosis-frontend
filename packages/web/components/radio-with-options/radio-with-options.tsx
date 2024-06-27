@@ -15,6 +15,7 @@ interface RadioWithOptionsProps {
   variant: RadioVariant;
   mode: RadioMode;
   options: RadioOptions[];
+  disabled?: boolean;
 }
 
 export const RadioWithOptions = ({
@@ -23,21 +24,25 @@ export const RadioWithOptions = ({
   variant,
   mode,
   options,
+  disabled,
 }: RadioWithOptionsProps) => {
   return (
     <RadioGroup
       value={value}
       onChange={onChange}
+      disabled={disabled}
       className={classNames(
         "inline-flex items-center rounded-xl bg-osmoverse-900",
         {
           "max-h-10": variant === "small",
           "max-h-13": variant === "large",
+          "opacity-50": disabled,
         }
       )}
     >
       {options.map(({ label, value }) => (
         <RadioGroup.Option
+          disabled={disabled}
           key={`${value} radio button`}
           className={({ checked }) =>
             classNames(
@@ -45,12 +50,8 @@ export const RadioWithOptions = ({
               {
                 "opacity-100": checked,
                 "hover:bg-osmoverse-900/25": !checked,
-              },
-              {
                 "bg-wosmongton-700": mode === "primary" && checked,
                 "bg-osmoverse-700": mode === "secondary" && checked,
-              },
-              {
                 "h-13": variant === "large",
                 "h-10": variant === "small",
               }

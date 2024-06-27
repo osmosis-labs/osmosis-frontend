@@ -1,33 +1,55 @@
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
+import type { BondDuration } from "@osmosis-labs/server";
 import { useCallback } from "react";
 
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+import { useAmountInput } from "../input/use-amount-input";
 
 /** Superfluid pool actions. */
-export function useSuperfluidPool(): {
+export function useSuperfluidPool(bondDurations?: BondDuration[]): {
   delegateSharesToValidator: (
     poolId: string,
     validatorAddress: string,
-    lockLPTokensConfig?: AmountConfig
+    lockLPTokensConfig?: ReturnType<typeof useAmountInput>
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const { chainStore, derivedDataStore, accountStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-
-  const account = accountStore.getWallet(chainId);
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const apiUtils = api.useUtils();
 
   const delegateSharesToValidator = useCallback(
-    (poolId, validatorAddress, lockLPTokensConfig) => {
+    (
+      poolId: string,
+      validatorAddress: string,
+      lockLPTokensConfig?: ReturnType<typeof useAmountInput>
+    ) => {
       return new Promise<"delegated" | "locked-and-delegated">(
         async (resolve, reject) => {
-          const superfluidPoolDetail =
-            derivedDataStore.superfluidPoolDetails.get(poolId);
-          if (superfluidPoolDetail.isSuperfluid) {
-            if (superfluidPoolDetail.userUpgradeableSharePoolLockIds) {
+          const address = account?.address;
+
+          if (!address) return reject("No account address");
+
+          const bondDurations_ =
+            bondDurations ??
+            (await apiUtils.edge.pools.getSharePoolBondDurations.fetch({
+              poolId,
+              userOsmoAddress: address,
+            }));
+
+          const superfluidDuration = bondDurations_.find(({ superfluid }) =>
+            Boolean(superfluid)
+          );
+
+          if (superfluidDuration) {
+            const delegateableLocks = superfluidDuration.userLocks.filter(
+              ({ isSynthetic }) => !isSynthetic
+            );
+            if (delegateableLocks.length > 0) {
               // is delegating existing locked shares
               try {
                 await account?.osmosis.sendSuperfluidDelegateMsg(
-                  superfluidPoolDetail.userUpgradeableSharePoolLockIds.lockIds,
+                  delegateableLocks.map((lock) => lock.lockId),
                   validatorAddress,
                   undefined,
                   () => resolve("delegated")
@@ -36,13 +58,19 @@ export function useSuperfluidPool(): {
                 console.error(e);
                 reject();
               }
-            } else if (lockLPTokensConfig) {
+            } else {
               try {
+                const sendCurrency = lockLPTokensConfig?.amount?.currency;
+                const amount = lockLPTokensConfig?.amount?.toCoin().amount;
+
+                if (!sendCurrency) return reject("No send currency to lock");
+                if (!amount) return reject("No amount to lock");
+
                 await account?.osmosis.sendLockAndSuperfluidDelegateMsg(
                   [
                     {
-                      currency: lockLPTokensConfig.sendCurrency,
-                      amount: lockLPTokensConfig.amount,
+                      currency: sendCurrency,
+                      amount: amount,
                     },
                   ],
                   validatorAddress,
@@ -53,16 +81,12 @@ export function useSuperfluidPool(): {
                 console.error(e);
                 reject();
               }
-            } else {
-              console.warn(
-                "Superfluid delegate: amount config for use in sendLockAndSuperfluidDelegateMsg missing"
-              );
             }
           }
         }
       );
     },
-    [account?.osmosis, derivedDataStore.superfluidPoolDetails]
+    [account?.osmosis, account?.address, bondDurations, apiUtils]
   );
 
   return { delegateSharesToValidator };

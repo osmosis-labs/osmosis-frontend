@@ -21,8 +21,8 @@ export interface CoinProtoMsg {
  * signatures required by gogoproto.
  */
 export interface CoinAmino {
-  denom: string;
-  amount: string;
+  denom?: string;
+  amount?: string;
 }
 export interface CoinAminoMsg {
   type: "cosmos-sdk/Coin";
@@ -59,8 +59,8 @@ export interface DecCoinProtoMsg {
  * signatures required by gogoproto.
  */
 export interface DecCoinAmino {
-  denom: string;
-  amount: string;
+  denom?: string;
+  amount?: string;
 }
 export interface DecCoinAminoMsg {
   type: "cosmos-sdk/DecCoin";
@@ -86,7 +86,7 @@ export interface IntProtoProtoMsg {
 }
 /** IntProto defines a Protobuf wrapper around an Int object. */
 export interface IntProtoAmino {
-  int: string;
+  int?: string;
 }
 export interface IntProtoAminoMsg {
   type: "cosmos-sdk/IntProto";
@@ -106,7 +106,7 @@ export interface DecProtoProtoMsg {
 }
 /** DecProto defines a Protobuf wrapper around a Dec object. */
 export interface DecProtoAmino {
-  dec: string;
+  dec?: string;
 }
 export interface DecProtoAminoMsg {
   type: "cosmos-sdk/DecProto";
@@ -164,15 +164,19 @@ export const Coin = {
     return message;
   },
   fromAmino(object: CoinAmino): Coin {
-    return {
-      denom: object.denom,
-      amount: object.amount,
-    };
+    const message = createBaseCoin();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    return message;
   },
   toAmino(message: Coin): CoinAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.amount = message.amount;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: CoinAminoMsg): Coin {
@@ -245,15 +249,19 @@ export const DecCoin = {
     return message;
   },
   fromAmino(object: DecCoinAmino): DecCoin {
-    return {
-      denom: object.denom,
-      amount: object.amount,
-    };
+    const message = createBaseDecCoin();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    return message;
   },
   toAmino(message: DecCoin): DecCoinAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.amount = message.amount;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
     return obj;
   },
   fromAminoMsg(object: DecCoinAminoMsg): DecCoin {
@@ -318,13 +326,15 @@ export const IntProto = {
     return message;
   },
   fromAmino(object: IntProtoAmino): IntProto {
-    return {
-      int: object.int,
-    };
+    const message = createBaseIntProto();
+    if (object.int !== undefined && object.int !== null) {
+      message.int = object.int;
+    }
+    return message;
   },
   toAmino(message: IntProto): IntProtoAmino {
     const obj: any = {};
-    obj.int = message.int;
+    obj.int = message.int === "" ? undefined : message.int;
     return obj;
   },
   fromAminoMsg(object: IntProtoAminoMsg): IntProto {
@@ -389,13 +399,15 @@ export const DecProto = {
     return message;
   },
   fromAmino(object: DecProtoAmino): DecProto {
-    return {
-      dec: object.dec,
-    };
+    const message = createBaseDecProto();
+    if (object.dec !== undefined && object.dec !== null) {
+      message.dec = object.dec;
+    }
+    return message;
   },
   toAmino(message: DecProto): DecProtoAmino {
     const obj: any = {};
-    obj.dec = message.dec;
+    obj.dec = message.dec === "" ? undefined : message.dec;
     return obj;
   },
   fromAminoMsg(object: DecProtoAminoMsg): DecProto {

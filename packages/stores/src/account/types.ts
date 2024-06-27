@@ -1,4 +1,14 @@
-import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
+import { AminoMsg, StdFee } from "@cosmjs/amino";
+import {
+  ChainWalletBase,
+  SignOptions as CosmoskitSignOptions,
+  Wallet,
+} from "@cosmos-kit/core";
+import {
+  Currency,
+  OneClickTradingHumanizedSessionPeriod,
+  OneClickTradingTimeLimit,
+} from "@osmosis-labs/types";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
 
@@ -13,8 +23,9 @@ export type TxEvent = {
 };
 
 export interface DeliverTxResponse {
+  readonly events?: TxEvent[];
   readonly height?: number;
-  /** Error code. The transaction suceeded if code is 0. */
+  /** Error code. The transaction succeeded if code is 0. */
   readonly code: number;
   readonly transactionHash: string;
   readonly rawLog?: string;
@@ -23,7 +34,7 @@ export interface DeliverTxResponse {
   readonly gasWanted: string;
 }
 
-export type RegistryWallet = Omit<Wallet, "logo"> & {
+export type CosmosRegistryWallet = Omit<Wallet, "logo"> & {
   logo: string;
   lazyInstall: () => any;
   stakeUrl?: string;
@@ -72,6 +83,62 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
     UnionToIntersection<Injects[number]> & {
       txTypeInProgress: string;
       isReadyToSendTx: boolean;
-      supportsChain: Required<RegistryWallet>["supportsChain"];
-      walletInfo: RegistryWallet;
+      supportsChain: Required<CosmosRegistryWallet>["supportsChain"];
+      walletInfo: CosmosRegistryWallet;
     };
+
+export interface TxEvents {
+  onBroadcastFailed?: (string: string, e?: Error) => void;
+  onBroadcasted?: (string: string, txHash: Uint8Array) => void;
+  onFulfill?: (string: string, tx: any) => void;
+  onExceeds1CTNetworkFeeLimit?: (params: {
+    // Continue with a wallet like Keplr.
+    continueTx: () => void;
+    // User will update his params so we cancel the transaction
+    finish: () => void;
+  }) => void;
+}
+
+export interface OneClickTradingInfo {
+  readonly authenticatorId: string;
+  readonly publicKey: string;
+  readonly sessionKey: string;
+  readonly userOsmoAddress: string;
+
+  networkFeeLimit: Currency & {
+    amount: string;
+  };
+
+  spendLimit: {
+    decimals: number;
+    amount: string;
+  };
+
+  // Time limit for the session to be considered valid.
+  readonly sessionPeriod: OneClickTradingTimeLimit;
+  readonly humanizedSessionPeriod: OneClickTradingHumanizedSessionPeriod;
+  readonly sessionStartedAtUnix: number;
+  readonly allowedMessages: string[];
+  readonly hasSeenExpiryToast: boolean;
+}
+
+/**
+ * The document to be signed
+ * Referenced from Cosmjs
+ * https://github.com/cosmos/cosmjs/blob/287278004b9e6a682a1a0b1664ba54646f65a1a0/packages/amino/src/signdoc.ts#L21-L35
+ *
+ * We copied it over to work around dependency updates.
+ */
+export interface StdSignDoc {
+  readonly chain_id: string;
+  readonly account_number: string;
+  readonly sequence: string;
+  readonly fee: StdFee;
+  readonly msgs: readonly AminoMsg[];
+  readonly memo: string;
+  readonly timeout_height?: string;
+}
+
+export interface SignOptions extends CosmoskitSignOptions {
+  useOneClickTrading?: boolean;
+}

@@ -7,6 +7,9 @@
 
 # testing
 /coverage
+playwright-report/index.html
+playwright-report/data/*
+test-results/*
 
 # next.js
 /.next/
@@ -41,3 +44,9 @@ yarn-error.log*
 
 # config files
 generated
+
+# Sitemap
+
+robots.txt
+sitemap-*.xml
+sitemap.xml

@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import { FunctionComponent, useState } from "react";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -72,7 +72,7 @@ export const SignupView: FunctionComponent = () => {
       <p className="mx-[2rem] mt-[0.3125rem] text-center text-subtitle1">
         {t("notifi.signupPageTitle")}
       </p>
-      <p className="mx-[2rem] mt-[1.3125rem] mb-[2.5rem] text-center text-body2">
+      <p className="mx-[2rem] mb-[2.5rem] mt-[1.3125rem] text-center text-body2">
         {t("notifi.signupPageMessage")}
       </p>
       <div className="mx-[2rem]">
@@ -188,7 +188,7 @@ const VerifyButton: FunctionComponent<{
 
   return (
     <Button
-      mode="primary"
+      className="w-full"
       disabled={loading}
       onClick={async () => {
         onClickVerify();

@@ -32,14 +32,14 @@ export interface GenesisStateAmino {
   /** params defines all the paramaters of the module. */
   params?: ParamsAmino;
   /** balances is an array containing the balances of all the accounts. */
-  balances: BalanceAmino[];
+  balances?: BalanceAmino[];
   /**
    * supply represents the total supply. If it is left empty, then supply will be calculated based on the provided
    * balances. Otherwise, it will be used to validate that the sum of the balances equals this amount.
    */
-  supply: CoinAmino[];
+  supply?: CoinAmino[];
   /** denom_metadata defines the metadata of the differents coins. */
-  denom_metadata: MetadataAmino[];
+  denom_metadata?: MetadataAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "cosmos-sdk/GenesisState";
@@ -72,9 +72,9 @@ export interface BalanceProtoMsg {
  */
 export interface BalanceAmino {
   /** address is the address of the balance holder. */
-  address: string;
+  address?: string;
   /** coins defines the different coins this balance holds. */
-  coins: CoinAmino[];
+  coins?: CoinAmino[];
 }
 export interface BalanceAminoMsg {
   type: "cosmos-sdk/Balance";
@@ -157,18 +157,15 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      balances: Array.isArray(object?.balances)
-        ? object.balances.map((e: any) => Balance.fromAmino(e))
-        : [],
-      supply: Array.isArray(object?.supply)
-        ? object.supply.map((e: any) => Coin.fromAmino(e))
-        : [],
-      denomMetadata: Array.isArray(object?.denom_metadata)
-        ? object.denom_metadata.map((e: any) => Metadata.fromAmino(e))
-        : [],
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.balances = object.balances?.map((e) => Balance.fromAmino(e)) || [];
+    message.supply = object.supply?.map((e) => Coin.fromAmino(e)) || [];
+    message.denomMetadata =
+      object.denom_metadata?.map((e) => Metadata.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState): GenesisStateAmino {
     const obj: any = {};
@@ -178,19 +175,19 @@ export const GenesisState = {
         e ? Balance.toAmino(e) : undefined
       );
     } else {
-      obj.balances = [];
+      obj.balances = message.balances;
     }
     if (message.supply) {
       obj.supply = message.supply.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.supply = [];
+      obj.supply = message.supply;
     }
     if (message.denomMetadata) {
       obj.denom_metadata = message.denomMetadata.map((e) =>
         e ? Metadata.toAmino(e) : undefined
       );
     } else {
-      obj.denom_metadata = [];
+      obj.denom_metadata = message.denomMetadata;
     }
     return obj;
   },
@@ -264,20 +261,20 @@ export const Balance = {
     return message;
   },
   fromAmino(object: BalanceAmino): Balance {
-    return {
-      address: object.address,
-      coins: Array.isArray(object?.coins)
-        ? object.coins.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseBalance();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    message.coins = object.coins?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: Balance): BalanceAmino {
     const obj: any = {};
-    obj.address = message.address;
+    obj.address = message.address === "" ? undefined : message.address;
     if (message.coins) {
       obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
     return obj;
   },

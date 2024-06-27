@@ -1,6 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "prettier"],
   "plugins": ["unicorn", "simple-import-sort", "unused-imports", "import"],
+  "ignorePatterns": ["/e2e/keplr-extension"],
   "rules": {
     "unicorn/filename-case": [
       "error",
@@ -24,6 +25,17 @@
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
     "unused-imports/no-unused-imports": "error",
-    "react/no-unescaped-entities": "off"
-  }
+    "react/no-unescaped-entities": "off",
+    "import/no-default-export": "error"
+    // see https://stackoverflow.com/questions/44378395/how-to-configure-eslint-so-that-it-disallows-default-exports
+  },
+  "overrides": [
+    // Pages router, config files
+    {
+      "files": ["pages/**/*", "playwright.config.ts"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    }
+  ]
 }

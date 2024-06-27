@@ -26,6 +26,8 @@ module.exports = {
         400: "#6A67EA",
         500: "#5B57FA",
         700: "#462ADF",
+        800: "#361FB2",
+        900: "#2D1B8F",
       },
       ion: {
         100: "#DCF9FF",
@@ -53,15 +55,20 @@ module.exports = {
         810: "#241E4B",
         825: "#232047",
         850: "#201B43",
+        860: "#19183A",
         900: "#140F34",
         1000: "#090524",
       },
       ammelia: {
+        300: "#E196DB",
+        400: "#D779CF",
         600: "#CA2EBD",
+        900: "#87087C",
       },
       rust: {
         200: "#F8C2B0",
         300: "#F5A68C",
+        400: "#F99575",
         500: "#FA825D",
         600: "#E06640",
         700: "#C6451C",
@@ -134,8 +141,8 @@ module.exports = {
       h6: 600,
       subtitle1: 600,
       subtitle2: 400,
-      body1: 400,
-      body2: 400,
+      body1: 500,
+      body2: 500,
       button: 600,
       caption: 400,
       overline: 400,
@@ -169,6 +176,10 @@ module.exports = {
         "linear-gradient(0deg, #201B43 20%, rgba(20, 15, 52, 0) 100%);",
       "gradient-scrollable-allocation-list-reverse":
         "linear-gradient(180deg, #201B43 10%, rgba(20, 15, 52, 0) 30%);",
+      "gradient-earnpage-position-bg":
+        "linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), #462ADF 100%)",
+      "gradient-earnpage-tvl-depositcap":
+        "linear-gradient(to right, #462ADF, #8A86FF)",
     },
     screens: {
       "3xl": { max: "1792px" },
@@ -220,6 +231,7 @@ module.exports = {
         earnpositions: "minmax(0, 1fr), 1px, minmax(0, 284px)",
       },
       width: {
+        25: "6.25rem",
         loader: {
           1: "3.75rem",
           2: "4rem",
@@ -230,6 +242,8 @@ module.exports = {
         },
       },
       spacing: {
+        navbar: "72px",
+        "navbar-mobile": "65px",
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         "rewards-w": "108px",
@@ -248,6 +262,7 @@ module.exports = {
         terms: "28rem",
       },
       minWidth: {
+        10: "2.5rem",
         "rewards-container": "332px",
         "multi-radio": "290px",
         "dropdown-with-label": "200px",

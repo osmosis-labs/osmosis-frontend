@@ -25,7 +25,7 @@ export class ObservableQueryPoolAprs extends ObservableQueryExternalBase<
   }
 
   @computed
-  get poolAprs() {
+  get queryPoolAprs() {
     if (!this.response) return [];
 
     try {
@@ -45,7 +45,7 @@ export class ObservableQueryPoolAprs extends ObservableQueryExternalBase<
   }
 
   getForPool = computedFn((poolId: string) =>
-    this.poolAprs.find(({ poolId: id }) => id === poolId)
+    this.queryPoolAprs.find(({ poolId: id }) => id === poolId)
   );
 }
 

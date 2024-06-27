@@ -4,7 +4,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 
-import { Button } from "~/components/buttons";
+import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";

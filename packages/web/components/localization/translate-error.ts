@@ -15,7 +15,7 @@ import {
   DepositNoBalanceError,
   HighSwapFeeError,
   InsufficientBalanceError,
-  InvalidRangeError,
+  InsufficientBalanceForFeeError,
   InvalidScalingFactorControllerAddress,
   InvalidSlippageError,
   InvalidSwapFeeError,
@@ -31,6 +31,7 @@ import {
   ScalingFactorTooLowError,
 } from "@osmosis-labs/stores";
 
+import { InvalidRangeError } from "~/hooks";
 import { t } from "~/hooks";
 
 /** Returns localization key given a custom Error subclass, typically from UI configs. */
@@ -73,6 +74,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.noSendCurrency"];
   } else if (e instanceof InsufficientBalanceError) {
     return ["errors.insufficientBal"];
+  } else if (e instanceof InsufficientBalanceForFeeError) {
+    return ["errors.insufficientBalForFee"];
   } else if (e instanceof NotInitializedError) {
     return ["errors.notInitialized"];
   } else if (e instanceof CalculatingShareOutAmountError) {

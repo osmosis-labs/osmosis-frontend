@@ -5,6 +5,7 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import { normalizeUrl, truncateString } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -30,27 +31,19 @@ import {
 
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { CheckBox } from "~/components/control";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { StakeOrEdit } from "~/components/types";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { normalizeUrl, truncateString } from "~/utils/string";
 
 const CONSTANTS = {
-  HIGH_APR: "0.3",
+  HIGH_APR: "0.2",
   HIGH_VOTING_POWER: "0.015",
 };
 
@@ -81,7 +74,6 @@ export type Validator = {
   website: string | undefined;
   imageUrl: string;
   operatorAddress: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
 };
 
@@ -92,7 +84,6 @@ export type FormattedValidator = {
   formattedCommissions: string;
   formattedWebsite: string;
   website: string;
-  isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
   operatorAddress: string;
 };
@@ -177,7 +168,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const getFormattedMyStake = useCallback(
-        (myStake) =>
+        (myStake: Dec) =>
           new CoinPretty(totalStakePool.currency, myStake)
             .maxDecimals(2)
             .hideDenom(true)
@@ -219,6 +210,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const data = useMemo(() => {
         return validators
           .filter(({ description }) => Boolean(description.moniker))
+          .filter((validator) => {
+            const commissions = getCommissions(validator);
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            return !isAPRTooHigh; // don't include validators where commissions >20%
+          })
           .map((validator) => {
             const votingPower = getVotingPower(validator);
             const myStake = getMyStake(validator);
@@ -229,7 +225,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             const commissions = getCommissions(validator);
             const formattedCommissions = getFormattedCommissions(commissions);
 
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
             const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
             const website = validator?.description?.website || "";
@@ -247,7 +242,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               formattedCommissions,
               formattedWebsite,
               website,
-              isAPRTooHigh,
               isVotingPowerTooHigh,
               operatorAddress,
             };
@@ -275,11 +269,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 (
                   props: CellContext<FormattedValidator, FormattedValidator>
                 ) => (
-                  <CheckBox
-                    isOn={props.row.getIsSelected()}
-                    onToggle={props.row.getToggleSelectedHandler()}
-                    containerProps={{ style: {} }}
-                  />
+                  <div className="flex h-full items-center justify-center">
+                    <Checkbox
+                      checked={props.row.getIsSelected()}
+                      onClick={props.row.getToggleSelectedHandler()}
+                    />
+                  </div>
                 )
               ),
             },
@@ -381,15 +376,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 ) => {
                   const formattedCommissions =
                     props.row.original.formattedCommissions;
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                   return (
-                    <div
-                      className={classNames(
-                        "text-right",
-                        isAPRTooHigh ? "text-rust-200" : "text-white"
-                      )}
-                    >
+                    <div className="text-white text-right">
                       {formattedCommissions}
                     </div>
                   );
@@ -405,20 +394,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const isVotingPowerTooHigh =
                     props.row.original.isVotingPowerTooHigh;
 
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
-
                   return (
                     <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("stake.isAPRTooHighTooltip")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {!isAPRTooHigh && isVotingPowerTooHigh && (
+                      {isVotingPowerTooHigh && (
                         <Tooltip
                           content={t("stake.isVotingPowerTooHighTooltip")}
                         >
@@ -454,20 +432,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        filterFns: {
-          /**
-           * these filters, even though they are not used in this table instance,
-           * are necessary to suppress errors derived by the "@tanstack/table-core"
-           * module declaration in the earn page.
-           *
-           * @fabryscript
-           */
-          arrLengthEquals,
-          strictEqualFilter,
-          boolEquals,
-          boolEqualsString,
-          listOptionValueEquals,
-        },
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
@@ -491,7 +455,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         setRowSelection(defaultRowSelection);
       }, [usersValidatorSetPreferenceMap]);
 
-      const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
+      const setSquadButtonDisabled = Object.keys(rowSelection).length === 0;
 
       const handleSetSquadClick = useCallback(async () => {
         // TODO disable cases for button, disable if none selected, if weights and list is same
@@ -550,7 +514,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           className="flex !max-w-[1168px] flex-col"
         >
           <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
-            <div className="mt-7 mb-3 font-medium">
+            <div className="mb-3 mt-7 font-medium">
               {t("stake.validatorSquad.description")}
             </div>
             <SearchBox
@@ -562,16 +526,16 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             />
           </div>
           <div
-            className="h-screen max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
+            className="overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
             ref={tableContainerRef}
           >
-            <table className="w-full border-separate border-spacing-y-1">
-              <thead className="sticky top-0 z-50 m-0">
+            <table className="w-full table-auto">
+              <thead>
                 {table
                   .getHeaderGroups()
                   .slice(1)
                   .map((headerGroup) => (
-                    <tr key={headerGroup.id}>
+                    <tr className="top-0 bg-osmoverse-800" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
                           <th key={header.id} colSpan={header.colSpan}>
@@ -653,10 +617,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           </div>
           <div className="mb-6 flex justify-center justify-self-end">
             <Button
+              className="w-80"
               disabled={setSquadButtonDisabled}
-              mode="special-1"
+              variant="success"
               onClick={handleSetSquadClick}
-              className="w-[383px] disabled:cursor-not-allowed disabled:opacity-75"
             >
               {action === "stake"
                 ? t("stake.validatorSquad.button2")

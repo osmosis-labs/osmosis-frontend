@@ -1,8 +1,9 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import classNames from "classnames";
+import { getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -13,29 +14,19 @@ import {
 } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
-import { EventName } from "~/config/user-analytics-v2";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import {
   useAmountConfig,
   useFakeFeeConfig,
   useLocalStorageState,
 } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { waitByTransferFromSourceChain } from "~/integrations/axelar";
 import {
   useAxelarDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
-import {
-  EthClientChainIds_SourceChainMap,
-  SourceChain,
-} from "~/integrations/bridge-info";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-} from "~/integrations/bridges/axelar";
 import {
   ChainNames,
   EthWallet,
@@ -50,13 +41,18 @@ import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
-import { getKeyByValue } from "~/utils/object";
+
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+  EthClientChainIds_SourceChainMap,
+} from "./types";
 
 /** Axelar-specific bridge transfer integration UI. */
 /**
  * @deprecated
  */
-const AxelarTransfer: FunctionComponent<
+export const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     ethWalletClient: EthWallet;
@@ -96,8 +92,6 @@ const AxelarTransfer: FunctionComponent<
       queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
 
     useTxEventToasts(ethWalletClient);
-
-    const { logEvent } = useAmplitudeAnalytics();
 
     const isDeposit = !isWithdraw;
 
@@ -300,7 +294,7 @@ const AxelarTransfer: FunctionComponent<
     }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
     const correctChainSelected =
-      (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
+      (EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ""] ??
         ethWalletClient.chainId) ===
       (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
         selectedSourceChainAxelarKey);
@@ -369,16 +363,6 @@ const AxelarTransfer: FunctionComponent<
     const [transferInitiated, setTransferInitiated] = useState(false);
     const doAxelarTransfer = async () => {
       if (depositAddress) {
-        logEvent([
-          isWithdraw
-            ? EventName.Assets.withdrawAssetStarted
-            : EventName.Assets.depositAssetStarted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: "axelar",
-          },
-        ]);
         if (isWithdraw) {
           // IBC transfer to generated axelar address
           try {
@@ -397,14 +381,6 @@ const AxelarTransfer: FunctionComponent<
               undefined,
               (event) => {
                 trackTransferStatus(event.txHash);
-                logEvent([
-                  EventName.Assets.withdrawAssetCompleted,
-                  {
-                    tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(inputAmountRaw),
-                    bridge: "axelar",
-                  },
-                ]);
               }
             );
           } catch (e) {
@@ -424,21 +400,13 @@ const AxelarTransfer: FunctionComponent<
               );
               trackTransferStatus(txHash as string);
               setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-              logEvent([
-                EventName.Assets.depositAssetCompleted,
-                {
-                  tokenName: originCurrency.coinDenom,
-                  tokenAmount: Number(inputAmountRaw),
-                  bridge: "axelar",
-                },
-              ]);
             } catch (e) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );
@@ -460,21 +428,13 @@ const AxelarTransfer: FunctionComponent<
               );
               trackTransferStatus(txHash as string);
               setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-              logEvent([
-                EventName.Assets.depositAssetCompleted,
-                {
-                  tokenName: originCurrency.coinDenom,
-                  tokenAmount: Number(inputAmountRaw),
-                  bridge: "axelar",
-                },
-              ]);
             } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );
@@ -625,10 +585,6 @@ const AxelarTransfer: FunctionComponent<
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
-              className={classNames(
-                "transition-opacity duration-300 hover:opacity-75",
-                { "opacity-30": isDepositAddressLoading }
-              )}
               disabled={
                 (!userCanInteract && !userDisconnectedEthWallet) ||
                 (isDeposit &&
@@ -664,6 +620,3 @@ const AxelarTransfer: FunctionComponent<
     );
   }
 );
-
-// accommodate next/dynamic
-export default AxelarTransfer;

@@ -158,8 +158,8 @@ describe("Create CL Positions Txs", () => {
         account?.osmosis
           .sendAddToConcentratedLiquidityPositionMsg(
             lastPositionId,
-            specifiedAmount0,
-            calculatedAmount1,
+            { denom: "ufoo", amount: specifiedAmount0 },
+            { denom: "ubar", amount: calculatedAmount1 },
             undefined,
             undefined,
             (tx) => {
@@ -193,8 +193,8 @@ describe("Create CL Positions Txs", () => {
         account?.osmosis
           .sendAddToConcentratedLiquidityPositionMsg(
             lastPositionId,
-            specifiedAmount0,
-            calculatedAmount1,
+            { denom: "ufoo", amount: specifiedAmount0 },
+            { denom: "ubar", amount: calculatedAmount1 },
             undefined,
             undefined,
             (tx) => {

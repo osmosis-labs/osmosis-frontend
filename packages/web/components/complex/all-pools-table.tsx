@@ -1,886 +1,719 @@
-import { Menu } from "@headlessui/react";
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import type { BasePool } from "@osmosis-labs/pools";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import type { SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
   createColumnHelper,
+  flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import EventEmitter from "eventemitter3";
-import { observer } from "mobx-react-lite";
+import { EventEmitter } from "eventemitter3";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import {
-  FC,
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { ReactNode } from "react";
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringEnum,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
+import { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import { useCallback } from "react";
 
-import { Icon } from "~/components/assets";
-import { PaginatedTable } from "~/components/complex/paginated-table";
-import { CheckBox, MenuSelectProps } from "~/components/control";
-import {
-  arrLengthEquals,
-  boolEquals,
-  boolEqualsString,
-  listOptionValueEquals,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
-import { SearchBox } from "~/components/input";
-import {
-  MetricLoaderCell,
-  PoolCompositionCell,
-  PoolQuickActionCell,
-} from "~/components/table/cells";
-import { Tooltip } from "~/components/tooltip";
-import { EventName, IS_TESTNET } from "~/config";
-import { MultiLanguageT, useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { MenuOptionsModal } from "~/modals";
-import { useStore } from "~/stores";
-import { ObservablePoolWithMetric } from "~/stores/derived-data";
-import { noop, runIfFn } from "~/utils/function";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import { api, RouterOutputs } from "~/utils/trpc";
 
-import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
+import { AprBreakdown } from "../cards/apr-breakdown";
+import { CheckboxSelect } from "../control";
+import { SearchBox } from "../input";
+import { Spinner } from "../loaders/spinner";
+import { PoolQuickActionCell } from "../table/cells";
+import { SortHeader } from "../table/headers/sort";
+import { Tooltip } from "../tooltip";
+import { AprDisclaimerTooltip } from "../tooltip/apr-disclaimer";
 
-const TVL_FILTER_THRESHOLD = 1000;
+type Pool =
+  RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
+/** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
+type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
+type PoolIncentiveFilter = NonNullable<Pool["incentiveTypes"]>[number];
 
-export type Pool = [
-  {
-    poolId: string;
-    poolAssets: { coinImageUrl: string | undefined; coinDenom: string }[];
-    stableswapPool: boolean;
-  },
-  {
-    value: PricePretty;
-  },
-  {
-    value: PricePretty;
-  },
-  {
-    value: PricePretty;
-    isLoading?: boolean;
-  },
-  {
-    value: PricePretty | RatePretty | undefined;
-  },
-  {
-    poolId: string;
-    cellGroupEventEmitter: EventEmitter<string | symbol, any>;
-    onAddLiquidity?: () => void;
-    onRemoveLiquidity?: () => void;
-    onLockTokens?: () => void;
-  }
-];
+// These are the options for filtering the pools.
+const poolFilterTypes = [
+  "weighted",
+  "stable",
+  "concentrated",
+  "cosmwasm-transmuter",
+] as const;
 
-const searchPoolsMemoedKeys = [
-  "queryPool.id",
-  "poolName",
-  "networkNames",
-  "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
-];
+const marketIncentivePoolsSortKeys = [
+  "totalFiatValueLocked",
+  "feesSpent7dUsd",
+  "feesSpent24hUsd",
+  "volume7dUsd",
+  "volume24hUsd",
+  "aprBreakdown.total",
+] as const;
 
-function getPoolFilters(
-  t: MultiLanguageT,
-  concentratedLiquidityEnabled: boolean
-): Partial<Record<BasePool["type"], string>> {
-  const base = {
-    stable: t("components.table.stable"),
-    weighted: t("components.table.weighted"),
-    transmuter: t("components.table.transmuter"),
-  };
+const incentiveTypes = ["superfluid", "osmosis", "boost", "none"] as const;
 
-  if (concentratedLiquidityEnabled) {
-    return {
-      ...base,
-      concentrated: t("components.table.concentrated"),
-    };
-  }
-  return base;
-}
+const useAllPoolsTable = () => {
+  const [sortParams, setSortParams] = useQueryStates(
+    {
+      allPoolsSort: parseAsStringLiteral(
+        marketIncentivePoolsSortKeys
+      ).withDefault("volume24hUsd"),
+      allPoolsSortDir: parseAsStringEnum<SortDirection>([
+        "asc",
+        "desc",
+      ]).withDefault("desc"),
+    },
+    {
+      history: "push",
+    }
+  );
 
-function getIncentiveFilters(
-  t: MultiLanguageT
-): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
+  const [filters, setFilters] = useQueryStates(
+    {
+      searchQuery: parseAsString,
+      poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
+        parseAsStringLiteral<PoolTypeFilter>(poolFilterTypes)
+      ).withDefault([...poolFilterTypes]),
+      poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
+        parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
+      ).withDefault([...incentiveTypes]),
+    },
+    {
+      history: "push",
+    }
+  );
+
   return {
-    internal: t("components.table.internal"),
-    external: t("components.table.external"),
-    superfluid: t("components.table.superfluid"),
-    noIncentives: t("components.table.noIncentives"),
+    filters,
+    setFilters,
+    sortParams,
+    setSortParams,
   };
-}
-
-export function getPoolLink(queryPool: ObservableQueryPool): string {
-  if (queryPool.type === "transmuter") {
-    return `https://celatone.osmosis.zone/osmosis-1/pools/${queryPool.id}`;
-  }
-
-  return `/pool/${queryPool.id}`;
-}
+};
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
   quickAddLiquidity: (poolId: string) => void;
-  quickRemoveLiquidity: (poolId: string) => void;
-  quickLockTokens: (poolId: string) => void;
-}> = observer(
-  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
-    const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
-      useStore();
-    const { t } = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
-    const { isMobile } = useWindowSize();
+}> = ({ topOffset, quickAddLiquidity }) => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { width } = useWindowSize();
 
-    const flags = useFeatureFlags();
+  const { filters, sortParams, setSortParams } = useAllPoolsTable();
 
-    const router = useRouter();
-    const PoolFilters = useMemo(
-      () => getPoolFilters(t, flags.concentratedLiquidity),
-      [t, flags.concentratedLiquidity]
-    );
-    const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
-    const poolFilterQuery = useMemo(
-      () =>
-        String(router.query?.pool ?? "")
-          .split(",")
-          .filter(Boolean) as Array<keyof typeof PoolFilters>,
-      [router.query?.pool]
-    );
-    const incentiveFilterQuery = useMemo(
-      () =>
-        String(router.query?.incentive ?? "")
-          .split(",")
-          .filter(Boolean) as Array<keyof typeof IncentiveFilters>,
-      [router.query?.incentive]
-    );
+  /** Won't sort when searching is happening. */
+  const sortKey = useMemo(
+    () => (Boolean(filters.searchQuery) ? undefined : sortParams.allPoolsSort),
+    [filters.searchQuery, sortParams.allPoolsSort]
+  );
 
-    // Initially display everything
-    useEffect(() => {
-      const poolQuery = router.query.pool;
-      const incentiveQuery = router.query.incentive;
+  const setSortDirection = useCallback(
+    (dir: SortDirection) => {
+      setSortParams((state) => ({
+        ...state,
+        allPoolsSortDir: dir,
+      }));
+    },
+    [setSortParams]
+  );
 
-      if (
-        !location.search.includes("pool") ||
-        !location.search.includes("incentive")
-      ) {
-        router.replace(
-          {
-            query: {
-              ...router.query,
-              ...(!poolQuery && { pool: Object.keys(PoolFilters) }),
-              ...(!incentiveQuery && {
-                incentive: Object.keys(IncentiveFilters),
-              }),
-            },
-          },
-          undefined,
-          {
-            scroll: false,
-          }
-        );
+  const setSortKey = useCallback(
+    (key: (typeof sortParams)["allPoolsSort"] | undefined) => {
+      if (key) {
+        setSortParams((state) => ({
+          ...state,
+          allPoolsSort: key,
+        }));
       }
-    }, [
-      IncentiveFilters,
-      PoolFilters,
-      router,
-      router.query.incentive,
-      router.query.pools,
-    ]);
+    },
+    [setSortParams]
+  );
 
-    const { chainId } = chainStore.osmosis;
-    const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos;
-    const queryActiveGauges = queriesExternalStore.queryActiveGauges;
-
-    const [sorting, _setSorting] = useState<
-      { id: keyof ObservablePoolWithMetric; desc: boolean }[]
-    >([
-      {
-        id: "volume24h",
-        desc: true,
-      },
-    ]);
-    const setSorting = useCallback(
-      (s) => {
-        if (typeof s === "function") {
-          const sort = s()?.[0];
-          if (sort)
-            logEvent([
-              EventName.Pools.allPoolsListSorted,
-              {
-                sortedBy: sort.id,
-                sortedOn: isMobile ? "dropdown" : "table",
-                sortDirection: sort.desc ? "descending" : "ascending",
-              },
-            ]);
-        }
-        _setSorting(s);
-      },
-      [logEvent, isMobile]
-    );
-
-    const [isSearching, setIsSearching] = useState(false);
-
-    const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
-      .get(chainId)
-      .getAllPools(
-        sorting[0]?.id,
-        sorting[0]?.desc,
-        isSearching,
-        flags.concentratedLiquidity
-      );
-
-    const initiallyFilteredPools = useMemo(
-      () =>
-        allPoolsWithMetrics.filter((p) => {
-          // Filter out pools with low TVL.
-          if (
-            !IS_TESTNET &&
-            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-          ) {
-            return false;
+  const {
+    data: poolsPagesData,
+    isLoading,
+    isFetching,
+    isPreviousData,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
+    {
+      limit: 100,
+      search: filters.searchQuery
+        ? {
+            query: filters.searchQuery,
           }
-
-          // Filter out pools that do not match the pool filter.
-          if (poolFilterQuery && !poolFilterQuery.includes(p.queryPool.type)) {
-            return false;
-          }
-
-          if (incentiveFilterQuery.includes("superfluid")) {
-            const isSuperfluid =
-              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                p.queryPool.id
-              );
-            if (isSuperfluid) return true;
-          }
-
-          if (incentiveFilterQuery.includes("internal")) {
-            const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(
-                p.queryPool.id
-              );
-            if (isInternallyIncentivized) return true;
-          }
-
-          if (incentiveFilterQuery.includes("external")) {
-            const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.queryPool.id
-            );
-            const isExternallyIncentivized = gauges && gauges.length > 0;
-            if (isExternallyIncentivized) return true;
-          }
-
-          if (incentiveFilterQuery.includes("noIncentives")) {
-            const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.queryPool.id
-            );
-            const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(
-                p.queryPool.id
-              );
-
-            const hasNoIncentives =
-              !(gauges && gauges.length > 0) && !isInternallyIncentivized;
-            if (hasNoIncentives) return true;
-          }
-
-          return false;
-        }),
-      [
-        allPoolsWithMetrics,
-        incentiveFilterQuery,
-        poolFilterQuery,
-        queriesOsmosis.queryIncentivizedPools,
-        queriesOsmosis.querySuperfluidPools,
-        queryActiveGauges,
-      ]
-    );
-
-    const [query, _setQuery, filteredPools] = useFilteredData(
-      initiallyFilteredPools,
-      searchPoolsMemoedKeys
-    );
-    const setQuery = useCallback(
-      (search: string) => {
-        const sanitizedSearch = search.replace(/#/g, "");
-
-        if (sanitizedSearch === "") {
-          setIsSearching(false);
-        } else {
-          queriesOsmosis.queryPools.fetchRemainingPools({
-            minLiquidity: 0,
-          });
-          setIsSearching(true);
-        }
-        setSorting([]);
-        _setQuery(sanitizedSearch);
-      },
-      [_setQuery, queriesOsmosis.queryPools, setSorting]
-    );
-
-    const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
-    const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-
-    const columns = useMemo(
-      () => [
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              const poolAssets = props.row.original.queryPool.poolAssets.map(
-                (poolAsset) => ({
-                  coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                  coinDenom: poolAsset.amount.currency.coinDenom,
-                })
-              );
-
-              return (
-                <PoolCompositionCell
-                  poolAssets={poolAssets}
-                  poolId={props.row.original.queryPool.id}
-                  stableswapPool={
-                    props.row.original.queryPool.type === "stable"
-                  }
-                  superchargedPool={
-                    props.row.original.queryPool.type === "concentrated"
-                  }
-                  transmuterPool={
-                    props.row.original.queryPool.type === "transmuter"
-                  }
-                />
-              );
-            }
-          ),
-          header: t("pools.allPools.sort.poolName"),
-          id: "pool",
-          sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              return (
-                <MetricLoaderCell
-                  value={props.row.original.volume24h.toString()}
-                />
-              );
-            }
-          ),
-          header: t("pools.allPools.sort.volume24h"),
-          id: "volume24h",
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              return <>{props.row.original.liquidity.toString()}</>;
-            }
-          ),
-          header: t("pools.allPools.sort.liquidity"),
-          id: "liquidity",
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              return (
-                <MetricLoaderCell
-                  value={props.row.original.feesSpent7d.toString()}
-                />
-              );
-            }
-          ),
-          header: t("pools.allPools.sort.fees"),
-          id: "feesSpent7d",
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              const pool = props.getValue();
-
-              const inflation = queriesCosmos.queryInflation;
-              /**
-               * If pool APR is 50 times bigger than staking APR, warn user
-               * that pool may be subject to inflation
-               */
-              const isAPRTooHigh =
-                !Boolean(pool.concentratedPoolDetail) &&
-                inflation.inflation.toDec().gt(new Dec(0))
-                  ? pool.apr
-                      .toDec()
-                      .gt(
-                        inflation.inflation
-                          .toDec()
-                          .quo(new Dec(100))
-                          .mul(new Dec(100))
-                      )
-                  : false;
-
-              let value: ReactNode | null;
-              if (isAPRTooHigh) {
-                // Only display warning when APR is too high
-                value = (
-                  <Tooltip
-                    className="w-5"
-                    content={t("highPoolInflationWarning")}
-                  >
-                    <p className="flex items-center gap-1.5">
-                      <Icon
-                        id="alert-triangle"
-                        className="h-4 w-4 text-osmoverse-400"
-                      />
-                      {pool.apr.toString()}
-                    </p>
-                  </Tooltip>
-                );
-              } else if (
-                Boolean(pool.concentratedPoolDetail) &&
-                flags.aprBreakdown
-              ) {
-                value = <ClAprBreakdownCell poolId={pool.queryPool.id} />;
-              } else if (flags._isInitialized) {
-                value = pool.apr.toString();
-              } else {
-                value = null;
-              }
-
-              return (
-                <MetricLoaderCell
-                  isLoading={
-                    queriesOsmosis.queryIncentivizedPools.isAprFetching
-                  }
-                  value={value}
-                />
-              );
-            }
-          ),
-          header: t("pools.allPools.sort.APRIncentivized"),
-          id: "apr",
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              const poolWithMetrics = props.row.original;
-              const poolId = poolWithMetrics.queryPool.id;
-              return (
-                <PoolQuickActionCell
-                  poolId={poolId}
-                  cellGroupEventEmitter={cellGroupEventEmitter}
-                  onAddLiquidity={() => quickAddLiquidity(poolId)}
-                  onRemoveLiquidity={
-                    !poolWithMetrics.myAvailableLiquidity.toDec().isZero()
-                      ? () => quickRemoveLiquidity(poolId)
-                      : undefined
-                  }
-                  onLockTokens={
-                    !poolWithMetrics.myAvailableLiquidity.toDec().isZero()
-                      ? () => quickLockTokens(poolId)
-                      : undefined
-                  }
-                />
-              );
-            }
-          ),
-          header: "",
-          id: "actions",
-        }),
+        : undefined,
+      // These are all of the pools that we support fetching.
+      // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      types: [
+        ...filters.poolTypesFilter,
+        "cosmwasm",
+        "cosmwasm-astroport-pcl",
+        "cosmwasm-whitewhale",
       ],
-      [
-        cellGroupEventEmitter,
-        columnHelper,
-        queriesCosmos.queryInflation,
-        queriesOsmosis.queryIncentivizedPools.isAprFetching,
-        quickAddLiquidity,
-        quickLockTokens,
-        quickRemoveLiquidity,
-        t,
-        flags.aprBreakdown,
-        flags._isInitialized,
-      ]
-    );
+      incentiveTypes: filters.poolIncentivesFilter,
+      sort: sortKey
+        ? {
+            keyPath: sortKey,
+            direction: sortParams.allPoolsSortDir,
+          }
+        : undefined,
+      minLiquidityUsd: 1_000,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
 
-    const table = useReactTable({
-      data: filteredPools,
-      columns,
-      state: {
-        sorting,
+      keepPreviousData: true,
+
+      // expensive query
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
       },
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryPools.fetchRemainingPools({
-          minLiquidity: 0,
-        });
+    }
+  );
 
-        const nextState = runIfFn(updaterOrValue, sorting);
-        const nextId: string | undefined = nextState[0]?.id;
+  const poolsData = useMemo(
+    () => poolsPagesData?.pages.flatMap((page) => page?.items) ?? [],
+    [poolsPagesData]
+  );
 
-        const accessors: Record<string, keyof ObservablePoolWithMetric> = {
-          queryPool: "queryPool",
-          volume24h: "volume24h",
-          liquidity: "liquidity",
-          feesSpent7d: "feesSpent7d",
-          apr: "apr",
-        };
+  // If more than half of the pools have volume and fees data, we should format their respective columns.
+  // Otherwise, we should not display them.
+  const { shouldDisplayVolumeData, shouldDisplayFeesData } = useMemo(() => {
+    let volumePresenceCount = 0;
+    let feesPresenceCount = 0;
+    poolsData.forEach((pool) => {
+      if (pool.volume24hUsd) {
+        volumePresenceCount++;
+      }
 
-        if (accessors[nextId]) {
-          setSorting([{ id: accessors[nextId], desc: nextState[0].desc }]);
-        } else {
-          setSorting([]);
-        }
-      },
-      manualSorting: true,
-      filterFns: {
-        /**
-         * these filters, even though they are not used in this table instance,
-         * are necessary to suppress errors derived by the "@tanstack/table-core"
-         * module declaration in the earn page.
-         *
-         * @fabryscript
-         */
-        arrLengthEquals,
-        strictEqualFilter,
-        boolEquals,
-        boolEqualsString,
-        listOptionValueEquals,
-      },
+      if (pool.feesSpent7dUsd) {
+        feesPresenceCount++;
+      }
     });
+    return {
+      shouldDisplayVolumeData: volumePresenceCount > poolsData.length / 2,
+      shouldDisplayFeesData: false, // never show fees in the table
+    };
+  }, [poolsData]);
 
-    const handleFetchRemaining = useCallback(
-      () =>
-        queriesOsmosis.queryPools.fetchRemainingPools({
-          minLiquidity: 0,
-        }),
-      [queriesOsmosis.queryPools]
-    );
+  // Define columns
+  const cellGroupEventEmitter = useRef(new EventEmitter()).current;
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Pool>();
 
-    const paginatePoolsQueryStore = useCallback(() => {
-      queriesOsmosis.queryPools.paginate();
-    }, [queriesOsmosis.queryPools]);
+    let allColumns = [
+      columnHelper.accessor((row) => row, {
+        id: "pool",
+        header: t("pools.allPools.sort.poolName"),
+        cell: PoolCompositionCell,
+      }),
+    ];
 
-    const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
-
-    const onSelectFilter = useCallback(
-      (id: keyof typeof PoolFilters) => {
-        if (poolFilterQuery.includes(id)) {
-          router.replace(
-            {
-              query: {
-                ...router.query,
-                pool: poolFilterQuery
-                  .filter((incentive) => incentive !== id)
-                  .join(","),
-              },
-            },
-            undefined,
-            {
-              scroll: false,
-            }
-          );
-        } else {
-          router.push(
-            {
-              query: {
-                ...router.query,
-                pool: [...poolFilterQuery, id].join(","),
-              },
-            },
-            undefined,
-            {
-              scroll: false,
-            }
-          );
-        }
-        handleFetchRemaining();
-      },
-      [handleFetchRemaining, poolFilterQuery, router]
-    );
-    const onSelectIncentiveFilter = useCallback(
-      (id: keyof typeof IncentiveFilters) => {
-        if (incentiveFilterQuery.includes(id)) {
-          router.replace(
-            {
-              query: {
-                ...router.query,
-                incentive: incentiveFilterQuery
-                  .filter((incentive) => incentive !== id)
-                  .join(","),
-              },
-            },
-            undefined,
-            {
-              scroll: false,
-            }
-          );
-        } else {
-          router.push(
-            {
-              query: {
-                ...router.query,
-                incentive: [...incentiveFilterQuery, id].join(","),
-              },
-            },
-            undefined,
-            {
-              scroll: false,
-            }
-          );
-        }
-        handleFetchRemaining();
-      },
-      [handleFetchRemaining, incentiveFilterQuery, router]
-    );
-
-    return (
-      <>
-        <div className="mt-5 flex flex-col gap-3">
-          {isMobile ? (
-            <>
-              <div className="flex gap-3">
-                <SearchBox
-                  currentValue={query}
-                  onInput={setQuery}
-                  placeholder={t("pools.allPools.search")}
-                  className="!w-full rounded-full"
-                  rightIcon={() => (
-                    <button
-                      className="flex h-8 w-8 items-center justify-center rounded-full border border-osmoverse-500 text-osmoverse-200"
-                      onClick={() => setMobileSortMenuIsOpen(true)}
-                    >
-                      <Icon id="tune" className="" />
-                    </button>
-                  )}
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex-1">
-                  <CheckboxSelect
-                    label={t("components.pool.mobileTitle")}
-                    options={Object.entries(PoolFilters).map(
-                      ([id, display]) => ({
-                        id,
-                        display,
-                      })
-                    )}
-                    selectedOptionIds={poolFilterQuery}
-                    onSelect={(id) =>
-                      onSelectFilter(id as keyof typeof PoolFilters)
-                    }
-                  />
-                </div>
-                <div className="flex-1">
-                  <CheckboxSelect
-                    label={t("components.incentive.mobileTitle")}
-                    options={Object.entries(IncentiveFilters).map(
-                      ([id, display]) => ({
-                        id,
-                        display,
-                      })
-                    )}
-                    selectedOptionIds={incentiveFilterQuery}
-                    onSelect={(id) =>
-                      onSelectIncentiveFilter(
-                        id as keyof typeof IncentiveFilters
-                      )
-                    }
-                    menuItemsClassName="sm:left-auto sm:-right-px"
-                  />
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex place-content-between items-center">
-              <h5>{t("pools.allPools.title")}</h5>
-              <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
-                <CheckboxSelect
-                  label={
-                    isMobile
-                      ? t("components.pool.mobileTitle")
-                      : t("components.pool.title")
-                  }
-                  options={Object.entries(PoolFilters).map(([id, display]) => ({
-                    id,
-                    display,
-                  }))}
-                  selectedOptionIds={poolFilterQuery}
-                  onSelect={(id) =>
-                    onSelectFilter(id as keyof typeof PoolFilters)
-                  }
-                />
-                <CheckboxSelect
-                  label={
-                    isMobile
-                      ? t("components.incentive.mobileTitle")
-                      : t("components.incentive.title")
-                  }
-                  options={Object.entries(IncentiveFilters).map(
-                    ([id, display]) => ({
-                      id,
-                      display,
-                    })
-                  )}
-                  selectedOptionIds={incentiveFilterQuery}
-                  onSelect={(id) =>
-                    onSelectIncentiveFilter(id as keyof typeof IncentiveFilters)
-                  }
-                />
-                <SearchBox
-                  currentValue={query}
-                  onInput={setQuery}
-                  placeholder={t("pools.allPools.search")}
-                  className="!w-64"
-                  size="small"
-                  onFocusChange={(isFocused) => {
-                    // user typed then removed focus
-                    if (query !== "" && !isFocused) {
-                      logEvent([
-                        EventName.Pools.allPoolsListFiltered,
-                        {
-                          isFilterOn: true,
-                          filteredBy: query,
-                        },
-                      ]);
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="h-auto overflow-auto">
-            <PaginatedTable
-              paginate={paginatePoolsQueryStore}
-              mobileSize={170}
-              size={69}
-              table={table}
-              topOffset={topOffset}
+    // Only show volume if more than half of the pools have volume data.
+    if (shouldDisplayVolumeData) {
+      allColumns.push(
+        columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
+          id: "volume24hUsd",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.volume24h")}
+              sortKey="volume24hUsd"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
             />
-          </div>
-        </div>
-        <MenuOptionsModal
-          title={t("components.sort.mobileMenu")}
-          options={table.getHeaderGroups()[0].headers.map(({ id, column }) => {
-            return {
-              id,
-              display: column.columnDef.header as string,
-            };
-          })}
-          selectedOptionId={sorting[0]?.id}
-          onSelectMenuOption={(id: string) => {
-            table.getColumn(id)?.toggleSorting();
-            setMobileSortMenuIsOpen(false);
-          }}
-          isOpen={mobileSortMenuIsOpen}
-          onRequestClose={() => setMobileSortMenuIsOpen(false)}
-        />
-      </>
-    );
-  }
-);
+          ),
+        }) as (typeof allColumns)[number]
+      );
+    }
 
-const CheckboxSelect: FC<
-  {
-    label: string;
-    selectedOptionIds?: string[];
-    showDeselectAll?: boolean;
-    menuItemsClassName?: string;
-  } & MenuSelectProps
-> = ({ label, selectedOptionIds, options, onSelect, menuItemsClassName }) => {
-  const { isMobile } = useWindowSize();
+    allColumns.push(
+      columnHelper.accessor(
+        (row) => row.totalFiatValueLocked?.toString() ?? "0",
+        {
+          id: "totalFiatValueLocked",
+          header: () => (
+            <SortHeader
+              label={t("pools.allPools.sort.liquidity")}
+              sortKey="totalFiatValueLocked"
+              disabled={isLoading}
+              currentSortKey={sortKey}
+              currentDirection={sortParams.allPoolsSortDir}
+              setSortDirection={setSortDirection}
+              setSortKey={setSortKey}
+            />
+          ),
+        }
+      ) as (typeof allColumns)[number]
+    );
+
+    // Only show fees if more than half of the pools have fees data.
+    if (shouldDisplayFeesData) {
+      allColumns.push(
+        columnHelper.accessor(
+          (row) => row.feesSpent7dUsd?.toString() ?? "N/A",
+          {
+            id: "feesSpent7dUsd",
+            header: () => (
+              <SortHeader
+                label={t("pools.allPools.sort.fees")}
+                sortKey="feesSpent7dUsd"
+                disabled={isLoading}
+                currentSortKey={sortKey}
+                currentDirection={sortParams.allPoolsSortDir}
+                setSortDirection={setSortDirection}
+                setSortKey={setSortKey}
+              />
+            ),
+          }
+        ) as (typeof allColumns)[number]
+      );
+    }
+
+    let remainingColumns = [
+      columnHelper.accessor((row) => row, {
+        id: "aprBreakdown.total",
+        header: () => (
+          <SortHeader
+            label={t("pools.allPools.sort.APRIncentivized")}
+            sortKey="aprBreakdown.total"
+            disabled={isLoading}
+            currentSortKey={sortKey}
+            currentDirection={sortParams.allPoolsSortDir}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          >
+            <AprDisclaimerTooltip />
+          </SortHeader>
+        ),
+        cell: AprBreakdownCell,
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "poolQuickActions",
+        header: "",
+        cell: ({ row }) => (
+          <PoolQuickActionCell
+            poolId={row.original.id}
+            cellGroupEventEmitter={cellGroupEventEmitter}
+            onAddLiquidity={() => quickAddLiquidity(row.original.id)}
+          />
+        ),
+      }),
+    ] as (typeof allColumns)[number][];
+
+    allColumns.push(...remainingColumns);
+
+    return allColumns;
+  }, [
+    t,
+    isLoading,
+    sortKey,
+    sortParams.allPoolsSortDir,
+    setSortDirection,
+    setSortKey,
+    cellGroupEventEmitter,
+    quickAddLiquidity,
+    shouldDisplayVolumeData,
+    shouldDisplayFeesData,
+  ]);
+
+  /** Columns collapsed for screen size responsiveness. */
+  const collapsedColumns = useMemo(() => {
+    const collapsedColIds: string[] = [];
+    if (width < Breakpoint.xxl && shouldDisplayFeesData)
+      collapsedColIds.push("feesSpent7dUsd");
+    if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
+    if (width < Breakpoint.lg && shouldDisplayVolumeData)
+      collapsedColIds.push("volume24hUsd");
+    if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
+    return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
+  }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
+
+  const table = useReactTable({
+    data: poolsData,
+    columns: collapsedColumns,
+    manualSorting: true,
+    manualFiltering: true,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const { rows } = table.getRowModel();
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rows.length,
+    estimateSize: () => 69,
+    paddingStart: topOffset,
+    overscan: 5,
+  });
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  // pagination
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
+  const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+  useEffect(() => {
+    if (
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index === lastVirtualRow.index &&
+      canLoadMore
+    )
+      fetchNextPage();
+  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
-    <Menu>
-      {({ open }) => (
-        <div className="relative">
-          <Menu.Button
-            className={classNames(
-              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors md:w-full",
-              "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
-              open &&
-                "border-2 border-osmoverse-200 px-[23px] text-osmoverse-200"
-            )}
-          >
-            {label}
-            <Icon
-              className="flex shrink-0 items-center text-osmoverse-200"
-              id={open ? "chevron-up" : "chevron-down"}
-              height={isMobile ? 12 : 16}
-              width={isMobile ? 12 : 16}
-            />
-          </Menu.Button>
-
-          <Menu.Items
-            className={classNames(
-              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
-              menuItemsClassName
-            )}
-          >
-            {options.map(({ id, display }, index) => {
-              return (
-                <Menu.Item key={id}>
-                  {({ active }) => (
-                    <button
-                      className={classNames(
-                        "flex cursor-pointer items-center gap-3 px-4 py-2 text-left text-osmoverse-200 transition-colors",
-                        {
-                          "hover:bg-osmoverse-700": active,
-                          "rounded-b-xlinset": index === options.length - 1,
-                        }
+    <div className="w-full">
+      <TableControls />
+      <table
+        className={classNames(
+          "table-auto",
+          isPreviousData &&
+            isFetching &&
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+        )}
+      >
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} colSpan={header.colSpan}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
                       )}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onSelect(id);
-                      }}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {paddingTop > 0 && paddingTop - topOffset > 0 && (
+            <tr>
+              <td style={{ height: paddingTop - topOffset }} />
+            </tr>
+          )}
+          {isLoading && (
+            <tr>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
+                <Spinner />
+              </td>
+            </tr>
+          )}
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+
+            return (
+              <tr
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                key={row.id}
+                onClick={() => router.push("/pool/" + row.original.id)}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      isPreviousData && isFetching && "cursor-progress"
+                    )}
+                    key={cell.id}
+                  >
+                    <Link
+                      href={getPoolLink(row.original)}
+                      key={virtualRow.index}
+                      target={getPoolTypeTarget(row.original)}
+                      onClick={(e) => e.stopPropagation()}
+                      passHref
+                      prefetch={false}
+                      className={classNames(
+                        isPreviousData && isFetching && "cursor-progress"
+                      )}
                     >
-                      <CheckBox
-                        className="w-fit"
-                        isOn={Boolean(selectedOptionIds?.includes(id))}
-                        onToggle={noop}
-                      />
-                      <span>{display}</span>
-                    </button>
-                  )}
-                </Menu.Item>
-              );
-            })}
-          </Menu.Items>
-        </div>
-      )}
-    </Menu>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Link>
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+          {isFetchingNextPage && (
+            <tr>
+              <td className="!text-center" colSpan={collapsedColumns.length}>
+                <Spinner />
+              </td>
+            </tr>
+          )}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: paddingBottom - topOffset }} />
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
+
+const TableControls = () => {
+  const { t } = useTranslation();
+
+  const { filters, setFilters } = useAllPoolsTable();
+
+  const onSearchInput = useCallback(
+    (data: string) => {
+      setFilters((state) => ({
+        ...state,
+        searchQuery: data.length === 0 ? null : data,
+      }));
+    },
+    [setFilters]
+  );
+
+  return (
+    <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
+      <h5>{t("pools.allPools.title")}</h5>
+
+      <div className="flex h-12 flex-wrap gap-3 xl:h-fit">
+        <CheckboxSelect
+          label={t("components.pool.title")}
+          selectedOptionIds={filters.poolTypesFilter}
+          atLeastOneSelected
+          options={[
+            { id: "weighted", display: t("components.table.weighted") },
+            { id: "stable", display: t("components.table.stable") },
+            {
+              id: "concentrated",
+              display: t("components.table.concentrated"),
+            },
+            {
+              id: "cosmwasm-transmuter",
+              display: t("components.table.transmuter"),
+            },
+          ]}
+          onSelect={(poolType) => {
+            if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
+              setFilters((state) => ({
+                ...state,
+                poolTypesFilter: state.poolTypesFilter.filter(
+                  (type) => type !== poolType
+                ),
+              }));
+            } else {
+              setFilters((state) => ({
+                ...state,
+                poolTypesFilter: [
+                  ...state.poolTypesFilter,
+                  poolType as PoolTypeFilter,
+                ],
+              }));
+            }
+          }}
+        />
+        <CheckboxSelect
+          label={t("components.incentive.title")}
+          selectedOptionIds={filters.poolIncentivesFilter}
+          atLeastOneSelected
+          options={[
+            { id: "superfluid", display: t("pools.aprBreakdown.superfluid") },
+            { id: "osmosis", display: t("pools.aprBreakdown.boost") },
+            {
+              id: "boost",
+              display: t("pools.aprBreakdown.externalBoost"),
+            },
+            {
+              id: "none",
+              display: t("components.table.noIncentives"),
+            },
+          ]}
+          onSelect={(incentiveType) => {
+            if (
+              filters.poolIncentivesFilter.includes(
+                incentiveType as PoolIncentiveFilter
+              )
+            ) {
+              setFilters((state) => ({
+                ...state,
+                poolIncentivesFilter: filters.poolIncentivesFilter.filter(
+                  (type) => type !== (incentiveType as PoolIncentiveFilter)
+                ),
+              }));
+            } else {
+              setFilters((state) => ({
+                ...state,
+                poolIncentivesFilter: [
+                  ...state.poolIncentivesFilter,
+                  incentiveType as PoolIncentiveFilter,
+                ],
+              }));
+            }
+          }}
+        />
+        <SearchBox
+          size="small"
+          placeholder={t("assets.table.search")}
+          debounce={500}
+          currentValue={filters.searchQuery ?? undefined}
+          onInput={onSearchInput}
+        />
+      </div>
+    </div>
+  );
+};
+
+type PoolCellComponent<TProps = {}> = FunctionComponent<
+  CellContext<Pool, Pool> & TProps
+>;
+
+const PoolCompositionCell: PoolCellComponent = ({
+  row: {
+    original: { id, type, spreadFactor, reserveCoins },
+  },
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center">
+      <PoolAssetsIcon
+        assets={reserveCoins.map((coin) => coin.currency)}
+        size="sm"
+      />
+      <div className="flex items-center gap-1.5 text-ion-400">
+        <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
+          <PoolAssetsName
+            size="sm"
+            assetDenoms={reserveCoins.map((coin) => coin.denom)}
+          />
+          <span className={classNames("text-sm font-caption opacity-60")}>
+            <p className={classNames("ml-auto flex items-center gap-1.5")}>
+              {t("components.table.poolId", { id })}
+              <div>
+                <p
+                  className={classNames("ml-auto flex items-center gap-1.5", {
+                    "text-ion-400": Boolean(type === "concentrated"),
+                    "text-bullish-300": Boolean(type === "stable"),
+                    "text-rust-300": Boolean(
+                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                    ),
+                  })}
+                >
+                  {type === "weighted" && (
+                    <Icon id="weighted-pool" width={16} height={16} />
+                  )}
+                  {type === "stable" && (
+                    <Icon id="stable-pool" width={16} height={16} />
+                  )}
+                  {type === "concentrated" && (
+                    <Icon id="concentrated-pool" width={16} height={16} />
+                  )}
+                  {type === "cosmwasm-astroport-pcl" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/astroport-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
+                  {type === "cosmwasm-whitewhale" && (
+                    <Image
+                      alt="astroport icon"
+                      src="/images/whitewhale-icon.png"
+                      height={16}
+                      width={16}
+                    />
+                  )}
+                  {type === "cosmwasm-transmuter" && (
+                    <Icon id="custom-pool" width={16} height={16} />
+                  )}
+
+                  {type != "cosmwasm-astroport-pcl" &&
+                    type != "cosmwasm-whitewhale" &&
+                    (spreadFactor ? spreadFactor.toString() : "")}
+                </p>
+              </div>
+            </p>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AprBreakdownCell: PoolCellComponent = ({
+  row: {
+    original: { aprBreakdown },
+  },
+}) =>
+  (aprBreakdown && (
+    <Tooltip
+      rootClassNames="!rounded-2xl drop-shadow-md"
+      content={<AprBreakdown {...aprBreakdown} />}
+    >
+      <p
+        className={classNames("ml-auto flex items-center gap-1.5", {
+          "text-bullish-500": Boolean(
+            aprBreakdown.boost || aprBreakdown.osmosis
+          ),
+        })}
+      >
+        {aprBreakdown.boost || aprBreakdown.osmosis ? (
+          <div className="rounded-full bg-[#003F4780]">
+            <Icon id="boost" className="h-4 w-4 text-bullish-500" />
+          </div>
+        ) : (
+          <Icon id="info" className="h-4 w-4" />
+        )}
+        {aprBreakdown.total?.maxDecimals(0).toString() ?? ""}
+      </p>
+    </Tooltip>
+  )) ??
+  null;
+
+function getPoolLink(pool: Pool): string {
+  if (pool.type === "cosmwasm-transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
+  }
+  if (pool.type === "cosmwasm-astroport-pcl") {
+    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+  }
+
+  if (pool.type === "cosmwasm-whitewhale") {
+    return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
+
+  return `/pool/${pool.id}`;
+}
+
+function getPoolTypeTarget(pool: Pool) {
+  if (
+    pool.type === "cosmwasm-transmuter" ||
+    pool.type === "cosmwasm-astroport-pcl" ||
+    pool.type === "cosmwasm-whitewhale"
+  ) {
+    return "_blank";
+  }
+  return "";
+}

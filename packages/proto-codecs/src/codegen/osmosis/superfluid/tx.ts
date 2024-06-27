@@ -15,9 +15,9 @@ export interface MsgSuperfluidDelegateProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSuperfluidDelegateAmino {
-  sender: string;
-  lock_id: string;
-  val_addr: string;
+  sender?: string;
+  lock_id?: string;
+  val_addr?: string;
 }
 export interface MsgSuperfluidDelegateAminoMsg {
   type: "osmosis/superfluid-delegate";
@@ -48,8 +48,8 @@ export interface MsgSuperfluidUndelegateProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSuperfluidUndelegateAmino {
-  sender: string;
-  lock_id: string;
+  sender?: string;
+  lock_id?: string;
 }
 export interface MsgSuperfluidUndelegateAminoMsg {
   type: "osmosis/superfluid-undelegate";
@@ -79,8 +79,8 @@ export interface MsgSuperfluidUnbondLockProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSuperfluidUnbondLockAmino {
-  sender: string;
-  lock_id: string;
+  sender?: string;
+  lock_id?: string;
 }
 export interface MsgSuperfluidUnbondLockAminoMsg {
   type: "osmosis/superfluid-unbond-lock";
@@ -112,8 +112,8 @@ export interface MsgSuperfluidUndelegateAndUnbondLockProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSuperfluidUndelegateAndUnbondLockAmino {
-  sender: string;
-  lock_id: string;
+  sender?: string;
+  lock_id?: string;
   /** Amount of unlocking coin. */
   coin?: CoinAmino;
 }
@@ -144,7 +144,7 @@ export interface MsgSuperfluidUndelegateAndUnbondLockResponseAmino {
    * returns the original lockid if the unlocked amount is equal to the
    * original lock's amount.
    */
-  lock_id: string;
+  lock_id?: string;
 }
 export interface MsgSuperfluidUndelegateAndUnbondLockResponseAminoMsg {
   type: "osmosis/superfluid-undelegate-and-unbond-lock-response";
@@ -173,9 +173,9 @@ export interface MsgLockAndSuperfluidDelegateProtoMsg {
  * specified validator addr.
  */
 export interface MsgLockAndSuperfluidDelegateAmino {
-  sender: string;
-  coins: CoinAmino[];
-  val_addr: string;
+  sender?: string;
+  coins?: CoinAmino[];
+  val_addr?: string;
 }
 export interface MsgLockAndSuperfluidDelegateAminoMsg {
   type: "osmosis/lock-and-superfluid-delegate";
@@ -199,7 +199,7 @@ export interface MsgLockAndSuperfluidDelegateResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgLockAndSuperfluidDelegateResponseAmino {
-  ID: string;
+  ID?: string;
 }
 export interface MsgLockAndSuperfluidDelegateResponseAminoMsg {
   type: "osmosis/lock-and-superfluid-delegate-response";
@@ -227,10 +227,10 @@ export interface MsgCreateFullRangePositionAndSuperfluidDelegateProtoMsg {
  * in a concentrated liquidity pool, then superfluid delegates.
  */
 export interface MsgCreateFullRangePositionAndSuperfluidDelegateAmino {
-  sender: string;
-  coins: CoinAmino[];
-  val_addr: string;
-  pool_id: string;
+  sender?: string;
+  coins?: CoinAmino[];
+  val_addr?: string;
+  pool_id?: string;
 }
 export interface MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg {
   type: "osmosis/full-range-and-sf-delegate";
@@ -255,8 +255,8 @@ export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseProtoMsg
   value: Uint8Array;
 }
 export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino {
-  lockID: string;
-  positionID: string;
+  lockID?: string;
+  positionID?: string;
 }
 export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseAminoMsg {
   type: "osmosis/create-full-range-position-and-superfluid-delegate-response";
@@ -295,8 +295,8 @@ export interface MsgUnPoolWhitelistedPoolProtoMsg {
  * until unbond completion.
  */
 export interface MsgUnPoolWhitelistedPoolAmino {
-  sender: string;
-  pool_id: string;
+  sender?: string;
+  pool_id?: string;
 }
 export interface MsgUnPoolWhitelistedPoolAminoMsg {
   type: "osmosis/unpool-whitelisted-pool";
@@ -324,7 +324,7 @@ export interface MsgUnPoolWhitelistedPoolResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgUnPoolWhitelistedPoolResponseAmino {
-  exited_lock_ids: string[];
+  exited_lock_ids?: string[];
 }
 export interface MsgUnPoolWhitelistedPoolResponseAminoMsg {
   type: "osmosis/un-pool-whitelisted-pool-response";
@@ -353,11 +353,11 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionProtoMs
  * MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
  */
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino {
-  sender: string;
-  lock_id: string;
+  sender?: string;
+  lock_id?: string;
   shares_to_migrate?: CoinAmino;
   /** token_out_mins indicates minimum token to exit Balancer pool with. */
-  token_out_mins: CoinAmino[];
+  token_out_mins?: CoinAmino[];
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAminoMsg {
   type: "osmosis/unlock-and-migrate";
@@ -384,9 +384,9 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionRespons
   value: Uint8Array;
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponseAmino {
-  amount0: string;
-  amount1: string;
-  liquidity_created: string;
+  amount0?: string;
+  amount1?: string;
+  liquidity_created?: string;
   join_time?: string;
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponseAminoMsg {
@@ -412,8 +412,8 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionProtoMsg {
 }
 /** ===================== MsgAddToConcentratedLiquiditySuperfluidPosition */
 export interface MsgAddToConcentratedLiquiditySuperfluidPositionAmino {
-  position_id: string;
-  sender: string;
+  position_id?: string;
+  sender?: string;
   token_desired0?: CoinAmino;
   token_desired1?: CoinAmino;
 }
@@ -445,16 +445,16 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseProtoMsg
   value: Uint8Array;
 }
 export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino {
-  position_id: string;
-  amount0: string;
-  amount1: string;
+  position_id?: string;
+  amount0?: string;
+  amount1?: string;
   /**
    * new_liquidity is the final liquidity after the add.
    * It includes the liquidity that existed before in the position
    * and the new liquidity that was added to the position.
    */
-  new_liquidity: string;
-  lock_id: string;
+  new_liquidity?: string;
+  lock_id?: string;
 }
 export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseAminoMsg {
   type: "osmosis/add-to-concentrated-liquidity-superfluid-position-response";
@@ -500,16 +500,16 @@ export interface MsgUnbondConvertAndStakeAmino {
    * lock ID to convert and stake.
    * lock id with 0 should be provided if converting liquid gamm shares to stake
    */
-  lock_id: string;
-  sender: string;
+  lock_id?: string;
+  sender?: string;
   /**
    * validator address to delegate to.
    * If provided empty string, we use the validators returned from
    * valset-preference module.
    */
-  val_addr: string;
+  val_addr?: string;
   /** min_amt_to_stake indicates the minimum amount to stake after conversion */
-  min_amt_to_stake: string;
+  min_amt_to_stake?: string;
   /**
    * shares_to_convert indicates shares wanted to stake.
    * Note that this field is only used for liquid(unlocked) gamm shares.
@@ -537,7 +537,7 @@ export interface MsgUnbondConvertAndStakeResponseProtoMsg {
   value: Uint8Array;
 }
 export interface MsgUnbondConvertAndStakeResponseAmino {
-  total_amt_staked: string;
+  total_amt_staked?: string;
 }
 export interface MsgUnbondConvertAndStakeResponseAminoMsg {
   type: "osmosis/unbond-convert-and-stake-response";
@@ -608,17 +608,24 @@ export const MsgSuperfluidDelegate = {
     return message;
   },
   fromAmino(object: MsgSuperfluidDelegateAmino): MsgSuperfluidDelegate {
-    return {
-      sender: object.sender,
-      lockId: BigInt(object.lock_id),
-      valAddr: object.val_addr,
-    };
+    const message = createBaseMsgSuperfluidDelegate();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.val_addr !== undefined && object.val_addr !== null) {
+      message.valAddr = object.val_addr;
+    }
+    return message;
   },
   toAmino(message: MsgSuperfluidDelegate): MsgSuperfluidDelegateAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
-    obj.val_addr = message.valAddr;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
+    obj.val_addr = message.valAddr === "" ? undefined : message.valAddr;
     return obj;
   },
   fromAminoMsg(object: MsgSuperfluidDelegateAminoMsg): MsgSuperfluidDelegate {
@@ -681,7 +688,8 @@ export const MsgSuperfluidDelegateResponse = {
   fromAmino(
     _: MsgSuperfluidDelegateResponseAmino
   ): MsgSuperfluidDelegateResponse {
-    return {};
+    const message = createBaseMsgSuperfluidDelegateResponse();
+    return message;
   },
   toAmino(
     _: MsgSuperfluidDelegateResponse
@@ -775,15 +783,20 @@ export const MsgSuperfluidUndelegate = {
     return message;
   },
   fromAmino(object: MsgSuperfluidUndelegateAmino): MsgSuperfluidUndelegate {
-    return {
-      sender: object.sender,
-      lockId: BigInt(object.lock_id),
-    };
+    const message = createBaseMsgSuperfluidUndelegate();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    return message;
   },
   toAmino(message: MsgSuperfluidUndelegate): MsgSuperfluidUndelegateAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -854,7 +867,8 @@ export const MsgSuperfluidUndelegateResponse = {
   fromAmino(
     _: MsgSuperfluidUndelegateResponseAmino
   ): MsgSuperfluidUndelegateResponse {
-    return {};
+    const message = createBaseMsgSuperfluidUndelegateResponse();
+    return message;
   },
   toAmino(
     _: MsgSuperfluidUndelegateResponse
@@ -948,15 +962,20 @@ export const MsgSuperfluidUnbondLock = {
     return message;
   },
   fromAmino(object: MsgSuperfluidUnbondLockAmino): MsgSuperfluidUnbondLock {
-    return {
-      sender: object.sender,
-      lockId: BigInt(object.lock_id),
-    };
+    const message = createBaseMsgSuperfluidUnbondLock();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    return message;
   },
   toAmino(message: MsgSuperfluidUnbondLock): MsgSuperfluidUnbondLockAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1027,7 +1046,8 @@ export const MsgSuperfluidUnbondLockResponse = {
   fromAmino(
     _: MsgSuperfluidUnbondLockResponseAmino
   ): MsgSuperfluidUnbondLockResponse {
-    return {};
+    const message = createBaseMsgSuperfluidUnbondLockResponse();
+    return message;
   },
   toAmino(
     _: MsgSuperfluidUnbondLockResponse
@@ -1134,18 +1154,25 @@ export const MsgSuperfluidUndelegateAndUnbondLock = {
   fromAmino(
     object: MsgSuperfluidUndelegateAndUnbondLockAmino
   ): MsgSuperfluidUndelegateAndUnbondLock {
-    return {
-      sender: object.sender,
-      lockId: BigInt(object.lock_id),
-      coin: object?.coin ? Coin.fromAmino(object.coin) : undefined,
-    };
+    const message = createBaseMsgSuperfluidUndelegateAndUnbondLock();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.coin !== undefined && object.coin !== null) {
+      message.coin = Coin.fromAmino(object.coin);
+    }
+    return message;
   },
   toAmino(
     message: MsgSuperfluidUndelegateAndUnbondLock
   ): MsgSuperfluidUndelegateAndUnbondLockAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     obj.coin = message.coin ? Coin.toAmino(message.coin) : undefined;
     return obj;
   },
@@ -1229,15 +1256,18 @@ export const MsgSuperfluidUndelegateAndUnbondLockResponse = {
   fromAmino(
     object: MsgSuperfluidUndelegateAndUnbondLockResponseAmino
   ): MsgSuperfluidUndelegateAndUnbondLockResponse {
-    return {
-      lockId: BigInt(object.lock_id),
-    };
+    const message = createBaseMsgSuperfluidUndelegateAndUnbondLockResponse();
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    return message;
   },
   toAmino(
     message: MsgSuperfluidUndelegateAndUnbondLockResponse
   ): MsgSuperfluidUndelegateAndUnbondLockResponseAmino {
     const obj: any = {};
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1337,25 +1367,27 @@ export const MsgLockAndSuperfluidDelegate = {
   fromAmino(
     object: MsgLockAndSuperfluidDelegateAmino
   ): MsgLockAndSuperfluidDelegate {
-    return {
-      sender: object.sender,
-      coins: Array.isArray(object?.coins)
-        ? object.coins.map((e: any) => Coin.fromAmino(e))
-        : [],
-      valAddr: object.val_addr,
-    };
+    const message = createBaseMsgLockAndSuperfluidDelegate();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.coins = object.coins?.map((e) => Coin.fromAmino(e)) || [];
+    if (object.val_addr !== undefined && object.val_addr !== null) {
+      message.valAddr = object.val_addr;
+    }
+    return message;
   },
   toAmino(
     message: MsgLockAndSuperfluidDelegate
   ): MsgLockAndSuperfluidDelegateAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.coins) {
       obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
-    obj.val_addr = message.valAddr;
+    obj.val_addr = message.valAddr === "" ? undefined : message.valAddr;
     return obj;
   },
   fromAminoMsg(
@@ -1438,15 +1470,17 @@ export const MsgLockAndSuperfluidDelegateResponse = {
   fromAmino(
     object: MsgLockAndSuperfluidDelegateResponseAmino
   ): MsgLockAndSuperfluidDelegateResponse {
-    return {
-      ID: BigInt(object.ID),
-    };
+    const message = createBaseMsgLockAndSuperfluidDelegateResponse();
+    if (object.ID !== undefined && object.ID !== null) {
+      message.ID = BigInt(object.ID);
+    }
+    return message;
   },
   toAmino(
     message: MsgLockAndSuperfluidDelegateResponse
   ): MsgLockAndSuperfluidDelegateResponseAmino {
     const obj: any = {};
-    obj.ID = message.ID ? message.ID.toString() : undefined;
+    obj.ID = message.ID !== BigInt(0) ? message.ID.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1554,27 +1588,32 @@ export const MsgCreateFullRangePositionAndSuperfluidDelegate = {
   fromAmino(
     object: MsgCreateFullRangePositionAndSuperfluidDelegateAmino
   ): MsgCreateFullRangePositionAndSuperfluidDelegate {
-    return {
-      sender: object.sender,
-      coins: Array.isArray(object?.coins)
-        ? object.coins.map((e: any) => Coin.fromAmino(e))
-        : [],
-      valAddr: object.val_addr,
-      poolId: BigInt(object.pool_id),
-    };
+    const message = createBaseMsgCreateFullRangePositionAndSuperfluidDelegate();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.coins = object.coins?.map((e) => Coin.fromAmino(e)) || [];
+    if (object.val_addr !== undefined && object.val_addr !== null) {
+      message.valAddr = object.val_addr;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(
     message: MsgCreateFullRangePositionAndSuperfluidDelegate
   ): MsgCreateFullRangePositionAndSuperfluidDelegateAmino {
     const obj: any = {};
-    obj.sender = message.sender;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     if (message.coins) {
       obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
-      obj.coins = [];
+      obj.coins = message.coins;
     }
-    obj.val_addr = message.valAddr;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.val_addr = message.valAddr === "" ? undefined : message.valAddr;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1683,19 +1722,26 @@ export const MsgCreateFullRangePositionAndSuperfluidDelegateResponse = {
   fromAmino(
     object: MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino
   ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
-    return {
-      lockID: BigInt(object.lockID),
-      positionID: BigInt(object.positionID),
-    };
+    const message =
+      createBaseMsgCreateFullRangePositionAndSuperfluidDelegateResponse();
+    if (object.lockID !== undefined && object.lockID !== null) {
+      message.lockID = BigInt(object.lockID);
+    }
+    if (object.positionID !== undefined && object.positionID !== null) {
+      message.positionID = BigInt(object.positionID);
+    }
+    return message;
   },
   toAmino(
     message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse
   ): MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino {
     const obj: any = {};
-    obj.lockID = message.lockID ? message.lockID.toString() : undefined;
-    obj.positionID = message.positionID
-      ? message.positionID.toString()
-      : undefined;
+    obj.lockID =
+      message.lockID !== BigInt(0) ? message.lockID.toString() : undefined;
+    obj.positionID =
+      message.positionID !== BigInt(0)
+        ? message.positionID.toString()
+        : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1799,15 +1845,20 @@ export const MsgUnPoolWhitelistedPool = {
     return message;
   },
   fromAmino(object: MsgUnPoolWhitelistedPoolAmino): MsgUnPoolWhitelistedPool {
-    return {
-      sender: object.sender,
-      poolId: BigInt(object.pool_id),
-    };
+    const message = createBaseMsgUnPoolWhitelistedPool();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
   },
   toAmino(message: MsgUnPoolWhitelistedPool): MsgUnPoolWhitelistedPoolAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1897,11 +1948,9 @@ export const MsgUnPoolWhitelistedPoolResponse = {
   fromAmino(
     object: MsgUnPoolWhitelistedPoolResponseAmino
   ): MsgUnPoolWhitelistedPoolResponse {
-    return {
-      exitedLockIds: Array.isArray(object?.exited_lock_ids)
-        ? object.exited_lock_ids.map((e: any) => BigInt(e))
-        : [],
-    };
+    const message = createBaseMsgUnPoolWhitelistedPoolResponse();
+    message.exitedLockIds = object.exited_lock_ids?.map((e) => BigInt(e)) || [];
+    return message;
   },
   toAmino(
     message: MsgUnPoolWhitelistedPoolResponse
@@ -1910,7 +1959,7 @@ export const MsgUnPoolWhitelistedPoolResponse = {
     if (message.exitedLockIds) {
       obj.exited_lock_ids = message.exitedLockIds.map((e) => e.toString());
     } else {
-      obj.exited_lock_ids = [];
+      obj.exited_lock_ids = message.exitedLockIds;
     }
     return obj;
   },
@@ -2025,23 +2074,31 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
   fromAmino(
     object: MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino
   ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
-    return {
-      sender: object.sender,
-      lockId: BigInt(object.lock_id),
-      sharesToMigrate: object?.shares_to_migrate
-        ? Coin.fromAmino(object.shares_to_migrate)
-        : undefined,
-      tokenOutMins: Array.isArray(object?.token_out_mins)
-        ? object.token_out_mins.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message =
+      createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (
+      object.shares_to_migrate !== undefined &&
+      object.shares_to_migrate !== null
+    ) {
+      message.sharesToMigrate = Coin.fromAmino(object.shares_to_migrate);
+    }
+    message.tokenOutMins =
+      object.token_out_mins?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(
     message: MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
   ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino {
     const obj: any = {};
-    obj.sender = message.sender;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     obj.shares_to_migrate = message.sharesToMigrate
       ? Coin.toAmino(message.sharesToMigrate)
       : undefined;
@@ -2050,7 +2107,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.token_out_mins = [];
+      obj.token_out_mins = message.tokenOutMins;
     }
     return obj;
   },
@@ -2184,22 +2241,33 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
     fromAmino(
       object: MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponseAmino
     ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
-      return {
-        amount0: object.amount0,
-        amount1: object.amount1,
-        liquidityCreated: object.liquidity_created,
-        joinTime: object?.join_time
-          ? fromTimestamp(Timestamp.fromAmino(object.join_time))
-          : undefined,
-      };
+      const message =
+        createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse();
+      if (object.amount0 !== undefined && object.amount0 !== null) {
+        message.amount0 = object.amount0;
+      }
+      if (object.amount1 !== undefined && object.amount1 !== null) {
+        message.amount1 = object.amount1;
+      }
+      if (
+        object.liquidity_created !== undefined &&
+        object.liquidity_created !== null
+      ) {
+        message.liquidityCreated = object.liquidity_created;
+      }
+      if (object.join_time !== undefined && object.join_time !== null) {
+        message.joinTime = fromTimestamp(Timestamp.fromAmino(object.join_time));
+      }
+      return message;
     },
     toAmino(
       message: MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
     ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponseAmino {
       const obj: any = {};
-      obj.amount0 = message.amount0;
-      obj.amount1 = message.amount1;
-      obj.liquidity_created = message.liquidityCreated;
+      obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+      obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+      obj.liquidity_created =
+        message.liquidityCreated === "" ? undefined : message.liquidityCreated;
       obj.join_time = message.joinTime
         ? Timestamp.toAmino(toTimestamp(message.joinTime))
         : undefined;
@@ -2331,25 +2399,30 @@ export const MsgAddToConcentratedLiquiditySuperfluidPosition = {
   fromAmino(
     object: MsgAddToConcentratedLiquiditySuperfluidPositionAmino
   ): MsgAddToConcentratedLiquiditySuperfluidPosition {
-    return {
-      positionId: BigInt(object.position_id),
-      sender: object.sender,
-      tokenDesired0: object?.token_desired0
-        ? Coin.fromAmino(object.token_desired0)
-        : undefined,
-      tokenDesired1: object?.token_desired1
-        ? Coin.fromAmino(object.token_desired1)
-        : undefined,
-    };
+    const message = createBaseMsgAddToConcentratedLiquiditySuperfluidPosition();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.token_desired0 !== undefined && object.token_desired0 !== null) {
+      message.tokenDesired0 = Coin.fromAmino(object.token_desired0);
+    }
+    if (object.token_desired1 !== undefined && object.token_desired1 !== null) {
+      message.tokenDesired1 = Coin.fromAmino(object.token_desired1);
+    }
+    return message;
   },
   toAmino(
     message: MsgAddToConcentratedLiquiditySuperfluidPosition
   ): MsgAddToConcentratedLiquiditySuperfluidPositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.sender = message.sender;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
     obj.token_desired0 = message.tokenDesired0
       ? Coin.toAmino(message.tokenDesired0)
       : undefined;
@@ -2493,25 +2566,39 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
   fromAmino(
     object: MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino
   ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
-    return {
-      positionId: BigInt(object.position_id),
-      amount0: object.amount0,
-      amount1: object.amount1,
-      newLiquidity: object.new_liquidity,
-      lockId: BigInt(object.lock_id),
-    };
+    const message =
+      createBaseMsgAddToConcentratedLiquiditySuperfluidPositionResponse();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.amount0 !== undefined && object.amount0 !== null) {
+      message.amount0 = object.amount0;
+    }
+    if (object.amount1 !== undefined && object.amount1 !== null) {
+      message.amount1 = object.amount1;
+    }
+    if (object.new_liquidity !== undefined && object.new_liquidity !== null) {
+      message.newLiquidity = object.new_liquidity;
+    }
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    return message;
   },
   toAmino(
     message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse
   ): MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.amount0 = message.amount0;
-    obj.amount1 = message.amount1;
-    obj.new_liquidity = message.newLiquidity;
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
+    obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
+    obj.new_liquidity =
+      message.newLiquidity === "" ? undefined : message.newLiquidity;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -2642,22 +2729,38 @@ export const MsgUnbondConvertAndStake = {
     return message;
   },
   fromAmino(object: MsgUnbondConvertAndStakeAmino): MsgUnbondConvertAndStake {
-    return {
-      lockId: BigInt(object.lock_id),
-      sender: object.sender,
-      valAddr: object.val_addr,
-      minAmtToStake: object.min_amt_to_stake,
-      sharesToConvert: object?.shares_to_convert
-        ? Coin.fromAmino(object.shares_to_convert)
-        : undefined,
-    };
+    const message = createBaseMsgUnbondConvertAndStake();
+    if (object.lock_id !== undefined && object.lock_id !== null) {
+      message.lockId = BigInt(object.lock_id);
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.val_addr !== undefined && object.val_addr !== null) {
+      message.valAddr = object.val_addr;
+    }
+    if (
+      object.min_amt_to_stake !== undefined &&
+      object.min_amt_to_stake !== null
+    ) {
+      message.minAmtToStake = object.min_amt_to_stake;
+    }
+    if (
+      object.shares_to_convert !== undefined &&
+      object.shares_to_convert !== null
+    ) {
+      message.sharesToConvert = Coin.fromAmino(object.shares_to_convert);
+    }
+    return message;
   },
   toAmino(message: MsgUnbondConvertAndStake): MsgUnbondConvertAndStakeAmino {
     const obj: any = {};
-    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.val_addr = message.valAddr;
-    obj.min_amt_to_stake = message.minAmtToStake;
+    obj.lock_id =
+      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.val_addr = message.valAddr === "" ? undefined : message.valAddr;
+    obj.min_amt_to_stake =
+      message.minAmtToStake === "" ? undefined : message.minAmtToStake;
     obj.shares_to_convert = message.sharesToConvert
       ? Coin.toAmino(message.sharesToConvert)
       : undefined;
@@ -2740,15 +2843,21 @@ export const MsgUnbondConvertAndStakeResponse = {
   fromAmino(
     object: MsgUnbondConvertAndStakeResponseAmino
   ): MsgUnbondConvertAndStakeResponse {
-    return {
-      totalAmtStaked: object.total_amt_staked,
-    };
+    const message = createBaseMsgUnbondConvertAndStakeResponse();
+    if (
+      object.total_amt_staked !== undefined &&
+      object.total_amt_staked !== null
+    ) {
+      message.totalAmtStaked = object.total_amt_staked;
+    }
+    return message;
   },
   toAmino(
     message: MsgUnbondConvertAndStakeResponse
   ): MsgUnbondConvertAndStakeResponseAmino {
     const obj: any = {};
-    obj.total_amt_staked = message.totalAmtStaked;
+    obj.total_amt_staked =
+      message.totalAmtStaked === "" ? undefined : message.totalAmtStaked;
     return obj;
   },
   fromAminoMsg(

@@ -22,7 +22,11 @@ export const UnbondingCard: React.FunctionComponent = () => {
         </div>
         <div className="flex flex-col pt-1 text-lg">
           {/* TODO figure out how to get estimated unbonding time */}
-          {isMobile ? <span className="h6">14 Days</span> : <h4>14 Days</h4>}
+          {isMobile ? (
+            <span className="h6">14 {t("stake.days")}</span>
+          ) : (
+            <h4>14 {t("stake.days")}</h4>
+          )}
           <span className="subtitle2 md:caption text-xs leading-4 text-osmoverse-400">
             {t("stake.unbondingSubtext")}
           </span>

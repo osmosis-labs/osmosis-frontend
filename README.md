@@ -2,6 +2,8 @@
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
+> Note: this codebase is currently undergoing a refactor from Keplr's architecture to a tRPC stack to improve performance, maintainability, and development speed. We appreciate your patience as we work through these changes.
+
 ## Overview 💻
 
 Our [frontend](https://app.osmosis.zone) is built with the following tools:
@@ -32,7 +34,7 @@ yarn start
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
-Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
+Make sure [node](https://nodejs.org/en/) = 20 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
 
 1. Install deps
 
@@ -63,7 +65,7 @@ To develop on the canonical public testnet, run:
 yarn build:testnet && yarn start:testnet
 ```
 
-To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), modify the .env file:
+To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), set this in your .env.local file in web package root:
 
 ```bash
 # Osmosis Chain Configuration Overwrite
@@ -97,6 +99,8 @@ Note: our currency registrar checks IBC hashes to see if they can be found via t
 
 ## Releases
 
+> Note: releases are suspended until the refactor is complete. Please avoid importing packages from this repo until further notice.
+
 Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
 
 To start the release process:
@@ -115,12 +119,12 @@ To add translations, you can manually edit the JSON translation files in `packag
 
 Please see the asset [listing requirements](https://github.com/osmosis-labs/assetlists/blob/main/LISTING.md) to display assets on Osmosis Zone web app.
 
-### Showing Unlisted Assets
+### Showing Preview Assets
 
-To view unlisted assets for testing, append the following query parameter to the Osmosis URL:
+To view preview assets for testing, append the following query parameter to the Osmosis URL:
 
 ```
-?show_unlisted_assets=true
+?show_preview_assets=true
 ```
 
-They'll be enabled for the tab's session. If you'd like to disable it, either open a new tab without the query parameter or append `?show_unlisted_assets=false`.
+They'll be enabled for the tab's session. If you'd like to disable it, either open a new tab without the query parameter or append `?show_preview_assets=false`.

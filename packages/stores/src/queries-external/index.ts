@@ -1,6 +1,5 @@
 export * from "./active-gauges";
 export * from "./base";
-export * from "./coingecko-market-charts";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./numia";
@@ -10,7 +9,6 @@ export * from "./pools";
 export * from "./store";
 export * from "./token-data";
 export * from "./token-historical-chart";
-export * from "./token-pair-historical-chart";
 
 export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
   "https://api-osmosis.imperator.co";

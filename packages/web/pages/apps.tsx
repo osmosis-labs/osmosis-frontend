@@ -3,14 +3,12 @@ import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useWindowSize } from "react-use";
 
-import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
-import { Breakpoint } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 export type App = {
   title: string;
@@ -38,8 +36,8 @@ type AppStoreProps = {
   };
 };
 
-export const OsmosisAppListRepoName = "osmosis-labs/apps-list";
-export const OsmosisAppListFilePath = "applications.json";
+export const OsmosisAppListRepoName = "osmosis-labs/fe-content";
+export const OsmosisAppListFilePath = "cms/apps/applications.json";
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -57,6 +55,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   useEffect(() => {
     const options = {
       keys: ["title"],
+      threshold: 0.3,
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
@@ -83,9 +82,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const appsToDisplay = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   const searchBoxSize = useMemo(() => {
-    if (width <= Breakpoint.SM) {
+    if (width <= Breakpoint.sm) {
       return "small";
-    } else if (width <= Breakpoint.LG) {
+    } else if (width <= Breakpoint.lg) {
       return "medium";
     }
     return "long";
@@ -110,6 +109,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             onInput={handleSearchInput}
             className="self-end"
             size={searchBoxSize || "long"}
+            debounce={100}
           />
         </div>
       </div>
@@ -117,7 +117,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
         imageUrl={
-          width <= Breakpoint.SM
+          width <= Breakpoint.sm
             ? featuredApp.thumbnail_image_URL
             : featuredApp.hero_image_URL
         }
@@ -127,7 +127,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         mediumUrl={featuredApp.medium_URL}
       />
 
-      <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
+      <div className="body2 mb-2 pl-6 pt-7 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
       </div>
 
@@ -158,17 +158,16 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           </p>
         </div>
         <div className="flex w-48 items-center justify-center pl-6">
-          <a
-            className={buttonCVA({
-              mode: "secondary",
-            })}
-            href="https://tally.so/r/wge9xO"
-            target="_blank"
-            rel="noreferrer noopener"
-            onClick={handleApplyClick}
-          >
-            {t("store.applyButton")} &rarr;
-          </a>
+          <Button variant="outline" asChild>
+            <a
+              href="https://github.com/osmosis-labs/fe-content/tree/main/cms/apps"
+              target="_blank"
+              rel="noreferrer noopener"
+              onClick={handleApplyClick}
+            >
+              {t("store.applyButton")} &rarr;
+            </a>
+          </Button>
         </div>
       </div>
       <div className="flex w-full items-center overflow-x-auto rounded-2xl bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">

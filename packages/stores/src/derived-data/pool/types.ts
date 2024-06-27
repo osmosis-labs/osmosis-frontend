@@ -19,11 +19,9 @@ export type BondDuration = {
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
-  swapFeeDailyReward: PricePretty;
   incentivesBreakdown: {
-    dailyPoolReward: CoinPretty;
     apr: RatePretty;
-    numDaysRemaining?: number;
+    type: "osmosis" | "boost" | "swapFees";
   }[];
   /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
   superfluid?: {

@@ -2,10 +2,10 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useCallback, useMemo, useState } from "react";
 
-import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar/axelar-source-chain-token-config";
-import { erc20TransferParams, sendParams } from "~/integrations/ethereum//tx";
+import { IS_TESTNET } from "~/config";
 import { SendFn } from "~/integrations/ethereum//types";
 import { useTxGasEstimate } from "~/integrations/ethereum/hooks/use-tx-gas-estimate";
+import { erc20TransferParams, sendParams } from "~/integrations/ethereum/tx";
 
 /** Amount config for EVM native or ERC20 token, with the option to set to max balance and for `amount` to not exceed the coin's decimal count.
  * Includes gas.
@@ -16,7 +16,7 @@ export function useAmountConfig({
   address,
   gasCurrency,
 }: {
-  sendFn: SendFn;
+  sendFn?: SendFn;
   balance?: CoinPretty;
   address?: string;
   gasCurrency?: Currency;
@@ -35,7 +35,7 @@ export function useAmountConfig({
   const evmTxParams: unknown[] | undefined = useMemo(() => {
     if (!balCurrency || !address) return;
 
-    // is ERC20 amount
+    // is ERC20 amount, return tx for any ERC20 token transfer tx for gas cost estimation
     if (
       !gasCurrency ||
       balCurrency.coinMinimalDenom !== gasCurrency.coinMinimalDenom
@@ -44,7 +44,10 @@ export function useAmountConfig({
         address,
         address,
         "0",
-        AxelarSourceChainTokenConfigs.usdc.ethereum.erc20ContractAddress! // any address will do
+        // USDC ERC20 on Ethereum testnet/mainnet
+        IS_TESTNET
+          ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
+          : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
       );
     }
 

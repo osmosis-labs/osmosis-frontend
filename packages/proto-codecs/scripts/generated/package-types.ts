@@ -25,6 +25,7 @@ export type AvailablePackages =
   | "ibc.applications.transfer.v2"
   | "osmosis.cosmwasmpool.v1beta1"
   | "osmosis.ibcratelimit.v1beta1"
+  | "osmosis.smartaccount.v1beta1"
   | "osmosis.tokenfactory.v1beta1"
   | "osmosis.poolmanager.v1beta1"
   | "osmosis.superfluid.v1beta1"

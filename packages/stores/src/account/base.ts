@@ -2,10 +2,11 @@ import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
-  makeSignDoc as makeSignDocAmino,
+  encodeSecp256k1Signature,
   OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
+import { StdFee } from "@cosmjs/launchpad";
 import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -23,13 +24,14 @@ import {
 } from "@cosmjs/stargate";
 import {
   MainWalletBase,
-  SignOptions,
   WalletConnectOptions,
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
-import { KeplrSignOptions } from "@keplr-wallet/types";
+import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import { Dec } from "@keplr-wallet/unit";
 import {
   ChainedFunctionifyTuple,
@@ -43,45 +45,65 @@ import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
+  osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
+import {
+  encodeAnyBase64,
+  QuoteStdFee,
+  SimulateNotAvailableError,
+  TxTracer,
+} from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  isNil,
+  unixNanoSecondsToSeconds,
+} from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
-import cachified, { CacheEntry } from "cachified";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { LRUCache } from "lru-cache";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import dayjs from "dayjs";
+import Long from "long";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
+import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
+import { InsufficientBalanceForFeeError } from "../ui-config";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
+  CosmosRegistryWallet,
   DeliverTxResponse,
-  RegistryWallet,
+  OneClickTradingInfo,
+  SignOptions,
   TxEvent,
+  TxEvents,
 } from "./types";
 import {
+  AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
-  DefaultGasPriceStep,
   getEndpointString,
   getWalletEndpoints,
+  HasUsedOneClickTradingLocalStorageKey,
   logger,
+  makeSignDocAmino,
+  NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
+  OneClickTradingLocalStorageKey,
   removeLastSlash,
-  TxFee,
+  UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
+
+export const GasMultiplier = 1.5;
+
+// The value of zero represent that there is not timeout height set.
+const timeoutHeightDisabledStr = "0";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -98,10 +120,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   private _refreshRequests = 0;
 
+  @observable
+  useOneClickTrading = false;
+
+  @observable.ref
+  oneClickTradingInfo: OneClickTradingInfo | null = null;
+
+  @observable
+  hasUsedOneClickTrading = false;
+
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
+
+  private _kvStore: KVStore = makeLocalStorageKVStore("account_store");
 
   /**
    * Keep track of the promise based observable for each wallet and chain id.
@@ -119,9 +152,32 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     ...cosmosProtoRegistry,
     ...ibcProtoRegistry,
     ...osmosisProtoRegistry,
-  ]) as unknown as SigningStargateClient["registry"];
+  ]);
 
-  private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
+  /**
+   * We make sure that the 'base' field always has as its value the native chain parameter
+   * and not values derived from the IBC connection with Osmosis
+   */
+  private get walletManagerAssets() {
+    return this.assets.map((assetList) => ({
+      ...assetList,
+      assets: assetList.assets.map((asset) => ({
+        ...asset,
+        base: asset.sourceDenom,
+        denom_units: [
+          {
+            denom: asset.sourceDenom,
+            exponent: 0,
+          },
+          {
+            denom: asset.symbol,
+            exponent: asset.decimals,
+          },
+        ],
+        display: asset.symbol,
+      })),
+    })) as CosmologyAssetList[];
+  }
 
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
@@ -134,11 +190,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     protected readonly chainGetter: ChainGetter,
     protected readonly options: {
       walletConnectOptions?: WalletConnectOptions;
-      preTxEvents?: {
-        onBroadcastFailed?: (string: string, e?: Error) => void;
-        onBroadcasted?: (string: string, txHash: Uint8Array) => void;
-        onFulfill?: (string: string, tx: any) => void;
-      };
+      preTxEvents?: TxEvents;
       broadcastUrl?: string;
       simulateUrl?: string;
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
@@ -154,12 +206,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
+
+    autorun(async () => {
+      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
+      const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
+      runInAction(() => {
+        this.useOneClickTrading = isOneClickTradingEnabled;
+        this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+        this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+      });
+    });
   }
 
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets as CosmologyAssetList[],
+      this.walletManagerAssets,
       wallets,
       logger,
       true,
@@ -170,7 +233,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       {
         signingStargate: () => ({
           aminoTypes: this.aminoTypes,
-          registry: this.registry,
+          registry: this
+            .registry as unknown as SigningStargateClient["registry"],
         }),
       },
       {
@@ -178,8 +242,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
       {
         duration: 31556926000, // 1 year
-        callback() {
+        callback: () => {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+          this.setOneClickTradingInfo(undefined);
         },
       }
     );
@@ -195,6 +260,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         viewWalletRepo: () => this.refresh(),
       });
       repo.wallets.forEach((wallet) => {
+        wallet.updateCallbacks({
+          ...wallet.callbacks,
+          afterDisconnect: async () => {
+            const osmosisChain = this.chains[0];
+            // Remove the one click trading info if the Osmosis wallet is disconnected.
+            const oneClickTradingInfo = await this.getOneClickTradingInfo();
+            if (
+              oneClickTradingInfo &&
+              wallet.chainName === osmosisChain.chain_name
+            ) {
+              this.setOneClickTradingInfo(undefined);
+            }
+          },
+        });
+
         wallet.setActions({
           data: () => this.refresh(),
           state: () => this.refresh(),
@@ -237,7 +317,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const walletRepo = this.walletManager.walletRepos.find(
       (repo) =>
         repo.chainName === chainNameOrId ||
-        repo.chainRecord.chain.chain_id === chainNameOrId
+        repo.chainRecord.chain?.chain_id === chainNameOrId
     );
 
     if (!walletRepo) {
@@ -280,7 +360,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
-      const walletInfo = wallet.walletInfo as RegistryWallet;
+      const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
@@ -389,7 +469,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // If the wallet isn't found, return the error
     if (!wallet) return new Error(errorMessage);
 
-    const walletInfo = wallet.walletInfo as RegistryWallet;
+    const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
     // If the wallet has a custom error matcher, use it
     if (walletInfo?.matchError) {
@@ -430,8 +510,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee?: TxFee,
-    _signOptions?: KeplrSignOptions,
+    fee?: StdFee,
+    signOptions?: SignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -481,20 +561,40 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
-      let usedFee: TxFee;
-      if (typeof fee === "undefined" || !fee?.force) {
-        usedFee = await this.estimateFee(
-          wallet,
-          msgs,
-          fee ?? { amount: [] },
-          memo,
-          wallet.walletInfo?.signOptions
-        );
+      const mergedSignOptions = {
+        ...wallet.walletInfo?.signOptions,
+        ...signOptions,
+      };
+
+      let usedFee: StdFee;
+      if (typeof fee === "undefined") {
+        try {
+          usedFee = await this.estimateFee({
+            wallet,
+            messages: msgs,
+            signOptions: mergedSignOptions,
+          });
+        } catch (e) {
+          if (e instanceof SimulateNotAvailableError) {
+            console.warn(
+              "Gas simulation not supported for chain ID:",
+              chainNameOrId
+            );
+          }
+
+          throw e;
+        }
       } else {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      const txRaw = await this.sign({
+        wallet,
+        fee: usedFee,
+        memo: memo || "",
+        messages: msgs,
+        signOptions: mergedSignOptions,
+      });
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -548,7 +648,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
           data?: string;
-          events?: TxEvent;
+          events?: TxEvent[];
           gas_used?: string;
           gas_wanted?: string;
           log?: string;
@@ -558,7 +658,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             data: string;
             code?: number;
             codespace: string;
-            events: TxEvent;
+            events: TxEvent[];
             gas_used: string;
             gas_wanted: string;
             info: string;
@@ -610,10 +710,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill(tx);
       }
     } catch (e) {
-      const error = e as Error;
+      const error = e as Error | AccountStoreNoBroadcastErrorEvent;
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
+
+      if (error instanceof AccountStoreNoBroadcastErrorEvent) {
+        throw e;
+      }
 
       if (this.options.preTxEvents?.onBroadcastFailed) {
         this.options.preTxEvents.onBroadcastFailed(chainNameOrId, error);
@@ -631,12 +735,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
   }
 
-  public async sign(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string
-  ): Promise<TxRaw> {
+  public async sign({
+    wallet,
+    messages,
+    fee,
+    memo,
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    fee: StdFee;
+    memo: string;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
     const chainId = wallet?.chainId;
 
@@ -660,33 +771,200 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return "signAmino" in offlineSigner || "signAmino" in wallet.client
-      ? this.signAmino(
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    const isWithinNetworkFeeLimit =
+      oneClickTradingInfo &&
+      fee?.amount.length === 1 &&
+      fee?.amount[0].denom === "uosmo" &&
+      new Dec(fee.amount[0].amount).lte(
+        new Dec(oneClickTradingInfo.networkFeeLimit.amount)
+      );
+
+    if (
+      signOptions?.useOneClickTrading &&
+      /**
+       * Should not surpass network fee limit.
+       */
+      isWithinNetworkFeeLimit
+    ) {
+      return this.signOneClick({
+        wallet,
+        signerAddress: wallet.address ?? "",
+        messages,
+        fee,
+        memo,
+        signerData,
+      });
+    }
+
+    if (
+      signOptions?.useOneClickTrading &&
+      !isWithinNetworkFeeLimit &&
+      this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit
+    ) {
+      const confirmationState = await new Promise<"continue" | "finish">(
+        (resolve) => {
+          const fn = this.options.preTxEvents?.onExceeds1CTNetworkFeeLimit;
+          if (!fn) return resolve("continue");
+          fn({
+            continueTx: () => resolve("continue"),
+            finish: () => resolve("finish"),
+          });
+        }
+      );
+      if (confirmationState === "finish") {
+        throw new AccountStoreNoBroadcastErrorEvent("User cancelled");
+      }
+    }
+
+    /**
+     * If the message is an authenticator message, force the direct signing.
+     * This is because the authenticator message should be signed with proto for now.
+     */
+    const isAuthenticatorMsg = messages.some(
+      (message) =>
+        message.typeUrl ===
+          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
+        message.typeUrl ===
+          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
+    );
+
+    const forceSignDirect = isAuthenticatorMsg;
+
+    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
+      !forceSignDirect
+      ? this.signAmino({
           wallet,
-          wallet.address ?? "",
+          signerAddress: wallet.address ?? "",
           messages,
           fee,
           memo,
-          signerData
-        )
-      : this.signDirect(
+          signerData,
+          signOptions,
+        })
+      : this.signDirect({
           wallet,
-          wallet.address ?? "",
+          signerAddress: wallet.address ?? "",
           messages,
           fee,
           memo,
-          signerData
-        );
+          signerData,
+          signOptions,
+        });
   }
 
-  private async signAmino(
-    wallet: AccountStoreWallet,
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData
-  ): Promise<TxRaw> {
+  private async signOneClick({
+    wallet,
+    signerAddress,
+    messages,
+    fee,
+    memo,
+    signerData: { accountNumber, sequence, chainId },
+  }: {
+    wallet: AccountStoreWallet;
+    signerAddress: string;
+    messages: readonly EncodeObject[];
+    fee: StdFee;
+    memo: string;
+    signerData: SignerData;
+  }): Promise<TxRaw> {
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
+      (account) => account.address === signerAddress
+    );
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (isNil(oneClickTradingInfo)) {
+      throw new Error("One click trading info is not available");
+    }
+
+    const pubkey = encodePubkey(
+      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+    );
+
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
+      messages,
+      memo,
+      nonCriticalExtensionOptions: [
+        {
+          typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
+          value: TxExtension.encode({
+            selectedAuthenticators: [
+              BigInt(oneClickTradingInfo.authenticatorId),
+            ],
+          }).finish(),
+        },
+      ],
+    }) as Uint8Array;
+
+    const privateKey = new PrivKeySecp256k1(
+      fromBase64(oneClickTradingInfo.sessionKey)
+    );
+
+    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
+    const authInfoBytes = makeAuthInfoBytes(
+      [{ pubkey, sequence }],
+      fee.amount,
+      gasLimit,
+      undefined,
+      undefined
+    );
+    const signDoc = makeSignDoc(
+      txBodyBytes,
+      authInfoBytes,
+      chainId,
+      accountNumber
+    );
+
+    const sig = privateKey.signDigest32(
+      Hash.sha256(
+        SignDoc.encode(
+          SignDoc.fromPartial({
+            bodyBytes: signDoc.bodyBytes,
+            authInfoBytes: signDoc.authInfoBytes,
+            chainId: signDoc.chainId,
+            accountNumber: signDoc.accountNumber.toString(),
+          })
+        ).finish()
+      )
+    );
+
+    const signature = encodeSecp256k1Signature(
+      privateKey.getPubKey().toBytes(),
+      new Uint8Array([...sig.r, ...sig.s])
+    );
+
+    return TxRaw.fromPartial({
+      bodyBytes: signDoc.bodyBytes,
+      authInfoBytes: signDoc.authInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    });
+  }
+
+  private async signAmino({
+    wallet,
+    signerAddress,
+    messages,
+    fee,
+    memo,
+    signerData: { accountNumber, sequence, chainId },
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    signerAddress: string;
+    messages: readonly EncodeObject[];
+    fee: StdFee;
+    memo: string;
+    signerData: SignerData;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
@@ -706,6 +984,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Failed to retrieve account from signer");
     }
 
+    if (memo === "") {
+      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "FE";
+    } else {
+      // Otherwise, tack on "FE" to the end of the memo.
+      memo += " \nFE";
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -720,13 +1007,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return res;
     }) as AminoMsg[];
 
+    const timeoutHeight = await this.getTimeoutHeight(chainId);
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
       chainId,
       memo,
       accountNumber,
-      sequence
+      sequence,
+      timeoutHeight
     );
 
     const { signature, signed } = await (wallet.client.signAmino
@@ -734,14 +1024,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           wallet.chainId,
           signerAddress,
           signDoc,
-          wallet.walletInfo?.signOptions
+          signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
           signerAddress,
           signDoc
         ));
 
-    const signedTxBody = {
+    const signedTxBodyBytes = this.registry?.encodeTxBody({
       messages: signed.msgs.map((msg) => {
         const res: any =
           wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
@@ -752,16 +1042,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         return res;
       }),
       memo: signed.memo,
-    };
-
-    const signedTxBodyEncodeObject = {
-      typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: signedTxBody,
-    };
-
-    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      signedTxBodyEncodeObject
-    );
+      timeoutHeight: BigInt(signDoc.timeout_height ?? timeoutHeightDisabledStr),
+    });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
     const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
@@ -781,14 +1063,47 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  private async signDirect(
-    wallet: AccountStoreWallet,
-    signerAddress: string,
-    messages: readonly EncodeObject[],
-    fee: TxFee,
-    memo: string,
-    { accountNumber, sequence, chainId }: SignerData
-  ): Promise<TxRaw> {
+  // Gets the timeout height as the sum of the latest block height and an offset.
+  // If for any reason we fail to get the latest block height, we disable the timeout height by returning
+  // a string value of 0.
+  private async getTimeoutHeight(chainId: string): Promise<bigint> {
+    // Get status query.
+    const queryRPCStatus = this.queriesStore.get(chainId).cosmos.queryRPCStatus;
+
+    // Wait for the response.
+    const result = await queryRPCStatus.waitFreshResponse();
+
+    // Retrieve the latest block height. If not present, set it to 0.
+    const latestBlockHeight = result
+      ? result.data.result.sync_info.latest_block_height
+      : timeoutHeightDisabledStr;
+
+    // If for any reason we fail to get the latest block height, we disable the timeout height.
+    if (latestBlockHeight == timeoutHeightDisabledStr) {
+      return BigInt(timeoutHeightDisabledStr);
+    }
+
+    // Otherwise we compute the timeout height as given by latest block height + offset.
+    return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
+  }
+
+  private async signDirect({
+    wallet,
+    signerAddress,
+    messages,
+    fee,
+    memo,
+    signerData: { accountNumber, sequence, chainId },
+    signOptions,
+  }: {
+    wallet: AccountStoreWallet;
+    signerAddress: string;
+    messages: readonly EncodeObject[];
+    fee: StdFee;
+    memo: string;
+    signerData: SignerData;
+    signOptions?: SignOptions;
+  }): Promise<TxRaw> {
     if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
@@ -809,6 +1124,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
+
+    if (memo === "") {
+      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "FE";
+    } else {
+      // Otherwise, tack on "FE" to the end of the memo.
+      memo += " \nFE";
+    }
+
     const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
@@ -816,16 +1141,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo,
       },
     };
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      txBodyEncodeObject
-    ) as Uint8Array;
+    const txBodyBytes = this.registry?.encode(txBodyEncodeObject) as Uint8Array;
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
-      fee.granter,
-      fee.payer
+      undefined,
+      undefined
     );
     const signDoc = makeSignDoc(
       txBodyBytes,
@@ -838,8 +1161,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          signDoc,
-          wallet.walletInfo?.signOptions
+          {
+            ...signDoc,
+            accountNumber: Long.fromString(signDoc.accountNumber.toString()),
+          },
+          signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
           signerAddress,
@@ -904,8 +1230,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *
    * @param wallet - The wallet object containing information about the blockchain wallet.
    * @param messages - An array of message objects to be encoded and included in the transaction.
-   * @param fee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
-   * @param memo - A string used as a memo or note with the transaction.
+   * @param signOptions - Optional options for customizing the sign process.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -921,90 +1246,65 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
    * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
    *
-   * If the chain does not support transaction simulation, the function may
-   * fall back to using the provided fee parameter.
+   * @throws `SimulateNotAvailableError` if simulation is not available
    */
-  public async estimateFee(
-    wallet: AccountStoreWallet,
-    messages: readonly EncodeObject[],
-    fee: Optional<TxFee, "gas">,
-    memo: string,
-    signOptions: SignOptions = {}
-  ): Promise<TxFee> {
-    const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-    const { sequence } = await this.getSequence(wallet);
-
-    const unsignedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode(
-        TxBody.fromPartial({
-          messages: encodedMessages,
-          memo: memo,
-        })
-      ).finish(),
-      authInfoBytes: AuthInfo.encode({
-        signerInfos: [
-          SignerInfo.fromPartial({
-            // Pub key is ignored.
-            // It is fine to ignore the pub key when simulating tx.
-            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
-            modeInfo: {
-              single: {
-                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
-              },
-              multi: undefined,
-            },
-            sequence,
-          }),
-        ],
-        fee: Fee.fromPartial({
-          amount: fee.amount.map((amount) => {
-            return { amount: amount.amount, denom: amount.denom };
-          }),
-        }),
-      }).finish(),
-      // Because of the validation of tx itself, the signature must exist.
-      // However, since they do not actually verify the signature, it is okay to use any value.
-      signatures: [new Uint8Array(64)],
-    }).finish();
-
-    const restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
+  public async estimateFee({
+    wallet,
+    messages,
+    signOptions = {},
+  }: {
+    wallet: AccountStoreWallet;
+    messages: readonly EncodeObject[];
+    initialFee?: Optional<StdFee, "gas">;
+    signOptions?: SignOptions;
+  }): Promise<StdFee> {
+    if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const result = await apiClient<{
-        gas_info: {
-          gas_used: string;
-        };
-      }>(this.options?.simulateUrl ?? "/api/simulate-transaction", {
+      const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
+
+      // check for one click trading tx decoration
+      const shouldBeSignedWithOneClickTrading =
+        signOptions?.useOneClickTrading &&
+        (await this.shouldBeSignedWithOneClickTrading({ messages }));
+      const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
+        ? await this.getOneClickTradingExtensionOptions({
+            oneClickTradingInfo: await this.getOneClickTradingInfo(),
+          })
+        : undefined;
+
+      const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
-          restEndpoint: removeLastSlash(restEndpoint),
-          tx_bytes: Buffer.from(unsignedTx).toString("base64"),
+          chainId: wallet.chainId,
+          messages: encodedMessages.map(encodeAnyBase64),
+          nonCriticalExtensionOptions:
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
+          bech32Address: wallet.address,
+          onlyDefaultFeeDenom: signOptions.useOneClickTrading,
+          gasMultiplier: GasMultiplier,
         },
       });
 
-      const gasUsed = Number(result.gas_info.gas_used);
-      if (Number.isNaN(gasUsed)) {
-        throw new Error(`Invalid integer gas: ${result.gas_info.gas_used}`);
-      }
+      const getGasAmount =
+        signOptions.preferNoSetFee || signOptions.useOneClickTrading;
 
-      const multiplier = 1.5;
-      /**
-       * The gas amount is multiplied by a specific factor to provide additional
-       * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-       *  */
-      const gas = String(Math.round(gasUsed * multiplier));
-
-      console.log(signOptions);
-
-      if (signOptions.preferNoSetFee) {
+      if (!getGasAmount) {
         return {
-          gas,
-          amount: [await this.getGasAmount(gas, wallet.chainId)],
+          gas: estimate.gas,
+          amount: [],
         };
       }
 
+      // avoid returning isNeededForTx, a utility returned from the estimateGasFee function that is not used here
+      // Also, for now, only single-token fee payments are supported.
       return {
-        gas,
-        amount: [],
+        gas: estimate.gas,
+        amount: [
+          {
+            denom: estimate.amount[0].denom,
+            amount: estimate.amount[0].amount,
+          },
+        ],
       };
     } catch (e) {
       if (e instanceof ApiClientError) {
@@ -1018,12 +1318,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
         if (status !== 400 || !message || typeof message !== "string") throw e;
 
-        /**
-         * If the error message includes "invalid empty tx", it means that the chain does not
-         * support tx simulation. In this case, just return the backup fee if available.
-         */
-        if (message.includes("invalid empty tx") && fee.gas) {
-          return fee as TxFee;
+        if (message.includes("invalid empty tx")) {
+          throw new SimulateNotAvailableError(message);
+        }
+
+        if (
+          message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new InsufficientBalanceForFeeError(
+            "Insufficient balance for transaction fees. Please add funds to continue."
+          );
         }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
@@ -1036,66 +1342,120 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
   }
 
-  async getGasAmount(gasLimit: string, chainId: string) {
-    let gasPrice: number | undefined;
+  /**
+   * Determines if a transaction should be signed using one-click trading based on various conditions.
+   */
+  async shouldBeSignedWithOneClickTrading({
+    messages,
+  }: {
+    messages: readonly EncodeObject[];
+  }): Promise<boolean> {
+    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
-    const counterpartyChain = this.chains.find(
-      ({ chain_id }) => chain_id === chainId
+    if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
+      return false;
+    }
+
+    const isAllowedMessageType = messages.every(({ typeUrl }) =>
+      oneClickTradingInfo.allowedMessages.includes(typeUrl)
     );
 
-    if (!counterpartyChain) throw new Error(`Chain (${chainId}) not found`);
-
-    if (chainId === this.osmosisChainId) {
-      try {
-        const result = await this.queryOsmosisGasPrice();
-        const multiplier = 1.5;
-        /**
-         * The gas amount is multiplied by a specific factor to provide additional
-         * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-         *  */
-        gasPrice = result.baseFee * multiplier;
-      } catch (e) {
-        console.warn(
-          "Failed to fetch Osmosis gas price. Using default gas price. Error stack: ",
-          e
-        );
-      }
-    }
-
-    const feeCurrency = counterpartyChain.fees.fee_tokens[0];
-    if (isNil(gasPrice) && feeCurrency && feeCurrency.average_gas_price) {
-      gasPrice = feeCurrency.average_gas_price;
-    }
-
-    if (isNil(gasPrice)) {
-      gasPrice = DefaultGasPriceStep.average;
-    }
-
-    const gasPriceDec = new Dec(gasPrice);
-    return {
-      amount: gasPriceDec.mul(new Dec(gasLimit)).roundUp().toString(),
-      denom: feeCurrency.denom,
-    };
+    return isAllowedMessageType;
   }
 
-  public async queryOsmosisGasPrice() {
-    return cachified({
-      key: "osmosis-gas-price",
-      cache: this._cache,
-      // 15 minutes
-      ttl: 15 * 60 * 1000,
-      getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(
-          this.osmosisChainId
-        ).rest;
-        const result = await apiClient<{
-          base_fee: string;
-        }>(`${restEndpoint}/osmosis/txfees/v1beta1/cur_eip_base_fee`);
-
-        return {
-          baseFee: Number(result.base_fee),
-        };
+  /**
+   * Generates the extension options for one-click trading transactions.
+   */
+  async getOneClickTradingExtensionOptions({
+    oneClickTradingInfo,
+  }: {
+    oneClickTradingInfo: OneClickTradingInfo | undefined;
+  }) {
+    if (!oneClickTradingInfo) return undefined;
+    return [
+      {
+        typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
+        value: TxExtension.encode({
+          selectedAuthenticators: [
+            BigInt(oneClickTradingInfo?.authenticatorId),
+          ],
+        }).finish(),
       },
+    ];
+  }
+
+  async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
+    return this._kvStore.get<OneClickTradingInfo>(
+      OneClickTradingLocalStorageKey
+    );
+  }
+
+  async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    const nextValue = data ?? null;
+
+    await this._kvStore.set<boolean>(
+      HasUsedOneClickTradingLocalStorageKey,
+      true
+    );
+    await this._kvStore.set(OneClickTradingLocalStorageKey, nextValue);
+
+    /**
+     * For some reason decorating this method with @action doesn't work when called
+     * from walletAccountSet.disconnect. So, we use runInAction instead.
+     */
+    return runInAction(() => {
+      this.oneClickTradingInfo = nextValue;
+      this.hasUsedOneClickTrading = true;
     });
+  }
+
+  async isOneCLickTradingEnabled(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return false;
+
+    return (
+      !(await this.isOneClickTradingExpired()) &&
+      Boolean(await this.getShouldUseOneClickTrading())
+    );
+  }
+
+  async isOneClickTradingExpired(): Promise<boolean> {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+
+    if (isNil(oneClickTradingInfo)) return false;
+
+    return dayjs
+      .unix(unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end))
+      .isBefore(dayjs());
+  }
+
+  /**
+   * Sets the preference for using one-click trading.
+   */
+  @action
+  async setShouldUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+    this.useOneClickTrading = nextValue;
+    await this._kvStore.set<boolean>(
+      UseOneClickTradingLocalStorageKey,
+      nextValue
+    );
+  }
+
+  /**
+   * Retrieves the user's preference for using one-click trading.
+   * This preference is used to determine if one-click trading should be enabled or not.
+   */
+  async getShouldUseOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
+    );
+  }
+
+  async getHasUsedOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(HasUsedOneClickTradingLocalStorageKey)
+    );
   }
 }

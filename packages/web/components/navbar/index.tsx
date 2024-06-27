@@ -1,48 +1,56 @@
 import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
+import { queryOsmosisCMS } from "@osmosis-labs/server";
+import {
+  formatICNSName,
+  getDeepValue,
+  getShortAddress,
+  noop,
+} from "@osmosis-labs/utils";
+import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   Fragment,
   FunctionComponent,
-  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
-import ClientOnly from "~/components/client-only";
-import { MainMenu } from "~/components/main-menu";
-import SkeletonLoader from "~/components/skeleton-loader";
-import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName } from "~/config";
+import { IconButton } from "~/components/buttons/icon-button";
+import { ClientOnly } from "~/components/client-only";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
+import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import {
-  useAmplitudeAnalytics,
-  useDisclosure,
-  useLocalStorageState,
-} from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
+import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import {
   NotifiContextProvider,
   NotifiModal,
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
-import { ExternalLinkModal } from "~/modals/external-links-modal";
+import {
+  ExternalLinkModal,
+  handleExternalLink,
+} from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
-import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
-import { noop } from "~/utils/function";
-import { formatICNSName, getShortAddress } from "~/utils/string";
+import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
@@ -55,20 +63,16 @@ export const NavBar: FunctionComponent<
 > = observer(
   ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
     const {
-      queriesExternalStore,
       navBarStore,
       chainStore: {
         osmosis: { chainId },
       },
       accountStore,
       userSettings,
-      userUpgrades,
     } = useStore();
     const { t } = useTranslation();
 
     const featureFlags = useFeatureFlags();
-
-    const { query } = useRouter();
 
     const {
       isOpen: isSettingsOpen,
@@ -94,34 +98,23 @@ export const NavBar: FunctionComponent<
       onClose: onCloseProfile,
     } = useDisclosure();
 
-    // upgrades modal
-    const {
-      isOpen: isUpgradesOpen_,
-      onOpen: onOpenUpgrades,
-      onClose: onCloseUpgrades_,
-    } = useDisclosure();
-    const [firstTimeShowUpgrades, setFirstTimeShowUpgrades] =
-      useLocalStorageState("firstTimeShowUpgrades", true);
-    const isUpgradesOpen =
-      isUpgradesOpen_ ||
-      (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable);
-    const [showUpgradesFyi, setShowUpgradesFyi] = useState(false);
-    const onCloseUpgrades = useCallback(() => {
-      onCloseUpgrades_();
-      if (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable) {
-        setFirstTimeShowUpgrades(false);
-        setShowUpgradesFyi(true);
-      }
-    }, [
-      onCloseUpgrades_,
-      firstTimeShowUpgrades,
-      userUpgrades.hasUpgradeAvailable,
-      setFirstTimeShowUpgrades,
-    ]);
-
     const closeMobileMenuRef = useRef(noop);
     const router = useRouter();
     const { isLoading: isWalletLoading } = useWalletSelect();
+
+    /**
+     * Fetches the top announcement banner from the osmosis-labs/fe-content repo
+     * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/top-announcement-banner.json
+     */
+    const { data: topAnnouncementBannerData } = useQuery({
+      queryKey: ["osmosis-top-announcement-banner"],
+      queryFn: async () =>
+        queryOsmosisCMS<TopAnnouncementBannerResponse>({
+          filePath: "cms/top-announcement-banner.json",
+        }),
+      staleTime: 1000 * 60 * 3, // 3 minutes
+      cacheTime: 1000 * 60 * 3, // 3 minutes
+    });
 
     useEffect(() => {
       const handler = () => {
@@ -134,32 +127,47 @@ export const NavBar: FunctionComponent<
 
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
-      if (query[UnverifiedAssetsQueryKey] === "true") {
+      if (router.query[UnverifiedAssetsQueryKey] === "true") {
         onOpenFrontierMigration();
         userSettings
           .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
+    }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
 
-    const account = accountStore.getWallet(chainId);
+    const wallet = accountStore.getWallet(chainId);
     const walletSupportsNotifications =
-      account?.walletInfo?.features?.includes("notifications");
-    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      account?.address ?? ""
-    );
+      wallet?.walletInfo?.features?.includes("notifications");
+
+    const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
+      address: wallet?.address ?? "",
+    });
 
     // announcement banner
-    const [_showBanner, setShowBanner] = useLocalStorageState(
-      Announcement ? Announcement?.localStorageKey ?? "" : "",
+    const defaultBannerLocalStorageKey = "banner";
+    const [_showBanner, setShowBanner] = useLocalStorage(
+      topAnnouncementBannerData?.banner?.localStorageKey ??
+        defaultBannerLocalStorageKey,
       true
     );
 
+    const isBannerWithinDateRange =
+      topAnnouncementBannerData?.banner &&
+      (topAnnouncementBannerData.banner.startDate ||
+        topAnnouncementBannerData.banner.endDate)
+        ? dayjs().isBetween(
+            topAnnouncementBannerData.banner.startDate,
+            topAnnouncementBannerData.banner.endDate
+          )
+        : true; // if no start and end date, show banner always
+
     const showBanner =
+      featureFlags.topAnnouncementBanner &&
       _showBanner &&
-      Announcement &&
-      (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+      !!topAnnouncementBannerData &&
+      Boolean(topAnnouncementBannerData?.banner) &&
+      isBannerWithinDateRange;
 
     const handleTradeClicked = () => {
       logEvent(EventName.Topnav.tradeClicked);
@@ -179,41 +187,27 @@ export const NavBar: FunctionComponent<
                 closeMobileMenuRef.current = closeMobileMainMenu;
 
                 let mobileMenus = menus.concat({
-                  label: "Settings",
+                  label: t("menu.settings"),
                   link: (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onOpenSettings();
                     closeMobileMainMenu();
                   },
-                  icon: (
-                    <Icon
-                      id="setting"
-                      className="text-white-full"
-                      width={20}
-                      height={20}
-                    />
-                  ),
+                  icon: <Icon id="setting" className="h-6 w-6" />,
                 });
 
                 if (featureFlags.notifications && walletSupportsNotifications) {
                   mobileMenus = mobileMenus.concat({
-                    label: "Notifications",
+                    label: t("menu.notifications"),
                     link: (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      if (!account) return;
+                      if (!wallet) return;
                       onOpenNotifi();
                       closeMobileMainMenu();
                     },
-                    icon: (
-                      <Icon
-                        id="bell"
-                        className="text-white-full"
-                        width={20}
-                        height={20}
-                      />
-                    ),
+                    icon: <Icon id="bell" className="h-6 w-6" />,
                   });
                 }
 
@@ -235,7 +229,7 @@ export const NavBar: FunctionComponent<
                         }
                       />
                     </Popover.Button>
-                    <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                    <Popover.Panel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
                       <MainMenu
                         menus={mobileMenus}
                         secondaryMenuItems={secondaryMenuItems}
@@ -259,12 +253,10 @@ export const NavBar: FunctionComponent<
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (
                   <Button
-                    className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
-                      className ?? ""
-                    }`}
-                    mode={index > 0 ? "secondary" : undefined}
+                    size="md"
+                    className={`w-48 lg:w-fit ${className ?? ""}`}
+                    variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    size="sm"
                     {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
@@ -274,77 +266,28 @@ export const NavBar: FunctionComponent<
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-            <div className="group">
-              <a href="https://pro.osmosis.zone">
-                <Button
-                  className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
-                  mode="icon-primary"
-                  size="unstyled"
-                  style={{ maxWidth: "180px" }}
-                  onClick={handleTradeClicked}
-                >
-                  <Image
-                    className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
-                    height={24}
-                    src="/images/tfm-logo.png"
-                    width={24}
-                    alt="TFM Logo"
-                  />
-                  {t("menu.trade")}
-                </Button>
-              </a>
-            </div>
-            {featureFlags.upgrades && userUpgrades.hasUpgradeAvailable && (
-              <div className="relative">
-                {showUpgradesFyi && (
-                  <>
-                    <div
-                      className={classNames(
-                        "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
-                      )}
-                    >
-                      <div className="flex w-full place-content-end items-center text-center">
-                        <span className="subtitle1 mx-auto">
-                          {t("upgrades.foundHere")}
-                        </span>
-                        <Icon
-                          id="close"
-                          color={theme.colors.osmoverse[400]}
-                          width={24}
-                          height={24}
-                          onClick={() => {
-                            setShowUpgradesFyi(false);
-                          }}
-                        />
-                      </div>
-                      <span className="body2 text-osmoverse-100">
-                        {t("upgrades.availableHereCaption")}
-                      </span>
-                    </div>
-                    <div
-                      onClick={() => {
-                        setShowUpgradesFyi(false);
-                      }}
-                      className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
-                    />
-                  </>
-                )}
-                <IconButton
-                  aria-label="Open upgrades"
-                  icon={
+            {featureFlags.tfmProTradingNavbarButton && (
+              <div className="group">
+                <a href="https://pro.osmosis.zone">
+                  <Button
+                    className="subtitle2 group mr-0 flex !h-10 !w-40 transform items-center justify-center bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                    style={{ maxWidth: "180px" }}
+                    onClick={handleTradeClicked}
+                    variant="ghost"
+                  >
                     <Image
-                      className="shrink-0"
-                      alt="upgrade"
-                      src="/icons/upgrade.svg"
-                      width={24}
+                      className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
                       height={24}
+                      src="/images/tfm-logo.png"
+                      width={24}
+                      alt="TFM Logo"
                     />
-                  }
-                  className="relative z-20 w-[48px] px-3 outline-none"
-                  onClick={onOpenUpgrades}
-                />
+                    {t("menu.trade")}
+                  </Button>
+                </a>
               </div>
             )}
+
             {featureFlags.notifications && walletSupportsNotifications && (
               <NotifiContextProvider>
                 <NotifiPopover className="z-40 px-3 outline-none" />
@@ -361,16 +304,18 @@ export const NavBar: FunctionComponent<
               className="px-3 outline-none"
               onClick={onOpenSettings}
             />
-            <UserUpgradesModal
-              isOpen={isUpgradesOpen}
-              onRequestClose={onCloseUpgrades}
-            />
             <SettingsModal
               isOpen={isSettingsOpen}
               onRequestClose={onCloseSettings}
             />
             <ClientOnly>
-              <SkeletonLoader isLoaded={!isWalletLoading}>
+              <SkeletonLoader
+                isLoaded={
+                  wallet?.isWalletConnected
+                    ? !isWalletLoading && !isLoadingICNSQuery
+                    : !isWalletLoading
+                }
+              >
                 <WalletInfo
                   className="md:hidden"
                   icnsName={icnsQuery?.primaryName}
@@ -390,8 +335,8 @@ export const NavBar: FunctionComponent<
         />
         {showBanner && (
           <AnnouncementBanner
-            {...Announcement!}
             closeBanner={() => setShowBanner(false)}
+            bannerResponse={topAnnouncementBannerData}
           />
         )}
         <FrontierMigrationModal
@@ -417,10 +362,11 @@ const WalletInfo: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
-    navBarStore,
     profileStore,
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+  const flags = useFeatureFlags();
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -429,95 +375,234 @@ const WalletInfo: FunctionComponent<
   const wallet = accountStore.getWallet(chainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
+  const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
+    api.edge.assets.getUserAsset.useQuery(
+      {
+        findMinDenomOrSymbol: "OSMO",
+        userOsmoAddress: wallet?.address as string,
+      },
+      {
+        enabled:
+          Boolean(wallet?.address) && typeof wallet?.address === "string",
+      }
+    );
+
   return (
     <div className={className}>
       {!walletConnected ? (
         <Button
-          className="!h-10 w-40 lg:w-36 md:w-full"
+          size="md"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
-            onOpenWalletSelect(chainId);
+            onOpenWalletSelect({
+              walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+            });
           }}
         >
           <span className="button mx-auto">{t("connectWallet")}</span>
         </Button>
       ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenProfile();
-          }}
-          className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-        >
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-            {profileStore.currentAvatar === "ammelia" ? (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-ammelia.png"
-                height={32}
-                width={32}
-              />
-            ) : (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-woz.png"
-                height={32}
-                width={32}
-              />
-            )}
-          </div>
+        <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProfile();
+            }}
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+          >
+            <div className="relative">
+              {isOneClickTradingEnabled && flags.oneClickTrading && (
+                <>
+                  <OneClickTradingRadialProgress />
+                  <div className="absolute -bottom-0.5 -right-1">
+                    <Image
+                      src="/images/1ct-small-icon.svg"
+                      alt="1-Click Trading Small Icon"
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                </>
+              )}
 
-          <div className="flex w-full  flex-col truncate text-right leading-tight">
-            <span className="body2 font-bold leading-4" title={icnsName}>
-              {Boolean(icnsName)
-                ? formatICNSName(icnsName)
-                : getShortAddress(wallet?.address!)}
-            </span>
-            <span className="caption font-medium tracking-wider text-osmoverse-200">
-              {navBarStore.walletInfo.balance.toString()}
-            </span>
-          </div>
-        </button>
+              <div
+                className={classNames(
+                  " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
+                  isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
+                )}
+              >
+                {profileStore.currentAvatar === "ammelia" ? (
+                  <Image
+                    alt="Wosmongton profile"
+                    src="/images/profile-ammelia.png"
+                    height={32}
+                    width={32}
+                  />
+                ) : (
+                  <Image
+                    alt="Wosmongton profile"
+                    src="/images/profile-woz.png"
+                    height={32}
+                    width={32}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span className="body2 font-bold leading-4" title={icnsName}>
+                {Boolean(icnsName)
+                  ? formatICNSName(icnsName)
+                  : getShortAddress(wallet?.address!)}
+              </span>
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
+                {userOsmoAsset?.amount
+                  ?.trim(true)
+                  .maxDecimals(2)
+                  .shrink(true)
+                  .upperCase(true)
+                  .toString()}
+              </span>
+            </div>
+          </button>
+        </SkeletonLoader>
       )}
     </div>
   );
 });
 
-const AnnouncementBanner: FunctionComponent<
-  typeof Announcement & { closeBanner: () => void }
-> = ({
-  enTextOrLocalizationPath,
-  link,
-  isWarning,
-  persistent,
-  closeBanner,
-  bg,
-}) => {
-  const { t } = useTranslation();
+const OneClickTradingRadialProgress = observer(() => {
+  const { oneClickTradingInfo, getTimeRemaining, getTotalSessionTime } =
+    useOneClickTradingSession();
+  const [percentage, setPercentage] = useState(100);
+
+  useEffect(() => {
+    if (!oneClickTradingInfo) return;
+    const updatePercentage = () => {
+      const totalSessionTime = getTotalSessionTime();
+      const timeRemaining = getTimeRemaining();
+
+      const percentage = Math.max((timeRemaining / totalSessionTime) * 100, 0);
+
+      setPercentage(percentage);
+    };
+
+    updatePercentage();
+
+    // Update every 5 seconds
+    const intervalId = setInterval(() => {
+      updatePercentage();
+    }, 5_000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [getTimeRemaining, getTotalSessionTime, oneClickTradingInfo]);
+
+  return (
+    <>
+      <div className="absolute h-full w-full scale-[1.35] transform">
+        <svg className="h-full w-full" viewBox="0 0 100 100">
+          <circle
+            className="origin-[50%_50%] rotate-45 transform transition-[stroke-dashoffset] duration-[0.35s]"
+            strokeWidth="5"
+            strokeLinecap="round"
+            stroke="url(#grad1)"
+            cx="50"
+            cy="50"
+            r="40"
+            fill="transparent"
+            /**
+             * Should be the circumference times the percentage
+             * circumference × ((100 - progress)/100)
+             */
+            strokeDashoffset={`calc(251.2 * ((100 - ${percentage})/100))`}
+            /**
+             * Should be the circumference of the circle
+             * circumference = 2πr = 2 * 3.14 * 40 = 251.2
+             */
+            strokeDasharray="251.2"
+          ></circle>
+
+          <defs>
+            <linearGradient id="grad1" gradientTransform="rotate(90)">
+              <stop offset="0.04%" stopColor={theme.colors.superfluid} />
+              <stop offset="99.5%" stopColor={theme.colors.ammelia["600"]} />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </>
+  );
+});
+
+interface TopAnnouncementBannerResponse {
+  isChainHalted: boolean;
+  banner: {
+    enTextOrLocalizationPath: string;
+    localStorageKey?: string;
+    pageRoute?: string;
+    link?: {
+      enTextOrLocalizationKey: string;
+      url: string;
+      isExternal: boolean;
+    };
+    isWarning?: boolean;
+    persistent?: boolean;
+    bg?: string;
+    startDate?: string;
+    endDate?: string;
+  } | null;
+  localization?: Record<string, Record<string, any>>;
+}
+
+const AnnouncementBanner: FunctionComponent<{
+  closeBanner: () => void;
+  bannerResponse: TopAnnouncementBannerResponse;
+}> = ({ closeBanner, bannerResponse }) => {
+  const { t, language } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
     onOpen: onOpenLeavingOsmosis,
   } = useDisclosure();
+  const router = useRouter();
 
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
+  const isChainHalted = bannerResponse?.isChainHalted;
+  const banner: TopAnnouncementBannerResponse["banner"] | null | undefined =
+    isChainHalted
+      ? {
+          enTextOrLocalizationPath: t("app.banner.chainHalted"),
+          isWarning: true,
+        }
+      : bannerResponse?.banner;
 
-  const handleLeaveClick = () => {
-    // try/catch in case user is in private mode
-    try {
-      const doNotShowModal = localStorage.getItem("doNotShowExternalLinkModal");
-      if (doNotShowModal) {
-        window.open(link?.url, "_blank");
-      } else {
-        onOpenLeavingOsmosis();
-      }
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
-      onOpenLeavingOsmosis();
-    }
-  };
+  if (!banner) return null;
+  // If the banner has a pageRoute, only show it on that page
+  if (
+    banner.pageRoute &&
+    router.pathname !== banner.pageRoute &&
+    router.asPath !== banner.pageRoute
+  )
+    return null;
+
+  const { isWarning, bg, link, persistent } = banner;
+
+  const currentLanguageTranslations = bannerResponse?.localization?.[language];
+
+  const linkText =
+    getDeepValue<string>(
+      currentLanguageTranslations,
+      link?.enTextOrLocalizationKey
+    ) ??
+    link?.enTextOrLocalizationKey ??
+    "Click here to learn more";
+
+  const handleLeaveClick = () =>
+    handleExternalLink({
+      url: link?.url ?? "",
+      openModal: onOpenLeavingOsmosis,
+    });
 
   return (
     <div
@@ -531,7 +616,14 @@ const AnnouncementBanner: FunctionComponent<
       )}
     >
       <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
-        <span>{t(enTextOrLocalizationPath)}</span>
+        <span>
+          {isChainHalted
+            ? banner?.enTextOrLocalizationPath ?? ""
+            : getDeepValue<string>(
+                currentLanguageTranslations,
+                banner?.enTextOrLocalizationPath
+              ) ?? banner?.enTextOrLocalizationPath}
+        </span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
@@ -617,8 +709,8 @@ const FrontierMigrationModal: FunctionComponent<
         <div className="mt-6 flex w-full items-center gap-3">
           <Button
             size="sm"
-            mode="secondary"
-            className="whitespace-nowrap border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
+            variant="outline"
+            className="border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
             onClick={() => {
               props.onOpenSettings();
               props.onRequestClose?.();
@@ -628,8 +720,7 @@ const FrontierMigrationModal: FunctionComponent<
           </Button>
           <Button
             size="sm"
-            mode="primary"
-            className="whitespace-nowrap border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
+            className="border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
             onClick={props.onRequestClose}
           >
             {t("frontierMigration.proceed")}

@@ -36,13 +36,13 @@ export interface PositionProtoMsg {
  * join time, and liquidity.
  */
 export interface PositionAmino {
-  position_id: string;
-  address: string;
-  pool_id: string;
-  lower_tick: string;
-  upper_tick: string;
+  position_id?: string;
+  address?: string;
+  pool_id?: string;
+  lower_tick?: string;
+  upper_tick?: string;
   join_time?: string;
-  liquidity: string;
+  liquidity?: string;
 }
 export interface PositionAminoMsg {
   type: "osmosis/concentratedliquidity/position";
@@ -95,9 +95,9 @@ export interface FullPositionBreakdownAmino {
   position?: PositionAmino;
   asset0?: CoinAmino;
   asset1?: CoinAmino;
-  claimable_spread_rewards: CoinAmino[];
-  claimable_incentives: CoinAmino[];
-  forfeited_incentives: CoinAmino[];
+  claimable_spread_rewards?: CoinAmino[];
+  claimable_incentives?: CoinAmino[];
+  forfeited_incentives?: CoinAmino[];
 }
 export interface FullPositionBreakdownAminoMsg {
   type: "osmosis/concentratedliquidity/full-position-breakdown";
@@ -250,35 +250,51 @@ export const Position = {
     return message;
   },
   fromAmino(object: PositionAmino): Position {
-    return {
-      positionId: BigInt(object.position_id),
-      address: object.address,
-      poolId: BigInt(object.pool_id),
-      lowerTick: BigInt(object.lower_tick),
-      upperTick: BigInt(object.upper_tick),
-      joinTime: object?.join_time
-        ? fromTimestamp(Timestamp.fromAmino(object.join_time))
-        : undefined,
-      liquidity: object.liquidity,
-    };
+    const message = createBasePosition();
+    if (object.position_id !== undefined && object.position_id !== null) {
+      message.positionId = BigInt(object.position_id);
+    }
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    if (object.lower_tick !== undefined && object.lower_tick !== null) {
+      message.lowerTick = BigInt(object.lower_tick);
+    }
+    if (object.upper_tick !== undefined && object.upper_tick !== null) {
+      message.upperTick = BigInt(object.upper_tick);
+    }
+    if (object.join_time !== undefined && object.join_time !== null) {
+      message.joinTime = fromTimestamp(Timestamp.fromAmino(object.join_time));
+    }
+    if (object.liquidity !== undefined && object.liquidity !== null) {
+      message.liquidity = object.liquidity;
+    }
+    return message;
   },
   toAmino(message: Position): PositionAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
-    obj.address = message.address;
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.lower_tick = message.lowerTick
-      ? message.lowerTick.toString()
-      : undefined;
-    obj.upper_tick = message.upperTick
-      ? message.upperTick.toString()
-      : undefined;
+    obj.position_id =
+      message.positionId !== BigInt(0)
+        ? message.positionId.toString()
+        : undefined;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    obj.lower_tick =
+      message.lowerTick !== BigInt(0)
+        ? message.lowerTick.toString()
+        : undefined;
+    obj.upper_tick =
+      message.upperTick !== BigInt(0)
+        ? message.upperTick.toString()
+        : undefined;
     obj.join_time = message.joinTime
       ? Timestamp.toAmino(toTimestamp(message.joinTime))
       : undefined;
-    obj.liquidity = message.liquidity;
+    obj.liquidity = message.liquidity === "" ? undefined : message.liquidity;
     return obj;
   },
   fromAminoMsg(object: PositionAminoMsg): Position {
@@ -404,22 +420,23 @@ export const FullPositionBreakdown = {
     return message;
   },
   fromAmino(object: FullPositionBreakdownAmino): FullPositionBreakdown {
-    return {
-      position: object?.position
-        ? Position.fromAmino(object.position)
-        : undefined,
-      asset0: object?.asset0 ? Coin.fromAmino(object.asset0) : undefined,
-      asset1: object?.asset1 ? Coin.fromAmino(object.asset1) : undefined,
-      claimableSpreadRewards: Array.isArray(object?.claimable_spread_rewards)
-        ? object.claimable_spread_rewards.map((e: any) => Coin.fromAmino(e))
-        : [],
-      claimableIncentives: Array.isArray(object?.claimable_incentives)
-        ? object.claimable_incentives.map((e: any) => Coin.fromAmino(e))
-        : [],
-      forfeitedIncentives: Array.isArray(object?.forfeited_incentives)
-        ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e))
-        : [],
-    };
+    const message = createBaseFullPositionBreakdown();
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Position.fromAmino(object.position);
+    }
+    if (object.asset0 !== undefined && object.asset0 !== null) {
+      message.asset0 = Coin.fromAmino(object.asset0);
+    }
+    if (object.asset1 !== undefined && object.asset1 !== null) {
+      message.asset1 = Coin.fromAmino(object.asset1);
+    }
+    message.claimableSpreadRewards =
+      object.claimable_spread_rewards?.map((e) => Coin.fromAmino(e)) || [];
+    message.claimableIncentives =
+      object.claimable_incentives?.map((e) => Coin.fromAmino(e)) || [];
+    message.forfeitedIncentives =
+      object.forfeited_incentives?.map((e) => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: FullPositionBreakdown): FullPositionBreakdownAmino {
     const obj: any = {};
@@ -433,21 +450,21 @@ export const FullPositionBreakdown = {
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.claimable_spread_rewards = [];
+      obj.claimable_spread_rewards = message.claimableSpreadRewards;
     }
     if (message.claimableIncentives) {
       obj.claimable_incentives = message.claimableIncentives.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.claimable_incentives = [];
+      obj.claimable_incentives = message.claimableIncentives;
     }
     if (message.forfeitedIncentives) {
       obj.forfeited_incentives = message.forfeitedIncentives.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.forfeited_incentives = [];
+      obj.forfeited_incentives = message.forfeitedIncentives;
     }
     return obj;
   },
@@ -530,12 +547,14 @@ export const PositionWithPeriodLock = {
     return message;
   },
   fromAmino(object: PositionWithPeriodLockAmino): PositionWithPeriodLock {
-    return {
-      position: object?.position
-        ? Position.fromAmino(object.position)
-        : undefined,
-      locks: object?.locks ? PeriodLock.fromAmino(object.locks) : undefined,
-    };
+    const message = createBasePositionWithPeriodLock();
+    if (object.position !== undefined && object.position !== null) {
+      message.position = Position.fromAmino(object.position);
+    }
+    if (object.locks !== undefined && object.locks !== null) {
+      message.locks = PeriodLock.fromAmino(object.locks);
+    }
+    return message;
   },
   toAmino(message: PositionWithPeriodLock): PositionWithPeriodLockAmino {
     const obj: any = {};

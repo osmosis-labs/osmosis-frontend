@@ -47,7 +47,7 @@ export const TokenSelectModal: FunctionComponent<
           size="large"
         />
       </div>
-      <ul className="flex max-h-64 flex-col overflow-y-auto">
+      <ul className="max-h-128 flex flex-col overflow-y-auto md:max-h-64">
         {props.tokens.map((t) => {
           const currency =
             t.token instanceof CoinPretty ? t.token.currency : t.token;
@@ -73,7 +73,7 @@ export const TokenSelectModal: FunctionComponent<
           return (
             <li
               key={currency.coinDenom}
-              className="my-1 mx-3 flex cursor-pointer items-center justify-between rounded-2xl py-2.5 px-4 hover:bg-osmoverse-900"
+              className="mx-3 my-1 flex cursor-pointer items-center justify-between rounded-2xl px-4 py-2.5 hover:bg-osmoverse-900"
               onClick={(e) => {
                 e.stopPropagation();
                 props.onSelect(coinDenom);

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Next.js Node Debug",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/next/dist/bin/next",
+            "cwd": "${workspaceFolder}/packages/web",
+            "console": "integratedTerminal"
+        }
+    ]
+}

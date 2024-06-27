@@ -1,9 +1,5 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  ObservableQueryPool,
-  QuasarVault,
-} from "@osmosis-labs/stores";
+import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -20,35 +16,46 @@ import React, {
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { ChartButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
-} from "~/components/chart/token-pair-historical";
+} from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
-import Spinner from "~/components/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
-import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
-import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { Button } from "~/components/ui/button";
+import { ChartButton } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import { EventName } from "~/config/analytics-events";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  useAmplitudeAnalytics,
+  useTranslation,
+} from "~/hooks";
+import {
+  ObservableHistoricalAndLiquidityData,
+  useHistoricalAndLiquidityData,
+} from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
-import { CheckBox } from "../control";
 import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
-const TokenPairHistoricalChart = dynamic(
-  () => import("~/components/chart/token-pair-historical"),
+const HistoricalPriceChart = dynamic(
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 
@@ -56,17 +63,10 @@ export const AddConcLiquidity: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
-    getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
     onRequestClose: () => void;
   } & CustomClasses
 > = observer(
-  ({
-    className,
-    addLiquidityConfig,
-    actionButton,
-    getFiatValue,
-    onRequestClose,
-  }) => {
+  ({ className, addLiquidityConfig, actionButton, onRequestClose }) => {
     const { poolId } = addLiquidityConfig;
     const {
       queriesStore,
@@ -104,7 +104,6 @@ export const AddConcLiquidity: FunctionComponent<
             case "add_manual":
               return (
                 <AddConcLiqView
-                  getFiatValue={getFiatValue}
                   pool={pool}
                   addLiquidityConfig={addLiquidityConfig}
                   actionButton={actionButton}
@@ -169,7 +168,7 @@ const Overview: FunctionComponent<
           />
         </div>
       </div>
-      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
+      <div className="flex rounded-2xl bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex flex-nowrap items-center gap-2">
             {pool && (
@@ -199,7 +198,7 @@ const Overview: FunctionComponent<
             </span>
           )}
         </div>
-        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
+        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-x-6 xs:gap-y-4">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
               {t("pool.24hrTradingVolume")}
@@ -285,7 +284,7 @@ const StrategySelector: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px]",
+        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
         {
           "bg-supercharged": selected,
           "cursor-pointer hover:bg-supercharged": onClick,
@@ -295,7 +294,7 @@ const StrategySelector: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
+          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl px-4 py-8",
           {
             "bg-osmoverse-700": Boolean(onClick),
           }
@@ -314,7 +313,7 @@ const StrategySelector: FunctionComponent<{
           src={imgSrc}
           width={354}
           height={180}
-          className="rounded-[1rem]"
+          className="!rounded-2xl"
         />
         <div className="body2 text-center text-osmoverse-200">
           {description}
@@ -329,9 +328,8 @@ const AddConcLiqView: FunctionComponent<
     pool?: ObservableQueryPool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
-    getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
+> = observer(({ addLiquidityConfig, actionButton, pool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -357,9 +355,8 @@ const AddConcLiqView: FunctionComponent<
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+  const { derivedDataStore, queriesExternalStore } = useStore();
+  const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
@@ -416,7 +413,7 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex w-full gap-1">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {chartConfig.queryTokenPairPrice.isFetching ? (
+            {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
@@ -435,7 +432,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
+              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
                   alt="refresh"
                   icon="refresh-ccw"
@@ -545,16 +542,18 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
-            <CheckBox
-              borderStyles="border-superfluid"
-              backgroundStyles="bg-superfluid"
-              isOn={shouldBeSuperfluidStaked}
-              onToggle={() => {
-                setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
-              }}
-              disabled={sfStakingDisabled}
-            >
-              <div
+            <div className="flex gap-3">
+              <Checkbox
+                id="superfluid-stake"
+                variant="secondary"
+                checked={shouldBeSuperfluidStaked}
+                onClick={() => {
+                  setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
+                }}
+                disabled={sfStakingDisabled}
+              />
+              <label
+                htmlFor="superfluid-stake"
                 className={classNames("flex flex-col gap-1", {
                   "opacity-30": sfStakingDisabled,
                 })}
@@ -574,20 +573,19 @@ const AddConcLiqView: FunctionComponent<
                       .toString(),
                   })}
                 </span>
-              </div>
-            </CheckBox>
+              </label>
+            </div>
           )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
-            getFiatValue={getFiatValue}
             currency={pool?.poolAssets[0]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
-                baseDepositAmountIn.setAmount(amount.toString());
+                baseDepositAmountIn.setAmount(amount);
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
@@ -597,14 +595,13 @@ const AddConcLiqView: FunctionComponent<
             percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
-            getFiatValue={getFiatValue}
             currency={pool?.poolAssets[1]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
-                quoteDepositAmountIn.setAmount(amount.toString());
+                quoteDepositAmountIn.setAmount(amount);
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
@@ -664,7 +661,7 @@ const AddConcLiqManaged: FunctionComponent<
               target="_blank"
               rel="noreferrer"
             >
-              <div className="grid cursor-pointer grid-cols-4 items-center rounded-[1rem] border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
+              <div className="grid cursor-pointer grid-cols-4 items-center rounded-2xl border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
                 <div className="col-span-3 flex items-center gap-4">
                   <Image
                     alt="quasar-provider"
@@ -719,8 +716,14 @@ const ChartHeader: FunctionComponent<{
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
 
+  const formatOpts = useMemo(
+    () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
+    [hoverPrice]
+  );
+
   return (
     <PriceChartHeader
+      formatOpts={formatOpts}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
       baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
@@ -743,7 +746,7 @@ const Chart: FunctionComponent<{
     chartConfig;
 
   return (
-    <TokenPairHistoricalChart
+    <HistoricalPriceChart
       data={historicalChartData}
       annotations={
         fullRange
@@ -979,7 +982,7 @@ const PriceInputBox: FunctionComponent<{
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
   /** to allow decimals, display the raw string value while typing
-   otherwise, display the nearest tick rounded price. 
+   otherwise, display the nearest tick rounded price.
     All values have currency decimals adjusted for display. */
   const currentValue = isFocused
     ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
@@ -1004,7 +1007,8 @@ const PriceInputBox: FunctionComponent<{
         </div>
       ) : (
         <InputBox
-          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          className="bg-transparent text-subtitle1 leading-tight"
+          style="no-border"
           type="number"
           rightEntry
           inputRef={inputRef}

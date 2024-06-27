@@ -6,6 +6,8 @@ function invertCoordinates(n: number, height: number) {
 }
 
 function scaleToRange(max: number, min: number, height: number, value: number) {
+  if (max - min === 0) return height / 2;
+
   return ((value - min) / (max - min)) * height;
 }
 
@@ -92,7 +94,7 @@ export const Sparkline: FunctionComponent<{
   }, [drawSparkline, shouldFillContainer]);
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full" style={{ width }}>
       <canvas width={width} height={height ?? 230} ref={canvasRef} />
     </div>
   );

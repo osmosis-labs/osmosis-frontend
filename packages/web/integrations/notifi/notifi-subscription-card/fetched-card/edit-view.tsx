@@ -9,8 +9,8 @@ import classNames from "classnames";
 import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
@@ -228,7 +228,7 @@ export const EditView: FunctionComponent = () => {
   return (
     <>
       {!isMobile && (
-        <div className="mt-[2rem] mb-[1rem] flex place-content-between items-center py-[0.625rem]">
+        <div className="mb-[1rem] mt-[2rem] flex place-content-between items-center py-[0.625rem]">
           {onRequestBack && (
             <IconButton
               aria-label="Back"
@@ -353,20 +353,16 @@ export const EditView: FunctionComponent = () => {
           <div
             className={classNames(
               styles.saveSection,
-              "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
+              "sticky bottom-0 left-0 right-0  px-[2.5rem] pb-[2.25rem] pt-[1.25rem] md:p-5"
             )}
           >
-            <Button
-              mode="primary"
-              disabled={loading}
-              onClick={() => onClickSave()}
-            >
+            <Button disabled={loading} onClick={() => onClickSave()}>
               {t("notifi.saveChanges")}
             </Button>
           </div>
         ) : null}
         <div
-          className={`bg-black-full absolute top-[-4.8125rem] left-0 right-0 bottom-0 flex flex-col items-center justify-center ${
+          className={`bg-black-full absolute bottom-0 left-0 right-0 top-[-4.8125rem] flex flex-col items-center justify-center ${
             isSaveOrDiscardModalShown ? "" : "hidden"
           }`}
         >
@@ -376,7 +372,6 @@ export const EditView: FunctionComponent = () => {
             </p>
             <Button
               className="z-[5] w-[20.8125rem]"
-              size={"normal"}
               disabled={loading}
               onClick={() => {
                 setLoading(true);
@@ -391,8 +386,7 @@ export const EditView: FunctionComponent = () => {
             </Button>
             <Button
               className="z-[52] w-[20.8125rem]"
-              size={"normal"}
-              mode={"secondary"}
+              variant="outline"
               disabled={loading}
               onClick={() => {
                 revertChanges();

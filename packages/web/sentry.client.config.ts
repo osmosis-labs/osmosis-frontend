@@ -4,14 +4,33 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+import { getValidSwapTRPCRoutesForSentry } from "~/utils/sentry-init";
+
 Sentry.init({
-  dsn: "https://c696452bb7ce4cc98150142ebea1c32f@o4505285755600896.ingest.sentry.io/4505285757698048",
+  dsn: "https://c696452bb7ce4cc98150142ebea1c32f@o4505285755600896.ingest.us.sentry.io/4505285757698048",
+
+  environment:
+    process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NODE_ENV || "development",
+
+  // Only send 5% of error events to Sentry
+  sampleRate: 0.05,
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  tracesSampler: (samplingContext) => {
+    const validPaths = ["/", "/pool/[id]", "/assets/[denom]"];
+    const validTrpcRoutes = getValidSwapTRPCRoutesForSentry();
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+    // Log 0.5% of transactions related to swap
+    if (
+      validPaths.includes(samplingContext.transactionContext.name) ||
+      validTrpcRoutes.includes(samplingContext.transactionContext.name)
+    ) {
+      return 0.005;
+    }
+
+    // Log 0.01% of all other transactions
+    return 0.0001;
+  },
 
   replaysOnErrorSampleRate: 1.0,
 
@@ -19,17 +38,26 @@ Sentry.init({
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
 
-  environment: process.env.NODE_ENV || "development",
+  // Temporarily disable due to client-side noise coming from extensions, Cosmos Kit, etc.
+  enabled:
+    process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test",
 
-  // enabled: process.env.NODE_ENV !== "development",
-  enabled: false,
+  // Setting this option to true will print useful information to the console while you're setting up Sentry.
+  debug: false,
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
-    new Sentry.Replay({
+    Sentry.replayIntegration({
       // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
+
+  /**
+   * Propagate traces to the sidecar in order to setup distributed tracing.
+   */
+  tracePropagationTargets: [process.env.NEXT_PUBLIC_SIDECAR_BASE_URL].filter(
+    (val): val is NonNullable<typeof val> => !!val
+  ),
 });

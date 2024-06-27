@@ -1,10 +1,14 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
+import type {
+  GetTransferStatusParams,
+  TransferFailureReason,
+} from "@osmosis-labs/bridge";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
-  TxReason,
 } from "@osmosis-labs/stores";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -12,19 +16,16 @@ import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
-import { Breakpoint, CustomClasses } from "~/components/types";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
-import { GetTransferStatusParams } from "~/integrations/bridges/types";
+import { CustomClasses } from "~/components/types";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
-import { truncateString } from "~/utils/string";
 
 type History = {
   txHash: string;
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
-  reason?: TxReason;
+  reason?: TransferFailureReason;
   status: IBCTransferHistoryStatus | "failed";
   isWithdraw: boolean;
 };
@@ -122,7 +123,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
             },
             {
               display: t("assets.historyTable.colums.status"),
-              collapseAt: Breakpoint.SM,
+              collapseAt: Breakpoint.sm,
               className: "md:!pr-2",
               displayCell: StatusDisplayCell,
             },
@@ -172,12 +173,15 @@ const TxHashDisplayCell: FunctionComponent<
   );
 };
 
-const reasonToTranslationKey: Record<TxReason, string> = {
+const reasonToTranslationKey: Record<TransferFailureReason, string> = {
   insufficientFee: "assets.historyTable.errors.insufficientFee",
 };
 
 const StatusDisplayCell: FunctionComponent<
-  BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: TxReason }
+  BaseCell & {
+    status?: IBCTransferHistoryStatus | "failed";
+    reason?: TransferFailureReason;
+  }
 > = ({ status, reason }) => {
   const { t } = useTranslation();
   if (status == null) {

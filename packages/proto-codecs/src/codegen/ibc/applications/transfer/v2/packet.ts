@@ -28,15 +28,15 @@ export interface FungibleTokenPacketDataProtoMsg {
  */
 export interface FungibleTokenPacketDataAmino {
   /** the token denomination to be transferred */
-  denom: string;
+  denom?: string;
   /** the token amount to be transferred */
-  amount: string;
+  amount?: string;
   /** the sender address */
-  sender: string;
+  sender?: string;
   /** the recipient address on the destination chain */
-  receiver: string;
+  receiver?: string;
   /** optional memo */
-  memo: string;
+  memo?: string;
 }
 export interface FungibleTokenPacketDataAminoMsg {
   type: "cosmos-sdk/FungibleTokenPacketData";
@@ -131,21 +131,31 @@ export const FungibleTokenPacketData = {
     return message;
   },
   fromAmino(object: FungibleTokenPacketDataAmino): FungibleTokenPacketData {
-    return {
-      denom: object.denom,
-      amount: object.amount,
-      sender: object.sender,
-      receiver: object.receiver,
-      memo: object.memo,
-    };
+    const message = createBaseFungibleTokenPacketData();
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.amount !== undefined && object.amount !== null) {
+      message.amount = object.amount;
+    }
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.receiver !== undefined && object.receiver !== null) {
+      message.receiver = object.receiver;
+    }
+    if (object.memo !== undefined && object.memo !== null) {
+      message.memo = object.memo;
+    }
+    return message;
   },
   toAmino(message: FungibleTokenPacketData): FungibleTokenPacketDataAmino {
     const obj: any = {};
-    obj.denom = message.denom;
-    obj.amount = message.amount;
-    obj.sender = message.sender;
-    obj.receiver = message.receiver;
-    obj.memo = message.memo;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.amount = message.amount === "" ? undefined : message.amount;
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.receiver = message.receiver === "" ? undefined : message.receiver;
+    obj.memo = message.memo === "" ? undefined : message.memo;
     return obj;
   },
   fromAminoMsg(

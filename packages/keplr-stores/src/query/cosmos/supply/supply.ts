@@ -17,7 +17,7 @@ export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<Supply
       kvStore,
       chainId,
       chainGetter,
-      `/cosmos/bank/v1beta1/supply/${denom}`
+      `/cosmos/bank/v1beta1/supply/by_denom?denom=${denom}`
     );
   }
 }

@@ -51,6 +51,7 @@ export class AccountStore<
       return mergeStores(
         accountSetBase,
         [this.chainGetter, chainId],
+        // @ts-ignore
         ...this.accountSetCreators
       );
     });

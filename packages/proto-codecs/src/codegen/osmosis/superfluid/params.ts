@@ -24,7 +24,7 @@ export interface ParamsAmino {
    * to counter-balance the staked amount on chain's exposure to various asset
    * volatilities, and have base staking be 'resistant' to volatility.
    */
-  minimum_risk_factor: string;
+  minimum_risk_factor?: string;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/params";
@@ -79,13 +79,19 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      minimumRiskFactor: object.minimum_risk_factor,
-    };
+    const message = createBaseParams();
+    if (
+      object.minimum_risk_factor !== undefined &&
+      object.minimum_risk_factor !== null
+    ) {
+      message.minimumRiskFactor = object.minimum_risk_factor;
+    }
+    return message;
   },
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
-    obj.minimum_risk_factor = message.minimumRiskFactor;
+    obj.minimum_risk_factor =
+      message.minimumRiskFactor === "" ? undefined : message.minimumRiskFactor;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

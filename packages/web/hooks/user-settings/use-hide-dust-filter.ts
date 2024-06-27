@@ -8,10 +8,10 @@ import { HideDustState } from "~/stores/user-settings";
  *  @param items Items to be filtered
  *  @param getValueOfItem Get the value of the item in fiat. Return `undefined` to include regardless.
  */
-export function useHideDustUserSetting<TDustableItem>(
-  items: TDustableItem[],
-  getValueOfItem: (item: TDustableItem) => PricePretty | undefined
-): TDustableItem[] {
+export function useHideDustUserSetting<DustableItem>(
+  items: DustableItem[],
+  getValueOfItem: (item: DustableItem) => PricePretty | undefined
+): DustableItem[] {
   const { userSettings } = useStore();
 
   const hideDust =

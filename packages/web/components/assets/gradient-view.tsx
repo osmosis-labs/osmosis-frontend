@@ -1,17 +1,17 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { PropsWithChildren } from "react";
 
 import { CustomClasses } from "~/components/types";
 
 /** Wrap a view in a gradient border. */
-export const GradientView: FunctionComponent<
-  { gradientClassName?: string; bgClassName?: string } & CustomClasses
-> = ({
+export const GradientView = ({
   gradientClassName = "bg-superfluid",
   bgClassName = "bg-osmoverse-900",
   className,
   children,
-}) => (
+}: PropsWithChildren<
+  { gradientClassName?: string; bgClassName?: string } & CustomClasses
+>) => (
   <div className={`rounded-xl p-[2px] ${gradientClassName}`}>
     <div
       className={classNames(

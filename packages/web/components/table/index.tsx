@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
-  FunctionComponent,
+  PropsWithChildren,
   PropsWithoutRef,
   useCallback,
   useState,
@@ -61,7 +61,7 @@ export const Table = <TCell extends BaseCell>({
   );
 
   return (
-    <table className={classNames("overflow-y-scroll", className)}>
+    <table className={classNames("table-auto overflow-y-scroll", className)}>
       <thead className={tHeadClassName}>
         <tr className={classNames("px-10 py-5", headerTrClassName)}>
           {columnDefs.map((colDef, colIndex) => {
@@ -211,9 +211,10 @@ export const Table = <TCell extends BaseCell>({
 };
 
 /** Wrap non-link non-visual content in a button for accessibility users. */
-const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
+const ClickableContent = ({
   isButton = false,
   children,
-}) => (isButton ? <button>{children}</button> : <>{children}</>);
+}: PropsWithChildren<{ isButton?: boolean }>) =>
+  isButton ? <button>{children}</button> : <>{children}</>;
 
 export * from "./types";

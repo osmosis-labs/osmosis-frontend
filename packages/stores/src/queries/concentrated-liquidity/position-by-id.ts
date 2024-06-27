@@ -45,7 +45,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
   }
 
   get hasData() {
-    return this._raw !== undefined;
+    return !!this._raw;
   }
 
   /** `amount0` */

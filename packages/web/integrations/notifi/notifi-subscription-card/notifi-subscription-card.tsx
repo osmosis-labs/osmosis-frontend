@@ -7,7 +7,6 @@ import { FunctionComponent, useEffect, useRef } from "react";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { ErrorCard } from "~/integrations/notifi/notifi-subscription-card/error-card";
-import { ExpiredCard } from "~/integrations/notifi/notifi-subscription-card/expired-card";
 import { FetchedCard } from "~/integrations/notifi/notifi-subscription-card/fetched-card";
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
@@ -61,8 +60,6 @@ export const NotifiSubscriptionCard: FunctionComponent<Props> = ({
 
   if (!client.isInitialized || config.state === "loading") {
     return <LoadingCard />;
-  } else if (client.isTokenExpired || cardView.state === "expired") {
-    return <ExpiredCard />;
   } else if (config.state === "error") {
     return <ErrorCard error={config.reason} />;
   } else if (cardView.state === "error") {

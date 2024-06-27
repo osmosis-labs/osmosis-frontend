@@ -1,18 +1,29 @@
 import Tippy, { TippyProps } from "@tippyjs/react";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { PropsWithChildren } from "react";
 
 import { TooltipProps } from "~/components/tooltip/types";
 import { CustomClasses } from "~/components/types";
 
-export const Tooltip: FunctionComponent<
+export const Tooltip = ({
+  content,
+  trigger,
+  children,
+  className,
+  rootClassNames,
+  enablePropagation,
+  ...props
+}: PropsWithChildren<
   TooltipProps &
     CustomClasses &
-    Omit<TippyProps, "content"> & { rootClassNames?: string }
-> = ({ content, trigger, children, className, rootClassNames, ...props }) => (
+    Omit<TippyProps, "content"> & {
+      rootClassNames?: string;
+      enablePropagation?: boolean;
+    }
+>) => (
   <Tippy
     className={classNames(
-      "body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5",
+      "body2 rounded-lg bg-osmoverse-700 px-3 py-2.5 md:px-2 md:py-1.5",
       rootClassNames
     )}
     content={content}
@@ -21,7 +32,7 @@ export const Tooltip: FunctionComponent<
   >
     <div
       className={classNames("flex cursor-pointer align-middle", className)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={enablePropagation ? undefined : (e) => e.stopPropagation()}
     >
       {children}
     </div>

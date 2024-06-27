@@ -13,7 +13,6 @@
     "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
     "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
     "singleAsset": "یک توکن",
-    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
     "titleInPool": "افزودن نقدینگی به  #{poolId}",
     "priceImpact": "تاثیر قیمت"
@@ -55,18 +54,6 @@
     }
   },
   "assetNotCompatible": "این دارایی با این کیف پول سازگار نیست.",
-  "convertToStake": {
-    "adTitle": "ما استراتژی کسب درآمد بهتری را شناسایی کرده ایم.",
-    "adSubtitle": "برخی از موقعیت های شما کمتر از آنچه که با شرط بندی OSMO به دست می آورید، درآمد دارند",
-    "title": "تبدیل به Staked OSMO",
-    "description": "موقعیت های انتخاب شده به طور کامل به OSMO تبدیل می شوند. سپس تمام OSMO به طور خودکار در مجموعه اعتبارسنجی موجود شما قرار می گیرد.",
-    "stakedOsmo": "OSMO سهامدار",
-    "APR": "آوریل",
-    "currentApr": "آوریل فعلی",
-    "pool": "استخر #{poolId}",
-    "position": "POSITION # {positionId}",
-    "convertAndStake": "تبدیل و سهام"
-  },
   "clPositions": {
     "inRange": "در محدوده",
     "nearBounds": "نزدیک به مرزها",
@@ -100,7 +87,7 @@
     "pendingRewards": "جوایز در انتظار",
     "superfluidValidator": "اعتبار سنجی",
     "superfluidUnstake": "یک بار بدون شرط، پس از آن در دسترس است",
-    "superfluidUnstaking": "بدون سهام، موجود در",
+    "superfluidUnstaking": "برداشت از سهام، در دسترس در {fromNow}",
     "superfluidCommission": "کمیسیون",
     "unstake": "نقدینگی بی خطر",
     "unbondingFromNow": "بدون پیوند، موجود در",
@@ -108,7 +95,7 @@
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
-    "goToPool": "رفتن به استخر #"
+    "goToPool": "رفتن به استخر #{poolId}"
   },
   "app": {
     "banner": {
@@ -117,7 +104,8 @@
       "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
       "externalLinkModalTitle": "ترک Osmosis",
       "goToSite": "بازگشت به سایت",
-      "doNotShowAgain": "این را دوباره نشان داده نشود"
+      "doNotShowAgain": "این را دوباره نشان داده نشود",
+      "chainHalted": "زنجیره اسمز متوقف شده است، تراکنش ها به طور موقت غیرفعال می شوند."
     }
   },
   "store": {
@@ -130,18 +118,6 @@
     "applyButton": "درخواست",
     "storeDisclaimer": "محتوای خاصی توسط اشخاص ثالثی تهیه شده است که به آزمایشگاه اسموز یا هر یک از شرکت های وابسته به آن وابسته نیستند و آزمایشگاه اسموز مسئولیتی در قبال چنین محتوایی ندارد. اسموزیس لبز مسئولیتی در قبال خطا یا تاخیر در محتوا، یا هرگونه اقدامی که بر اساس هر محتوا انجام می شود، ندارد. اطلاعات فقط برای مقاصد اطلاعاتی ارائه شده است و مشاوره سرمایه گذاری نیست. این یک توصیه برای خرید یا فروش یک دارایی دیجیتال خاص یا به کارگیری یک استراتژی سرمایه گذاری خاص نیست. آزمایشگاه اسموز هیچ گونه اظهارنظری در مورد صحت، مناسب بودن یا اعتبار اطلاعات ارائه شده یا برای یک دارایی خاص ارائه نمی دهد. قیمت های نشان داده شده فقط برای مقاصد توضیحی است. قیمت واقعی ارزهای دیجیتال و آمار مرتبط ممکن است متفاوت باشد. داده های ارائه شده ممکن است منعکس کننده دارایی های معامله شده در صرافی Osmosis Labs و انتخاب سایر صرافی های ارزهای دیجیتال باشد.",
     "allAppsHeader": "تمام برنامه ها"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "خود را سوپرشارژ کنید",
-    "caption": "موقعیت های سوپرشارژ به شما امکان می دهد بازدهی بیشتری کسب کنید. نحوه عملکرد آن را در 30 ثانیه بیاموزید یا با چند کلیک موقعیت خود را ارتقا دهید.",
-    "primaryCta": "به Supercharged ارتقا دهید",
-    "secondaryCta": "در 30 ثانیه یاد بگیرید"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "از نقدینگی خود درآمد بیشتری کسب کنید",
-    "caption": "موقعیت های سوپرشارژ به شما امکان می دهد بازدهی بیشتری کسب کنید. نحوه عملکرد آن را در 30 ثانیه بیاموزید یا نقدینگی خود را با چند کلیک ارتقا دهید.",
-    "primaryCta": "به Supercharged ارتقا دهید",
-    "secondaryCta": "در 30 ثانیه یاد بگیرید"
   },
   "createFirstPositionCta": {
     "title": "اولین موقعیت Supercharged خود را ایجاد کنید",
@@ -169,9 +145,16 @@
       "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
-      "title": "تاریخ چه انتقال"
+      "title": "تاریخ چه انتقال",
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
     },
     "ibcTransfer": {
+      "buttonAdd": "اضافه کردن",
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",
       "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",
@@ -223,14 +206,22 @@
       },
       "title": "همه دارایی ها",
       "withdrawButton": "برداشت",
-      "activate": "فعال کنید"
+      "activate": "فعال کنید",
+      "marketCap": "ارزش بازار",
+      "volume24h": "جلد",
+      "price": "قیمت",
+      "balance": "تعادل",
+      "lastWeek": "7 روز گذشته",
+      "asset": "دارایی"
     },
     "totalAssets": "کل دارایی ها",
+    "totalBalance": "موجودی کل",
     "transfer": {
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
       "givePermission": "اجازه استفاده از توکن ها را بدهید",
+      "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
         "insufficientFee": "کارمزد ناکافی",
@@ -239,7 +230,9 @@
         "seeRequest": "درخواست را در {walletName} ببینید",
         "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
         "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
-        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید."
+        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
+        "invalidAddress": "آدرس نامعتبر",
+        "missingAddress": "آدرس گم شده"
       },
       "from": "از",
       "loading": "در حال بارگذاری",
@@ -287,22 +280,67 @@
       "undergoAudit": "در حین انجام حسابرسی (تکمیل تخمینی ژانویه 2024).",
       "warning": "هشدار:",
       "loading": "در حال بارگذاری..."
-    }
+    },
+    "activateUnverifiedAssetsModal": {
+      "activate": "دارایی های تایید نشده را فعال کنید",
+      "description": "یک توکن تایید نشده است. آیا می خواهید آن را فعال کنید؟ حتما قبل از معامله به طور کامل تحقیق کنید.",
+      "reminder": "همیشه می توانید این تنظیم را در حالت تنظیمات غیرفعال کنید."
+    },
+    "categories": {
+      "new": "جدیدترین",
+      "defi": "دیفای",
+      "stablecoin": "استیبل کوین ها",
+      "meme": "میم",
+      "liquid_staking": "استقرار مایع",
+      "built_on_osmosis": "ساخته شده بر روی اسمز",
+      "sail_initiative": "ابتکار بادبان",
+      "bridges": "پل ها",
+      "nft_protocol": "پروتکل NFT",
+      "ai": "هوش مصنوعی",
+      "privacy": "حریم خصوصی",
+      "social": "اجتماعی",
+      "oracles": "اوراکلز",
+      "dweb": "وب غیرمتمرکز",
+      "rwa": "صدور دارایی دنیای واقعی",
+      "gaming": "بازی",
+      "topGainers": "برترین برندگان",
+      "more": "دسته های بیشتر"
+    },
+    "seeAll": "همه را ببین",
+    "highlights": {
+      "new": "جدید",
+      "topGainers": "برترین برندگان",
+      "upcoming": "آینده"
+    },
+    "balancesMovedTitle": "به دنبال تعادل خود هستید؟",
+    "balancesMovedDescription": "به صفحه نمونه کارها بروید، خانه جدید موجودی های خود و موارد دیگر."
+  },
+  "portfolio": {
+    "buy": "خرید کنید",
+    "yourAssets": "دارایی های شما",
+    "yourPositions": "موقعیت های شما",
+    "recentTransfers": "نقل و انتقالات اخیر",
+    "yourSuperchargedPositions": "موقعیت های سوپرشارژ شما",
+    "yourLiquidityPools": "استخرهای نقدینگی شما",
+    "connectWallet": "کیف پول خود را وصل کنید تا ردیابی موجودی ها و موقعیت های خود را در اسموز شروع کنید.",
+    "noAssets": "هیچ موجودی در {osmosis} ندارید",
+    "getStarted": "برای شروع، دارایی ها را سپرده گذاری کنید",
+    "noPositions": "شما هیچ مقامی ندارید",
+    "unlockPotential": "پتانسیل درآمد کامل خود را باز کنید و دارایی های خود را با استخرهای نقدینگی کار کنید"
   },
   "buyTokens": "خرید توکن",
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
-      "transakSubtitle": "پشتیبانی OSMO"
+      "transakSubtitle": "پشتیبانی OSMO",
+      "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },
     "incentive": {
-      "mobileTitle": "جایزه",
-      "title": "نوع جوایز"
+      "title": "انواع مشوق"
     },
     "MAX": "حداکثر",
     "pool": {
-      "mobileTitle": "استخر",
       "title": "استخرها"
     },
     "searchTokens": "جستجو",
@@ -326,9 +364,6 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
-      "internal": "مشوق های داخلی",
-      "external": "مشوق های خارجی",
-      "superfluid": "ابر سیال",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -341,6 +376,7 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
+    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -355,7 +391,7 @@
     "noAvailableShares": "شما موجودی برای {denom} ندارید",
     "noRoute": "هیچ مسیر برای تبدیل پیدا نشد",
     "noSendCurrency": "ارز خروجی مشخص نشده است",
-    "notInitialized": "ساخته نشده است",
+    "notInitialized": "بارگذاری...",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
     "zeroAmount": "مقدار صفر است",
@@ -368,7 +404,9 @@
     "chartUnavailable": "نمودار در دسترس نیست",
     "sequenceNumber": "شما تراکنش های همزمان زیادی دارید! پس از اینکه tx قبلی روی زنجیره قرار گرفت، دوباره ارسال کنید. (توالی: {sequence} )",
     "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
-    "invalidAmounts": "مقدار(های) نامعتبر"
+    "invalidAmounts": "مقدار(های) نامعتبر",
+    "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
+    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید."
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -395,6 +433,7 @@
   },
   "menu": {
     "assets": "دارایی ها",
+    "portfolio": "نمونه کارها",
     "help": "پشتیبانی",
     "info": "آمار و اطلاعات",
     "pools": "استخرها",
@@ -409,7 +448,9 @@
     "marsSubtext": "پشتیبانی شده توسط مریخ",
     "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
-    "new": "جدید"
+    "new": "جدید",
+    "settings": "تنظیمات",
+    "notifications": "اطلاعیه"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
@@ -449,9 +490,102 @@
     "discardButton": "لغو تغییرات",
     "clearAllHistory": "همه را پاک کن"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
+      "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
+      "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
+      "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
+      "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
+      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
+      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
+      "approveManually": "تأیید دستی در {walletName}",
+      "continueWithWallet": "با کیف پول ادامه دهید",
+      "sessionEnded": "جلسه در این دستگاه به پایان رسید",
+      "errorEndingSession": "خطا در پایان جلسه",
+      "pleaseTryAgain": "خطای غیرمنتظره لطفا دوباره تلاش کنید."
+    },
+    "introduction": {
+      "newFeature": "خصوصیت جدید",
+      "introducingTitle": "معرفی تجارت 1 کلیک",
+      "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
+      "learnMore": "بیشتر بدانید",
+      "startTradingButton": "شروع تجارت با 1 کلیک",
+      "defaultParameters": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
+      "changeButton": "تغییر دادن"
+    },
+    "swapRotatingBanner": {
+      "tradeQuickerAndEasier": "تجارت سریعتر و آسان تر",
+      "startOneClickTradingNow": "اکنون تجارت 1-کلیک کنید",
+      "iconAlt": "1-روی نماد تجاری کوچک کلیک کنید"
+    },
+    "floatingBanner": {
+      "newPill": "جدید",
+      "title": "1- روی تجارت کلیک کنید",
+      "tradeFasterButton": "تجارت سریعتر"
+    },
+    "settings": {
+      "header": "1- روی تجارت کلیک کنید",
+      "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
+      "enableTitle": "تجارت 1 کلیکی را فعال کنید",
+      "spendLimitTitle": "محدودیت هزینه",
+      "networkFeeLimitTitle": "محدودیت هزینه شبکه",
+      "sessionPeriodTitle": "دوره جلسه",
+      "startButton": "شروع تجارت با 1 کلیک",
+      "editSessionButton": "ذخیره تغییرات",
+      "endingSession": "پایان جلسه",
+      "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "fixedAmount": "مقدار ثابت",
+        "shareOfBalance": "سهم تعادل",
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
+        "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
+      },
+      "networkFeeLimitScreen": {
+        "title": "محدودیت هزینه شبکه",
+        "description": "حداکثر مبلغی را که می‌توانید برای کارمزد شبکه برای هر تراکنش منفرد در طول جلسه تجارت 1 کلیک خود خرج کنید، تنظیم کنید.",
+        "info": "اگر کارمزد بیش از این مقدار باشد، می‌توانید با امضای دستی تراکنش‌ها در کیف پول خود اقدام کنید.",
+        "low": "کم",
+        "average": "میانگین",
+        "high": "بالا",
+        "recommended": "توصیه شده"
+      },
+      "sessionPeriodScreen": {
+        "title": "دوره جلسه",
+        "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
+        "periods": {
+          "10min": "10 دقیقه",
+          "30min": "30 دقیقه",
+          "1hour": "1 ساعت",
+          "3hours": "3 ساعت",
+          "12hours": "12 ساعت"
+        }
+      },
+      "discardChanges": {
+        "title": "لغو تغییرات؟",
+        "message": "آیا مایلید تنظیمات تجارت 1-کلیک موجود خود را حفظ کنید؟",
+        "cancelButton": "لغو کنید",
+        "discardButton": "دور انداختن"
+      }
+    },
+    "welcomeBack": {
+      "title": "خوش برگشتی",
+      "description": "هنگامی که کیف پول خود را وصل کردید، از شما خواسته می شود تا یک تراکنش را تأیید کنید تا جلسه تجارت 1-Click خود را شروع کنید.",
+      "toggleLabel": "1- روی تجارت کلیک کنید",
+      "editParamsAriaLabel": "پارامترهای 1CT را تغییر دهید"
+    },
+    "connectToContinue": {
+      "altText": "گرافیک معاملاتی با یک کلیک",
+      "header": "برای ادامه یک کیف پول وصل کنید",
+      "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
+    },
+    "profile": {
+      "sessionExpired": "جلسه تمام شده"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
-    "7davg": "(میانگین 7 روز)",
     "amountDaysUnbonding": "{numDays} روز تا باز شدن",
     "amountDaysUnbonding_plural": "{numDays} روز تا باز شدن",
     "APR": "نرخ بازدهی",
@@ -465,12 +599,9 @@
     "checkBackForBondingRewards": "بررسی مجدد برای جوایز دریافتی",
     "collapseDetails": "مخفی کردن جزئیات",
     "commission": "کمسیون",
-    "currentDailyEarn": "درآمد فغلی شما",
-    "dailyEarnAmount": "{amount} / در روز",
-    "day": "روز",
+    "dailyEarnAmount": "{amount} / روز",
     "delegated": "مشارکت شده",
     "details": "جزئیات",
-    "earnMore": "دریافت {amount} درصد بازدهی بیشتر با قفل کردن",
     "earnSwapFees": "دریافت کارمزد تبدیل",
     "earnSwapFeesCaption": "توکن ها را به سهم تبدیل کنید و کارمزد دریافت کنید.",
     "from": "از",
@@ -478,7 +609,6 @@
     "learnMore": "دریافت اطلاعات بیشتر",
     "level": "سطح {level}",
     "liquidity": "نقدینگی استخر",
-    "numDaysRemaining": "{numDays} روز مانده",
     "putAssetsToWork": "دارای خود را به کار بگیرید.",
     "putAssetsToWorkCaption": "دارای خود را در مدت زمان مشخص قفل کنید و جایزه دریافت کنید مدت زمان بیشتر سود بیشتر دارد.",
     "rewardDistribution": "جوایز به همه تامین کنندگان نقدینگی تخصیص می یابد.",
@@ -499,11 +629,11 @@
     "unbonding": "باز شدن",
     "undelegating": "در حال خروج",
     "yourStats": "موجودی استخر شما",
-    "onlyInRangePositions": "فقط برای موقعیت های در محدوده"
+    "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
+    "custom": "سفارشی"
   },
   "pools": {
     "allPools": {
-      "search": "جستجوی استخرها",
       "sort": {
         "APRIncentivized": "نرخ بازدهی",
         "fees": "کارمزد (7 روز)",
@@ -551,19 +681,28 @@
     "aprBreakdown": {
       "swapFees": "کارمزد تعویض",
       "boost": "تقویت کنید",
-      "total": "کل آوریل"
+      "superfluid": "ابر سیال",
+      "externalBoost": "تقویت خارجی",
+      "total": "کل آوریل",
+      "explainer": {
+        "title": "APR چگونه محاسبه می شود؟",
+        "p1": "همه APR ها تخمینی هستند. آنها با گرفتن میانگین APR برای نقدینگی در استخر محاسبه می شوند.",
+        "p2": "در استخرهای سوپرشارژ، بیشتر کاربران پاداش کمتری دریافت خواهند کرد. این به دلیل موقعیت هایی است که تمرکز بیشتری دارند و انگیزه های بیشتری را به خود اختصاص می دهند.",
+        "p3": "به منظور محافظه‌کاری تخمین‌ها، همه APR بر ضریب 3 تقسیم می‌شوند."
+      }
     }
   },
   "profile": {
     "balance": "موجودی",
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
-    "wallet": "کیف پول"
+    "wallet": "کیف پول",
+    "transactions": "معاملات",
+    "oneClickTrading": "1- روی تجارت کلیک کنید"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
-    "title": "حذف نقدینگی",
-    "titleInPool": "حذف نقدینگی از استخر #{poolId}"
+    "title": "حذف نقدینگی"
   },
   "requestRejected": "درخواست رد شد",
   "settings": {
@@ -577,8 +716,13 @@
     "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
     "hideBalances": "تعادل های ماسک شده"
   },
+  "search": {
+    "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
+  },
   "stake": {
     "available": "دسترس",
+    "staked": "شرط بندی",
     "MAX": "حداکثر",
     "validatorHeader": "گروه اعتبارسنجی",
     "stake": "وارد کردن OSMO",
@@ -588,6 +732,7 @@
     "amount": "مقدار",
     "availableIn": "در دسترس در",
     "day": "روز",
+    "days": "روزها",
     "month": "ماه",
     "dashboard": "داشبورد",
     "dashboardStakedOsmo": "شرط بندی OSMO",
@@ -606,10 +751,7 @@
     "unbondingSubtext": "پس از گذشت این دوره، شما می‌توانید به OSMO خود در زبانه دارایی‌ها دسترسی پیدا کنید",
     "unbondingPeriodTooltip": "توکن‌های قفل شده استحکام زنجیره بلوکی را افزایش می‌دهد. زمانی که توکن‌های خود را خارج می‌کنید، پس از دوره آزادسازی مشخص شده در دسترس خواهند بود.",
     "estimatedEarningsTooltip": "این درآمدها بر اساس APR وارد کردن فعلی محاسبه می‌شوند، که ممکن است تغییر کند.",
-    "collectRewardsTooltip": "تمام جوایز دریافت نشده خود را جمع آوری کنید. این توکن‌ها فوراً در Osmosis در دسترس شما خواهند بود.",
     "collectRewardsTooltipDisabled": "پاداش‌های شما برای جمع‌آوری بسیار کم است، لطفاً زمانی که موجودی درخواست‌نشده‌تان به حداقل آستانه OSMO رسید {collectRewardsMinimumOsmo} دوباره امتحان کنید.",
-    "collectAndReinvestTooltip": "جوایز دریافت نشده خود را با یک کلیک جمع آوری و به صورت خودکار مجدداً وارد کنید. بهره‌برداری ترکیبی یک راه عالی برای کسب بیشتر با دارایی‌های شما است.",
-    "isAPRTooHighTooltip": "این اعتبارسنج کمیسیون بسیار زیادی می‌گیرد. در نظر داشته باشید که یک اعتبارسنج دیگر را انتخاب کنید.",
     "isVotingPowerTooHighTooltip": "این یک اعتبارسنج برتر 10 با قدرت رای بالا است. برای کمک به ارتقاء توزیع‌پذیری، در نظر داشته باشید که یک اعتبارسنج مختلف را انتخاب کنید.",
     "learnMore": {
       "step1": {
@@ -683,11 +825,14 @@
       "hide": "مخفی",
       "show": "نماید"
     },
+    "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
     "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
     "expectedOutput": "خروجی مورد انتظار",
     "fee": "کارمزد تبدیل ({fee})",
+    "networkFee": "هزینه شبکه",
+    "totalFee": "هزینه کل",
     "HALF": "نصف",
     "MAX": "همه",
     "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
@@ -695,18 +840,23 @@
     "priceImpact": "تاثیر قیمت",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
+    "continueAnyway": "ادامه دادن به هر طریق",
+    "warning": {
+      "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
+      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
+      "increaseSpendLimit": "افزایش سقف هزینه",
+      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+    },
     "settings": {
       "slippage": "تغیرات قابل قبول",
       "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
       "title": "تنظیمات تراکنش"
     },
     "title": "تبدیل",
-    "promo": {
-      "newOpportunity": "فرصت جدید برای کسب درآمد با",
-      "discoverSuperchargedPools": "استخرهای سوپرشارژ را کشف کنید"
-    }
+    "dynamicSpreadFactor": "پویا"
   },
   "walletSelect": {
+    "gettingStarted": "شروع شدن",
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
     "isNotInstalled": "تعریف نشده",
@@ -718,6 +868,12 @@
     "reconnect": "دوباره وصل شوید",
     "connectingWallet": "اتصال کیف پول",
     "approveWalletConnect": "تایید",
+    "enablingOneClickTrading": "فعال کردن تجارت 1 کلیک.",
+    "approveOneClickTradingSession": "تأیید معامله 1-کلیک در {walletName} .",
+    "errorInitializingOneClickTradingSession": "1-Click Trading را نمی توان فعال کرد.",
+    "retryInWalletOrContinue": "در {walletName} دوباره امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
+    "continueWithoutOneClickTrading": "بدون 1-Click Trading ادامه دهید",
+    "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
     "initializingWallet": "راه اندازی سرویس گیرنده کیف پول",
     "clickToRefresh": "برای بازخوانی کلیک کنید.",
@@ -743,29 +899,41 @@
     "step4Title": "برای شروع یک کیف پول ایجاد کنید",
     "step4Content": "اولین کیف پول خود را تنظیم کنید و وارد شوید! ارسال، دریافت یا خرید دارایی."
   },
-  "swapFailed": "تبدیل موفق نبود باید میزان تغییرات قابل قبول شما بیشتر باشد. ",
+  "swapFailed": "تعویض انجام نشد. نقدینگی ممکن است کافی نباشد. سعی کنید لغزش مجاز را تنظیم کنید.",
   "transactionBroadcasting": "در حال ارسال تراکنش",
   "transactionFailed": "تراکنش با موفقیت انجام نشد",
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
+  "transfer": {
+    "deposit": "سپرده",
+    "withdraw": "کنار کشیدن",
+    "fromNetwork": "از شبکه",
+    "toNetwork": "به شبکه",
+    "max": "حداکثر",
+    "available": "در دسترس",
+    "transferWith": "انتقال با",
+    "transferTo": "انتقال به",
+    "receiveAsset": "دریافت دارایی",
+    "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
+    "estimatingTime": "تخمین زمان",
+    "calculatingFees": "محاسبه هزینه ها",
+    "reviewDeposit": "بررسی سپرده",
+    "reviewWithdraw": "بازبینی برداشت",
+    "moreDepositOptions": "گزینه های سپرده بیشتر",
+    "moreWithdrawOptions": "گزینه های برداشت بیشتر",
+    "convertTo": "تبدیل به",
+    "recommended": "توصیه شده",
+    "moreBridgeOptions": {
+      "titleDeposit": "گزینه های سپرده بیشتر",
+      "titleWithdraw": "گزینه های برداشت بیشتر",
+      "descriptionDeposit": "از میان ارائه دهندگان جایگزین زیر برای واریز (معروف به \"پل\") {asset} خود را به {chain} .",
+      "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
+      "depositWith": "سپرده گذاری با",
+      "withdrawWith": "برداشت با"
+    }
+  },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
-  "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "upgrades": {
-    "title": "ارتقا در دسترس است",
-    "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
-    "positionUpgrade": "ارتقاء موقعیت",
-    "superchargedLiquidity": "نقدینگی سوپرشارژ",
-    "newSuperchargedPool": "این استخر جدید با پتانسیل درآمد بالاتر و بالاترین برآورد ماه آوریل ارائه می شود.",
-    "upgrade": "ارتقا دهید",
-    "pool": "استخر",
-    "new": "جدید",
-    "current": "جاری",
-    "success": "ارتقاء موفقیت!",
-    "clickHereToView": "برای مشاهده اینجا را کلیک کنید",
-    "foundHere": "ارتقاها را می توان در اینجا یافت",
-    "availableHereCaption": "ارتقاهای موجود را می توان در اینجا مشاهده کرد. شما می توانید انتخاب کنید که در هر زمان ارتقا دهید."
-  },
   "seo": {
     "404": {
       "title": "404 - صفحه یافت نشد",
@@ -787,6 +955,10 @@
       "title": "دارایی اسمز",
       "description": "همه دارایی‌های موجود در Osmosis - صرافی غیرمتمرکز Cosmos را مرور کنید"
     },
+    "portfolio": {
+      "title": "نمونه کار اسمز",
+      "description": "دارایی‌های خود را در Osmosis - صرافی غیرمتمرکز Cosmos مشاهده کنید"
+    },
     "disclaimer": {
       "title": "سلب مسئولیت اسمز",
       "description": "سلب مسئولیت و سیاست حفظ حریم خصوصی Osmosis - صرافی غیرمتمرکز پیشرو Cosmos را بخوانید"
@@ -800,16 +972,12 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "دارایی های مرتبط",
     "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
     "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
     "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
     "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
-    "pastDaysReturns": "بازده روز گذشته",
-    "allTimeReturns": "همه زمان ها برمی گردد",
-    "averagePrice": "قیمت میانگین",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
@@ -825,44 +993,41 @@
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
-    "tvl": "TVL",
-    "backButton": "همه توکن ها",
-    "ariaBackButton": "دکمه برگشت همه نشانه ها",
-    "noData": "ND"
+    "buyToken": "خرید {coinDenom}",
+    "staking": "شرط بندی",
+    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
+    "underlyingAssets": {
+      "title": "دارایی های اساسی",
+      "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",
+      "of": "of {denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "به روز رسانی اسمز!",
     "seeWhatsNew": "ببینید چه چیز جدیدی است"
   },
-  "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
-  "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
-  "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید.",
+  "previewAssetsEnabled": "پیش‌نمایش دارایی‌ها فعال شد",
+  "previewAssetsDisabled": "پیش‌نمایش دارایی‌ها غیرفعال شد",
+  "previewAssetsEnabledForSession": "پیش‌نمایش دارایی‌های فعال برای این جلسه. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_preview_assets=false» را اضافه کنید.",
   "earnPage": {
     "title": "بدست آوردن",
-    "position": "موقعیت",
     "positions": "موقعیت ها",
-    "allocation": "تخصیص",
-    "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
-    "value": "ارزش",
-    "method": "روش",
-    "platform": "سکو",
-    "scrollToSeeMore": "برای دیدن بیشتر ورق بزنید",
+    "oneStrategy": "1 استراتژی",
     "discoverStrategies": "استراتژی ها را کشف کنید",
-    "myStrategies": "استراتژی های من",
-    "strategyPlatform": "استراتژی / پلتفرم",
-    "apy": "APY",
-    "daily": "روزانه",
+    "myStrategies": "استراتژی های شما",
+    "strategyPlatform": "استراتژی",
+    "apy": "آوریل",
     "reward": "جایزه",
-    "lock": "قفل کردن",
+    "lock": "بی بند و باری",
     "days": "روزها",
+    "day": "روز",
     "risk": "خطر",
-    "strategyMethod": "روش استراتژی",
-    "allMethods": "همه روش",
+    "strategyMethod": "انواع",
+    "allMethods": "همه انواع",
     "platforms": "بستر، زمینه",
     "allPlatforms": "همه پلتفرم ها",
-    "lockingDuration": "مدت زمان قفل کردن",
-    "specialTokens": "توکن های ویژه",
+    "allCategories": "همه دسته بندی ها",
     "filters": "فیلترها",
     "resetFilters": "بازنشانی فیلترها",
     "saveFilters": "ذخیره فیلترها",
@@ -872,18 +1037,102 @@
     "claimAllRewards": "تمام جوایز را مطالبه کنید",
     "join": "پیوستن",
     "tokenFilterOptions": {
-      "my": "توکن های من",
-      "all": "همه توکن ها"
+      "my": "دارایی های شما",
+      "all": "تمام دارایی ها"
     },
     "rewardTypes": {
       "all": "همه",
       "single": "تنها",
       "multi": "چند"
+    },
+    "totalValueInvested": "ارزش کل",
+    "lookBelow": "به زیر نگاه کنید و بهترین استراتژی ها را برای خود بیابید",
+    "startEarningDescription": "پتانسیل کسب درآمد کامل خود را باز کنید. دارایی های خود را از طریق بسیاری از استراتژی های زیر به کار بگیرید.",
+    "loadingStrategies": "بارگیری استراتژی‌ها...",
+    "sorryErrorOccurred": "با عرض پوزش، خطایی رخ داده است.",
+    "sorryNoResultsWithAssets": "هیچ استراتژی مرتبط با دارایی های شما یافت نشد.",
+    "sorryNoResults": "هیچ استراتژی یافت نشد",
+    "tryChangingFilters": "سعی کنید فیلترها را تغییر دهید",
+    "retry": "دوباره امتحان کنید",
+    "manage": "مدیریت کنید",
+    "noLock": "بدون قفل",
+    "riskDisclaimer": "ریسک با مجموعه‌ای از معیارهای ترکیبی در مورد یک استراتژی و دارایی‌های زیربنایی آن محاسبه می‌شود.",
+    "strategyGeoblocked": "متأسفیم، این استراتژی در کشور شما در دسترس نیست.",
+    "instantUnbondOnly": "فقط بی بند و باری فوری",
+    "tooltips": {
+      "apr": {
+        "description": "نرخ درصدی سالانه (APR) به درصد بازده سالانه یک استراتژی اشاره دارد.\n\nتوجه: بازده یک استراتژی ممکن است بر اساس مشارکت و عملکرد نوسان داشته باشد.\n\nسلب مسئولیت: این APR ها توسط خود پروژه ها گزارش می شوند و ممکن است نادرست باشند."
+      },
+      "tvl": {
+        "description": "ارزش کل قفل شده (TVL) به کل ارزش دلاری دارایی های سپرده شده در استراتژی اشاره دارد."
+      },
+      "reward": {
+        "description": "نوع دارایی هایی که از طریق عملیات و/یا مشوق های استراتژی به دست می آید."
+      },
+      "lock": {
+        "description": "دوره زمانی که یک موقعیت قبل از خروج از آن باند می شود. توجه: همه دوره‌های unbonding* استراتژی دارای توزیع پاداش نیستند."
+      },
+      "strategy": {
+        "description": "فرصت‌های کسب درآمد از انواع مختلفی که توسط پلتفرم‌های مختلف میزبانی می‌شوند، در Osmosis در دسترس هستند. دسترسی به یک استراتژی مستلزم سپرده گذاری دارایی های خاص است."
+      },
+      "risk": {
+        "description": "ارزیابی ریسک شامل در نظر گرفتن ترکیبی از معیارهای مرتبط با یک استراتژی و دارایی های زیربنایی آن است."
+      }
+    },
+    "riskLabels": {
+      "low": "کم",
+      "medium": "متوسط",
+      "high": "بالا",
+      "veryHigh": "خیلی بالا"
     }
   },
   "disclaimer": "سلب مسئولیت",
-  "namada": {
-    "description": "کاربران اسموسیس ممکن است برای درخواست راه‌اندازی نمادا واجد شرایط باشند.",
-    "link": "اعتبار اهلیت خود برای $NAM را اینجا بررسی کنید!"
+  "remaining": "باقی مانده است",
+  "timeUnits": {
+    "second": "دومین",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقایق",
+    "hour": "ساعت",
+    "hours": "ساعت ها"
+  },
+  "unstableAssetsWarning": {
+    "titleDeposit": "{coinDenom} سپرده های ناپایدار",
+    "titleWithdraw": "{coinDenom} برداشت‌های ناپایدار",
+    "description": "به دلیل مشکلات فنی نامشخص، انتقال بین اسمز و {prettyChainName} ممکن است با تاخیرهای قابل توجه یا شکست تراکنش مواجه شود. با مسئولیت خود ادامه دهید.",
+    "buttonContinue": "ادامه دادن به هر طریق",
+    "buttonCancel": "لغو کنید"
+  },
+  "transactions": {
+    "noRecent": "بدون نقل و انتقالات اخیر",
+    "recentShownHere": "واریزها و برداشت‌ها در 3 روز گذشته در این دستگاه (بین شبکه‌های خاص) در اینجا ظاهر می‌شوند.",
+    "noTransactions": "بدون معامله",
+    "pastShownHere": "معاملات گذشته شما در Osmosis در اینجا ظاهر می شود.",
+    "connectToSee": "برای مشاهده تاریخچه تراکنش خود وصل شوید",
+    "connectWallet": "کیف پول را وصل کنید",
+    "title": "معاملات",
+    "swapping": "مبادله",
+    "swapped": "تعویض شد",
+    "swapFailed": "تعویض انجام نشد",
+    "taxReports": "گزارش های مالیاتی",
+    "explorer": "کاوشگر",
+    "sold": "فروخته شد",
+    "bought": "خرید",
+    "executionPrice": "قیمت اجرا",
+    "totalFees": "مجموع هزینه ها",
+    "transactionHash": "هش تراکنش",
+    "viewOnExplorer": "مشاهده در اکسپلورر",
+    "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
+    "noPriceData": "اطلاعات قیمت در دسترس نیست",
+    "viewAll": "مشاهده همه"
+  },
+  "date": {
+    "earlierToday": "اوایل امروز",
+    "yesterday": "دیروز"
+  },
+  "backToTop": "بازگشت به بالا",
+  "pagination": {
+    "older": "مسن تر",
+    "newer": "جدیدتر"
   }
 }

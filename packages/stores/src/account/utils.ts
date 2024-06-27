@@ -1,4 +1,6 @@
 import type { Chain } from "@chain-registry/types";
+import { AminoMsg } from "@cosmjs/amino/build/signdoc";
+import { Uint53 } from "@cosmjs/math";
 import { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,
@@ -7,12 +9,7 @@ import {
   Logger,
 } from "@cosmos-kit/core";
 
-export interface TxFee extends StdFee {
-  /**
-   * If set to true, the fee will be used as it is and will not undergo any estimation process.
-   */
-  force?: boolean;
-}
+import { StdSignDoc } from "./types";
 
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
@@ -72,6 +69,27 @@ export function changeDecStringToProtoBz(decStr: string): string {
   return r;
 }
 
+// Creates the document to be signed from given parameters.
+export function makeSignDocAmino(
+  msgs: readonly AminoMsg[],
+  fee: StdFee,
+  chainId: string,
+  memo: string | undefined,
+  accountNumber: number | string,
+  sequence: number | string,
+  timeout_height?: bigint
+): StdSignDoc {
+  return {
+    chain_id: chainId,
+    account_number: Uint53.fromString(accountNumber.toString()).toString(),
+    sequence: Uint53.fromString(sequence.toString()).toString(),
+    fee: fee,
+    msgs: msgs,
+    memo: memo || "",
+    ...(timeout_height && { timeout_height: timeout_height.toString() }),
+  };
+}
+
 export const DefaultGasPriceStep: {
   low: number;
   average: number;
@@ -85,3 +103,31 @@ export const DefaultGasPriceStep: {
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@2:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
   "cosmos-kit@2:core//current-wallet";
+
+export class InsufficientFeeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InsufficientFeeError";
+  }
+}
+export const OneClickTradingLocalStorageKey = "one-click-trading";
+export const UseOneClickTradingLocalStorageKey = "use-one-click-enabled";
+export const HasUsedOneClickTradingLocalStorageKey = "has-used-one-click";
+
+// The number of heights from current before transaction times out.
+// 30 heights * 5 second block time = 150 seconds before transaction
+// timeout and mempool eviction.
+const defaultTimeoutHeightOffset = 30;
+
+export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
+  process.env.TIMEOUT_HEIGHT_OFFSET
+    ? process.env.TIMEOUT_HEIGHT_OFFSET
+    : defaultTimeoutHeightOffset
+);
+
+export class AccountStoreNoBroadcastErrorEvent extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AccountStoreNoBroadcastErrorEvent";
+  }
+}

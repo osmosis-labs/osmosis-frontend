@@ -1,13 +1,18 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
+import type {
+  Bridge,
+  BridgeError,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
+  SourceChain,
+  SourceChainTokenConfig,
+} from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import classNames from "classnames";
+import { Currency } from "@osmosis-labs/types";
+import { getKeyByValue } from "@osmosis-labs/utils";
+import { noop } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -19,14 +24,14 @@ import {
   useState,
 } from "react";
 import { useDebounce, useUnmount } from "react-use";
+import { Required } from "utility-types";
+import { isAddress } from "web3-utils";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button, buttonCVA } from "~/components/buttons";
-import { Transfer } from "~/components/complex/transfer";
-import { EventName } from "~/config";
+import { Transfer, TransferProps } from "~/components/complex/transfer";
+import { Button } from "~/components/ui/button";
 import {
   useAmountConfig,
-  useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
@@ -34,16 +39,9 @@ import {
 } from "~/hooks";
 import { useTxEventToasts } from "~/integrations";
 import {
+  AxelarChainIds_SourceChainMap,
   EthClientChainIds_SourceChainMap,
-  type SourceChainKey,
-} from "~/integrations/bridge-info";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/bridges/axelar";
-import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
-import {
-  CosmosBridgeTransactionRequest,
-  EvmBridgeTransactionRequest,
-  GetTransferStatusParams,
-} from "~/integrations/bridges/types";
+} from "~/integrations/axelar";
 import {
   ChainNames,
   EthWallet,
@@ -57,75 +55,154 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
-import { ErrorTypes } from "~/utils/error-types";
-import { getKeyByValue } from "~/utils/object";
+import { createContext } from "~/utils/react-context";
 import { api } from "~/utils/trpc";
 
-/** Modal that lets user transfer via non-IBC bridges. */
-export const BridgeTransferV2Modal: FunctionComponent<
-  ModalBaseProps & {
-    isWithdraw: boolean;
-    balance: IBCBalance;
-    /** Selected network key. */
-    sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet | undefined;
-    onRequestSwitchWallet: () => void;
-  }
+interface BridgeTransferContext {
+  useWrappedToken: boolean;
+  useNativeToken: boolean;
+  setUseWrappedToken: (nextValue: boolean) => void;
+  sourceChainConfig?: SourceChainTokenConfig;
+  sourceChainKeyMapped: SourceChain;
+  originCurrency: Currency;
+}
+
+const [BridgeTransferModalProvider, useBridgeTransfer] =
+  createContext<BridgeTransferContext>({
+    name: "BridgeTransferModal",
+    strict: true,
+  });
+
+interface BridgeTransferModalProps extends ModalBaseProps {
+  isWithdraw: boolean;
+  balance: IBCBalance;
+  sourceChainKey: SourceChain;
+  walletClient?: ObservableWallet;
+  onRequestSwitchWallet: () => void;
+}
+
+export const BridgeTransferV2Modal: FunctionComponent<BridgeTransferModalProps> =
+  observer((props) => {
+    const { balance: assetToBridge, sourceChainKey, walletClient } = props;
+
+    if (!assetToBridge.originBridgeInfo) {
+      console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+      return null;
+    }
+
+    const sourceChainConfig =
+      assetToBridge.originBridgeInfo!.sourceChainTokens.find(
+        ({ id }) => id === sourceChainKey
+      );
+
+    const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
+      sourceChainConfig?.erc20ContractAddress &&
+        sourceChainConfig?.nativeWrapEquivalent
+        ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
+        : "",
+      false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+    );
+
+    const sourceChainKeyMapped =
+      AxelarChainIds_SourceChainMap[sourceChainKey] || sourceChainKey;
+
+    const useNativeToken =
+      (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
+
+    const originCurrency = useMemo(() => {
+      const wrapCurrency = sourceChainConfig?.nativeWrapEquivalent
+        ? {
+            ...assetToBridge.balance.currency.originCurrency!,
+            coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+          }
+        : undefined;
+
+      return !useNativeToken && wrapCurrency
+        ? wrapCurrency
+        : assetToBridge.balance.currency.originCurrency!;
+    }, [sourceChainConfig, assetToBridge, useNativeToken]);
+
+    const contextValue = useMemo<BridgeTransferContext>(
+      () => ({
+        useNativeToken,
+        useWrappedToken,
+        setUseWrappedToken,
+        sourceChainConfig,
+        sourceChainKeyMapped,
+        originCurrency,
+      }),
+      [
+        originCurrency,
+        setUseWrappedToken,
+        sourceChainConfig,
+        sourceChainKeyMapped,
+        useNativeToken,
+        useWrappedToken,
+      ]
+    );
+
+    return (
+      <BridgeTransferModalProvider value={contextValue}>
+        {walletClient ? (
+          <EvmTransfer {...props} walletClient={walletClient} />
+        ) : (
+          <ManualTransfer {...props} chainType="evm" />
+        )}
+      </BridgeTransferModalProvider>
+    );
+  });
+
+const EvmTransfer: FunctionComponent<
+  Required<BridgeTransferModalProps, "walletClient" | "balance">
 > = observer((props) => {
   const {
     isWithdraw,
     balance: assetToBridge,
     sourceChainKey,
     walletClient,
-    onRequestClose,
-    onRequestSwitchWallet,
   } = props;
-  const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+
+  const {
+    sourceChainKeyMapped,
+    sourceChainConfig,
+    originCurrency,
+    useNativeToken,
+  } = useBridgeTransfer();
 
   const ethWalletClient = walletClient as EthWallet;
-  useTxEventToasts(ethWalletClient);
-
-  const {
-    queriesExternalStore,
-    chainStore,
-    accountStore,
-    queriesStore,
-    nonIbcBridgeHistoryStore,
-    priceStore,
-  } = useStore();
-  const {
-    showModalBase,
-    accountActionButton: connectWalletButton,
-    walletConnected,
-  } = useConnectWalletModalRedirect(
-    {
-      className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
-      onClick: () => {},
-    },
-    props.onRequestClose
-  );
-  const { chainId: osmosisChainId, chainName } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getWallet(osmosisChainId);
-  const osmosisAddress = osmosisAccount?.address ?? "";
-  const osmoIcnsName =
-    queriesExternalStore.queryICNSNames.getQueryContract(
-      osmosisAddress
-    ).primaryName;
-
   const isDeposit = !isWithdraw;
 
-  const ethChainKey =
-    EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ||
-    ethWalletClient.chainId;
-  const sourceChainKeyMapped =
-    AxelarChainIds_SourceChainMap[sourceChainKey] || sourceChainKey;
+  useTxEventToasts(ethWalletClient);
 
-  if (!assetToBridge.originBridgeInfo) {
-    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
-    return null;
-  }
-  const { bridge } = assetToBridge.originBridgeInfo;
+  const ethWalletClientChainKey =
+    EthClientChainIds_SourceChainMap[ethWalletClient?.chainId ?? ""] ||
+    ethWalletClient?.chainId;
+  const isCorrectChainSelected =
+    ethWalletClientChainKey === sourceChainKeyMapped;
+
+  const erc20Balance = useErc20Balance(
+    ethWalletClient,
+    isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
+  );
+  const nativeBalance = useNativeBalance(
+    ethWalletClient,
+    isDeposit ? originCurrency : undefined
+  );
+
+  const {
+    amount: depositAmount,
+    setAmount: setDepositAmount,
+    toggleIsMax: toggleIsDepositAmtMax,
+  } = useEvmAmountConfig({
+    sendFn: ethWalletClient?.send,
+    balance: useNativeToken
+      ? nativeBalance ?? undefined
+      : erc20Balance ?? undefined,
+    address: ethWalletClient?.accountAddress,
+    gasCurrency: useNativeToken
+      ? assetToBridge.balance.currency.originCurrency
+      : undefined, // user will inspect gas costs in their wallet
+  });
 
   // notify eth wallet of prev selected preferred chain
   useEffect(() => {
@@ -140,15 +217,196 @@ export const BridgeTransferV2Modal: FunctionComponent<
       ? ethClientChainName
       : undefined;
 
-    if (!hexChainId) return;
+    if (!hexChainId || !ethWalletClient) return;
 
     ethWalletClient.setPreferredSourceChain(hexChainId);
   }, [ethWalletClient, sourceChainKey, walletClient]);
 
-  const sourceChainConfig =
-    assetToBridge.originBridgeInfo.sourceChainTokens.find(
-      ({ id }) => id === sourceChainKey
+  const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
+    useState(false);
+  useEffect(() => {
+    if (!ethWalletClient?.isConnected) {
+      setUserDisconnectedWallet(true);
+    }
+    if (ethWalletClient?.isConnected && userDisconnectedEthWallet) {
+      setUserDisconnectedWallet(false);
+    }
+  }, [ethWalletClient?.isConnected, userDisconnectedEthWallet]);
+
+  const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
+    useLocalStorageState<string | null>(
+      isWithdraw
+        ? ""
+        : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
+      null
     );
+
+  const warnOfDifferentDepositAddress =
+    isWithdraw &&
+    ethWalletClient?.isConnected &&
+    lastDepositAccountEvmAddress &&
+    ethWalletClient?.accountAddress
+      ? ethWalletClient?.accountAddress !== lastDepositAccountEvmAddress
+      : false;
+
+  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
+
+  return (
+    <TransferContent
+      {...props}
+      erc20Balance={erc20Balance}
+      nativeBalance={nativeBalance}
+      isCorrectChainSelected={isCorrectChainSelected}
+      depositAmount={depositAmount}
+      setDepositAmount={setDepositAmount}
+      toggleIsDepositAmtMax={toggleIsDepositAmtMax}
+      counterpartyAddress={ethWalletClient.accountAddress ?? ""}
+      warnOfDifferentDepositAddress={warnOfDifferentDepositAddress}
+      setLastDepositAccountEvmAddress={setLastDepositAccountEvmAddress}
+      isEthTxPending={
+        isEthTxPending || ethWalletClient?.isSending === "eth_sendTransaction"
+      }
+      ethWalletClient={ethWalletClient}
+    />
+  );
+});
+
+const ManualTransfer: FunctionComponent<
+  Omit<BridgeTransferModalProps, "walletClient"> & { chainType: "evm" }
+> = observer((props) => {
+  const { t } = useTranslation();
+  const [address, setAddress] = useState("");
+  const [didAckWithdrawRisk, setAckWithdrawRisk] = useState(false);
+  const { sourceChainKeyMapped } = useBridgeTransfer();
+
+  if (props.chainType !== "evm") throw new Error("Unsupported chain type");
+
+  const addressConfig: TransferProps<any>["addWithdrawAddrConfig"] = {
+    customAddress: address,
+    setCustomAddress(bech32Address) {
+      setAddress(bech32Address);
+    },
+    isValid: isAddress(address),
+    didAckWithdrawRisk: didAckWithdrawRisk,
+    setDidAckWithdrawRisk: setAckWithdrawRisk,
+    inputPlaceholder: t("assets.transfer.enterAddress", {
+      network: sourceChainKeyMapped,
+    }),
+  };
+
+  return (
+    <TransferContent
+      {...props}
+      counterpartyAddress={address}
+      depositAmount=""
+      setDepositAmount={noop}
+      toggleIsDepositAmtMax={noop}
+      setLastDepositAccountEvmAddress={noop}
+      addWithdrawAddrConfig={addressConfig}
+      isDisabled={
+        addressConfig?.customAddress === "" ||
+        !addressConfig.isValid ||
+        !didAckWithdrawRisk
+      }
+      isCounterpartyAddressValid={addressConfig.isValid}
+    />
+  );
+});
+
+const availableBridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar"];
+
+/** Modal that lets user transfer via non-IBC bridges. */
+export const TransferContent: FunctionComponent<
+  ModalBaseProps & {
+    isWithdraw: boolean;
+    balance: IBCBalance;
+    /** Selected network key. */
+    sourceChainKey: SourceChain;
+    onRequestSwitchWallet: () => void;
+    counterpartyAddress: string;
+    isCounterpartyAddressValid?: boolean;
+
+    // Deposit
+    isCorrectChainSelected?: boolean;
+    erc20Balance?: CoinPretty;
+    nativeBalance?: CoinPretty;
+    depositAmount: string;
+    setDepositAmount: (amount: string) => void;
+    toggleIsDepositAmtMax: () => void;
+    setLastDepositAccountEvmAddress: (address: string) => void;
+    userDisconnectedEthWallet?: boolean;
+    warnOfDifferentDepositAddress?: boolean;
+    isEthTxPending?: boolean;
+    ethWalletClient?: EthWallet;
+    addWithdrawAddrConfig?: TransferProps<any>["addWithdrawAddrConfig"];
+    isDisabled?: boolean;
+  }
+> = observer((props) => {
+  const {
+    isWithdraw,
+    balance: assetToBridge,
+    sourceChainKey,
+    onRequestClose,
+    onRequestSwitchWallet,
+    isCorrectChainSelected,
+    depositAmount,
+    setDepositAmount,
+    toggleIsDepositAmtMax,
+    nativeBalance,
+    erc20Balance,
+    userDisconnectedEthWallet,
+    counterpartyAddress,
+    warnOfDifferentDepositAddress,
+    setLastDepositAccountEvmAddress,
+    isEthTxPending,
+    ethWalletClient,
+    addWithdrawAddrConfig,
+    isDisabled: isDisabledProp,
+    isCounterpartyAddressValid = true,
+  } = props;
+  const { t } = useTranslation();
+
+  const {
+    queriesExternalStore,
+    chainStore,
+    accountStore,
+    queriesStore,
+    nonIbcBridgeHistoryStore,
+  } = useStore();
+  const {
+    showModalBase,
+    accountActionButton: connectWalletButton,
+    walletConnected,
+  } = useConnectWalletModalRedirect(
+    {
+      className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
+      onClick: () => {},
+    },
+    props.onRequestClose
+  );
+  const {
+    useNativeToken,
+    originCurrency,
+    useWrappedToken,
+    setUseWrappedToken,
+    sourceChainConfig,
+  } = useBridgeTransfer();
+
+  const { chainId: osmosisChainId, chainName } = chainStore.osmosis;
+  const osmosisAccount = accountStore.getWallet(osmosisChainId);
+  const osmosisAddress = osmosisAccount?.address ?? "";
+  const osmoIcnsName =
+    queriesExternalStore.queryICNSNames.getQueryContract(
+      osmosisAddress
+    ).primaryName;
+
+  const isDeposit = !isWithdraw;
+
+  if (!assetToBridge.originBridgeInfo) {
+    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+    return null;
+  }
+  const { bridge } = assetToBridge.originBridgeInfo;
 
   let modalTitle = "";
 
@@ -194,53 +452,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     assetToBridge.balance.currency
   );
 
-  // DEPOSIT
-  const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
-    sourceChainConfig?.erc20ContractAddress &&
-      sourceChainConfig?.nativeWrapEquivalent
-      ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
-      : "",
-    false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
-  );
-  const useNativeToken =
-    (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
-
-  const originCurrency = useMemo(() => {
-    const wrapCurrency = sourceChainConfig?.nativeWrapEquivalent
-      ? {
-          ...assetToBridge.balance.currency.originCurrency!,
-          coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
-        }
-      : undefined;
-
-    return !useNativeToken && wrapCurrency
-      ? wrapCurrency
-      : assetToBridge.balance.currency.originCurrency!;
-  }, [sourceChainConfig, assetToBridge, useNativeToken]);
-
-  const erc20Balance = useErc20Balance(
-    ethWalletClient,
-    isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
-  );
-  const nativeBalance = useNativeBalance(
-    ethWalletClient,
-    isDeposit ? originCurrency : undefined
-  );
-  const {
-    amount: depositAmount,
-    setAmount: setDepositAmount,
-    toggleIsMax: toggleIsDepositAmtMax,
-  } = useEvmAmountConfig({
-    sendFn: ethWalletClient.send,
-    balance: useNativeToken
-      ? nativeBalance ?? undefined
-      : erc20Balance ?? undefined,
-    address: ethWalletClient.accountAddress,
-    gasCurrency: useNativeToken
-      ? assetToBridge.balance.currency.originCurrency
-      : undefined, // user will inspect gas costs in their wallet
-  });
-
   const inputAmountRaw = isWithdraw
     ? withdrawAmountConfig.amount
     : depositAmount;
@@ -250,6 +461,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
   useDebounce(
     () => {
       setDebouncedInputValue(inputAmountRaw);
+      // Every time the input amount changes, deactivate the controlled mode.
+      // Best quotes will be selected automatically.
+      setBridgeProviderControlledMode(false);
     },
     300,
     [inputAmountRaw]
@@ -261,8 +475,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
   );
 
-  const isCorrectChainSelected = ethChainKey === sourceChainKeyMapped;
-
   let availableBalance: CoinPretty | undefined;
   if (isWithdraw) {
     availableBalance = assetToBridge.balance;
@@ -272,17 +484,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     availableBalance = erc20Balance;
   }
 
-  const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
-    useState(false);
-  useEffect(() => {
-    if (!ethWalletClient.isConnected) {
-      setUserDisconnectedWallet(true);
-    }
-    if (ethWalletClient.isConnected && userDisconnectedEthWallet) {
-      setUserDisconnectedWallet(false);
-    }
-  }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
-
   const osmosisPath = {
     address: osmosisAddress,
     networkName: chainStore.osmosis.prettyChainName,
@@ -290,9 +491,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      sourceDenom:
-        originCurrency?.coinMinimalDenom ??
-        assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
@@ -304,17 +502,12 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const counterpartyPath = {
-    address: ethWalletClient.accountAddress || "",
+    address: counterpartyAddress,
     networkName: sourceChainKey,
     iconUrl: assetToBridge.balance.currency.coinImageUrl,
     source: "counterpartyAccount" as const,
     asset: {
       denom: assetToBridge.balance.denom,
-      sourceDenom:
-        useNativeToken && isDeposit
-          ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
-          : originCurrency?.coinMinimalDenom ??
-            assetToBridge.balance.currency?.coinMinimalDenom!,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
         : sourceChainConfig?.erc20ContractAddress!,
@@ -337,160 +530,209 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
-    useState<AvailableBridges | null>(null);
-  const bridgeQuote = api.bridgeTransfer.getQuotes.useQuery(
-    {
-      ...quoteParams,
-      fromAmount: inputAmount.truncate().toString(),
-    },
-    {
-      enabled: inputAmount.gt(new Dec(0)),
-      refetchInterval: 30 * 1000, // 30 seconds
-      retry(failureCount, error) {
-        if (failureCount > 3) return false;
-        /** Do not retry if there are no quotes */
-        if (error?.data?.errors?.[0]?.errorType === ErrorTypes.NoQuotesError) {
-          return false;
-        }
-        return true;
-      },
-      select: ({ quotes }) => {
-        const nextProviderId = selectedBridgeProvider ?? quotes[0].provider.id;
-        if (!selectedBridgeProvider) {
-          setSelectedBridgeProvider(nextProviderId);
-        }
+    useState<Bridge | null>(null);
+  const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
+    useState(false);
 
-        if (!quotes) throw new Error("No quotes found");
+  const quoteResults = api.useQueries((t) =>
+    availableBridgeKeys.map((bridge) =>
+      t.bridgeTransfer.getQuoteByBridge(
+        {
+          ...quoteParams,
+          bridge,
+          fromAmount: inputAmount.truncate().toString(),
+        },
+        {
+          enabled:
+            inputAmount.gt(new Dec(0)) &&
+            counterpartyAddress !== "" &&
+            isCounterpartyAddressValid,
+          staleTime: 5_000,
+          cacheTime: 5_000,
+          // Disable retries, as useQueries
+          // will block successful quotes from being returned
+          // if failed quotes are being returned
+          // until retry starts returning false.
+          // This causes slow UX even though there's a
+          // quote that the user can use.
+          retry: false,
 
-        let selectedQuote = quotes?.find(
-          (quote) => quote.provider.id === nextProviderId
-        );
+          refetchInterval: 30 * 1000, // 30 seconds
 
-        if (!selectedQuote) {
-          setSelectedBridgeProvider(quotes[0].provider.id);
-          selectedQuote = quotes[0];
-        }
+          select: ({ quote }) => {
+            const {
+              estimatedGasFee,
+              transferFee,
+              estimatedTime,
+              expectedOutput,
+              transactionRequest,
+              provider,
+              fromChain,
+              toChain,
+              input,
+            } = quote;
 
-        const {
-          estimatedGasFee,
-          transferFee,
-          estimatedTime,
-          expectedOutput,
-          transactionRequest,
-          provider,
-          fromChain,
-          toChain,
-          input,
-        } = selectedQuote;
+            const priceImpact = new RatePretty(
+              new Dec(expectedOutput.priceImpact)
+            );
+            const expectedOutputFiatDec = expectedOutput.fiatValue.toDec();
+            const inputFiatDec = input.fiatValue.toDec();
 
-        const priceImpact = new RatePretty(new Dec(expectedOutput.priceImpact));
-        const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
-        const inputFiatDec = new Dec(input.fiatValue.amount);
+            let transferSlippage: Dec;
+            if (expectedOutputFiatDec.gt(inputFiatDec)) {
+              // if expected output is greater than input, assume slippage is 0%
+              transferSlippage = new Dec(0);
+            } else if (expectedOutputFiatDec.lt(new Dec(0))) {
+              // if expected output is negative, assume slippage is 100%
+              transferSlippage = new Dec(1);
+            } else {
+              transferSlippage = new Dec(1).sub(
+                expectedOutputFiatDec.quo(inputFiatDec)
+              );
+            }
 
-        let transferSlippage: Dec;
-        if (expectedOutputFiatDec.gt(inputFiatDec)) {
-          // if expected output is greater than input, assume slippage is 0%
-          transferSlippage = new Dec(0);
-        } else if (expectedOutputFiatDec.lt(new Dec(0))) {
-          // if expected output is negative, assume slippage is 100%
-          transferSlippage = new Dec(1);
-        } else {
-          transferSlippage = new Dec(1).sub(
-            expectedOutputFiatDec.quo(inputFiatDec)
-          );
-        }
+            return {
+              gasCost: estimatedGasFee
+                ? new CoinPretty(
+                    {
+                      coinDecimals: estimatedGasFee.decimals,
+                      coinDenom: estimatedGasFee.denom,
+                      coinMinimalDenom: estimatedGasFee.address,
+                    },
+                    new Dec(estimatedGasFee.amount)
+                  ).maxDecimals(8)
+                : undefined,
 
-        return {
-          gasCost: estimatedGasFee
-            ? new CoinPretty(
+              transferFee: new CoinPretty(
                 {
-                  coinDecimals: estimatedGasFee.decimals,
-                  coinDenom: estimatedGasFee.denom,
-                  coinMinimalDenom: estimatedGasFee.sourceDenom,
+                  coinDecimals: transferFee.decimals,
+                  coinDenom: transferFee.denom,
+                  coinMinimalDenom: transferFee.address,
                 },
-                new Dec(estimatedGasFee.amount)
-              ).maxDecimals(8)
-            : undefined,
+                new Dec(transferFee.amount)
+              ).maxDecimals(8),
 
-          transferFee: new CoinPretty(
-            {
-              coinDecimals: transferFee.decimals,
-              coinDenom: transferFee.denom,
-              coinMinimalDenom: transferFee.sourceDenom,
+              expectedOutput: new CoinPretty(
+                {
+                  coinDecimals: expectedOutput.decimals,
+                  coinDenom: expectedOutput.denom,
+                  coinMinimalDenom: expectedOutput.address,
+                },
+                new Dec(expectedOutput.amount)
+              ),
+
+              expectedOutputFiat: expectedOutput.fiatValue,
+              transferFeeFiat: transferFee.fiatValue,
+              gasCostFiat: estimatedGasFee?.fiatValue,
+              estimatedTime: dayjs.duration({
+                seconds: estimatedTime,
+              }),
+              responseTime: dayjs(),
+              quote,
+              transactionRequest,
+              priceImpact,
+              provider,
+              fromChain,
+              toChain,
+              isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
+              isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
+            };
+          },
+
+          // prevent batching so that fast routers can
+          // return requests faster than the slowest router
+          trpc: {
+            context: {
+              skipBatch: true,
             },
-            new Dec(transferFee.amount)
-          ).maxDecimals(8),
-
-          expectedOutput: new CoinPretty(
-            {
-              coinDecimals: expectedOutput.decimals,
-              coinDenom: expectedOutput.denom,
-              coinMinimalDenom: expectedOutput.sourceDenom,
-            },
-            new Dec(expectedOutput.amount)
-          ).maxDecimals(8),
-
-          get expectedOutputFiat() {
-            if (!expectedOutput.fiatValue) return undefined;
-            const expectedOutputFiatValue = expectedOutput.fiatValue;
-            const fiat = priceStore.getFiatCurrency(
-              expectedOutputFiatValue.currency
-            );
-            if (!fiat) return undefined;
-
-            return new PricePretty(
-              fiat,
-              new Dec(expectedOutputFiatValue.amount)
-            );
           },
-
-          get transferFeeFiat() {
-            if (!transferFee.fiatValue) return undefined;
-
-            const transferFeeFiatValue = transferFee.fiatValue;
-            const fiat = priceStore.getFiatCurrency(
-              transferFeeFiatValue?.currency ?? "usd"
-            );
-
-            if (!fiat) throw new Error("No fiat currency found");
-
-            return new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
-          },
-
-          get gasCostFiat() {
-            if (!estimatedGasFee?.fiatValue) return undefined;
-            const gasCostFiatValue = estimatedGasFee.fiatValue;
-            const fiat = priceStore.getFiatCurrency(gasCostFiatValue.currency);
-            if (!fiat) return undefined;
-
-            return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
-          },
-
-          estimatedTime: dayjs.duration({
-            seconds: estimatedTime,
-          }),
-
-          allBridgeProviders: quotes.map((quote) => quote.provider),
-
-          transactionRequest,
-          priceImpact,
-          provider,
-          fromChain,
-          toChain,
-          selectedQuote: selectedQuote,
-          isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
-          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
-        };
-      },
-    }
+        }
+      )
+    )
   );
+
+  // reduce the results' data to that with the highest out amount
+  const selectedQuote = useMemo(() => {
+    return quoteResults?.find(
+      ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
+    )?.data;
+  }, [quoteResults, selectedBridgeProvider]);
+
+  const numSucceeded = quoteResults.filter(({ isSuccess }) => isSuccess).length;
+  const isOneSuccessful = Boolean(numSucceeded);
+  const amountOfErrors = quoteResults.filter(({ isError }) => isError).length;
+  const isOneErrored = Boolean(amountOfErrors);
+
+  // if none have returned a resulting quote, find some error
+  const someError = useMemo(
+    () =>
+      !isOneSuccessful &&
+      isOneErrored &&
+      quoteResults.every(({ isLoading }) => !isLoading)
+        ? quoteResults.find((quoteResult) => Boolean(quoteResult.error))?.error
+        : undefined,
+    [isOneSuccessful, isOneErrored, quoteResults]
+  );
+
+  useEffect(() => {
+    const quoteResults_ = [...quoteResults];
+
+    const bestQuote = quoteResults_
+      // only those that have fetched
+      .filter((quoteResult) => Boolean(quoteResult.isFetched))
+      // Sort by response time. The fastest and highest quality quote will be first.
+      .sort((a, b) => {
+        if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+          return 1;
+        }
+        if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+          return -1;
+        }
+        return 0;
+      })
+      // only those that have returned a result without error
+      .map(({ data }) => data)
+      // only the best quote data
+      .reduce((bestAcc, cur) => {
+        if (!bestAcc) return cur;
+        if (
+          !!cur &&
+          bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+        ) {
+          return cur;
+        }
+        return bestAcc;
+      }, undefined);
+
+    // If the selected bridge provider is not found in the results, select the best quote provider
+    const isBridgeProviderNotFound = !quoteResults_.some(
+      ({ data }) => data?.provider.id === selectedBridgeProvider
+    );
+
+    if (
+      !!bestQuote &&
+      ((bestQuote?.provider.id !== selectedBridgeProvider &&
+        !isBridgeProviderControlledMode) ||
+        isBridgeProviderNotFound)
+    ) {
+      setSelectedBridgeProvider(bestQuote.provider.id);
+    }
+  }, [
+    selectedQuote,
+    quoteResults,
+    selectedBridgeProvider,
+    isBridgeProviderControlledMode,
+  ]);
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
-    bridgeQuote.data?.transferFee !== undefined &&
+    selectedQuote?.transferFee !== undefined &&
+    selectedQuote?.transferFee.denom === assetToBridge.balance.denom && // make sure the fee is in the same denom as the asset
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
-      .lt(bridgeQuote.data?.transferFee.toDec());
+      .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
+      .abs()
+      .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -511,9 +753,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
          * If there is no transaction request data, fetch it.
          */
         enabled:
-          bridgeQuote.isSuccess &&
+          Boolean(selectedQuote) &&
           Boolean(selectedBridgeProvider) &&
-          !bridgeQuote.data?.transactionRequest &&
+          !selectedQuote?.transactionRequest &&
           inputAmount.gt(new Dec(0)) &&
           !isInsufficientBal &&
           !isInsufficientFee,
@@ -523,29 +765,15 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   useUnmount(() => {
     setSelectedBridgeProvider(null);
+    setBridgeProviderControlledMode(false);
   });
-
-  const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
-    useLocalStorageState<string | null>(
-      isWithdraw
-        ? ""
-        : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
-      null
-    );
-  const warnOfDifferentDepositAddress =
-    isWithdraw &&
-    ethWalletClient.isConnected &&
-    lastDepositAccountEvmAddress &&
-    ethWalletClient.accountAddress
-      ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
-      : false;
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: AvailableBridges, params: GetTransferStatusParams) => {
+    (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
-          `${providerId.toLowerCase()}${JSON.stringify(params)}`,
+          `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
           osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
@@ -563,12 +791,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
-  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
 
   // close modal when initial eth transaction is committed
   const isSendTxPending = isWithdraw
     ? osmosisAccount?.txTypeInProgress !== ""
-    : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
+    : isEthTxPending;
   useEffect(() => {
     if (transferInitiated && !isSendTxPending) {
       onRequestClose();
@@ -577,14 +804,15 @@ export const BridgeTransferV2Modal: FunctionComponent<
     transferInitiated,
     isSendTxPending,
     osmosisAccount?.txTypeInProgress,
-    ethWalletClient.isSending,
     isEthTxPending,
     onRequestClose,
   ]);
 
   const handleEvmTx = async (
-    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
+    quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
+    if (!ethWalletClient) throw new Error("No ETH wallet client found");
+
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
@@ -631,7 +859,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
           ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
         });
 
-        bridgeQuote.refetch();
+        for (const quoteResult of quoteResults) {
+          await quoteResult.refetch();
+        }
 
         return;
       }
@@ -698,8 +928,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
       if (typeof msg === "string") {
         displayToast(
           {
-            message: "transactionFailed",
-            caption: msg,
+            titleTranslationKey: "transactionFailed",
+            captionTranslationKey: msg,
           },
           ToastType.ERROR
         );
@@ -712,7 +942,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
+    quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -746,26 +976,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
             queryBalance.fetch();
           }
 
-          if (isDeposit) {
-            logEvent([
-              EventName.Assets.depositAssetCompleted,
-              {
-                tokenName: originCurrency.coinDenom,
-                tokenAmount: Number(inputAmountRaw),
-                bridge: quote.provider.id,
-              },
-            ]);
-          } else {
-            logEvent([
-              EventName.Assets.withdrawAssetCompleted,
-              {
-                tokenName: originCurrency.coinDenom,
-                tokenAmount: Number(inputAmountRaw),
-                bridge: quote.provider.id,
-              },
-            ]);
-          }
-
           trackTransferStatus(quote.provider.id, {
             sendTxHash: tx.transactionHash,
             fromChainId: quote.fromChain.chainId,
@@ -785,76 +995,46 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const onTransfer = async () => {
     const transactionRequest =
-      bridgeQuote.data?.transactionRequest ??
+      selectedQuote?.transactionRequest ??
       bridgeTransaction.data?.transactionRequest;
-    const selectedQuote = bridgeQuote.data?.selectedQuote;
+    const quote = selectedQuote?.quote;
 
-    if (!transactionRequest || !selectedQuote) return;
-
-    logEvent([
-      isWithdraw
-        ? EventName.Assets.withdrawAssetStarted
-        : EventName.Assets.depositAssetStarted,
-      {
-        tokenName: originCurrency.coinDenom,
-        tokenAmount: Number(inputAmountRaw),
-        bridge: selectedQuote.provider.id,
-      },
-    ]);
+    if (!transactionRequest || !quote) return;
 
     try {
       if (transactionRequest.type === "evm") {
-        await handleEvmTx({ ...selectedQuote, transactionRequest });
-        return;
-      }
-
-      if (transactionRequest.type === "cosmos") {
+        await handleEvmTx({ ...quote, transactionRequest });
+      } else if (transactionRequest.type === "cosmos") {
         await handleCosmosTx({
-          ...selectedQuote,
+          ...quote,
           transactionRequest,
         });
-        return;
-      }
-
-      if (isDeposit) {
-        logEvent([
-          EventName.Assets.depositAssetCompleted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: selectedQuote.provider.id,
-          },
-        ]);
-      } else {
-        logEvent([
-          EventName.Assets.withdrawAssetCompleted,
-          {
-            tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(inputAmountRaw),
-            bridge: selectedQuote.provider.id,
-          },
-        ]);
       }
     } catch (e) {}
   };
 
-  const errors = bridgeQuote.error?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
-  const warnUserOfSlippage = bridgeQuote.data?.isSlippageTooHigh;
-  const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
+  const hasNoQuotes = someError?.message.includes(
+    "NoQuotesError" as BridgeError
+  );
+  const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
+  const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
-  if (hasNoQuotes) {
+  if (!counterpartyAddress) {
+    buttonErrorMessage = t("assets.transfer.errors.missingAddress");
+  } else if (!isCounterpartyAddressValid) {
+    buttonErrorMessage = t("assets.transfer.errors.invalidAddress");
+  } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
+      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
     });
   } else if (isDeposit && !isCorrectChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
+      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
     });
-  } else if (bridgeQuote.error) {
+  } else if (Boolean(someError)) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
@@ -866,7 +1046,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
-    bridgeQuote.isLoading && bridgeQuote.fetchStatus !== "idle";
+    (!isOneSuccessful ||
+      quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
+    quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
   const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
@@ -890,9 +1072,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
   } else if (isSendTxPending) {
     buttonText = t("assets.transfer.sending");
   } else if (
-    bridgeQuote.data?.selectedQuote?.transactionRequest?.type === "evm" &&
-    bridgeQuote.data?.selectedQuote?.transactionRequest
-      .approvalTransactionRequest &&
+    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
+    selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
@@ -909,11 +1090,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
   let warningMessage;
   if (warnOfDifferentDepositAddress) {
     warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
-      address: ethWalletClient.displayInfo.displayName,
+      address: ethWalletClient?.displayInfo.displayName ?? "",
     });
   }
 
-  if (bridgeQuote.data && !bridgeQuote.data.expectedOutput) {
+  if (selectedQuote && !selectedQuote.expectedOutput) {
     throw new Error("Expected output is not defined.");
   }
 
@@ -940,7 +1121,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
               },
         ]}
         selectedWalletDisplay={
-          isWithdraw ? undefined : ethWalletClient.displayInfo
+          isWithdraw || !ethWalletClient
+            ? undefined
+            : ethWalletClient.displayInfo
         }
         isOsmosisAccountLoaded={
           osmosisAccount?.walletStatus === WalletStatus.Connected
@@ -983,69 +1166,57 @@ export const BridgeTransferV2Modal: FunctionComponent<
               }
             : undefined
         }
-        transferFee={
-          !bridgeQuote.error ? bridgeQuote.data?.transferFee ?? "-" : "-"
-        }
+        transferFee={!someError ? selectedQuote?.transferFee ?? "-" : "-"}
         transferFeeFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.transferFeeFiat : undefined
+          !someError ? selectedQuote?.transferFeeFiat : undefined
         }
         gasCost={
-          !bridgeQuote.error && bridgeQuote.data
-            ? bridgeQuote.data.gasCost
-            : undefined
+          !someError && selectedQuote ? selectedQuote.gasCost : undefined
         }
-        gasCostFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
-        }
+        gasCostFiat={!someError ? selectedQuote?.gasCostFiat : undefined}
         classes={{
           expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
           priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
         }}
         expectedOutput={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.expectedOutput ?? "-"
-            : undefined
+          !someError ? selectedQuote?.expectedOutput ?? "-" : undefined
         }
         expectedOutputFiat={
-          !bridgeQuote.error ? bridgeQuote.data?.expectedOutputFiat : undefined
+          !someError ? selectedQuote?.expectedOutputFiat : undefined
         }
         priceImpact={
-          !bridgeQuote.error &&
+          !someError &&
           inputAmountRaw !== "" &&
-          bridgeQuote.data?.priceImpact.toDec().gt(new Dec(0))
-            ? bridgeQuote.data?.priceImpact
+          selectedQuote?.priceImpact.toDec().gt(new Dec(0))
+            ? selectedQuote?.priceImpact
             : undefined
         }
         waitTime={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.estimatedTime?.humanize() ?? "-"
-            : "-"
+          !someError ? selectedQuote?.estimatedTime?.humanize() ?? "-" : "-"
         }
-        disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={bridgeQuote.data?.allBridgeProviders?.map(
-          ({ id, logoUrl }) => ({
+        bridgeProviders={quoteResults
+          .map(({ data }) => data?.provider)
+          ?.filter((r): r is NonNullable<typeof r> => !!r)
+          .map(({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
             name: id,
-          })
-        )}
+          }))}
         selectedBridgeProvidersId={
-          !bridgeQuote.error
-            ? bridgeQuote.data?.selectedQuote?.provider.id
-            : undefined
+          !someError ? selectedQuote?.provider.id : undefined
         }
         onSelectBridgeProvider={({ id }) => {
+          setBridgeProviderControlledMode(true);
           setSelectedBridgeProvider(id);
         }}
+        disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         isLoadingDetails={isLoadingBridgeQuote}
+        addWithdrawAddrConfig={addWithdrawAddrConfig}
       />
       <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 md:mt-4">
         {walletConnected ? (
           <Button
-            className={classNames(
-              "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": isLoadingBridgeQuote }
-            )}
+            className="w-full"
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||
               (isDeposit &&
@@ -1058,18 +1229,20 @@ export const BridgeTransferV2Modal: FunctionComponent<
               isLoadingBridgeQuote ||
               isLoadingBridgeTransaction ||
               isApprovingToken ||
-              Boolean(bridgeQuote.error) ||
+              Boolean(someError) ||
               Boolean(bridgeTransaction.error) ||
-              !bridgeQuote.data?.selectedQuote
+              !selectedQuote?.quote ||
+              isDisabledProp ||
+              !counterpartyAddress
             }
-            mode={
+            variant={
               warnUserOfSlippage || warnUserOfPriceImpact
-                ? "primary-warning"
-                : undefined
+                ? "destructive"
+                : "default"
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
-                ethWalletClient.enable();
+                ethWalletClient?.enable();
               else onTransfer();
             }}
           >
@@ -1080,12 +1253,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
         )}
         <Link
           href="/disclaimer#providers-and-bridge-disclaimer"
-          className={buttonCVA({
-            className: "caption font-semibold",
-            mode: "text-white",
-            size: "text",
-          })}
           target="_blank"
+          className="text-xs font-semibold text-wosmongton-100 hover:text-rust-200"
         >
           {t("disclaimer")}
         </Link>

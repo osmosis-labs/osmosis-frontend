@@ -32,11 +32,6 @@ const config = {
 
     fileLoaderRule.exclude = /sprite\.svg$/;
 
-    // workaround to get imports to work in web workers
-    config.optimization.splitChunks.cacheGroups = {
-      commons: { chunks: "initial" },
-    };
-
     // Replace libsodium with a no-op API. It is only imported from within cosmJS to support
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
@@ -92,8 +87,10 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
 
-    org: "osmosis-wu",
-    project: "javascript-nextjs",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
+    org: "osmosis-labs",
+    project: "osmosis-web",
   },
   {
     // For all available options, see:

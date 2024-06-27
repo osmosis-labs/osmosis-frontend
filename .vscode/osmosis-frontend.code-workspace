@@ -16,13 +16,25 @@
       "path": "../packages/proto-codecs/"
     },
     {
-      "path": "../packages/stores/"
-    },
-    {
       "path": "../packages/types/"
     },
     {
+      "path": "../packages/tx/"
+    },
+    {
+      "path": "../packages/trpc/"
+    },
+    {
       "path": "../packages/utils/"
+    },
+    {
+      "path": "../packages/bridge/"
+    },
+    {
+      "path": "../packages/stores/"
+    },
+    {
+      "path": "../packages/server/"
     },
     {
       "path": "../packages/web/"

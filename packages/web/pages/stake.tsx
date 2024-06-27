@@ -1,6 +1,7 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -8,16 +9,16 @@ import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
-import { Spinner } from "~/components/spinner";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { Spinner } from "~/components/loaders/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { StakeOrUnstake } from "~/components/types";
 import { StakeOrEdit } from "~/components/types";
-import { EventName } from "~/config";
-import { AmountDefault } from "~/config/user-analytics-v2";
+import { AmountDefault, EventName } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useGetApr, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
@@ -252,7 +253,9 @@ export const Staking: React.FC = observer(() => {
 
   const onStakeButtonClick = useCallback(() => {
     if (!isWalletConnected) {
-      onOpenWalletSelect(osmosisChainId);
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: osmosisChainId }],
+      });
       return;
     }
 
@@ -279,12 +282,12 @@ export const Staking: React.FC = observer(() => {
     unstakeCall,
   ]);
 
+  const { stakingAPR, isLoadingApr } = useGetApr();
+
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
-    StakingType.BondStatus.Bonded
+    BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
-
-  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -325,8 +328,14 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
-  const disableMainStakeCardButton =
-    isWalletConnected && Number(activeAmountConfig.amount) <= 0;
+  const hasInsufficientBalance = activeAmountConfig.balance
+    ?.toDec()
+    .lt(new Dec(activeAmountConfig.amount || "1"));
+
+  // never disable when wallet is not connected
+  const disableMainStakeCardButton = !isWalletConnected
+    ? false
+    : Number(activeAmountConfig.amount) <= 0 || hasInsufficientBalance;
 
   const setAmount = useCallback(
     (amount: string) => {
@@ -342,20 +351,23 @@ export const Staking: React.FC = observer(() => {
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
-          <AlertBanner
-            className="!rounded-[32px]"
-            title={alertTitle}
-            subtitle={t("stake.alertSubtitle")}
-            image={
-              <div
-                className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
-                style={{
-                  backgroundImage: 'url("/images/staking-apr.svg")',
-                }}
-              />
-            }
-          />
+          <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-3xl">
+            <AlertBanner
+              className="!rounded-3xl"
+              title={alertTitle}
+              subtitle={t("stake.alertSubtitle")}
+              image={
+                <div
+                  className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
+                  style={{
+                    backgroundImage: 'url("/images/staking-apr.svg")',
+                  }}
+                />
+              }
+            />
+          </SkeletonLoader>
           <StakeTool
+            hasInsufficientBalance={hasInsufficientBalance}
             handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
             handleHalfButtonClick={() =>
               activeAmountConfig.fraction
@@ -374,6 +386,7 @@ export const Staking: React.FC = observer(() => {
             isWalletConnected={isWalletConnected}
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
+            stakingAPR={stakingAPR}
           />
         </div>
         <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
@@ -388,6 +401,7 @@ export const Staking: React.FC = observer(() => {
             />
           ) : (
             <StakeDashboard
+              hasInsufficientBalance={hasInsufficientBalance}
               setShowValidatorModal={() => setShowValidatorModal(true)}
               setShowStakeLearnMoreModal={() =>
                 setShowStakeLearnMoreModal(true)
@@ -415,6 +429,7 @@ export const Staking: React.FC = observer(() => {
         queryValidators={queryValidators}
       />
       <ValidatorNextStepModal
+        setShowStakeLearnMoreModal={() => setShowStakeLearnMoreModal(true)}
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}

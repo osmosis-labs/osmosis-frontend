@@ -39,26 +39,26 @@ export interface PoolProtoMsg {
 }
 export interface PoolAmino {
   /** pool's address holding all liquidity tokens. */
-  address: string;
+  address?: string;
   /** address holding the incentives liquidity. */
-  incentives_address: string;
+  incentives_address?: string;
   /** address holding spread rewards from swaps. */
-  spread_rewards_address: string;
-  id: string;
+  spread_rewards_address?: string;
+  id?: string;
   /** Amount of total liquidity */
-  current_tick_liquidity: string;
-  token0: string;
-  token1: string;
-  current_sqrt_price: string;
-  current_tick: string;
+  current_tick_liquidity?: string;
+  token0?: string;
+  token1?: string;
+  current_sqrt_price?: string;
+  current_tick?: string;
   /**
    * tick_spacing must be one of the authorized_tick_spacing values set in the
    * concentrated-liquidity parameters
    */
-  tick_spacing: string;
-  exponent_at_price_one: string;
+  tick_spacing?: string;
+  exponent_at_price_one?: string;
   /** spread_factor is the ratio that is charged on the amount of token in. */
-  spread_factor: string;
+  spread_factor?: string;
   /**
    * last_liquidity_update is the last time either the pool liquidity or the
    * active tick changed
@@ -252,44 +252,100 @@ export const Pool = {
     return message;
   },
   fromAmino(object: PoolAmino): Pool {
-    return {
-      address: object.address,
-      incentivesAddress: object.incentives_address,
-      spreadRewardsAddress: object.spread_rewards_address,
-      id: BigInt(object.id),
-      currentTickLiquidity: object.current_tick_liquidity,
-      token0: object.token0,
-      token1: object.token1,
-      currentSqrtPrice: object.current_sqrt_price,
-      currentTick: BigInt(object.current_tick),
-      tickSpacing: BigInt(object.tick_spacing),
-      exponentAtPriceOne: BigInt(object.exponent_at_price_one),
-      spreadFactor: object.spread_factor,
-      lastLiquidityUpdate: object?.last_liquidity_update
-        ? fromTimestamp(Timestamp.fromAmino(object.last_liquidity_update))
-        : undefined,
-    };
+    const message = createBasePool();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (
+      object.incentives_address !== undefined &&
+      object.incentives_address !== null
+    ) {
+      message.incentivesAddress = object.incentives_address;
+    }
+    if (
+      object.spread_rewards_address !== undefined &&
+      object.spread_rewards_address !== null
+    ) {
+      message.spreadRewardsAddress = object.spread_rewards_address;
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = BigInt(object.id);
+    }
+    if (
+      object.current_tick_liquidity !== undefined &&
+      object.current_tick_liquidity !== null
+    ) {
+      message.currentTickLiquidity = object.current_tick_liquidity;
+    }
+    if (object.token0 !== undefined && object.token0 !== null) {
+      message.token0 = object.token0;
+    }
+    if (object.token1 !== undefined && object.token1 !== null) {
+      message.token1 = object.token1;
+    }
+    if (
+      object.current_sqrt_price !== undefined &&
+      object.current_sqrt_price !== null
+    ) {
+      message.currentSqrtPrice = object.current_sqrt_price;
+    }
+    if (object.current_tick !== undefined && object.current_tick !== null) {
+      message.currentTick = BigInt(object.current_tick);
+    }
+    if (object.tick_spacing !== undefined && object.tick_spacing !== null) {
+      message.tickSpacing = BigInt(object.tick_spacing);
+    }
+    if (
+      object.exponent_at_price_one !== undefined &&
+      object.exponent_at_price_one !== null
+    ) {
+      message.exponentAtPriceOne = BigInt(object.exponent_at_price_one);
+    }
+    if (object.spread_factor !== undefined && object.spread_factor !== null) {
+      message.spreadFactor = object.spread_factor;
+    }
+    if (
+      object.last_liquidity_update !== undefined &&
+      object.last_liquidity_update !== null
+    ) {
+      message.lastLiquidityUpdate = fromTimestamp(
+        Timestamp.fromAmino(object.last_liquidity_update)
+      );
+    }
+    return message;
   },
   toAmino(message: Pool): PoolAmino {
     const obj: any = {};
-    obj.address = message.address;
-    obj.incentives_address = message.incentivesAddress;
-    obj.spread_rewards_address = message.spreadRewardsAddress;
-    obj.id = message.id ? message.id.toString() : undefined;
-    obj.current_tick_liquidity = message.currentTickLiquidity;
-    obj.token0 = message.token0;
-    obj.token1 = message.token1;
-    obj.current_sqrt_price = message.currentSqrtPrice;
-    obj.current_tick = message.currentTick
-      ? message.currentTick.toString()
-      : undefined;
-    obj.tick_spacing = message.tickSpacing
-      ? message.tickSpacing.toString()
-      : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne
-      ? message.exponentAtPriceOne.toString()
-      : undefined;
-    obj.spread_factor = message.spreadFactor;
+    obj.address = message.address === "" ? undefined : message.address;
+    obj.incentives_address =
+      message.incentivesAddress === "" ? undefined : message.incentivesAddress;
+    obj.spread_rewards_address =
+      message.spreadRewardsAddress === ""
+        ? undefined
+        : message.spreadRewardsAddress;
+    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.current_tick_liquidity =
+      message.currentTickLiquidity === ""
+        ? undefined
+        : message.currentTickLiquidity;
+    obj.token0 = message.token0 === "" ? undefined : message.token0;
+    obj.token1 = message.token1 === "" ? undefined : message.token1;
+    obj.current_sqrt_price =
+      message.currentSqrtPrice === "" ? undefined : message.currentSqrtPrice;
+    obj.current_tick =
+      message.currentTick !== BigInt(0)
+        ? message.currentTick.toString()
+        : undefined;
+    obj.tick_spacing =
+      message.tickSpacing !== BigInt(0)
+        ? message.tickSpacing.toString()
+        : undefined;
+    obj.exponent_at_price_one =
+      message.exponentAtPriceOne !== BigInt(0)
+        ? message.exponentAtPriceOne.toString()
+        : undefined;
+    obj.spread_factor =
+      message.spreadFactor === "" ? undefined : message.spreadFactor;
     obj.last_liquidity_update = message.lastLiquidityUpdate
       ? Timestamp.toAmino(toTimestamp(message.lastLiquidityUpdate))
       : undefined;

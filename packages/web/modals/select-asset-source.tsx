@@ -1,3 +1,4 @@
+import type { SourceChain } from "@osmosis-labs/bridge";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 
@@ -8,7 +9,6 @@ import {
   FiatRampDisplayInfos,
   FiatRampKey,
   ObservableWallet,
-  SourceChainKey,
 } from "~/integrations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
@@ -16,7 +16,7 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 export const SelectAssetSourceModal: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedWalletId?: string;
-    desiredSourceKey?: SourceChainKey;
+    desiredSourceKey?: SourceChain;
     isWithdraw: boolean;
     wallets: ObservableWallet[];
     fiatRamps?: FiatRampKey[];
@@ -36,7 +36,6 @@ export const SelectAssetSourceModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      className: "mt-3 mx-auto",
       disabled:
         (props.initiallySelectedWalletId === undefined &&
           !selectedAssetSourceKey) ||

@@ -120,7 +120,8 @@ export const EmptyRequest = {
     return message;
   },
   fromAmino(_: EmptyRequestAmino): EmptyRequest {
-    return {};
+    const message = createBaseEmptyRequest();
+    return message;
   },
   toAmino(_: EmptyRequest): EmptyRequestAmino {
     const obj: any = {};
@@ -196,11 +197,11 @@ export const JoinPoolExecuteMsgRequest = {
     return message;
   },
   fromAmino(object: JoinPoolExecuteMsgRequestAmino): JoinPoolExecuteMsgRequest {
-    return {
-      joinPool: object?.join_pool
-        ? EmptyRequest.fromAmino(object.join_pool)
-        : undefined,
-    };
+    const message = createBaseJoinPoolExecuteMsgRequest();
+    if (object.join_pool !== undefined && object.join_pool !== null) {
+      message.joinPool = EmptyRequest.fromAmino(object.join_pool);
+    }
+    return message;
   },
   toAmino(message: JoinPoolExecuteMsgRequest): JoinPoolExecuteMsgRequestAmino {
     const obj: any = {};
@@ -275,7 +276,8 @@ export const JoinPoolExecuteMsgResponse = {
     return message;
   },
   fromAmino(_: JoinPoolExecuteMsgResponseAmino): JoinPoolExecuteMsgResponse {
-    return {};
+    const message = createBaseJoinPoolExecuteMsgResponse();
+    return message;
   },
   toAmino(_: JoinPoolExecuteMsgResponse): JoinPoolExecuteMsgResponseAmino {
     const obj: any = {};
@@ -359,11 +361,11 @@ export const ExitPoolExecuteMsgRequest = {
     return message;
   },
   fromAmino(object: ExitPoolExecuteMsgRequestAmino): ExitPoolExecuteMsgRequest {
-    return {
-      exitPool: object?.exit_pool
-        ? EmptyRequest.fromAmino(object.exit_pool)
-        : undefined,
-    };
+    const message = createBaseExitPoolExecuteMsgRequest();
+    if (object.exit_pool !== undefined && object.exit_pool !== null) {
+      message.exitPool = EmptyRequest.fromAmino(object.exit_pool);
+    }
+    return message;
   },
   toAmino(message: ExitPoolExecuteMsgRequest): ExitPoolExecuteMsgRequestAmino {
     const obj: any = {};
@@ -438,7 +440,8 @@ export const ExitPoolExecuteMsgResponse = {
     return message;
   },
   fromAmino(_: ExitPoolExecuteMsgResponseAmino): ExitPoolExecuteMsgResponse {
-    return {};
+    const message = createBaseExitPoolExecuteMsgResponse();
+    return message;
   },
   toAmino(_: ExitPoolExecuteMsgResponse): ExitPoolExecuteMsgResponseAmino {
     const obj: any = {};

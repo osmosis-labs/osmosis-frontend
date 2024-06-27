@@ -1,18 +1,18 @@
+import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { ArrowButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
-import Spinner from "~/components/spinner";
+import { IconButton } from "~/components/buttons/icon-button";
+import { Spinner } from "~/components/loaders/spinner";
+import { ArrowButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
-import { queryGithubFile } from "~/server/queries/github";
 
-const NavbarOsmosisUpdates = () => {
+export const NavbarOsmosisUpdate = () => {
   const { t } = useTranslation();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const featureFlags = useFeatureFlags();
@@ -25,8 +25,7 @@ const NavbarOsmosisUpdates = () => {
    * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/osmosis-update.json
    */
   const { data, isLoading } = useQuery(["osmosis-updates"], async () =>
-    queryGithubFile<{ iframeUrl: string }>({
-      repo: "osmosis-labs/fe-content",
+    queryOsmosisCMS<{ iframeUrl: string }>({
       filePath: "cms/osmosis-update.json",
     })
   );
@@ -110,5 +109,3 @@ const OsmosisUpdateModal: FunctionComponent<{
     </ModalBase>
   );
 };
-
-export default NavbarOsmosisUpdates;

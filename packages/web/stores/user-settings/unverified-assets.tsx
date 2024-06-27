@@ -1,10 +1,10 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks/language";
 
 import { Icon } from "../../components/assets";
-import { Switch } from "../../components/control";
 import { UserSetting } from ".";
 
 export type UnverifiedAssetsState = { showUnverifiedAssets: boolean };
@@ -21,8 +21,8 @@ export class UnverifiedAssetsUserSetting
         <div className="flex items-center justify-between">
           <Icon id="alert-triangle" className="text-osmoverse-200" />
           <Switch
-            isOn={showUnverifiedAssets}
-            onToggle={() =>
+            checked={showUnverifiedAssets}
+            onCheckedChange={() =>
               this.setState({ showUnverifiedAssets: !showUnverifiedAssets })
             }
           />

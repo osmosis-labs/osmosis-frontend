@@ -9,7 +9,8 @@
         "src/codegen/**",
         "scripts/generated/**",
         "config/generated/**",
-        "public/tokens/generated/**"
+        "public/tokens/generated/**",
+        "tsconfig.tsbuildinfo"
       ],
       "dependsOn": ["^build"]
     },
@@ -19,6 +20,7 @@
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
     "test": { "dependsOn": ["^build"] },
+    "test:e2e": { "dependsOn": ["^build"] },
     "analyze": {}
   }
 }

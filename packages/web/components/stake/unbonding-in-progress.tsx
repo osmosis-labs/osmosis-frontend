@@ -19,22 +19,30 @@ export const UnbondingInProgress: React.FC<{
   ): { amountOsmo: string; amountUSD: string; remainingTime: string }[] {
     const currentDate = new Date();
 
-    return unbondings
-      .map((unbonding) => {
-        const completionDate = new Date(unbonding.completionTime);
-        const timeDiff = dayjs.duration(
-          completionDate.getTime() - currentDate.getTime()
-        );
+    return (
+      unbondings
+        // Sort by completionTime
+        .sort(
+          (a, b) =>
+            new Date(a.completionTime).getTime() -
+            new Date(b.completionTime).getTime()
+        )
+        .map((unbonding) => {
+          const completionDate = new Date(unbonding.completionTime);
+          const timeDiff = dayjs.duration(
+            completionDate.getTime() - currentDate.getTime()
+          );
 
-        const prettifiedAmount = unbonding.balance;
-        return {
-          amountOsmo: prettifiedAmount.trim(true).toString(),
-          amountUSD:
-            priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
-          remainingTime: timeDiff.humanize(),
-        };
-      })
-      .filter((entry) => parseInt(entry.remainingTime) > 0); // Filter out entries with completion time in the past
+          const prettifiedAmount = unbonding.balance;
+          return {
+            amountOsmo: prettifiedAmount.trim(true).toString(),
+            amountUSD:
+              priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
+            remainingTime: timeDiff.humanize(),
+          };
+        })
+        .filter((entry) => parseInt(entry.remainingTime) > 0)
+    ); // Filter out entries with completion time in the past
   }
 
   const formattedUnbondings = formatUnbondings(unbondings);
@@ -58,7 +66,7 @@ const UnbondRow: React.FC<{
 }> = ({ amountOsmo, amountUSD, remainingTime }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex justify-between rounded-[32px] bg-osmoverse-850 px-10 py-8">
+    <div className="flex justify-between rounded-3xl bg-osmoverse-850 px-10 py-8">
       <div className="flex flex-col gap-3">
         <span className="caption text-sm text-osmoverse-200 md:text-xs">
           {t("stake.amount")}

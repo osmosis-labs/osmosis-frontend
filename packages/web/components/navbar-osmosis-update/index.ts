@@ -1,1 +1,1 @@
-export { default } from "./navbar-osmosis-update";
+export * from "./navbar-osmosis-update";

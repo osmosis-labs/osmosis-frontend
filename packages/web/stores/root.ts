@@ -1,4 +1,10 @@
 import {
+  AxelarTransferStatusProvider,
+  IbcTransferStatusProvider,
+  SkipTransferStatusProvider,
+  SquidTransferStatusProvider,
+} from "@osmosis-labs/bridge";
+import {
   CosmosQueries,
   CosmwasmQueries,
   QueriesStore,
@@ -8,14 +14,19 @@ import {
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
+  DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
+  TxEvents,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgradesConfig,
+} from "@osmosis-labs/stores";
+import {
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
@@ -27,6 +38,7 @@ import {
 import {
   BlacklistedPoolIds,
   INDEXER_DATA_URL,
+  IS_TESTNET,
   TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
@@ -34,11 +46,7 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
-import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
-import { DerivedDataStore } from "~/stores/derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -50,7 +58,6 @@ import {
   UserSettings,
 } from "~/stores/user-settings";
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
@@ -84,9 +91,11 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  public readonly userUpgrades: UserUpgradesConfig;
-
-  constructor() {
+  constructor({
+    txEvents,
+  }: {
+    txEvents?: TxEvents;
+  } = {}) {
     this.chainStore = new ChainStore(
       ChainList.map((chain) => chain.keplrChain),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
@@ -107,7 +116,8 @@ export class RootStore {
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
         BlacklistedPoolIds,
-        TransmuterPoolCodeIds
+        TransmuterPoolCodeIds,
+        IS_TESTNET
       )
     );
 
@@ -177,13 +187,23 @@ export class RootStore {
           },
         },
         preTxEvents: {
-          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-          onBroadcasted: toastOnBroadcast(),
-          onFulfill: toastOnFulfill((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
+          ...txEvents,
+          onBroadcastFailed: (string, e) => {
+            txEvents?.onBroadcastFailed?.(string, e);
+            return toastOnBroadcastFailed((chainId) =>
+              this.chainStore.getChain(chainId)
+            )(string, e);
+          },
+          onBroadcasted: (string, txHash) => {
+            txEvents?.onBroadcasted?.(string, txHash);
+            return toastOnBroadcast()();
+          },
+          onFulfill: (chainId, tx) => {
+            txEvents?.onFulfill?.(chainId, tx);
+            return toastOnFulfill((chainId) =>
+              this.chainStore.getChain(chainId)
+            )(chainId, tx);
+          },
         },
       },
       OsmosisAccount.use({
@@ -222,9 +242,7 @@ export class RootStore {
       this.queriesExternalStore,
       this.accountStore,
       this.priceStore,
-      this.chainStore,
-      this.assetsStore,
-      this.userSettings
+      this.chainStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -235,7 +253,12 @@ export class RootStore {
       this.queriesStore,
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [new AxelarTransferStatusSource(), new SquidTransferStatusSource()]
+      [
+        new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+        new IbcTransferStatusProvider(ChainList, AssetLists),
+      ]
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
@@ -244,21 +267,9 @@ export class RootStore {
       assets
     );
 
-    this.navBarStore = new NavBarStore(
-      this.chainStore.osmosis.chainId,
-      this.accountStore,
-      this.queriesStore
-    );
+    this.navBarStore = new NavBarStore(this.chainStore.osmosis.chainId);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
-
-    this.userUpgrades = new UserUpgradesConfig(
-      this.chainStore.osmosis.chainId,
-      this.queriesStore,
-      this.accountStore,
-      this.derivedDataStore,
-      this.priceStore
-    );
   }
 }

@@ -1,19 +1,22 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
-import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import {
-  ObservableQueryLiquidityPositionById,
-  OsmosisQueries,
-} from "../../queries";
-
+type Position = {
+  liquidity: Dec;
+  baseAsset: CoinPretty;
+  quoteAsset: CoinPretty;
+};
 export class ObservableRemoveConcentratedLiquidityConfig {
   @observable
   protected _percentage: number;
 
   @observable
   chainId: string;
+
+  @observable
+  position: Position;
 
   get percentage(): number {
     return this._percentage;
@@ -22,7 +25,7 @@ export class ObservableRemoveConcentratedLiquidityConfig {
   /** Gets the user-selected percentage of the position's liquidity. */
   @computed
   get effectiveLiquidity(): Dec | undefined {
-    return this.queryPosition.liquidity?.mul(new Dec(this.percentage));
+    return this.position.liquidity?.mul(new Dec(this.percentage));
   }
 
   /** Get's the amount of each token in position given the position's liquidity and the user's
@@ -35,8 +38,8 @@ export class ObservableRemoveConcentratedLiquidityConfig {
       }
     | undefined {
     const liquidity = this.effectiveLiquidity;
-    const base = this.queryPosition.baseAsset;
-    const quote = this.queryPosition.quoteAsset;
+    const base = this.position.baseAsset;
+    const quote = this.position.quoteAsset;
 
     if (!liquidity || !base || !quote) return;
 
@@ -73,23 +76,21 @@ export class ObservableRemoveConcentratedLiquidityConfig {
     return;
   }
 
-  protected get queryPosition(): ObservableQueryLiquidityPositionById {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.queriesStore
-      .get(this.chainId)
-      .osmosis!.queryLiquidityPositionsById.getForPositionId(this.positionId);
-  }
-
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly poolId: string,
-    protected readonly positionId: string,
+    protected readonly initialPosition: {
+      liquidity: Dec;
+      baseAsset: CoinPretty;
+      quoteAsset: CoinPretty;
+    },
     initialPercentage: number = 1
   ) {
     this.chainId = initialChainId;
     this._percentage = initialPercentage;
+
+    this.position = initialPosition;
 
     makeObservable(this);
   }
@@ -97,5 +98,10 @@ export class ObservableRemoveConcentratedLiquidityConfig {
   @action
   setPercentage(percentage: number) {
     this._percentage = percentage;
+  }
+
+  @action
+  setPosition(position: Position) {
+    this.position = position;
   }
 }

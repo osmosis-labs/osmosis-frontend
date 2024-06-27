@@ -81,8 +81,6 @@ export function useAddLiquidityConfig(
     config.isSingleAmountIn,
     config.singleAmountInConfig,
     config.poolId,
-    config.singleAmountInConfig?.sendCurrency,
-    config.singleAmountInConfig?.amount,
     config.shareOutAmount,
   ]);
 

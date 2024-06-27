@@ -1,12 +1,11 @@
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -23,7 +22,6 @@ export const TransferButtonCell: FunctionComponent<
     withdrawUrlOverride,
     chainId,
     coinDenom,
-    isUnstable,
     onWithdraw,
     onDeposit,
   }) => {
@@ -46,7 +44,7 @@ export const TransferButtonCell: FunctionComponent<
           content={notSupportedTooltipText}
         >
           <TransferButton
-            disabled={!isWithdrawSupported || isUnstable}
+            disabled={!isWithdrawSupported}
             externalUrl={withdrawUrlOverride}
             label={t("assets.table.withdrawButton")}
             action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
@@ -56,7 +54,7 @@ export const TransferButtonCell: FunctionComponent<
     ) : chainId && coinDenom && onDeposit ? (
       <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
         <TransferButton
-          disabled={!isDepositSupported || isUnstable}
+          disabled={!isDepositSupported}
           externalUrl={depositUrlOverride}
           label={t("assets.table.depositButton")}
           action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
@@ -73,36 +71,36 @@ const TransferButton: FunctionComponent<{
   action: () => void;
 }> = ({ externalUrl, disabled, label, action }) => {
   return externalUrl ? (
-    <a
-      className={classNames(
-        "subtitle1 flex shrink-0 items-center gap-1 pt-2 text-wosmongton-200 lg:pt-0",
-        { "opacity-30": disabled }
-      )}
-      rel="noreferrer"
-      href={externalUrl}
-      target="_blank"
-      style={
-        disabled ? { pointerEvents: "none", cursor: "default" } : undefined
-      }
-      onClick={(event) => {
-        event.stopPropagation();
-        action();
-      }}
+    <Button
+      variant="ghost"
+      size="md"
+      className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+      disabled={disabled}
+      asChild
     >
-      {label}
-      <div className="w-fit shrink-0">
+      <a
+        rel="noreferrer"
+        target="_blank"
+        href={externalUrl}
+        onClick={(event) => {
+          event.stopPropagation();
+          action();
+        }}
+      >
+        <span>{label}</span>
         <Image
           alt="external transfer link"
           src="/icons/external-link.svg"
           height={13}
           width={13}
         />
-      </div>
-    </a>
+      </a>
+    </Button>
   ) : (
     <Button
-      mode="text"
-      className="gap-2"
+      variant="ghost"
+      size="md"
+      className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();

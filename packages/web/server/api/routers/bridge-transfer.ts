@@ -1,255 +1,201 @@
-import { TRPCError } from "@trpc/server";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  Bridge,
+  BridgeCoin,
+  BridgeProviders,
+  getBridgeExternalUrlSchema,
+  getBridgeQuoteSchema,
+} from "@osmosis-labs/bridge";
+import {
+  DEFAULT_VS_CURRENCY,
+  getAssetPrice,
+  getTimeoutHeight,
+} from "@osmosis-labs/server";
+import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import { isNil, timeout } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import {
-  AvailableBridges,
-  BridgeManager,
-} from "~/integrations/bridges/bridge-manager";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
-import {
-  type BridgeQuote,
-  getBridgeQuoteSchema,
-} from "~/integrations/bridges/types";
-import { Errors } from "~/server/api/errors";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import timeout from "~/utils/async";
-import { ErrorTypes } from "~/utils/error-types";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
+// TODO: this should be in view layer
+const BridgeLogoUrls: Record<Bridge, string> = {
+  Skip: "/bridges/skip.svg",
+  Squid: "/bridges/squid.svg",
+  Axelar: "/bridges/axelar.svg",
+  IBC: "/bridges/ibc.svg",
+};
+
+const ExternalBridgeLogoUrls: Record<Bridge, string> = {
+  Skip: "/external-bridges/ibc-fun.svg",
+  Squid: "/bridges/squid.svg",
+  Axelar: "/external-bridges/satellite.svg",
+  IBC: "/external-bridges/tfm.svg",
+};
+
 export const bridgeTransferRouter = createTRPCRouter({
-  /**
-   * Provide the quotes for a given bridge transfer. Elements are descending by total fiat value.
-   * The first element is the best quote.
-   */
-  getQuotes: publicProcedure
-    .input(getBridgeQuoteSchema)
-    .query(async ({ input }) => {
-      try {
-        const bridgeManager = new BridgeManager(
-          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
-        );
-
-        interface BridgeQuoteInPromise {
-          providerId: AvailableBridges;
-          logoUrl: string;
-          quote: BridgeQuote;
-        }
-
-        const bridges = Object.values(bridgeManager.bridges);
-        const quotes = await Promise.allSettled(
-          bridges.map(async (bridgeProvider) => {
-            const quoteFn: () => Promise<BridgeQuoteInPromise> = () =>
-              bridgeProvider.getQuote(input).then(
-                (quote): BridgeQuoteInPromise => ({
-                  providerId: bridgeProvider.providerName,
-                  logoUrl: bridgeProvider.logoUrl,
-                  quote,
-                })
-              );
-
-            /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-            const twentySecondsInMs = 20 * 1000;
-            return await timeout(quoteFn, twentySecondsInMs)();
-          })
-        );
-
-        const successfulQuotes = quotes
-          .filter(
-            (
-              quote,
-              index
-            ): quote is PromiseFulfilledResult<BridgeQuoteInPromise> => {
-              if (quote.status === "rejected") {
-                console.error(
-                  `Quote for ${bridges[index].providerName} failed. Reason: `,
-                  quote.reason
-                );
-                return false;
-              }
-
-              // If the quote is missing any of the required fields, we should ignore it.
-              if (
-                quote.value.quote.expectedOutput.fiatValue?.amount === undefined
-              ) {
-                return false;
-              }
-
-              return true;
-            }
-          )
-          .sort((a, b) => {
-            if (!a.value.quote.expectedOutput.fiatValue?.amount) {
-              return 1;
-            }
-
-            if (!b.value.quote.expectedOutput?.fiatValue?.amount) {
-              return 0;
-            }
-
-            const aTotalFiat = Number(
-              a.value.quote.expectedOutput.fiatValue?.amount ?? 0
-            );
-            const bTotalFiat = Number(
-              b.value.quote.expectedOutput.fiatValue?.amount ?? 0
-            );
-
-            /**
-             * Move the quote with the highest total fiat value to the top of the list.
-             */
-            if (aTotalFiat < bTotalFiat) {
-              return 1;
-            }
-
-            return -1;
-          });
-
-        if (!successfulQuotes.length) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "No successful quotes found",
-            cause: new Errors([
-              {
-                errorType: ErrorTypes.NoQuotesError,
-                message: "No successful quotes found",
-              },
-            ]),
-          });
-        }
-
-        return {
-          quotes: successfulQuotes.map(
-            ({ value: { quote, providerId, logoUrl } }) => ({
-              provider: {
-                id: providerId,
-                logoUrl,
-              },
-              ...quote,
-            })
-          ),
-        };
-      } catch (e) {
-        const error = e as BridgeQuoteError | Error | TRPCError | unknown;
-        console.error(e);
-
-        if (error instanceof BridgeQuoteError) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Bridge quote error",
-            cause: error.errors,
-          });
-        }
-
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Unexpected Error",
-            cause: [
-              {
-                error: ErrorTypes.UnexpectedError,
-                message: error?.message ?? "Unexpected Error",
-              },
-            ],
-          });
-        }
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
-        });
-      }
-    }),
-
   /**
    * Provide the quote for a given bridge transfer.
    */
   getQuoteByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
-    .query(async ({ input }) => {
-      try {
-        const bridgeManager = new BridgeManager(
-          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
-        );
-
-        const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
-          ];
-
-        if (!bridgeProvider) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Invalid bridge provider id",
-          });
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            getTimeoutHeight({ ...ctx, destinationAddress }),
         }
+      );
 
-        const quoteFn = () => bridgeProvider.getQuote(input);
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
 
-        /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-        const twentySecondsInMs = 10 * 1000;
-        const quote = await timeout(quoteFn, twentySecondsInMs)();
-
-        if (quote.expectedOutput.fiatValue?.amount === undefined) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Invalid quote",
-          });
-        }
-
-        return {
-          quote: {
-            provider: {
-              id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
-            },
-            ...quote,
-          },
-        };
-      } catch (e) {
-        const error = e as BridgeQuoteError | Error | unknown;
-        console.error(e);
-
-        if (error instanceof BridgeQuoteError) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Bridge quote error",
-            cause: error.errors,
-          });
-        }
-
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Unexpected Error",
-            cause: new Errors([
-              {
-                errorType: ErrorTypes.UnexpectedError,
-                message: error?.message ?? "Unexpected Error",
-              },
-            ]),
-          });
-        }
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Unexpected Error",
-          cause: [{ errorType: ErrorTypes.UnexpectedError }],
-        });
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id: " + input.bridge);
       }
+
+      const quoteFn = () => bridgeProvider.getQuote(input);
+
+      /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
+      const quote = await timeout(quoteFn, 10 * 1000)();
+
+      // Get fiat value of:
+      // 1. Expected output
+      // 2. Transfer fee
+      // 3. Estimated gas fee
+      //
+      // Getting the fiat value from quotes here
+      // results in more accurate fiat prices
+      // and fair competition amongst bridge providers.
+      // Prices are on Osmosis, so a counterparty asset should match either the source denom in the asset list
+      // or the coinMinimalDenom on Osmosis. If not on Osmosis & no match, no price is provided.
+      // TODO: add coingeckoId to bridge provider assets to get price from coingecko in those cases.
+      const [toAssetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all(
+        [
+          getAssetPrice({
+            ...ctx,
+            asset: {
+              coinMinimalDenom: input.toAsset.address,
+              sourceDenom: input.toAsset.address,
+              chainId: input.toChain.chainId,
+              address: input.toAsset.address,
+            },
+          }),
+          getAssetPrice({
+            ...ctx,
+            asset: {
+              coinMinimalDenom: quote.transferFee.address,
+              sourceDenom: quote.transferFee.address,
+              chainId: quote.transferFee.chainId,
+              address: quote.transferFee.address,
+            },
+          }).catch(() => {
+            // it's common for bridge providers to not provide correct denoms
+            console.warn(
+              "getQuoteByBridge: Failed to get asset price for transfer fee",
+              {
+                bridge: input.bridge,
+                coinMinimalDenom: quote.transferFee.address,
+                sourceDenom: quote.transferFee.address,
+                chainId: quote.transferFee.chainId,
+                address: quote.transferFee.address,
+              }
+            );
+            return undefined;
+          }),
+          quote.estimatedGasFee
+            ? getAssetPrice({
+                ...ctx,
+                asset: {
+                  coinMinimalDenom: quote.estimatedGasFee.address,
+                  sourceDenom: quote.estimatedGasFee.address,
+                  chainId: quote.fromChain.chainId,
+                  address: quote.estimatedGasFee.address,
+                },
+              }).catch(() => {
+                // it's common for bridge providers to not provide correct denoms
+                if (quote.estimatedGasFee)
+                  console.warn(
+                    "getQuoteByBridge: Failed to get asset price for gas fee",
+                    {
+                      bridge: input.bridge,
+                      coinMinimalDenom: quote.estimatedGasFee.address,
+                      sourceDenom: quote.estimatedGasFee.address,
+                      chainId: quote.fromChain.chainId,
+                      address: quote.estimatedGasFee.address,
+                    }
+                  );
+                return undefined;
+              })
+            : Promise.resolve(undefined),
+        ]
+      );
+
+      if (!toAssetPrice) {
+        throw new Error("Invalid quote: Missing toAsset price");
+      }
+
+      /** Include decimals with decimal-included price. */
+      // TODO: can move somewhere else
+      const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {
+        return new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          new Dec(coin.amount)
+            .quo(DecUtils.getTenExponentN(coin.decimals))
+            .mul(price)
+        );
+      };
+
+      return {
+        quote: {
+          provider: {
+            id: bridgeProvider.providerName as Bridge,
+            logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
+          },
+          ...quote,
+          input: {
+            ...quote.input,
+            fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
+          },
+          expectedOutput: {
+            ...quote.expectedOutput,
+            fiatValue: priceFromBridgeCoin(
+              quote.expectedOutput,
+              // output is same token as input
+              toAssetPrice
+            ),
+          },
+          transferFee: {
+            ...quote.transferFee,
+            fiatValue: feeAssetPrice
+              ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
+              : undefined,
+          },
+          estimatedGasFee: quote.estimatedGasFee
+            ? {
+                ...quote.estimatedGasFee,
+                fiatValue:
+                  gasFeeAssetPrice && quote.estimatedGasFee
+                    ? priceFromBridgeCoin(
+                        quote.estimatedGasFee,
+                        gasFeeAssetPrice
+                      )
+                    : undefined,
+              }
+            : undefined,
+        },
+      };
     }),
 
   /**
@@ -257,72 +203,86 @@ export const bridgeTransferRouter = createTRPCRouter({
    */
   getTransactionRequestByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
-    .query(async ({ input }) => {
-      try {
-        const bridgeManager = new BridgeManager(
-          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-          IS_TESTNET ? "testnet" : "mainnet",
-          lruCache
-        );
-
-        const bridgeProvider =
-          bridgeManager.bridges[
-            input.bridge as keyof typeof bridgeManager.bridges
-          ];
-
-        if (!bridgeProvider) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Invalid bridge provider id",
-          });
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            // passes testnet chains if IS_TESTNET
+            getTimeoutHeight({ ...ctx, destinationAddress }),
         }
+      );
 
-        const quote = await bridgeProvider.getTransactionData(input);
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
 
-        return {
-          transactionRequest: {
-            provider: {
-              id: bridgeProvider.providerName,
-              logoUrl: bridgeProvider.logoUrl,
-            },
-            ...quote,
-          },
-        };
-      } catch (e) {
-        const error = e as BridgeQuoteError | Error | unknown;
-        console.error(e);
-
-        if (error instanceof BridgeQuoteError) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Bridge quote error",
-            cause: new Errors(error.errors),
-          });
-        }
-
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Unexpected Error",
-            cause: new Errors([
-              {
-                errorType: ErrorTypes.UnexpectedError,
-                message: error?.message ?? "Unexpected Error",
-              },
-            ]),
-          });
-        }
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Unexpected Error",
-          cause: new Errors([
-            {
-              errorType: ErrorTypes.UnexpectedError,
-              message: "Unexpected Error",
-            },
-          ]),
-        });
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id");
       }
+
+      const quote = await bridgeProvider.getTransactionData(input);
+
+      return {
+        transactionRequest: {
+          provider: {
+            id: bridgeProvider.providerName,
+            logoUrl: BridgeLogoUrls[bridgeProvider.providerName as Bridge],
+          },
+          ...quote,
+        },
+      };
+    }),
+
+  getExternalUrls: publicProcedure
+    .input(getBridgeExternalUrlSchema)
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            // passes testnet chains if IS_TESTNET
+            getTimeoutHeight({ ...ctx, destinationAddress }),
+        }
+      );
+
+      const eventualExternalUrls = await Promise.all(
+        Object.values(bridgeProviders.bridges).map((bridgeProvider) =>
+          timeout(
+            () =>
+              bridgeProvider
+                .getExternalUrl(input)
+                .then((externalUrl) =>
+                  !isNil(externalUrl)
+                    ? {
+                        ...externalUrl,
+                        logo: ExternalBridgeLogoUrls[
+                          bridgeProvider.providerName
+                        ],
+                      }
+                    : undefined
+                )
+                .catch(() => undefined),
+            5_000, // 5 seconds
+            `Failed to get external url for ${bridgeProvider.providerName}`
+          )().catch(() => undefined)
+        )
+      );
+
+      const externalUrls = eventualExternalUrls.filter(
+        (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
+          Boolean(externalUrl)
+      );
+
+      return {
+        externalUrls,
+      };
     }),
 });

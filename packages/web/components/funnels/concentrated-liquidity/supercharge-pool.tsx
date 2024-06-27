@@ -2,8 +2,8 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
-import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 
 interface Props extends CustomClasses {
   title: string;
@@ -45,17 +45,15 @@ const Buttons: FunctionComponent<Props> = ({
 }) => (
   <div className="flex shrink-0 gap-4 md:w-full md:flex-col">
     <Button
+      variant="outline"
       className="w-fit shrink-0 md:w-full"
-      mode="secondary"
       onClick={onSecondaryClick}
-      size="normal"
     >
       {secondaryCta}
     </Button>
     <Button
       className="w-fit shrink-0 border-0 bg-gradient-supercharged text-osmoverse-1000 md:w-full"
       onClick={onCtaClick}
-      size="normal"
     >
       {primaryCta}
     </Button>

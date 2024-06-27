@@ -1,14 +1,14 @@
 import { Listbox, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { ReactNode } from "react";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
-import { CheckBox } from "~/components/control";
 import { ListOption } from "~/components/earn/table/types/filters";
+import { InfoTooltip } from "~/components/tooltip";
+import { Checkbox } from "~/components/ui/checkbox";
 
 interface DropdownWithMultiSelectProps<T> {
-  options: (ListOption<T> & { icon: ReactNode })[];
+  options: (ListOption<T> & { icon: ReactNode; tooltip?: string })[];
   stateValues: ListOption<T>[];
   label: string;
   toggleFn: (options: ListOption<T>) => void;
@@ -26,7 +26,7 @@ export const DropdownWithMultiSelect = <T,>({
     <div className={classNames(containerClassName)}>
       <Listbox value={options} onChange={() => {}} multiple>
         <div className="relative w-full">
-          <Listbox.Button className="relative z-50 inline-flex w-full min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
+          <Listbox.Button className="relative z-50 inline-flex w-full min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 px-5 py-3">
             {stateValues.length === 0 ? (
               <span
                 className={classNames(
@@ -76,30 +76,33 @@ export const DropdownWithMultiSelect = <T,>({
                 "absolute inset-x-0 z-40 -mt-1 flex flex-col gap-2 rounded-b-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-4"
               }
             >
-              {options.map(({ icon, label, value }) => (
+              {options.map(({ icon, label, tooltip, value }) => (
                 <Listbox.Option
-                  className="relative cursor-default select-none py-3 px-4"
+                  className="relative cursor-default select-none px-4 py-3"
                   key={value as unknown as string}
                   value={value}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
-                        {icon}
-                      </div>
-                      <small className="text-base text-osmoverse-200">
-                        {label}
-                      </small>
+                  <div className="flex w-full items-center justify-between gap-4">
+                    <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
+                      {icon}
                     </div>
-                    <CheckBox
-                      checkClassName="hidden"
-                      backgroundStyles="bg-wosmongton-700"
-                      borderStyles="border-osmoverse-300 border-opacity-50"
-                      isOn={
+                    <small className="flex items-center gap-4 text-base text-osmoverse-200">
+                      {label}
+
+                      {tooltip && (
+                        <InfoTooltip
+                          trigger="mouseenter focus"
+                          content={tooltip}
+                        />
+                      )}
+                    </small>
+                    <Checkbox
+                      className="ml-auto"
+                      checked={
                         stateValues.filter((f) => f.value === value).length !==
                         0
                       }
-                      onToggle={() => toggleFn({ label, value })}
+                      onClick={() => toggleFn({ label, value })}
                     />
                   </div>
                 </Listbox.Option>

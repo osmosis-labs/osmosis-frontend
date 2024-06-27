@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { Switch } from "~/components/control";
+import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
 import { UserSetting } from "~/stores/user-settings";
 
@@ -18,8 +18,8 @@ export class HideDustUserSetting implements UserSetting<HideDustState> {
         <div className="flex items-center justify-between">
           <Icon id="dust-broom" className="text-osmoverse-200" />
           <Switch
-            isOn={hideDust}
-            onToggle={() => this.setState({ hideDust: !hideDust })}
+            checked={hideDust}
+            onCheckedChange={() => this.setState({ hideDust: !hideDust })}
           />
         </div>
 

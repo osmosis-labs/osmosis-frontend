@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "build",
     "declaration": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "module": "ES6",
+    "allowJs": true
   },
-  "include": ["src/**/*", "src/tests/msw-server.ts"]
+  "include": ["src/**/*"]
 }

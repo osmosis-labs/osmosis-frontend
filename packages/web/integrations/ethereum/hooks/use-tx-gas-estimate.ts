@@ -12,7 +12,7 @@ import { SendFn } from "~/integrations/ethereum/types";
  * @param costMultiplier Buffer to add to gas cost to handle high gas cost case (gas slippage).
  */
 export function useTxGasEstimate(
-  sendFn: SendFn,
+  sendFn?: SendFn,
   memoedParams?: unknown[],
   memoedCurrency?: Currency,
   costMultiplier = 5.4
@@ -22,7 +22,7 @@ export function useTxGasEstimate(
   const gasCostCache = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
-    if (memoedParams && memoedCurrency) {
+    if (memoedParams && memoedCurrency && sendFn) {
       const cacheKey = `${JSON.stringify(memoedParams)}${JSON.stringify(
         memoedCurrency
       )}`;

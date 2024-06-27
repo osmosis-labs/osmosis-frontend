@@ -10,6 +10,8 @@ yarn-error.log
 src/styles/index.scss
 .vercel
 .turbo
-.repos
 
 lerna-debug.log
+coverage
+
+tsconfig.tsbuildinfo

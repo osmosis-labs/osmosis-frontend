@@ -1,10 +1,11 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
+import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 
 export const buttonCVA = cva(
-  "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
+  "flex w-full group place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {
       /**
@@ -145,6 +146,9 @@ export const buttonCVA = cva(
           "caption",
           "rounded-xl",
           "p-2",
+          "disabled:hover:bg-osmoverse-800",
+          "disabled:opacity-60",
+          "disabled:cursor-not-allowed",
         ],
         "quaternary-modal": [
           "border-2",
@@ -188,6 +192,7 @@ export const buttonCVA = cva(
         amount:
           "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         "md-icon-social": "w-10 h-10 button tracking-wide shrink-0 py-0",
+        "md-min": "w-auto min-w-10 h-10 button tracking-wide shrink-0 py-0",
         unstyled: null,
       },
     },
@@ -215,21 +220,33 @@ export const Button = forwardRef<
   HTMLButtonElement,
   VariantProps<typeof buttonCVA> &
     CustomClasses &
-    ButtonHTMLAttributes<HTMLButtonElement>
+    ButtonHTMLAttributes<HTMLButtonElement> & {
+      isLoading?: boolean;
+      loadingText?: string;
+    }
 >((props, ref) => {
-  const { mode, size, className, children } = props;
+  const { mode, size, className, children, isLoading, loadingText, ...rest } =
+    props;
 
   return (
     <button
       ref={ref}
-      {...props}
+      {...rest}
       className={buttonCVA({
         className,
         mode,
         size: size ?? modeToDefaultSize[mode as keyof typeof modeToDefaultSize],
       })}
+      disabled={props.disabled || isLoading}
     >
-      {children}
+      {isLoading ? (
+        <div className="flex items-center gap-2">
+          <Spinner />
+          {loadingText && <span>{loadingText}</span>}
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 });

@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { base64FromBytes, bytesFromBase64 } from "../../../../helpers";
 /**
  * PageRequest is to be embedded in gRPC request messages for efficient
  * pagination. Ex:
@@ -60,31 +61,31 @@ export interface PageRequestAmino {
    * querying the next page most efficiently. Only one of offset or key
    * should be set.
    */
-  key: Uint8Array;
+  key?: string;
   /**
    * offset is a numeric offset that can be used when key is unavailable.
    * It is less efficient than using key. Only one of offset or key should
    * be set.
    */
-  offset: string;
+  offset?: string;
   /**
    * limit is the total number of results to be returned in the result page.
    * If left empty it will default to a value to be set by each app.
    */
-  limit: string;
+  limit?: string;
   /**
    * count_total is set to true  to indicate that the result set should include
    * a count of the total number of items available for pagination in UIs.
    * count_total is only respected when offset is used. It is ignored when key
    * is set.
    */
-  count_total: boolean;
+  count_total?: boolean;
   /**
    * reverse is set to true if results are to be returned in the descending order.
    *
    * Since: cosmos-sdk 0.43
    */
-  reverse: boolean;
+  reverse?: boolean;
 }
 export interface PageRequestAminoMsg {
   type: "cosmos-sdk/PageRequest";
@@ -147,12 +148,12 @@ export interface PageResponseAmino {
    * query the next page most efficiently. It will be empty if
    * there are no more results.
    */
-  next_key: Uint8Array;
+  next_key?: string;
   /**
    * total is total number of results available if PageRequest.count_total
    * was set, its value is undefined otherwise
    */
-  total: string;
+  total?: string;
 }
 export interface PageResponseAminoMsg {
   type: "cosmos-sdk/PageResponse";
@@ -249,21 +250,34 @@ export const PageRequest = {
     return message;
   },
   fromAmino(object: PageRequestAmino): PageRequest {
-    return {
-      key: object.key,
-      offset: BigInt(object.offset),
-      limit: BigInt(object.limit),
-      countTotal: object.count_total,
-      reverse: object.reverse,
-    };
+    const message = createBasePageRequest();
+    if (object.key !== undefined && object.key !== null) {
+      message.key = bytesFromBase64(object.key);
+    }
+    if (object.offset !== undefined && object.offset !== null) {
+      message.offset = BigInt(object.offset);
+    }
+    if (object.limit !== undefined && object.limit !== null) {
+      message.limit = BigInt(object.limit);
+    }
+    if (object.count_total !== undefined && object.count_total !== null) {
+      message.countTotal = object.count_total;
+    }
+    if (object.reverse !== undefined && object.reverse !== null) {
+      message.reverse = object.reverse;
+    }
+    return message;
   },
   toAmino(message: PageRequest): PageRequestAmino {
     const obj: any = {};
-    obj.key = message.key;
-    obj.offset = message.offset ? message.offset.toString() : undefined;
-    obj.limit = message.limit ? message.limit.toString() : undefined;
-    obj.count_total = message.countTotal;
-    obj.reverse = message.reverse;
+    obj.key = message.key ? base64FromBytes(message.key) : undefined;
+    obj.offset =
+      message.offset !== BigInt(0) ? message.offset.toString() : undefined;
+    obj.limit =
+      message.limit !== BigInt(0) ? message.limit.toString() : undefined;
+    obj.count_total =
+      message.countTotal === false ? undefined : message.countTotal;
+    obj.reverse = message.reverse === false ? undefined : message.reverse;
     return obj;
   },
   fromAminoMsg(object: PageRequestAminoMsg): PageRequest {
@@ -339,15 +353,22 @@ export const PageResponse = {
     return message;
   },
   fromAmino(object: PageResponseAmino): PageResponse {
-    return {
-      nextKey: object.next_key,
-      total: BigInt(object.total),
-    };
+    const message = createBasePageResponse();
+    if (object.next_key !== undefined && object.next_key !== null) {
+      message.nextKey = bytesFromBase64(object.next_key);
+    }
+    if (object.total !== undefined && object.total !== null) {
+      message.total = BigInt(object.total);
+    }
+    return message;
   },
   toAmino(message: PageResponse): PageResponseAmino {
     const obj: any = {};
-    obj.next_key = message.nextKey;
-    obj.total = message.total ? message.total.toString() : undefined;
+    obj.next_key = message.nextKey
+      ? base64FromBytes(message.nextKey)
+      : undefined;
+    obj.total =
+      message.total !== BigInt(0) ? message.total.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PageResponseAminoMsg): PageResponse {

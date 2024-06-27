@@ -1,7 +1,7 @@
+import { noop } from "@osmosis-labs/utils";
 import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 
-import { noop } from "~/utils/function";
 import { isBrowser } from "~/utils/ssr";
 
 export type UseDimensionRect = Pick<
