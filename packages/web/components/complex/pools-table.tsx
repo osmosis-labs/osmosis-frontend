@@ -352,7 +352,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     count: rows.length,
     estimateSize: () => 69,
     paddingStart: topOffset,
-    overscan: 5,
+    overscan: disablePagination ? limit : 5,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
