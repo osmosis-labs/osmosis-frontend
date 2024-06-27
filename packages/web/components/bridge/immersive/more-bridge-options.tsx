@@ -33,11 +33,11 @@ export const MoreBridgeOptions = observer(
     const { data: externalUrlsData, isLoading: isLoadingExternalUrls } =
       api.bridgeTransfer.getExternalUrls.useQuery(
         {
-          fromAsset,
-          toAsset,
-          fromChain,
-          toChain,
-          toAddress,
+          fromAsset: fromAsset!,
+          toAsset: toAsset!,
+          fromChain: fromChain!,
+          toChain: toChain!,
+          toAddress: toAddress!,
         },
         {
           enabled:
@@ -61,8 +61,8 @@ export const MoreBridgeOptions = observer(
               ? "transfer.moreBridgeOptions.descriptionDeposit"
               : "transfer.moreBridgeOptions.descriptionWithdraw",
             {
-              asset: fromAsset.denom,
-              chain: toChain.chainName ?? "",
+              asset: fromAsset?.denom ?? "",
+              chain: toChain?.chainName ?? "",
             }
           )}
         </p>
