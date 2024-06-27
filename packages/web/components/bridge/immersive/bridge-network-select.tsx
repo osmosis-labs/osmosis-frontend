@@ -1,5 +1,4 @@
 import type { BridgeChain } from "@osmosis-labs/bridge";
-import { debounce } from "debounce";
 import React, { useMemo, useState } from "react";
 
 import { SearchBox } from "~/components/input";
@@ -40,9 +39,9 @@ export const BridgeNetworkSelect = ({
       }}
     >
       <SearchBox
-        onInput={debounce((nextValue) => {
+        onInput={(nextValue) => {
           setQuery(nextValue);
-        }, 300)}
+        }}
         className="my-4 flex-shrink-0"
         placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
         size="full"

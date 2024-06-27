@@ -59,63 +59,67 @@ export const localBridgeTransferRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       if (input.type === "evm") {
-        input.assets
-          .filter(
-            (asset): asset is Extract<typeof asset, { chainType: "evm" }> =>
-              asset.chainType !== "cosmos"
-          )
-          .map(async (asset) => {
-            const emptyBalance = {
-              coinDenom: asset.denom,
-              amount: new CoinPretty(
-                {
-                  coinDecimals: asset.decimals,
-                  coinDenom: asset.denom,
-                  coinMinimalDenom: asset.address,
-                },
-                new Dec(0)
-              ),
-              usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-            };
+        return Promise.all(
+          input.assets
+            .filter(
+              (asset): asset is Extract<typeof asset, { chainType: "evm" }> =>
+                asset.chainType !== "cosmos"
+            )
+            .map(async (asset) => {
+              const emptyBalance = {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  new Dec(0)
+                ),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+              };
 
-            if (!input.userEvmAddress) return emptyBalance;
+              if (!input.userEvmAddress) return emptyBalance;
 
-            const balance = await getEvmBalance({
-              address: getAddress(asset.address),
-              userAddress: input.userEvmAddress,
-              chainId: asset.chainId,
-            }).catch(() => undefined);
+              const balance = await getEvmBalance({
+                address: getAddress(asset.address),
+                userAddress: input.userEvmAddress,
+                chainId: asset.chainId,
+              }).catch(() => undefined);
 
-            if (!balance) return emptyBalance;
+              if (!balance) return emptyBalance;
 
-            const decAmount = new Dec(balance.toString());
-            /**
-             * Use the supported variant to determine the price of the ETH asset.
-             * This is because providers can return variant assets that are missing in
-             * our asset list.
-             *
-             * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
-             */
-            const usdValue = await calcAssetValue({
-              ...ctx,
-              anyDenom: asset.supportedVariants[0],
-              amount: decAmount,
-            }).catch((e) => captureErrorAndReturn(e, undefined));
+              const decAmount = new Dec(balance.toString());
+              /**
+               * Use the supported variant to determine the price of the ETH asset.
+               * This is because providers can return variant assets that are missing in
+               * our asset list.
+               *
+               * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
+               */
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: asset.supportedVariants[0],
+                amount: decAmount,
+              }).catch((e) => captureErrorAndReturn(e, undefined));
 
-            return {
-              ...asset,
-              amount: new CoinPretty(
-                {
-                  coinDecimals: asset.decimals,
-                  coinDenom: asset.denom,
-                  coinMinimalDenom: asset.address,
-                },
-                decAmount
-              ),
-              usdValue:
-                usdValue ?? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-            };
-          });
+              return {
+                ...asset,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  decAmount
+                ),
+                usdValue: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  usdValue ?? new Dec(0)
+                ),
+              };
+            })
+        );
       }
 
       if (input.type === "cosmos") {
