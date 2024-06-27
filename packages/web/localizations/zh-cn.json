@@ -929,7 +929,8 @@
       "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
       "depositWith": "存款",
       "withdrawWith": "提款"
-    }
+    },
+    "connectionError": "连接错误"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

@@ -929,7 +929,8 @@
       "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
-    }
+    },
+    "connectionError": "Eroare de conexiune"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

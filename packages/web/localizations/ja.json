@@ -929,7 +929,8 @@
       "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
-    }
+    },
+    "connectionError": "接続エラー"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

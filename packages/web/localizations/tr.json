@@ -929,7 +929,8 @@
       "descriptionWithdraw": "{asset} {chain} .",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
-    }
+    },
+    "connectionError": "Bağlantı hatası"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

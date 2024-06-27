@@ -929,7 +929,8 @@
       "descriptionWithdraw": "Choisissez parmi les fournisseurs alternatifs suivants pour retirer (alias « pont ») votre {asset} vers {chain} .",
       "depositWith": "Dépôt avec",
       "withdrawWith": "Retirer avec"
-    }
+    },
+    "connectionError": "Erreur de connexion"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

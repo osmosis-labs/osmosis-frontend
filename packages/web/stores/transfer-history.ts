@@ -14,6 +14,9 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+import { toast } from "react-toastify";
+
+import { displayToast, ToastType } from "~/components/alert";
 
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
@@ -39,6 +42,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   protected snapshots: TxSnapshot[] = [];
   @observable
   private isRestoredFromLocalStorage = false;
+
+  /**
+   * Since we can't control how many times a status provider
+   * will call `receiveNewTxStatus`, we need to track which
+   * tx statuses have already been resolved to avoid duplicity in UI.
+   */
+  private readonly _resolvedTxStatusKeys = new Set<string>();
 
   constructor(
     protected readonly onAccountTransferSuccess: (
@@ -121,6 +131,19 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       prefixedKey.slice(statusSource.keyPrefix.length)
     );
 
+    setTimeout(() => {
+      displayToast(
+        {
+          titleTranslationKey: isWithdraw
+            ? "transfer.pendingWithdraw"
+            : "transfer.pendingDeposit",
+          captionTranslationKey: amount,
+        },
+        ToastType.LOADING,
+        { toastId: prefixedKey, autoClose: false }
+      );
+    }, 500);
+
     this.snapshots.push({
       createdAtMs: Date.now(),
       prefixedKey,
@@ -150,13 +173,64 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       return;
     }
 
-    // update balances if successful
-    if (status === "success") {
-      this.onAccountTransferSuccess(snapshot.accountAddress);
-    }
-
+    // set updates
     snapshot.status = status;
     snapshot.reason = reason;
+
+    switch (status) {
+      case "pending":
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.pendingWithdraw"
+              : "transfer.pendingDeposit",
+          },
+          ToastType.LOADING,
+          { toastId: prefixedKey, autoClose: false }
+        );
+        break;
+      case "success":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.completedWithdraw"
+              : "transfer.completedDeposit",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.SUCCESS
+        );
+        this.onAccountTransferSuccess(snapshot.accountAddress);
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        toast.dismiss(prefixedKey);
+        break;
+      case "failed":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.failWithdraw"
+              : "transfer.failDeposit",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.ERROR
+        );
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        toast.dismiss(prefixedKey);
+        break;
+      case "connection-error":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: "transfer.connectionError",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.ERROR
+        );
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        toast.dismiss(prefixedKey);
+        break;
+    }
   }
 
   /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
@@ -174,10 +248,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
 
-      // start receiving tx status updates again
-      statusSource?.trackTxStatus(
-        snapshot.prefixedKey.slice(statusSource.keyPrefix.length)
-      );
+      // start receiving tx status updates again for snapshots that were still pending
+      if (snapshot.status === "pending" && statusSource) {
+        statusSource.trackTxStatus(
+          snapshot.prefixedKey.slice(statusSource.keyPrefix.length)
+        );
+      } else {
+        this._resolvedTxStatusKeys.add(snapshot.prefixedKey);
+      }
 
       runInAction(() => {
         this.snapshots.push(snapshot);

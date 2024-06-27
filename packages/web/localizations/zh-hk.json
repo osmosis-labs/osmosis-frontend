@@ -929,7 +929,8 @@
       "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
-    }
+    },
+    "connectionError": "連線錯誤"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
