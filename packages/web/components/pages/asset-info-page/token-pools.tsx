@@ -59,7 +59,7 @@ export const TokenPools = (props: TokenPoolsProps) => {
       </header>
 
       <PoolsTable
-        limit={4}
+        limit={10}
         filters={filters}
         disablePagination
         sortParams={sortParams}
