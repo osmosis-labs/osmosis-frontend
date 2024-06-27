@@ -8,6 +8,7 @@ import {
   Step2AddLiquidity,
   Step3Confirm,
 } from "~/components/complex";
+import { CreateCLPool } from "~/components/complex/pool/create/cl-pool";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 export const CreatePoolModal: FunctionComponent<
@@ -40,31 +41,49 @@ export const CreatePoolModal: FunctionComponent<
         props.onRequestClose();
       }}
       onRequestBack={curStep !== 0 ? backStep : undefined}
+      title={
+        config.poolType === "concentrated" ? (
+          <div className="relative mx-auto">
+            <h6 className="text-center">Create new Supercharged Pool</h6>
+          </div>
+        ) : (
+          props.title
+        )
+      }
     >
       {config.poolType === null && (
         <SelectType
-          types={["weighted", "stable"]}
+          types={["weighted", "stable", "concentrated"]}
           selectType={(type) => {
             config.setPoolType(type);
             setCurStep(1);
           }}
         />
       )}
-      {curStep === 1 && (
-        <Step1SetRatios createPoolConfig={config} advanceStep={advanceStep} />
-      )}
-      {curStep === 2 && (
-        <Step2AddLiquidity
-          createPoolConfig={config}
-          advanceStep={advanceStep}
-        />
-      )}
-      {curStep === 3 && (
-        <Step3Confirm
-          createPoolConfig={config}
-          isSendingMsg={isSendingMsg}
-          advanceStep={onCreatePool}
-        />
+      {config.poolType && config.poolType === "concentrated" ? (
+        <CreateCLPool />
+      ) : (
+        <>
+          {curStep === 1 && (
+            <Step1SetRatios
+              createPoolConfig={config}
+              advanceStep={advanceStep}
+            />
+          )}
+          {curStep === 2 && (
+            <Step2AddLiquidity
+              createPoolConfig={config}
+              advanceStep={advanceStep}
+            />
+          )}
+          {curStep === 3 && (
+            <Step3Confirm
+              createPoolConfig={config}
+              isSendingMsg={isSendingMsg}
+              advanceStep={onCreatePool}
+            />
+          )}
+        </>
       )}
     </ModalBase>
   );
