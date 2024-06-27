@@ -1,6 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { BridgeAsset, BridgeChain } from "@osmosis-labs/bridge";
+import { BridgeChain } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, isNumeric, noop } from "@osmosis-labs/utils";
@@ -26,7 +26,11 @@ import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { api } from "~/utils/trpc";
+
+type SupportedAsset = ReturnType<
+  typeof useBridgesSupportedAssets
+>["supportedAssetsByChainId"][string][number];
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
@@ -54,8 +58,8 @@ export const AmountScreen = observer(
         noop
       );
 
-    const [sourceAsset, setSourceAsset] = useState<BridgeAsset>();
-    const [destinationAsset, setDestinationAsset] = useState<BridgeAsset>();
+    const [sourceAsset, setSourceAsset] = useState<SupportedAsset>();
+    const [destinationAsset, setDestinationAsset] = useState<MinimalAsset>();
     const [fromChain, setFromChain] = useState<BridgeChain>();
     const [toChain, setToChain] = useState<BridgeChain>();
 
@@ -106,8 +110,8 @@ export const AmountScreen = observer(
                    *
                    * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
                    */
-                  destinationAsset.address
-                : sourceAsset.address,
+                  destinationAsset.coinMinimalDenom
+                : sourceAsset.supportedVariants[0],
           }
         : undefined
     );
@@ -177,12 +181,7 @@ export const AmountScreen = observer(
               nextData[0]
             );
 
-            setSourceAsset({
-              address: highestBalance.amount.currency.coinMinimalDenom,
-              decimals: highestBalance.amount.currency.coinDecimals,
-              denom: highestBalance.coinDenom,
-              sourceDenom: highestBalance.amount.currency.coinMinimalDenom,
-            });
+            setSourceAsset(highestBalance);
           }
 
           return nextData;
@@ -191,26 +190,14 @@ export const AmountScreen = observer(
     );
 
     useEffect(() => {
-      if (
-        !isNil(supportedAssets) &&
-        !isNil(sourceAsset) &&
-        !isNil(assetsInOsmosis)
-      ) {
-        const selectedSupportedAsset = supportedAssets.find(
-          (a) => a.address === sourceAsset.address
-        )!;
+      if (!isNil(sourceAsset) && !isNil(assetsInOsmosis)) {
         const destinationAsset = assetsInOsmosis.find(
-          (a) => a.coinDenom === selectedSupportedAsset.supportedVariants[0]
+          (a) => a.coinMinimalDenom === sourceAsset.supportedVariants[0]
         )!;
 
-        setDestinationAsset({
-          address: destinationAsset.coinMinimalDenom,
-          decimals: destinationAsset.coinDecimals,
-          denom: destinationAsset.coinDenom,
-          sourceDenom: destinationAsset.sourceDenom,
-        });
+        setDestinationAsset(destinationAsset);
       }
-    }, [assetsInOsmosis, selectedDenom, sourceAsset, supportedAssets]);
+    }, [assetsInOsmosis, selectedDenom, sourceAsset]);
 
     useEffect(() => {
       const chain = direction === "deposit" ? toChain : fromChain;
@@ -285,16 +272,6 @@ export const AmountScreen = observer(
     ) {
       return <AmountScreenSkeletonLoader />;
     }
-
-    const supportedReceiveTokens = supportedAssets.find(
-      ({ address }) => address === destinationAsset?.address
-    )?.supportedVariants;
-
-    console.log(
-      supportedAssets,
-      destinationAsset?.address,
-      supportedReceiveTokens
-    );
 
     const cryptoAmountPretty = new CoinPretty(
       canonicalAsset,
@@ -514,16 +491,9 @@ export const AmountScreen = observer(
                             "text-osmoverse-100": !isActive,
                           }
                         )}
-                        onClick={() =>
-                          setSourceAsset({
-                            address: asset.amount.currency.coinMinimalDenom,
-                            decimals: asset.amount.currency.coinDecimals,
-                            denom: asset.coinDenom,
-                            sourceDenom: asset.amount.currency.coinMinimalDenom,
-                          })
-                        }
+                        onClick={() => setSourceAsset(asset)}
                       >
-                        <span>{asset.coinDenom}</span>
+                        <span>{asset.denom}</span>
                         <span className="body2 text-osmoverse-300">
                           {asset.usdValue.toString()}
                         </span>
@@ -571,71 +541,67 @@ export const AmountScreen = observer(
             </div>
           </div>
 
-          {!isNil(supportedReceiveTokens) &&
-            supportedReceiveTokens.length > 0 && (
-              <Menu>
-                {({ open }) => (
-                  <div className="relative w-full">
-                    <Menu.Button className="w-full">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="body1 text-osmoverse-300">
-                            {t("transfer.receiveAsset")}
-                          </span>
-                          <Tooltip
-                            content={
-                              <div>
-                                <h1 className="caption mb-1">
-                                  {t("transfer.receiveAsset")}
-                                </h1>
-                                <p className="caption text-osmoverse-300">
-                                  {t("transfer.receiveAssetDescription")}
-                                </p>
-                              </div>
-                            }
-                          >
-                            <Icon id="info" width={16} />
-                          </Tooltip>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="body1 text-white-full">
-                            {destinationAsset?.denom}
-                          </span>
-                          <Icon
-                            id="chevron-down"
-                            width={12}
-                            height={12}
-                            className={classNames(
-                              "text-osmoverse-300 transition-transform duration-150",
-                              {
-                                "rotate-180": open,
-                              }
-                            )}
-                          />
-                        </div>
+          {!isNil(sourceAsset) && sourceAsset.supportedVariants.length > 0 && (
+            <Menu>
+              {({ open }) => (
+                <div className="relative w-full">
+                  <Menu.Button className="w-full">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-osmoverse-300">
+                          {t("transfer.receiveAsset")}
+                        </span>
+                        <Tooltip
+                          content={
+                            <div>
+                              <h1 className="caption mb-1">
+                                {t("transfer.receiveAsset")}
+                              </h1>
+                              <p className="caption text-osmoverse-300">
+                                {t("transfer.receiveAssetDescription")}
+                              </p>
+                            </div>
+                          }
+                        >
+                          <Icon id="info" width={16} />
+                        </Tooltip>
                       </div>
-                    </Menu.Button>
 
-                    <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
-                      {supportedReceiveTokens.map((assetDenom, index) => {
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-white-full">
+                          {destinationAsset?.coinDenom}
+                        </span>
+                        <Icon
+                          id="chevron-down"
+                          width={12}
+                          height={12}
+                          className={classNames(
+                            "text-osmoverse-300 transition-transform duration-150",
+                            {
+                              "rotate-180": open,
+                            }
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </Menu.Button>
+
+                  <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                    {sourceAsset.supportedVariants.map(
+                      (variantCoinMinimalDenom, index) => {
                         const asset = assetsInOsmosis.find(
-                          (asset) => asset.coinDenom === assetDenom
+                          (asset) =>
+                            asset.coinMinimalDenom === variantCoinMinimalDenom
                         )!;
 
                         const onClick = () => {
-                          setDestinationAsset({
-                            address: asset.coinMinimalDenom,
-                            decimals: asset.coinDecimals,
-                            denom: asset.coinDenom,
-                            sourceDenom: asset.coinDenom,
-                          });
+                          setDestinationAsset(asset);
                         };
 
                         const isConvert =
                           asset.coinMinimalDenom === asset.variantGroupKey;
                         const isSelected =
-                          destinationAsset?.denom === asset.coinDenom;
+                          destinationAsset?.coinDenom === asset.coinDenom;
 
                         // Is canonical asset
                         if (index === 0) {
@@ -643,8 +609,9 @@ export const AmountScreen = observer(
                             <Menu.Item key={asset.coinDenom}>
                               <button
                                 className={classNames(
-                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left hover:bg-osmoverse-800",
-                                  isSelected && "bg-osmoverse-700"
+                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                  isSelected && "bg-osmoverse-700",
+                                  !isSelected && "hover:bg-osmoverse-800"
                                 )}
                                 onClick={onClick}
                               >
@@ -677,8 +644,9 @@ export const AmountScreen = observer(
                           <Menu.Item key={asset.coinDenom}>
                             <button
                               className={classNames(
-                                "flex items-center gap-3 rounded-lg py-2 px-3 hover:bg-osmoverse-800",
-                                isSelected && "bg-osmoverse-700"
+                                "flex items-center gap-3 rounded-lg py-2 px-3",
+                                isSelected && "bg-osmoverse-700",
+                                !isSelected && "hover:bg-osmoverse-800"
                               )}
                               onClick={onClick}
                             >
@@ -698,12 +666,13 @@ export const AmountScreen = observer(
                             </button>
                           </Menu.Item>
                         );
-                      })}
-                    </Menu.Items>
-                  </div>
-                )}
-              </Menu>
-            )}
+                      }
+                    )}
+                  </Menu.Items>
+                </div>
+              )}
+            </Menu>
+          )}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -738,10 +707,31 @@ export const AmountScreen = observer(
                     : t("transfer.moreWithdrawOptions")}
                 </Button>
                 <MoreBridgeOptions
-                  type={direction}
+                  direction={direction}
                   isOpen={isMoreOptionsVisible}
-                  // TODO: Use the receive asset when implemented
-                  asset={canonicalAsset}
+                  fromAsset={
+                    sourceAsset
+                      ? {
+                          address: sourceAsset.address,
+                          decimals: sourceAsset.decimals,
+                          denom: sourceAsset.denom,
+                          sourceDenom: sourceAsset.sourceDenom,
+                        }
+                      : undefined
+                  }
+                  toAsset={
+                    destinationAsset
+                      ? {
+                          address: destinationAsset.coinMinimalDenom,
+                          decimals: destinationAsset.coinDecimals,
+                          denom: destinationAsset.coinDenom,
+                          sourceDenom: destinationAsset.sourceDenom,
+                        }
+                      : undefined
+                  }
+                  fromChain={fromChain}
+                  toChain={toChain}
+                  toAddress={currentAddress}
                   onRequestClose={() => setIsMoreOptionsVisible(false)}
                 />
               </>
@@ -815,48 +805,3 @@ const AmountScreenSkeletonLoader = () => {
     </div>
   );
 };
-
-type SupportedAsset = ReturnType<
-  typeof useBridgesSupportedAssets
->["supportedAssetsByChainId"][string][number];
-
-interface SupportedAssetListProps {
-  assets: NonNullable<
-    RouterOutputs["local"]["bridgeTransfer"]["getSupportedAssetsBalances"]
-  >;
-  selectedAssetAddress: string;
-  chain: BridgeChain;
-  onSelectAsset: (assetAddress: string) => void;
-}
-
-export const SupportedAssetList: FunctionComponent<SupportedAssetListProps> =
-  observer(({ assets, selectedAssetAddress, onSelectAsset }) => {
-    return (
-      <div className="flex flex-wrap items-center justify-between rounded-2xl bg-osmoverse-1000">
-        {assets.map((asset) => {
-          const isActive =
-            asset.amount.currency.coinMinimalDenom === selectedAssetAddress;
-          return (
-            <button
-              key={asset.amount.currency.coinMinimalDenom}
-              className={classNames(
-                "subtitle1 flex w-1/3 flex-col items-center rounded-lg py-3 px-2",
-                {
-                  "bg-osmoverse-825 text-wosmongton-100": isActive,
-                  "text-osmoverse-100": !isActive,
-                }
-              )}
-              onClick={() =>
-                onSelectAsset(asset.amount.currency.coinMinimalDenom)
-              }
-            >
-              <span>{asset.coinDenom}</span>
-              <span className="body2 text-osmoverse-300">
-                {asset.usdValue.toString()}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    );
-  });

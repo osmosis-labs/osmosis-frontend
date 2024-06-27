@@ -146,9 +146,8 @@ export const useBridgesSupportedAssets = ({
       ([chainId, assets]) => [
         chainId,
         assets
-          .map((asset) => ({
+          .map(({ providerName, ...asset }) => ({
             ...asset,
-            providerName: undefined,
             supportedVariants: Array.from(
               assetAddress_supportedVariants[asset.address.toLowerCase()]
             ),
@@ -175,10 +174,13 @@ export const useBridgesSupportedAssets = ({
 
     return Object.fromEntries(assetEntriesByChainId) as Record<
       keyof AssetsByChainId,
-      (AssetsByChainId[string][number] & {
-        supportedVariants: string[];
-        supportedProviders: Bridge[];
-      })[]
+      Omit<
+        AssetsByChainId[string][number] & {
+          supportedVariants: string[];
+          supportedProviders: Bridge[];
+        },
+        "providerName"
+      >[]
     >;
   }, [successfulQueries]);
 

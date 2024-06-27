@@ -777,9 +777,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const url = new URL("https://ibc.fun/");
     url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address);
+    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
     url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address);
+    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
 
     return { urlProviderName: "IBC.fun", url };
   }

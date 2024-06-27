@@ -31,21 +31,24 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
   assetLists,
   chainList,
   asset,
-  userOsmoAddress,
+  userCosmosAddress,
+  chainId,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
-  userOsmoAddress?: string;
+  userCosmosAddress?: string;
+  chainId?: string;
 }): Promise<TAsset & MaybeUserAssetCoin> {
-  if (!userOsmoAddress) return asset;
+  if (!userCosmosAddress) return asset;
 
   const userAssets = await mapGetAssetsWithUserBalances({
     assetLists,
     chainList,
     assets: [asset],
-    userOsmoAddress,
+    userCosmosAddress: userCosmosAddress,
     includePreview: true,
+    chainId,
   });
   return userAssets[0];
 }
@@ -57,19 +60,21 @@ export async function mapGetAssetsWithUserBalances<
   TAsset extends MinimalAsset
 >({
   poolId,
+  chainId,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
-  userOsmoAddress?: string;
+  chainId?: string;
+  userCosmosAddress?: string;
   sortFiatValueDirection?: SortDirection;
   /**
    * If poolId is provided, only include assets that are part of the pool.
    */
   poolId?: string;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
-  const { userOsmoAddress, search, sortFiatValueDirection } = params;
+  const { userCosmosAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
 
@@ -87,16 +92,21 @@ export async function mapGetAssetsWithUserBalances<
     ) as TAsset[];
   }
 
-  if (!userOsmoAddress) return assets;
+  if (!userCosmosAddress) return assets;
 
   const { balances } = await queryBalances({
     ...params,
-    bech32Address: userOsmoAddress,
+    // Defaults to Osmosis
+    chainId,
+    bech32Address: userCosmosAddress,
   });
 
   const eventualUserAssets = assets
     .map(async (asset) => {
-      const balance = balances.find((a) => a.denom === asset.coinMinimalDenom);
+      const balance = balances.find(
+        (a) =>
+          a.denom === asset.coinMinimalDenom || a.denom === asset.sourceDenom // If it's outside of Osmosis
+      );
 
       // not a user asset
       if (!balance) return asset;
