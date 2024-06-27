@@ -147,6 +147,26 @@ export const AmountScreen = observer(
       [supportedChains]
     );
 
+    const firstSupportedEvmChain = useMemo(
+      () =>
+        supportedChainsAsBridgeChain.find(
+          (chain): chain is Extract<BridgeChain, { chainType: "evm" }> =>
+            chain.chainType === "evm"
+        ),
+      [supportedChainsAsBridgeChain]
+    );
+    const firstSupportedCosmosChain = useMemo(
+      () =>
+        supportedChainsAsBridgeChain.find(
+          (chain): chain is Extract<BridgeChain, { chainType: "cosmos" }> =>
+            chain.chainType === "cosmos"
+        ),
+      [supportedChainsAsBridgeChain]
+    );
+
+    const hasMoreThanOneChainType =
+      !isNil(firstSupportedCosmosChain) && !isNil(firstSupportedEvmChain);
+
     const {
       data: sourceAssetsBalances,
       isLoading: isLoadingSourceAssetsBalance,
@@ -203,6 +223,9 @@ export const AmountScreen = observer(
       }
     );
 
+    /**
+     * Set the initial destination asset based on the source asset.
+     */
     useEffect(() => {
       if (!isNil(sourceAsset) && !isNil(assetsInOsmosis)) {
         const destinationAsset = assetsInOsmosis.find(
@@ -213,6 +236,9 @@ export const AmountScreen = observer(
       }
     }, [assetsInOsmosis, selectedDenom, sourceAsset]);
 
+    /**
+     * Set the osmosis chain based on the direction
+     */
     useEffect(() => {
       const chain = direction === "deposit" ? toChain : fromChain;
       const setChain = direction === "deposit" ? setToChain : setFromChain;
@@ -231,6 +257,11 @@ export const AmountScreen = observer(
       toChain,
     ]);
 
+    /**
+     * Set the initial chain based on the direction.
+     * TODO: When all balances are computed per chain, we can default to the highest balance
+     * instead of the first one.
+     */
     useEffect(() => {
       const chain = direction === "deposit" ? fromChain : toChain;
       const setChain = direction === "deposit" ? setFromChain : setToChain;
@@ -248,17 +279,27 @@ export const AmountScreen = observer(
       }
     }, [direction, fromChain, supportedChains, toChain]);
 
+    /**
+     * Connect cosmos wallet to the counterparty chain
+     */
     useEffect(() => {
       if (!fromChain || !toChain) return;
 
       const chain = direction === "deposit" ? fromChain : toChain;
+
       if (
-        typeof chain.chainId !== "string" ||
-        !!cosmosCounterpartyAccount?.address
+        // If the chain is an EVM chain, we don't need to connect the cosmos chain
+        chain.chainType !== "cosmos" ||
+        // Or if the account is already connected
+        !!cosmosCounterpartyAccount?.address ||
+        // Or if there's no available cosmos chain
+        !firstSupportedCosmosChain
       ) {
         return;
       }
+
       cosmosCounterpartyAccountRepo?.connect(account?.walletName).catch(() =>
+        // Display the connect modal if the user for some reason rejects the connection
         onOpenWalletSelect({
           walletOptions: [
             { walletType: "cosmos", chainId: String(chain.chainId) },
@@ -266,13 +307,43 @@ export const AmountScreen = observer(
         })
       );
     }, [
+      account?.walletName,
       cosmosCounterpartyAccount?.address,
       cosmosCounterpartyAccountRepo,
       direction,
+      firstSupportedCosmosChain,
       fromChain,
       onOpenWalletSelect,
       toChain,
-      account?.walletName,
+    ]);
+
+    /**
+     * Connect evm wallet to the counterparty chain
+     */
+    useEffect(() => {
+      if (!fromChain || !toChain) return;
+
+      const chain = direction === "deposit" ? fromChain : toChain;
+
+      if (
+        // If the chain is an Cosmos chain, we don't need to connect the cosmos chain
+        chain.chainType !== "evm" ||
+        // Or if the account is already connected
+        !!evmAddress ||
+        // Or if there's no available evm chain
+        !firstSupportedEvmChain
+      ) {
+        return;
+      }
+
+      onOpenBridgeWalletSelect();
+    }, [
+      direction,
+      evmAddress,
+      firstSupportedEvmChain,
+      fromChain,
+      onOpenBridgeWalletSelect,
+      toChain,
     ]);
 
     if (
@@ -546,81 +617,83 @@ export const AmountScreen = observer(
 
           {walletConnected && (
             <>
-              <button
-                onClick={onOpenBridgeWalletSelect}
-                className="flex items-center justify-between"
-              >
-                <span className="body1 text-osmoverse-300">
-                  {direction === "deposit"
-                    ? t("transfer.transferWith")
-                    : t("transfer.transferTo")}
-                </span>
-                <div className="flex items-center gap-2 rounded-lg">
-                  {sourceChain?.chainType === "evm" ? (
-                    <>
-                      {!isNil(evmConnector?.icon) && (
-                        <img
-                          src={evmConnector?.icon}
-                          alt={evmConnector?.name}
-                          className="h-6 w-6"
+              {hasMoreThanOneChainType ? (
+                <>
+                  <button
+                    onClick={onOpenBridgeWalletSelect}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="body1 text-osmoverse-300">
+                      {direction === "deposit"
+                        ? t("transfer.transferWith")
+                        : t("transfer.transferTo")}
+                    </span>
+
+                    <WalletDisplay
+                      icon={
+                        sourceChain?.chainType === "evm"
+                          ? evmConnector?.icon
+                          : account?.walletInfo.logo
+                      }
+                      name={
+                        sourceChain?.chainType === "evm"
+                          ? evmConnector?.name
+                          : account?.walletInfo.prettyName
+                      }
+                      suffix={
+                        <Icon
+                          id="chevron-down"
+                          width={12}
+                          height={12}
+                          className="text-osmoverse-300"
                         />
-                      )}
-                      <span>{evmConnector?.name}</span>
-                    </>
-                  ) : (
-                    <>
-                      <img
-                        src={account?.walletInfo.logo}
-                        alt={account?.walletInfo.prettyName}
-                        className="h-6 w-6"
-                      />
-                      <span>{account?.walletInfo.prettyName}</span>
-                    </>
-                  )}
-                  <Icon
-                    id="chevron-down"
-                    width={12}
-                    height={12}
-                    className="text-osmoverse-300"
+                      }
+                    />
+                  </button>
+
+                  <BridgeWalletSelect
+                    direction={direction}
+                    isOpen={isBridgeWalletSelectOpen}
+                    onRequestClose={onCloseBridgeWalletSelect}
+                    onSelectChain={(chain) => {
+                      const setChain =
+                        direction === "deposit" ? setFromChain : setToChain;
+                      setChain(chain);
+                      resetAssets();
+                    }}
+                    evmChain={
+                      sourceChain?.chainType === "evm"
+                        ? sourceChain
+                        : firstSupportedEvmChain
+                    }
+                    cosmosChain={
+                      sourceChain?.chainType === "cosmos"
+                        ? sourceChain
+                        : firstSupportedCosmosChain
+                    }
+                  />
+                </>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="body1 text-osmoverse-300">
+                    {direction === "deposit"
+                      ? t("transfer.transferWith")
+                      : t("transfer.transferTo")}
+                  </span>
+                  <WalletDisplay
+                    icon={
+                      sourceChain?.chainType === "evm"
+                        ? evmConnector?.icon
+                        : account?.walletInfo.logo
+                    }
+                    name={
+                      sourceChain?.chainType === "evm"
+                        ? evmConnector?.name
+                        : account?.walletInfo.prettyName
+                    }
                   />
                 </div>
-              </button>
-
-              <BridgeWalletSelect
-                direction={direction}
-                isOpen={isBridgeWalletSelectOpen}
-                onRequestClose={onCloseBridgeWalletSelect}
-                onSelectChain={(chain) => {
-                  const setChain =
-                    direction === "deposit" ? setFromChain : setToChain;
-                  setChain(chain);
-                  resetAssets();
-                }}
-                evmChain={
-                  sourceChain?.chainType === "evm"
-                    ? sourceChain
-                    : supportedChainsAsBridgeChain.find(
-                        (
-                          chain
-                        ): chain is Extract<
-                          BridgeChain,
-                          { chainType: "evm" }
-                        > => chain.chainType === "evm"
-                      )
-                }
-                cosmosChain={
-                  sourceChain?.chainType === "cosmos"
-                    ? sourceChain
-                    : supportedChainsAsBridgeChain.find(
-                        (
-                          chain
-                        ): chain is Extract<
-                          BridgeChain,
-                          { chainType: "cosmos" }
-                        > => chain.chainType === "cosmos"
-                      )
-                }
-              />
+              )}
             </>
           )}
 
@@ -877,6 +950,20 @@ const AmountScreenSkeletonLoader = () => {
       <SkeletonLoader className="h-6 w-full" />
       <SkeletonLoader className="h-14 w-full" />
       <SkeletonLoader className="h-14 w-full" />
+    </div>
+  );
+};
+
+const WalletDisplay: FunctionComponent<{
+  icon: string | undefined;
+  name: string | undefined;
+  suffix?: ReactNode;
+}> = ({ icon, name, suffix }) => {
+  return (
+    <div className="flex items-center gap-2 rounded-lg">
+      {!isNil(icon) && <img src={icon} alt={name} className="h-6 w-6" />}
+      <span>{name}</span>
+      {suffix}
     </div>
   );
 };
