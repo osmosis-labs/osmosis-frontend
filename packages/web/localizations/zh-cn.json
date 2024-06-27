@@ -1002,7 +1002,7 @@
     "marketCapRank": "市值排名",
     "marketCap": "市值",
     "fullyDilutedValuation": "完全稀释估值",
-    "volume24h": "24小时交易量",
+    "volume24h": "24小时总成交量",
     "volumeOnOsmosis": "24 小时渗透量",
     "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",

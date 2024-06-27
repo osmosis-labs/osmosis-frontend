@@ -1002,7 +1002,7 @@
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
     "fullyDilutedValuation": "완전희석평가",
-    "volume24h": "24시간 볼륨",
+    "volume24h": "24시간 총 볼륨",
     "volumeOnOsmosis": "Osmosis의 24시간 볼륨",
     "liquidityOnOsmosis": "삼투의 유동성",
     "circulatingSupply": "순환 공급",

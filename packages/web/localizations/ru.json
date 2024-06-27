@@ -1002,7 +1002,7 @@
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
     "fullyDilutedValuation": "Полностью разводненная оценка",
-    "volume24h": "24-часовой объем",
+    "volume24h": "общий объем за 24 часа",
     "volumeOnOsmosis": "24-часовой объем по осмосу",
     "liquidityOnOsmosis": "Ликвидность по осмосу",
     "circulatingSupply": "Оборотное снабжение",
