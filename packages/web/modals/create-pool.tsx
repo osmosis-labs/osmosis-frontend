@@ -51,7 +51,7 @@ export const CreatePoolModal: FunctionComponent<
       }
       title={!isConcentrated ? props.title : undefined}
       hideCloseButton={isConcentrated}
-      className={classNames({ "!p-0": isConcentrated })}
+      className={classNames({ "!w-fit !max-w-none !p-0": isConcentrated })}
     >
       {config.poolType === null && (
         <SelectType
@@ -63,7 +63,18 @@ export const CreatePoolModal: FunctionComponent<
         />
       )}
       {config.poolType && isConcentrated ? (
-        <CreateCLPool />
+        <CreateCLPool
+          onBack={() => {
+            if (curStep !== 0) {
+              backStep();
+            }
+          }}
+          advanceStep={advanceStep}
+          backStep={backStep}
+          currentStep={curStep}
+          onClose={props.onRequestClose}
+          config={config}
+        />
       ) : (
         <>
           {curStep === 1 && (
