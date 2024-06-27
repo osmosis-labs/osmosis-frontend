@@ -930,6 +930,12 @@
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
+    "pendingWithdraw": "Geri çekilme bekleniyor",
+    "pendingDeposit": "Geri çekilme bekleniyor",
+    "completedWithdraw": "Para çekme işlemi tamamlandı",
+    "completedDeposit": "Para yatırma tamamlandı",
+    "failedWithdraw": "Para çekme işlemi başarısız oldu",
+    "failedDeposit": "Para yatırma işlemi başarısız oldu",
     "connectionError": "Bağlantı hatası"
   },
   "unknownError": "Bilinmeyen hata",

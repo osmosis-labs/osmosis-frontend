@@ -930,6 +930,12 @@
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
     },
+    "pendingWithdraw": "Retirada pendente",
+    "pendingDeposit": "Retirada pendente",
+    "completedWithdraw": "Retirada concluída",
+    "completedDeposit": "Depósito concluído",
+    "failedWithdraw": "Falha na retirada",
+    "failedDeposit": "Falha no depósito",
     "connectionError": "Erro de conexão"
   },
   "unknownError": "Erro desconhecido",

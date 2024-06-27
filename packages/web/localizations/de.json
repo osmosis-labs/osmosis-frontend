@@ -930,6 +930,12 @@
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
+    "pendingWithdraw": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehender Auszug",
+    "completedWithdraw": "Auszahlung abgeschlossen",
+    "completedDeposit": "Einzahlung abgeschlossen",
+    "failedWithdraw": "Auszahlung fehlgeschlagen",
+    "failedDeposit": "Einzahlung fehlgeschlagen",
     "connectionError": "Verbindungsfehler"
   },
   "unknownError": "Unbekannter Fehler",

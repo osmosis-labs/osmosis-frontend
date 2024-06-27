@@ -930,6 +930,12 @@
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
+    "pendingWithdraw": "În așteptarea retragerii",
+    "pendingDeposit": "În așteptarea retragerii",
+    "completedWithdraw": "Retragere finalizată",
+    "completedDeposit": "Depozit finalizat",
+    "failedWithdraw": "Retragerea a eșuat",
+    "failedDeposit": "Depunerea nu a reușit",
     "connectionError": "Eroare de conexiune"
   },
   "unknownError": "Eroare necunoscuta",

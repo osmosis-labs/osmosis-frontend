@@ -930,6 +930,12 @@
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
     },
+    "pendingWithdraw": "待提款",
+    "pendingDeposit": "待提款",
+    "completedWithdraw": "提現完成",
+    "completedDeposit": "存款完成",
+    "failedWithdraw": "提現失敗",
+    "failedDeposit": "存款失敗",
     "connectionError": "連線錯誤"
   },
   "unknownError": "未知錯誤",

@@ -930,6 +930,12 @@
       "depositWith": "存款",
       "withdrawWith": "提款"
     },
+    "pendingWithdraw": "等待提款",
+    "pendingDeposit": "等待提款",
+    "completedWithdraw": "提现完成",
+    "completedDeposit": "存款已完成",
+    "failedWithdraw": "提现失败",
+    "failedDeposit": "存款失败",
     "connectionError": "连接错误"
   },
   "unknownError": "未知错误",

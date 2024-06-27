@@ -930,6 +930,12 @@
       "depositWith": "સાથે જમા",
       "withdrawWith": "સાથે પાછી ખેંચો"
     },
+    "pendingWithdraw": "બાકી ઉપાડ",
+    "pendingDeposit": "બાકી ઉપાડ",
+    "completedWithdraw": "ઉપાડ પૂર્ણ",
+    "completedDeposit": "ડિપોઝિટ પૂર્ણ",
+    "failedWithdraw": "ઉપાડ નિષ્ફળ",
+    "failedDeposit": "ડિપોઝિટ નિષ્ફળ",
     "connectionError": "કનેક્શન ભૂલ"
   },
   "unknownError": "અજાણી ભૂલ",

@@ -930,6 +930,12 @@
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
     },
+    "pendingWithdraw": "Oczekuje na wycofanie",
+    "pendingDeposit": "Oczekuje na wycofanie",
+    "completedWithdraw": "Wypłata zakończona",
+    "completedDeposit": "Depozyt zrealizowany",
+    "failedWithdraw": "Wypłata nie powiodła się",
+    "failedDeposit": "Wpłata nie powiodła się",
     "connectionError": "Błąd połączenia"
   },
   "unknownError": "Nieznany błąd",

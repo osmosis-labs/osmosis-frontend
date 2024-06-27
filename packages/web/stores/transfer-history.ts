@@ -209,8 +209,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         displayToast(
           {
             titleTranslationKey: snapshot.isWithdraw
-              ? "transfer.failWithdraw"
-              : "transfer.failDeposit",
+              ? "transfer.failedWithdraw"
+              : "transfer.failedDeposit",
             captionTranslationKey: snapshot.amount,
           },
           ToastType.ERROR
