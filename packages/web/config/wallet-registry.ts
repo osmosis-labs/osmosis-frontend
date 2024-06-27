@@ -225,4 +225,84 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["cdcwallet-extension"],
+    logo: "/wallets/crypto-com.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cdcwallet-extension").then(
+        (m) => m.CdcwalletExtensionWallet
+      ),
+    async supportsChain(chainId) {
+      const cdcAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "crypto-org-chain-mainnet-1",
+      ];
+      return cdcAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    windowPropertyName: "cdc_wallet",
+    stakeUrl: "https://crypto.com/staking",
+    features: [],
+    mode: "extension",
+  },
+  {
+    ...CosmosKitWalletList["xdefi-extension"],
+    logo: "/wallets/xdefi.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
+    windowPropertyName: "xfi",
+    async supportsChain(chainId) {
+      if (typeof window === "undefined") return true;
+
+      const xfiWallet = (window as any)?.xfi?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
+
+      if (!xfiWallet) return true;
+
+      return xfiWallet
+        .getKey(chainId)
+        .then(() => true)
+        .catch(() => false);
+    },
+    features: [],
+  },
+  {
+    ...CosmosKitWalletList["cosmostation-extension"],
+    logo: "/wallets/cosmostation.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cosmostation-extension").then(
+        (m) => m.CosmostationExtensionWallet
+      ),
+    windowPropertyName: "cosmostation",
+    stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
+    governanceUrl: "https://cosmos.leapwallet.io/gov",
+    features: ["notifications"],
+  },
+  {
+    ...CosmosKitWalletList["station-extension"],
+    mobileDisabled: true,
+    logo: "/wallets/station.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/station-extension").then(
+        (m) => m.StationExtensionWallet
+      ),
+    windowPropertyName: "station",
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const stationWallet = (window as any)?.station?.keplr as {
+        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
+      };
+
+      if (!stationWallet) return true;
+
+      const chainInfos = await stationWallet.getChainInfosWithoutEndpoints();
+      return chainInfos.some((info) => info.chainId === chainId);
+    },
+    signOptions: {
+      preferNoSetFee: true,
+    },
+    features: [],
+  },
 ];

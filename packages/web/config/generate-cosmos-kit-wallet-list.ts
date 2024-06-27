@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
+import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
@@ -12,6 +13,17 @@ import { isFunction } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
+
+type UpdateWalletMode =
+  | "ledger"
+  | "extension"
+  | "wallet-connect"
+  | "social-login"
+  | undefined;
+
+interface Wallet extends Omit<DefaultWallet, "mode"> {
+  mode: UpdateWalletMode;
+}
 
 const CosmosKitWalletList = [
   keplrExtensionInfo,
