@@ -1,6 +1,7 @@
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import {
   SelectType,
@@ -34,22 +35,23 @@ export const CreatePoolModal: FunctionComponent<
     }
   };
 
+  const isConcentrated = useMemo(
+    () => config.poolType === "concentrated",
+    [config.poolType]
+  );
+
   return (
     <ModalBase
       {...props}
       onRequestClose={() => {
         props.onRequestClose();
       }}
-      onRequestBack={curStep !== 0 ? backStep : undefined}
-      title={
-        config.poolType === "concentrated" ? (
-          <div className="relative mx-auto">
-            <h6 className="text-center">Create new Supercharged Pool</h6>
-          </div>
-        ) : (
-          props.title
-        )
+      onRequestBack={
+        isConcentrated ? undefined : curStep !== 0 ? backStep : undefined
       }
+      title={!isConcentrated ? props.title : undefined}
+      hideCloseButton={isConcentrated}
+      className={classNames({ "!p-0": isConcentrated })}
     >
       {config.poolType === null && (
         <SelectType
@@ -60,7 +62,7 @@ export const CreatePoolModal: FunctionComponent<
           }}
         />
       )}
-      {config.poolType && config.poolType === "concentrated" ? (
+      {config.poolType && isConcentrated ? (
         <CreateCLPool />
       ) : (
         <>
