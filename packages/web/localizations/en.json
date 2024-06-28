@@ -924,6 +924,11 @@
     "depositAs": "Deposit as",
     "withdrawAs": "Withdraw as",
     "recommended": "Recommended",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",

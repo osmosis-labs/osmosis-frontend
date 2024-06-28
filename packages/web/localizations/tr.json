@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Daha fazla para çekme seçeneği",
     "convertTo": "E dönüşmek",
     "recommended": "Tavsiye edilen",
+    "stepLabels": {
+      "asset": "Varlık",
+      "amount": "Miktar",
+      "review": "Gözden geçirmek"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",

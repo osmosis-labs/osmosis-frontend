@@ -2,6 +2,7 @@ import { AxelarSourceChain, EthereumChainInfo } from "@osmosis-labs/utils";
 
 import { BridgeEnvironment } from "../interface";
 
+/** @deprecated Prefer using Axelar chain/asset list API via bridge providers instead */
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */
   id: AxelarSourceChain;
@@ -40,6 +41,7 @@ export type SourceChainTokenConfig = {
 
 /** https://axelarscan.io/assets
  *  Ensure that users bridge sufficient amounts from EthMainnet=>NonEthEvm via Axelar before enabling.
+ *  @deprecated Prefer using Axelar chain/asset list API via bridge providers instead
  */
 export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
   [asset: string]: { [chain: string]: SourceChainTokenConfig };

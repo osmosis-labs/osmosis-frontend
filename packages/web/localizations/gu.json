@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "વધુ ઉપાડ વિકલ્પો",
     "convertTo": "માં કન્વર્ટ કરો",
     "recommended": "ભલામણ કરેલ",
+    "stepLabels": {
+      "asset": "એસેટ",
+      "amount": "રકમ",
+      "review": "સમીક્ષા"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",

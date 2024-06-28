@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Mai multe opțiuni de retragere",
     "convertTo": "Schimba in",
     "recommended": "Recomandat",
+    "stepLabels": {
+      "asset": "Atu",
+      "amount": "Cantitate",
+      "review": "Revizuire"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",

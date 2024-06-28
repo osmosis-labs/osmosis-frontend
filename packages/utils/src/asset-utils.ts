@@ -60,7 +60,6 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     name,
     unstable,
     verified,
-    sourceDenom,
     variantGroupKey,
   } = assetListAsset;
 
@@ -70,7 +69,6 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     coinMinimalDenom,
     coinDecimals: decimals,
     coinGeckoId: coingeckoId,
-    sourceDenom,
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
     isVerified: verified,

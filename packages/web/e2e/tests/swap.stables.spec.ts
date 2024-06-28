@@ -21,6 +21,8 @@ test.describe("Test Swap Stables feature", () => {
     "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4";
   let allUSDT =
     "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
+  let kavaUSDT =
+    "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB";
 
   test.beforeAll(async () => {
     console.log("Before test setup Wallet Extension.");
@@ -112,6 +114,36 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDTa);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
+    expect(swapPage.isTransactionBroadcasted(10));
+    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
+  });
+
+  test("User should be able to swap USDT.axl to kava.USDT", async () => {
+    await swapPage.goto();
+    await swapPage.selectPair("USDT.axl", "kava.USDT");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + USDTa);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + kavaUSDT);
+    expect(swapPage.isTransactionBroadcasted(10));
+    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
+  });
+
+  test("User should be able to swap kava.USDT to USDT.axl", async () => {
+    await swapPage.goto();
+    await swapPage.selectPair("kava.USDT", "USDT.axl");
+    await swapPage.enterAmount("0.1");
+    await swapPage.showSwapInfo();
+    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("denom: " + kavaUSDT);
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("token_out_denom: " + USDTa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
     expect(swapPage.getTransactionUrl()).toBeTruthy();

@@ -13,7 +13,7 @@ import { IbcBridgeProvider } from ".";
 
 export type IbcTransferStatus = "pending" | "complete" | "timeout" | "refunded";
 
-export class IBCTransferStatusProvider implements TransferStatusProvider {
+export class IbcTransferStatusProvider implements TransferStatusProvider {
   readonly keyPrefix = IbcBridgeProvider.ID;
   readonly sourceDisplayName = "IBC Transfer";
   public statusReceiverDelegate?: TransferStatusReceiver;

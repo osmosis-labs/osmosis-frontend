@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "अधिक निकासी विकल्प",
     "convertTo": "में बदलो",
     "recommended": "अनुशंसित",
+    "stepLabels": {
+      "asset": "संपत्ति",
+      "amount": "मात्रा",
+      "review": "समीक्षा"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",

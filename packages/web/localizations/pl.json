@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Więcej opcji wypłat",
     "convertTo": "Konwertuj na",
     "recommended": "Zalecana",
+    "stepLabels": {
+      "asset": "Zaleta",
+      "amount": "Kwota",
+      "review": "Recenzja"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",

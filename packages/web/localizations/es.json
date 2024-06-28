@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Más opciones de retiro",
     "convertTo": "Convertir a",
     "recommended": "Recomendado",
+    "stepLabels": {
+      "asset": "Activo",
+      "amount": "Cantidad",
+      "review": "Revisar"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",

@@ -16,7 +16,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import { BridgeNetworkSelect } from "~/components/bridge/immersive/bridge-network-select";
+import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { BridgeWalletSelect } from "~/components/bridge/immersive/bridge-wallet-select";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
 import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
@@ -941,7 +941,7 @@ const ChainSelectorButton: FunctionComponent<{
         />
       </button>
       {!isNil(chains) && !isNil(onSelectChain) && (
-        <BridgeNetworkSelect
+        <BridgeNetworkSelectModal
           isOpen={isNetworkSelectVisible}
           chains={chains}
           onSelectChain={async (chain) => {

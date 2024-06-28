@@ -16,12 +16,8 @@ jobs:
           echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
 
   frontend-e2e-tests:
-    name: ${{ matrix.env }}
-    needs: setup-matrix
+    name: production
     runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     environment:
       name: prod_swap_test
     steps:
@@ -43,9 +39,9 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests on ${{ matrix.env }}
+      - name: Run Swap tests on production
         env:
-          BASE_URL: ${{ matrix.base-url }}
+          BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
         run: |
           cd packages/web
@@ -55,7 +51,7 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.env }}-e2e-test-results
+          name: production-e2e-test-results
           path: packages/web/playwright-report
       - name: Send Slack alert if test fails
         id: slack
@@ -77,7 +73,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Environment:* ${{ matrix.env }}\n*App URL:* ${{ matrix.base-url }}"
+                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
                   }
                 },
                 {

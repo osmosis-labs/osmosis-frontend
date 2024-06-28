@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
     "convertTo": "Konvertieren zu",
     "recommended": "Empfohlen",
+    "stepLabels": {
+      "asset": "Vermögenswert",
+      "amount": "Menge",
+      "review": "Rezension"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",

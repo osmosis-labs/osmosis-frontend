@@ -6,7 +6,7 @@ import {
   type TokensResponse,
   type TransactionRequest,
 } from "@0xsquid/sdk";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -34,12 +34,12 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -90,42 +90,26 @@ export class SquidBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
+      ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
-        const url = new URL(`${this.apiURL}/v1/route`);
-
-        const amount = new CoinPretty(
-          {
-            coinDecimals: fromAsset.decimals,
-            coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.sourceDenom ?? fromAsset.denom,
-          },
-          fromAmount
-        ).toCoin().amount;
-
         const getRouteParams: SquidGetRouteParams = {
           fromChain: fromChain.chainId.toString(),
           toChain: toChain.chainId.toString(),
           fromAddress,
           toAddress,
-          fromAmount: amount,
+          fromAmount,
           fromToken: fromAsset.address,
           toToken: toAsset.address,
           slippage,
           quoteOnly: false,
+          enableExpress: false,
+          receiveGasOnDestination: false,
         };
 
+        const url = new URL(`${this.apiURL}/v1/route`);
         Object.entries(getRouteParams).forEach(([key, value]) => {
           url.searchParams.append(key, value.toString());
         });
-
-        if (fromChain.chainType === "cosmos") {
-          throw new BridgeQuoteError({
-            errorType: "UnsupportedQuoteError",
-            message:
-              "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
-          });
-        }
-
         const data = await apiClient<RouteResponse>(url.toString(), {
           headers: {
             "x-integrator-id": this.integratorId,
@@ -145,6 +129,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (feeCosts.length > 1 || gasCosts.length > 1) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message:
               "Osmosis FrontEnd only supports a single fee and gas costs",
@@ -153,6 +138,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (!data.route.transactionRequest) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message:
               "Squid failed to generate a transaction request for this quote",
@@ -164,6 +150,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (!aggregatePriceImpact) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "Squid failed to generate a price impact for this quote",
           });
@@ -171,6 +158,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         if (data.route.params.toToken.address !== toAsset.address) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "toAsset mismatch",
           });
@@ -183,6 +171,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           fromAmountUSD === ""
         ) {
           throw new BridgeQuoteError({
+            bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: "USD value not found",
           });
@@ -190,16 +179,12 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            ...fromAsset,
             amount: estimateFromAmount,
-            sourceDenom: fromAsset.sourceDenom,
-            decimals: fromAsset.decimals,
-            denom: fromAsset.denom,
           },
           expectedOutput: {
+            ...toAsset,
             amount: toAmount,
-            sourceDenom: toAsset.sourceDenom ?? toAsset.denom,
-            decimals: toAsset.decimals,
-            denom: toAsset.denom,
             priceImpact: new Dec(aggregatePriceImpact)
               .quo(new Dec(100))
               .toString(),
@@ -209,15 +194,16 @@ export class SquidBridgeProvider implements BridgeProvider {
           transferFee: {
             denom: feeCosts[0].token.symbol,
             amount: feeCosts[0].amount,
+            chainId: feeCosts[0].token.chainId,
             decimals: feeCosts[0].token.decimals,
-            sourceDenom: feeCosts[0].token.symbol,
+            address: feeCosts[0].token.address,
           },
           estimatedTime: estimatedRouteDuration,
           estimatedGasFee: {
             denom: gasCosts[0].token.symbol,
             amount: gasCosts[0].amount,
             decimals: gasCosts[0].token.decimals,
-            sourceDenom: gasCosts[0].token.symbol,
+            address: gasCosts[0].token.address,
           },
           transactionRequest: isEvmTransaction
             ? await this.createEvmTransaction({
@@ -230,14 +216,13 @@ export class SquidBridgeProvider implements BridgeProvider {
             : await this.createCosmosTransaction(transactionRequest.data),
         };
       },
-      ttl: 20 * 1000, // 20 seconds,
     });
   }
 
   async getSupportedAssets({
     chain,
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
     try {
       const [tokens, chains] = await Promise.all([
         this.getTokens(),
@@ -282,7 +267,6 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: c.sourceDenom,
             denom: c.symbol,
             decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
           });
         }
         if (counterparty.chainType === "evm") {
@@ -294,7 +278,6 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: c.sourceDenom,
             denom: c.symbol,
             decimals: c.decimals,
-            sourceDenom: c.sourceDenom,
           });
         }
       }
@@ -335,7 +318,6 @@ export class SquidBridgeProvider implements BridgeProvider {
           denom: variant.symbol,
           address: variant.address,
           decimals: variant.decimals,
-          sourceDenom: variant.address,
         });
       }
 
@@ -372,6 +354,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     if (!squidFromChain) {
       throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
         message: "Error getting approval Tx",
       });
@@ -403,6 +386,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       });
     } catch (e) {
       throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
         errorType: "ApprovalTxError",
         message: `Error creating approval Tx: ${e}`,
       });
@@ -461,6 +445,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer"
       ) {
         throw new BridgeQuoteError({
+          bridgeId: SquidBridgeProvider.ID,
           errorType: "CreateCosmosTxError",
           message:
             "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
@@ -499,6 +484,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       if (error instanceof Error) {
         throw new BridgeQuoteError({
+          bridgeId: SquidBridgeProvider.ID,
           errorType: "CreateCosmosTxError",
           message: error.message,
         });
@@ -518,7 +504,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_chains",
-      ttl: 30 * 60 * 1000, // 30 minutes
+      ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
           const data = await apiClient<ChainsResponse>(
@@ -537,7 +523,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_tokens",
-      ttl: 30 * 60 * 1000, // 30 minutes
+      ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
       getFreshValue: async () => {
         try {
           const data = await apiClient<TokensResponse>(
@@ -604,6 +590,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
+    // TODO get axelar ID for both assets
     const url = new URL(
       this.ctx.env === "mainnet"
         ? "https://app.squidrouter.com/"
