@@ -1,7 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
-import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -10,12 +8,10 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
@@ -25,7 +21,6 @@ import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
-  useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
   useSlippageConfig,
@@ -59,7 +54,6 @@ export interface SwapToolProps {
 
 export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
-    fixedWidth,
     useOtherCurrencies,
     useQueryParams,
     onRequestModalClose,
@@ -94,55 +88,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       forceSwapInPoolId,
       maxSlippage: slippageConfig.slippage.toDec(),
     });
-
-    // const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
-    const [
-      estimateDetailsContentRef,
-      { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
-    ] = useMeasure<HTMLDivElement>();
-
-    // out amount less slippage calculated from slippage config
-    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
-      // Compute ratio of 1 - slippage
-      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
-
-      // Compute out amount less slippage
-      const outAmountLessSlippage =
-        swapState.quote && swapState.toAsset
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
-          : undefined;
-
-      // Compute out fiat amount less slippage
-      const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
-        ? new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
-          )
-        : undefined;
-
-      return { outAmountLessSlippage, outFiatAmountLessSlippage };
-    }, [
-      swapState.quote,
-      swapState.toAsset,
-      slippageConfig.slippage,
-      swapState.tokenOutFiatValue,
-    ]);
-
-    const routesVisDisclosure = useDisclosure();
-
-    const [showQuoteDetails, setShowEstimateDetails] = useState(false);
-
-    /** User has input and there is enough liquidity and routes for given input. */
-    const isQuoteDetailRelevant =
-      swapState.inAmountInput.amount &&
-      !swapState.inAmountInput.amount.toDec().isZero() &&
-      !(swapState.error instanceof NotEnoughLiquidityError) &&
-      !(swapState.error instanceof NoRouteError);
-    // auto collapse on input clear
-    useEffect(() => {
-      if (!isQuoteDetailRelevant && !swapState.isQuoteLoading)
-        setShowEstimateDetails(false);
-    }, [isQuoteDetailRelevant, swapState.isQuoteLoading]);
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
@@ -285,11 +230,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         </span>
       );
     }
-
-    // Only display network fee if it's greater than 0.01 USD
-    const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
-      .toDec()
-      .gte(new Dec(0.01));
 
     const isLoadingMaxButton = useMemo(
       () =>
