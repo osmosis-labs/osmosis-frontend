@@ -110,6 +110,25 @@ export const TokenChartFooter = observer(() => {
       ) : null}
 
       <div className="ml-auto flex gap-2">
+        {assetInfoConfig.mode === "simple" ? (
+          <Select
+            onValueChange={assetInfoConfig.setDataType}
+            defaultValue={assetInfoConfig.dataType}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="price">
+                {t("tokenInfos.chart.price")}
+              </SelectItem>
+              <SelectItem value="volume">
+                {t("tokenInfos.chart.volume")}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        ) : null}
+
         <Button
           size="xsm"
           variant="secondary-outline"
@@ -123,21 +142,6 @@ export const TokenChartFooter = observer(() => {
             ? t("tokenInfos.chart.advanced")
             : t("tokenInfos.chart.simple")}
         </Button>
-        <Select
-          onValueChange={assetInfoConfig.setDataType}
-          defaultValue={assetInfoConfig.dataType}
-          disabled={assetInfoConfig.mode === "advanced"}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="price">{t("tokenInfos.chart.price")}</SelectItem>
-            <SelectItem value="volume">
-              {t("tokenInfos.chart.volume")}
-            </SelectItem>
-          </SelectContent>
-        </Select>
       </div>
     </footer>
   );
