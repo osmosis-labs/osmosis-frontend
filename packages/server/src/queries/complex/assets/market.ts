@@ -5,8 +5,13 @@ import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
-import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
+import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
+import {
+  CoingeckoVsCurrencies,
+  queryCoingeckoCoin,
+  queryCoingeckoCoinIds,
+  queryCoingeckoCoins,
+} from "../../coingecko";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -14,6 +19,7 @@ import {
 } from "../../data-services";
 import { Asset, AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
@@ -22,6 +28,7 @@ export type AssetMarketInfo = Partial<{
   priceChange24h: RatePretty;
   priceChange7d: RatePretty;
   volume24h: PricePretty;
+  liquidity: PricePretty;
 }>;
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -50,6 +57,7 @@ export async function getMarketAsset<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        liquidity: assetMarketActivity?.liquidity,
         priceChange1h: assetMarketActivity?.price1hChange,
         priceChange24h: assetMarketActivity?.price24hChange,
         priceChange7d: assetMarketActivity?.price7dChange,
@@ -103,6 +111,68 @@ async function getAssetMarketCap({
     marketCapsMap.get(coinDenom.toUpperCase()) ??
     (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
   );
+}
+
+const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Fetches coingecko coin data. */
+export async function getAssetCoingeckoCoin({
+  coinGeckoId,
+  currency = "usd",
+}: {
+  coinGeckoId: string;
+  currency?: CoingeckoVsCurrencies;
+}) {
+  return cachified({
+    cache: assetCoingeckoCoinCache,
+    key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
+    ttl: 1000 * 60 * 30, // 15 minutes
+    getFreshValue: async () => {
+      const [coingeckoCoin, volumes] = await Promise.all([
+        captureIfError(() => queryCoingeckoCoin(coinGeckoId)),
+        captureIfError(() =>
+          getCoinGeckoPricesBatchLoader({
+            currency,
+          })
+        ),
+      ]);
+
+      const volume24h = volumes
+        ? (await volumes.load(coinGeckoId)).volume24h
+        : undefined;
+
+      return {
+        links: coingeckoCoin?.links,
+        marketCapRank: coingeckoCoin?.market_cap_rank,
+        totalValueLocked: coingeckoCoin?.market_data.total_value_locked?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.total_value_locked.usd)
+            )
+          : undefined,
+        fullyDilutedValuation: coingeckoCoin?.market_data
+          .fully_diluted_valuation?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.fully_diluted_valuation.usd)
+            )
+          : undefined,
+        circulatingSupply: coingeckoCoin?.market_data.circulating_supply,
+        marketCap: coingeckoCoin?.market_data.market_cap?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.market_cap.usd)
+            )
+          : undefined,
+        volume24h:
+          volume24h !== undefined
+            ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(volume24h))
+            : undefined,
+      };
+    },
+  });
 }
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name

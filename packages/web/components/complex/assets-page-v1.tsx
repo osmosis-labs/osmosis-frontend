@@ -7,10 +7,10 @@ import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { Button, ShowMoreButton } from "~/components/ui/button";
-import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,

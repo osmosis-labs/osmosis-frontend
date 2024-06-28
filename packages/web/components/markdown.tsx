@@ -22,7 +22,7 @@ const MarkdownParagraph: NormalMarkdownComponent<"p"> = ({
   ...props
 }) => {
   return (
-    <p {...props} className="text-body2 font-medium text-osmoverse-300"></p>
+    <p {...props} className="text-body1 font-body1 text-osmoverse-300"></p>
   );
 };
 

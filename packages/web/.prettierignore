@@ -24,3 +24,6 @@ yarn.lock
 
 *.txt
 *.xml
+
+public/tradingview/**/*
+public/datafeeds/**/*

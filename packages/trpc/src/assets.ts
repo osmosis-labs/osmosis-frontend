@@ -8,6 +8,7 @@ import {
   CursorPaginationSchema,
   DEFAULT_VS_CURRENCY,
   getAsset,
+  getAssetCoingeckoCoin,
   getAssetHistoricalPrice,
   getAssetListingDate,
   getAssetMarketActivity,
@@ -137,6 +138,31 @@ export const assetsRouter = createTRPCRouter({
         currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
       };
     }),
+  getMarketAsset: publicProcedure
+    .input(
+      z.object({
+        findMinDenomOrSymbol: z.string(),
+      })
+    )
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const asset = getAsset({
+        ...ctx,
+        anyDenom: findMinDenomOrSymbol,
+      });
+
+      const userAsset = await getAssetWithUserBalance({
+        ...ctx,
+        asset,
+      });
+      const userMarketAsset = await getMarketAsset({
+        asset: userAsset,
+      });
+
+      return {
+        ...userAsset,
+        ...userMarketAsset,
+      };
+    }),
   getUserMarketAsset: publicProcedure
     .input(
       z
@@ -247,6 +273,39 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+    ),
+  getCoingeckoCoin: publicProcedure
+    .input(
+      z.object({
+        coinGeckoId: z.string(),
+      })
+    )
+    .query(({ input: { coinGeckoId } }) =>
+      getAssetCoingeckoCoin({ coinGeckoId })
+    ),
+  getUserBridgeAsset: publicProcedure
+    .input(
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
+        })
+        .merge(UserOsmoAddressSchema)
+    )
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
+
+        const bridgeAsset = getBridgeAsset(ctx.assetLists, asset);
+
+        return await getAssetWithUserBalance({
+          ...ctx,
+          asset: bridgeAsset,
+          userOsmoAddress,
+        });
+      }
     ),
   getUserBridgeAssets: publicProcedure
     .input(

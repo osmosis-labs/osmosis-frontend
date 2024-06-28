@@ -100,6 +100,7 @@ export const poolsRouter = createTRPCRouter({
           search,
           minLiquidityUsd,
           sort: sortInput,
+          denoms,
           types,
           incentiveTypes,
           cursor,
@@ -114,6 +115,7 @@ export const poolsRouter = createTRPCRouter({
               search,
               minLiquidityUsd,
               types,
+              denoms,
             });
             const incentivesPromise = getCachedPoolIncentivesMap();
             const marketMetricsPromise = getCachedPoolMarketMetricsMap();
@@ -146,7 +148,6 @@ export const poolsRouter = createTRPCRouter({
               })
               .filter((pool): pool is NonNullable<typeof pool> => !!pool);
 
-            // won't sort if searching
             if (search) return marketIncentivePools;
             else
               return sort(

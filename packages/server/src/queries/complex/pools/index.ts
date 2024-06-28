@@ -43,6 +43,8 @@ export const PoolFilterSchema = z.object({
   minLiquidityUsd: z.number().optional(),
   /** Only include pools of given type. */
   types: z.array(z.enum(allPooltypes)).optional(),
+  /** Search using exact match with pools denoms */
+  denoms: z.array(z.string()).optional(),
 });
 
 /** Params for filtering pools. */
@@ -104,6 +106,14 @@ export async function getPools(
     ]),
     poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
   }));
+
+  if (params.denoms) {
+    const denoms = params.denoms;
+
+    denomPools = denomPools.filter((denomPool) =>
+      denomPool.coinDenoms.some((denom) => denoms.includes(denom))
+    );
+  }
 
   if (params?.search) {
     // search for an exact match of coinMinimalDenom or pool ID

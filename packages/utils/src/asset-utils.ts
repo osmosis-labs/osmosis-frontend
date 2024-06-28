@@ -55,6 +55,8 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
   coinName: string;
   isUnstable: boolean;
   isVerified: boolean;
+  isAlloyed: boolean;
+  contract?: string;
   sourceDenom: string;
 } {
   const {
@@ -66,6 +68,8 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     name,
     unstable,
     verified,
+    isAlloyed,
+    contract,
     sourceDenom,
   } = assetListAsset;
 
@@ -79,5 +83,7 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
     isVerified: verified,
+    isAlloyed,
+    contract,
   };
 }
