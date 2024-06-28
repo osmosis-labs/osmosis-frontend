@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
     "recommended": "推奨",
+    "stepLabels": {
+      "asset": "資産",
+      "amount": "額",
+      "review": "レビュー"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "預ける資産を選択してください",
+      "titleWithdraw": "引き出す資産を選択してください",
+      "searchAssets": "アセットを検索"
+    },
+    "bridgeNetworkSelect": {
+      "title": "ネットワークを選択",
+      "searchPlaceholder": "サポートされているネットワークを検索"
     },
     "pendingWithdraw": "保留中の撤回",
     "pendingDeposit": "保留中の入金",

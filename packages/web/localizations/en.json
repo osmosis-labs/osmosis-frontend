@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "More withdraw options",
     "convertTo": "Convert to",
     "recommended": "Recommended",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Select an asset to deposit",
+      "titleWithdraw": "Select an asset to withdraw",
+      "searchAssets": "Search assets"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Select network",
+      "searchPlaceholder": "Search supported networks"
     },
     "pendingWithdraw": "Pending withdraw",
     "pendingDeposit": "Pending deposit",

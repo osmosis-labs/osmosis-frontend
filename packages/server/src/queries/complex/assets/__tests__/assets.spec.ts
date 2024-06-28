@@ -1,5 +1,5 @@
 import { AssetLists as MockAssetLists } from "../../../__tests__/mock-asset-lists";
-import { getAsset, getAssets } from "../index";
+import { getAsset, getAssets, getAssetWithVariants } from "../index";
 
 describe("getAssets", () => {
   describe("search", () => {
@@ -83,5 +83,128 @@ describe("getAsset", () => {
     expect(() =>
       getAsset({ assetLists: MockAssetLists, anyDenom: "NON_EXISTING_DENOM" })
     ).toThrow();
+  });
+});
+
+describe("getAssetWithVariants", () => {
+  it("should return the asset with its variants, with the canonical asset first", () => {
+    const result = getAssetWithVariants({
+      assetLists: MockAssetLists,
+      anyDenom: "USDC",
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "coinDecimals": 6,
+          "coinDenom": "USDC",
+          "coinGeckoId": "usd-coin",
+          "coinImageUrl": "/tokens/generated/usdc.svg",
+          "coinMinimalDenom": "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          "coinName": "USDC",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "USDC.axl",
+          "coinGeckoId": "axlusdc",
+          "coinImageUrl": "/tokens/generated/usdc.axl.svg",
+          "coinMinimalDenom": "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+          "coinName": "USD Coin (Axelar)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "polygon.USDC.axl",
+          "coinGeckoId": "usd-coin",
+          "coinImageUrl": "/tokens/generated/polygon.usdc.axl.svg",
+          "coinMinimalDenom": "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A",
+          "coinName": "USD Coin (Polygon)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "avalanche.USDC.axl",
+          "coinGeckoId": "usd-coin",
+          "coinImageUrl": "/tokens/generated/avalanche.usdc.axl.svg",
+          "coinMinimalDenom": "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C",
+          "coinName": "USD Coin (Avalanche)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "USDC.grv",
+          "coinGeckoId": "gravity-bridge-usdc",
+          "coinImageUrl": "/tokens/generated/usdc.grv.svg",
+          "coinMinimalDenom": "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E",
+          "coinName": "USDC (Gravity Bridge)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "USDC.wh",
+          "coinGeckoId": undefined,
+          "coinImageUrl": "/tokens/generated/usdc.wh.svg",
+          "coinMinimalDenom": "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695",
+          "coinName": "USD Coin (Wormhole)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+        {
+          "coinDecimals": 6,
+          "coinDenom": "solana.USDC.wh",
+          "coinGeckoId": undefined,
+          "coinImageUrl": "/tokens/generated/solana.usdc.wh.svg",
+          "coinMinimalDenom": "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45",
+          "coinName": "Solana USD Coin (Wormhole)",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "USDC",
+        },
+      ]
+    `);
+  });
+
+  it("should throw an error if the asset is not found", () => {
+    expect(() =>
+      getAssetWithVariants({
+        assetLists: MockAssetLists,
+        anyDenom: "unotexist",
+      })
+    ).toThrow("unotexist not found in asset list");
+  });
+
+  it("Should still return assets even if they have no variants", () => {
+    expect(
+      getAssetWithVariants({
+        assetLists: MockAssetLists,
+        anyDenom: "ATOM",
+      })
+    ).toMatchInlineSnapshot(`
+      [
+        {
+          "coinDecimals": 6,
+          "coinDenom": "ATOM",
+          "coinGeckoId": "cosmos",
+          "coinImageUrl": "/tokens/generated/atom.svg",
+          "coinMinimalDenom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          "coinName": "Cosmos Hub",
+          "isUnstable": false,
+          "isVerified": true,
+          "variantGroupKey": "ATOM",
+        },
+      ]
+    `);
   });
 });

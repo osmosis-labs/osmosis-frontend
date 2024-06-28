@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
     "convertTo": "Konvertieren zu",
     "recommended": "Empfohlen",
+    "stepLabels": {
+      "asset": "Vermögenswert",
+      "amount": "Menge",
+      "review": "Rezension"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
+      "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",
+      "searchAssets": "Assets suchen"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Netzwerk auswählen",
+      "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     },
     "pendingWithdraw": "Ausstehender Auszug",
     "pendingDeposit": "Ausstehende Einzahlung",

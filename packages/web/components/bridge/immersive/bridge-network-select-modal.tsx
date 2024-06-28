@@ -4,45 +4,43 @@ import React, { useMemo, useState } from "react";
 import { SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { api } from "~/utils/trpc";
 
-export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
-  const [query, setQuery] = useState("");
-  const {
-    data: chainsPages,
-    hasNextPage,
-    isLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = api.edge.chains.getChains.useInfiniteQuery(
-    {
-      limit: 50,
-      search: query,
-    },
-    {
-      enabled: modalProps.isOpen,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialCursor: 0,
-      keepPreviousData: true,
+export const BridgeNetworkSelectModal = (modalProps: ModalBaseProps) => {
+  const { t } = useTranslation();
 
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
+  const [query, setQuery] = useState("");
+  const { data, hasNextPage, isLoading, isFetchingNextPage, fetchNextPage } =
+    api.edge.chains.getChains.useInfiniteQuery(
+      {
+        limit: 50,
+        search: query,
       },
-    }
-  );
+      {
+        enabled: modalProps.isOpen,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+        keepPreviousData: true,
+
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const chains = useMemo(
-    () => chainsPages?.pages.flatMap((page) => page?.items) ?? [],
-    [chainsPages]
+    () => data?.pages.flatMap((page) => page?.items) ?? [],
+    [data]
   );
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
 
   return (
     <ModalBase
-      title="Select network"
+      title={t("transfer.bridgeNetworkSelect.title")}
       className="!max-w-[30rem]"
       {...modalProps}
     >
@@ -51,7 +49,7 @@ export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
           setQuery(nextValue);
         }, 300)}
         className="my-4 flex-shrink-0"
-        placeholder="Search supported networks"
+        placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
         size="full"
       />
       <div className="flex flex-col gap-1">

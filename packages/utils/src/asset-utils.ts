@@ -1,4 +1,4 @@
-import type { Asset, AssetList, Currency } from "@osmosis-labs/types";
+import type { Asset, AssetList, MinimalAsset } from "@osmosis-labs/types";
 
 /** Find asset in asset list config given any of the available identifiers. */
 export function getAssetFromAssetList({
@@ -50,13 +50,7 @@ export function getAssetFromAssetList({
 
 /** Convert an asset list asset into an asset with minimal content and that
  *  is compliant with the `Currency` type. */
-export function makeMinimalAsset(assetListAsset: Asset): Currency & {
-  coinGeckoId: string | undefined;
-  coinName: string;
-  isUnstable: boolean;
-  isVerified: boolean;
-  sourceDenom: string;
-} {
+export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
   const {
     decimals,
     symbol,
@@ -66,7 +60,7 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     name,
     unstable,
     verified,
-    sourceDenom,
+    variantGroupKey,
   } = assetListAsset;
 
   return {
@@ -75,9 +69,9 @@ export function makeMinimalAsset(assetListAsset: Asset): Currency & {
     coinMinimalDenom,
     coinDecimals: decimals,
     coinGeckoId: coingeckoId,
-    sourceDenom,
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
     isVerified: verified,
+    variantGroupKey,
   };
 }

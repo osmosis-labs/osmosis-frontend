@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "अधिक निकासी विकल्प",
     "convertTo": "में बदलो",
     "recommended": "अनुशंसित",
+    "stepLabels": {
+      "asset": "संपत्ति",
+      "amount": "मात्रा",
+      "review": "समीक्षा"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "अपने {asset} को {chain} वापस लेने (उर्फ “ब्रिज”) के लिए निम्नलिखित वैकल्पिक प्रदाताओं में से चुनें।",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "जमा करने के लिए एक परिसंपत्ति का चयन करें",
+      "titleWithdraw": "निकासी के लिए एक परिसंपत्ति का चयन करें",
+      "searchAssets": "संपत्ति खोजें"
+    },
+    "bridgeNetworkSelect": {
+      "title": "नेटवर्क चुनें",
+      "searchPlaceholder": "समर्थित नेटवर्क खोजें"
     },
     "pendingWithdraw": "लंबित निकासी",
     "pendingDeposit": "लंबित जमा",

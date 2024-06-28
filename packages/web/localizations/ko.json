@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "더 많은 인출 옵션",
     "convertTo": "로 변환하다",
     "recommended": "추천",
+    "stepLabels": {
+      "asset": "유산",
+      "amount": "양",
+      "review": "검토"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
       "titleWithdraw": "더 많은 인출 옵션",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "귀하의 {asset} {chain} 으로 철회(일명 \"브리지\")하려면 다음 대체 제공자 중에서 선택하세요. .",
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "입금할 자산을 선택하세요",
+      "titleWithdraw": "출금할 자산을 선택하세요",
+      "searchAssets": "자산 검색"
+    },
+    "bridgeNetworkSelect": {
+      "title": "네트워크 선택",
+      "searchPlaceholder": "지원되는 네트워크 검색"
     },
     "pendingWithdraw": "출금 대기 중",
     "pendingDeposit": "입금 대기 중",

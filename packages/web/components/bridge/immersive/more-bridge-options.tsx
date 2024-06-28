@@ -1,3 +1,4 @@
+import { MinimalAsset } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React from "react";
@@ -11,10 +12,11 @@ import { api } from "~/utils/trpc";
 
 interface MoreBridgeOptionsProps extends ModalBaseProps {
   type: "deposit" | "withdraw";
+  asset: MinimalAsset;
 }
 
 export const MoreBridgeOptions = observer(
-  ({ type, ...modalProps }: MoreBridgeOptionsProps) => {
+  ({ type, asset, ...modalProps }: MoreBridgeOptionsProps) => {
     const {
       accountStore,
       chainStore: {
@@ -24,11 +26,7 @@ export const MoreBridgeOptions = observer(
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const { t } = useTranslation();
 
-    // TODO: Use context state to get the fromAsset, toAsset, fromChain, and toChain
-    const { data: asset, isLoading: isLoadingAsset } =
-      api.edge.assets.getAssetWithPrice.useQuery({
-        findMinDenomOrSymbol: "USDC",
-      });
+    // TODO: Get fromChain, toChain, and address from props after supportTokens.
     const { data: externalUrlsData, isLoading: isLoadingExternalUrls } =
       api.bridgeTransfer.getExternalUrls.useQuery(
         {
@@ -64,7 +62,7 @@ export const MoreBridgeOptions = observer(
         className="!max-w-[30rem]"
         {...modalProps}
       >
-        <h1 className="body1 py-4 text-center text-osmoverse-300">
+        <p className="body1 py-4 text-center text-osmoverse-300">
           {t(
             type === "deposit"
               ? "transfer.moreBridgeOptions.descriptionDeposit"
@@ -74,9 +72,9 @@ export const MoreBridgeOptions = observer(
               chain: prettyChainName,
             }
           )}
-        </h1>
+        </p>
         <div className="flex flex-col gap-1 pt-4">
-          {isLoadingExternalUrls || isLoadingAsset ? (
+          {isLoadingExternalUrls ? (
             <>
               {new Array(3).fill(undefined).map((_, i) => (
                 <SkeletonLoader key={i} className="h-[76px] w-full" />

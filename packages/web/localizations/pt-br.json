@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Mais opções de retirada",
     "convertTo": "Converter para",
     "recommended": "Recomendado",
+    "stepLabels": {
+      "asset": "Ativo",
+      "amount": "Quantia",
+      "review": "Análise"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",
       "titleWithdraw": "Mais opções de retirada",
@@ -929,6 +934,15 @@
       "descriptionWithdraw": "Escolha um dos seguintes provedores alternativos para retirar (também conhecido como “ponte”) seu {asset} para {chain} .",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Selecione um ativo para depositar",
+      "titleWithdraw": "Selecione um ativo para retirar",
+      "searchAssets": "Pesquisar ativos"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Selecione a rede",
+      "searchPlaceholder": "Pesquisar redes suportadas"
     },
     "pendingWithdraw": "Retirada pendente",
     "pendingDeposit": "Depósito pendente",

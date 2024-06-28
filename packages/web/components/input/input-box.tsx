@@ -14,6 +14,8 @@ export interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
+type ClassVariants = "label" | "input" | "trailingSymbol";
+
 interface Props
   extends Optional<InputProps<string>, "currentValue">,
     Disableable,
@@ -29,9 +31,11 @@ interface Props
   clearButton?: boolean;
   /** Display a symbol after the input box, ex: '%'. */
   trailingSymbol?: React.ReactNode;
+  /** @deprecated Use 'classes' instead */
   inputClassName?: string;
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
+  classes?: Partial<Record<ClassVariants, string>>;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
@@ -46,6 +50,7 @@ export const InputBox: FunctionComponent<Props> = ({
   labelButtons = [],
   trailingSymbol,
   inputClassName,
+  classes,
   disabled = false,
   className,
   isAutosize,
@@ -77,7 +82,10 @@ export const InputBox: FunctionComponent<Props> = ({
       )}
     >
       <label
-        className="flex w-full shrink grow items-center"
+        className={classNames(
+          "flex w-full shrink grow items-center",
+          classes?.label
+        )}
         htmlFor="text-input"
       >
         {isAutosize ? (
@@ -110,6 +118,7 @@ export const InputBox: FunctionComponent<Props> = ({
                 "float-right text-right": rightEntry,
                 "pr-1": !trailingSymbol,
               },
+              classes?.input,
               inputClassName
             )}
             value={currentValue}
@@ -129,7 +138,9 @@ export const InputBox: FunctionComponent<Props> = ({
             autoFocus={autoFocus}
           />
         )}
-        {trailingSymbol && <span>{trailingSymbol}</span>}
+        {trailingSymbol && (
+          <span className={classes?.trailingSymbol}>{trailingSymbol}</span>
+        )}
       </label>
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&

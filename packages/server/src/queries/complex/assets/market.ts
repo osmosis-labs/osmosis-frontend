@@ -1,5 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetList, Chain } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -12,7 +12,7 @@ import {
   queryTokenMarketCaps,
   TokenData,
 } from "../../data-services";
-import { Asset, AssetFilter, getAssets } from ".";
+import { AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 
 export type AssetMarketInfo = Partial<{
@@ -26,7 +26,7 @@ export type AssetMarketInfo = Partial<{
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
-export async function getMarketAsset<TAsset extends Asset>({
+export async function getMarketAsset<TAsset extends MinimalAsset>({
   asset,
 }: {
   asset: TAsset;
@@ -63,7 +63,7 @@ export async function getMarketAsset<TAsset extends Asset>({
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
  *  If no assets provided, they will be fetched and passed the given search params. */
-export async function mapGetMarketAssets<TAsset extends Asset>({
+export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   ...params
 }: {
