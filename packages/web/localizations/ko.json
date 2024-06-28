@@ -1135,8 +1135,9 @@
     "older": "이전",
     "newer": "최신"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "주문 검토",
+    "tradeDetails": "거래내역",
     "marketOrder": {
       "title": "시장가 주문",
       "description": "가장 좋은 가격으로 즉시 구매하세요"
@@ -1148,6 +1149,47 @@
     "recurringOrder": {
       "title": "반복 주문",
       "description": "시간이 지남에 따라 평균 가격으로 구매"
-    }
+    },
+    "aboveMarket": {
+      "title": "시장가보다 높은 가격 제한",
+      "description": "계속 진행하시면 귀하의 주문은 시장가로 시장가 주문으로 처리됩니다."
+    },
+    "belowMarket": {
+      "title": "가격을 시장가 이하로 제한",
+      "description": "계속 진행하시면 귀하의 주문은 시장가로 시장가 주문으로 처리됩니다."
+    },
+    "enterAnAmountTo": "금액을 입력하세요.",
+    "sell": "팔다",
+    "insufficientFunds": "자금 부족",
+    "addFunds": "자금 추가",
+    "watchOut": "조심해! 고래가 들어오다",
+    "selectAnAssetTo": {
+      "buy": "구매할 자산을 선택하세요",
+      "sell": "판매할 자산을 선택하세요"
+    },
+    "payWith": "지불",
+    "receive": "받다",
+    "swapFromAnotherAsset": "다른 자산에서 교체",
+    "connectYourWallet": "지갑을 연결하세요",
+    "toSeeYourBalances": "잔액을 보려면",
+    "searchAssets": "자산 검색",
+    "marketPrice": "시장 가격",
+    "below": "아래에",
+    "above": "~ 위에",
+    "currentPrice": "현재 가격",
+    "whenDenomPriceIs": "{denom} 가격이 다음과 같은 경우",
+    "estimating": "견적",
+    "totalFeesWhenFilled": "충전 시 총 수수료",
+    "at": "~에",
+    "value": "값",
+    "estimatedFees": "예상 수수료",
+    "totalEstimatedFees": "총 예상 수수료",
+    "receiveMin": "최소 수신",
+    "receiveAsset": "자산 수령",
+    "orderType": "주문 유형",
+    "limitPrice": "가격 제한",
+    "moreDetails": "자세한 내용은",
+    "confirm": "확인하다",
+    "expectedRate": "예상비율"
   }
 }

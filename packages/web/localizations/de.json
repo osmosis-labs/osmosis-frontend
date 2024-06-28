@@ -1135,8 +1135,9 @@
     "older": "Älter",
     "newer": "Neuere"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Bestellung überprüfen",
+    "tradeDetails": "Handelsdetails",
     "marketOrder": {
       "title": "Marktauftrag",
       "description": "Sofort zum besten verfügbaren Preis kaufen"
@@ -1148,6 +1149,47 @@
     "recurringOrder": {
       "title": "Wiederkehrende Bestellung",
       "description": "Kaufen Sie zum Durchschnittspreis im Laufe der Zeit"
-    }
+    },
+    "aboveMarket": {
+      "title": "Limitpreis über Marktpreis",
+      "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
+    },
+    "belowMarket": {
+      "title": "Limitpreis unter Marktpreis",
+      "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
+    },
+    "enterAnAmountTo": "Geben Sie einen Betrag ein, um",
+    "sell": "Verkaufen",
+    "insufficientFunds": "Unzureichende Mittel",
+    "addFunds": "Guthaben hinzufügen",
+    "watchOut": "Achtung, Wal im Anmarsch",
+    "selectAnAssetTo": {
+      "buy": "Wählen Sie einen Vermögenswert zum Kauf aus",
+      "sell": "Wählen Sie einen Vermögenswert zum Verkauf aus"
+    },
+    "payWith": "Bezahlen mit",
+    "receive": "Erhalten",
+    "swapFromAnotherAsset": "Swap von einem anderen Vermögenswert",
+    "connectYourWallet": "Verbinde dein Wallet",
+    "toSeeYourBalances": "um Ihre Guthaben einzusehen",
+    "searchAssets": "Assets suchen",
+    "marketPrice": "Marktpreis",
+    "below": "unten",
+    "above": "über",
+    "currentPrice": "derzeitiger Preis",
+    "whenDenomPriceIs": "Wenn der Preis {denom}",
+    "estimating": "Schätzen",
+    "totalFeesWhenFilled": "Gesamtgebühren bei Ausfüllung",
+    "at": "bei",
+    "value": "Wert",
+    "estimatedFees": "Geschätzte Gebühren",
+    "totalEstimatedFees": "Geschätzte Gesamtgebühren",
+    "receiveMin": "Erhalten Sie mindestens",
+    "receiveAsset": "Anlagegut erhalten",
+    "orderType": "Auftragsart",
+    "limitPrice": "Limitpreis",
+    "moreDetails": "Mehr Details",
+    "confirm": "Bestätigen",
+    "expectedRate": "Erwarteter Kurs"
   }
 }

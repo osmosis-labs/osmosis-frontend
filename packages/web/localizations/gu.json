@@ -1135,8 +1135,9 @@
     "older": "જૂની",
     "newer": "નવું"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "રિવ્યૂ ઓર્ડર",
+    "tradeDetails": "વેપારની વિગતો",
     "marketOrder": {
       "title": "માર્કેટ ઓર્ડર",
       "description": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ ખરીદો"
@@ -1148,6 +1149,47 @@
     "recurringOrder": {
       "title": "રિકરિંગ ઓર્ડર",
       "description": "સમય જતાં સરેરાશ કિંમતે ખરીદો"
-    }
+    },
+    "aboveMarket": {
+      "title": "બજાર કિંમત ઉપર મર્યાદા કિંમત",
+      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+    },
+    "belowMarket": {
+      "title": "બજાર કિંમત નીચે કિંમત મર્યાદા",
+      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+    },
+    "enterAnAmountTo": "માટે રકમ દાખલ કરો",
+    "sell": "વેચો",
+    "insufficientFunds": "અપૂરતું ભંડોળ",
+    "addFunds": "ભંડોળ ઉમેરો",
+    "watchOut": "ધ્યાન રાખો! વ્હેલ ઇનકમિંગ",
+    "selectAnAssetTo": {
+      "buy": "ખરીદવા માટે સંપત્તિ પસંદ કરો",
+      "sell": "વેચવા માટે સંપત્તિ પસંદ કરો"
+    },
+    "payWith": "સાથે ચૂકવો",
+    "receive": "પ્રાપ્ત કરો",
+    "swapFromAnotherAsset": "અન્ય સંપત્તિમાંથી સ્વેપ કરો",
+    "connectYourWallet": "તમારું વૉલેટ કનેક્ટ કરો",
+    "toSeeYourBalances": "તમારા બેલેન્સ જોવા માટે",
+    "searchAssets": "સંપત્તિ શોધો",
+    "marketPrice": "બજાર કિંમત",
+    "below": "નીચે",
+    "above": "ઉપર",
+    "currentPrice": "વર્તમાન ભાવ",
+    "whenDenomPriceIs": "જ્યારે {denom} કિંમત હોય છે",
+    "estimating": "અંદાજ",
+    "totalFeesWhenFilled": "ભરવામાં આવે ત્યારે કુલ ફી",
+    "at": "ખાતે",
+    "value": "મૂલ્ય",
+    "estimatedFees": "અંદાજિત ફી",
+    "totalEstimatedFees": "કુલ અંદાજિત ફી",
+    "receiveMin": "ન્યૂનતમ પ્રાપ્ત કરો",
+    "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
+    "orderType": "ઓર્ડરનો પ્રકાર",
+    "limitPrice": "મર્યાદા કિંમત",
+    "moreDetails": "વધુ વિગતો",
+    "confirm": "પુષ્ટિ કરો",
+    "expectedRate": "અપેક્ષિત દર"
   }
 }
