@@ -49,9 +49,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
           onExceeds1CTNetworkFeeLimit: ({ finish, continueTx }) => {
             displayToast(
               {
-                titleTranslationKey: t(
-                  "oneClickTrading.toast.networkFeeTooHigh"
-                ),
+                titleTranslationKey: "oneClickTrading.toast.networkFeeTooHigh",
                 captionElement: (
                   <div className="flex flex-col items-start gap-2">
                     <Button

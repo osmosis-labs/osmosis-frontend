@@ -51,10 +51,10 @@ const Home = () => {
               height="725.6817"
             />
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
+              lowResXlinkHref={"/images/bitcoin-props-low.png"}
+              xlinkHref={"/images/bitcoin-props.png"}
               x={"61"}
-              y={"682"}
+              y={"600"}
               width={"448.8865"}
               height={"285.1699"}
             />

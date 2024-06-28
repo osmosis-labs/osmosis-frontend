@@ -146,7 +146,7 @@ function getCachedAssetWithPrice(
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () =>
       apiUtils.edge.assets.getAssetWithPrice.fetch({
-        coinMinimalDenom,
+        findMinDenomOrSymbol: coinMinimalDenom,
       }),
   });
 }

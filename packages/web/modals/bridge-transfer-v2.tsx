@@ -1,13 +1,13 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import {
-  type Bridge,
+import type {
+  Bridge,
   BridgeError,
-  type CosmosBridgeTransactionRequest,
-  type EvmBridgeTransactionRequest,
-  type GetTransferStatusParams,
-  type SourceChain,
-  type SourceChainTokenConfig,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
+  SourceChain,
+  SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
@@ -371,7 +371,7 @@ export const TransferContent: FunctionComponent<
     chainStore,
     accountStore,
     queriesStore,
-    nonIbcBridgeHistoryStore,
+    transferHistoryStore,
   } = useStore();
   const {
     showModalBase,
@@ -491,9 +491,6 @@ export const TransferContent: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      sourceDenom:
-        originCurrency?.coinMinimalDenom ??
-        assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
@@ -511,11 +508,6 @@ export const TransferContent: FunctionComponent<
     source: "counterpartyAccount" as const,
     asset: {
       denom: assetToBridge.balance.denom,
-      sourceDenom:
-        useNativeToken && isDeposit
-          ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
-          : originCurrency?.coinMinimalDenom ??
-            assetToBridge.balance.currency?.coinMinimalDenom!,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
         : sourceChainConfig?.erc20ContractAddress!,
@@ -605,7 +597,7 @@ export const TransferContent: FunctionComponent<
                     {
                       coinDecimals: estimatedGasFee.decimals,
                       coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.sourceDenom,
+                      coinMinimalDenom: estimatedGasFee.address,
                     },
                     new Dec(estimatedGasFee.amount)
                   ).maxDecimals(8)
@@ -615,7 +607,7 @@ export const TransferContent: FunctionComponent<
                 {
                   coinDecimals: transferFee.decimals,
                   coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.sourceDenom,
+                  coinMinimalDenom: transferFee.address,
                 },
                 new Dec(transferFee.amount)
               ).maxDecimals(8),
@@ -624,7 +616,7 @@ export const TransferContent: FunctionComponent<
                 {
                   coinDecimals: expectedOutput.decimals,
                   coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.sourceDenom,
+                  coinMinimalDenom: expectedOutput.address,
                 },
                 new Dec(expectedOutput.amount)
               ),
@@ -780,7 +772,7 @@ export const TransferContent: FunctionComponent<
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
-        nonIbcBridgeHistoryStore.pushTxNow(
+        transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
@@ -790,7 +782,7 @@ export const TransferContent: FunctionComponent<
     },
     [
       inputAmountRaw,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
       originCurrency,
       inputAmount,
       isWithdraw,
@@ -1021,8 +1013,9 @@ export const TransferContent: FunctionComponent<
     } catch (e) {}
   };
 
-  const errors = someError?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === BridgeError.NoQuotesError;
+  const hasNoQuotes = someError?.message.includes(
+    "NoQuotesError" as BridgeError
+  );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 

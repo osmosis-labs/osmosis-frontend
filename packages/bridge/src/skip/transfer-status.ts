@@ -22,7 +22,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly axelarScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
-    this.skipClient = new SkipApiClient();
+    this.skipClient = new SkipApiClient(env);
 
     this.axelarScanBaseUrl =
       env === "mainnet"

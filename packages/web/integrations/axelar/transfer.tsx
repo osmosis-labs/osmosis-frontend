@@ -81,7 +81,7 @@ export const AxelarTransfer: FunctionComponent<
       accountStore,
       queriesStore,
       queriesExternalStore,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
     } = useStore();
     const { t } = useTranslation();
 
@@ -263,7 +263,7 @@ export const AxelarTransfer: FunctionComponent<
     const trackTransferStatus = useCallback(
       (txHash: string) => {
         if (inputAmountRaw !== "") {
-          nonIbcBridgeHistoryStore.pushTxNow(
+          transferHistoryStore.pushTxNow(
             `axelar${txHash}`,
             new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
             isWithdraw,
@@ -272,7 +272,7 @@ export const AxelarTransfer: FunctionComponent<
         }
       },
       [
-        nonIbcBridgeHistoryStore,
+        transferHistoryStore,
         originCurrency,
         inputAmountRaw,
         inputAmount,
