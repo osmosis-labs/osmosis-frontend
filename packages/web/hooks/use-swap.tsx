@@ -827,6 +827,8 @@ function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
@@ -839,6 +841,9 @@ function useSwapAmountInput({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
     enabled: networkFeeQueryEnabled,
+    signOptions: {
+      useOneClickTrading: isOneClickTradingEnabled,
+    },
   });
   const isLoadingCurrentBalanceNetworkFee =
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
