@@ -210,8 +210,9 @@ jobs:
     needs: frontend-e2e-tests
     steps:
       - name: Delete Previous deployments
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
+          debug: true
           script: |
             const deployments = await github.rest.repos.listDeployments({
                owner: context.repo.owner,
