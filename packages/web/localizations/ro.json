@@ -1190,6 +1190,8 @@
     "limitPrice": "Preț limită",
     "moreDetails": "Mai multe detalii",
     "confirm": "A confirma",
-    "expectedRate": "Rata așteptată"
+    "expectedRate": "Rata așteptată",
+    "market": "Piaţă",
+    "limit": "Limită"
   }
 }

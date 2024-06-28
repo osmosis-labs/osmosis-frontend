@@ -1190,6 +1190,8 @@
     "limitPrice": "Limitpreis",
     "moreDetails": "Mehr Details",
     "confirm": "Bestätigen",
-    "expectedRate": "Erwarteter Kurs"
+    "expectedRate": "Erwarteter Kurs",
+    "market": "Markt",
+    "limit": "Grenze"
   }
 }

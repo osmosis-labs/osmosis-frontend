@@ -1190,6 +1190,8 @@
     "limitPrice": "Limit Price",
     "moreDetails": "More details",
     "confirm": "Confirm",
-    "expectedRate": "Expected rate"
+    "expectedRate": "Expected rate",
+    "market": "Market",
+    "limit": "Limit"
   }
 }

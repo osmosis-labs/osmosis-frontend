@@ -1190,6 +1190,8 @@
     "limitPrice": "制限価格",
     "moreDetails": "詳細情報",
     "confirm": "確認する",
-    "expectedRate": "予想レート"
+    "expectedRate": "予想レート",
+    "market": "市場",
+    "limit": "制限"
   }
 }

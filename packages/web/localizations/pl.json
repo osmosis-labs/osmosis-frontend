@@ -1190,6 +1190,8 @@
     "limitPrice": "Cena graniczna",
     "moreDetails": "Więcej szczegółów",
     "confirm": "Potwierdzać",
-    "expectedRate": "Oczekiwana stawka"
+    "expectedRate": "Oczekiwana stawka",
+    "market": "Rynek",
+    "limit": "Limit"
   }
 }

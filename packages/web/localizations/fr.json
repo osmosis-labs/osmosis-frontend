@@ -1190,6 +1190,8 @@
     "limitPrice": "Prix limite",
     "moreDetails": "Plus de détails",
     "confirm": "Confirmer",
-    "expectedRate": "Taux attendu"
+    "expectedRate": "Taux attendu",
+    "market": "Marché",
+    "limit": "Limite"
   }
 }

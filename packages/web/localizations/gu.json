@@ -1190,6 +1190,8 @@
     "limitPrice": "મર્યાદા કિંમત",
     "moreDetails": "વધુ વિગતો",
     "confirm": "પુષ્ટિ કરો",
-    "expectedRate": "અપેક્ષિત દર"
+    "expectedRate": "અપેક્ષિત દર",
+    "market": "બજાર",
+    "limit": "મર્યાદા"
   }
 }

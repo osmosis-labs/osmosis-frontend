@@ -1190,6 +1190,8 @@
     "limitPrice": "Precio límite",
     "moreDetails": "Más detalles",
     "confirm": "Confirmar",
-    "expectedRate": "Expectativa salarial"
+    "expectedRate": "Expectativa salarial",
+    "market": "Mercado",
+    "limit": "Límite"
   }
 }

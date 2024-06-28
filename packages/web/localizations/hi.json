@@ -1190,6 +1190,8 @@
     "limitPrice": "सीमा मूल्य",
     "moreDetails": "अधिक जानकारी",
     "confirm": "पुष्टि करना",
-    "expectedRate": "अपेक्षित दर"
+    "expectedRate": "अपेक्षित दर",
+    "market": "बाज़ार",
+    "limit": "आप LIMIT"
   }
 }

@@ -1190,6 +1190,8 @@
     "limitPrice": "Лимитная цена",
     "moreDetails": "Подробнее",
     "confirm": "Подтверждать",
-    "expectedRate": "Ожидаемая ставка"
+    "expectedRate": "Ожидаемая ставка",
+    "market": "Рынок",
+    "limit": "Лимит"
   }
 }

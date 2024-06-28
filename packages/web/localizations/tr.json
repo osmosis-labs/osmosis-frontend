@@ -1190,6 +1190,8 @@
     "limitPrice": "Limit Fiyatı",
     "moreDetails": "Daha fazla detay",
     "confirm": "Onaylamak",
-    "expectedRate": "Beklenen oran"
+    "expectedRate": "Beklenen oran",
+    "market": "Pazar",
+    "limit": "Sınır"
   }
 }

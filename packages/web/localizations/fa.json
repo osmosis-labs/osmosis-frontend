@@ -1190,6 +1190,8 @@
     "limitPrice": "قیمت محدود",
     "moreDetails": "جزئیات بیشتر",
     "confirm": "تایید",
-    "expectedRate": "نرخ مورد انتظار"
+    "expectedRate": "نرخ مورد انتظار",
+    "market": "بازار",
+    "limit": "حد"
   }
 }

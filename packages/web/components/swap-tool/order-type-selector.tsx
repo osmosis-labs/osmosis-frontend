@@ -54,7 +54,7 @@ export const OrderTypeSelector = () => {
     <Menu as="div" className="relative inline-block">
       <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4">
         <p className="font-semibold text-wosmongton-200">
-          {type === "market" ? "Market" : "Limit"}
+          {type === "market" ? t("limitOrders.market") : t("limitOrders.limit")}
         </p>
         <div className="flex h-6 w-6 items-center justify-center">
           <Icon id="chevron-down" className="h-[7px] w-3 text-wosmongton-200" />
@@ -71,7 +71,9 @@ export const OrderTypeSelector = () => {
       >
         <Menu.Items className="absolute right-0 z-50 mt-3 flex w-[280px] origin-top-right flex-col rounded-xl bg-osmoverse-800">
           <div className="flex items-center border-b border-osmoverse-700 py-2 px-4">
-            <p className="text-subtitle1 font-semibold">Order Type</p>
+            <p className="text-subtitle1 font-semibold">
+              {t("limitOrders.orderType")}
+            </p>
           </div>
           <div className="flex flex-col gap-2 p-2">
             {uiTradeTypes.map(({ id, title, description, icon }) => {

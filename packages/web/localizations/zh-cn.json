@@ -1190,6 +1190,8 @@
     "limitPrice": "限价",
     "moreDetails": "更多细节",
     "confirm": "确认",
-    "expectedRate": "预期利率"
+    "expectedRate": "预期利率",
+    "market": "市场",
+    "limit": "限制"
   }
 }

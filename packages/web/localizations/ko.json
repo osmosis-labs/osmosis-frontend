@@ -1190,6 +1190,8 @@
     "limitPrice": "가격 제한",
     "moreDetails": "자세한 내용은",
     "confirm": "확인하다",
-    "expectedRate": "예상비율"
+    "expectedRate": "예상비율",
+    "market": "시장",
+    "limit": "한계"
   }
 }
