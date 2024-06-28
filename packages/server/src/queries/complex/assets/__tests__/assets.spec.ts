@@ -104,7 +104,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USDC",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "uusdc",
           "variantGroupKey": "USDC",
         },
         {
@@ -116,7 +115,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USD Coin (Axelar)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "uusdc",
           "variantGroupKey": "USDC",
         },
         {
@@ -128,7 +126,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USD Coin (Polygon)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "polygon-uusdc",
           "variantGroupKey": "USDC",
         },
         {
@@ -140,7 +137,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USD Coin (Avalanche)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "avalanche-uusdc",
           "variantGroupKey": "USDC",
         },
         {
@@ -152,7 +148,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USDC (Gravity Bridge)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
           "variantGroupKey": "USDC",
         },
         {
@@ -164,7 +159,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "USD Coin (Wormhole)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
           "variantGroupKey": "USDC",
         },
         {
@@ -176,7 +170,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "Solana USD Coin (Wormhole)",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/HJk1XMDRNUbRrpKkNZYui7SwWDMjXZAsySzqgyNcQoU3",
           "variantGroupKey": "USDC",
         },
       ]
@@ -209,7 +202,6 @@ describe("getAssetWithVariants", () => {
           "coinName": "Cosmos Hub",
           "isUnstable": false,
           "isVerified": true,
-          "sourceDenom": "uatom",
           "variantGroupKey": "ATOM",
         },
       ]
