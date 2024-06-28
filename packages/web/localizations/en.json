@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "Select network",
       "searchPlaceholder": "Search supported networks"
-    }
+    },
+    "pendingWithdraw": "Pending withdraw",
+    "pendingDeposit": "Pending deposit",
+    "completedWithdraw": "Withdraw completed",
+    "completedDeposit": "Deposit completed",
+    "failedWithdraw": "Withdraw failed",
+    "failedDeposit": "Deposit failed",
+    "connectionError": "Connection error"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "नेटवर्क चुनें",
       "searchPlaceholder": "समर्थित नेटवर्क खोजें"
-    }
+    },
+    "pendingWithdraw": "लंबित निकासी",
+    "pendingDeposit": "लंबित जमा",
+    "completedWithdraw": "निकासी पूर्ण हुई",
+    "completedDeposit": "जमा पूर्ण हुआ",
+    "failedWithdraw": "निकासी विफल",
+    "failedDeposit": "जमा विफल",
+    "connectionError": "संपर्क त्रुटि"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

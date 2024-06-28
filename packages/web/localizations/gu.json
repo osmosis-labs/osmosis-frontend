@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "નેટવર્ક પસંદ કરો",
       "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
-    }
+    },
+    "pendingWithdraw": "બાકી ઉપાડ",
+    "pendingDeposit": "બાકી થાપણ",
+    "completedWithdraw": "ઉપાડ પૂર્ણ",
+    "completedDeposit": "ડિપોઝિટ પૂર્ણ",
+    "failedWithdraw": "ઉપાડ નિષ્ફળ",
+    "failedDeposit": "ડિપોઝિટ નિષ્ફળ",
+    "connectionError": "કનેક્શન ભૂલ"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

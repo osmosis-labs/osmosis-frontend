@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "Выберите сеть",
       "searchPlaceholder": "Поиск поддерживаемых сетей"
-    }
+    },
+    "pendingWithdraw": "Ожидание вывода",
+    "pendingDeposit": "Ожидается депозит",
+    "completedWithdraw": "Вывод завершен",
+    "completedDeposit": "Депозит завершен",
+    "failedWithdraw": "Вывести не удалось",
+    "failedDeposit": "Депозит не выполнен",
+    "connectionError": "Ошибка подключения"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",
