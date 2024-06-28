@@ -294,7 +294,7 @@ export const TokenStats = observer(() => {
               variant="link"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex gap-2 px-0 text-wosmongton-300 hover:no-underline"
+              className="flex gap-2 px-0 !text-subtitle1 font-subtitle1 text-wosmongton-300 hover:no-underline"
             >
               <div>
                 {isExpanded
