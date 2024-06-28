@@ -2,7 +2,7 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 import { approxSqrt } from "../../../utils";
 import { maxSpotPrice, maxTick, minSpotPrice } from "../const";
-import { priceToTick, tickToSqrtPrice } from "../tick";
+import { priceToTick, tickToPrice, tickToSqrtPrice } from "../tick";
 
 // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/tick_test.go#L30
 describe("tickToSqrtPrice", () => {
@@ -213,6 +213,38 @@ describe("priceToTick", () => {
         console.error(e);
         expect(expectedError).toBeDefined();
       }
+    });
+  });
+});
+
+describe("tickToPrice", () => {
+  const testCases: Record<string, { tick: Int; priceExpected: Dec }> = {
+    "Tick Zero": {
+      tick: new Int("0"),
+      priceExpected: new Dec("1"),
+    },
+    "Large Positive Tick": {
+      tick: new Int("1000000"),
+      priceExpected: new Dec("2"),
+    },
+    "Large Negative Tick": {
+      tick: new Int("-5000000"),
+      priceExpected: new Dec("0.5"),
+    },
+    "Max Tick": {
+      tick: new Int("182402823"),
+      priceExpected: new Dec("340282300000000000000"),
+    },
+    "Min Tick": {
+      tick: new Int("-108000000"),
+      priceExpected: new Dec("0.000000000001"),
+    },
+  };
+
+  Object.values(testCases).forEach(({ tick, priceExpected }, i) => {
+    it(Object.keys(testCases)[i], () => {
+      const price = tickToPrice(tick);
+      expect(price.toString()).toEqual(priceExpected.toString());
     });
   });
 });

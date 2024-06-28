@@ -338,7 +338,13 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
+    .query(({ input, ctx }) =>
+      getUserAssetsTotal({
+        ...ctx,
+        ...input,
+        userOsmoAddress: input.userOsmoAddress,
+      })
+    ),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({

@@ -4,6 +4,7 @@ export * from "./chains";
 export * from "./concentrated-liquidity";
 export * from "./earn";
 export * from "./get-timeout-height";
+export * from "./orderbooks";
 export * from "./pools";
 export * from "./staking";
 export * from "./swap-routers";

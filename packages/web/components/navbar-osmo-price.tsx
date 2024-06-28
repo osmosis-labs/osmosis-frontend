@@ -26,7 +26,6 @@ export const NavbarOsmoPrice = observer(() => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
   const { fiatRampSelection } = useBridge();
-
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
