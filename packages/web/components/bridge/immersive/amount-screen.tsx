@@ -842,7 +842,7 @@ export const AmountScreen = observer(
             </Menu>
           )}
 
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Spinner className="text-wosmongton-500" />
               <span className="body1 text-osmoverse-300">
@@ -853,7 +853,7 @@ export const AmountScreen = observer(
             <span className="body1 text-osmoverse-300">
               {t("transfer.calculatingFees")}
             </span>
-          </div>
+          </div> */}
 
           <div className="flex flex-col items-center gap-4">
             {!walletConnected ? (

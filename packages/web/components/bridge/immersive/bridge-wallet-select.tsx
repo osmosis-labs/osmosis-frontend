@@ -253,14 +253,14 @@ const WalletButton: React.FC<{
   return (
     <div
       className={classNames(
-        "button flex w-full items-center justify-between rounded-xl px-3 font-bold transition-colors hover:bg-osmoverse-700",
+        "flex w-full cursor-pointer items-center justify-between rounded-xl px-3 transition-colors hover:bg-osmoverse-700 active:bg-osmoverse-700/50",
         "col-span-2 py-3 font-normal",
         "sm:w-fit sm:flex-col",
         "disabled:opacity-70"
       )}
       onClick={onClick}
     >
-      <button className="flex items-center gap-3">
+      <button className="subtitle1 flex items-center gap-3">
         {typeof icon === "string" && (
           <img src={icon} width={40} height={40} alt="Wallet logo" />
         )}
