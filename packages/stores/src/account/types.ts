@@ -73,7 +73,7 @@ export type CosmosRegistryWallet = Omit<Wallet, "logo"> & {
    * For example, if "notifications" is included in the array, the app will display
    * the notifications button.
    */
-  features: Array<"notifications">;
+  features: Array<"notifications" | "alt-fee-tokens">;
 
   signOptions?: SignOptions;
 };
