@@ -1,4 +1,4 @@
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@keplr-wallet/unit";
 import type { PoolDataRange, PoolIncentives } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
@@ -39,7 +39,8 @@ export const AprBreakdown: FunctionComponent<
               <p>OSMO {t("pools.aprBreakdown.boost")}</p>
               <Icon id="boost" color={theme.colors.bullish[500]} />
             </div>
-            {osmosis.upper.toDec().equals(osmosis.lower.toDec()) ? (
+            {osmosis.upper.maxDecimals(1).toString() ===
+            osmosis.lower.maxDecimals(1).toString() ? (
               <p>{osmosis.upper.maxDecimals(1).toString()}</p>
             ) : (
               <p>
@@ -61,7 +62,8 @@ export const AprBreakdown: FunctionComponent<
               <p>{t("pools.aprBreakdown.externalBoost")}</p>
               <Icon id="boost" color={theme.colors.bullish[500]} />
             </div>
-            {boost.upper.toDec().equals(boost.lower.toDec()) ? (
+            {boost.upper.maxDecimals(1).toString() ===
+            boost.lower.maxDecimals(1).toString() ? (
               <p>{boost.upper.maxDecimals(1).toString()}</p>
             ) : (
               <p>
@@ -90,7 +92,8 @@ export const AprBreakdown: FunctionComponent<
           ) : (
             <p>{t("pools.aprBreakdown.total")}</p>
           )}
-          {total.upper.toDec().equals(total.lower.toDec()) ? (
+          {total.upper.maxDecimals(1).toString() ===
+          total.lower.maxDecimals(1).toString() ? (
             <p>{total.upper.maxDecimals(1).toString()}</p>
           ) : (
             <p>
@@ -110,7 +113,8 @@ const BreakdownRow: FunctionComponent<{
 }> = ({ label, value }) => (
   <div className="body2 flex w-full place-content-between items-center px-3">
     <p className="text-white-full">{label}</p>
-    {value.lower?.toDec().equals(value.upper?.toDec() ?? new Dec(0)) ? (
+    {value.lower?.maxDecimals(1).toString() ===
+    value.upper?.maxDecimals(1).toString() ? (
       <p className="text-osmoverse-200">
         {value.upper?.maxDecimals(1).toString()}
       </p>
