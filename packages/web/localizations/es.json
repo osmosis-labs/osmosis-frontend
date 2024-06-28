@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "Seleccione la red",
       "searchPlaceholder": "Buscar redes compatibles"
-    }
+    },
+    "pendingWithdraw": "A la espera de Retiro",
+    "pendingDeposit": "Deposito pendiente",
+    "completedWithdraw": "Retiro completado",
+    "completedDeposit": "Depósito completado",
+    "failedWithdraw": "Retiro fallido",
+    "failedDeposit": "El depósito falló",
+    "connectionError": "Error de conexión"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

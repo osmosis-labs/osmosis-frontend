@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "Selecteaza reteaua",
       "searchPlaceholder": "Căutați rețele acceptate"
-    }
+    },
+    "pendingWithdraw": "În așteptarea retragerii",
+    "pendingDeposit": "Depunerea în așteptare",
+    "completedWithdraw": "Retragere finalizată",
+    "completedDeposit": "Depozit finalizat",
+    "failedWithdraw": "Retragerea a eșuat",
+    "failedDeposit": "Depunerea nu a reușit",
+    "connectionError": "Eroare de conexiune"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

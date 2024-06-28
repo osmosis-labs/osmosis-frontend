@@ -943,7 +943,14 @@
     "bridgeNetworkSelect": {
       "title": "Netzwerk auswählen",
       "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
-    }
+    },
+    "pendingWithdraw": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehende Einzahlung",
+    "completedWithdraw": "Auszahlung abgeschlossen",
+    "completedDeposit": "Einzahlung abgeschlossen",
+    "failedWithdraw": "Auszahlung fehlgeschlagen",
+    "failedDeposit": "Einzahlung fehlgeschlagen",
+    "connectionError": "Verbindungsfehler"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
