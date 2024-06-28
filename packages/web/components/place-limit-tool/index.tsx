@@ -118,21 +118,26 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
             />
           </div>
-          {type === "limit" ? (
-            <LimitPriceSelector
-              swapState={swapState}
-              orderDirection={orderDirection}
-            />
-          ) : (
-            <div className="inline-flex items-center gap-1 py-3.5">
-              <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
-                {swapState.quoteDenom}
-              </span>
-            </div>
-          )}
-          <LimitTradeDetails swapState={swapState} />
+          <>
+            {type === "limit" && (
+              <>
+                <LimitPriceSelector
+                  swapState={swapState}
+                  orderDirection={orderDirection}
+                />
+                <LimitTradeDetails swapState={swapState} />
+              </>
+            )}
+            {type === "market" && (
+              <div className="inline-flex items-center gap-1 py-3.5">
+                <span className="body2 text-osmoverse-300">
+                  {swapState.baseDenom} {t("assets.table.price").toLowerCase()}{" "}
+                  ≈ {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
+                  {swapState.quoteDenom}
+                </span>
+              </div>
+            )}
+          </>
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>

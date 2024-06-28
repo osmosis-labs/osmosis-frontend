@@ -2,7 +2,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText, isNil } from "@osmosis-labs/utils";
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -19,9 +19,8 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
-import { SplitRoute } from "~/components/swap-tool/split-route";
+import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
@@ -501,7 +500,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </div>
-            <SkeletonLoader
+            {/*<SkeletonLoader
               className={classNames(
                 "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
                 showQuoteDetails ? "py-6" : "py-[10px]"
@@ -520,7 +519,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 !swapState.isSpotPriceQuoteLoading
               }
             >
-              {/* TODO - move this custom button to our own button component */}
+              <>
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -720,7 +719,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 )}
               </div>
-            </SkeletonLoader>
+            </SkeletonLoader>*/}
+            <TradeDetails swapState={swapState} />
           </div>
           {!isNil(warningText) && (
             <div
