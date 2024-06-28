@@ -10,7 +10,7 @@ import { Icon } from "~/components/assets";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useControllableState } from "~/hooks/use-controllable-state";
@@ -54,6 +54,7 @@ export const TokenSelectLimit: FunctionComponent<
     disabled,
     orderDirection,
   }) => {
+    const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const router = useRouter();
     const { logEvent } = useAmplitudeAnalytics();
@@ -154,7 +155,8 @@ export const TokenSelectLimit: FunctionComponent<
           <div className="flex h-6 items-center justify-center">
             {showBaseBalance && (
               <div className="flex text-body1 text-osmoverse-300">
-                {formatPretty(baseFiatBalance)} available
+                {formatPretty(baseFiatBalance)}{" "}
+                {t("addLiquidity.available").toLowerCase()}
               </div>
             )}
             {tokenSelectionAvailable && (
@@ -175,8 +177,8 @@ export const TokenSelectLimit: FunctionComponent<
         <TokenSelectModalLimit
           headerTitle={
             orderDirection === "ask"
-              ? "Select an asset to sell"
-              : "Select an asset to buy"
+              ? t("limitOrders.selectAnAssetTo.sell")
+              : t("limitOrders.selectAnAssetTo.buy")
           }
           isOpen={isSelectOpen}
           onClose={() => setIsSelectOpen(false)}

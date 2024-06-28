@@ -10,7 +10,12 @@ import { useLatest } from "react-use";
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
-import { useFilteredData, useWalletSelect, useWindowKeyActions } from "~/hooks";
+import {
+  useFilteredData,
+  useTranslation,
+  useWalletSelect,
+  useWindowKeyActions,
+} from "~/hooks";
 import { useConst } from "~/hooks/use-const";
 import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
 import { useKeyActions } from "~/hooks/use-key-actions";
@@ -63,6 +68,8 @@ export const TokenSelectModalLimit: FunctionComponent<{
     fetchNextPageAssets = () => {},
     headerTitle,
   }) => {
+    const { t } = useTranslation();
+
     const { userSettings, accountStore } = useStore();
     const { onOpenWalletSelect } = useWalletSelect();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
@@ -251,9 +258,11 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   }
                   className="body1 font-semibold text-wosmongton-300"
                 >
-                  Connect your wallet
+                  {t("limitOrders.connectYourWallet")}
                 </button>
-                <p className="font-semibold">to see your balances</p>
+                <p className="font-semibold">
+                  {t("limitOrders.toSeeYourBalances")}
+                </p>
               </div>
             )}
             <div className="flex flex-col">
@@ -269,7 +278,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                     <input
                       autoFocus
                       onChange={(e) => onSearch(e.target.value)}
-                      placeholder="Search assets"
+                      placeholder={t("limitOrders.searchAssets")}
                       className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
                     />
                   </div>
@@ -360,7 +369,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                               <div className="h-12 w-12 rounded-full">
                                 <Image
                                   src={coinImageUrl}
-                                  alt="token icon"
+                                  alt={`${coinDenom} icon`}
                                   width={48}
                                   height={48}
                                 />

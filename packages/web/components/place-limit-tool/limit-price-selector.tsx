@@ -55,7 +55,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       return formatPretty(priceState.priceFiat);
     }
     return priceState.percentAdjusted.isZero()
-      ? `market price`
+      ? t("limitOrders.marketPrice")
       : `${
           priceState.percentAdjusted.isNegative()
             ? priceState.percentAdjusted
@@ -69,15 +69,21 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 .round()
                 .toString()
         }% ${
-          priceState.percentAdjusted.isNegative() ? "below" : "above"
-        } current price`;
-  }, [inputMode, priceState.priceFiat, priceState.percentAdjusted]);
+          priceState.percentAdjusted.isNegative()
+            ? t("limitOrders.below")
+            : t("limitOrders.above")
+        } ${t("limitOrders.currentPrice")}`;
+  }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const inputSuffix = useMemo(() => {
     return inputMode === InputMode.Price
       ? `= 1 ${swapState.baseAsset?.coinDenom}`
-      : `% ${orderDirection === "bid" ? "below" : "above"} current price`;
-  }, [inputMode, swapState.baseAsset, orderDirection]);
+      : `% ${
+          orderDirection === "bid"
+            ? t("limitOrders.below")
+            : t("limitOrders.above")
+        } ${t("limitOrders.currentPrice")}`;
+  }, [inputMode, swapState.baseAsset?.coinDenom, orderDirection, t]);
 
   const TooltipContent = useMemo(() => {
     const translationId =
@@ -101,9 +107,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         >
           <div>
             <span className="body2 text-osmoverse-300">
-              When {swapState.baseDenom} price is{" "}
+              {t("limitOrders.whenDenomPriceIs", {
+                denom: swapState.baseDenom,
+              })}{" "}
             </span>
-
             <button
               className={classNames("body2 inline-flex items-center gap-1", {
                 "text-rust-400": isAboveBelowMarketPrice,
@@ -121,7 +128,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             </button>
           </div>
         </SkeletonLoader>
-        <div className="">
+        <div>
           {isAboveBelowMarketPrice && (
             <span className="body2 text-rust-400">
               <Tooltip
@@ -171,7 +178,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             <span className="text-osmoverse-400">{inputSuffix}</span>
           </div>
         </SkeletonLoader>
-
         <div className="mt-1 flex items-center">
           {percentAdjustmentOptions.map(({ label, value }) => (
             <button

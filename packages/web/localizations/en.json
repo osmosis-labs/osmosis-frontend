@@ -1161,6 +1161,35 @@
     "enterAnAmountTo": "Enter an amount to",
     "sell": "Sell",
     "insufficientFunds": "Insufficient Funds",
-    "addFunds": "Add Funds"
+    "addFunds": "Add Funds",
+    "watchOut": "Watch out! Whale incoming",
+    "selectAnAssetTo": {
+      "buy": "Select an asset to buy",
+      "sell": "Select an asset to sell"
+    },
+    "payWith": "Pay With",
+    "receive": "Receive",
+    "swapFromAnotherAsset": "Swap from another asset",
+    "connectYourWallet": "Connect your wallet",
+    "toSeeYourBalances": "to see your balances",
+    "searchAssets": "Search assets",
+    "marketPrice": "market price",
+    "below": "below",
+    "above": "above",
+    "currentPrice": "current price",
+    "whenDenomPriceIs": "When {denom} price is",
+    "estimating": "Estimating",
+    "totalFeesWhenFilled": "Total fees when filled",
+    "at": "at",
+    "value": "Value",
+    "estimatedFees": "Estimated fees",
+    "totalEstimatedFees": "Total Estimated Fees",
+    "receiveMin": "Receive minimum",
+    "receiveAsset": "Receive asset",
+    "orderType": "Order Type",
+    "limitPrice": "Limit Price",
+    "moreDetails": "More details",
+    "confirm": "Confirm",
+    "expectedRate": "Expected rate"
   }
 }

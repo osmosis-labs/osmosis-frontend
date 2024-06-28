@@ -79,7 +79,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         case swapState.insufficientFunds:
           return t("limitOrders.insufficientFunds");
         case +swapState.inAmountInput.inputAmount > WHALE_MESSAGE_THRESHOLD:
-          return "Watch out! Whale incoming";
+          return t("limitOrders.watchOut");
         default:
           return (
             <>

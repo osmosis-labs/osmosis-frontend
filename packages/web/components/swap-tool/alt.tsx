@@ -392,7 +392,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         {formatPretty(
                           swapState.inAmountInput.balance ?? new Dec(0)
                         )}{" "}
-                        available
+                        {t("pool.available").toLowerCase()}
                       </span>
                       {swapState.inAmountInput.balance &&
                       swapState.inAmountInput.balance.toDec().gt(new Dec(0)) ? (
@@ -421,7 +421,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           onClick={fiatRampSelection}
                           className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
                         >
-                          Add funds
+                          {t("limitOrders.addFunds")}
                         </button>
                       )}
                     </div>
@@ -775,7 +775,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )}
         </div>
         <TokenSelectModalLimit
-          headerTitle="Select an asset to sell"
+          headerTitle={t("limitOrders.selectAnAssetTo.buy")}
           isOpen={showFromTokenSelectModal}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
@@ -796,7 +796,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           showRecommendedTokens={showTokenSelectRecommendedTokens}
         />
         <TokenSelectModalLimit
-          headerTitle="Select an asset to buy"
+          headerTitle={t("limitOrders.selectAnAssetTo.sell")}
           isOpen={showToTokenSelectModal}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
