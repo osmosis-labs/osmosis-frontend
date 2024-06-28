@@ -1,5 +1,7 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
+
+import { useTranslation } from "~/hooks";
 
 export enum SwapToolTab {
   SWAP = "swap",
@@ -12,21 +14,6 @@ export interface SwapToolTabsProps {
   activeTab: SwapToolTab;
 }
 
-const tabs = [
-  {
-    label: "Buy",
-    value: SwapToolTab.BUY,
-  },
-  {
-    label: "Sell",
-    value: SwapToolTab.SELL,
-  },
-  {
-    label: "Swap",
-    value: SwapToolTab.SWAP,
-  },
-];
-
 /**
  * Component for swapping between tabs on the swap modal.
  * Has three tabs:
@@ -38,6 +25,26 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
 }) => {
+  const { t } = useTranslation();
+
+  const tabs = useMemo(
+    () => [
+      {
+        label: t("portfolio.buy"),
+        value: SwapToolTab.BUY,
+      },
+      {
+        label: t("limitOrders.sell"),
+        value: SwapToolTab.SELL,
+      },
+      {
+        label: t("swap.title"),
+        value: SwapToolTab.SWAP,
+      },
+    ],
+    [t]
+  );
+
   return (
     <div className="flex w-max items-center rounded-3xl border border-osmoverse-700">
       {tabs.map((tab) => {

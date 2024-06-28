@@ -1135,8 +1135,9 @@
     "older": "古い",
     "newer": "新しい"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "注文の確認",
+    "tradeDetails": "取引の詳細",
     "marketOrder": {
       "title": "成行注文",
       "description": "最安価格で今すぐご購入ください"
@@ -1148,6 +1149,53 @@
     "recurringOrder": {
       "title": "定期注文",
       "description": "時間の経過とともに平均価格で購入する"
-    }
+    },
+    "aboveMarket": {
+      "title": "市場価格を上回る制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "belowMarket": {
+      "title": "市場価格以下の制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "enterAnAmountTo": "金額を入力してください",
+    "sell": "売る",
+    "insufficientFunds": "残高不足",
+    "addFunds": "資金を追加",
+    "watchOut": "気をつけろ！クジラが来る",
+    "selectAnAssetTo": {
+      "buy": "購入する資産を選択",
+      "sell": "売却する資産を選択"
+    },
+    "payWith": "お支払い方法",
+    "receive": "受け取る",
+    "swapFromAnotherAsset": "別の資産からのスワップ",
+    "connectYourWallet": "ウォレットを接続する",
+    "toSeeYourBalances": "残高を確認する",
+    "searchAssets": "アセットを検索",
+    "marketPrice": "市場価格",
+    "below": "下に",
+    "above": "その上",
+    "currentPrice": "現在の価格",
+    "whenDenomPriceIs": "{denom}価格が",
+    "estimating": "見積り",
+    "totalFeesWhenFilled": "記入時の合計手数料",
+    "at": "で",
+    "value": "価値",
+    "estimatedFees": "推定料金",
+    "totalEstimatedFees": "合計見積料金",
+    "receiveMin": "最低限受け取る",
+    "receiveAsset": "資産を受け取る",
+    "orderType": "注文タイプ",
+    "limitPrice": "制限価格",
+    "moreDetails": "詳細情報",
+    "confirm": "確認する",
+    "expectedRate": "予想レート",
+    "market": "市場",
+    "limit": "制限"
+  },
+  "orderHistory": {
+    "orders": "注文",
+    "history": "歴史"
   }
 }

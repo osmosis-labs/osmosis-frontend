@@ -1135,8 +1135,9 @@
     "older": "Más viejo",
     "newer": "Más nuevo"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Revisar orden",
+    "tradeDetails": "Detalles comerciales",
     "marketOrder": {
       "title": "Orden de mercado",
       "description": "Compre inmediatamente al mejor precio disponible"
@@ -1148,6 +1149,53 @@
     "recurringOrder": {
       "title": "Orden recurrente",
       "description": "Compre a precio promedio a lo largo del tiempo"
-    }
+    },
+    "aboveMarket": {
+      "title": "Precio límite por encima del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "belowMarket": {
+      "title": "Precio límite por debajo del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "enterAnAmountTo": "Introduzca una cantidad a",
+    "sell": "Vender",
+    "insufficientFunds": "Fondos insuficientes",
+    "addFunds": "Añadir fondos",
+    "watchOut": "¡Cuidado! ballena entrante",
+    "selectAnAssetTo": {
+      "buy": "Seleccione un activo para comprar",
+      "sell": "Seleccione un activo para vender"
+    },
+    "payWith": "Pagar con",
+    "receive": "Recibir",
+    "swapFromAnotherAsset": "Intercambiar desde otro activo",
+    "connectYourWallet": "Conecta tu billetera",
+    "toSeeYourBalances": "para ver tus saldos",
+    "searchAssets": "Buscar activos",
+    "marketPrice": "precio de mercado",
+    "below": "abajo",
+    "above": "arriba",
+    "currentPrice": "precio actual",
+    "whenDenomPriceIs": "Cuando el precio {denom} es",
+    "estimating": "Estimando",
+    "totalFeesWhenFilled": "Tarifas totales cuando se llenan",
+    "at": "en",
+    "value": "Valor",
+    "estimatedFees": "Tarifas estimadas",
+    "totalEstimatedFees": "Tarifas totales estimadas",
+    "receiveMin": "Recibir mínimo",
+    "receiveAsset": "Recibir activo",
+    "orderType": "Tipo de orden",
+    "limitPrice": "Precio límite",
+    "moreDetails": "Más detalles",
+    "confirm": "Confirmar",
+    "expectedRate": "Expectativa salarial",
+    "market": "Mercado",
+    "limit": "Límite"
+  },
+  "orderHistory": {
+    "orders": "Pedidos",
+    "history": "Historia"
   }
 }

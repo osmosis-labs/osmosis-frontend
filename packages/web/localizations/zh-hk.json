@@ -1135,8 +1135,9 @@
     "older": "年長的",
     "newer": "較新"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "查看訂單",
+    "tradeDetails": "交易詳情",
     "marketOrder": {
       "title": "市價訂單",
       "description": "立即以最優惠的價格購買"
@@ -1148,6 +1149,53 @@
     "recurringOrder": {
       "title": "重複訂單",
       "description": "以一段時間內的平均價格購買"
-    }
+    },
+    "aboveMarket": {
+      "title": "限價高於市場價格",
+      "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
+    },
+    "belowMarket": {
+      "title": "限制價格低於市場價格",
+      "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
+    },
+    "enterAnAmountTo": "輸入金額至",
+    "sell": "賣",
+    "insufficientFunds": "不充足的資金",
+    "addFunds": "增加資金",
+    "watchOut": "小心！鯨魚來襲",
+    "selectAnAssetTo": {
+      "buy": "選擇要購買的資產",
+      "sell": "選擇要出售的資產"
+    },
+    "payWith": "使用。",
+    "receive": "收到",
+    "swapFromAnotherAsset": "從另一種資產交換",
+    "connectYourWallet": "連接你的錢包",
+    "toSeeYourBalances": "查看您的餘額",
+    "searchAssets": "搜尋資產",
+    "marketPrice": "市價",
+    "below": "以下",
+    "above": "多於",
+    "currentPrice": "時價",
+    "whenDenomPriceIs": "當{denom}價格為",
+    "estimating": "估計",
+    "totalFeesWhenFilled": "填寫後的總費用",
+    "at": "在",
+    "value": "價值",
+    "estimatedFees": "預計費用",
+    "totalEstimatedFees": "預計費用總計",
+    "receiveMin": "接收最低",
+    "receiveAsset": "接收資產",
+    "orderType": "訂單類型",
+    "limitPrice": "限價",
+    "moreDetails": "更多細節",
+    "confirm": "確認",
+    "expectedRate": "預期利率",
+    "market": "市場",
+    "limit": "限制"
+  },
+  "orderHistory": {
+    "orders": "命令",
+    "history": "歷史"
   }
 }

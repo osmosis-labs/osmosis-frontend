@@ -77,12 +77,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const getInputWidgetLabel = () => {
       switch (true) {
         case swapState.insufficientFunds:
-          return "Insufficent Funds";
+          return t("limitOrders.insufficientFunds");
         case +swapState.inAmountInput.inputAmount > WHALE_MESSAGE_THRESHOLD:
-          return "Watch out! Whale incoming";
+          return t("limitOrders.watchOut");
         default:
           return (
-            <>Enter an amount to {orderDirection === "bid" ? "buy" : "sell"}</>
+            <>
+              {t("limitOrders.enterAnAmountTo")}{" "}
+              {orderDirection === "bid"
+                ? t("portfolio.buy").toLowerCase()
+                : t("limitOrders.sell").toLowerCase()}
+            </>
           );
       }
     };
@@ -121,7 +126,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ) : (
             <div className="inline-flex items-center gap-1 py-3.5">
               <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} price ≈{" "}
+                {swapState.baseDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
                 {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
                 {swapState.quoteDenom}
               </span>
@@ -159,14 +164,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     swapState.isMakerFeeLoading ||
                     orderbookAssetsLoading
                   }
-                  loadingText={"Loading..."}
+                  loadingText={t("assets.transfer.loading")}
                   onClick={() => setReviewOpen(true)}
                 >
-                  <h6>{orderDirection === "bid" ? "Buy" : "Sell"}</h6>
+                  <h6>
+                    {orderDirection === "bid"
+                      ? t("portfolio.buy")
+                      : t("limitOrders.sell")}
+                  </h6>
                 </Button>
               ) : (
                 <Button onClick={() => setReviewOpen(true)}>
-                  <h6>Add funds</h6>
+                  <h6>{t("limitOrders.addFunds")}</h6>
                 </Button>
               )}
             </>
