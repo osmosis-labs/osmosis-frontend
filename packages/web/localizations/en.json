@@ -929,7 +929,14 @@
       "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
-    }
+    },
+    "pendingWithdraw": "Pending withdraw",
+    "pendingDeposit": "Pending deposit",
+    "completedWithdraw": "Withdraw completed",
+    "completedDeposit": "Deposit completed",
+    "failedWithdraw": "Withdraw failed",
+    "failedDeposit": "Deposit failed",
+    "connectionError": "Connection error"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

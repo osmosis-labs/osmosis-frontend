@@ -929,7 +929,14 @@
       "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
-    }
+    },
+    "pendingWithdraw": "Ожидание вывода",
+    "pendingDeposit": "Ожидается депозит",
+    "completedWithdraw": "Вывод завершен",
+    "completedDeposit": "Депозит завершен",
+    "failedWithdraw": "Вывести не удалось",
+    "failedDeposit": "Депозит не выполнен",
+    "connectionError": "Ошибка подключения"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

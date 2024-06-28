@@ -929,7 +929,14 @@
       "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
-    }
+    },
+    "pendingWithdraw": "待提款",
+    "pendingDeposit": "待定存款",
+    "completedWithdraw": "提現完成",
+    "completedDeposit": "存款完成",
+    "failedWithdraw": "提現失敗",
+    "failedDeposit": "存款失敗",
+    "connectionError": "連線錯誤"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

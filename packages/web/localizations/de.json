@@ -929,7 +929,14 @@
       "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
-    }
+    },
+    "pendingWithdraw": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehende Einzahlung",
+    "completedWithdraw": "Auszahlung abgeschlossen",
+    "completedDeposit": "Einzahlung abgeschlossen",
+    "failedWithdraw": "Auszahlung fehlgeschlagen",
+    "failedDeposit": "Einzahlung fehlgeschlagen",
+    "connectionError": "Verbindungsfehler"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

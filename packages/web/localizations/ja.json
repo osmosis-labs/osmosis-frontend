@@ -929,7 +929,14 @@
       "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
-    }
+    },
+    "pendingWithdraw": "保留中の撤回",
+    "pendingDeposit": "保留中の入金",
+    "completedWithdraw": "引き出しが完了しました",
+    "completedDeposit": "入金完了",
+    "failedWithdraw": "引き出しに失敗しました",
+    "failedDeposit": "入金に失敗しました",
+    "connectionError": "接続エラー"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

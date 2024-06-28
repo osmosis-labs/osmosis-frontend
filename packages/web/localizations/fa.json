@@ -929,7 +929,14 @@
       "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
-    }
+    },
+    "pendingWithdraw": "در انتظار برداشت",
+    "pendingDeposit": "سپرده معلق",
+    "completedWithdraw": "برداشت کامل شد",
+    "completedDeposit": "واریز تکمیل شد",
+    "failedWithdraw": "برداشت ناموفق بود",
+    "failedDeposit": "سپرده گذاری انجام نشد",
+    "connectionError": "خطای اتصال"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

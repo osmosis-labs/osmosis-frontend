@@ -929,7 +929,14 @@
       "descriptionWithdraw": "अपने {asset} को {chain} वापस लेने (उर्फ “ब्रिज”) के लिए निम्नलिखित वैकल्पिक प्रदाताओं में से चुनें।",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
-    }
+    },
+    "pendingWithdraw": "लंबित निकासी",
+    "pendingDeposit": "लंबित जमा",
+    "completedWithdraw": "निकासी पूर्ण हुई",
+    "completedDeposit": "जमा पूर्ण हुआ",
+    "failedWithdraw": "निकासी विफल",
+    "failedDeposit": "जमा विफल",
+    "connectionError": "संपर्क त्रुटि"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

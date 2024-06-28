@@ -929,7 +929,14 @@
       "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
       "depositWith": "存款",
       "withdrawWith": "提款"
-    }
+    },
+    "pendingWithdraw": "等待提款",
+    "pendingDeposit": "待存款",
+    "completedWithdraw": "提现完成",
+    "completedDeposit": "存款已完成",
+    "failedWithdraw": "提现失败",
+    "failedDeposit": "存款失败",
+    "connectionError": "连接错误"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

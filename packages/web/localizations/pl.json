@@ -929,7 +929,14 @@
       "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
-    }
+    },
+    "pendingWithdraw": "Oczekuje na wycofanie",
+    "pendingDeposit": "Oczekujący depozyt",
+    "completedWithdraw": "Wypłata zakończona",
+    "completedDeposit": "Depozyt zrealizowany",
+    "failedWithdraw": "Wypłata nie powiodła się",
+    "failedDeposit": "Wpłata nie powiodła się",
+    "connectionError": "Błąd połączenia"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
