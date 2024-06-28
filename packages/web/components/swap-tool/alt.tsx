@@ -720,7 +720,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 )}
               </div>
             </SkeletonLoader>*/}
-            <TradeDetails swapState={swapState} />
+            <TradeDetails
+              swapState={swapState}
+              slippageConfig={slippageConfig}
+            />
           </div>
           {!isNil(warningText) && (
             <div

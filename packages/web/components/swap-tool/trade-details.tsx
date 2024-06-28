@@ -2,33 +2,48 @@ import { Disclosure } from "@headlessui/react";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
+import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
+import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
-import { useDisclosure, UseDisclosureReturn, usePreviousWhen } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  UseDisclosureReturn,
+  usePreviousWhen,
+  useSlippageConfig,
+} from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { RecapRow } from "~/modals/review-limit-order";
 import { formatPretty } from "~/utils/formatter";
-import { RouterOutputs } from "~/utils/trpc";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
   isLoading: boolean;
   swapState: ReturnType<typeof useSwap>;
+  slippageConfig: ReturnType<typeof useSlippageConfig>;
 }
 
-const defaultSlippages = [
-  { value: new Dec(0.5), label: "0.5%" },
-  { value: new Dec(1), label: "1%" },
-  { value: new Dec(2), label: "2%" },
-];
+export const TradeDetails = ({
+  swapState,
+  slippageConfig,
+}: Partial<TradeDetailsProps>) => {
+  const { logEvent } = useAmplitudeAnalytics();
 
-export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
   const routesVisDisclosure = useDisclosure();
+  const [queryToFallbackDenom] = useQueryState(
+    "to",
+    parseAsString.withDefault("ATOM")
+  );
 
   const [ref] = useMeasure<HTMLDivElement>();
+  const [swapRouteRef, { height: swapRouteHeight }] =
+    useMeasure<HTMLDivElement>();
 
   const isInAmountEmpty = useMemo(
     () => swapState?.inAmountInput.error instanceof EmptyAmountError,
@@ -52,6 +67,11 @@ export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
     [swapState?.quote?.priceImpactTokenOut]
   );
 
+  const { data: toAssetFiatValue, isLoading: isLoadingToAssetFiatValue } =
+    api.edge.assets.getAssetPrice.useQuery({
+      coinMinimalDenom: swapState?.toAsset?.coinDenom ?? queryToFallbackDenom,
+    });
+
   return (
     <div className="flex w-full">
       <Disclosure>
@@ -59,7 +79,7 @@ export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
           <div
             className="flex w-full flex-col transition-all"
             style={{
-              height: open ? 333 : 48,
+              height: open ? 301 + swapRouteHeight : 48,
             }}
           >
             <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
@@ -169,10 +189,19 @@ export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
                 }
               />
               <RecapRow
-                left={"Swap fees (0.015%)"}
+                left={`Swap fees (${swapState?.quote?.swapFee})`}
                 right={
                   <span>
-                    <span className="text-osmoverse-100">~$0.12</span> (0.12
+                    <span className="text-osmoverse-100">
+                      ~
+                      {formatPretty(
+                        swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
+                      )}
+                    </span>{" "}
+                    (
+                    {formatPretty(
+                      swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
+                    )}{" "}
                     USDC)
                   </span>
                 }
@@ -181,9 +210,15 @@ export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
               <RecapRow
                 left="Receive (estimated)"
                 right={
-                  <span>
-                    <span className="text-osmoverse-100">0.00147059 BTC</span>
-                    (~$99.88)
+                  <span className="inline-flex items-center gap-1">
+                    {swapState?.quote?.amount && (
+                      <span className="text-osmoverse-100">
+                        {formatPretty(swapState?.quote?.amount)}
+                      </span>
+                    )}{" "}
+                    {!isLoadingToAssetFiatValue && (
+                      <>(~ {formatPretty(toAssetFiatValue ?? new Dec(0))})</>
+                    )}
                   </span>
                 }
               />
@@ -194,32 +229,80 @@ export const TradeDetails = ({ swapState }: Partial<TradeDetailsProps>) => {
                 left="Slippage tolerance"
                 right={
                   <div className="flex items-center justify-end">
-                    {defaultSlippages.map((props) => (
-                      <SlippageButton key={props.label} {...props} />
+                    {slippageConfig?.selectableSlippages.map((props) => (
+                      <SlippageButton
+                        key={`slippage-${props.index}`}
+                        {...props}
+                        onSelect={() => {
+                          slippageConfig.select(props.index);
+
+                          logEvent([
+                            EventName.Swap.slippageToleranceSet,
+                            {
+                              percentage: slippageConfig.slippage.toString(),
+                              page: "Swap Page",
+                            },
+                          ]);
+                        }}
+                      />
                     ))}
-                    <input
-                      type="number"
-                      placeholder="Custom"
-                      className="w-1/4 rounded-3xl bg-transparent py-1.5 px-2 text-center transition-colors placeholder:text-osmoverse-300 hover:bg-osmoverse-825 focus:bg-osmoverse-825"
-                    />
+                    <div
+                      className={classNames(
+                        "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
+                        { "bg-osmoverse-825": slippageConfig?.isManualSlippage }
+                      )}
+                    >
+                      <AutosizeInput
+                        type="number"
+                        minWidth={30}
+                        placeholder="Custom"
+                        className="w-fit bg-transparent px-0"
+                        inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px]"
+                        value={slippageConfig?.manualSlippageStr}
+                        onFocus={() =>
+                          slippageConfig?.setIsManualSlippage(true)
+                        }
+                        autoFocus={slippageConfig?.isManualSlippage}
+                        onChange={(e) => {
+                          if (e.target.value.trim() === "") {
+                            slippageConfig?.setManualSlippage("0");
+                          } else {
+                            slippageConfig?.setManualSlippage(e.target.value);
+                          }
+
+                          logEvent([
+                            EventName.Swap.slippageToleranceSet,
+                            {
+                              fromToken: swapState?.fromAsset?.coinDenom,
+                              toToken: swapState?.toAsset?.coinDenom,
+                              // isOnHome: page === "Swap Page",
+                              isOnHome: true,
+                              percentage: slippageConfig?.slippage.toString(),
+                              page: "Swap Page",
+                            },
+                          ]);
+                        }}
+                      />
+                      <span>%</span>
+                    </div>
                   </div>
                 }
               />
-              <RecapRow
-                left="Swap route"
-                right={
-                  <div ref={ref} className="flex flex-col gap-2">
-                    <RoutesTaken
-                      {...routesVisDisclosure}
-                      split={
-                        // swapState.quote?.split ?? []
-                        []
-                      }
-                      isLoading={false}
-                    />
-                  </div>
-                }
-              />
+              <div ref={swapRouteRef} className="flex w-full">
+                <RecapRow
+                  left="Swap route"
+                  className="!h-auto flex-col !items-start gap-2.5"
+                  right={
+                    <div ref={ref} className="flex w-full flex-col gap-2">
+                      <RoutesTaken
+                        {...routesVisDisclosure}
+                        split={swapState?.quote?.split ?? []}
+                        isLoading={swapState?.isQuoteLoading}
+                      />
+                    </div>
+                  }
+                />
+              </div>
             </Disclosure.Panel>
           </div>
         )}
@@ -244,17 +327,25 @@ function Closer({
   return <></>;
 }
 
-function SlippageButton({ label }: (typeof defaultSlippages)[0]) {
+function SlippageButton({
+  slippage,
+  selected,
+  onSelect,
+}: {
+  slippage: RatePretty;
+  index: number;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   return (
     <button
-      key={label}
-      onClick={() => {}}
+      onClick={onSelect}
       className={classNames(
         "flex w-fit items-center justify-center rounded-3xl py-1.5 px-2 transition-colors hover:bg-osmoverse-825",
-        { "bg-osmoverse-825": false }
+        { "bg-osmoverse-825": selected }
       )}
     >
-      {label}
+      {formatPretty(slippage)}
     </button>
   );
 }
