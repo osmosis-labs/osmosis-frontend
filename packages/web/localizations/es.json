@@ -1193,5 +1193,9 @@
     "expectedRate": "Expectativa salarial",
     "market": "Mercado",
     "limit": "Límite"
+  },
+  "orderHistory": {
+    "orders": "Pedidos",
+    "history": "Historia"
   }
 }

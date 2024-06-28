@@ -1193,5 +1193,9 @@
     "expectedRate": "Rata așteptată",
     "market": "Piaţă",
     "limit": "Limită"
+  },
+  "orderHistory": {
+    "orders": "Comenzi",
+    "history": "Istorie"
   }
 }

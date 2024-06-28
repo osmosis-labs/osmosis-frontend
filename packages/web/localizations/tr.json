@@ -1193,5 +1193,9 @@
     "expectedRate": "Beklenen oran",
     "market": "Pazar",
     "limit": "Sınır"
+  },
+  "orderHistory": {
+    "orders": "Emirler",
+    "history": "Tarih"
   }
 }

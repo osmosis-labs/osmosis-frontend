@@ -1193,5 +1193,9 @@
     "expectedRate": "預期利率",
     "market": "市場",
     "limit": "限制"
+  },
+  "orderHistory": {
+    "orders": "命令",
+    "history": "歷史"
   }
 }

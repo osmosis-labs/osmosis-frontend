@@ -1193,5 +1193,9 @@
     "expectedRate": "نرخ مورد انتظار",
     "market": "بازار",
     "limit": "حد"
+  },
+  "orderHistory": {
+    "orders": "سفارشات",
+    "history": "تاریخ"
   }
 }

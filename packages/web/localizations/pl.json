@@ -1193,5 +1193,9 @@
     "expectedRate": "Oczekiwana stawka",
     "market": "Rynek",
     "limit": "Limit"
+  },
+  "orderHistory": {
+    "orders": "Zamówienia",
+    "history": "Historia"
   }
 }

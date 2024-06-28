@@ -1193,5 +1193,9 @@
     "expectedRate": "예상비율",
     "market": "시장",
     "limit": "한계"
+  },
+  "orderHistory": {
+    "orders": "명령",
+    "history": "역사"
   }
 }

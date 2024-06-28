@@ -1193,5 +1193,9 @@
     "expectedRate": "Ожидаемая ставка",
     "market": "Рынок",
     "limit": "Лимит"
+  },
+  "orderHistory": {
+    "orders": "Заказы",
+    "history": "История"
   }
 }

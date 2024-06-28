@@ -1193,5 +1193,9 @@
     "expectedRate": "予想レート",
     "market": "市場",
     "limit": "制限"
+  },
+  "orderHistory": {
+    "orders": "注文",
+    "history": "歴史"
   }
 }

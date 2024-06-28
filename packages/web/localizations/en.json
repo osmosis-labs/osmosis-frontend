@@ -1193,5 +1193,9 @@
     "expectedRate": "Expected rate",
     "market": "Market",
     "limit": "Limit"
+  },
+  "orderHistory": {
+    "orders": "Orders",
+    "history": "History"
   }
 }

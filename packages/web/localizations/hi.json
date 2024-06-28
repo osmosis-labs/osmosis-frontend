@@ -1193,5 +1193,9 @@
     "expectedRate": "अपेक्षित दर",
     "market": "बाज़ार",
     "limit": "आप LIMIT"
+  },
+  "orderHistory": {
+    "orders": "आदेश",
+    "history": "इतिहास"
   }
 }

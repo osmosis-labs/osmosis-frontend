@@ -1193,5 +1193,9 @@
     "expectedRate": "Erwarteter Kurs",
     "market": "Markt",
     "limit": "Grenze"
+  },
+  "orderHistory": {
+    "orders": "Aufträge",
+    "history": "Geschichte"
   }
 }
