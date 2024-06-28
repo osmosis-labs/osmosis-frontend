@@ -82,8 +82,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   const TooltipContent = useMemo(() => {
     const translationId =
       orderDirection === "bid"
-        ? "place-limit.aboveMarket"
-        : "place-limit.belowMarket";
+        ? "limitOrders.aboveMarket"
+        : "limitOrders.belowMarket";
     return (
       <div>
         <div className="text-caption">{t(`${translationId}.title`)}</div>

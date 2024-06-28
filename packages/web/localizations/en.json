@@ -1135,7 +1135,7 @@
     "older": "Older",
     "newer": "Newer"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Review Order",
     "tradeDetails": "Trade Details",
     "marketOrder": {
@@ -1157,6 +1157,10 @@
     "belowMarket": {
       "title": "Limit price below market price",
       "description": "If you proceed, your order will be processed as a market order at market price."
-    }
+    },
+    "enterAnAmountTo": "Enter an amount to",
+    "sell": "Sell",
+    "insufficientFunds": "Insufficient Funds",
+    "addFunds": "Add Funds"
   }
 }

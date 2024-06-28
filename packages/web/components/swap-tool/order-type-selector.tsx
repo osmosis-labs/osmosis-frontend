@@ -30,20 +30,20 @@ export const OrderTypeSelector = () => {
     () => [
       {
         id: "market",
-        title: t("place-limit.marketOrder.title"),
-        description: t("place-limit.marketOrder.description"),
+        title: t("limitOrders.marketOrder.title"),
+        description: t("limitOrders.marketOrder.description"),
         icon: "exchange",
       },
       {
         id: "limit",
-        title: t("place-limit.limitOrder.title"),
-        description: t("place-limit.limitOrder.description", { denom: "BTC" }),
+        title: t("limitOrders.limitOrder.title"),
+        description: t("limitOrders.limitOrder.description", { denom: "BTC" }),
         icon: "trade",
       },
       // {
       //   id: "recurring",
-      //   title: t("place-limit.recurringOrder.title"),
-      //   description: t("place-limit.recurringOrder.description"),
+      //   title: t("limitOrders.recurringOrder.title"),
+      //   description: t("limitOrders.recurringOrder.description"),
       //   icon: "history-uncolored",
       // },
     ],

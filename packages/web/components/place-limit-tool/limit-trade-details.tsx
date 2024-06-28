@@ -44,7 +44,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
           className="flex w-full cursor-pointer items-center justify-between"
           onClick={() => setDisplayInfo(!displayInfo && !isLoading)}
         >
-          <div className="text-subtitle1">{t("place-limit.tradeDetails")}</div>
+          <div className="text-subtitle1">{t("limitOrders.tradeDetails")}</div>
           <div className="flex items-center justify-end text-body2 text-osmoverse-300">
             {isLoading ? (
               <div className="flex items-center text-body2 text-osmoverse-400">
