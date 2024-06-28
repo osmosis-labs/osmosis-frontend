@@ -180,7 +180,7 @@ export interface Asset {
   variantGroupKey?: string;
 }
 
-export type MinimalAsset = KeplrBaseCurrency & {
+export type MinimalAsset = {
   coinDenom: string;
   coinMinimalDenom: string;
   coinDecimals: number;
@@ -193,6 +193,5 @@ export type MinimalAsset = KeplrBaseCurrency & {
   coinName: string;
   isUnstable: boolean;
   isVerified: boolean;
-  sourceDenom: string;
   variantGroupKey: string | undefined;
 };
