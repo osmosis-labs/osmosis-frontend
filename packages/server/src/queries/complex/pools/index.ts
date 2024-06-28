@@ -111,7 +111,7 @@ export async function getPools(
 
   if (params?.search) {
     // search for an exact match of coinMinimalDenom or pool ID
-    const coinMinimalDemonMatches = search(
+    const coinDenomsOrIdMatches = search(
       denomPools,
       ["coinDenoms", "id"],
       params.search,
@@ -119,8 +119,8 @@ export async function getPools(
     );
 
     // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
-    if (coinMinimalDemonMatches.length > 0) {
-      denomPools = coinMinimalDemonMatches;
+    if (coinDenomsOrIdMatches.length > 0) {
+      denomPools = coinDenomsOrIdMatches;
     } else {
       const poolNameByDenomMatches = search(
         denomPools,
