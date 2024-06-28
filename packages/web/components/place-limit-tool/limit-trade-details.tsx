@@ -17,7 +17,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
   ({ swapState }) => {
     const { t } = useTranslation();
     const [displayInfo, setDisplayInfo] = useState<boolean>(false);
-    const { makerFeeFiat, totalFeeFiat } = useMemo(() => {
+    const { makerFeeFiat /*totalFeeFiat*/ } = useMemo(() => {
       const makerFeeFiat = (
         swapState.paymentFiatValue ??
         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
