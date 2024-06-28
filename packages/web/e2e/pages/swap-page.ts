@@ -1,14 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
-export class SwapPage {
+import { BasePage } from "~/e2e/pages/base-page";
+
+export class SwapPage extends BasePage {
   readonly page: Page;
-  readonly connectWalletBtn: Locator;
   readonly swapBtn: Locator;
   readonly swapHalfBtn: Locator;
   readonly swapMaxBtn: Locator;
   readonly swapInput: Locator;
-  readonly kepltWalletBtn: Locator;
   readonly flipAssetsBtn: Locator;
   readonly exchangeRate: Locator;
   readonly trxSuccessful: Locator;
@@ -16,15 +16,12 @@ export class SwapPage {
   readonly trxLink: Locator;
 
   constructor(page: Page) {
+    super(page);
     this.page = page;
-    this.connectWalletBtn = page
-      .getByRole("button", { name: "Connect wallet", exact: true })
-      .first();
     this.swapBtn = page.getByRole("button", { name: "Swap", exact: true });
     this.swapHalfBtn = page.getByRole("button", { name: "HALF", exact: true });
     this.swapMaxBtn = page.getByRole("button", { name: "MAX", exact: true });
     this.swapInput = page.locator('input[type="number"]');
-    this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
@@ -43,28 +40,6 @@ export class SwapPage {
     await this.page.waitForTimeout(2000);
     const currentUrl = this.page.url();
     console.log("FE opened at: " + currentUrl);
-  }
-
-  async connectWallet() {
-    await this.connectWalletBtn.click();
-    // This is needed to handle a wallet popup
-    const pagePromise = this.page.context().waitForEvent("page");
-    await this.kepltWalletBtn.click();
-    await this.page.waitForTimeout(1000);
-    // Handle Pop-up page ->
-    const newPage = await pagePromise;
-    await newPage.waitForLoadState();
-    const pageTitle = await newPage.title();
-    console.log("Title of the new page: " + pageTitle);
-    await newPage.getByRole("button", { name: "Approve" }).click();
-    // PopUp page is auto-closed
-    // Handle Pop-up page <-
-    const wallet = this.page.getByRole("button", {
-      name: "Wosmongton profile osmo1k...",
-    });
-    await this.page.waitForTimeout(2000);
-    expect(wallet).toBeTruthy();
-    console.log("Wallet is connected.");
   }
 
   async flipTokenPair() {
