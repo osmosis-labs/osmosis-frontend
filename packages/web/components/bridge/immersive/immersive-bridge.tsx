@@ -12,13 +12,8 @@ import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button, IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { BridgeFlowProvider } from "~/hooks/bridge";
-import {
-  useDisconnectEvmWallet,
-  useEvmWalletAccount,
-} from "~/hooks/evm-wallet";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
-import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { FiatRampKey } from "~/integrations";
 import { ModalCloseButton } from "~/modals";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
@@ -71,10 +66,6 @@ export const ImmersiveBridgeFlow = ({
     onOpen: onOpenFiatOnrampSelection,
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
-
-  const { isConnected, address } = useEvmWalletAccount();
-  const { onOpenWalletSelect } = useWalletSelect();
-  const { disconnect } = useDisconnectEvmWallet();
 
   useLockBodyScroll(isVisible);
 
@@ -215,27 +206,6 @@ export const ImmersiveBridgeFlow = ({
                   )}
                 </Screen>
               </div>
-              {isConnected ? (
-                <div>
-                  <p>Evm Address: {address}</p>
-                  <Button onClick={() => disconnect()}>Disconnect</Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={() =>
-                    onOpenWalletSelect({
-                      walletOptions: [
-                        {
-                          walletType: "evm",
-                        },
-                      ],
-                      layout: "list",
-                    })
-                  }
-                >
-                  Connect EVM Wallet
-                </Button>
-              )}
             </div>
           </Transition>
         )}

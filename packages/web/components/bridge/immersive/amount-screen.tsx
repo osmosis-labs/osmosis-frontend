@@ -2,7 +2,7 @@ import { Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { MinimalAsset } from "@osmosis-labs/types";
+import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
 import { isNil, isNumeric, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -54,8 +54,6 @@ export const AmountScreen = observer(
   ({ direction, assetsInOsmosis, selectedDenom }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const { onOpenWalletSelect } = useWalletSelect();
-
-    const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false);
     const { t } = useTranslation();
 
     const { accountActionButton: connectWalletButton, walletConnected } =
@@ -71,6 +69,8 @@ export const AmountScreen = observer(
     const [fromChain, setFromChain] = useState<BridgeChain>();
     const [toChain, setToChain] = useState<BridgeChain>();
 
+    const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
+
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
@@ -82,8 +82,11 @@ export const AmountScreen = observer(
 
     // Wallets
     const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { address: evmAddress, connector: evmConnector } =
-      useEvmWalletAccount();
+    const {
+      address: evmAddress,
+      connector: evmConnector,
+      isConnected: isEvmWalletConnected,
+    } = useEvmWalletAccount();
 
     const sourceChain = direction === "deposit" ? fromChain : toChain;
     const destinationChain = direction === "deposit" ? toChain : fromChain;
@@ -293,7 +296,9 @@ export const AmountScreen = observer(
         // Or if the account is already connected
         !!cosmosCounterpartyAccount?.address ||
         // Or if there's no available cosmos chain
-        !firstSupportedCosmosChain
+        !firstSupportedCosmosChain ||
+        // Or if the account is already connected
+        !!cosmosCounterpartyAccountRepo?.current
       ) {
         return;
       }
@@ -329,7 +334,7 @@ export const AmountScreen = observer(
         // If the chain is an Cosmos chain, we don't need to connect the cosmos chain
         chain.chainType !== "evm" ||
         // Or if the account is already connected
-        !!evmAddress ||
+        isEvmWalletConnected ||
         // Or if there's no available evm chain
         !firstSupportedEvmChain
       ) {
@@ -342,6 +347,7 @@ export const AmountScreen = observer(
       evmAddress,
       firstSupportedEvmChain,
       fromChain,
+      isEvmWalletConnected,
       onOpenBridgeWalletSelect,
       toChain,
     ]);
@@ -460,6 +466,7 @@ export const AmountScreen = observer(
 
           <div className="flex items-center gap-2">
             <ChainSelectorButton
+              direction={direction}
               chainLogo={""}
               chains={supportedChains}
               onSelectChain={(nextChain) => {
@@ -474,6 +481,7 @@ export const AmountScreen = observer(
             <Icon id="arrow-right" className="text-osmoverse-300" />
 
             <ChainSelectorButton
+              direction={direction}
               chainLogo=""
               chains={supportedChains}
               onSelectChain={(nextChain) => {
@@ -633,12 +641,12 @@ export const AmountScreen = observer(
                       icon={
                         sourceChain?.chainType === "evm"
                           ? evmConnector?.icon
-                          : account?.walletInfo.logo
+                          : cosmosCounterpartyAccount?.walletInfo.logo
                       }
                       name={
                         sourceChain?.chainType === "evm"
                           ? evmConnector?.name
-                          : account?.walletInfo.prettyName
+                          : cosmosCounterpartyAccount?.walletInfo.prettyName
                       }
                       suffix={
                         <Icon
@@ -860,7 +868,7 @@ export const AmountScreen = observer(
                 <Button
                   variant="ghost"
                   className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
-                  onClick={() => setIsMoreOptionsVisible(true)}
+                  onClick={() => setAreMoreOptionsVisible(true)}
                   disabled={isNil(sourceAsset) || isNil(destinationAsset)}
                 >
                   {direction === "deposit"
@@ -869,7 +877,7 @@ export const AmountScreen = observer(
                 </Button>
                 <MoreBridgeOptions
                   direction={direction}
-                  isOpen={isMoreOptionsVisible}
+                  isOpen={areMoreOptionsVisible}
                   fromAsset={sourceAsset}
                   toAsset={{
                     address: destinationAsset.coinMinimalDenom,
@@ -880,7 +888,7 @@ export const AmountScreen = observer(
                   fromChain={fromChain}
                   toChain={toChain}
                   toAddress={currentAddress}
-                  onRequestClose={() => setIsMoreOptionsVisible(false)}
+                  onRequestClose={() => setAreMoreOptionsVisible(false)}
                 />
               </>
             )}
@@ -892,12 +900,20 @@ export const AmountScreen = observer(
 );
 
 const ChainSelectorButton: FunctionComponent<{
+  direction: BridgeTransactionDirection;
   readonly: boolean;
   children: ReactNode;
   chainLogo: string;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
   onSelectChain: (chain: BridgeChain) => void;
-}> = ({ readonly, children, chainLogo: _chainLogo, chains, onSelectChain }) => {
+}> = ({
+  direction,
+  readonly,
+  children,
+  chainLogo: _chainLogo,
+  chains,
+  onSelectChain,
+}) => {
   const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
 
   if (readonly) {
@@ -928,11 +944,12 @@ const ChainSelectorButton: FunctionComponent<{
         <BridgeNetworkSelect
           isOpen={isNetworkSelectVisible}
           chains={chains}
-          onSelectChain={(chain) => {
+          onSelectChain={async (chain) => {
             onSelectChain(chain);
             setIsNetworkSelectVisible(false);
           }}
           onRequestClose={() => setIsNetworkSelectVisible(false)}
+          direction={direction}
         />
       )}
     </>

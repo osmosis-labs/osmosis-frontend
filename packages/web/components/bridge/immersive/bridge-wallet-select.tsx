@@ -80,9 +80,9 @@ export const BridgeWalletSelectScreen = ({
   const {
     onConnect: onConnectWallet,
     wagmi: {
-      variables: wagmiVariables,
-      status: wagmiStatus,
-      error: wagmiError,
+      variables: connectingWagmiVariables,
+      status: connectingWagmiStatus,
+      error: connectingWagmiError,
     },
   } = useConnectWallet({
     walletOptions: [
@@ -108,14 +108,14 @@ export const BridgeWalletSelectScreen = ({
     isMobile: false,
   });
 
-  if (!isNil(wagmiVariables?.connector)) {
+  if (!isNil(connectingWagmiVariables?.connector)) {
     return (
       <div className="pt-12">
         <EvmWalletState
           onRequestClose={onClose}
-          connector={wagmiVariables.connector as Connector}
-          status={wagmiStatus}
-          error={wagmiError}
+          connector={connectingWagmiVariables.connector as Connector}
+          status={connectingWagmiStatus}
+          error={connectingWagmiError}
           onConnect={onConnectWallet}
         />
       </div>
