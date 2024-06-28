@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "更多提款选项",
     "convertTo": "转换成",
     "recommended": "受到推崇的",
+    "stepLabels": {
+      "asset": "资产",
+      "amount": "数量",
+      "review": "审查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",

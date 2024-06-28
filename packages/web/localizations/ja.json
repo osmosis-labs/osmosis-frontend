@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
     "recommended": "推奨",
+    "stepLabels": {
+      "asset": "資産",
+      "amount": "額",
+      "review": "レビュー"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",

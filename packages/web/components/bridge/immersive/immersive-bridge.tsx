@@ -11,6 +11,7 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { Button, IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
@@ -20,7 +21,7 @@ import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
 import { api } from "~/utils/trpc";
 
-enum ImmersiveBridgeScreens {
+const enum ImmersiveBridgeScreens {
   Asset = "0",
   Amount = "1",
   Review = "2",
@@ -34,12 +35,13 @@ export const ImmersiveBridgeFlow = ({
   Provider,
   children,
 }: PropsWithChildren<BridgeFlowProvider>) => {
+  const { t } = useTranslation();
+
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<ImmersiveBridgeScreens>(
     ImmersiveBridgeScreens.Asset
   );
-  const [direction, setDirection] =
-    useState<BridgeTransactionDirection>("deposit");
+  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit");
   const { logEvent } = useAmplitudeAnalytics();
 
   const [selectedAssetDenom, setSelectedAssetDenom] = useState<string>();
@@ -66,10 +68,6 @@ export const ImmersiveBridgeFlow = ({
     onOpen: onOpenFiatOnrampSelection,
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
-
-  // const { isConnected, address } = useEvmWalletAccount();
-  // const { onOpenWalletSelect } = useWalletSelect();
-  // const { disconnect } = useDisconnectEvmWallet();
 
   useLockBodyScroll(isVisible);
 
@@ -159,21 +157,21 @@ export const ImmersiveBridgeFlow = ({
                 className="w-full"
                 steps={[
                   {
-                    displayLabel: "Asset",
+                    displayLabel: t("transfer.stepLabels.asset"),
                     onClick:
                       step !== ImmersiveBridgeScreens.Asset
                         ? () => setStep(ImmersiveBridgeScreens.Asset)
                         : undefined,
                   },
                   {
-                    displayLabel: "Amount",
+                    displayLabel: t("transfer.stepLabels.amount"),
                     onClick:
                       step === ImmersiveBridgeScreens.Review
                         ? () => setStep(ImmersiveBridgeScreens.Amount)
                         : undefined,
                   },
                   {
-                    displayLabel: "Review",
+                    displayLabel: t("transfer.stepLabels.review"),
                   },
                 ]}
                 currentStep={Number(step)}
@@ -192,12 +190,10 @@ export const ImmersiveBridgeFlow = ({
                   )}
                 </Screen>
                 <Screen screenName={ImmersiveBridgeScreens.Amount}>
-                  {() => (
-                    <AmountScreen
-                      type={direction}
-                      assetsInOsmosis={canonicalAssetsWithVariants}
-                    />
-                  )}
+                  <AmountScreen
+                    type={direction}
+                    assetsInOsmosis={canonicalAssetsWithVariants}
+                  />
                 </Screen>
                 <Screen screenName={ImmersiveBridgeScreens.Review}>
                   {({ goBack }) => (
@@ -209,27 +205,6 @@ export const ImmersiveBridgeFlow = ({
                   )}
                 </Screen>
               </div>
-              {/* {isConnected ? (
-              <div>
-                <p>Evm Address: {address}</p>
-                <Button onClick={() => disconnect()}>Disconnect</Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() =>
-                  onOpenWalletSelect({
-                    walletOptions: [
-                      {
-                        walletType: "evm",
-                      },
-                    ],
-                    layout: "list",
-                  })
-                }
-              >
-                Connect EVM Wallet
-              </Button>
-            )} */}
             </div>
           </Transition>
         )}

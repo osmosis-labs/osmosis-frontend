@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "More withdraw options",
     "convertTo": "Convert to",
     "recommended": "Recommended",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",

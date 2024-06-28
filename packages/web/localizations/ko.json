@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "더 많은 인출 옵션",
     "convertTo": "로 변환하다",
     "recommended": "추천",
+    "stepLabels": {
+      "asset": "유산",
+      "amount": "양",
+      "review": "검토"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
       "titleWithdraw": "더 많은 인출 옵션",

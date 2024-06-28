@@ -9,7 +9,7 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { BridgeNetworkSelect } from "~/components/bridge/immersive/bridge-network-select";
+import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
 import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
@@ -448,7 +448,7 @@ const ChainSelectorButton: FunctionComponent<{
           height={12}
         />
       </button>
-      <BridgeNetworkSelect
+      <BridgeNetworkSelectModal
         isOpen={isNetworkSelectVisible}
         onRequestClose={() => setIsNetworkSelectVisible(false)}
       />

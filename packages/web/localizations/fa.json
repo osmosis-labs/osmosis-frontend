@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "گزینه های برداشت بیشتر",
     "convertTo": "تبدیل به",
     "recommended": "توصیه شده",
+    "stepLabels": {
+      "asset": "دارایی",
+      "amount": "میزان",
+      "review": "مرور"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",

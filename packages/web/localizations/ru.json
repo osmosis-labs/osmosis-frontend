@@ -922,6 +922,11 @@
     "moreWithdrawOptions": "Больше вариантов вывода",
     "convertTo": "Перевести в",
     "recommended": "рекомендуемые",
+    "stepLabels": {
+      "asset": "Объект",
+      "amount": "Количество",
+      "review": "Обзор"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",

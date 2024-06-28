@@ -8,7 +8,7 @@ import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { api } from "~/utils/trpc";
 
-export const BridgeNetworkSelect = (modalProps: ModalBaseProps) => {
+export const BridgeNetworkSelectModal = (modalProps: ModalBaseProps) => {
   const { t } = useTranslation();
 
   const [query, setQuery] = useState("");

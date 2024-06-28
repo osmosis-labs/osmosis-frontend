@@ -24,10 +24,9 @@ import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets"
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterOutputs } from "~/utils/trpc";
 
-const variantsNotToBeExcluded = ["WBTC", "BTC"] satisfies (
-  | MainnetVariantGroupKeys
-  | TestnetVariantGroupKeys
-)[];
+const variantsNotToBeExcluded = [
+  "factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc",
+] satisfies (MainnetVariantGroupKeys | TestnetVariantGroupKeys)[];
 const prioritizedDenoms = [
   "USDC",
   "OSMO",
