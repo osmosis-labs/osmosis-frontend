@@ -931,7 +931,7 @@
       "withdrawWith": "다음으로 인출"
     },
     "pendingWithdraw": "출금 대기 중",
-    "pendingDeposit": "출금 대기 중",
+    "pendingDeposit": "입금 대기 중",
     "completedWithdraw": "출금 완료",
     "completedDeposit": "입금완료",
     "failedWithdraw": "출금 실패",

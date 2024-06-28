@@ -931,7 +931,7 @@
       "withdrawWith": "Abheben mit"
     },
     "pendingWithdraw": "Ausstehender Auszug",
-    "pendingDeposit": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehende Einzahlung",
     "completedWithdraw": "Auszahlung abgeschlossen",
     "completedDeposit": "Einzahlung abgeschlossen",
     "failedWithdraw": "Auszahlung fehlgeschlagen",

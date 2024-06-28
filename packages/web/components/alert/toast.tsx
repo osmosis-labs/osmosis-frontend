@@ -1,12 +1,19 @@
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
-import { toast, ToastOptions as ReactToastifyOptions } from "react-toastify";
+import {
+  Id,
+  toast,
+  ToastContent,
+  ToastOptions as ReactToastifyOptions,
+} from "react-toastify";
 
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { t } from "~/hooks";
 
-export type ToastOptions = Partial<ReactToastifyOptions>;
+export type ToastOptions = Partial<ReactToastifyOptions> & {
+  updateToastId?: Id;
+};
 
 export function displayToast(
   alert: Alert,
@@ -38,18 +45,25 @@ export function displayToast(
     ...(toastOptions ?? {}),
   };
 
+  const showToast = toastOptions.updateToastId
+    ? (content: ToastContent<unknown>, opts: ToastOptions) =>
+        toast.update(toastOptions.updateToastId!, {
+          render: content,
+          ...opts,
+        })
+    : toast;
   switch (type) {
     case ToastType.SUCCESS:
-      toast(<SuccessToast {...alert} />, toastOptions);
+      showToast(<SuccessToast {...alert} />, toastOptions);
       break;
     case ToastType.ERROR:
-      toast(<ErrorToast {...alert} />, toastOptions);
+      showToast(<ErrorToast {...alert} />, toastOptions);
       break;
     case ToastType.LOADING:
-      toast(<LoadingToast {...alert} />, toastOptions);
+      showToast(<LoadingToast {...alert} />, toastOptions);
       break;
     case ToastType.ONE_CLICK_TRADING:
-      toast(<OneClickTradingToast {...alert} />, toastOptions);
+      showToast(<OneClickTradingToast {...alert} />, toastOptions);
       break;
   }
 }

@@ -931,7 +931,7 @@
       "withdrawWith": "提款"
     },
     "pendingWithdraw": "等待提款",
-    "pendingDeposit": "等待提款",
+    "pendingDeposit": "待存款",
     "completedWithdraw": "提现完成",
     "completedDeposit": "存款已完成",
     "failedWithdraw": "提现失败",

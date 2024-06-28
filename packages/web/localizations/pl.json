@@ -931,7 +931,7 @@
       "withdrawWith": "Wycofaj się z"
     },
     "pendingWithdraw": "Oczekuje na wycofanie",
-    "pendingDeposit": "Oczekuje na wycofanie",
+    "pendingDeposit": "Oczekujący depozyt",
     "completedWithdraw": "Wypłata zakończona",
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",

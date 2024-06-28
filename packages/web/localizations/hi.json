@@ -931,7 +931,7 @@
       "withdrawWith": "साथ वापस लें"
     },
     "pendingWithdraw": "लंबित निकासी",
-    "pendingDeposit": "लंबित निकासी",
+    "pendingDeposit": "लंबित जमा",
     "completedWithdraw": "निकासी पूर्ण हुई",
     "completedDeposit": "जमा पूर्ण हुआ",
     "failedWithdraw": "निकासी विफल",

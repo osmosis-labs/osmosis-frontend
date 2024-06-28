@@ -931,7 +931,7 @@
       "withdrawWith": "برداشت با"
     },
     "pendingWithdraw": "در انتظار برداشت",
-    "pendingDeposit": "در انتظار برداشت",
+    "pendingDeposit": "سپرده معلق",
     "completedWithdraw": "برداشت کامل شد",
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",

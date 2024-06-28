@@ -14,7 +14,6 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
 
@@ -186,7 +185,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               : "transfer.pendingDeposit",
           },
           ToastType.LOADING,
-          { toastId: prefixedKey, autoClose: false }
+          { updateToastId: prefixedKey, autoClose: false }
         );
         break;
       case "success":
@@ -198,11 +197,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               : "transfer.completedDeposit",
             captionTranslationKey: snapshot.amount,
           },
-          ToastType.SUCCESS
+          ToastType.SUCCESS,
+          { updateToastId: prefixedKey }
         );
         this.onAccountTransferSuccess(snapshot.accountAddress);
         this._resolvedTxStatusKeys.add(prefixedKey);
-        toast.dismiss(prefixedKey);
         break;
       case "failed":
         if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
@@ -213,10 +212,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               : "transfer.failedDeposit",
             captionTranslationKey: snapshot.amount,
           },
-          ToastType.ERROR
+          ToastType.ERROR,
+          { updateToastId: prefixedKey }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
-        toast.dismiss(prefixedKey);
         break;
       case "connection-error":
         if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
@@ -225,10 +224,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: "transfer.connectionError",
             captionTranslationKey: snapshot.amount,
           },
-          ToastType.ERROR
+          ToastType.ERROR,
+          { updateToastId: prefixedKey }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
-        toast.dismiss(prefixedKey);
         break;
     }
   }

@@ -931,7 +931,7 @@
       "withdrawWith": "Withdraw with"
     },
     "pendingWithdraw": "Pending withdraw",
-    "pendingDeposit": "Pending withdraw",
+    "pendingDeposit": "Pending deposit",
     "completedWithdraw": "Withdraw completed",
     "completedDeposit": "Deposit completed",
     "failedWithdraw": "Withdraw failed",

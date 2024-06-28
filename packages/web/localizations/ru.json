@@ -931,7 +931,7 @@
       "withdrawWith": "Вывод средств с помощью"
     },
     "pendingWithdraw": "Ожидание вывода",
-    "pendingDeposit": "Ожидание вывода",
+    "pendingDeposit": "Ожидается депозит",
     "completedWithdraw": "Вывод завершен",
     "completedDeposit": "Депозит завершен",
     "failedWithdraw": "Вывести не удалось",

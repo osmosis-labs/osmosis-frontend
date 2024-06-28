@@ -931,7 +931,7 @@
       "withdrawWith": "Retirer avec"
     },
     "pendingWithdraw": "En attente de retrait",
-    "pendingDeposit": "En attente de retrait",
+    "pendingDeposit": "Dépôt en attente",
     "completedWithdraw": "Retrait terminé",
     "completedDeposit": "Dépôt complété",
     "failedWithdraw": "Échec du retrait",
