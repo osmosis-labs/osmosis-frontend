@@ -17,6 +17,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
+import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
 import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
@@ -366,7 +367,15 @@ export const AmountScreen = observer(
       toChain,
     ]);
 
-    const { bridgeProviders, selectedQuote } = useBridgeQuote({
+    const {
+      selectedQuote,
+      buttonErrorMessage,
+      buttonText,
+      isLoadingBridgeQuote,
+      isLoadingBridgeTransaction,
+      selectedQuoteUpdatedAt,
+      refetchInterval,
+    } = useBridgeQuote({
       destinationAddress: destinationAccount?.address,
       destinationChain,
       destinationAsset: destinationAsset
@@ -384,8 +393,6 @@ export const AmountScreen = observer(
       inputAmount: cryptoAmount,
       bridges: sourceAsset?.supportedProviders,
     });
-
-    console.log(bridgeProviders, selectedQuote);
 
     if (
       isLoadingCanonicalAssetPrice ||
@@ -877,28 +884,77 @@ export const AmountScreen = observer(
             </Menu>
           )}
 
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Spinner className="text-wosmongton-500" />
+          {isLoadingBridgeQuote && (
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Spinner className="text-wosmongton-500" />
+                <p className="body1 text-osmoverse-300">
+                  {t("transfer.estimatingTime")}
+                </p>
+              </div>
               <span className="body1 text-osmoverse-300">
-                {t("transfer.estimatingTime")}
+                {t("transfer.calculatingFees")}
               </span>
             </div>
-
-            <span className="body1 text-osmoverse-300">
-              {t("transfer.calculatingFees")}
-            </span>
-          </div> */}
+          )}
+          {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              <div className="flex items-center gap-2">
+                <p className="body1 text-osmoverse-300">
+                  {selectedQuote.estimatedTime.humanize()} ETA
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {!isNil(selectedQuoteUpdatedAt) && (
+                  <BridgeQuoteRemainingTime
+                    dataUpdatedAt={selectedQuoteUpdatedAt}
+                    refetchInterval={refetchInterval}
+                    expiredElement={
+                      <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                    }
+                  />
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="body1">
+                    ~
+                    {(
+                      selectedQuote.transferFeeFiat ??
+                      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                    )
+                      ?.add(selectedQuote.gasCost ?? new Dec(0))
+                      .toString()}{" "}
+                    {t("transfer.fees")}
+                  </span>
+                  <Icon
+                    id="chevron-down"
+                    width={12}
+                    height={12}
+                    className={classNames(
+                      "text-osmoverse-300 transition-transform duration-150",
+                      {
+                        "rotate-180": false,
+                      }
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col items-center gap-4">
             {!walletConnected ? (
               connectWalletButton
             ) : (
               <>
-                <Button className="w-full text-h6 font-h6">
-                  {direction === "deposit"
-                    ? t("transfer.reviewDeposit")
-                    : t("transfer.reviewWithdraw")}
+                <Button
+                  disabled={
+                    !isNil(buttonErrorMessage) ||
+                    isLoadingBridgeQuote ||
+                    isLoadingBridgeTransaction
+                  }
+                  className="w-full text-h6 font-h6"
+                >
+                  {buttonText}
                 </Button>
                 <Button
                   variant="ghost"

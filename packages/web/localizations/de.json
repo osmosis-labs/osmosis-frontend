@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
     "convertTo": "Konvertieren zu",
     "recommended": "Empfohlen",
+    "fees": "Gebühren",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",

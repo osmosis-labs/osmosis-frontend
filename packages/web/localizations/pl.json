@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "Więcej opcji wypłat",
     "convertTo": "Konwertuj na",
     "recommended": "Zalecana",
+    "fees": "opłaty",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",

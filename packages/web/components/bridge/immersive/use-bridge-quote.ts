@@ -24,6 +24,8 @@ import { useStore } from "~/stores";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { api, RouterInputs } from "~/utils/trpc";
 
+const refetchInterval = 30 * 1000; // 30 seconds
+
 export const useBridgeQuote = ({
   direction,
 
@@ -123,6 +125,15 @@ export const useBridgeQuote = ({
     DecUtils.getTenExponentNInPrecisionRange(destinationAsset?.decimals ?? 0)
   );
 
+  const availableBalance = sourceAsset?.amount;
+
+  const isInsufficientBal =
+    inputAmountRaw !== "" &&
+    availableBalance &&
+    new CoinPretty(availableBalance.currency, inputAmount)
+      .toDec()
+      .gt(availableBalance.toDec());
+
   const quoteResults = api.useQueries((t) =>
     bridges.map((bridge) =>
       t.bridgeTransfer.getQuoteByBridge(
@@ -134,7 +145,8 @@ export const useBridgeQuote = ({
         {
           enabled:
             inputAmount.gt(new Dec(0)) &&
-            Object.values(quoteParams).every((param) => !isNil(param)),
+            Object.values(quoteParams).every((param) => !isNil(param)) &&
+            !isInsufficientBal,
           staleTime: 5_000,
           cacheTime: 5_000,
           // Disable retries, as useQueries
@@ -145,7 +157,7 @@ export const useBridgeQuote = ({
           // quote that the user can use.
           retry: false,
 
-          refetchInterval: 30 * 1000, // 30 seconds
+          refetchInterval, // 30 seconds
 
           select: ({ quote }) => {
             const {
@@ -239,11 +251,15 @@ export const useBridgeQuote = ({
     )
   );
 
-  const selectedQuote = useMemo(() => {
+  const selectedQuoteQuery = useMemo(() => {
     return quoteResults?.find(
       ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
-    )?.data;
+    );
   }, [quoteResults, selectedBridgeProvider]);
+
+  const selectedQuote = useMemo(() => {
+    return selectedQuoteQuery?.data;
+  }, [selectedQuoteQuery]);
 
   const bridgeProviders = useMemo(
     () =>
@@ -324,8 +340,6 @@ export const useBridgeQuote = ({
     isBridgeProviderControlledMode,
   ]);
 
-  const availableBalance = sourceAsset?.amount;
-
   const isInsufficientFee =
     inputAmountRaw !== "" &&
     availableBalance &&
@@ -336,13 +350,6 @@ export const useBridgeQuote = ({
       .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
       .abs()
       .lt(selectedQuote?.transferFee.toDec());
-
-  const isInsufficientBal =
-    inputAmountRaw !== "" &&
-    availableBalance &&
-    new CoinPretty(availableBalance.currency, inputAmount)
-      .toDec()
-      .gt(availableBalance.toDec());
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
@@ -615,8 +622,6 @@ export const useBridgeQuote = ({
   let buttonText: string;
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
-  } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
-    buttonText = `${t("assets.transfer.loading")}...`;
   } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
   } else if (isApprovingToken) {
@@ -630,7 +635,10 @@ export const useBridgeQuote = ({
   ) {
     buttonText = t("assets.transfer.givePermission");
   } else {
-    buttonText = `Review ${direction === "deposit" ? "deposit" : "withdraw"}`;
+    buttonText =
+      direction === "deposit"
+        ? t("transfer.reviewDeposit")
+        : t("transfer.reviewWithdraw");
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
@@ -640,6 +648,9 @@ export const useBridgeQuote = ({
   return {
     buttonText,
     buttonErrorMessage,
+
+    selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,
+    refetchInterval,
 
     userCanInteract,
     onTransfer,

@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "Más opciones de retiro",
     "convertTo": "Convertir a",
     "recommended": "Recomendado",
+    "fees": "honorarios",
     "stepLabels": {
       "asset": "Activo",
       "amount": "Cantidad",

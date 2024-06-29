@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
     "recommended": "推奨",
+    "fees": "手数料",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",

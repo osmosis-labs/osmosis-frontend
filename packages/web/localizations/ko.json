@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "더 많은 인출 옵션",
     "convertTo": "로 변환하다",
     "recommended": "추천",
+    "fees": "수수료",
     "stepLabels": {
       "asset": "유산",
       "amount": "양",

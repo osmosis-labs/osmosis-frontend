@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "Больше вариантов вывода",
     "convertTo": "Перевести в",
     "recommended": "рекомендуемые",
+    "fees": "сборы",
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",

@@ -922,6 +922,7 @@
     "moreWithdrawOptions": "Plus d'options de retrait",
     "convertTo": "Convertir en",
     "recommended": "Recommandé",
+    "fees": "frais",
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",
