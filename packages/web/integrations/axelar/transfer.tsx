@@ -1,9 +1,8 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import type { SourceChain } from "@osmosis-labs/bridge";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import { AxelarSourceChain, getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -57,7 +56,7 @@ export const AxelarTransfer: FunctionComponent<
     isWithdraw: boolean;
     ethWalletClient: EthWallet;
     balanceOnOsmosis: IBCBalance;
-    selectedSourceChainKey: SourceChain;
+    selectedSourceChainKey: AxelarSourceChain;
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;

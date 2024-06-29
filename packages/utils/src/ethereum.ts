@@ -26,6 +26,8 @@ export const NativeEVMTokenConstantAddress =
 
 /** Human-displayable global source chain identifiers.
  *  TODO: use global chain IDs instead of display names as keys
+ *
+ * @deprecated
  */
 export type AxelarSourceChain =
   | "Bitcoin"
