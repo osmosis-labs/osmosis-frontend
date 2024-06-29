@@ -9,8 +9,8 @@ import {
   captureErrorAndReturn,
   DEFAULT_VS_CURRENCY,
   getAsset,
-  getAssetWithUserBalance,
   getEvmBalance,
+  queryBalances,
 } from "@osmosis-labs/server";
 import {
   createTRPCRouter,
@@ -147,21 +147,66 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 asset.chainType !== "evm"
             )
             .map(async (asset) => {
-              const assetWithBalance = await getAssetWithUserBalance({
+              const { balances } = await queryBalances({
                 ...ctx,
-                userCosmosAddress: input.userCosmosAddress,
                 chainId: asset.chainId,
-                asset: getAsset({ ...ctx, anyDenom: asset.denom }),
+                bech32Address: input.userCosmosAddress!,
               });
+
+              const balance = balances.find((a) => a.denom === asset.address);
+
+              if (!balance) {
+                return {
+                  ...asset,
+                  amount: new CoinPretty(
+                    {
+                      coinDecimals: asset.decimals,
+                      coinDenom: asset.denom,
+                      coinMinimalDenom: asset.denom,
+                    },
+                    new Dec(0)
+                  ),
+                  usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                };
+              }
+
+              const representativeAssetMinimalDenom =
+                asset.supportedVariants[0];
+              const representativeAsset = getAsset({
+                ...ctx,
+                anyDenom: representativeAssetMinimalDenom,
+              });
+
+              // is user asset, include user data
+              const usdValue = await calcAssetValue({
+                ...ctx,
+                anyDenom: representativeAsset.coinMinimalDenom,
+                amount: balance.amount,
+              }).catch((e) => captureErrorAndReturn(e, undefined));
 
               return {
                 ...asset,
                 amount:
-                  assetWithBalance.amount ??
-                  new CoinPretty(assetWithBalance, new Dec(0)),
-                usdValue:
-                  assetWithBalance.usdValue ??
-                  new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                  new CoinPretty(
+                    {
+                      coinDecimals: asset.decimals,
+                      coinDenom: asset.denom,
+                      coinMinimalDenom: asset.address,
+                    },
+                    new Dec(balance.amount)
+                  ) ??
+                  new CoinPretty(
+                    {
+                      coinDecimals: asset.decimals,
+                      coinDenom: asset.denom,
+                      coinMinimalDenom: asset.address,
+                    },
+                    new Dec(0)
+                  ),
+                usdValue: new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  usdValue ?? new Dec(0)
+                ),
               };
             })
         );

@@ -17,8 +17,9 @@ import {
 
 import { Icon } from "~/components/assets";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
-import { BridgeWalletSelect } from "~/components/bridge/immersive/bridge-wallet-select";
+import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
+import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
 import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
@@ -48,10 +49,17 @@ interface AmountScreenProps {
    * Includes both the canonical asset and its variants.
    */
   assetsInOsmosis: MinimalAsset[] | undefined;
+
+  onClose: () => void;
 }
 
 export const AmountScreen = observer(
-  ({ direction, assetsInOsmosis, selectedDenom }: AmountScreenProps) => {
+  ({
+    direction,
+    assetsInOsmosis,
+    selectedDenom,
+    onClose,
+  }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const { onOpenWalletSelect } = useWalletSelect();
     const { t } = useTranslation();
@@ -64,7 +72,9 @@ export const AmountScreen = observer(
         noop
       );
 
-    const [sourceAsset, setSourceAsset] = useState<SupportedAsset>();
+    const [sourceAsset, setSourceAsset] = useState<
+      SupportedAsset & { amount: CoinPretty }
+    >();
     const [destinationAsset, setDestinationAsset] = useState<MinimalAsset>();
     const [fromChain, setFromChain] = useState<BridgeChain>();
     const [toChain, setToChain] = useState<BridgeChain>();
@@ -81,7 +91,9 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const destinationAccount = accountStore.getWallet(
+      accountStore.osmosisChainId
+    );
     const {
       address: evmAddress,
       connector: evmConnector,
@@ -100,7 +112,7 @@ export const AmountScreen = observer(
         ? undefined
         : accountStore.getWallet(sourceChain.chainId);
 
-    const currentAddress =
+    const sourceAddress =
       sourceChain?.chainType === "evm"
         ? evmAddress
         : cosmosCounterpartyAccount?.address;
@@ -303,16 +315,18 @@ export const AmountScreen = observer(
         return;
       }
 
-      cosmosCounterpartyAccountRepo?.connect(account?.walletName).catch(() =>
-        // Display the connect modal if the user for some reason rejects the connection
-        onOpenWalletSelect({
-          walletOptions: [
-            { walletType: "cosmos", chainId: String(chain.chainId) },
-          ],
-        })
-      );
+      cosmosCounterpartyAccountRepo
+        ?.connect(destinationAccount?.walletName)
+        .catch(() =>
+          // Display the connect modal if the user for some reason rejects the connection
+          onOpenWalletSelect({
+            walletOptions: [
+              { walletType: "cosmos", chainId: String(chain.chainId) },
+            ],
+          })
+        );
     }, [
-      account?.walletName,
+      destinationAccount?.walletName,
       cosmosCounterpartyAccount?.address,
       cosmosCounterpartyAccountRepo,
       direction,
@@ -351,6 +365,27 @@ export const AmountScreen = observer(
       onOpenBridgeWalletSelect,
       toChain,
     ]);
+
+    const { bridgeProviders, selectedQuote } = useBridgeQuote({
+      destinationAddress: destinationAccount?.address,
+      destinationChain,
+      destinationAsset: destinationAsset
+        ? {
+            address: destinationAsset.coinMinimalDenom,
+            decimals: destinationAsset.coinDecimals,
+            denom: destinationAsset.coinDenom,
+          }
+        : undefined,
+      sourceAddress,
+      sourceChain,
+      sourceAsset,
+      direction,
+      onRequestClose: onClose,
+      inputAmount: cryptoAmount,
+      bridges: sourceAsset?.supportedProviders,
+    });
+
+    console.log(bridgeProviders, selectedQuote);
 
     if (
       isLoadingCanonicalAssetPrice ||
@@ -659,7 +694,7 @@ export const AmountScreen = observer(
                     />
                   </button>
 
-                  <BridgeWalletSelect
+                  <BridgeWalletSelectModal
                     direction={direction}
                     isOpen={isBridgeWalletSelectOpen}
                     onRequestClose={onCloseBridgeWalletSelect}
@@ -692,12 +727,12 @@ export const AmountScreen = observer(
                     icon={
                       sourceChain?.chainType === "evm"
                         ? evmConnector?.icon
-                        : account?.walletInfo.logo
+                        : destinationAccount?.walletInfo.logo
                     }
                     name={
                       sourceChain?.chainType === "evm"
                         ? evmConnector?.name
-                        : account?.walletInfo.prettyName
+                        : destinationAccount?.walletInfo.prettyName
                     }
                   />
                 </div>
@@ -883,11 +918,10 @@ export const AmountScreen = observer(
                     address: destinationAsset.coinMinimalDenom,
                     decimals: destinationAsset.coinDecimals,
                     denom: destinationAsset.coinDenom,
-                    sourceDenom: destinationAsset.sourceDenom,
                   }}
                   fromChain={fromChain}
                   toChain={toChain}
-                  toAddress={currentAddress}
+                  toAddress={sourceAddress}
                   onRequestClose={() => setAreMoreOptionsVisible(false)}
                 />
               </>

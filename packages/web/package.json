@@ -138,8 +138,8 @@
     "sharp": "^0.30.4",
     "tailwindcss-animate": "^1.0.7",
     "utility-types": "^3.10.0",
-    "viem": "2.13.3",
-    "wagmi": "^2.9.6",
+    "viem": "2.16.4",
+    "wagmi": "^2.10.8",
     "web3-utils": "^1.7.4",
     "zod": "^3.22.4"
   },

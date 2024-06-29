@@ -4,9 +4,9 @@ import {
   BridgeChain,
   BridgeCoin,
   BridgeProviders,
-  bridgeSupportedAssetsSchema,
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
+  getBridgeSupportedAssetsParams,
 } from "@osmosis-labs/bridge";
 import {
   DEFAULT_VS_CURRENCY,
@@ -202,7 +202,7 @@ export const bridgeTransferRouter = createTRPCRouter({
     }),
 
   getSupportedAssetsByBridge: publicProcedure
-    .input(bridgeSupportedAssetsSchema.extend({ bridge: z.string() }))
+    .input(getBridgeSupportedAssetsParams.extend({ bridge: z.string() }))
     .query(async ({ input, ctx }) => {
       const bridgeProviders = new BridgeProviders(
         process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,

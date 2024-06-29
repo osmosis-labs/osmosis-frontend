@@ -3,15 +3,25 @@ import {
   Bridge,
   BridgeAsset,
   BridgeChain,
+  BridgeError,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
   GetTransferStatusParams,
 } from "@osmosis-labs/bridge";
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
+import { Address } from "viem";
+import { BaseError } from "wagmi";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
+import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
+import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { api, RouterInputs } from "~/utils/trpc";
 
 export const useBridgeQuote = ({
@@ -28,22 +38,34 @@ export const useBridgeQuote = ({
   destinationChain,
 
   bridges = ["Axelar", "Skip", "Squid", "IBC"],
+
+  onRequestClose,
 }: {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
 
   inputAmount: string;
 
-  sourceAsset: BridgeAsset & { amount: CoinPretty };
-  sourceChain: BridgeChain;
-  sourceAddress: string;
+  sourceAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
+  sourceChain: BridgeChain | undefined;
+  sourceAddress: string | undefined;
 
-  destinationAsset: BridgeAsset;
-  destinationChain: BridgeChain;
-  destinationAddress: string;
+  destinationAsset: BridgeAsset | undefined;
+  destinationChain: BridgeChain | undefined;
+  destinationAddress: string | undefined;
 
   bridges?: Bridge[];
+
+  onRequestClose: () => void;
 }) => {
-  const { transferHistoryStore } = useStore();
+  const { accountStore, transferHistoryStore, queriesStore } = useStore();
+  const {
+    connector: evmConnector,
+    address: evmAddress,
+    isConnected: isEvmWalletConnected,
+    chainId: currentEvmChainId,
+  } = useEvmWalletAccount();
+  const { sendTransactionAsync, isLoading: isEthTxPending } =
+    useSendEvmTransaction();
   const { t } = useTranslation();
 
   // In the context of Osmosis, this refers to the Osmosis chain.
@@ -53,7 +75,7 @@ export const useBridgeQuote = ({
     chain: destinationChain,
   };
 
-  const counterpartyPath = {
+  const sourcePath = {
     address: sourceAddress,
     asset: sourceAsset,
     chain: sourceChain,
@@ -62,16 +84,18 @@ export const useBridgeQuote = ({
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
 
-  const quoteParams: Omit<
-    RouterInputs["bridgeTransfer"]["getQuoteByBridge"],
-    "bridge" | "fromAmount"
+  const quoteParams: Partial<
+    Omit<
+      RouterInputs["bridgeTransfer"]["getQuoteByBridge"],
+      "bridge" | "fromAmount"
+    >
   > = {
-    fromAddress: isDeposit ? counterpartyPath.address : destinationPath.address,
-    fromAsset: isDeposit ? counterpartyPath.asset : destinationPath.asset,
-    fromChain: isDeposit ? counterpartyPath.chain : destinationPath.chain,
-    toAddress: isDeposit ? destinationPath.address : counterpartyPath.address,
-    toAsset: isDeposit ? destinationPath.asset : counterpartyPath.asset,
-    toChain: isDeposit ? destinationPath.chain : counterpartyPath.chain,
+    fromAddress: isDeposit ? sourcePath.address : destinationPath.address,
+    fromAsset: isDeposit ? sourcePath.asset : destinationPath.asset,
+    fromChain: isDeposit ? sourcePath.chain : destinationPath.chain,
+    toAddress: isDeposit ? destinationPath.address : sourcePath.address,
+    toAsset: isDeposit ? destinationPath.asset : sourcePath.asset,
+    toChain: isDeposit ? destinationPath.chain : sourcePath.chain,
   };
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
@@ -96,20 +120,21 @@ export const useBridgeQuote = ({
     debouncedInputValue === "" ? "0" : debouncedInputValue
   ).mul(
     // CoinPretty only accepts whole amounts
-    DecUtils.getTenExponentNInPrecisionRange(destinationAsset.decimals)
+    DecUtils.getTenExponentNInPrecisionRange(destinationAsset?.decimals ?? 0)
   );
 
   const quoteResults = api.useQueries((t) =>
     bridges.map((bridge) =>
       t.bridgeTransfer.getQuoteByBridge(
         {
-          ...quoteParams,
+          ...(quoteParams as Required<typeof quoteParams>),
           bridge,
           fromAmount: inputAmount.truncate().toString(),
         },
         {
           enabled:
-            inputAmount.gt(new Dec(0)) && counterpartyPath.address !== "",
+            inputAmount.gt(new Dec(0)) &&
+            Object.values(quoteParams).every((param) => !isNil(param)),
           staleTime: 5_000,
           cacheTime: 5_000,
           // Disable retries, as useQueries
@@ -160,7 +185,7 @@ export const useBridgeQuote = ({
                     {
                       coinDecimals: estimatedGasFee.decimals,
                       coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.sourceDenom,
+                      coinMinimalDenom: estimatedGasFee.address,
                     },
                     new Dec(estimatedGasFee.amount)
                   ).maxDecimals(8)
@@ -170,7 +195,7 @@ export const useBridgeQuote = ({
                 {
                   coinDecimals: transferFee.decimals,
                   coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.sourceDenom,
+                  coinMinimalDenom: transferFee.address,
                 },
                 new Dec(transferFee.amount)
               ).maxDecimals(8),
@@ -179,7 +204,7 @@ export const useBridgeQuote = ({
                 {
                   coinDecimals: expectedOutput.decimals,
                   coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.sourceDenom,
+                  coinMinimalDenom: expectedOutput.address,
                 },
                 new Dec(expectedOutput.amount)
               ),
@@ -219,6 +244,19 @@ export const useBridgeQuote = ({
       ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
     )?.data;
   }, [quoteResults, selectedBridgeProvider]);
+
+  const bridgeProviders = useMemo(
+    () =>
+      quoteResults
+        .map(({ data }) => data?.provider)
+        ?.filter((r): r is NonNullable<typeof r> => !!r)
+        .map(({ id, logoUrl }) => ({
+          id: id,
+          logo: logoUrl,
+          name: id,
+        })),
+    [quoteResults]
+  );
 
   const numSucceeded = quoteResults.filter(({ isSuccess }) => isSuccess).length;
   const isOneSuccessful = Boolean(numSucceeded);
@@ -286,10 +324,11 @@ export const useBridgeQuote = ({
     isBridgeProviderControlledMode,
   ]);
 
-  const availableBalance = sourceAsset.amount;
+  const availableBalance = sourceAsset?.amount;
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
+    availableBalance &&
     selectedQuote?.transferFee !== undefined &&
     selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
     new CoinPretty(availableBalance.currency, inputAmount)
@@ -308,7 +347,7 @@ export const useBridgeQuote = ({
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
       {
-        ...quoteParams,
+        ...(quoteParams as Required<typeof quoteParams>),
         fromAmount: inputAmount.truncate().toString(),
         bridge: selectedBridgeProvider!,
       },
@@ -322,7 +361,8 @@ export const useBridgeQuote = ({
           !selectedQuote?.transactionRequest &&
           inputAmount.gt(new Dec(0)) &&
           !isInsufficientBal &&
-          !isInsufficientFee,
+          !isInsufficientFee &&
+          Object.values(quoteParams).every((param) => !isNil(param)),
         refetchInterval: 30 * 1000, // 30 seconds
       }
     );
@@ -335,7 +375,7 @@ export const useBridgeQuote = ({
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
-      if (inputAmountRaw !== "") {
+      if (inputAmountRaw !== "" && availableBalance) {
         transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(availableBalance.currency, inputAmount)
@@ -347,37 +387,37 @@ export const useBridgeQuote = ({
       }
     },
     [
-      availableBalance.currency,
+      availableBalance,
       destinationAddress,
       inputAmount,
       inputAmountRaw,
       isWithdraw,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
     ]
   );
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
 
+  const isSendTxPending = (() => {
+    if (!destinationChain) return false;
+    return destinationChain.chainType === "cosmos"
+      ? accountStore.getWallet(destinationChain.chainId)?.txTypeInProgress !==
+          ""
+      : isEthTxPending;
+  })();
+
   // close modal when initial eth transaction is committed
-  const isSendTxPending = isWithdraw
-    ? osmosisAccount?.txTypeInProgress !== ""
-    : isEthTxPending;
   useEffect(() => {
     if (transferInitiated && !isSendTxPending) {
       onRequestClose();
     }
-  }, [
-    transferInitiated,
-    isSendTxPending,
-    osmosisAccount?.txTypeInProgress,
-    isEthTxPending,
-    onRequestClose,
-  ]);
+  }, [isSendTxPending, onRequestClose, transferInitiated]);
 
   const handleEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
-    if (!ethWalletClient) throw new Error("No ETH wallet client found");
+    if (!isEvmWalletConnected || !evmAddress || !evmConnector)
+      throw new Error("No ETH wallet account is connected");
 
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
@@ -388,42 +428,13 @@ export const useBridgeQuote = ({
       if (transactionRequest.approvalTransactionRequest) {
         setIsApprovingToken(true);
 
-        await ethWalletClient.send({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: transactionRequest.approvalTransactionRequest.to,
-              from: ethWalletClient.accountAddress,
-              data: transactionRequest.approvalTransactionRequest.data,
-            },
-          ],
+        await sendTransactionAsync({
+          to: transactionRequest.approvalTransactionRequest.to as Address,
+          account: evmAddress,
+          data: transactionRequest.approvalTransactionRequest.data as Address,
         });
 
-        await new Promise((resolve, reject) => {
-          const onConfirmed = () => {
-            setIsApprovingToken(false);
-            clearEvents();
-            resolve(void 0);
-          };
-          const onFailed = () => {
-            setIsApprovingToken(false);
-            clearEvents();
-            reject(void 0);
-          };
-
-          const clearEvents = () => {
-            ethWalletClient.txStatusEventEmitter!.removeListener(
-              "confirmed",
-              onConfirmed
-            );
-            ethWalletClient.txStatusEventEmitter!.removeListener(
-              "failed",
-              onFailed
-            );
-          };
-          ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirmed);
-          ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
-        });
+        setIsApprovingToken(false);
 
         for (const quoteResult of quoteResults) {
           await quoteResult.refetch();
@@ -432,88 +443,62 @@ export const useBridgeQuote = ({
         return;
       }
 
-      const txHash = await ethWalletClient.send({
-        method: "eth_sendTransaction",
-        params: [
-          {
-            to: transactionRequest.to,
-            from: ethWalletClient.accountAddress,
-            value: transactionRequest?.value
-              ? transactionRequest.value
-              : undefined,
-            data: transactionRequest.data,
-            gas: transactionRequest.gas,
-            gasPrice: transactionRequest.gasPrice,
-            maxFeePerGas: transactionRequest.maxFeePerGas,
-            maxPriorityFeePerGas: transactionRequest.maxPriorityFeePerGas,
-          },
-        ],
+      const txHash = await sendTransactionAsync({
+        to: transactionRequest.to,
+        account: evmAddress,
+        value: transactionRequest?.value
+          ? BigInt(transactionRequest.value)
+          : undefined,
+        data: transactionRequest.data,
+        gas: transactionRequest.gas
+          ? BigInt(transactionRequest.gas)
+          : undefined,
+        gasPrice: transactionRequest.gasPrice
+          ? BigInt(transactionRequest.gasPrice)
+          : undefined,
+        maxFeePerGas: transactionRequest.maxFeePerGas
+          ? BigInt(transactionRequest.maxFeePerGas)
+          : undefined,
+        maxPriorityFeePerGas: transactionRequest.maxPriorityFeePerGas
+          ? BigInt(transactionRequest.maxPriorityFeePerGas)
+          : undefined,
       });
 
-      await new Promise((resolve, reject) => {
-        const onConfirm = () => {
-          trackTransferStatus(quote.provider.id, {
-            sendTxHash: txHash as string,
-            fromChainId: quote.fromChain.chainId,
-            toChainId: quote.toChain.chainId,
-          });
-          setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-
-          if (isWithdraw) {
-            withdrawAmountConfig.setAmount("");
-          } else {
-            setDepositAmount("");
-          }
-          setTransferInitiated(true);
-
-          clearEvents();
-          resolve(void 0);
-        };
-
-        const onFailed = () => {
-          clearEvents();
-          reject(void 0);
-        };
-
-        const clearEvents = () => {
-          ethWalletClient.txStatusEventEmitter!.removeListener(
-            "confirmed",
-            onConfirm
-          );
-          ethWalletClient.txStatusEventEmitter!.removeListener(
-            "failed",
-            onFailed
-          );
-        };
-
-        ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirm);
-        ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
+      trackTransferStatus(quote.provider.id, {
+        sendTxHash: txHash as string,
+        fromChainId: quote.fromChain.chainId,
+        toChainId: quote.toChain.chainId,
       });
+
+      //   setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
+
+      //   if (isWithdraw) {
+      //     withdrawAmountConfig.setAmount("");
+      //   } else {
+      //     setDepositAmount("");
+      //   }
+      setTransferInitiated(true);
     } catch (e) {
-      const msg = ethWalletClient.displayError?.(e);
-      if (typeof msg === "string") {
-        displayToast(
-          {
-            titleTranslationKey: "transactionFailed",
-            captionTranslationKey: msg,
-          },
-          ToastType.ERROR
-        );
-      } else if (msg) {
-        displayToast(msg, ToastType.ERROR);
-      } else {
-        console.error(e);
-      }
+      const error = e as BaseError;
+      const toastContent = getWagmiToastErrorMessage({
+        error,
+        t,
+        walletName: evmConnector.name,
+      });
+      displayToast(toastContent, ToastType.ERROR);
     }
   };
 
   const handleCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
+    if (!destinationChain || destinationChain?.chainType !== "cosmos") {
+      throw new Error("Destination chain is not cosmos");
+    }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     return accountStore.signAndBroadcast(
-      osmosisChainId, // Osmosis chain id. For now all Cosmos transactions will come from Osmosis
+      destinationChain.chainId,
       transactionRequest.msgTypeUrl,
       [
         {
@@ -526,15 +511,16 @@ export const useBridgeQuote = ({
       undefined,
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(osmosisChainId);
+          const queries = queriesStore.get(destinationChain.chainId);
 
           // After succeeding to send token, refresh the balance.
           const queryBalance = queries.queryBalances
-            .getQueryBech32Address(osmosisAddress)
+            // If we get here destination address is defined
+            .getQueryBech32Address(destinationAddress!)
             .balances.find((bal) => {
               return (
                 bal.currency.coinMinimalDenom ===
-                assetToBridge.balance.currency.coinMinimalDenom
+                availableBalance?.currency.coinMinimalDenom
               );
             });
 
@@ -548,11 +534,11 @@ export const useBridgeQuote = ({
             toChainId: quote.toChain.chainId,
           });
 
-          if (isWithdraw) {
-            withdrawAmountConfig.setAmount("");
-          } else {
-            setDepositAmount("");
-          }
+          //   if (isWithdraw) {
+          //     withdrawAmountConfig.setAmount("");
+          //   } else {
+          //     setDepositAmount("");
+          //   }
           setTransferInitiated(true);
         }
       }
@@ -567,16 +553,14 @@ export const useBridgeQuote = ({
 
     if (!transactionRequest || !quote) return;
 
-    try {
-      if (transactionRequest.type === "evm") {
-        await handleEvmTx({ ...quote, transactionRequest });
-      } else if (transactionRequest.type === "cosmos") {
-        await handleCosmosTx({
-          ...quote,
-          transactionRequest,
-        });
-      }
-    } catch (e) {}
+    if (transactionRequest.type === "evm") {
+      await handleEvmTx({ ...quote, transactionRequest });
+    } else if (transactionRequest.type === "cosmos") {
+      await handleCosmosTx({
+        ...quote,
+        transactionRequest,
+      });
+    }
   };
 
   const hasNoQuotes = someError?.message.includes(
@@ -584,21 +568,23 @@ export const useBridgeQuote = ({
   );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
+  const isCorrectEvmChainSelected =
+    sourceChain?.chainType === "evm"
+      ? currentEvmChainId === sourceChain?.chainId
+      : true;
 
   let buttonErrorMessage: string | undefined;
-  if (!counterpartyAddress) {
+  if (!sourceAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
-  } else if (!isCounterpartyAddressValid) {
-    buttonErrorMessage = t("assets.transfer.errors.invalidAddress");
   } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  } else if (userDisconnectedEthWallet) {
+  } else if (!isEvmWalletConnected) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
+      walletName: evmConnector?.name ?? "Unknown",
     });
-  } else if (isDeposit && !isCorrectChainSelected) {
+  } else if (isDeposit && !isCorrectEvmChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: ethWalletClient?.displayInfo.displayName ?? "Unknown",
+      walletName: evmConnector?.name ?? "Unknown",
     });
   } else if (Boolean(someError)) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
@@ -617,11 +603,11 @@ export const useBridgeQuote = ({
     quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
+  const isWithdrawReady = isWithdraw && !isSendTxPending;
   const isDepositReady =
     isDeposit &&
-    !userDisconnectedEthWallet &&
-    isCorrectChainSelected &&
+    !isEvmWalletConnected &&
+    isCorrectEvmChainSelected &&
     !isLoadingBridgeQuote &&
     !isEthTxPending;
   const userCanInteract = isDepositReady || isWithdrawReady;
@@ -643,17 +629,34 @@ export const useBridgeQuote = ({
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
-  } else if (isWithdraw) {
-    buttonText = t("assets.transfer.titleWithdraw", {
-      coinDenom: originCurrency.coinDenom,
-    });
   } else {
-    buttonText = t("assets.transfer.titleDeposit", {
-      coinDenom: originCurrency.coinDenom,
-    });
+    buttonText = `Review ${direction === "deposit" ? "deposit" : "withdraw"}`;
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
     throw new Error("Expected output is not defined.");
   }
+
+  return {
+    buttonText,
+    buttonErrorMessage,
+
+    userCanInteract,
+    onTransfer,
+
+    isApprovingToken,
+
+    isInsufficientFee,
+    isInsufficientBal,
+    warnUserOfSlippage,
+    warnUserOfPriceImpact,
+
+    bridgeProviders,
+    selectedBridgeProvider,
+    setSelectedBridgeProvider,
+
+    selectedQuote,
+    isLoadingBridgeQuote,
+    isLoadingBridgeTransaction,
+  };
 };

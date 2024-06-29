@@ -32,13 +32,11 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
   chainList,
   asset,
   userCosmosAddress,
-  chainId,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
   userCosmosAddress?: string;
-  chainId?: string;
 }): Promise<TAsset & MaybeUserAssetCoin> {
   if (!userCosmosAddress) return asset;
 
@@ -48,7 +46,6 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
     assets: [asset],
     userCosmosAddress: userCosmosAddress,
     includePreview: true,
-    chainId,
   });
   return userAssets[0];
 }
@@ -60,13 +57,11 @@ export async function mapGetAssetsWithUserBalances<
   TAsset extends MinimalAsset
 >({
   poolId,
-  chainId,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
-  chainId?: string;
   userCosmosAddress?: string;
   sortFiatValueDirection?: SortDirection;
   /**
@@ -96,17 +91,12 @@ export async function mapGetAssetsWithUserBalances<
 
   const { balances } = await queryBalances({
     ...params,
-    // Defaults to Osmosis
-    chainId,
     bech32Address: userCosmosAddress,
   });
 
   const eventualUserAssets = assets
     .map(async (asset) => {
-      const balance = balances.find(
-        (a) =>
-          a.denom === asset.coinMinimalDenom || a.denom === asset.sourceDenom // If it's outside of Osmosis
-      );
+      const balance = balances.find((a) => a.denom === asset.coinMinimalDenom);
 
       // not a user asset
       if (!balance) return asset;

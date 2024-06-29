@@ -13,7 +13,6 @@ import {
   useDisconnectEvmWallet,
   useEvmWalletAccount,
 } from "~/hooks/evm-wallet";
-import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
@@ -27,30 +26,32 @@ interface BridgeWalletSelectProps extends ModalBaseProps {
   onSelectChain: (chain: BridgeChain) => void;
 }
 
-export const BridgeWalletSelect = observer((props: BridgeWalletSelectProps) => {
-  const { direction, cosmosChain, evmChain, onSelectChain, ...modalProps } =
-    props;
+export const BridgeWalletSelectModal = observer(
+  (props: BridgeWalletSelectProps) => {
+    const { direction, cosmosChain, evmChain, onSelectChain, ...modalProps } =
+      props;
 
-  return (
-    <ModalBase
-      title={
-        direction === "deposit"
-          ? "Select deposit wallet"
-          : "Select withdraw wallet"
-      }
-      className="!max-w-[450px]"
-      {...modalProps}
-    >
-      <BridgeWalletSelectScreen
-        direction={direction}
-        cosmosChain={cosmosChain}
-        evmChain={evmChain}
-        onClose={modalProps.onRequestClose}
-        onSelectChain={onSelectChain}
-      />
-    </ModalBase>
-  );
-});
+    return (
+      <ModalBase
+        title={
+          direction === "deposit"
+            ? "Select deposit wallet"
+            : "Select withdraw wallet"
+        }
+        className="!max-w-[450px]"
+        {...modalProps}
+      >
+        <BridgeWalletSelectScreen
+          direction={direction}
+          cosmosChain={cosmosChain}
+          evmChain={evmChain}
+          onClose={modalProps.onRequestClose}
+          onSelectChain={onSelectChain}
+        />
+      </ModalBase>
+    );
+  }
+);
 
 export const BridgeWalletSelectScreen = ({
   cosmosChain,
@@ -63,7 +64,6 @@ export const BridgeWalletSelectScreen = ({
 > & {
   onClose: () => void;
 }) => {
-  const { t } = useTranslation();
   const { accountStore } = useStore();
   const cosmosAccount = cosmosChain
     ? accountStore.getWallet(cosmosChain.chainId)

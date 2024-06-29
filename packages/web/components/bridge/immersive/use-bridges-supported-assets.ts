@@ -24,7 +24,6 @@ export const useBridgesSupportedAssets = ({
               address: asset.coinMinimalDenom,
               decimals: asset.coinDecimals,
               denom: asset.coinDenom,
-              sourceDenom: asset.sourceDenom,
             },
             chain,
           },

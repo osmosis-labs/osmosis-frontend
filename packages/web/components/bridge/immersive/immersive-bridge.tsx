@@ -195,6 +195,7 @@ export const ImmersiveBridgeFlow = ({
                       direction={direction}
                       assetsInOsmosis={canonicalAssetsWithVariants}
                       selectedDenom={selectedAssetDenom!}
+                      onClose={() => setIsVisible(false)}
                     />
                   )}
                 </Screen>
