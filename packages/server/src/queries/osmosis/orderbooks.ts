@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 import { createNodeQuery } from "../create-node-query";
 
 interface OrderbookMakerFeeResponse {
@@ -168,3 +170,76 @@ export const queryOrderbookDenoms = createNodeQuery<
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
 });
+
+export interface HistoricalLimitOrder {
+  place_timestamp: string;
+  place_tx_hash: string;
+  order_denom: string;
+  output_denom: string;
+  quantity: string;
+  tick_id: string;
+  order_id: string;
+  order_direction: "ask" | "bid";
+  price: string;
+  status: string;
+  contract: string;
+}
+
+export function queryHistoricalOrders(
+  userOsmoAddress: string
+): Promise<HistoricalLimitOrder[]> {
+  // const url = new URL(
+  //   `/users/limit_orders/history/closed?address=${userOsmoAddress}`,
+  //   NUMIA_BASE_URL
+  // );
+  // return apiClient<HistoricalLimitOrder[]>(url.toString());
+  const placedholders: HistoricalLimitOrder[] = [
+    {
+      place_timestamp: (dayjs().unix() * 1_000_000).toString(),
+      place_tx_hash: "123123",
+      order_denom:
+        "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
+      output_denom: "uosmo",
+      quantity: "1000000",
+      tick_id: "1",
+      order_id: '1"',
+      order_direction: "bid",
+      price: "1",
+      status: "fullyClaimed",
+      contract:
+        "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
+    },
+    {
+      place_timestamp: (dayjs().unix() * 1_000_000).toString(),
+      place_tx_hash: "123123",
+      output_denom:
+        "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
+      order_denom: "uosmo",
+      quantity: "123123",
+      tick_id: "1",
+      order_id: '1"',
+      order_direction: "ask",
+      price: "0.5",
+      status: "fullyClaimed",
+      contract:
+        "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
+    },
+    {
+      place_timestamp: (dayjs().unix() * 1_000_000).toString(),
+      place_tx_hash: "123123",
+      output_denom:
+        "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
+      order_denom: "uosmo",
+      quantity: "123123",
+      tick_id: "1",
+      order_id: '1"',
+      order_direction: "ask",
+      price: "2.5",
+      status: "cancelled",
+      contract:
+        "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
+    },
+  ];
+
+  return new Promise((resolve) => resolve(placedholders));
+}

@@ -4,10 +4,12 @@ import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookDenoms,
+  getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookSpotPrice,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
+  HistoricalLimitOrder,
   LimitOrder,
   maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
@@ -43,7 +45,7 @@ export type MappedLimitOrder = Omit<
   orderbookAddress: string;
   price: Dec;
   status: OrderStatus;
-  output: number;
+  output: Dec;
   quoteAsset: ReturnType<typeof getAssetFromAssetList>;
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
   placed_at: number;
@@ -99,19 +101,11 @@ async function getTickInfoAndTransformOrders(
       ({ tickId }) => tickId === o.tick_id
     ) ?? { tickState: undefined, unrealizedCancels: undefined };
 
-    const [tokenInAsset, tokenOutAsset] =
-      o.order_direction === "bid"
-        ? [quoteAsset, baseAsset]
-        : [baseAsset, quoteAsset];
-
-    const quantityMin = parseInt(o.quantity);
-    const placedQuantityMin = parseInt(o.placed_quantity);
-    const placedQuantity =
-      placedQuantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
-    const quantity = quantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
+    const quantity = parseInt(o.quantity);
+    const placedQuantity = parseInt(o.placed_quantity);
 
     const percentClaimed = new Dec(
-      (placedQuantityMin - quantityMin) / placedQuantityMin
+      (placedQuantity - quantity) / placedQuantity
     );
     const [tickEtas, tickUnrealizedCancelled] =
       o.order_direction === "bid"
@@ -135,22 +129,17 @@ async function getTickInfoAndTransformOrders(
           ];
     const tickTotalEtas = tickEtas + tickUnrealizedCancelled;
     const totalFilled = Math.max(
-      tickTotalEtas - (parseInt(o.etas) - (placedQuantityMin - quantityMin)),
+      tickTotalEtas - (parseInt(o.etas) - (placedQuantity - quantity)),
       0
     );
-    const percentFilled = new Dec(Math.min(totalFilled / placedQuantityMin, 1));
+    const percentFilled = new Dec(Math.min(totalFilled / placedQuantity, 1));
     const price = tickToPrice(new Int(o.tick_id));
     const status = mapOrderStatus(o, percentFilled);
-    const outputMin =
+    const output =
       o.order_direction === "bid"
-        ? new Dec(placedQuantityMin).quo(price)
-        : new Dec(placedQuantityMin).mul(price);
-    const output = parseInt(
-      outputMin
-        .quo(new Dec(10 ** (tokenOutAsset?.decimals ?? 0)))
-        .truncate()
-        .toString()
-    );
+        ? new Dec(placedQuantity).quo(price)
+        : new Dec(placedQuantity).mul(price);
+    console.log("price", price.toString());
     return {
       ...o,
       price,
@@ -165,6 +154,46 @@ async function getTickInfoAndTransformOrders(
       quoteAsset,
       baseAsset,
       placed_at: parseInt(o.placed_at),
+    };
+  });
+}
+
+function mapHistoricalToMapped(
+  historicalOrders: HistoricalLimitOrder[],
+  userAddress: string,
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>,
+  baseAsset: ReturnType<typeof getAssetFromAssetList>
+): MappedLimitOrder[] {
+  return historicalOrders.map((o) => {
+    const quantityMin = parseInt(o.quantity);
+    const placedQuantityMin = parseInt(o.quantity);
+
+    const price = new Dec(o.price);
+    const percentClaimed = new Dec(1);
+    const output =
+      o.order_direction === "bid"
+        ? new Dec(placedQuantityMin).quo(price)
+        : new Dec(placedQuantityMin).mul(price);
+    return {
+      quoteAsset,
+      baseAsset,
+      etas: "0",
+      order_direction: o.order_direction,
+      order_id: parseInt(o.order_id),
+      owner: userAddress,
+      placed_at: parseInt(o.place_timestamp),
+      placed_quantity: parseInt(o.quantity),
+      placedQuantityMin,
+      quantityMin,
+      quantity: parseInt(o.quantity),
+      price,
+      status: o.status as OrderStatus,
+      tick_id: parseInt(o.tick_id),
+      output,
+      percentClaimed,
+      percentFilled: new Dec(1),
+      totalFilled: parseInt(o.quantity),
+      orderbookAddress: o.contract,
     };
   });
 }
@@ -241,6 +270,10 @@ export const orderbookRouter = createTRPCRouter({
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
 
+          const historicalOrders = await getOrderbookHistoricalOrders({
+            userOsmoAddress: input.userOsmoAddress,
+          });
+
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
               const resp = await getOrderbookActiveOrders({
@@ -248,8 +281,15 @@ export const orderbookRouter = createTRPCRouter({
                 userOsmoAddress: userOsmoAddress,
                 chainList: ctx.chainList,
               });
+              const historicalOrdersForContract = historicalOrders.filter(
+                (o) => o.contract === contractOsmoAddress
+              );
 
-              if (resp.orders.length === 0) return [];
+              if (
+                resp.orders.length === 0 &&
+                historicalOrdersForContract.length === 0
+              )
+                return [];
               const { base_denom } = await getOrderbookDenoms({
                 orderbookAddress: contractOsmoAddress,
                 chainList: ctx.chainList,
@@ -270,11 +310,22 @@ export const orderbookRouter = createTRPCRouter({
                 quoteAsset,
                 baseAsset
               );
-              return mappedOrders.sort(defaultSortOrders);
+
+              const mappedHistoricalOrders = mapHistoricalToMapped(
+                historicalOrdersForContract,
+                input.userOsmoAddress,
+                quoteAsset,
+                baseAsset
+              );
+
+              return [...mappedOrders, ...mappedHistoricalOrders].sort(
+                defaultSortOrders
+              );
             }
           );
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flatMap((p) => p);
+
           return allOrders;
         },
         cacheKey: JSON.stringify([
@@ -350,5 +401,14 @@ export const orderbookRouter = createTRPCRouter({
       const ordersByContracts = await Promise.all(promises);
       const allOrders = ordersByContracts.flatMap((p) => p);
       return allOrders;
+    }),
+  getHistoricalOrders: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input }) => {
+      const { userOsmoAddress } = input;
+      const historicalOrders = await getOrderbookHistoricalOrders({
+        userOsmoAddress,
+      });
+      return historicalOrders;
     }),
 });

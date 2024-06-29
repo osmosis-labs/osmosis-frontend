@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -61,8 +61,16 @@ export const tableColumns = [
               )}
             >
               <span>
-                {order_direction === "bid" ? output : placed_quantity}{" "}
-                {baseAsset?.symbol}
+                {formatPretty(
+                  new CoinPretty(
+                    {
+                      coinDecimals: baseAsset?.decimals ?? 0,
+                      coinDenom: baseAsset?.symbol ?? "",
+                      coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+                    },
+                    order_direction === "ask" ? placed_quantity : output
+                  )
+                )}
               </span>
               <Icon
                 id="arrow-right"
@@ -71,8 +79,16 @@ export const tableColumns = [
                 height={16}
               />
               <span>
-                {order_direction === "bid" ? placed_quantity : output}{" "}
-                {quoteAsset?.symbol}
+                {formatPretty(
+                  new CoinPretty(
+                    {
+                      coinDecimals: quoteAsset?.decimals ?? 0,
+                      coinDenom: quoteAsset?.symbol ?? "",
+                      coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
+                    },
+                    order_direction === "ask" ? output : placed_quantity
+                  )
+                )}
               </span>
             </p>
             <div className="inline-flex items-center gap-2">
@@ -81,7 +97,9 @@ export const tableColumns = [
                 {formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
-                    order_direction === "bid" ? placed_quantity : output
+                    order_direction === "bid"
+                      ? placed_quantity / 1_000_000
+                      : output.quo(new Dec(1_000_000))
                   )
                 )}{" "}
                 of
