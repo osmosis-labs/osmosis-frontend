@@ -2,6 +2,7 @@ import { PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import Image from "next/image";
 
 import { Icon } from "~/components/assets";
@@ -124,11 +125,18 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Order Placed</small>;
     },
-    cell: () => {
+    cell: ({
+      row: {
+        original: { placed_at },
+      },
+    }) => {
+      const placedAt = dayjs(placed_at / 1000000);
+      const formattedTime = placedAt.format("h:mm A");
+      const formattedDate = placedAt.format("MMM D");
       return (
         <div className="flex flex-col gap-1">
-          <p className="body2 text-osmoverse-300">2:14 PM</p>
-          <p>Apr 1st</p>
+          <p className="body2 text-osmoverse-300">{formattedTime}</p>
+          <p>{formattedDate}</p>
         </div>
       );
     },
