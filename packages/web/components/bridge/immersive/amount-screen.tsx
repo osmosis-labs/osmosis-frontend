@@ -625,7 +625,7 @@ export const AmountScreen = observer(
                           .hideDenom(true)
                           .toString()
                       : sourceAssetsBalances[0].usdValue.toString()}{" "}
-                    available
+                    {t("transfer.available")}
                   </p>
                 </div>
               )}
