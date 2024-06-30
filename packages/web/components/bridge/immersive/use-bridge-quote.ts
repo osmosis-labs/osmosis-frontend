@@ -669,5 +669,6 @@ export const useBridgeQuote = ({
     selectedQuote,
     isLoadingBridgeQuote,
     isLoadingBridgeTransaction,
+    isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
   };
 };

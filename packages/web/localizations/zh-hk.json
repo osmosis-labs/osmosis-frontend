@@ -921,6 +921,8 @@
     "moreDepositOptions": "更多存款選擇",
     "moreWithdrawOptions": "更多提款選項",
     "convertTo": "轉換成",
+    "depositAs": "存款為",
+    "withdrawAs": "提款為",
     "recommended": "受到推崇的",
     "fees": "費用",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "存款完成",
     "failedWithdraw": "提現失敗",
     "failedDeposit": "存款失敗",
-    "connectionError": "連線錯誤"
+    "connectionError": "連線錯誤",
+    "transferDetails": "轉帳詳情",
+    "provider": "提供者",
+    "estimatedTime": "預計時間",
+    "providerFees": "提供者費用",
+    "networkFee": "{networkName}網路費用",
+    "totalFees": "總費用",
+    "estimatedAmountReceived": "預計收到金額"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

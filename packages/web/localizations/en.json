@@ -953,7 +953,14 @@
     "completedDeposit": "Deposit completed",
     "failedWithdraw": "Withdraw failed",
     "failedDeposit": "Deposit failed",
-    "connectionError": "Connection error"
+    "connectionError": "Connection error",
+    "transferDetails": "Transfer details",
+    "provider": "Provider",
+    "estimatedTime": "Estimated time",
+    "providerFees": "Provider fees",
+    "networkFee": "{networkName} Network fee",
+    "totalFees": "Total fees",
+    "estimatedAmountReceived": "Estimated amount received"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

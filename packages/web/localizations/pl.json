@@ -921,6 +921,8 @@
     "moreDepositOptions": "Więcej opcji depozytu",
     "moreWithdrawOptions": "Więcej opcji wypłat",
     "convertTo": "Konwertuj na",
+    "depositAs": "Wpłać jako",
+    "withdrawAs": "Wycofaj jako",
     "recommended": "Zalecana",
     "fees": "opłaty",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",
     "failedDeposit": "Wpłata nie powiodła się",
-    "connectionError": "Błąd połączenia"
+    "connectionError": "Błąd połączenia",
+    "transferDetails": "Szczegóły przelewu",
+    "provider": "Dostawca",
+    "estimatedTime": "Szacowany czas",
+    "providerFees": "Opłaty dostawcy",
+    "networkFee": "{networkName} Opłata sieciowa",
+    "totalFees": "Wszystkie koszty",
+    "estimatedAmountReceived": "Szacunkowa otrzymana kwota"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

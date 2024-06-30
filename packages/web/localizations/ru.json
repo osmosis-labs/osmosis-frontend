@@ -921,6 +921,8 @@
     "moreDepositOptions": "Больше вариантов депозита",
     "moreWithdrawOptions": "Больше вариантов вывода",
     "convertTo": "Перевести в",
+    "depositAs": "Депозит как",
+    "withdrawAs": "Вывести как",
     "recommended": "рекомендуемые",
     "fees": "сборы",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "Депозит завершен",
     "failedWithdraw": "Вывести не удалось",
     "failedDeposit": "Депозит не выполнен",
-    "connectionError": "Ошибка подключения"
+    "connectionError": "Ошибка подключения",
+    "transferDetails": "Детали трансфера",
+    "provider": "Поставщик",
+    "estimatedTime": "Расчетное время",
+    "providerFees": "Комиссия поставщика",
+    "networkFee": "{networkName} Сетевая плата",
+    "totalFees": "Общая сумма сборов",
+    "estimatedAmountReceived": "Ориентировочная полученная сумма"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

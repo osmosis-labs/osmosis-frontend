@@ -921,6 +921,8 @@
     "moreDepositOptions": "Plus d'options de dépôt",
     "moreWithdrawOptions": "Plus d'options de retrait",
     "convertTo": "Convertir en",
+    "depositAs": "Dépôt comme",
+    "withdrawAs": "Se retirer comme",
     "recommended": "Recommandé",
     "fees": "frais",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "Dépôt complété",
     "failedWithdraw": "Échec du retrait",
     "failedDeposit": "Échec du dépôt",
-    "connectionError": "Erreur de connexion"
+    "connectionError": "Erreur de connexion",
+    "transferDetails": "Détails du transfert",
+    "provider": "Fournisseur",
+    "estimatedTime": "Temps estimé",
+    "providerFees": "Frais du fournisseur",
+    "networkFee": "{networkName} Frais de réseau",
+    "totalFees": "Total des frais",
+    "estimatedAmountReceived": "Montant estimé reçu"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

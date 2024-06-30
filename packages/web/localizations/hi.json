@@ -921,6 +921,8 @@
     "moreDepositOptions": "अधिक जमा विकल्प",
     "moreWithdrawOptions": "अधिक निकासी विकल्प",
     "convertTo": "में बदलो",
+    "depositAs": "इस प्रकार जमा करें",
+    "withdrawAs": "इस प्रकार वापस लें",
     "recommended": "अनुशंसित",
     "fees": "फीस",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "जमा पूर्ण हुआ",
     "failedWithdraw": "निकासी विफल",
     "failedDeposit": "जमा विफल",
-    "connectionError": "संपर्क त्रुटि"
+    "connectionError": "संपर्क त्रुटि",
+    "transferDetails": "स्थानांतरण विवरण",
+    "provider": "प्रदाता",
+    "estimatedTime": "अनुमानित समय",
+    "providerFees": "प्रदाता शुल्क",
+    "networkFee": "{networkName} नेटवर्क शुल्क",
+    "totalFees": "कुल शुल्क",
+    "estimatedAmountReceived": "अनुमानित प्राप्त राशि"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

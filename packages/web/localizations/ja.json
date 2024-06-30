@@ -921,6 +921,8 @@
     "moreDepositOptions": "その他の入金オプション",
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
+    "depositAs": "入金",
+    "withdrawAs": "撤退する",
     "recommended": "推奨",
     "fees": "手数料",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "入金完了",
     "failedWithdraw": "引き出しに失敗しました",
     "failedDeposit": "入金に失敗しました",
-    "connectionError": "接続エラー"
+    "connectionError": "接続エラー",
+    "transferDetails": "振込詳細",
+    "provider": "プロバイダー",
+    "estimatedTime": "予定時刻",
+    "providerFees": "プロバイダー料金",
+    "networkFee": "{networkName}ネットワーク料金",
+    "totalFees": "合計料金",
+    "estimatedAmountReceived": "受け取る推定金額"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

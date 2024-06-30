@@ -921,6 +921,8 @@
     "moreDepositOptions": "گزینه های سپرده بیشتر",
     "moreWithdrawOptions": "گزینه های برداشت بیشتر",
     "convertTo": "تبدیل به",
+    "depositAs": "سپرده گذاری به عنوان",
+    "withdrawAs": "برداشت به عنوان",
     "recommended": "توصیه شده",
     "fees": "هزینه ها",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",
     "failedDeposit": "سپرده گذاری انجام نشد",
-    "connectionError": "خطای اتصال"
+    "connectionError": "خطای اتصال",
+    "transferDetails": "جزئیات انتقال",
+    "provider": "ارائه دهنده",
+    "estimatedTime": "زمان تخمین زده شده",
+    "providerFees": "هزینه های ارائه دهنده",
+    "networkFee": "هزینه شبکه {networkName}",
+    "totalFees": "مجموع هزینه ها",
+    "estimatedAmountReceived": "مبلغ تخمینی دریافت شده"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

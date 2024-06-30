@@ -921,6 +921,8 @@
     "moreDepositOptions": "更多存款选择",
     "moreWithdrawOptions": "更多提款选项",
     "convertTo": "转换成",
+    "depositAs": "存款为",
+    "withdrawAs": "提款方式",
     "recommended": "受到推崇的",
     "fees": "费用",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "存款已完成",
     "failedWithdraw": "提现失败",
     "failedDeposit": "存款失败",
-    "connectionError": "连接错误"
+    "connectionError": "连接错误",
+    "transferDetails": "转账详情",
+    "provider": "提供者",
+    "estimatedTime": "预计时间",
+    "providerFees": "供应商费用",
+    "networkFee": "{networkName}网络费",
+    "totalFees": "总费用",
+    "estimatedAmountReceived": "预计收到金额"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

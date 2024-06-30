@@ -1,4 +1,4 @@
-import { Menu } from "@headlessui/react";
+import { Disclosure, Menu } from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
@@ -373,6 +373,7 @@ export const AmountScreen = observer(
       buttonText,
       isLoadingBridgeQuote,
       isLoadingBridgeTransaction,
+      isRefetchingQuote,
       selectedQuoteUpdatedAt,
       refetchInterval,
     } = useBridgeQuote({
@@ -898,47 +899,138 @@ export const AmountScreen = observer(
             </div>
           )}
           {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
-            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
-              <div className="flex items-center gap-2">
-                <p className="body1 text-osmoverse-300">
-                  {selectedQuote.estimatedTime.humanize()} ETA
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {!isNil(selectedQuoteUpdatedAt) && (
-                  <BridgeQuoteRemainingTime
-                    dataUpdatedAt={selectedQuoteUpdatedAt}
-                    refetchInterval={refetchInterval}
-                    expiredElement={
-                      <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                    }
-                  />
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="body1">
-                    ~
-                    {(
-                      selectedQuote.transferFeeFiat ??
-                      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                    )
-                      ?.add(selectedQuote.gasCost ?? new Dec(0))
-                      .toString()}{" "}
-                    {t("transfer.fees")}
-                  </span>
-                  <Icon
-                    id="chevron-down"
-                    width={12}
-                    height={12}
-                    className={classNames(
-                      "text-osmoverse-300 transition-transform duration-150",
-                      {
-                        "rotate-180": false,
+            <Disclosure>
+              {({ open }) => (
+                <>
+                  {" "}
+                  <Disclosure.Button>
+                    <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+                      {open ? (
+                        <p className="subtitle1">
+                          {t("transfer.transferDetails")}
+                        </p>
+                      ) : (
+                        <p className="body1 text-osmoverse-300">
+                          {selectedQuote.estimatedTime.humanize()} ETA
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2">
+                        {!isNil(selectedQuoteUpdatedAt) && (
+                          <BridgeQuoteRemainingTime
+                            dataUpdatedAt={selectedQuoteUpdatedAt}
+                            refetchInterval={refetchInterval}
+                            expiredElement={
+                              <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                            }
+                          />
+                        )}
+                        <div className="flex items-center gap-2">
+                          {!open && (
+                            <span className="body1">
+                              ~
+                              {(
+                                selectedQuote.transferFeeFiat ??
+                                new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                              )
+                                ?.add(selectedQuote.gasCost ?? new Dec(0))
+                                .toString()}{" "}
+                              {t("transfer.fees")}
+                            </span>
+                          )}
+                          <Icon
+                            id="chevron-down"
+                            width={12}
+                            height={12}
+                            className={classNames(
+                              "text-osmoverse-300 transition-transform duration-150",
+                              {
+                                "rotate-180": open,
+                              }
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </Disclosure.Button>
+                  <Disclosure.Panel className="flex flex-col gap-2">
+                    <TransferDetailRow
+                      label={t("transfer.provider")}
+                      value={<p>{selectedQuote.provider.id}</p>}
+                      isLoading={isRefetchingQuote}
+                    />
+                    <TransferDetailRow
+                      label={t("transfer.estimatedTime")}
+                      value={<p>{selectedQuote.estimatedTime.humanize()}</p>}
+                      isLoading={isRefetchingQuote}
+                    />
+                    <TransferDetailRow
+                      label={t("transfer.providerFees")}
+                      value={
+                        <p>
+                          {selectedQuote.transferFeeFiat
+                            ? `${selectedQuote.transferFeeFiat.toString()} (${selectedQuote.transferFee
+                                .maxDecimals(4)
+                                .toString()})`
+                            : selectedQuote.transferFee
+                                .maxDecimals(4)
+                                .toString()}
+                        </p>
                       }
+                      isLoading={isRefetchingQuote}
+                    />
+                    {(selectedQuote.gasCostFiat || selectedQuote.gasCost) && (
+                      <TransferDetailRow
+                        label={t("transfer.networkFee", {
+                          networkName: sourceChain?.chainName ?? "",
+                        })}
+                        value={
+                          <p>
+                            {selectedQuote.gasCostFiat
+                              ? selectedQuote.gasCostFiat.toString()
+                              : selectedQuote.gasCost
+                                  ?.maxDecimals(4)
+                                  .toString()}
+                            {selectedQuote.gasCostFiat && selectedQuote.gasCost
+                              ? ` (${selectedQuote.gasCost
+                                  .maxDecimals(4)
+                                  .toString()})`
+                              : ""}
+                          </p>
+                        }
+                        isLoading={isRefetchingQuote}
+                      />
                     )}
-                  />
-                </div>
-              </div>
-            </div>
+                    {selectedQuote.gasCostFiat &&
+                      selectedQuote.transferFeeFiat && (
+                        <TransferDetailRow
+                          label={t("transfer.totalFees")}
+                          value={
+                            <p>
+                              {selectedQuote.gasCostFiat
+                                .add(selectedQuote.transferFeeFiat)
+                                .toString()}
+                            </p>
+                          }
+                          isLoading={isRefetchingQuote}
+                        />
+                      )}
+                    <TransferDetailRow
+                      label={t("transfer.estimatedAmountReceived")}
+                      value={
+                        <p>
+                          {selectedQuote.expectedOutputFiat.toString()} (
+                          {selectedQuote.expectedOutput
+                            .maxDecimals(4)
+                            .toString()}
+                          )
+                        </p>
+                      }
+                      isLoading={isRefetchingQuote}
+                    />
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
           )}
 
           <div className="flex flex-col items-center gap-4">
@@ -1071,6 +1163,26 @@ const WalletDisplay: FunctionComponent<{
       {!isNil(icon) && <img src={icon} alt={name} className="h-6 w-6" />}
       <span>{name}</span>
       {suffix}
+    </div>
+  );
+};
+
+const TransferDetailRow: FunctionComponent<{
+  label: string;
+  value: ReactNode;
+  isLoading: boolean;
+}> = ({ label, value, isLoading }) => {
+  return (
+    <div className="body2 flex justify-between">
+      <p className="text-osmoverse-300">{label}</p>
+      <span
+        className={classNames({
+          "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress":
+            isLoading,
+        })}
+      >
+        {value}
+      </span>
     </div>
   );
 };

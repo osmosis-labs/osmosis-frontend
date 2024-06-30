@@ -921,6 +921,8 @@
     "moreDepositOptions": "Daha fazla para yatırma seçeneği",
     "moreWithdrawOptions": "Daha fazla para çekme seçeneği",
     "convertTo": "E dönüşmek",
+    "depositAs": "Şu şekilde yatırın:",
+    "withdrawAs": "Olarak geri çekil",
     "recommended": "Tavsiye edilen",
     "fees": "ücretler",
     "stepLabels": {
@@ -951,7 +953,14 @@
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",
     "failedDeposit": "Para yatırma işlemi başarısız oldu",
-    "connectionError": "Bağlantı hatası"
+    "connectionError": "Bağlantı hatası",
+    "transferDetails": "Aktarım ayrıntıları",
+    "provider": "Sağlayıcı",
+    "estimatedTime": "Tahmini süresi",
+    "providerFees": "Sağlayıcı ücretleri",
+    "networkFee": "{networkName} Ağ ücreti",
+    "totalFees": "Toplam ücretler",
+    "estimatedAmountReceived": "Alınan tahmini miktar"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
