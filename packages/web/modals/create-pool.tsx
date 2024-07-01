@@ -51,7 +51,10 @@ export const CreatePoolModal: FunctionComponent<
       }
       title={!isConcentrated ? props.title : undefined}
       hideCloseButton={isConcentrated}
-      className={classNames({ "!w-fit !max-w-none !p-0": isConcentrated })}
+      className={classNames({
+        "!w-fit !max-w-none !overflow-visible !bg-osmoverse-850 !p-0":
+          isConcentrated,
+      })}
     >
       {config.poolType === null && (
         <SelectType
