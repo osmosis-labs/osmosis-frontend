@@ -1,8 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
+import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { Asset } from "@osmosis-labs/server";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useSwapAsset } from "~/hooks/use-swap";
@@ -300,5 +301,62 @@ export const useOrderbookAllActiveOrders = ({
     isLoading,
     fetchNextPage,
     isFetching,
+  };
+};
+
+export const useOrderbookClaimableOrders = ({
+  userAddress,
+}: {
+  userAddress: string;
+}) => {
+  const { orderbooks } = useOrderbooks();
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const {
+    data: orders,
+    isLoading,
+    isFetching,
+  } = api.edge.orderbooks.getClaimableOrders.useQuery({
+    contractAddresses: addresses,
+    userOsmoAddress: userAddress,
+  });
+
+  const claimAllOrders = useCallback(async () => {
+    if (!account || !orders) return;
+    const msgs = addresses
+      .map((contractAddress) => {
+        const ordersForAddress = orders.filter(
+          (o) => o.orderbookAddress === contractAddress
+        );
+        if (ordersForAddress.length === 0) return;
+
+        const msg = {
+          batch_claim: {
+            orders: ordersForAddress.map((o) => [o.tick_id, o.order_id]),
+          },
+        };
+        return {
+          contractAddress,
+          msg,
+          funds: [],
+        };
+      })
+      .filter(Boolean) as {
+      contractAddress: string;
+      msg: object;
+      funds: CoinPrimitive[];
+    }[];
+
+    if (msgs.length > 0) {
+      await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+    }
+  }, [orders, account, addresses]);
+
+  return {
+    orders: orders ?? [],
+    count: orders?.length ?? 0,
+    isLoading: isLoading || isFetching,
+    claimAllOrders,
   };
 };

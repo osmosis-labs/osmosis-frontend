@@ -68,9 +68,12 @@ export const usePlaceLimit = ({
   const { price: baseAssetPrice } = usePrice({
     coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
   });
-  const { price: quoteAssetPrice } = usePrice({
-    coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
-  });
+
+  // Price fixed to 1 for stablcoins (TEMPORARY)
+  const quoteAssetPrice = useMemo(
+    () => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)),
+    []
+  );
 
   /**
    * Calculates the amount of tokens to be sent with the order.
@@ -137,7 +140,7 @@ export const usePlaceLimit = ({
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(priceState.price);
+    const tickId = priceToTick(priceState.price.quo(quoteAssetPrice.toDec()));
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
@@ -167,6 +170,7 @@ export const usePlaceLimit = ({
     orderDirection,
     priceState,
     paymentTokenValue,
+    quoteAssetPrice,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
