@@ -921,7 +921,21 @@
     "moreDepositOptions": "More deposit options",
     "moreWithdrawOptions": "More withdraw options",
     "convertTo": "Convert to",
+    "depositAs": "Deposit as",
+    "withdrawAs": "Withdraw as",
     "recommended": "Recommended",
+    "fee": "fee",
+    "fees": "fees",
+    "unknown": "Unknown",
+    "unknownFeeTooltip": "Currently network fees on {networkName} can’t be calculated. Network fees should be displayed in your wallet upon transaction approval.",
+    "free": "Free",
+    "cheapest": "Cheapest",
+    "fastest": "Fastest",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
@@ -930,13 +944,31 @@
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
     },
+    "assetSelectScreen": {
+      "titleDeposit": "Select an asset to deposit",
+      "titleWithdraw": "Select an asset to withdraw",
+      "searchAssets": "Search assets"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Select network",
+      "searchPlaceholder": "Search supported networks"
+    },
     "pendingWithdraw": "Pending withdraw",
     "pendingDeposit": "Pending deposit",
     "completedWithdraw": "Withdraw completed",
     "completedDeposit": "Deposit completed",
     "failedWithdraw": "Withdraw failed",
     "failedDeposit": "Deposit failed",
-    "connectionError": "Connection error"
+    "connectionError": "Connection error",
+    "transferDetails": "Transfer details",
+    "provider": "Provider",
+    "estimatedTime": "Estimated time",
+    "providerFees": "Provider fees",
+    "networkFee": "{networkName} Network fee",
+    "totalFees": "Total fees",
+    "estimatedAmountReceived": "Estimated amount received",
+    "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
+    "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received."
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

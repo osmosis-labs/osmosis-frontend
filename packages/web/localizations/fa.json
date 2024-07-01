@@ -921,7 +921,21 @@
     "moreDepositOptions": "گزینه های سپرده بیشتر",
     "moreWithdrawOptions": "گزینه های برداشت بیشتر",
     "convertTo": "تبدیل به",
+    "depositAs": "سپرده گذاری به عنوان",
+    "withdrawAs": "برداشت به عنوان",
     "recommended": "توصیه شده",
+    "fee": "هزینه",
+    "fees": "هزینه ها",
+    "unknown": "ناشناخته",
+    "unknownFeeTooltip": "در حال حاضر هزینه‌های شبکه برای {networkName} قابل محاسبه نیست. پس از تایید تراکنش، هزینه های شبکه باید در کیف پول شما نمایش داده شود.",
+    "free": "رایگان",
+    "cheapest": "ارزان ترین",
+    "fastest": "سریع ترین",
+    "stepLabels": {
+      "asset": "دارایی",
+      "amount": "میزان",
+      "review": "مرور"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
@@ -930,13 +944,31 @@
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },
+    "assetSelectScreen": {
+      "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",
+      "titleWithdraw": "دارایی را برای برداشت انتخاب کنید",
+      "searchAssets": "جستجوی دارایی ها"
+    },
+    "bridgeNetworkSelect": {
+      "title": "شبکه را انتخاب کنید",
+      "searchPlaceholder": "جستجوی شبکه های پشتیبانی شده"
+    },
     "pendingWithdraw": "در انتظار برداشت",
     "pendingDeposit": "سپرده معلق",
     "completedWithdraw": "برداشت کامل شد",
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",
     "failedDeposit": "سپرده گذاری انجام نشد",
-    "connectionError": "خطای اتصال"
+    "connectionError": "خطای اتصال",
+    "transferDetails": "جزئیات انتقال",
+    "provider": "ارائه دهنده",
+    "estimatedTime": "زمان تخمین زده شده",
+    "providerFees": "هزینه های ارائه دهنده",
+    "networkFee": "هزینه شبکه {networkName}",
+    "totalFees": "مجموع هزینه ها",
+    "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
+    "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
+    "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد."
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

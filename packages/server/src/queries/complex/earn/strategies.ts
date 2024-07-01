@@ -1,5 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -19,7 +19,7 @@ import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { dayjs } from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
-import { type Asset, getAsset } from "../assets";
+import { getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { convertToPricePretty } from "../price";
 
@@ -157,11 +157,13 @@ export async function getStrategies({
             ...rawStrategy,
             depositAssets: depositAssets.filter(
               (deposit) => !!deposit
-            ) as Asset[],
+            ) as MinimalAsset[],
             positionAssets: positionAssets.filter(
               (position) => !!position
-            ) as Asset[],
-            rewardAssets: rewardAssets.filter((reward) => !!reward) as Asset[],
+            ) as MinimalAsset[],
+            rewardAssets: rewardAssets.filter(
+              (reward) => !!reward
+            ) as MinimalAsset[],
             hasLockingDuration:
               dayjs.duration(lockDuration).asMilliseconds() > 0,
           });

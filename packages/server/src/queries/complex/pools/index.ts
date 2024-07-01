@@ -103,24 +103,28 @@ export async function getPools(
       coin.currency.coinMinimalDenom,
     ]),
     poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
+    coinNames: pool.reserveCoins.map((coin) => [
+      // @ts-ignore
+      coin.currency.coinName,
+    ]),
   }));
 
   if (params?.search) {
     // search for an exact match of coinMinimalDenom or pool ID
-    const coinMinimalDemonMatches = search(
+    const coinDenomsOrIdMatches = search(
       denomPools,
       ["coinDenoms", "id"],
       params.search,
       0.0 // Exact match
     );
 
-    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC)
-    if (coinMinimalDemonMatches.length > 0) {
-      denomPools = coinMinimalDemonMatches;
+    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
+    if (coinDenomsOrIdMatches.length > 0) {
+      denomPools = coinDenomsOrIdMatches;
     } else {
       const poolNameByDenomMatches = search(
         denomPools,
-        ["poolNameByDenom"],
+        ["poolNameByDenom", "coinNames"],
         params.search
       );
 

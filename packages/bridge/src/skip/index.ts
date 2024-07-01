@@ -3,7 +3,11 @@ import { Registry } from "@cosmjs/proto-signing";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
   Address,
@@ -18,7 +22,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -311,6 +314,7 @@ export class SkipBridgeProvider implements BridgeProvider {
             ...chainInfo,
             address: sharedOriginAsset.denom,
             denom:
+              sharedOriginAsset.recommended_symbol ??
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
@@ -756,9 +760,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const url = new URL("https://ibc.fun/");
     url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address);
+    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
     url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address);
+    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
 
     return { urlProviderName: "IBC.fun", url };
   }

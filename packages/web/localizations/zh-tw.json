@@ -921,7 +921,21 @@
     "moreDepositOptions": "更多存款選擇",
     "moreWithdrawOptions": "更多提款選項",
     "convertTo": "轉換成",
+    "depositAs": "存款為",
+    "withdrawAs": "提款為",
     "recommended": "受到推崇的",
+    "fee": "費用",
+    "fees": "費用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前無法計算{networkName}上的網路費用。交易批准後，網路費用應顯示在您的錢包中。",
+    "free": "自由的",
+    "cheapest": "最便宜",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "資產",
+      "amount": "數量",
+      "review": "審查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
@@ -930,13 +944,31 @@
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
     },
+    "assetSelectScreen": {
+      "titleDeposit": "選擇要存入的資產",
+      "titleWithdraw": "選擇要提取的資產",
+      "searchAssets": "搜尋資產"
+    },
+    "bridgeNetworkSelect": {
+      "title": "選擇網路",
+      "searchPlaceholder": "搜尋支援的網絡"
+    },
     "pendingWithdraw": "待提款",
     "pendingDeposit": "待定存款",
     "completedWithdraw": "提現完成",
     "completedDeposit": "存款完成",
     "failedWithdraw": "提現失敗",
     "failedDeposit": "存款失敗",
-    "connectionError": "連線錯誤"
+    "connectionError": "連線錯誤",
+    "transferDetails": "轉帳詳情",
+    "provider": "提供者",
+    "estimatedTime": "預計時間",
+    "providerFees": "提供者費用",
+    "networkFee": "{networkName}網路費用",
+    "totalFees": "總費用",
+    "estimatedAmountReceived": "預計收到金額",
+    "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
+    "priceImpactWarning": "此交易的價格影響為{priceImpact} ，這可能會影響最終收到的金額。"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

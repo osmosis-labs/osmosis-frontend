@@ -1,18 +1,21 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
+  BridgeChain,
   BridgeCoin,
   BridgeProviders,
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
+  getBridgeSupportedAssetsParams,
 } from "@osmosis-labs/bridge";
 import {
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
+  getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
-import { isNil, timeout } from "@osmosis-labs/utils";
+import { EthereumChainInfo, isNil, timeout } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -194,6 +197,110 @@ export const bridgeTransferRouter = createTRPCRouter({
                     : undefined,
               }
             : undefined,
+        },
+      };
+    }),
+
+  getSupportedAssetsByBridge: publicProcedure
+    .input(getBridgeSupportedAssetsParams.extend({ bridge: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            getTimeoutHeight({ ...ctx, destinationAddress }),
+        }
+      );
+
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
+
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id: " + input.bridge);
+      }
+
+      const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
+
+      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
+      const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
+
+      const assetsByChainId = supportedAssets.reduce<
+        Record<
+          BridgeChain["chainId"],
+          ((typeof supportedAssets)[number] & { providerName: string })[]
+        >
+      >((acc, asset) => {
+        if (!acc[asset.chainId]) {
+          acc[asset.chainId] = [];
+        }
+
+        acc[asset.chainId].push({ ...asset, providerName: input.bridge });
+
+        return acc;
+      }, {});
+
+      const eventualChains = Array.from(
+        // Remove duplicate chains
+        new Map(
+          supportedAssets.map(({ chainId, chainType }) => [
+            chainId,
+            { chainId, chainType },
+          ])
+        ).values()
+      );
+
+      const availableChains = eventualChains
+        .map(({ chainId, chainType }) => {
+          if (chainType === "evm") {
+            // TODO: Find a way to get eth chains from `getChain` function
+            const evmChain = Object.values(EthereumChainInfo).find(
+              (chain) => chain.id === chainId
+            );
+
+            if (!evmChain) {
+              return undefined;
+            }
+
+            return {
+              prettyName: evmChain.name,
+              chainId: evmChain.id,
+              chainType,
+            };
+          } else if (chainType === "cosmos") {
+            let cosmosChain: ReturnType<typeof getChain> | undefined;
+            try {
+              cosmosChain = getChain({
+                chainList: ctx.chainList,
+                chainNameOrId: String(chainId),
+              });
+            } catch {}
+
+            if (!cosmosChain) {
+              return undefined;
+            }
+
+            return {
+              prettyName: cosmosChain.chain_name,
+              chainId: cosmosChain.chain_id,
+              chainType,
+            };
+          }
+
+          return undefined;
+        })
+        .filter((chain): chain is NonNullable<typeof chain> => Boolean(chain));
+
+      return {
+        supportedAssets: {
+          providerName: bridgeProvider.providerName as Bridge,
+          inputAssetAddress: input.asset.address,
+          assetsByChainId,
+          availableChains,
         },
       };
     }),

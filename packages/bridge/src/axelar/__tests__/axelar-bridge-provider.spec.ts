@@ -4,6 +4,7 @@ import {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { estimateGasFee } from "@osmosis-labs/tx";
+import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -11,7 +12,6 @@ import { rest } from "msw";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { server } from "../../__tests__/msw";
-import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
 import {

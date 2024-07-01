@@ -921,7 +921,21 @@
     "moreDepositOptions": "더 많은 입금 옵션",
     "moreWithdrawOptions": "더 많은 인출 옵션",
     "convertTo": "로 변환하다",
+    "depositAs": "다음으로 입금",
+    "withdrawAs": "다음으로 인출",
     "recommended": "추천",
+    "fee": "요금",
+    "fees": "수수료",
+    "unknown": "알려지지 않은",
+    "unknownFeeTooltip": "현재 {networkName} 의 네트워크 요금을 계산할 수 없습니다. 네트워크 수수료는 거래 승인 시 지갑에 표시되어야 합니다.",
+    "free": "무료",
+    "cheapest": "가장 저렴",
+    "fastest": "가장 빠른",
+    "stepLabels": {
+      "asset": "유산",
+      "amount": "양",
+      "review": "검토"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
       "titleWithdraw": "더 많은 인출 옵션",
@@ -930,13 +944,31 @@
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출"
     },
+    "assetSelectScreen": {
+      "titleDeposit": "입금할 자산을 선택하세요",
+      "titleWithdraw": "출금할 자산을 선택하세요",
+      "searchAssets": "자산 검색"
+    },
+    "bridgeNetworkSelect": {
+      "title": "네트워크 선택",
+      "searchPlaceholder": "지원되는 네트워크 검색"
+    },
     "pendingWithdraw": "출금 대기 중",
     "pendingDeposit": "입금 대기 중",
     "completedWithdraw": "출금 완료",
     "completedDeposit": "입금완료",
     "failedWithdraw": "출금 실패",
     "failedDeposit": "입금 실패",
-    "connectionError": "연결 오류"
+    "connectionError": "연결 오류",
+    "transferDetails": "송금 세부정보",
+    "provider": "공급자",
+    "estimatedTime": "예상 시간",
+    "providerFees": "공급자 수수료",
+    "networkFee": "{networkName} 네트워크 요금",
+    "totalFees": "총 수수료",
+    "estimatedAmountReceived": "예상 수령 금액",
+    "slippageWarning": "이 거래에 대한 예상 출력은 입력 금액보다 상당히 낮으므로 예상과 다른 최종 금액을 받게 될 수 있습니다.",
+    "priceImpactWarning": "이 거래의 가격 영향은 {priceImpact} 이며, 최종 수령 금액에 영향을 미칠 수 있습니다."
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
