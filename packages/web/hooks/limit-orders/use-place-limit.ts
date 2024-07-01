@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
-import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
+import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -20,6 +20,7 @@ export interface UsePlaceLimitParams {
   useOtherCurrencies?: boolean;
   baseDenom: string;
   quoteDenom: string;
+  type: "limit" | "market";
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -34,6 +35,7 @@ export const usePlaceLimit = ({
   orderDirection,
   useQueryParams = false,
   useOtherCurrencies = false,
+  type,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
   const swapAssets = useSwapAssets({
@@ -46,10 +48,22 @@ export const usePlaceLimit = ({
     makerFee,
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
+    poolId,
   } = useOrderbook({
     quoteDenom,
     baseDenom,
   });
+
+  const marketState = useSwap({
+    initialFromDenom: baseDenom,
+    initialToDenom: quoteDenom,
+    useQueryParams: false,
+    useOtherCurrencies: false,
+    forceSwapInPoolId: poolId,
+    maxSlippage: new Dec(1),
+  });
+
+  const { inAmountInput } = marketState;
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
@@ -58,11 +72,12 @@ export const usePlaceLimit = ({
     orderbookContractAddress,
     orderDirection,
   });
-  const inAmountInput = useSwapAmountInput({
-    swapAssets,
-    forceSwapInPoolId: undefined,
-    maxSlippage: undefined,
-  });
+
+  const isMarket = useMemo(
+    () => type === "market" || priceState.isBeyondOppositePrice,
+    [type, priceState.isBeyondOppositePrice]
+  );
+
   const account = accountStore.getWallet(osmosisChainId);
 
   const { price: baseAssetPrice } = usePrice({
@@ -134,6 +149,11 @@ export const usePlaceLimit = ({
       return;
     }
 
+    if (isMarket) {
+      await marketState.sendTradeTokenInTx();
+      return;
+    }
+
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
@@ -167,6 +187,8 @@ export const usePlaceLimit = ({
     orderDirection,
     priceState,
     paymentTokenValue,
+    isMarket,
+    marketState,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
@@ -256,6 +278,8 @@ export const usePlaceLimit = ({
     isMakerFeeLoading,
     expectedTokenAmountOut,
     expectedFiatAmountOut,
+    marketState,
+    isMarket,
   };
 };
 

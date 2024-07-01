@@ -57,6 +57,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       useQueryParams: false,
       baseDenom: base,
       quoteDenom: quote,
+      type,
     });
 
     // Adjust price to base price if the type changes to "market"
@@ -151,7 +152,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     !swapState.inAmountInput.inputAmount ||
                     swapState.inAmountInput.inputAmount === "0" ||
                     (!swapState.priceState.isValidPrice &&
-                      swapState.priceState.orderPrice.length > 0)
+                      swapState.priceState.orderPrice.length > 0) ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.inAmountInput.isEmpty ||
+                        !Boolean(swapState.marketState.quote) ||
+                        Boolean(swapState.marketState.error) ||
+                        Boolean(swapState.marketState.networkFeeError)))
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
