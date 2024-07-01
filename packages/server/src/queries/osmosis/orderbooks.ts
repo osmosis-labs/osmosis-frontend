@@ -29,6 +29,7 @@ export interface LimitOrder {
   etas: string;
   claim_bounty?: string;
   placed_quantity: string;
+  placed_at: string;
 }
 
 interface OrderbookActiveOrdersResponse {
@@ -111,7 +112,7 @@ export const queryOrderbookTickUnrealizedCancelsById = createNodeQuery<
 >({
   path: ({ tickIds, orderbookAddress }) => {
     const msg = JSON.stringify({
-      tick_unrealized_cancels_by_id: {
+      get_unrealized_cancels: {
         tick_ids: tickIds,
       },
     });

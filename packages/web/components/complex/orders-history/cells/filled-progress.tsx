@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import React, { useMemo } from "react";
 
@@ -16,9 +16,9 @@ export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
 
   const roundedAmountFilled = useMemo(() => {
     if (percentFilled.lt(new Dec(1)) && !percentFilled.isZero()) {
-      return new Dec(1);
+      return new Int(1);
     }
-    return percentFilled.round();
+    return percentFilled.round().mul(new Int(100));
   }, [percentFilled]);
 
   const progressSegments = useMemo(

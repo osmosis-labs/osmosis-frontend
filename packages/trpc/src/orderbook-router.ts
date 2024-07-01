@@ -16,7 +16,7 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { OsmoAddressSchema } from "./parameter-types";
+import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   z.object({
@@ -33,7 +33,7 @@ export type OrderStatus =
 
 export type MappedLimitOrder = Omit<
   LimitOrder,
-  "quantity" | "placed_quantity"
+  "quantity" | "placed_quantity" | "placed_at"
 > & {
   quantity: number;
   placed_quantity: number;
@@ -46,16 +46,27 @@ export type MappedLimitOrder = Omit<
   output: number;
   quoteAsset: ReturnType<typeof getAssetFromAssetList>;
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
+  placed_at: number;
 };
 
-function mapOrderStatus(order: LimitOrder): OrderStatus {
+function mapOrderStatus(order: LimitOrder, percentFilled: Dec): OrderStatus {
   const quantInt = parseInt(order.quantity);
   const placedQuantInt = parseInt(order.placed_quantity);
-  if (quantInt === 0) return "filled";
+  if (quantInt === 0 || percentFilled.equals(new Dec(1))) return "filled";
   if (quantInt === placedQuantInt) return "open";
   if (quantInt < placedQuantInt) return "partiallyFilled";
 
   return "open";
+}
+
+function defaultSortOrders(
+  orderA: MappedLimitOrder,
+  orderB: MappedLimitOrder
+): number {
+  if (orderA.status === orderB.status) {
+    return orderA.placed_at - orderB.placed_at;
+  }
+  return orderA.status === "filled" ? 1 : -1;
 }
 
 async function getTickInfoAndTransformOrders(
@@ -83,88 +94,79 @@ async function getTickInfoAndTransformOrders(
     unrealizedCancels: unrealizedTickCancels.find((c) => c.tick_id === tick_id),
   }));
 
-  return orders
-    .map((o) => {
-      const { tickState, unrealizedCancels } = fullTickState.find(
-        ({ tickId }) => tickId === o.tick_id
-      ) ?? { tickState: undefined, unrealizedCancels: undefined };
+  return orders.map((o) => {
+    const { tickState, unrealizedCancels } = fullTickState.find(
+      ({ tickId }) => tickId === o.tick_id
+    ) ?? { tickState: undefined, unrealizedCancels: undefined };
 
-      const [tokenInAsset, tokenOutAsset] =
-        o.order_direction === "bid"
-          ? [quoteAsset, baseAsset]
-          : [baseAsset, quoteAsset];
+    const [tokenInAsset, tokenOutAsset] =
+      o.order_direction === "bid"
+        ? [quoteAsset, baseAsset]
+        : [baseAsset, quoteAsset];
 
-      const quantityMin = parseInt(o.quantity);
-      const placedQuantityMin = parseInt(o.placed_quantity);
-      const placedQuantity =
-        placedQuantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
-      const quantity = quantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
+    const quantityMin = parseInt(o.quantity);
+    const placedQuantityMin = parseInt(o.placed_quantity);
+    const placedQuantity =
+      placedQuantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
+    const quantity = quantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
 
-      const percentClaimed = new Dec(
-        (placedQuantityMin - quantityMin) / placedQuantityMin
-      );
-      const [tickEtas, tickCumulativeCancelled, tickUnrealizedCancelled] =
-        o.order_direction === "bid"
-          ? [
-              parseInt(
-                tickState?.bid_values.effective_total_amount_swapped ?? "0"
-              ),
-              parseInt(
-                tickState?.bid_values.cumulative_realized_cancels ?? "0"
-              ),
-              parseInt(
-                unrealizedCancels?.unrealized_cancels.bid_unrealized_cancels ??
-                  "0"
-              ),
-            ]
-          : [
-              parseInt(
-                tickState?.ask_values.effective_total_amount_swapped ?? "0"
-              ),
-              parseInt(
-                tickState?.ask_values.cumulative_realized_cancels ?? "0"
-              ),
-              parseInt(
-                unrealizedCancels?.unrealized_cancels.ask_unrealized_cancels ??
-                  "0"
-              ),
-            ];
-      const tickTotalEtas =
-        tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
-      const totalFilled = Math.max(
-        tickTotalEtas - (parseInt(o.etas) - (placedQuantityMin - quantityMin)),
-        0
-      );
-      const percentFilled = new Dec(totalFilled / placedQuantityMin);
-      const price = tickToPrice(new Int(o.tick_id));
-      const status = mapOrderStatus(o);
-
-      const outputMin =
-        o.order_direction === "bid"
-          ? new Dec(placedQuantityMin).quo(price)
-          : new Dec(placedQuantityMin).mul(price);
-      const output = parseInt(
-        outputMin
-          .quo(new Dec(10 ** (tokenOutAsset?.decimals ?? 0)))
-          .truncate()
-          .toString()
-      );
-      return {
-        ...o,
-        price,
-        quantity,
-        placed_quantity: placedQuantity,
-        percentClaimed,
-        totalFilled,
-        percentFilled,
-        orderbookAddress,
-        status,
-        output,
-        quoteAsset,
-        baseAsset,
-      };
-    })
-    .sort((a, b) => a.order_id - b.order_id);
+    const percentClaimed = new Dec(
+      (placedQuantityMin - quantityMin) / placedQuantityMin
+    );
+    const [tickEtas, tickUnrealizedCancelled] =
+      o.order_direction === "bid"
+        ? [
+            parseInt(
+              tickState?.bid_values.effective_total_amount_swapped ?? "0"
+            ),
+            parseInt(
+              unrealizedCancels?.unrealized_cancels.bid_unrealized_cancels ??
+                "0"
+            ),
+          ]
+        : [
+            parseInt(
+              tickState?.ask_values.effective_total_amount_swapped ?? "0"
+            ),
+            parseInt(
+              unrealizedCancels?.unrealized_cancels.ask_unrealized_cancels ??
+                "0"
+            ),
+          ];
+    const tickTotalEtas = tickEtas + tickUnrealizedCancelled;
+    const totalFilled = Math.max(
+      tickTotalEtas - (parseInt(o.etas) - (placedQuantityMin - quantityMin)),
+      0
+    );
+    const percentFilled = new Dec(Math.min(totalFilled / placedQuantityMin, 1));
+    const price = tickToPrice(new Int(o.tick_id));
+    const status = mapOrderStatus(o, percentFilled);
+    const outputMin =
+      o.order_direction === "bid"
+        ? new Dec(placedQuantityMin).quo(price)
+        : new Dec(placedQuantityMin).mul(price);
+    const output = parseInt(
+      outputMin
+        .quo(new Dec(10 ** (tokenOutAsset?.decimals ?? 0)))
+        .truncate()
+        .toString()
+    );
+    return {
+      ...o,
+      price,
+      quantity,
+      placed_quantity: placedQuantity,
+      percentClaimed,
+      totalFilled,
+      percentFilled,
+      orderbookAddress,
+      status,
+      output,
+      quoteAsset,
+      baseAsset,
+      placed_at: parseInt(o.placed_at),
+    };
+  });
 }
 
 export const orderbookRouter = createTRPCRouter({
@@ -268,7 +270,7 @@ export const orderbookRouter = createTRPCRouter({
                 quoteAsset,
                 baseAsset
               );
-              return mappedOrders;
+              return mappedOrders.sort(defaultSortOrders);
             }
           );
           const ordersByContracts = await Promise.all(promises);
@@ -303,5 +305,50 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return spotPrice;
+    }),
+  getClaimableOrders: publicProcedure
+    .input(
+      z
+        .object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
+        .required()
+        .and(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { contractAddresses, userOsmoAddress } = input;
+      const promises = contractAddresses.map(
+        async (contractOsmoAddress: string) => {
+          const resp = await getOrderbookActiveOrders({
+            orderbookAddress: contractOsmoAddress,
+            userOsmoAddress: userOsmoAddress,
+            chainList: ctx.chainList,
+          });
+
+          if (resp.orders.length === 0) return [];
+          const { base_denom } = await getOrderbookDenoms({
+            orderbookAddress: contractOsmoAddress,
+            chainList: ctx.chainList,
+          });
+          // TODO: Use actual quote denom here
+          const quoteAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: "uusdc",
+          });
+          const baseAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: base_denom,
+          });
+          const mappedOrders = await getTickInfoAndTransformOrders(
+            contractOsmoAddress,
+            resp.orders,
+            ctx.chainList,
+            quoteAsset,
+            baseAsset
+          );
+          return mappedOrders.filter((o) => o.percentFilled.gte(new Dec(1)));
+        }
+      );
+      const ordersByContracts = await Promise.all(promises);
+      const allOrders = ordersByContracts.flatMap((p) => p);
+      return allOrders;
     }),
 });
