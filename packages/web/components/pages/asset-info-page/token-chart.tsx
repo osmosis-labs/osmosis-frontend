@@ -8,6 +8,7 @@ import {
   HistoricalChart,
   HistoricalChartHeader,
 } from "~/components/chart/historical-chart";
+import { HistoricalVolumeChart } from "~/components/chart/historical-volume-chart";
 import { AdvancedChart } from "~/components/chart/light-weight-charts/advanced-chart";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
@@ -54,13 +55,23 @@ export const TokenChart = observer(() => {
             <Spinner />
           </div>
         ) : !assetInfoConfig.historicalChartUnavailable ? (
-          <HistoricalChart
-            data={data}
-            onPointerHover={assetInfoConfig.setHoverData}
-            onPointerOut={() => {
-              assetInfoConfig.setHoverData(undefined, undefined);
-            }}
-          />
+          assetInfoConfig.dataType === "price" ? (
+            <HistoricalChart
+              data={data}
+              onPointerHover={assetInfoConfig.setHoverData}
+              onPointerOut={() => {
+                assetInfoConfig.setHoverData(undefined, undefined);
+              }}
+            />
+          ) : (
+            <HistoricalVolumeChart
+              data={data}
+              onPointerHover={assetInfoConfig.setHoverData}
+              onPointerOut={() => {
+                assetInfoConfig.setHoverData(undefined, undefined);
+              }}
+            />
+          )
         ) : (
           <ChartUnavailable />
         )}
