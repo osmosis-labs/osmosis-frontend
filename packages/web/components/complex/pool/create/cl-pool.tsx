@@ -1,8 +1,10 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { AppCurrency } from "@keplr-wallet/types";
-import { RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import { getAssets } from "@osmosis-labs/server";
 import { ConcentratedLiquidityParams } from "@osmosis-labs/stores";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -12,6 +14,9 @@ import React, { Fragment, useMemo, useState } from "react";
 import { Icon } from "~/components/assets/icon";
 import { Spinner } from "~/components/loaders";
 import { Checkbox } from "~/components/ui/checkbox";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { useDisclosure, useFilteredData } from "~/hooks";
+import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -24,19 +29,35 @@ interface CreateCLPoolProps {
   backStep?: () => void;
 }
 
+type SelectionToken = {
+  token: AppCurrency;
+  chainName: string;
+};
+
+const OSMO_ASSET: SelectionToken = {
+  chainName: "Osmosis",
+  token: {
+    coinDenom: "OSMO",
+    coinDecimals: 6,
+    coinMinimalDenom: "uosmo",
+    coinImageUrl:
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+  },
+};
+
 export const CreateCLPool = observer(
   ({
     onBack,
     onClose,
     currentStep,
-    advanceStep,
-    backStep,
+    // advanceStep,
+    // backStep,
     config,
   }: CreateCLPoolProps) => {
-    const selectableCurrencies = useMemo(
-      () => config.remainingSelectableCurrencies,
-      [config.remainingSelectableCurrencies]
-    );
+    // const selectableCurrencies = useMemo(
+    //   () => config.remainingSelectableCurrencies,
+    //   [config.remainingSelectableCurrencies]
+    // );
 
     const { accountStore, queriesStore } = useStore();
 
@@ -51,13 +72,77 @@ export const CreateCLPool = observer(
         (d?.data as unknown as { params: ConcentratedLiquidityParams }).params,
     });
 
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+
     const [selectedSpread, setSelectedSpread] = useState(
       clParams?.authorized_spread_factors[0] ?? "0.000000000000000000"
     );
 
+    const { baseTokens, quoteTokens } = useMemo(() => {
+      return {
+        baseTokens: getAssets({
+          assetLists: AssetLists,
+          onlyVerified: true,
+        }).map((asset) => {
+          const assetListAsset = getAssetFromAssetList({
+            assetLists: AssetLists,
+            coinMinimalDenom: asset.coinMinimalDenom,
+          });
+
+          return {
+            chainName: assetListAsset?.rawAsset.chainName,
+            token: new CoinPretty(
+              {
+                coinDenom: asset.coinDenom,
+                coinDecimals: asset.coinDecimals,
+                coinMinimalDenom: asset.coinMinimalDenom,
+                coinImageUrl: asset.coinImageUrl,
+              },
+              0
+            ).currency,
+          };
+        }) as SelectionToken[],
+        quoteTokens: clParams
+          ? (clParams.authorized_quote_denoms
+              .map((qa): SelectionToken | undefined => {
+                const asset = getAssetFromAssetList({
+                  assetLists: AssetLists,
+                  coinMinimalDenom: qa,
+                });
+
+                if (!asset) return;
+
+                const {
+                  symbol,
+                  decimals,
+                  coinMinimalDenom,
+                  rawAsset: { logoURIs },
+                } = asset;
+                return {
+                  token: new CoinPretty(
+                    {
+                      coinDenom: symbol,
+                      coinDecimals: decimals,
+                      coinMinimalDenom,
+                      coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
+                    },
+                    0
+                  ).currency,
+                  chainName: asset.rawAsset.chainName,
+                };
+              })
+              .filter(Boolean) as SelectionToken[])
+          : [],
+      };
+    }, [clParams]);
+
+    const [selectedBase, setSelectedBase] = useState<SelectionToken>();
+    // I think we can default to OSMO for quote asset
+    const [selectedQuote, setSelectedQuote] =
+      useState<SelectionToken>(OSMO_ASSET);
+
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const content = useMemo(() => {
       switch (currentStep) {
@@ -69,15 +154,23 @@ export const CreateCLPool = observer(
                   <div className="flex flex-col gap-2 pl-4">
                     <span className="subtitle1 text-white-emphasis">Base</span>
                     <TokenSelector
-                      onClick={() => {}}
-                      selectedAsset={selectableCurrencies[0]}
+                      assets={baseTokens.filter(
+                        (qc) =>
+                          qc.token.coinDenom !== selectedQuote?.token.coinDenom
+                      )}
+                      selectedAsset={selectedBase}
+                      setSelectedAsset={setSelectedBase}
                     />
                   </div>
                   <div className="flex flex-col gap-2 pl-4">
                     <span className="subtitle1 text-white-emphasis">Quote</span>
                     <TokenSelector
-                      onClick={() => {}}
-                      selectedAsset={selectableCurrencies[1]}
+                      assets={quoteTokens.filter(
+                        (qc) =>
+                          qc.token.coinDenom !== selectedBase?.token.coinDenom
+                      )}
+                      selectedAsset={selectedQuote}
+                      setSelectedAsset={setSelectedQuote}
                     />
                   </div>
                 </div>
@@ -141,12 +234,15 @@ export const CreateCLPool = observer(
       }
     }, [
       account?.osmosis,
+      baseTokens,
       clParams,
       currentStep,
       isAgreementChecked,
       isLoadingCLParams,
       isTxLoading,
-      selectableCurrencies,
+      quoteTokens,
+      selectedBase,
+      selectedQuote,
       selectedSpread,
     ]);
 
@@ -186,49 +282,70 @@ export const CreateCLPool = observer(
 );
 
 interface TokenSelectorProps {
-  selectedAsset?: AppCurrency;
-  onClick?: () => void;
+  assets: SelectionToken[];
+  setSelectedAsset: (asset: SelectionToken) => void;
+  selectedAsset?: SelectionToken;
 }
 
 const TokenSelector = observer(
-  ({ selectedAsset, onClick }: TokenSelectorProps) => {
+  ({ selectedAsset, assets, setSelectedAsset }: TokenSelectorProps) => {
+    const { isOpen, onClose, onOpen } = useDisclosure();
+
+    const [query, setQuery, results] = useFilteredData(assets, [
+      "token.coinDenom",
+    ]);
+
     return (
-      <button
-        onClick={onClick}
-        className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
-      >
-        <div className="flex items-center gap-3">
-          {selectedAsset ? (
-            <>
-              <Image
-                src={selectedAsset.coinImageUrl ?? ""}
-                alt={`${selectedAsset.coinDenom}`}
-                width={52}
-                height={52}
-                className="rounded-full"
-              />
-              <h5>{selectedAsset.coinDenom}</h5>
-            </>
-          ) : (
-            <>
-              <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
-                <Icon id="close-button-icon" className="rotate-45" />
-              </div>
-              <h6>Add token</h6>
-            </>
-          )}
-        </div>
-        {selectedAsset && (
-          <div className="flex h-6 w-6 items-center justify-center">
-            <Icon
-              id="chevron-left"
-              width={12}
-              height={24}
-              className="-rotate-90 text-osmoverse-400"
-            />
+      <>
+        <button
+          onClick={onOpen}
+          className="flex w-[260px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5"
+        >
+          <div className="flex items-center gap-3">
+            {selectedAsset ? (
+              <>
+                <Image
+                  src={selectedAsset.token.coinImageUrl ?? ""}
+                  alt={`${selectedAsset.token.coinDenom}`}
+                  width={52}
+                  height={52}
+                  className="rounded-full"
+                />
+                <h5>{selectedAsset.token.coinDenom}</h5>
+              </>
+            ) : (
+              <>
+                <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
+                  <Icon id="close-button-icon" className="rotate-45" />
+                </div>
+                <h6>Add token</h6>
+              </>
+            )}
           </div>
-        )}
-      </button>
+          {selectedAsset && (
+            <div className="flex h-6 w-6 items-center justify-center">
+              <Icon
+                id="chevron-left"
+                width={12}
+                height={24}
+                className="-rotate-90 text-osmoverse-400"
+              />
+            </div>
+          )}
+        </button>
+        <TokenSelectModal
+          isOpen={isOpen}
+          tokens={results}
+          currentValue={query}
+          onInput={setQuery}
+          onRequestClose={onClose}
+          onSelect={(selectedDenom) =>
+            setSelectedAsset(
+              assets.find((value) => value.token.coinDenom === selectedDenom)!
+            )
+          }
+        />
+      </>
     );
   }
 );
