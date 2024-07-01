@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "24-часовой объем по осмосу",
     "liquidityOnOsmosis": "Ликвидность по осмосу",
     "circulatingSupply": "Оборотное снабжение",
+    "supplyOnOsmosis": "Поставка по осмосу",
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",

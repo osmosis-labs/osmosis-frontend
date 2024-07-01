@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "ओस्मोसिस पर 24 घंटे का वॉल्यूम",
     "liquidityOnOsmosis": "ऑस्मोसिस पर तरलता",
     "circulatingSupply": "परिसंचारी आपूर्ति",
+    "supplyOnOsmosis": "ऑस्मोसिस पर आपूर्ति",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",

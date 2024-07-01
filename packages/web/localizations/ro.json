@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Volum 24h pe osmoză",
     "liquidityOnOsmosis": "Lichiditate pe osmoză",
     "circulatingSupply": "Aprovizionare în circulație",
+    "supplyOnOsmosis": "Alimentare pe osmoză",
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",

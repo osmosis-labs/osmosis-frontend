@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Osmosis volume (24h)",
     "liquidityOnOsmosis": "Liquidity on Osmosis",
     "circulatingSupply": "Circulating supply",
+    "supplyOnOsmosis": "Supply on Osmosis",
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",

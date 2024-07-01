@@ -173,8 +173,8 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
 
 export const TokenDetails = observer(_TokenDetails);
 
-const formatCompact = (value: PricePretty | number) => {
-  return formatPretty(value instanceof PricePretty ? value : new Dec(value), {
+const formatCompact = (value: PricePretty | Dec | number) => {
+  return formatPretty(typeof value === "number" ? new Dec(value) : value, {
     maximumSignificantDigits: 3,
     notation: "compact",
     compactDisplay: "short",
@@ -256,6 +256,13 @@ export const TokenStats = observer(() => {
           ? formatCompact(coingeckoCoin.circulatingSupply)
           : "-",
         isLoading: isLoadingCoingeckoCoin && !!coinGeckoId,
+      },
+      {
+        title: t("tokenInfos.supplyOnOsmosis"),
+        value: tokenMarket?.totalSupply
+          ? formatCompact(tokenMarket.totalSupply.toDec())
+          : "-",
+        isLoading: isLoadingTokenMarket,
       },
       {
         title: t("tokenInfos.liquidityOnOsmosis"),

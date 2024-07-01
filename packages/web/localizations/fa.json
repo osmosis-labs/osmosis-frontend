@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "جلد 24 ساعته اسمز",
     "liquidityOnOsmosis": "نقدینگی در اسمز",
     "circulatingSupply": "عرضه در گردش",
+    "supplyOnOsmosis": "عرضه بر روی اسمز",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",

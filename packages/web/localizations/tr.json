@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Osmosis'te 24 saatlik hacim",
     "liquidityOnOsmosis": "Osmozda Likidite",
     "circulatingSupply": "Dolaşımdaki Tedarik",
+    "supplyOnOsmosis": "Osmozda Tedarik",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",

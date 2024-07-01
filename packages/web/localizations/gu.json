@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "ઓસ્મોસિસ પર 24 કલાક વોલ્યુમ",
     "liquidityOnOsmosis": "ઓસ્મોસિસ પર તરલતા",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
+    "supplyOnOsmosis": "ઓસ્મોસિસ પર પુરવઠો",
     "underlyingAssets": {
       "title": "અંતર્ગત અસ્કયામતો",
       "description": "ઓસ્મોસિસ પર {name} ( {denom} ) એ {count} વિવિધ પ્રકારના {name} .",

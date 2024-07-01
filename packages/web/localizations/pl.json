@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "24-godzinny tom na Osmozie",
     "liquidityOnOsmosis": "Płynność na osmozie",
     "circulatingSupply": "Krążące zaopatrzenie",
+    "supplyOnOsmosis": "Zaopatrzenie w osmozę",
     "underlyingAssets": {
       "title": "Aktywa bazowe",
       "description": "{name} ( {denom} ) na osmozie składa się z {count} różne typy {name} .",

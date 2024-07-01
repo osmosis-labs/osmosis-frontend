@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Osmosisの24時間ボリューム",
     "liquidityOnOsmosis": "浸透による流動性",
     "circulatingSupply": "循環供給",
+    "supplyOnOsmosis": "浸透圧供給",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",

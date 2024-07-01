@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Osmosis의 24시간 볼륨",
     "liquidityOnOsmosis": "삼투의 유동성",
     "circulatingSupply": "순환 공급",
+    "supplyOnOsmosis": "삼투에 대한 공급",
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",

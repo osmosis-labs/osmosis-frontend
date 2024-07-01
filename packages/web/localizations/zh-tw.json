@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "24 小時滲透體積",
     "liquidityOnOsmosis": "滲透流動性",
     "circulatingSupply": "循環供應",
+    "supplyOnOsmosis": "滲透供應",
     "underlyingAssets": {
       "title": "基礎資產",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同類型的{name} 。",

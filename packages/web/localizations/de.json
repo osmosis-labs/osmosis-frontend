@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "24h Volumen auf Osmose",
     "liquidityOnOsmosis": "Liquidität durch Osmose",
     "circulatingSupply": "Umlaufversorgung",
+    "supplyOnOsmosis": "Versorgung durch Osmose",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",

@@ -1,4 +1,4 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -12,6 +12,7 @@ import {
   queryCoingeckoCoinIds,
   queryCoingeckoCoins,
 } from "../../coingecko";
+import { querySupplyTotal } from "../../cosmos";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
@@ -23,6 +24,7 @@ import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
+  totalSupply: CoinPretty;
   currentPrice: PricePretty;
   priceChange1h: RatePretty;
   priceChange24h: RatePretty;
@@ -35,7 +37,10 @@ const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
 export async function getMarketAsset<TAsset extends Asset>({
   asset,
+  ...params
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   asset: TAsset;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
@@ -43,12 +48,15 @@ export async function getMarketAsset<TAsset extends Asset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const [marketCap, assetMarketActivity] = await Promise.all([
+      const [marketCap, assetMarketActivity, totalSupply] = await Promise.all([
         getAssetMarketCap(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
         ),
         getAssetMarketActivity(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
+        ),
+        querySupplyTotal({ ...params, denom: asset.coinMinimalDenom }).catch(
+          (e) => captureErrorAndReturn(e, undefined)
         ),
       ]);
 
@@ -56,6 +64,9 @@ export async function getMarketAsset<TAsset extends Asset>({
         currentPrice: assetMarketActivity?.price,
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
+          : undefined,
+        totalSupply: totalSupply
+          ? new CoinPretty(asset, totalSupply.amount.amount)
           : undefined,
         liquidity: assetMarketActivity?.liquidity,
         priceChange1h: assetMarketActivity?.price1hChange,
@@ -81,7 +92,9 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
+  return await Promise.all(
+    assets.map((asset) => getMarketAsset({ asset, ...params }))
+  );
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);

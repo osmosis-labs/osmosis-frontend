@@ -155,6 +155,7 @@ export const assetsRouter = createTRPCRouter({
         asset,
       });
       const userMarketAsset = await getMarketAsset({
+        ...ctx,
         asset: userAsset,
       });
 
@@ -184,6 +185,7 @@ export const assetsRouter = createTRPCRouter({
           userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
+          ...ctx,
           asset: userAsset,
         });
 

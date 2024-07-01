@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "Volume 24h sur Osmose",
     "liquidityOnOsmosis": "Liquidité sur osmose",
     "circulatingSupply": "Approvisionnement en circulation",
+    "supplyOnOsmosis": "Alimentation sur osmose",
     "underlyingAssets": {
       "title": "Atouts sous-jacents",
       "description": "{name} ( {denom} ) sur Osmose est composé de {count} différents types de {name} .",

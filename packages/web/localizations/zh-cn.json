@@ -1006,6 +1006,7 @@
     "volumeOnOsmosis": "24 小时渗透量",
     "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",
+    "supplyOnOsmosis": "渗透供给",
     "underlyingAssets": {
       "title": "基础资产",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",
