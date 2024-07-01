@@ -31,13 +31,13 @@ export const useBridgeQuote = ({
 
   inputAmount: inputAmountRaw,
 
-  sourceAddress,
-  sourceChain,
-  sourceAsset,
+  fromAddress,
+  fromChain,
+  fromAsset,
 
-  destinationAddress,
-  destinationAsset,
-  destinationChain,
+  toAddress,
+  toAsset,
+  toChain,
 
   bridges = ["Axelar", "Skip", "Squid", "IBC"],
 
@@ -48,13 +48,13 @@ export const useBridgeQuote = ({
 
   inputAmount: string;
 
-  sourceAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
-  sourceChain: BridgeChain | undefined;
-  sourceAddress: string | undefined;
+  fromAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
+  fromChain: BridgeChain | undefined;
+  fromAddress: string | undefined;
 
-  destinationAsset: BridgeAsset | undefined;
-  destinationChain: BridgeChain | undefined;
-  destinationAddress: string | undefined;
+  toAsset: BridgeAsset | undefined;
+  toChain: BridgeChain | undefined;
+  toAddress: string | undefined;
 
   bridges?: Bridge[];
 
@@ -72,19 +72,6 @@ export const useBridgeQuote = ({
     useSendEvmTransaction();
   const { t } = useTranslation();
 
-  // In the context of Osmosis, this refers to the Osmosis chain.
-  const destinationPath = {
-    address: destinationAddress,
-    asset: destinationAsset,
-    chain: destinationChain,
-  };
-
-  const sourcePath = {
-    address: sourceAddress,
-    asset: sourceAsset,
-    chain: sourceChain,
-  };
-
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
 
@@ -93,14 +80,17 @@ export const useBridgeQuote = ({
       RouterInputs["bridgeTransfer"]["getQuoteByBridge"],
       "bridge" | "fromAmount"
     >
-  > = {
-    fromAddress: isDeposit ? sourcePath.address : destinationPath.address,
-    fromAsset: isDeposit ? sourcePath.asset : destinationPath.asset,
-    fromChain: isDeposit ? sourcePath.chain : destinationPath.chain,
-    toAddress: isDeposit ? destinationPath.address : sourcePath.address,
-    toAsset: isDeposit ? destinationPath.asset : sourcePath.asset,
-    toChain: isDeposit ? destinationPath.chain : sourcePath.chain,
-  };
+  > = useMemo(
+    () => ({
+      fromAddress,
+      fromAsset,
+      fromChain,
+      toAddress,
+      toAsset,
+      toChain,
+    }),
+    [fromAddress, fromAsset, fromChain, toAddress, toAsset, toChain]
+  );
 
   const [selectedBridgeProvider, setSelectedBridgeProvider] =
     useState<Bridge | null>(null);
@@ -129,10 +119,10 @@ export const useBridgeQuote = ({
     debouncedInputValue === "" ? "0" : debouncedInputValue
   ).mul(
     // CoinPretty only accepts whole amounts
-    DecUtils.getTenExponentNInPrecisionRange(destinationAsset?.decimals ?? 0)
+    DecUtils.getTenExponentNInPrecisionRange(toAsset?.decimals ?? 0)
   );
 
-  const availableBalance = sourceAsset?.amount;
+  const availableBalance = fromAsset?.amount;
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -396,13 +386,13 @@ export const useBridgeQuote = ({
             .trim(true)
             .toString(),
           isWithdraw,
-          destinationAddress ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
+          toAddress ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
         );
       }
     },
     [
       availableBalance,
-      destinationAddress,
+      toAddress,
       inputAmount,
       inputAmountRaw,
       isWithdraw,
@@ -413,10 +403,9 @@ export const useBridgeQuote = ({
   const [isApprovingToken, setIsApprovingToken] = useState(false);
 
   const isSendTxPending = (() => {
-    if (!destinationChain) return false;
-    return destinationChain.chainType === "cosmos"
-      ? accountStore.getWallet(destinationChain.chainId)?.txTypeInProgress !==
-          ""
+    if (!toChain) return false;
+    return toChain.chainType === "cosmos"
+      ? accountStore.getWallet(toChain.chainId)?.txTypeInProgress !== ""
       : isEthTxPending;
   })();
 
@@ -503,13 +492,13 @@ export const useBridgeQuote = ({
   const handleCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
-    if (!destinationChain || destinationChain?.chainType !== "cosmos") {
+    if (!toChain || toChain?.chainType !== "cosmos") {
       throw new Error("Destination chain is not cosmos");
     }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     return accountStore.signAndBroadcast(
-      destinationChain.chainId,
+      toChain.chainId,
       transactionRequest.msgTypeUrl,
       [
         {
@@ -522,12 +511,12 @@ export const useBridgeQuote = ({
       undefined,
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(destinationChain.chainId);
+          const queries = queriesStore.get(toChain.chainId);
 
           // After succeeding to send token, refresh the balance.
           const queryBalance = queries.queryBalances
             // If we get here destination address is defined
-            .getQueryBech32Address(destinationAddress!)
+            .getQueryBech32Address(toAddress!)
             .balances.find((bal) => {
               return (
                 bal.currency.coinMinimalDenom ===
@@ -576,12 +565,12 @@ export const useBridgeQuote = ({
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
   const isCorrectEvmChainSelected =
-    sourceChain?.chainType === "evm"
-      ? currentEvmChainId === sourceChain?.chainId
+    fromChain?.chainType === "evm"
+      ? currentEvmChainId === fromChain?.chainId
       : true;
 
   let buttonErrorMessage: string | undefined;
-  if (!sourceAddress) {
+  if (!fromAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
   } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
