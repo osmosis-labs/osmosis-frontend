@@ -43,10 +43,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     );
   }, [inputMode]);
 
-  const isAboveBelowMarketPrice = useMemo(() => {
-    return swapState.priceState.isBeyondOppositePrice;
-  }, [swapState.priceState.isBeyondOppositePrice]);
-
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
       return formatPretty(priceState.priceFiat);
@@ -103,8 +99,9 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
             <button
               className={classNames("body2 inline-flex items-center gap-1", {
-                "text-rust-400": isAboveBelowMarketPrice,
-                "text-wosmongton-300": !isAboveBelowMarketPrice,
+                "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                "text-wosmongton-300":
+                  !swapState.priceState.isBeyondOppositePrice,
               })}
               onClick={swapInputMode}
             >
@@ -119,7 +116,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           </div>
         </SkeletonLoader>
         <div className="">
-          {isAboveBelowMarketPrice && (
+          {swapState.priceState.isBeyondOppositePrice && (
             <span className="body2 text-rust-400">
               <Tooltip
                 content={TooltipContent}

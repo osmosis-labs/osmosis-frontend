@@ -266,7 +266,6 @@ const useLimitPrice = ({
   orderbookContractAddress: string;
   orderDirection: OrderDirection;
 }) => {
-  // TODO: Fetch spot price from SQS
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
