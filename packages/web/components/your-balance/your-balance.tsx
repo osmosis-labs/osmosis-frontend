@@ -14,7 +14,7 @@ import { ReactElement, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
@@ -22,7 +22,6 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useFakeFeeConfig,
-  useFeatureFlags,
   useGetApr,
   useHideDustUserSetting,
   useStakedAmountConfig,
@@ -42,7 +41,7 @@ interface YourBalanceProps {
   className?: string;
 }
 
-const YourBalance = observer(
+export const YourBalance = observer(
   ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
     const {
       queriesStore,
@@ -51,7 +50,6 @@ const YourBalance = observer(
       derivedDataStore,
       priceStore,
     } = useStore();
-    const featureFlags = useFeatureFlags();
     const { t } = useTranslation();
     const { stakingAPR } = useGetApr();
     const language = useCurrentLanguage();
@@ -152,15 +150,7 @@ const YourBalance = observer(
             | ObservableConcentratedPoolDetail;
         } => {
           if (pool === undefined) return false;
-
-          // concentrated liquidity liquidity feature flag
-          if (
-            !featureFlags.concentratedLiquidity &&
-            pool.poolDetail instanceof ObservableConcentratedPoolDetail
-          )
-            return false;
-
-          return true;
+          return !(pool.poolDetail instanceof ObservableConcentratedPoolDetail);
         }
       );
 
@@ -329,8 +319,6 @@ const YourBalance = observer(
   }
 );
 
-export default YourBalance;
-
 const ActionButton = ({
   title,
   sub,
@@ -394,7 +382,7 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
   const { ibcBalances } = assetsStore;
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const tokenChain = chainStore.getChainFromCurrency(denom);
-  const chainName = tokenChain?.chainName;
+  const chainId = tokenChain?.chainId;
 
   const { data, isLoading: isCoinDataLoading } =
     api.edge.assets.getUserMarketAsset.useQuery({
@@ -464,7 +452,11 @@ const BalanceStats = observer(({ denom }: YourBalanceProps) => {
           </SkeletonLoader>
         ) : (
           <button
-            onClick={() => onOpenWalletSelect(chainName!)}
+            onClick={() =>
+              onOpenWalletSelect({
+                walletOptions: [{ walletType: "cosmos", chainId: chainId! }],
+              })
+            }
             className="text-subtitle1 font-subtitle1 leading-6 text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-200"
           >
             {t("connectWallet")}

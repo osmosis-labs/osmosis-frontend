@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export type SkipAsset = {
   denom: string;
   chain_id: string;
@@ -6,6 +8,8 @@ export type SkipAsset = {
   origin_chain_id: string;
   trace: string;
   is_cw20: boolean;
+  is_evm: boolean;
+  is_svm: boolean;
 
   symbol?: string;
   name?: string;
@@ -171,15 +175,15 @@ export type SkipMultiChainMsg = {
 
 export type SkipEvmTx = {
   chain_id: string;
-  to: string;
+  to: Address;
   value: string;
   data: string;
   required_erc20_approvals: SkipERC20Approval[];
 };
 
 export type SkipERC20Approval = {
-  token_contract: string;
-  spender: string;
+  token_contract: Address;
+  spender: Address;
   amount: string;
 };
 

@@ -391,7 +391,7 @@
     "noAvailableShares": "利用可能な{denom}共有がありません",
     "noRoute": "この取引にはルートがありません",
     "noSendCurrency": "送金通貨が設定されていません",
-    "notInitialized": "初期化されていません",
+    "notInitialized": "読み込み中...",
     "percentageSum": "パーセンテージの合計が 100 にならない",
     "scalingFactorTooLow": "倍率が低すぎる",
     "zeroAmount": "金額はゼロです",
@@ -531,7 +531,6 @@
       "spendLimitTitle": "支出制限",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
-      "resetPeriodTitle": "リセット期間",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
@@ -561,16 +560,6 @@
           "1hour": "1時間",
           "3hours": "3時間",
           "12hours": "12時間"
-        }
-      },
-      "resetPeriodScreen": {
-        "title": "リセット期間",
-        "description": "支出制限割り当てをリセットする期間を設定します。",
-        "periods": {
-          "day": "日",
-          "week": "週",
-          "month": "月",
-          "year": "年"
         }
       },
       "discardChanges": {
@@ -610,12 +599,9 @@
     "checkBackForBondingRewards": "絆の報酬をもう一度チェックしてください",
     "collapseDetails": "プール構成を非表示にする",
     "commission": "手数料",
-    "currentDailyEarn": "あなたは現在稼いでいます",
     "dailyEarnAmount": "{amount} / 日",
-    "day": "日",
     "delegated": "委任された",
     "details": "詳細",
-    "earnMore": "ボンディングによってさらに{amount}獲得しましょう",
     "earnSwapFees": "スワップ手数料を獲得する",
     "earnSwapFeesCaption": "トークンを株式に変換し、交換するたびに収益を上げます。",
     "from": "から",
@@ -867,10 +853,6 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "promo": {
-      "newOpportunity": "{denom}で獲得する新たな機会",
-      "discoverSuperchargedPools": "スーパーチャージされたプールを発見する"
-    },
     "dynamicSpreadFactor": "動的"
   },
   "walletSelect": {
@@ -921,6 +903,34 @@
   "transactionBroadcasting": "トランザクションブロードキャスト",
   "transactionFailed": "処理に失敗しました",
   "transactionSuccessful": "トランザクションが成功しました",
+  "transfer": {
+    "deposit": "デポジット",
+    "withdraw": "撤回する",
+    "fromNetwork": "ネットワークから",
+    "toNetwork": "ネットワークに",
+    "max": "マックス",
+    "available": "利用可能",
+    "transferWith": "転送",
+    "transferTo": "転送先",
+    "receiveAsset": "資産を受け取る",
+    "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
+    "estimatingTime": "時間の見積もり",
+    "calculatingFees": "手数料の計算",
+    "reviewDeposit": "預金の確認",
+    "reviewWithdraw": "レビュー撤回",
+    "moreDepositOptions": "その他の入金オプション",
+    "moreWithdrawOptions": "引き出しオプションの追加",
+    "convertTo": "に変換",
+    "recommended": "推奨",
+    "moreBridgeOptions": {
+      "titleDeposit": "その他の入金オプション",
+      "titleWithdraw": "引き出しオプションの追加",
+      "descriptionDeposit": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "depositWith": "入金",
+      "withdrawWith": "撤退する"
+    }
+  },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
   "waitingForTransaction": "トランザクションがブロックに含まれるのを待っています",
@@ -962,7 +972,6 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "関連アセット",
     "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
     "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
@@ -984,10 +993,14 @@
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
     "circulatingSupply": "循環供給",
-    "tvl": "TVL",
     "buyToken": "{coinDenom}を購入する",
     "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性"
+    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
+    "underlyingAssets": {
+      "title": "基礎資産",
+      "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
+      "of": "{denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "浸透圧のアップデート！",
@@ -998,16 +1011,9 @@
   "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
-    "position": "位置",
     "positions": "ポジション",
-    "allocation": "割り当て",
-    "tokensCount": "{number}トークン",
     "strategiesCount": "{number}戦略",
     "oneStrategy": "1つの戦略",
-    "value": "価値",
-    "method": "タイプ",
-    "platform": "プラットホーム",
-    "scrollToSeeMore": "スクロールしてさらに見る",
     "discoverStrategies": "戦略を発見する",
     "myStrategies": "あなたの戦略",
     "strategyPlatform": "戦略",

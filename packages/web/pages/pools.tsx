@@ -1,9 +1,8 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { Duration } from "dayjs/plugin/duration";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
-import { ComponentProps, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
@@ -15,16 +14,8 @@ import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
-  useLockTokenConfig,
-  useSuperfluidPool,
 } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import {
-  AddLiquidityModal,
-  CreatePoolModal,
-  LockTokensModal,
-  SuperfluidValidatorModal,
-} from "~/modals";
+import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
 
 const Pools: NextPage = observer(function () {
@@ -35,8 +26,7 @@ const Pools: NextPage = observer(function () {
   });
 
   const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getWallet(chainId);
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
 
   const [poolsOverviewRef, { height: poolsOverviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -46,8 +36,6 @@ const Pools: NextPage = observer(function () {
 
   const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
-
-  const featureFlags = useFeatureFlags();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -63,80 +51,13 @@ const Pools: NextPage = observer(function () {
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
     string | null
   >(null);
-  const [lockLpTokenModalPoolId, setLockLpTokenModalPoolId] = useState<
-    string | null
-  >(null);
-  const [superfluidDelegateModalProps, setSuperfluidDelegateModalProps] =
-    useState<ComponentProps<typeof SuperfluidValidatorModal> | null>(null);
 
-  // TODO: add amplitude events for quick actions on pool
   const quickActionProps = {
     quickAddLiquidity: useCallback(
       (poolId: string) => setAddLiquidityModalPoolId(poolId),
       []
     ),
-    quickLockTokens: useCallback(
-      (poolId: string) => setLockLpTokenModalPoolId(poolId),
-      []
-    ),
   };
-
-  // lock tokens (& possibly select sfs validator) quick action state
-  const { delegateSharesToValidator } = useSuperfluidPool();
-  const selectedPoolShareCurrency = lockLpTokenModalPoolId
-    ? queryOsmosis.queryGammPoolShare.makeShareCurrency(lockLpTokenModalPoolId)
-    : undefined;
-  const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
-    selectedPoolShareCurrency
-  );
-  const onLockToken = useCallback(
-    (duration: Duration, electSuperfluid?: boolean) => {
-      if (electSuperfluid && selectedPoolShareCurrency) {
-        // open superfluid modal
-        setSuperfluidDelegateModalProps({
-          isOpen: true,
-          availableBondAmount: new CoinPretty(
-            selectedPoolShareCurrency,
-            lockLpTokenConfig.getAmountPrimitive().amount
-          ),
-          onSelectValidator: (address) => {
-            if (!lockLpTokenModalPoolId) {
-              console.error(
-                "onSelectValidator: lockLpTokenModalPoolId is undefined"
-              );
-              setSuperfluidDelegateModalProps(null);
-              lockLpTokenConfig.setAmount("");
-              return;
-            }
-
-            delegateSharesToValidator(
-              lockLpTokenModalPoolId,
-              address,
-              lockLpTokenConfig
-            ).finally(() => {
-              setSuperfluidDelegateModalProps(null);
-              lockLpTokenConfig.setAmount("");
-            });
-          },
-          onRequestClose: () => setSuperfluidDelegateModalProps(null),
-        });
-        setLockLpTokenModalPoolId(null);
-      } else {
-        lockToken(duration).finally(() => {
-          setLockLpTokenModalPoolId(null);
-          setSuperfluidDelegateModalProps(null);
-          lockLpTokenConfig.setAmount("");
-        });
-      }
-    },
-    [
-      selectedPoolShareCurrency,
-      lockLpTokenConfig,
-      lockLpTokenModalPoolId,
-      delegateSharesToValidator,
-      lockToken,
-    ]
-  );
 
   const onCreatePool = useCallback(async () => {
     try {
@@ -223,26 +144,13 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
-      {lockLpTokenModalPoolId && (
-        <LockTokensModal
-          title={t("lockToken.titleInPool", { poolId: lockLpTokenModalPoolId })}
-          isOpen={true}
-          poolId={lockLpTokenModalPoolId}
-          amountConfig={lockLpTokenConfig}
-          onLockToken={onLockToken}
-          onRequestClose={() => setLockLpTokenModalPoolId(null)}
-        />
-      )}
-      {superfluidDelegateModalProps && (
-        <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
-      )}
       <section className="pb-10 pt-8 md:pb-5 md:pt-4" ref={poolsOverviewRef}>
         <PoolsOverview
           className="mx-auto"
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity && account?.address && (
+      {account?.address && (
         <section className="pb-[3.75rem]" ref={myPositionsRef}>
           <h5>{t("clPositions.yourPositions")}</h5>
           <MyPositionsSection />

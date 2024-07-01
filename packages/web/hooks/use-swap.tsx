@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -9,7 +10,6 @@ import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
   SignOptions,
-  TxFee,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import {
@@ -18,7 +18,6 @@ import {
   makeMinimalAsset,
 } from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -45,11 +44,10 @@ import { useStore } from "~/stores";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
-import { useBalances } from "./queries/cosmos/use-balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
-import { useWalletSelect } from "./wallet-select";
+import { useWalletSelect } from "./use-wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -97,11 +95,11 @@ export function useSwap(
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const queryClient = useQueryClient();
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
   const { t } = useTranslation();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -119,27 +117,35 @@ export function useSwap(
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
-  const canLoadQuote =
-    isToFromAssets &&
-    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive());
 
+  const quoteQueryEnabled =
+    isToFromAssets &&
+    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+    // since input is debounced there could be the wrong asset associated
+    // with the input amount when switching assets
+    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom &&
+    inAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom &&
+    !account?.txTypeInProgress &&
+    !isWalletLoading;
   const {
     data: quote,
     isLoading: isQuoteLoading_,
     error: quoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    canLoadQuote
+    quoteQueryEnabled
   );
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
+  const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
 
   const {
     data: spotPriceQuote,
@@ -147,14 +153,14 @@ export function useSwap(
     error: spotPriceQuoteError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: DecUtils.getTenExponentN(
         swapAssets.fromAsset?.coinDecimals ?? 0
       )
         .quoRoundUp(spotPriceQuoteMultiplier)
         .truncate()
         .toString(),
-      tokenOut: swapAssets.toAsset,
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
@@ -163,10 +169,8 @@ export function useSwap(
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
-    | NoRouteError
-    | NotEnoughLiquidityError
-    | Error
-    | undefined = useMemo(() => {
+    | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
+    | typeof inAmountInput.error = useMemo(() => {
     let error = quoteError;
 
     // only show spot price error if there's no quote
@@ -190,28 +194,33 @@ export function useSwap(
     inAmountInput.isEmpty,
   ]);
 
+  const networkFeeQueryEnabled =
+    featureFlags.swapToolSimulateFee &&
+    !Boolean(precedentError) &&
+    !isQuoteLoading &&
+    quoteQueryEnabled &&
+    Boolean(quote?.messages) &&
+    Boolean(account?.address) &&
+    inAmountInput.debouncedInAmount !== null &&
+    inAmountInput.balance &&
+    inAmountInput.amount &&
+    inAmountInput.debouncedInAmount
+      .toDec()
+      .lte(inAmountInput.balance.toDec()) &&
+    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec());
   const {
     data: networkFee,
-    error: estimateTxError,
-    isLoading: isLoadingNetworkFee,
+    error: networkFeeError,
+    isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
-    enabled:
-      !inAmountInput.isEmpty &&
-      !precedentError &&
-      featureFlags.swapToolSimulateFee,
-    sendToken:
-      inAmountInput.balance && inAmountInput.amount
-        ? {
-            amount: inAmountInput.amount,
-            balance: inAmountInput.balance,
-          }
-        : undefined,
+    enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
+  const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
   const hasExceededOneClickTradingGasLimit = useMemo(() => {
     if (
@@ -244,18 +253,18 @@ export function useSwap(
 
   const hasOverSpendLimitError = useMemo(() => {
     if (
-      !estimateTxError?.message ||
+      !networkFeeError?.message ||
       !isOneClickTradingEnabled ||
       inAmountInput.isEmpty ||
       inAmountInput.inputAmount == "0" ||
-      !isOverspendErrorMessage({ message: estimateTxError?.message })
+      !isOverspendErrorMessage({ message: networkFeeError?.message })
     ) {
       return false;
     }
 
     return true;
   }, [
-    estimateTxError,
+    networkFeeError,
     inAmountInput.inputAmount,
     inAmountInput.isEmpty,
     isOneClickTradingEnabled,
@@ -266,12 +275,18 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          if (!maxSlippage) return reject("No max slippage");
-          if (!inAmountInput.amount) return reject("No input amount");
-          if (!account) return reject("No account");
+          if (!maxSlippage)
+            return reject(new Error("Max slippage is not defined."));
+          if (!inAmountInput.amount)
+            return reject(new Error("Input amount is not specified."));
+          if (!account)
+            return reject(new Error("Account information is missing."));
+          if (!swapAssets.fromAsset)
+            return reject(new Error("From asset is not specified."));
+          if (!swapAssets.toAsset)
+            return reject(new Error("To asset is not specified."));
 
           let txParams: ReturnType<typeof getSwapTxParameters>;
-
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
@@ -282,7 +297,9 @@ export function useSwap(
             });
           } catch (e) {
             const error = e as Error;
-            return reject(error.message);
+            return reject(
+              new Error(`Transaction preparation failed: ${error.message}`)
+            );
           }
 
           const { routes, tokenIn, tokenOutMinAmount } = txParams;
@@ -298,13 +315,13 @@ export function useSwap(
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
             !hasExceededOneClickTradingGasLimit &&
-            !estimateTxError;
+            !networkFeeError;
 
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
             !hasExceededOneClickTradingGasLimit &&
-            estimateTxError
+            networkFeeError
           ) {
             try {
               const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
@@ -339,11 +356,11 @@ export function useSwap(
                 );
               });
             } catch (e) {
-              return reject("Rejected manual approval");
+              return reject(new Error("Rejected manual approval"));
             }
           }
 
-          const signOptions: (SignOptions & { fee?: TxFee }) | undefined = {
+          const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
             useOneClickTrading: shouldBeSignedWithOneClickTrading,
             ...(featureFlags.swapToolSimulateFee && networkFee
               ? {
@@ -368,14 +385,15 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve(pools.length === 1 ? "exact-in" : "multihop");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
-            return pools.length === 1 ? "exact-in" : "multihop";
+              .catch(reject);
           } else if (routes.length > 1) {
             account.osmosis
               .sendSplitRouteSwapExactAmountInMsg(
@@ -384,25 +402,23 @@ export function useSwap(
                 tokenOutMinAmount,
                 undefined,
                 signOptions,
-                () => {
-                  resolve("multiroute");
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error(
+                        "Failed to send split route swap exact amount in message"
+                      )
+                    );
+                  else resolve("multiroute");
                 }
               )
-              .catch((reason) => {
-                reject(reason);
-              });
+              .catch(reject);
           } else {
-            reject("No routes given");
+            // should not be possible because button should be disabled
+            reject(new Error("No routes given"));
           }
         }
-      ).finally(() => {
-        // TODO: Move this logic to osmosis account store
-        // But for now we will invalidate query data here.
-        if (!account?.address) return;
-        useBalances.invalidateQuery({ address: account.address, queryClient });
-
-        inAmountInput.reset();
-      }),
+      ).finally(() => inAmountInput.reset()),
     [
       maxSlippage,
       inAmountInput,
@@ -412,32 +428,29 @@ export function useSwap(
       accountStore,
       hasOverSpendLimitError,
       hasExceededOneClickTradingGasLimit,
-      estimateTxError,
+      networkFeeError,
       featureFlags.swapToolSimulateFee,
       networkFee,
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
-      queryClient,
     ]
   );
 
   const positivePrevQuote = usePreviousWhen(
     quote,
     useCallback(
-      () => Boolean(quote?.amount.toDec().isPositive()) && !quoteError,
-      [quote, quoteError]
+      () =>
+        Boolean(quote?.amount.toDec().isPositive()) &&
+        !quoteError &&
+        !inAmountInput.isEmpty,
+      [quote, quoteError, inAmountInput.isEmpty]
     )
   );
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
-    if (
-      inAmountInput.amount &&
-      quote &&
-      swapAssets.toAsset &&
-      !inAmountInput.isTyping
-    ) {
+    if (inAmountInput.amount && quote && swapAssets.toAsset) {
       return new CoinPretty(
         swapAssets.toAsset,
         quote.amount
@@ -448,7 +461,7 @@ export function useSwap(
           )
       );
     }
-  }, [inAmountInput.amount, inAmountInput.isTyping, quote, swapAssets.toAsset]);
+  }, [inAmountInput.amount, quote, swapAssets.toAsset]);
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
@@ -507,18 +520,17 @@ export function useSwap(
       networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
     ]),
     networkFee,
-    isLoadingNetworkFee,
+    isLoadingNetworkFee:
+      inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
+    networkFeeError,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
     isQuoteLoading,
-    /** Spot price or user input quote. */
-    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
     hasExceededOneClickTradingGasLimit,
-    estimateTxError,
   };
 }
 
@@ -668,6 +680,13 @@ export function useSwapAssets({
       enabled: canLoadAssets,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+
+      // avoid blocking
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
 
@@ -763,7 +782,9 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { chainStore } = useStore();
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const featureFlags = useFeatureFlags();
 
@@ -771,64 +792,80 @@ function useSwapAmountInput({
 
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
-
     gasAmount: gasAmount,
   });
 
+  const balanceQuoteQueryEnabled =
+    featureFlags.swapToolSimulateFee &&
+    !isLoadingWallet &&
+    !account?.txTypeInProgress &&
+    Boolean(swapAssets.fromAsset) &&
+    Boolean(swapAssets.toAsset) &&
+    // since the in amount is debounced, the asset could be wrong when switching assets
+    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    inAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.fromAsset!.coinMinimalDenom &&
+    !!inAmountInput.balance &&
+    !inAmountInput.balance.toDec().isZero() &&
+    inAmountInput.balance.currency.coinMinimalDenom ===
+      swapAssets.fromAsset?.coinMinimalDenom;
   const {
     data: quoteForCurrentBalance,
-    isLoading: isQuoteForCurrentBalanceLoading,
+    isLoading: isQuoteForCurrentBalanceLoading_,
     error: quoteForCurrentBalanceError,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
       tokenInAmount: inAmountInput.balance?.toCoin().amount!,
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-
-    !!inAmountInput.balance && !inAmountInput.balance?.toDec().isZero()
+    balanceQuoteQueryEnabled
   );
+  const isQuoteForCurrentBalanceLoading =
+    isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
+  const networkFeeQueryEnabled =
+    !isQuoteForCurrentBalanceLoading &&
+    balanceQuoteQueryEnabled &&
+    Boolean(quoteForCurrentBalance);
   const {
     data: currentBalanceNetworkFee,
-
-    isLoading: isLoadingCurrentBalanceNetworkFee,
-
+    isLoading: isLoadingCurrentBalanceNetworkFee_,
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
-    sendToken: inAmountInput.balance
-      ? {
-          amount: inAmountInput.balance,
-          balance: inAmountInput.balance,
-        }
-      : undefined,
-    enabled:
-      featureFlags.swapToolSimulateFee &&
-      !!inAmountInput.balance &&
-      !isQuoteForCurrentBalanceLoading,
+    enabled: networkFeeQueryEnabled,
   });
+  const isLoadingCurrentBalanceNetworkFee =
+    networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
     return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
   }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
 
-  const notEnoughBalanceForMax = useMemo(() => {
-    return (
+  const notEnoughBalanceForMax = useMemo(
+    () =>
       currentBalanceNetworkFeeError?.message.includes(
         "min out amount or max in amount should be positive"
       ) ||
+      currentBalanceNetworkFeeError?.message.includes(
+        "No fee tokens found with sufficient balance on account"
+      ) ||
+      currentBalanceNetworkFeeError?.message.includes(
+        "Insufficient alternative balance for transaction fees"
+      ) ||
       quoteForCurrentBalanceError?.message.includes(
         "Not enough quoted. Try increasing amount."
-      )
-    );
-  }, [
-    currentBalanceNetworkFeeError?.message,
-    quoteForCurrentBalanceError?.message,
-  ]);
+      ),
+    [
+      currentBalanceNetworkFeeError?.message,
+      quoteForCurrentBalanceError?.message,
+    ]
+  );
 
   useEffect(() => {
     if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
@@ -955,7 +992,7 @@ function useSwapAsset<TAsset extends Asset>({
   }, [minDenomOrSymbol, existingAsset]);
 
   return {
-    asset: existingAsset ?? (asset as TAsset),
+    asset: existingAsset ?? (asset as TAsset | undefined),
   };
 }
 
@@ -1192,6 +1229,8 @@ function useQueryRouterBestQuote(
           // the gas simulation will fail due to slippage and the user would see errors
           staleTime: 5_000,
           cacheTime: 5_000,
+          refetchInterval: 5_000,
+
           // Disable retries, as useQueries
           // will block successfull quotes from being returned
           // if failed quotes are being returned

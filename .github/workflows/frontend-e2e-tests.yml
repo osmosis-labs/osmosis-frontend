@@ -26,7 +26,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Select Swap Pair tests on Master
+      - name: Run Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
@@ -40,6 +40,41 @@ jobs:
         with:
           name: main-e2e-test-results
           path: packages/web/playwright-report
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 FE E2E Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "FE E2E Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   preview-e2e-tests:
     if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
@@ -63,7 +98,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Select Swap Pair tests on Stage
+      - name: Run Swap Pair tests on Stage
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
@@ -77,3 +112,45 @@ jobs:
         with:
           name: preview-e2e-test-results
           path: packages/web/playwright-report
+      - name: Run Portfolio tests on Stage
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Portfolio feature"
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 FE E2E Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "FE E2E Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* preview\n*App URL:* ${{ github.event.deployment_status.environment_url }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

@@ -1,3 +1,4 @@
+export * from "./authenticators";
 export * from "./concentratedliquidity";
 export * from "./epochs";
 export * from "./icns";

@@ -17,6 +17,7 @@ export type Asset = {
   coinImageUrl?: string;
   isVerified: boolean;
   isUnstable: boolean;
+  sourceDenom: string;
 };
 
 export const AssetFilterSchema = z.object({
@@ -169,6 +170,7 @@ function filterAssetList(
 export * from "./bridge";
 export * from "./categories";
 export * from "./config";
+export * from "./gas";
 export * from "./market";
 export * from "./price";
 export * from "./user";

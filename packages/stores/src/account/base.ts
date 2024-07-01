@@ -6,6 +6,7 @@ import {
   OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
+import { StdFee } from "@cosmjs/launchpad";
 import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -49,47 +50,37 @@ import {
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
 import {
-  queryBalances,
-  queryFeesBaseDenom,
-  queryFeeTokens,
-  queryFeeTokenSpotPrice,
-  queryOsmosisGasPrice,
-} from "@osmosis-labs/server";
+  encodeAnyBase64,
+  QuoteStdFee,
+  SimulateNotAvailableError,
+  TxTracer,
+} from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
   ApiClientError,
-  DefaultGasPriceStep,
-  getChain,
   isNil,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
-import cachified, { CacheEntry } from "cachified";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import { LRUCache } from "lru-cache";
+import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
+import { InsufficientBalanceForFeeError } from "../ui-config";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
+  CosmosRegistryWallet,
   DeliverTxResponse,
   OneClickTradingInfo,
-  RegistryWallet,
   SignOptions,
   TxEvent,
   TxEvents,
@@ -100,13 +91,11 @@ import {
   getEndpointString,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
-  InsufficientFeeError,
   logger,
   makeSignDocAmino,
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
   removeLastSlash,
-  TxFee,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -167,8 +156,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     ...ibcProtoRegistry,
     ...osmosisProtoRegistry,
   ]);
-
-  private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
   /**
    * We make sure that the 'base' field always has as its value the native chain parameter
@@ -387,7 +374,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
-      const walletInfo = wallet.walletInfo as RegistryWallet;
+      const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
@@ -496,7 +483,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // If the wallet isn't found, return the error
     if (!wallet) return new Error(errorMessage);
 
-    const walletInfo = wallet.walletInfo as RegistryWallet;
+    const walletInfo = wallet.walletInfo as CosmosRegistryWallet;
 
     // If the wallet has a custom error matcher, use it
     if (walletInfo?.matchError) {
@@ -537,7 +524,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee?: TxFee,
+    fee?: StdFee,
     signOptions?: SignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
@@ -593,20 +580,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      let usedFee: TxFee;
-      if (typeof fee === "undefined" || fee?.force === false) {
-        usedFee = await this.estimateFee({
-          wallet,
-          messages: msgs,
-          initialFee: fee ?? { amount: [] },
-          nonCriticalExtensionOptions: signOptions?.useOneClickTrading
-            ? await this.getOneClickTradingExtensionOptions({
-                oneClickTradingInfo: await this.getOneClickTradingInfo(),
-              })
-            : undefined,
-          memo,
-          signOptions: mergedSignOptions,
-        });
+      let usedFee: StdFee;
+      if (typeof fee === "undefined") {
+        try {
+          usedFee = await this.estimateFee({
+            wallet,
+            messages: msgs,
+            signOptions: mergedSignOptions,
+          });
+        } catch (e) {
+          if (e instanceof SimulateNotAvailableError) {
+            console.warn(
+              "Gas simulation not supported for chain ID:",
+              chainNameOrId
+            );
+          }
+
+          throw e;
+        }
       } else {
         usedFee = fee;
       }
@@ -767,7 +758,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signOptions?: SignOptions;
   }): Promise<TxRaw> {
@@ -888,7 +879,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
   }): Promise<TxRaw> {
@@ -928,7 +919,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }) as Uint8Array;
 
     const privateKey = new PrivKeySecp256k1(
-      fromBase64(oneClickTradingInfo.privateKey)
+      fromBase64(oneClickTradingInfo.sessionKey)
     );
 
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
@@ -936,8 +927,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
-      fee.granter,
-      fee.payer
+      undefined,
+      undefined
     );
     const signDoc = makeSignDoc(
       txBodyBytes,
@@ -983,7 +974,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
@@ -1122,7 +1113,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: AccountStoreWallet;
     signerAddress: string;
     messages: readonly EncodeObject[];
-    fee: TxFee;
+    fee: StdFee;
     memo: string;
     signerData: SignerData;
     signOptions?: SignOptions;
@@ -1170,8 +1161,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
-      fee.granter,
-      fee.payer
+      undefined,
+      undefined
     );
     const signDoc = makeSignDoc(
       txBodyBytes,
@@ -1250,10 +1241,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *
    * @param wallet - The wallet object containing information about the blockchain wallet.
    * @param messages - An array of message objects to be encoded and included in the transaction.
-   * @param initialFee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
-   * @param memo - A string used as a memo or note with the transaction.
    * @param signOptions - Optional options for customizing the sign process.
-   * @param excludedFeeMinimalDenoms - An array of minimal denoms to exclude from the fee calculation.
    *
    * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
    *
@@ -1269,112 +1257,65 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
    * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
    *
-   * If the chain does not support transaction simulation, the function may
-   * fall back to using the provided fee parameter.
+   * @throws `SimulateNotAvailableError` if simulation is not available
    */
   public async estimateFee({
     wallet,
     messages,
-    initialFee = { amount: [] },
-    memo = "",
-    nonCriticalExtensionOptions,
     signOptions = {},
-    excludedFeeMinimalDenoms = [],
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    initialFee?: Optional<TxFee, "gas">;
-    nonCriticalExtensionOptions?: TxBody["nonCriticalExtensionOptions"];
-    memo?: string;
+    initialFee?: Optional<StdFee, "gas">;
     signOptions?: SignOptions;
-    excludedFeeMinimalDenoms?: string[];
-  }): Promise<TxFee> {
-    const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-    const { sequence } = await this.getSequence(wallet);
-
-    const unsignedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode(
-        TxBody.fromPartial({
-          messages: encodedMessages,
-          memo: memo,
-          nonCriticalExtensionOptions,
-        })
-      ).finish(),
-      authInfoBytes: AuthInfo.encode({
-        signerInfos: [
-          SignerInfo.fromPartial({
-            // Pub key is ignored.
-            // It is fine to ignore the pub key when simulating tx.
-            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
-            modeInfo: {
-              single: {
-                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
-              },
-              multi: undefined,
-            },
-            sequence,
-          }),
-        ],
-        fee: Fee.fromPartial({
-          amount: initialFee.amount.map((amount) => {
-            return { amount: amount.amount, denom: amount.denom };
-          }),
-        }),
-      }).finish(),
-      // Because of the validation of tx itself, the signature must exist.
-      // However, since they do not actually verify the signature, it is okay to use any value.
-      signatures: [new Uint8Array(64)],
-    }).finish();
-
-    const restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
+  }): Promise<StdFee> {
+    if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const result = await apiClient<{
-        gas_info: {
-          gas_used: string;
-        };
-      }>(this.options?.simulateUrl ?? "/api/simulate-transaction", {
+      const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
+
+      // check for one click trading tx decoration
+      const shouldBeSignedWithOneClickTrading =
+        signOptions?.useOneClickTrading &&
+        (await this.shouldBeSignedWithOneClickTrading({ messages }));
+      const nonCriticalExtensionOptions = shouldBeSignedWithOneClickTrading
+        ? await this.getOneClickTradingExtensionOptions({
+            oneClickTradingInfo: await this.getOneClickTradingInfo(),
+          })
+        : undefined;
+
+      const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
-          restEndpoint: removeLastSlash(restEndpoint),
-          tx_bytes: Buffer.from(unsignedTx).toString("base64"),
+          chainId: wallet.chainId,
+          messages: encodedMessages.map(encodeAnyBase64),
+          nonCriticalExtensionOptions:
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
+          bech32Address: wallet.address,
+          onlyDefaultFeeDenom: signOptions.useOneClickTrading,
+          gasMultiplier: GasMultiplier,
         },
       });
 
-      const gasUsed = Number(result.gas_info.gas_used);
-      if (Number.isNaN(gasUsed)) {
-        throw new Error(`Invalid integer gas: ${result.gas_info.gas_used}`);
-      }
+      const getGasAmount =
+        signOptions.preferNoSetFee || signOptions.useOneClickTrading;
 
-      /**
-       * The gas amount is multiplied by a specific factor to provide additional
-       * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-       *  */
-      const gasLimit = String(Math.round(gasUsed * GasMultiplier));
-
-      /**
-       * Compute the fee amount based on the gas limit and the gas price rather than on the wallet.
-       * This is useful for wallets that do not support fee estimation.
-       */
-      if (signOptions.preferNoSetFee || signOptions.useOneClickTrading) {
+      if (!getGasAmount) {
         return {
-          gas: gasLimit,
-          amount: [
-            await this.getFeeAmount({
-              gasLimit,
-              chainId: wallet.chainId,
-              address: wallet.address,
-              excludedFeeMinimalDenoms,
-              checkOtherFeeTokens: signOptions.useOneClickTrading
-                ? false
-                : true,
-            }),
-          ],
+          gas: estimate.gas,
+          amount: [],
         };
       }
 
+      // avoid returning isNeededForTx, a utility returned from the estimateGasFee function that is not used here
+      // Also, for now, only single-token fee payments are supported.
       return {
-        gas: gasLimit,
-        amount: [],
+        gas: estimate.gas,
+        amount: [
+          {
+            denom: estimate.amount[0].denom,
+            amount: estimate.amount[0].amount,
+          },
+        ],
       };
     } catch (e) {
       if (e instanceof ApiClientError) {
@@ -1388,12 +1329,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
         if (status !== 400 || !message || typeof message !== "string") throw e;
 
-        /**
-         * If the error message includes "invalid empty tx", it means that the chain does not
-         * support tx simulation. In this case, just return the backup fee if available.
-         */
-        if (message.includes("invalid empty tx") && initialFee.gas) {
-          return initialFee as TxFee;
+        if (message.includes("invalid empty tx")) {
+          throw new SimulateNotAvailableError(message);
+        }
+
+        if (
+          message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new InsufficientBalanceForFeeError(
+            "Insufficient balance for transaction fees. Please add funds to continue."
+          );
         }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
@@ -1404,371 +1351,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       throw e;
     }
-  }
-
-  /**
-   * Calculates the fee coin amount required for a transaction based on the gas limit, chain ID, and user address.
-   * It considers the chain's gas price and the user's balance for the fee token. If the chain supports the
-   * Osmosis fee module and the user doesn't have enough balance for the primary fee token, it attempts to find
-   * an alternative fee token that the user has sufficient balance for.
-   *
-   * @param {string} params.gasLimit - The gas limit for the transaction.
-   * @param {string} params.chainId - The ID of the chain where the transaction will be executed.
-   * @param {string | undefined} params.address - The address of the user executing the transaction. If undefined, a default fee calculation is used.
-   * @param {string[]} [params.excludedFeeMinimalDenoms=[]] - An array of fee tokens to exclude from the fee calculation.
-   * @param {boolean} params.checkOtherFeeTokens - If true, the function will attempt to find an alternative fee token if the user doesn't have enough balance for the primary fee token.
-   * @throws {InsufficientFeeError} - Throws an error if the user doesn't have enough balance for the fee token.
-   *
-   * @example
-   * const gasAmount = await accountStore.getFeeAmount({
-   *   gasLimit: "200000",
-   *   chainId: "osmosis-1",
-   *   address: "osmo1..."
-   * });
-   * console.log(gasAmount); // { amount: "1000", denom: "uosmo" }
-   */
-  async getFeeAmount({
-    gasLimit,
-    chainId,
-    address,
-    excludedFeeMinimalDenoms: excludedFeeTokens = [],
-    checkOtherFeeTokens = true,
-  }: {
-    gasLimit: string;
-    chainId: string;
-    address: string | undefined;
-    excludedFeeMinimalDenoms?: string[];
-    checkOtherFeeTokens?: boolean;
-  }) {
-    const chain = getChain({ chainList: this.chains, chainId });
-
-    let fee: TxFee["amount"][number];
-
-    if (!address) {
-      const { feeDenom, gasPrice } = await this.getGasPriceByChainId({
-        chainId,
-      });
-      fee = {
-        amount: gasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-        denom: feeDenom,
-      };
-      return fee;
-    }
-
-    const [{ gasPrice: chainGasPrice, feeDenom }, { balances }] =
-      await Promise.all([
-        this.getGasPriceByChainId({
-          chainId,
-        }),
-        this.getAccountBalance({
-          userOsmoAddress: address,
-          chainId,
-        }),
-      ]);
-    fee = {
-      amount: chainGasPrice.mul(new Dec(gasLimit)).roundUp().toString(),
-      denom: feeDenom,
-    };
-
-    const userBalanceForFeeDenom = balances.find(
-      (balance) => balance.denom === fee.denom
-    );
-
-    const chainHasOsmosisFeeModule = Boolean(
-      chain?.features?.includes("osmosis-txfees")
-    );
-
-    const isUserBalanceInsufficientForBaseChainFee =
-      (userBalanceForFeeDenom &&
-        new Dec(fee.amount).gt(new Dec(userBalanceForFeeDenom.amount))) ||
-      !userBalanceForFeeDenom;
-
-    /**
-     * If the chain doesn't support the Osmosis chain fee module or if checking for other fee tokens is disabled,
-     * and the user's balance is insufficient for the base chain fee, throw an error.
-     */
-    if (
-      (!chainHasOsmosisFeeModule || !checkOtherFeeTokens) &&
-      isUserBalanceInsufficientForBaseChainFee
-    ) {
-      console.error(
-        `Insufficient balance for the base fee token (${fee.denom}).`
-      );
-      throw new InsufficientFeeError(
-        "Insufficient balance for transaction fees. Please add funds to continue."
-      );
-    }
-
-    /**
-     * If the chain supports the Osmosis chain fee module, check that the user has enough balance
-     * to pay the fee denom, otherwise find another fee token to use.
-     */
-    if (
-      chainHasOsmosisFeeModule &&
-      (isUserBalanceInsufficientForBaseChainFee ||
-        excludedFeeTokens.includes(fee.denom))
-    ) {
-      const { feeTokens } = await this.getFeeTokens({ chainId });
-
-      const feeTokenUserBalances = balances.filter(
-        (balance) =>
-          feeTokens.includes(balance.denom) &&
-          !excludedFeeTokens.includes(balance.denom)
-      );
-
-      if (!feeTokenUserBalances.length) {
-        console.error("No fee tokens found with sufficient balance.");
-        throw new InsufficientFeeError(
-          "Insufficient balance for transaction fees. Please add funds to continue."
-        );
-      }
-
-      let alternateFee: TxFee["amount"][number] | undefined;
-      for (const feeTokenBalance of feeTokenUserBalances) {
-        try {
-          const { gasPrice: feeDenomGasPrice } =
-            await this.getGasPriceByFeeDenom({
-              feeDenom: feeTokenBalance.denom,
-              chainId: chainId,
-              // Here chain gas price is the osmosis eip base fee since the osmosis fee module is enabled.
-              baseFee: chainGasPrice.toString(),
-            });
-          const amount = feeDenomGasPrice
-            .mul(new Dec(gasLimit))
-            .truncate()
-            .toString();
-
-          // If the fee is greater than the user's balance, continue to the next fee token.
-          if (new Dec(amount).gt(new Dec(feeTokenBalance.amount))) continue;
-
-          alternateFee = {
-            amount,
-            denom: feeTokenBalance.denom,
-          };
-          break;
-        } catch {
-          console.warn(
-            `Failed to fetch gas price for fee token ${feeTokenBalance.denom}.`
-          );
-        }
-      }
-
-      if (!alternateFee) {
-        console.error("No fee token found with sufficient balance.");
-        throw new InsufficientFeeError(
-          "Insufficient balance for transaction fees. Please add funds to continue."
-        );
-      }
-
-      fee = alternateFee;
-    }
-
-    if (!fee) {
-      throw new Error("Fee not found");
-    }
-
-    return fee;
-  }
-
-  private async getGasPriceByChainId({
-    chainId,
-  }: {
-    chainId: string;
-  }): Promise<{ gasPrice: Dec; feeDenom: string }> {
-    let gasPrice: number | undefined;
-
-    const chain = this.chains.find(({ chain_id }) => chain_id === chainId);
-
-    if (!chain) throw new Error(`Chain (${chainId}) not found`);
-
-    const chainHasOsmosisFeeModule = Boolean(
-      chain?.features?.includes("osmosis-txfees")
-    );
-
-    if (chainHasOsmosisFeeModule || chainId === this.osmosisChainId) {
-      try {
-        const result = await this.getOsmosisGasPrice({ chainId });
-
-        /**
-         * The gas amount is multiplied by a specific factor to provide additional
-         * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-         *  */
-        gasPrice = result.baseFee * GasMultiplier;
-      } catch (e) {
-        console.warn(
-          "Failed to fetch Osmosis gas price. Using default gas price. Error stack: ",
-          e
-        );
-      }
-    }
-
-    const feeCurrency = chain.fees.fee_tokens[0];
-    if (isNil(gasPrice) && feeCurrency && feeCurrency.average_gas_price) {
-      gasPrice = feeCurrency.average_gas_price;
-    }
-
-    if (isNil(gasPrice)) {
-      gasPrice = DefaultGasPriceStep.average;
-    }
-
-    return { gasPrice: new Dec(gasPrice), feeDenom: feeCurrency.denom };
-  }
-
-  /**
-   * Calculates the gas price for a given fee denom by fetching the spot price of the fee token
-   * and dividing the base fee by the spot price. This method is particularly useful for chains that
-   * have the Osmosis fee module, allowing for dynamic fee token usage based on market prices.
-   *
-   * The formula to compute gas price for a given fee token is:
-   * gasPrice = baseFee / spotPrice * 1.01
-   *
-   * Note: we multiply by 1.01 to provide a buffer for the gas price.
-   */
-  private async getGasPriceByFeeDenom({
-    chainId,
-    feeDenom,
-    baseFee,
-  }: {
-    /**
-     * Chain to fetch the fee token spot price from.
-     * This requires the chain to have the Osmosis fee module.
-     */
-    chainId: string;
-    feeDenom: string;
-    /**
-     * The osmosis fee module current base fee token to use for
-     * the gas price calculation. It can be fetched with this.queryOsmosisGasPrice
-     */
-    baseFee: string | undefined;
-  }): Promise<{ gasPrice: Dec }> {
-    const spotPriceDec = new Dec(
-      (
-        await this.getFeeTokenSpotPrice({
-          chainId: chainId,
-          denom: feeDenom,
-        })
-      ).spotPrice
-    );
-
-    if (spotPriceDec.lte(new Dec(0))) {
-      throw new Error(`Failed to fetch spot price for fee token ${feeDenom}.`);
-    }
-
-    const gasPrice = new Dec(baseFee ?? DefaultGasPriceStep.average)
-      .quo(spotPriceDec)
-      .mul(new Dec(1.01));
-
-    return { gasPrice };
-  }
-
-  private async getAccountBalance({
-    userOsmoAddress,
-    chainId,
-  }: {
-    chainId: string;
-    userOsmoAddress: string;
-  }) {
-    return cachified({
-      key: "account-balance",
-      cache: this._cache,
-      // 5 seconds
-      ttl: 5_000,
-      getFreshValue: async () => {
-        const result = await queryBalances({
-          bech32Address: userOsmoAddress,
-          chainList: this.chains,
-          chainId,
-        });
-
-        return {
-          balances: result.balances,
-        };
-      },
-    });
-  }
-
-  /**
-   * Fetches and caches the fee tokens denoms from chains that have the fee module.
-   *
-   * @example
-   * ```typescript
-   * const feeTokensInfo = await queryFeeTokens();
-   * console.log(feeTokensInfo);
-   * // Output: { feeTokens: ["ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", ...] }
-   * ```
-   */
-  private async getFeeTokens({ chainId }: { chainId: string }) {
-    return cachified({
-      key: "fee-tokens",
-      cache: this._cache,
-      // 15 minutes
-      ttl: 15 * 60 * 1000,
-      getFreshValue: async () => {
-        const restEndpoint = this.chainGetter.getChain(chainId).rest;
-
-        if (!restEndpoint)
-          throw new Error(
-            `Rest endpoint for chain ${chainId} is not provided.`
-          );
-
-        const [baseFeeToken, { fee_tokens: feeTokens }] = await Promise.all([
-          queryFeesBaseDenom({ chainList: this.chains, chainId }),
-          queryFeeTokens({ chainList: this.chains, chainId }),
-        ]);
-
-        const baseFeeTokenDenom = baseFeeToken.base_denom;
-
-        return {
-          baseFeeTokenDenom,
-          feeTokens: feeTokens.map(({ denom }) => denom),
-        };
-      },
-    });
-  }
-
-  private async getFeeTokenSpotPrice({
-    denom,
-    chainId,
-  }: {
-    denom: string;
-    chainId: string;
-  }) {
-    return cachified({
-      key: `fee-token-spot-price-${denom}`,
-      cache: this._cache,
-      // 5 seconds
-      ttl: 5_000,
-      getFreshValue: async () => {
-        const result = await queryFeeTokenSpotPrice({
-          chainList: this.chains,
-          denom,
-          chainId,
-        });
-
-        return {
-          spotPrice: result.spot_price,
-        };
-      },
-    });
-  }
-
-  private async getOsmosisGasPrice({ chainId }: { chainId: string }) {
-    return cachified({
-      key: "osmosis-gas-price",
-      cache: this._cache,
-      // 15 minutes
-      ttl: 15 * 60 * 1000,
-      getFreshValue: async () => {
-        const result = await queryOsmosisGasPrice({
-          chainList: this.chains,
-          chainId,
-        });
-
-        return {
-          baseFee: Number(result.base_fee),
-        };
-      },
-    });
   }
 
   /**

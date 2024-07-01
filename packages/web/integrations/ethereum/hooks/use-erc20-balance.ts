@@ -21,13 +21,14 @@ export function useErc20Balance(
         ethWallet.accountAddress
       );
     },
+    enabled: !!ethWallet && !!ethWallet.send && !!ethWallet.accountAddress,
   });
 
   if (!erc20Balance) return;
   return new CoinPretty(
     {
       coinDecimals: erc20Balance.decimals,
-      coinMinimalDenom: erc20Balance.symbol,
+      coinMinimalDenom: erc20ContractAddress ?? erc20Balance.symbol,
       coinDenom: erc20Balance.symbol,
     },
     erc20Balance.amount

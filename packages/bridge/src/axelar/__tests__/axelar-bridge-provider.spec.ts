@@ -3,6 +3,7 @@ import {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -13,20 +14,28 @@ import { server } from "../../__tests__/msw";
 import { NativeEVMTokenConstantAddress } from "../../ethereum";
 import { BridgeProviderContext } from "../../interface";
 import { AxelarBridgeProvider } from "../index";
+import {
+  MockAxelarAssets,
+  MockAxelarChains,
+} from "./mock-axelar-assets-and-chains";
 
-jest.mock("ethers", () => {
-  const originalModule = jest.requireActual("ethers");
-  return {
-    ...originalModule,
-    ethers: {
-      ...originalModule.ethers,
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        estimateGas: jest.fn().mockResolvedValue("21000"),
-        _perform: jest.fn().mockResolvedValue("0x4a817c800"),
-      })),
-    },
-  };
-});
+jest.mock("viem", () => ({
+  ...jest.requireActual("viem"),
+  createPublicClient: jest.fn().mockImplementation(() => ({
+    estimateGas: jest.fn().mockResolvedValue(BigInt("21000")),
+    getGasPrice: jest.fn().mockResolvedValue(BigInt("0x4a817c800")),
+  })),
+  http: jest.fn(),
+}));
+
+jest.mock("@osmosis-labs/tx");
+
+jest.mock("@cosmjs/proto-signing", () => ({
+  ...jest.requireActual("@cosmjs/proto-signing"),
+  Registry: jest.fn().mockReturnValue({
+    encodeAsAny: jest.fn().mockReturnValue("any"),
+  }),
+}));
 
 beforeEach(() => {
   server.use(
@@ -38,27 +47,37 @@ beforeEach(() => {
       (_req, res, ctx) => {
         return res(ctx.json({}));
       }
-    )
+    ),
+    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) => {
+      return res(ctx.json(MockAxelarChains));
+    }),
+    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
+      return res(ctx.json(MockAxelarAssets));
+    })
   );
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 describe("AxelarBridgeProvider", () => {
   let provider: AxelarBridgeProvider;
-  let ctx: BridgeProviderContext;
 
   beforeEach(() => {
-    ctx = {
+    provider = new AxelarBridgeProvider({
       env: "mainnet",
       cache: new LRUCache<string, CacheEntry>({
         max: 500,
       }),
       assetLists: MockAssetLists,
+      // not used
+      chainList: [],
       getTimeoutHeight: jest.fn().mockResolvedValue({
         revisionNumber: "1",
         revisionHeight: "1000",
       }),
-    };
-    provider = new AxelarBridgeProvider(ctx);
+    });
   });
 
   it("should initialize clients", async () => {
@@ -77,13 +96,22 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
     const depositAddress = await provider.getDepositAddress({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: {
+        chainId: "osmosis-1",
+        chainName: "Osmosis",
+        chainType: "cosmos",
+      },
       fromAsset: {
         denom: "ETH",
-        address: "0x0",
+        address: NativeEVMTokenConstantAddress,
         decimals: 18,
-        sourceDenom: "eth",
+      },
+      toAsset: {
+        denom: "ETH.axl",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
       },
       toAddress: "0x456",
     });
@@ -95,41 +123,45 @@ describe("AxelarBridgeProvider", () => {
     await expect(
       provider.getDepositAddress({
         fromChain: {
-          chainId: "unsupported",
+          chainId: 989898989898,
           chainName: "Unsupported",
           chainType: "evm",
+          networkName: "unsupported",
         },
         toChain: {
-          chainId: "unsupported",
+          chainId: 989898989898,
           chainName: "Unsupported",
           chainType: "evm",
+          networkName: "unsupported",
         },
         fromAsset: {
           denom: "ETH",
           address: "0x0",
           decimals: 18,
-          sourceDenom: "eth",
+        },
+        toAsset: {
+          denom: "ETH",
+          address: "0x0",
+          decimals: 18,
         },
         toAddress: "0x456",
       })
-    ).rejects.toThrow("Unsupported chain");
+    ).rejects.toThrow("Chain not found: 989898989898");
   });
 
   it("should estimate gas cost for EVM transactions", async () => {
     const gasCost = await provider.estimateGasCost({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
-        denom: "ETH",
-        address: "0x0",
+        denom: "WETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
-        denom: "AVAX",
-        address: "0x0",
+        denom: "axlETH",
+        address: "0x42A62eb3Fd2a05eD499117F128de8a3192B49EBB",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -141,11 +173,58 @@ describe("AxelarBridgeProvider", () => {
     // Should be a string representation of a number
     expect(gasCost?.amount).toMatch(/^\d+(\.\d+)?$/);
     expect(gasCost?.denom).toBe("ETH");
-    expect(gasCost?.sourceDenom).toBe("ETH");
+    expect(gasCost?.address).toBe("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE");
     expect(gasCost?.decimals).toBe(18);
   });
 
-  it("should create an EVM transaction", async () => {
+  it("should estimate gas cost for Cosmos transactions", async () => {
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "1000",
+      amount: [
+        {
+          denom: "uosmo",
+          amount: "1000",
+        },
+      ],
+    });
+
+    const gasCost = await provider.estimateGasCost({
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: 1,
+        chainName: "Ethereum",
+        chainType: "evm",
+      },
+      fromAsset: {
+        denom: "USDC.axl",
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+      },
+      toAsset: {
+        denom: "USDc",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        decimals: 6,
+      },
+      fromAmount: "1",
+      fromAddress: "cosmos1ABC123",
+      toAddress: "0x123ABC",
+    });
+
+    expect(gasCost).toBeDefined();
+    expect(gasCost!.amount).toBeDefined();
+    // Should be a string representation of a number
+    expect(gasCost!.amount).toBe("1000");
+    expect(gasCost!.denom).toBe("OSMO");
+    expect(gasCost!.address).toBe("uosmo");
+    expect(gasCost!.decimals).toBe(6);
+  });
+
+  it("should create an EVM transaction - ERC20 transfer", async () => {
     const mockDepositClient: Partial<AxelarAssetTransfer> = {
       getDepositAddress: jest
         .fn()
@@ -157,19 +236,17 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
     const transaction = await provider.createEvmTransaction({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
-        denom: "ETH",
-        address: "0x0000000000000000000000000000000000000000",
+        denom: "WETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
-        denom: "AVAX",
-        address: "0x0000000000000000000000000000000000000000",
+        denom: "axlETH",
+        address: "0x42A62eb3Fd2a05eD499117F128de8a3192B49EBB",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
@@ -180,11 +257,11 @@ describe("AxelarBridgeProvider", () => {
     expect(transaction).toEqual({
       data: "0xa9059cbb0000000000000000000000001234567890abcdef1234567890abcdef123456780000000000000000000000000000000000000000000000000000000000000001",
       type: "evm",
-      to: "0x0000000000000000000000000000000000000000",
+      to: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // ERC20 contract address of fromAsset (WETH)
     });
   });
 
-  it("should throw an error when creating an EVM transaction with a non-native token", async () => {
+  it("should create an EVM transaction - native send", async () => {
     const mockDepositClient: Partial<AxelarAssetTransfer> = {
       getDepositAddress: jest
         .fn()
@@ -195,28 +272,30 @@ describe("AxelarBridgeProvider", () => {
       .spyOn(provider, "getAssetTransferClient")
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
-    await expect(
-      provider.createEvmTransaction({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
-        fromAsset: {
-          denom: "ETH",
-          address: NativeEVMTokenConstantAddress,
-          decimals: 6,
-          sourceDenom: "weth",
-        },
-        toAsset: {
-          denom: "ETH",
-          address: NativeEVMTokenConstantAddress,
-          decimals: 6,
-          sourceDenom: "eth",
-        },
-        fromAmount: "1",
-        fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
-        toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
-        simulated: false,
-      })
-    ).rejects.toThrow("eth is not a native token on Axelar");
+    const transaction = await provider.createEvmTransaction({
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: NativeEVMTokenConstantAddress,
+        decimals: 18,
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0x0000000000000000000000000000000000000000",
+        decimals: 18,
+      },
+      fromAmount: "1",
+      fromAddress: "0x1234567890abcdef1234567890abcdef12345678",
+      toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+      simulated: false,
+    });
+
+    expect(transaction).toEqual({
+      value: "0x1", // same as from amount
+      type: "evm",
+      to: "0x1234567890abcdef1234567890abcdef12345678",
+    });
   });
 
   it("should create a Cosmos transaction", async () => {
@@ -236,18 +315,17 @@ describe("AxelarBridgeProvider", () => {
         chainName: "Osmosis",
         chainType: "cosmos",
       },
-      toChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       fromAsset: {
         denom: "USDC.axl",
-        address: "cosmos1...",
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         decimals: 6,
-        sourceDenom: "uusdc",
       },
       toAsset: {
         denom: "USDC",
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         decimals: 6,
-        sourceDenom: "uusdc",
       },
       fromAmount: "1000000",
       fromAddress: "cosmos1...",
@@ -270,7 +348,8 @@ describe("AxelarBridgeProvider", () => {
         timeoutTimestamp: "0",
         token: {
           amount: "1000000",
-          denom: "cosmos1...",
+          denom:
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
         },
       },
     });
@@ -298,19 +377,17 @@ describe("AxelarBridgeProvider", () => {
       .mockResolvedValue(mockQueryClient as AxelarQueryAPI);
 
     const quote = await provider.getQuote({
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       fromAsset: {
         denom: "ETH",
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
-        sourceDenom: "eth",
       },
       toAsset: {
         denom: "AVAX",
         address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
         decimals: 18,
-        sourceDenom: "avax",
       },
       fromAmount: "1",
       fromAddress: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
@@ -321,26 +398,32 @@ describe("AxelarBridgeProvider", () => {
     expect(quote).toBeDefined();
     expect(quote).toEqual({
       estimatedTime: 900,
-      input: { amount: "1", sourceDenom: "eth", decimals: 18, denom: "ETH" },
+      input: {
+        amount: "1",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        decimals: 18,
+        denom: "ETH",
+      },
       expectedOutput: {
         amount: "0.990000000000000000",
-        sourceDenom: "avax",
+        address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
         decimals: 18,
         denom: "AVAX",
         priceImpact: "0",
       },
-      fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-      toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
       transferFee: {
         amount: "0.01",
         denom: "ETH",
-        sourceDenom: "eth",
+        chainId: 1,
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
       },
       estimatedGasFee: {
         amount: "420000000000000",
         denom: "ETH",
-        sourceDenom: "ETH",
+        address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },
     });
@@ -369,19 +452,17 @@ describe("AxelarBridgeProvider", () => {
 
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
           denom: "ETH",
           address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
           denom: "AVAX",
           address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1.1",
         fromAddress: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
@@ -400,19 +481,17 @@ describe("AxelarBridgeProvider", () => {
 
     await expect(
       provider.getQuote({
-        fromChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        toChain: { chainId: "43114", chainName: "Avalanche", chainType: "evm" },
+        fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
         fromAsset: {
-          denom: "ETH",
-          address: "0x0",
+          denom: "WETH",
+          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           decimals: 18,
-          sourceDenom: "eth",
         },
         toAsset: {
-          denom: "AVAX",
-          address: "0x0",
+          denom: "axlETH",
+          address: "0x42A62eb3Fd2a05eD499117F128de8a3192B49EBB",
           decimals: 18,
-          sourceDenom: "avax",
         },
         fromAmount: "1",
         fromAddress: "0x123",
@@ -422,44 +501,244 @@ describe("AxelarBridgeProvider", () => {
     ).rejects.toThrow("Query client error");
   });
 
-  it("should throw an error when withdrawing native asset without using 'autoUnwrapIntoNative'", async () => {
-    const mockDepositClient: Partial<AxelarAssetTransfer> = {
-      getDepositAddress: jest
-        .fn()
-        .mockResolvedValue("0x1234567890abcdef1234567890abcdef12345678"),
-    };
-
-    jest
-      .spyOn(provider, "getAssetTransferClient")
-      .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
-
-    await expect(
-      provider.createCosmosTransaction({
-        fromChain: {
+  describe("getSupportedAssets", () => {
+    it("gets source axelar assets - Ethereum USDC", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
           chainId: "osmosis-1",
-          chainName: "Osmosis",
           chainType: "cosmos",
         },
-        toChain: { chainId: "1", chainName: "Ethereum", chainType: "evm" },
-        fromAsset: {
-          denom: "ETH",
-          address: NativeEVMTokenConstantAddress,
+        asset: {
+          denom: "USDC.axl",
+          address:
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
           decimals: 6,
-          sourceDenom: "eth",
+        },
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 6,
+          denom: "USDC",
+        },
+      ]);
+    });
+
+    it("gets unwrapped source assets (i.e. ETH from Osmosis WETH) - WETH & ETH", async () => {
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "ETH",
+          address:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          decimals: 6,
+        },
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 18,
+          denom: "WETH",
+        },
+        {
+          // this is the denom accepted by Axelar APIs
+          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          chainId: 1,
+          chainName: "Ethereum",
+          chainType: "evm",
+          decimals: 18,
+          denom: "ETH",
+        },
+      ]);
+    });
+  });
+});
+
+describe("AxelarBridgeProvider.getExternalUrl", () => {
+  let provider: AxelarBridgeProvider;
+  let ctx: BridgeProviderContext;
+
+  beforeEach(() => {
+    ctx = {
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({
+        max: 500,
+      }),
+      assetLists: MockAssetLists,
+      // not used
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+    };
+    provider = new AxelarBridgeProvider(ctx);
+  });
+
+  it("should return the correct URL for Weth <> axlEth", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "ETH",
+        decimals: 18,
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      },
+      toAsset: {
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+        denom: "ETH",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Satellite Money");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for ETH <> axlEth", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "ETH",
+        decimals: 18,
+        address: NativeEVMTokenConstantAddress,
+      },
+      toAsset: {
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+        denom: "ETH",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Satellite Money");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=eth&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for USDC <> axlUSDC", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 1, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "USDC",
+        decimals: 6,
+        address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      },
+      toAsset: {
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+        denom: "USDC",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Satellite Money");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc&destination_address=destination-address"
+    );
+  });
+
+  it("should return the correct URL for USDC <> axlUSDC (Avalanche)", async () => {
+    const result = await provider.getExternalUrl({
+      fromChain: { chainId: 43114, chainType: "evm" },
+      toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+      fromAsset: {
+        denom: "USDC",
+        decimals: 6,
+        address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      },
+      toAsset: {
+        address:
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+        decimals: 6,
+        denom: "USDC",
+      },
+      toAddress: "destination-address",
+    });
+
+    expect(result?.urlProviderName).toBe("Satellite Money");
+    expect(result?.url.toString()).toBe(
+      "https://satellite.money/?source=avalanche&destination=osmosis&asset_denom=avalanche-uusdc&destination_address=destination-address"
+    );
+  });
+
+  it("should throw an error if fromChain is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 9898989898988, chainType: "evm" },
+        toChain: { chainId: "chain2", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          decimals: 18,
         },
         toAsset: {
-          denom: "ETH",
-          address: NativeEVMTokenConstantAddress,
-          decimals: 6,
-          sourceDenom: "eth",
+          address: "address2",
+          denom: "denom2",
+          decimals: 18,
         },
-        fromAmount: "1000000",
-        fromAddress: "cosmos1...",
-        toAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
-        simulated: false,
+        toAddress: "destination-address",
       })
-    ).rejects.toThrow(
-      "When withdrawing native ETH from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom"
-    );
+    ).rejects.toThrow("Chain not found: 9898989898988");
+  });
+
+  it("should throw an error if toChain is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "nonexistent", chainType: "cosmos" },
+        fromAsset: {
+          address: "address1",
+          denom: "denom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Chain not found: nonexistent");
+  });
+
+  it("should throw an error if toAsset is not found", async () => {
+    await expect(
+      provider.getExternalUrl({
+        fromChain: { chainId: 1, chainType: "evm" },
+        toChain: { chainId: "osmosis-1", chainType: "cosmos" },
+        fromAsset: {
+          address: "nonexistent",
+          denom: "denom1",
+          decimals: 18,
+        },
+        toAsset: {
+          address: "address2",
+          denom: "denom2",
+          decimals: 18,
+        },
+        toAddress: "destination-address",
+      })
+    ).rejects.toThrow("Axelar source asset not found: nonexistent");
   });
 });

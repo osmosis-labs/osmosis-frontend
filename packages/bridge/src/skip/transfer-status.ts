@@ -8,12 +8,12 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
-import { skipProviderId } from ".";
+import { SkipBridgeProvider } from ".";
 import { SkipApiClient } from "./queries";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = skipProviderId;
+  readonly keyPrefix = SkipBridgeProvider.ID;
   readonly sourceDisplayName = "Skip Bridge";
 
   statusReceiverDelegate?: TransferStatusReceiver | undefined;
@@ -22,7 +22,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly axelarScanBaseUrl: string;
 
   constructor(env: BridgeEnvironment) {
-    this.skipClient = new SkipApiClient();
+    this.skipClient = new SkipApiClient(env);
 
     this.axelarScanBaseUrl =
       env === "mainnet"

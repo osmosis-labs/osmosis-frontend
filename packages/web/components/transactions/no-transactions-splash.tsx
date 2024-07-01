@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 export const NoTransactionsSplash: FunctionComponent<{
@@ -43,7 +43,16 @@ export const NoTransactionsSplash: FunctionComponent<{
       </div>
       {variant === "connect" && (
         <div className="max-w-56">
-          <Button onClick={() => onOpenWalletSelect(osmosisChainId)} size="md">
+          <Button
+            onClick={() =>
+              onOpenWalletSelect({
+                walletOptions: [
+                  { walletType: "cosmos", chainId: osmosisChainId },
+                ],
+              })
+            }
+            size="md"
+          >
             {t("transactions.connectWallet")}
           </Button>
         </div>

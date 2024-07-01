@@ -1,5 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Bridge } from "@osmosis-labs/bridge";
 import { formatICNSName } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -11,12 +12,12 @@ import { useClickAway } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { GradientView } from "~/components/assets/gradient-view";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Disableable, InputProps } from "~/components/types";
 import { Button } from "~/components/ui/button";
@@ -30,7 +31,7 @@ import { useStore } from "~/stores";
 type PathSource = "counterpartyAccount" | "account";
 
 export type BaseBridgeProviderOption = {
-  id: string;
+  id: Bridge;
   logo: string;
   name: string;
 };
@@ -171,14 +172,19 @@ export const Transfer = observer(
       toAddressToDisplay = to.address;
     }
 
-    const toAddressIcnsName = formatICNSName(
-      queriesExternalStore.queryICNSNames.getQueryContract(toAddressToDisplay)
-        ?.primaryName
-    );
-    const fromAddressIcnsName = formatICNSName(
-      queriesExternalStore.queryICNSNames.getQueryContract(from.address)
-        ?.primaryName
-    );
+    const toAddressIcnsName = !toAddressToDisplay.startsWith("Ox")
+      ? formatICNSName(
+          queriesExternalStore.queryICNSNames.getQueryContract(
+            toAddressToDisplay
+          )?.primaryName
+        )
+      : undefined;
+    const fromAddressIcnsName = !from.address.startsWith("0x")
+      ? formatICNSName(
+          queriesExternalStore.queryICNSNames.getQueryContract(from.address)
+            ?.primaryName
+        )
+      : undefined;
 
     const isSwitchWalletVisibleForTo =
       to.address.length > 0 &&

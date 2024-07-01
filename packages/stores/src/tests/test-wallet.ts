@@ -178,8 +178,8 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
-  ): Promise<DirectSignResponse> {
-    const result = await this.client.signDirect(
+  ): ReturnType<Required<WalletClient>["signDirect"]> {
+    const response = await this.client.signDirect(
       chainId,
       signer,
       {
@@ -189,12 +189,13 @@ export class MockKeplrClient implements WalletClient {
       signOptions
     );
 
+    // Convert Long to bigint
     return {
-      ...result,
       signed: {
-        ...result.signed,
-        accountNumber: BigInt(result.signed.accountNumber.toString()),
+        ...response.signed,
+        accountNumber: BigInt(response.signed.accountNumber.toString()),
       },
+      signature: response.signature,
     };
   }
 

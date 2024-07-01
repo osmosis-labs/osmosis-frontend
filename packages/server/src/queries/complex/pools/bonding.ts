@@ -2,7 +2,7 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import type { Duration } from "dayjs/plugin/duration";
 
-import dayjs from "../../../utils/dayjs";
+import { dayjs } from "../../../utils/dayjs";
 import { captureErrorAndReturn } from "../../../utils/error";
 import { querySyntheticLockupsByLockId } from "../../osmosis/lockup";
 import {
@@ -166,9 +166,11 @@ export async function getSharePoolBondDurations({
           userLockedLocks.forEach((userDurationLock) => {
             userDurationLock.coins.forEach((coin) => {
               if (getShareDenomPoolId(coin.denom) === poolId) {
-                userShares = userShares.add(
-                  new CoinPretty(userShares.currency, coin.amount)
+                const lockedShares = new CoinPretty(
+                  userShares.currency,
+                  coin.amount
                 );
+                userShares = userShares.add(lockedShares);
               }
             });
             userLockedLockIds.push(userDurationLock.ID);
@@ -334,6 +336,7 @@ export async function getSharePoolBondDurations({
         return {
           duration: dayjs.duration(durationMs),
           bondable: isSuperfluid ? isLongestDuration : Boolean(durationGauges),
+          /** Locked shares */
           userShares,
           userLockedShareValue,
           userLocks: userLockedLockIds.map((lockId) => ({

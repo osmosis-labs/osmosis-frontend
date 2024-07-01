@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useLocalStorage } from "react-use";
 
 import { Ad, AdBanners } from "~/components/ad-banner";
-import ErrorBoundary from "~/components/error/error-boundary";
+import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
@@ -51,10 +51,10 @@ const Home = () => {
               height="725.6817"
             />
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
+              lowResXlinkHref={"/images/bitcoin-props-low.png"}
+              xlinkHref={"/images/bitcoin-props.png"}
               x={"61"}
-              y={"682"}
+              y={"600"}
               width={"448.8865"}
               height={"285.1699"}
             />

@@ -1,55 +1,26 @@
-/** A collection of errors that is itself an error. */
-export class Errors extends Error {
-  errors: Array<{
-    errorType: string;
+/** Includes a `BridgeError` & optionally the bridge ID in the message member. */
+export class BridgeQuoteError extends Error {
+  readonly errorType: BridgeError;
+
+  constructor({
+    bridgeId,
+    errorType,
+    message,
+  }: {
+    bridgeId?: string;
+    errorType: BridgeError;
     message: string;
-  }>;
-
-  constructor(
-    errors: Array<{
-      errorType: string;
-      message: string;
-    }>
-  ) {
-    super();
-    this.errors = errors;
-    this.name = "Errors";
-  }
-
-  get message() {
-    return this.errors.map((error) => error.message).join(", ");
+  }) {
+    const id = bridgeId ? `(${bridgeId}) ` : "";
+    super(`${id}${errorType}: ${message}`);
+    this.errorType = errorType;
   }
 }
 
-export class BridgeQuoteError extends Errors {
-  constructor(
-    errors: Array<{
-      errorType: string;
-      message: string;
-    }>
-  ) {
-    super(errors);
-    this.name = "BridgeQuoteError";
-  }
-}
-
-export class BridgeTransferStatusError extends Errors {
-  constructor(
-    errors: Array<{
-      errorType: string;
-      message: string;
-    }>
-  ) {
-    super(errors);
-    this.name = "BridgeTransferError";
-  }
-}
-
-export enum BridgeError {
-  UnexpectedError = "UnexpectedError",
-  CreateApprovalTxError = "ApprovalTxError",
-  CreateCosmosTxError = "CreateCosmosTxError",
-  CreateEVMTxError = "CreateEVMTxError",
-  NoQuotesError = "NoQuotesError",
-  UnsupportedQuoteError = "UnsupportedQuoteError",
-}
+export type BridgeError =
+  | "ApprovalTxError"
+  | "CreateCosmosTxError"
+  | "CreateEVMTxError"
+  | "NoQuotesError"
+  | "UnsupportedQuoteError"
+  | "InsufficientAmountError";
