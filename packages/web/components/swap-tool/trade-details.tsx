@@ -35,7 +35,6 @@ export const TradeDetails = ({
 
   const routesVisDisclosure = useDisclosure();
 
-  const [ref] = useMeasure<HTMLDivElement>();
   const [swapRouteRef, { height: swapRouteHeight }] =
     useMeasure<HTMLDivElement>();
 
@@ -287,7 +286,7 @@ export const TradeDetails = ({
                   left="Swap route"
                   className="!h-auto flex-col !items-start gap-2.5"
                   right={
-                    <div ref={ref} className="flex w-full flex-col gap-2">
+                    <div className="flex w-full flex-col gap-2">
                       <RoutesTaken
                         {...routesVisDisclosure}
                         split={swapState?.quote?.split ?? []}
