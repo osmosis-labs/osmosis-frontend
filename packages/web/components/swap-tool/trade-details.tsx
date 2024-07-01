@@ -2,7 +2,6 @@ import { Disclosure } from "@headlessui/react";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
-import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
 import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
@@ -24,7 +23,6 @@ import { formatPretty } from "~/utils/formatter";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
-  isLoading: boolean;
   swapState: ReturnType<typeof useSwap>;
   slippageConfig: ReturnType<typeof useSlippageConfig>;
 }
@@ -36,10 +34,6 @@ export const TradeDetails = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   const routesVisDisclosure = useDisclosure();
-  const [queryToFallbackDenom] = useQueryState(
-    "to",
-    parseAsString.withDefault("ATOM")
-  );
 
   const [ref] = useMeasure<HTMLDivElement>();
   const [swapRouteRef, { height: swapRouteHeight }] =
@@ -69,7 +63,7 @@ export const TradeDetails = ({
 
   const { data: toAssetFiatValue, isLoading: isLoadingToAssetFiatValue } =
     api.edge.assets.getAssetPrice.useQuery({
-      coinMinimalDenom: swapState?.toAsset?.coinDenom ?? queryToFallbackDenom,
+      coinMinimalDenom: swapState?.toAsset?.coinDenom ?? "USDC",
     });
 
   return (

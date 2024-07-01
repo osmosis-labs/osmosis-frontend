@@ -136,6 +136,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   {swapState.quoteDenom}
                 </span>
               </div>
+              // <TradeDetails />
             )}
           </>
           {!account?.isWalletConnected ? (
