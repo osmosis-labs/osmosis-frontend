@@ -9,6 +9,7 @@ import { useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface YourBalanceProps {
@@ -48,14 +49,15 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-2 text-h4 font-h4">
-          {data?.usdValue?.toString() ??
-            new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)).toString()}
+          {data?.usdValue
+            ? formatPretty(data.usdValue)
+            : new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)).toString()}
         </p>
       </SkeletonLoader>
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
-          {data?.amount?.toString() ?? `0 ${token.coinDenom}`}{" "}
+          {data?.amount ? formatPretty(data.amount) : `0 ${token.coinDenom}`}{" "}
           {t("tokenInfos.onOsmosis")}
         </p>
       </SkeletonLoader>
