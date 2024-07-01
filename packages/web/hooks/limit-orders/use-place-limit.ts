@@ -56,14 +56,6 @@ export const usePlaceLimit = ({
 
   const priceState = useLimitPrice({
     orderbookContractAddress,
-    quoteAssetDenom:
-      orderDirection === "ask"
-        ? quoteAsset?.coinMinimalDenom ?? ""
-        : baseAsset?.coinMinimalDenom ?? "",
-    baseAssetDenom:
-      orderDirection === "ask"
-        ? baseAsset?.coinMinimalDenom ?? ""
-        : quoteAsset?.coinMinimalDenom ?? "",
     orderDirection,
   });
   const inAmountInput = useSwapAmountInput({
@@ -145,9 +137,7 @@ export const usePlaceLimit = ({
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(
-      priceState.price.quo(quoteAssetPrice?.toDec() ?? new Dec(1))
-    );
+    const tickId = priceToTick(priceState.price);
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
@@ -176,7 +166,6 @@ export const usePlaceLimit = ({
     account,
     orderDirection,
     priceState,
-    quoteAssetPrice,
     paymentTokenValue,
   ]);
 
@@ -272,24 +261,22 @@ export const usePlaceLimit = ({
 
 const useLimitPrice = ({
   orderbookContractAddress,
-  quoteAssetDenom,
-  baseAssetDenom,
   orderDirection,
 }: {
   orderbookContractAddress: string;
-  quoteAssetDenom: string;
-  baseAssetDenom: string;
   orderDirection: OrderDirection;
 }) => {
   // TODO: Fetch spot price from SQS
-  const { data: spotPrice, isLoading } =
-    api.edge.orderbooks.getSpotPrice.useQuery({
-      osmoAddress: orderbookContractAddress,
-      quoteAssetDenom,
-      baseAssetDenom,
-    });
+  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
+    osmoAddress: orderbookContractAddress,
+  });
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
+
+  const spotPrice = useMemo(() => {
+    if (!data) return new Dec(1);
+    return orderDirection === "ask" ? data.askSpotPrice : data.bidSpotPrice;
+  }, [orderDirection, data]);
 
   const adjustByPercentage = useCallback(
     (percentage: Dec) => {
@@ -335,6 +322,13 @@ const useLimitPrice = ({
     [isValidPrice, orderPrice, spotPrice]
   );
 
+  const isBeyondOppositePrice = useMemo(() => {
+    if (!data) return false;
+    return orderDirection === "ask"
+      ? data.bidSpotPrice.gte(price)
+      : data.askSpotPrice.lte(price);
+  }, [orderDirection, data, price]);
+
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
   }, [price]);
@@ -379,5 +373,6 @@ const useLimitPrice = ({
     reset,
     setPrice,
     isValidPrice,
+    isBeyondOppositePrice,
   };
 };

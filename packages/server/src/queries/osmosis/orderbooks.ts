@@ -167,3 +167,27 @@ export const queryOrderbookDenoms = createNodeQuery<
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
 });
+
+interface OrderbookStateResponse {
+  data: {
+    quote_denom: string;
+    base_denom: string;
+    next_bid_tick: number;
+    next_ask_tick: number;
+  };
+}
+
+export const queryOrderbookState = createNodeQuery<
+  OrderbookStateResponse,
+  {
+    orderbookAddress: string;
+  }
+>({
+  path: ({ orderbookAddress }) => {
+    const msg = JSON.stringify({
+      orderbook_state: {},
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});

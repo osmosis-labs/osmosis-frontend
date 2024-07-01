@@ -6,6 +6,7 @@ import {
   getOrderbookDenoms,
   getOrderbookMakerFee,
   getOrderbookSpotPrice,
+  getOrderbookState,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
   LimitOrder,
@@ -303,5 +304,21 @@ export const orderbookRouter = createTRPCRouter({
         chainList: ctx.chainList,
       });
       return spotPrice;
+    }),
+  getOrderbookState: publicProcedure
+    .input(OsmoAddressSchema.required())
+    .query(async ({ input, ctx }) => {
+      const { osmoAddress } = input;
+      const orderbookState = await getOrderbookState({
+        orderbookAddress: osmoAddress,
+        chainList: ctx.chainList,
+      });
+      const askSpotPrice = tickToPrice(new Int(orderbookState.next_ask_tick));
+      const bidSpotPrice = tickToPrice(new Int(orderbookState.next_bid_tick));
+      return {
+        ...orderbookState,
+        askSpotPrice,
+        bidSpotPrice,
+      };
     }),
 });

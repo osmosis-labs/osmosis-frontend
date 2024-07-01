@@ -44,11 +44,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   }, [inputMode]);
 
   const isAboveBelowMarketPrice = useMemo(() => {
-    return (
-      (orderDirection === "ask" && priceState.percentAdjusted.isNegative()) ||
-      (orderDirection === "bid" && priceState.percentAdjusted.isPositive())
-    );
-  }, [orderDirection, priceState.percentAdjusted]);
+    return swapState.priceState.isBeyondOppositePrice;
+  }, [swapState.priceState.isBeyondOppositePrice]);
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
