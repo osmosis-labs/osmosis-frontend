@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { AvailablePriceRanges } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { historicalDatafeed } from "~/utils/trading-view";
@@ -73,6 +73,7 @@ export const TokenChart = observer(() => {
 
 export const TokenChartFooter = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { advancedChart } = useFeatureFlags();
   const { t } = useTranslation();
 
   return (
@@ -129,19 +130,21 @@ export const TokenChartFooter = observer(() => {
           </Select>
         ) : null}
 
-        <Button
-          size="xsm"
-          variant="secondary-outline"
-          onClick={() => {
-            assetInfoConfig.setMode(
-              assetInfoConfig.mode === "simple" ? "advanced" : "simple"
-            );
-          }}
-        >
-          {assetInfoConfig.mode === "simple"
-            ? t("tokenInfos.chart.advanced")
-            : t("tokenInfos.chart.simple")}
-        </Button>
+        {advancedChart ? (
+          <Button
+            size="xsm"
+            variant="secondary-outline"
+            onClick={() => {
+              assetInfoConfig.setMode(
+                assetInfoConfig.mode === "simple" ? "advanced" : "simple"
+              );
+            }}
+          >
+            {assetInfoConfig.mode === "simple"
+              ? t("tokenInfos.chart.advanced")
+              : t("tokenInfos.chart.simple")}
+          </Button>
+        ) : null}
       </div>
     </footer>
   );
