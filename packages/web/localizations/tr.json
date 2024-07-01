@@ -926,6 +926,11 @@
     "recommended": "Tavsiye edilen",
     "fee": "ücret",
     "fees": "ücretler",
+    "unknown": "Bilinmeyen",
+    "unknownFeeTooltip": "Şu anda {networkName} ağ ücretleri hesaplanamıyor. İşlem onaylandıktan sonra ağ ücretleri cüzdanınızda görüntülenmelidir.",
+    "free": "Özgür",
+    "cheapest": "En ucuz",
+    "fastest": "En hızlı",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
@@ -961,7 +966,9 @@
     "providerFees": "Sağlayıcı ücretleri",
     "networkFee": "{networkName} Ağ ücreti",
     "totalFees": "Toplam ücretler",
-    "estimatedAmountReceived": "Alınan tahmini miktar"
+    "estimatedAmountReceived": "Alınan tahmini miktar",
+    "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
+    "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir."
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

@@ -926,6 +926,11 @@
     "recommended": "Recomendado",
     "fee": "taxa",
     "fees": "tarifas",
+    "unknown": "Desconhecido",
+    "unknownFeeTooltip": "Atualmente, as taxas de rede em {networkName} não podem ser calculadas. As taxas de rede devem ser exibidas em sua carteira após a aprovação da transação.",
+    "free": "Livre",
+    "cheapest": "Mais barato",
+    "fastest": "O mais rápido",
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
@@ -961,7 +966,9 @@
     "providerFees": "Taxas do provedor",
     "networkFee": "{networkName} Taxa de rede",
     "totalFees": "Taxas totais",
-    "estimatedAmountReceived": "Valor estimado recebido"
+    "estimatedAmountReceived": "Valor estimado recebido",
+    "slippageWarning": "O resultado esperado para esta transação é significativamente inferior ao valor do insumo, o que pode resultar no recebimento de um valor final diferente do esperado.",
+    "priceImpactWarning": "O impacto no preço desta transação é {priceImpact} , o que pode influenciar o valor final recebido."
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

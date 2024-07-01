@@ -926,6 +926,11 @@
     "recommended": "Recommandé",
     "fee": "frais",
     "fees": "frais",
+    "unknown": "Inconnu",
+    "unknownFeeTooltip": "Actuellement, les frais de réseau sur {networkName} ne peuvent pas être calculés. Les frais de réseau doivent être affichés dans votre portefeuille lors de l'approbation de la transaction.",
+    "free": "Gratuit",
+    "cheapest": "Le moins cher",
+    "fastest": "Le plus rapide",
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",
@@ -961,7 +966,9 @@
     "providerFees": "Frais du fournisseur",
     "networkFee": "{networkName} Frais de réseau",
     "totalFees": "Total des frais",
-    "estimatedAmountReceived": "Montant estimé reçu"
+    "estimatedAmountReceived": "Montant estimé reçu",
+    "slippageWarning": "Le résultat attendu pour cette transaction est nettement inférieur au montant d'entrée, ce qui peut entraîner la réception d'un montant final différent de celui attendu.",
+    "priceImpactWarning": "L'impact sur le prix de cette transaction est {priceImpact} , ce qui peut influencer le montant final reçu."
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

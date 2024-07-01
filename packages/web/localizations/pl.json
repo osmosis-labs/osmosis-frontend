@@ -926,6 +926,11 @@
     "recommended": "Zalecana",
     "fee": "opłata",
     "fees": "opłaty",
+    "unknown": "Nieznany",
+    "unknownFeeTooltip": "Obecnie nie można obliczyć opłat sieciowych dla {networkName} . Opłaty sieciowe powinny zostać wyświetlone w Twoim portfelu po zatwierdzeniu transakcji.",
+    "free": "Bezpłatny",
+    "cheapest": "Najtańszy",
+    "fastest": "Najszybszy",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
@@ -961,7 +966,9 @@
     "providerFees": "Opłaty dostawcy",
     "networkFee": "{networkName} Opłata sieciowa",
     "totalFees": "Wszystkie koszty",
-    "estimatedAmountReceived": "Szacunkowa otrzymana kwota"
+    "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
+    "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
+    "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę."
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

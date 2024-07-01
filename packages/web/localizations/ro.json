@@ -926,6 +926,11 @@
     "recommended": "Recomandat",
     "fee": "taxa",
     "fees": "taxe",
+    "unknown": "Necunoscut",
+    "unknownFeeTooltip": "În prezent, taxele de rețea pentru {networkName} nu pot fi calculate. Taxele de rețea ar trebui să fie afișate în portofel după aprobarea tranzacției.",
+    "free": "Gratuit",
+    "cheapest": "Cele mai ieftine",
+    "fastest": "Cel mai rapid",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
@@ -961,7 +966,9 @@
     "providerFees": "Taxe de furnizor",
     "networkFee": "{networkName} Taxă de rețea",
     "totalFees": "Taxele totale",
-    "estimatedAmountReceived": "Suma estimată primită"
+    "estimatedAmountReceived": "Suma estimată primită",
+    "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
+    "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită."
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

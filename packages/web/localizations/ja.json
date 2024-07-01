@@ -926,6 +926,11 @@
     "recommended": "推奨",
     "fee": "手数料",
     "fees": "手数料",
+    "unknown": "未知",
+    "unknownFeeTooltip": "現在、 {networkName}のネットワーク手数料を計算できません。ネットワーク手数料は、トランザクションが承認されるとウォレットに表示されます。",
+    "free": "無料",
+    "cheapest": "最も安い",
+    "fastest": "最速",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
@@ -961,7 +966,9 @@
     "providerFees": "プロバイダー料金",
     "networkFee": "{networkName}ネットワーク料金",
     "totalFees": "合計料金",
-    "estimatedAmountReceived": "受け取る推定金額"
+    "estimatedAmountReceived": "受け取る推定金額",
+    "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
+    "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

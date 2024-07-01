@@ -926,6 +926,11 @@
     "recommended": "ભલામણ કરેલ",
     "fee": "ફી",
     "fees": "ફી",
+    "unknown": "અજ્ઞાત",
+    "unknownFeeTooltip": "હાલમાં {networkName} પરની નેટવર્ક ફીની ગણતરી કરી શકાતી નથી. ટ્રાન્ઝેક્શનની મંજૂરી પર નેટવર્ક ફી તમારા વૉલેટમાં પ્રદર્શિત થવી જોઈએ.",
+    "free": "મફત",
+    "cheapest": "સૌથી સસ્તું",
+    "fastest": "સૌથી ઝડપી",
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",
@@ -961,7 +966,9 @@
     "providerFees": "પ્રદાતા ફી",
     "networkFee": "{networkName} નેટવર્ક ફી",
     "totalFees": "કુલ ફી",
-    "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ"
+    "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
+    "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
+    "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે."
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

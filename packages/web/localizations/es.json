@@ -926,6 +926,11 @@
     "recommended": "Recomendado",
     "fee": "tarifa",
     "fees": "honorarios",
+    "unknown": "Desconocido",
+    "unknownFeeTooltip": "Actualmente, las tarifas de red de {networkName} no se pueden calcular. Las tarifas de la red deben aparecer en su billetera al momento de la aprobación de la transacción.",
+    "free": "Gratis",
+    "cheapest": "Lo mas barato",
+    "fastest": "Lo más rápido",
     "stepLabels": {
       "asset": "Activo",
       "amount": "Cantidad",
@@ -961,7 +966,9 @@
     "providerFees": "Tarifas del proveedor",
     "networkFee": "{networkName} Tarifa de red",
     "totalFees": "Tarifas totales",
-    "estimatedAmountReceived": "Cantidad estimada recibida"
+    "estimatedAmountReceived": "Cantidad estimada recibida",
+    "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
+    "priceImpactWarning": "El impacto en el precio de esta transacción es {priceImpact} , lo que puede influir en el importe final recibido."
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

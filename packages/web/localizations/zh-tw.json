@@ -926,6 +926,11 @@
     "recommended": "受到推崇的",
     "fee": "費用",
     "fees": "費用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前無法計算{networkName}上的網路費用。交易批准後，網路費用應顯示在您的錢包中。",
+    "free": "自由的",
+    "cheapest": "最便宜",
+    "fastest": "最快的",
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",
@@ -961,7 +966,9 @@
     "providerFees": "提供者費用",
     "networkFee": "{networkName}網路費用",
     "totalFees": "總費用",
-    "estimatedAmountReceived": "預計收到金額"
+    "estimatedAmountReceived": "預計收到金額",
+    "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
+    "priceImpactWarning": "此交易的價格影響為{priceImpact} ，這可能會影響最終收到的金額。"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

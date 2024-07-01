@@ -926,6 +926,11 @@
     "recommended": "Empfohlen",
     "fee": "Gebühr",
     "fees": "Gebühren",
+    "unknown": "Unbekannt",
+    "unknownFeeTooltip": "Derzeit können Netzwerkgebühren für {networkName} nicht berechnet werden. Netzwerkgebühren sollten nach der Transaktionsgenehmigung in Ihrem Wallet angezeigt werden.",
+    "free": "Frei",
+    "cheapest": "Am billigsten",
+    "fastest": "Am schnellsten",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
@@ -961,7 +966,9 @@
     "providerFees": "Anbietergebühren",
     "networkFee": "{networkName} Netzwerkgebühr",
     "totalFees": "Gesamtkosten",
-    "estimatedAmountReceived": "Geschätzter erhaltener Betrag"
+    "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
+    "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
+    "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken."
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
