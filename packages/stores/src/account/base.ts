@@ -67,7 +67,6 @@ import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
