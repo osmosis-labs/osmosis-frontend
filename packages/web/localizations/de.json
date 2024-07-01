@@ -924,6 +924,7 @@
     "depositAs": "Einzahlung als",
     "withdrawAs": "Abheben als",
     "recommended": "Empfohlen",
+    "fee": "Gebühr",
     "fees": "Gebühren",
     "stepLabels": {
       "asset": "Vermögenswert",

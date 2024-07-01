@@ -924,6 +924,7 @@
     "depositAs": "سپرده گذاری به عنوان",
     "withdrawAs": "برداشت به عنوان",
     "recommended": "توصیه شده",
+    "fee": "هزینه",
     "fees": "هزینه ها",
     "stepLabels": {
       "asset": "دارایی",

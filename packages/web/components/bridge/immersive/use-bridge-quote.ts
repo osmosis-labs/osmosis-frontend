@@ -42,6 +42,7 @@ export const useBridgeQuote = ({
   bridges = ["Axelar", "Skip", "Squid", "IBC"],
 
   onRequestClose,
+  onTransfer: onTransferProp,
 }: {
   direction: "deposit" | "withdraw";
 
@@ -58,6 +59,7 @@ export const useBridgeQuote = ({
   bridges?: Bridge[];
 
   onRequestClose: () => void;
+  onTransfer?: () => void;
 }) => {
   const { accountStore, transferHistoryStore, queriesStore } = useStore();
   const {
@@ -251,32 +253,32 @@ export const useBridgeQuote = ({
     )
   );
 
+  const successfulQuotes = useMemo(() => {
+    return quoteResults.filter(
+      (
+        quote
+      ): quote is typeof quote & { data: NonNullable<typeof quote.data> } =>
+        quote.isSuccess && !isNil(quote.data)
+    );
+  }, [quoteResults]);
+
+  const erroredQuotes = useMemo(() => {
+    return quoteResults.filter(({ isError }) => isError);
+  }, [quoteResults]);
+
   const selectedQuoteQuery = useMemo(() => {
-    return quoteResults?.find(
+    return successfulQuotes.find(
       ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
     );
-  }, [quoteResults, selectedBridgeProvider]);
+  }, [selectedBridgeProvider, successfulQuotes]);
 
   const selectedQuote = useMemo(() => {
     return selectedQuoteQuery?.data;
   }, [selectedQuoteQuery]);
 
-  const bridgeProviders = useMemo(
-    () =>
-      quoteResults
-        .map(({ data }) => data?.provider)
-        ?.filter((r): r is NonNullable<typeof r> => !!r)
-        .map(({ id, logoUrl }) => ({
-          id: id,
-          logo: logoUrl,
-          name: id,
-        })),
-    [quoteResults]
-  );
-
-  const numSucceeded = quoteResults.filter(({ isSuccess }) => isSuccess).length;
+  const numSucceeded = successfulQuotes.length;
   const isOneSuccessful = Boolean(numSucceeded);
-  const amountOfErrors = quoteResults.filter(({ isError }) => isError).length;
+  const amountOfErrors = erroredQuotes.length;
   const isOneErrored = Boolean(amountOfErrors);
 
   // if none have returned a resulting quote, find some error
@@ -477,13 +479,10 @@ export const useBridgeQuote = ({
         toChainId: quote.toChain.chainId,
       });
 
+      // TODO: Investigate if this is still needed
       //   setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
 
-      //   if (isWithdraw) {
-      //     withdrawAmountConfig.setAmount("");
-      //   } else {
-      //     setDepositAmount("");
-      //   }
+      onTransferProp?.();
       setTransferInitiated(true);
     } catch (e) {
       const error = e as BaseError;
@@ -541,11 +540,7 @@ export const useBridgeQuote = ({
             toChainId: quote.toChain.chainId,
           });
 
-          //   if (isWithdraw) {
-          //     withdrawAmountConfig.setAmount("");
-          //   } else {
-          //     setDepositAmount("");
-          //   }
+          onTransferProp?.();
           setTransferInitiated(true);
         }
       }
@@ -662,7 +657,7 @@ export const useBridgeQuote = ({
     warnUserOfSlippage,
     warnUserOfPriceImpact,
 
-    bridgeProviders,
+    successfulQuotes,
     selectedBridgeProvider,
     setSelectedBridgeProvider,
 

@@ -924,6 +924,7 @@
     "depositAs": "Депозит как",
     "withdrawAs": "Вывести как",
     "recommended": "рекомендуемые",
+    "fee": "платеж",
     "fees": "сборы",
     "stepLabels": {
       "asset": "Объект",

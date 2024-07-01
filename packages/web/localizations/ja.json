@@ -924,6 +924,7 @@
     "depositAs": "入金",
     "withdrawAs": "撤退する",
     "recommended": "推奨",
+    "fee": "手数料",
     "fees": "手数料",
     "stepLabels": {
       "asset": "資産",

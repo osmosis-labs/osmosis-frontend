@@ -924,6 +924,7 @@
     "depositAs": "Deposit as",
     "withdrawAs": "Withdraw as",
     "recommended": "Recommended",
+    "fee": "fee",
     "fees": "fees",
     "stepLabels": {
       "asset": "Asset",

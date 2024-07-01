@@ -17,6 +17,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
+import { BridgeProviderDropdown } from "~/components/bridge/immersive/bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
@@ -369,6 +370,8 @@ export const AmountScreen = observer(
 
     const {
       selectedQuote,
+      successfulQuotes,
+      setSelectedBridgeProvider,
       buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
@@ -393,6 +396,10 @@ export const AmountScreen = observer(
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
       bridges: sourceAsset?.supportedProviders,
+      onTransfer: () => {
+        setCryptoAmount("0");
+        setFiatAmount("0");
+      },
     });
 
     if (
@@ -748,7 +755,7 @@ export const AmountScreen = observer(
             </>
           )}
 
-          {!isNil(sourceAsset) && sourceAsset.supportedVariants.length > 0 && (
+          {!isNil(sourceAsset) && sourceAsset.supportedVariants.length > 1 && (
             <Menu>
               {({ open }) => (
                 <div className="relative w-full">
@@ -816,65 +823,69 @@ export const AmountScreen = observer(
                         if (index === 0) {
                           return (
                             <Menu.Item key={asset.coinDenom}>
-                              <button
-                                className={classNames(
-                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
-                                  isSelected && "bg-osmoverse-700",
-                                  !isSelected && "hover:bg-osmoverse-800"
-                                )}
-                                onClick={onClick}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Image
-                                    src={asset.coinImageUrl ?? "/"}
-                                    alt={`${asset.coinDenom} logo`}
-                                    width={32}
-                                    height={32}
-                                  />
-                                  <div className="flex flex-col">
-                                    <p className="body1">
-                                      {isConvert
-                                        ? t("transfer.convertTo")
-                                        : direction === "withdraw"
-                                        ? t("transfer.withdrawAs")
-                                        : t("transfer.depositAs")}{" "}
-                                      {asset.coinDenom}
-                                    </p>
-                                    <p className="body2 text-osmoverse-300">
-                                      {t("transfer.recommended")}
-                                    </p>
+                              {({ active }) => (
+                                <button
+                                  className={classNames(
+                                    "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                    isSelected && "bg-osmoverse-700",
+                                    !isSelected && active && "bg-osmoverse-800"
+                                  )}
+                                  onClick={onClick}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Image
+                                      src={asset.coinImageUrl ?? "/"}
+                                      alt={`${asset.coinDenom} logo`}
+                                      width={32}
+                                      height={32}
+                                    />
+                                    <div className="flex flex-col">
+                                      <p className="body1">
+                                        {isConvert
+                                          ? t("transfer.convertTo")
+                                          : direction === "withdraw"
+                                          ? t("transfer.withdrawAs")
+                                          : t("transfer.depositAs")}{" "}
+                                        {asset.coinDenom}
+                                      </p>
+                                      <p className="body2 text-osmoverse-300">
+                                        {t("transfer.recommended")}
+                                      </p>
+                                    </div>
                                   </div>
-                                </div>
-                                {isSelected && dropdownActiveItemIcon}
-                              </button>
+                                  {isSelected && dropdownActiveItemIcon}
+                                </button>
+                              )}
                             </Menu.Item>
                           );
                         }
 
                         return (
                           <Menu.Item key={asset.coinDenom}>
-                            <button
-                              className={classNames(
-                                "flex items-center gap-3 rounded-lg py-2 px-3",
-                                isSelected && "bg-osmoverse-700",
-                                !isSelected && "hover:bg-osmoverse-800"
-                              )}
-                              onClick={onClick}
-                            >
-                              <Image
-                                src={asset.coinImageUrl ?? "/"}
-                                alt={`${asset.coinDenom} logo`}
-                                width={32}
-                                height={32}
-                              />
-                              <p className="body1">
-                                {isConvert
-                                  ? t("transfer.convertTo")
-                                  : t("transfer.depositAs")}{" "}
-                                {asset.coinDenom}
-                              </p>
-                              {isSelected && dropdownActiveItemIcon}
-                            </button>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  "flex items-center gap-3 rounded-lg py-2 px-3",
+                                  isSelected && "bg-osmoverse-700",
+                                  !isSelected && active && "bg-osmoverse-800"
+                                )}
+                                onClick={onClick}
+                              >
+                                <Image
+                                  src={asset.coinImageUrl ?? "/"}
+                                  alt={`${asset.coinDenom} logo`}
+                                  width={32}
+                                  height={32}
+                                />
+                                <p className="body1">
+                                  {isConvert
+                                    ? t("transfer.convertTo")
+                                    : t("transfer.depositAs")}{" "}
+                                  {asset.coinDenom}
+                                </p>
+                                {isSelected && dropdownActiveItemIcon}
+                              </button>
+                            )}
                           </Menu.Item>
                         );
                       }
@@ -955,7 +966,15 @@ export const AmountScreen = observer(
                   <Disclosure.Panel className="flex flex-col gap-2">
                     <TransferDetailRow
                       label={t("transfer.provider")}
-                      value={<p>{selectedQuote.provider.id}</p>}
+                      value={
+                        <BridgeProviderDropdown
+                          selectedQuote={selectedQuote}
+                          quotes={successfulQuotes}
+                          onSelect={(bridgeId) =>
+                            setSelectedBridgeProvider(bridgeId)
+                          }
+                        />
+                      }
                       isLoading={isRefetchingQuote}
                     />
                     <TransferDetailRow

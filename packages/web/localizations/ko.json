@@ -924,6 +924,7 @@
     "depositAs": "다음으로 입금",
     "withdrawAs": "다음으로 인출",
     "recommended": "추천",
+    "fee": "요금",
     "fees": "수수료",
     "stepLabels": {
       "asset": "유산",

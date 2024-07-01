@@ -924,6 +924,7 @@
     "depositAs": "Depozit ca",
     "withdrawAs": "Retrage ca",
     "recommended": "Recomandat",
+    "fee": "taxa",
     "fees": "taxe",
     "stepLabels": {
       "asset": "Atu",

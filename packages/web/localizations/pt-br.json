@@ -924,6 +924,7 @@
     "depositAs": "Depositar como",
     "withdrawAs": "Retirar como",
     "recommended": "Recomendado",
+    "fee": "taxa",
     "fees": "tarifas",
     "stepLabels": {
       "asset": "Ativo",

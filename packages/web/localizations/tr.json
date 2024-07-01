@@ -924,6 +924,7 @@
     "depositAs": "Şu şekilde yatırın:",
     "withdrawAs": "Olarak geri çekil",
     "recommended": "Tavsiye edilen",
+    "fee": "ücret",
     "fees": "ücretler",
     "stepLabels": {
       "asset": "Varlık",
