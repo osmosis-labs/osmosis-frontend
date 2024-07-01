@@ -2,6 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Bridge } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -24,16 +25,38 @@ export const BridgeProviderDropdown = ({
   onSelect,
 }: Props) => {
   const { t } = useTranslation();
-  const fastestQuote = useMemo(
-    () =>
-      quotes.reduce((prev, current) =>
-        prev.data.estimatedTime.asMilliseconds() <
-        current.data.estimatedTime.asMilliseconds()
-          ? prev
-          : current
-      ),
-    [quotes]
-  );
+  const fastestQuote = useMemo(() => {
+    const minTime = Math.min(
+      ...quotes.map((q) => q.data.estimatedTime.asMilliseconds())
+    );
+    const uniqueFastestQuotes = quotes.filter(
+      (q) => q.data.estimatedTime.asMilliseconds() === minTime
+    );
+    return uniqueFastestQuotes.length === 1
+      ? uniqueFastestQuotes[0]
+      : undefined;
+  }, [quotes]);
+
+  const cheapestQuote = useMemo(() => {
+    const minFee = quotes
+      .map((q) => q.data.transferFeeFiat?.toDec() ?? new Dec(0))
+      .reduce((acc, fee) => {
+        if (acc === null || fee.lt(acc)) {
+          return fee;
+        }
+        return acc;
+      }, null as Dec | null);
+
+    const uniqueCheapestQuotes = quotes.filter((q) => {
+      const feeDec = q.data.transferFeeFiat?.toDec();
+      return !isNil(feeDec) && !isNil(minFee) && feeDec.equals(minFee);
+    });
+
+    return uniqueCheapestQuotes.length === 1
+      ? uniqueCheapestQuotes[0]
+      : undefined;
+  }, [quotes]);
+
   return (
     <Menu>
       {({ open }) => (
@@ -82,6 +105,11 @@ export const BridgeProviderDropdown = ({
                   )
                   .toString();
                 const isSelected = selectedQuote.provider.id === provider.id;
+                const isCheapest =
+                  cheapestQuote?.data.provider.id === provider.id;
+                const isFastest =
+                  fastestQuote?.data.provider.id === provider.id;
+
                 return (
                   <MenuItem key={provider.id}>
                     <button
@@ -108,18 +136,15 @@ export const BridgeProviderDropdown = ({
                               {estimatedTime.humanize()}
                             </span>
                             {/* First quote is the cheapest */}
-                            {index === 0 && (
+                            {isCheapest ? (
                               <span className="body2 text-bullish-400">
                                 {t("transfer.cheapest")}
                               </span>
-                            )}
-                            {/* Fastest quote */}
-                            {index !== 0 &&
-                              fastestQuote.data.provider.id === provider.id && (
-                                <span className="body2 text-ammelia-400">
-                                  {t("transfer.fastest")}
-                                </span>
-                              )}
+                            ) : isFastest ? (
+                              <span className="body2 text-ammelia-400">
+                                {t("transfer.fastest")}
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                       </div>

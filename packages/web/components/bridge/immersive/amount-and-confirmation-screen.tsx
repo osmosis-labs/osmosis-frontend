@@ -1,6 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
-import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -35,7 +34,7 @@ export const AmountAndConfirmationScreen = observer(
     const { accountStore } = useStore();
 
     const [sourceAsset, setSourceAsset] = useState<SupportedAssetWithAmount>();
-    const [destinationAsset, setDestinationAsset] = useState<MinimalAsset>();
+    const [destinationAsset, setDestinationAsset] = useState<SupportedAsset>();
     const [fromChain, setFromChain] = useState<BridgeChain>();
     const [toChain, setToChain] = useState<BridgeChain>();
 
@@ -43,41 +42,38 @@ export const AmountAndConfirmationScreen = observer(
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
     // Wallets
-    const destinationAccount = accountStore.getWallet(
-      accountStore.osmosisChainId
-    );
     const { address: evmAddress } = useEvmWalletAccount();
 
-    const sourceChain = direction === "deposit" ? fromChain : toChain;
-    const destinationChain = direction === "deposit" ? toChain : fromChain;
-
-    const cosmosCounterpartyAccount =
-      sourceChain?.chainType === "evm" || isNil(sourceChain)
+    const fromChainCosmosAccount =
+      fromChain?.chainType === "evm" || isNil(fromChain)
         ? undefined
-        : accountStore.getWallet(sourceChain.chainId);
+        : accountStore.getWallet(fromChain.chainId);
 
-    const sourceAddress =
-      sourceChain?.chainType === "evm"
-        ? evmAddress
-        : cosmosCounterpartyAccount?.address;
+    const toChainCosmosAccount =
+      toChain?.chainType === "evm" || isNil(toChain)
+        ? undefined
+        : accountStore.getWallet(toChain.chainId);
 
     const quote = useBridgeQuote({
-      destinationAddress: destinationAccount?.address,
-      destinationChain,
-      destinationAsset: destinationAsset
-        ? {
-            address: destinationAsset.coinMinimalDenom,
-            decimals: destinationAsset.coinDecimals,
-            denom: destinationAsset.coinDenom,
-          }
-        : undefined,
-      sourceAddress,
-      sourceChain,
-      sourceAsset,
+      toAddress:
+        toChain?.chainType === "evm"
+          ? evmAddress
+          : toChainCosmosAccount?.address,
+      toChain: toChain,
+      toAsset: destinationAsset,
+      fromAddress:
+        fromChain?.chainType === "evm"
+          ? evmAddress
+          : fromChainCosmosAccount?.address,
+      fromChain: fromChain,
+      fromAsset: sourceAsset,
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
-      bridges: sourceAsset?.supportedProviders,
+      bridges:
+        direction === "deposit"
+          ? sourceAsset?.supportedProviders
+          : destinationAsset?.supportedProviders,
       onTransfer: () => {
         setCryptoAmount("0");
         setFiatAmount("0");
@@ -93,8 +89,6 @@ export const AmountAndConfirmationScreen = observer(
             <AmountScreen
               direction={direction}
               selectedDenom={selectedAssetDenom!}
-              sourceChain={sourceChain}
-              destinationChain={destinationChain}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}
