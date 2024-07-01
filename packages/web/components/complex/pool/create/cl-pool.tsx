@@ -203,7 +203,10 @@ export const CreateCLPool = observer(
                 </div>
                 <button
                   disabled={
-                    isTxLoading || !isAgreementChecked || isLoadingCLParams
+                    isTxLoading ||
+                    !isAgreementChecked ||
+                    isLoadingCLParams ||
+                    !selectedBase
                   }
                   className={classNames(
                     "flex h-13 w-[520px] items-center justify-center rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:opacity-70"
@@ -212,10 +215,10 @@ export const CreateCLPool = observer(
                     setIsTxLoading(true);
                     account?.osmosis
                       .sendCreateConcentratedPoolMsg(
-                        "uion",
-                        "uosmo",
+                        selectedBase?.token.coinMinimalDenom!,
+                        selectedQuote?.token.coinMinimalDenom!,
                         100,
-                        0.0001,
+                        +selectedSpread,
                         undefined,
                         (res) => {
                           if (res.code === 0) {
