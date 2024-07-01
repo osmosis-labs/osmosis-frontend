@@ -148,7 +148,7 @@ export const tableColumns = [
         original: { placed_at },
       },
     }) => {
-      const placedAt = dayjs(placed_at / 1000000);
+      const placedAt = dayjs(placed_at);
       const formattedTime = placedAt.format("h:mm A");
       const formattedDate = placedAt.format("MMM D");
       return (

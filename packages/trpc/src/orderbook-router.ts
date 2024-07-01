@@ -13,6 +13,7 @@ import {
   LimitOrder,
   maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
+import { dayjs } from "@osmosis-labs/server/build/utils/dayjs";
 import { Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
@@ -66,9 +67,13 @@ function defaultSortOrders(
   orderB: MappedLimitOrder
 ): number {
   if (orderA.status === orderB.status) {
-    return orderA.placed_at - orderB.placed_at;
+    return orderB.placed_at - orderA.placed_at;
   }
-  return orderA.status === "filled" ? 1 : -1;
+  return orderA.status === "filled"
+    ? 1
+    : orderA.status === "partiallyFilled" || orderA.status === "open"
+    ? 1
+    : orderB.placed_at - orderA.placed_at;
 }
 
 async function getTickInfoAndTransformOrders(
@@ -139,7 +144,6 @@ async function getTickInfoAndTransformOrders(
       o.order_direction === "bid"
         ? new Dec(placedQuantity).quo(price)
         : new Dec(placedQuantity).mul(price);
-    console.log("price", price.toString());
     return {
       ...o,
       price,
@@ -153,7 +157,7 @@ async function getTickInfoAndTransformOrders(
       output,
       quoteAsset,
       baseAsset,
-      placed_at: parseInt(o.placed_at),
+      placed_at: dayjs(parseInt(o.placed_at) / 1_000).unix(),
     };
   });
 }
@@ -181,7 +185,7 @@ function mapHistoricalToMapped(
       order_direction: o.order_direction,
       order_id: parseInt(o.order_id),
       owner: userAddress,
-      placed_at: parseInt(o.place_timestamp),
+      placed_at: dayjs(o.place_timestamp ?? 0).unix() * 1000,
       placed_quantity: parseInt(o.quantity),
       placedQuantityMin,
       quantityMin,
