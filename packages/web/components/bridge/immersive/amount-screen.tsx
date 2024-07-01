@@ -24,6 +24,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-confirmation-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { BridgeProviderDropdown } from "~/components/bridge/immersive/bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
@@ -56,23 +57,74 @@ interface AmountScreenProps {
   selectedDenom: string;
 
   /**
-   * Includes both the canonical asset and its variants.
+   * Chain taking into account the direction.
    */
-  assetsInOsmosis: MinimalAsset[] | undefined;
+  sourceChain: BridgeChain | undefined;
+  destinationChain: BridgeChain | undefined;
 
-  onClose: () => void;
+  fromChain: BridgeChain | undefined;
+  setFromChain: (chain: BridgeChain) => void;
+  toChain: BridgeChain | undefined;
+  setToChain: (chain: BridgeChain) => void;
+
+  sourceAsset: SupportedAssetWithAmount | undefined;
+  setSourceAsset: (asset: SupportedAssetWithAmount | undefined) => void;
+  destinationAsset: MinimalAsset | undefined;
+  setDestinationAsset: (asset: MinimalAsset | undefined) => void;
+
+  cryptoAmount: string;
+  fiatAmount: string;
+  setCryptoAmount: (amount: string) => void;
+  setFiatAmount: (amount: string) => void;
+
+  quote: ReturnType<typeof useBridgeQuote>;
 }
 
 export const AmountScreen = observer(
   ({
     direction,
-    assetsInOsmosis,
     selectedDenom,
-    onClose,
+
+    sourceChain,
+
+    fromChain,
+    setFromChain,
+    toChain,
+    setToChain,
+
+    sourceAsset,
+    setSourceAsset,
+
+    destinationAsset,
+    setDestinationAsset,
+
+    cryptoAmount,
+    setCryptoAmount,
+    fiatAmount,
+    setFiatAmount,
+
+    quote,
   }: AmountScreenProps) => {
     const { accountStore } = useStore();
     const { onOpenWalletSelect } = useWalletSelect();
     const { t } = useTranslation();
+
+    const {
+      selectedQuote,
+      successfulQuotes,
+      setSelectedBridgeProvider,
+      buttonErrorMessage,
+      buttonText,
+      isLoadingBridgeQuote,
+      isLoadingBridgeTransaction,
+      isRefetchingQuote,
+      selectedQuoteUpdatedAt,
+      refetchInterval,
+      isInsufficientBal,
+      isInsufficientFee,
+      warnUserOfPriceImpact,
+      warnUserOfSlippage,
+    } = quote;
 
     const { accountActionButton: connectWalletButton, walletConnected } =
       useConnectWalletModalRedirect(
@@ -82,18 +134,9 @@ export const AmountScreen = observer(
         noop
       );
 
-    const [sourceAsset, setSourceAsset] = useState<
-      SupportedAsset & { amount: CoinPretty }
-    >();
-    const [destinationAsset, setDestinationAsset] = useState<MinimalAsset>();
-    const [fromChain, setFromChain] = useState<BridgeChain>();
-    const [toChain, setToChain] = useState<BridgeChain>();
-
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
-    const [cryptoAmount, setCryptoAmount] = useState<string>("0");
-    const [fiatAmount, setFiatAmount] = useState<string>("0");
     const {
       isOpen: isBridgeWalletSelectOpen,
       onClose: onCloseBridgeWalletSelect,
@@ -110,9 +153,6 @@ export const AmountScreen = observer(
       isConnected: isEvmWalletConnected,
     } = useEvmWalletAccount();
 
-    const sourceChain = direction === "deposit" ? fromChain : toChain;
-    const destinationChain = direction === "deposit" ? toChain : fromChain;
-
     const cosmosCounterpartyAccountRepo =
       sourceChain?.chainType === "evm" || isNil(sourceChain)
         ? undefined
@@ -126,6 +166,18 @@ export const AmountScreen = observer(
       sourceChain?.chainType === "evm"
         ? evmAddress
         : cosmosCounterpartyAccount?.address;
+
+    const { data: assetsInOsmosis } =
+      api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+        {
+          findMinDenomOrSymbol: selectedDenom!,
+        },
+        {
+          enabled: !isNil(selectedDenom),
+          cacheTime: 10 * 60 * 1000, // 10 minutes
+          staleTime: 10 * 60 * 1000, // 10 minutes
+        }
+      );
 
     const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
       findChainNameOrId: accountStore.osmosisChainId,
@@ -259,7 +311,7 @@ export const AmountScreen = observer(
 
         setDestinationAsset(destinationAsset);
       }
-    }, [assetsInOsmosis, selectedDenom, sourceAsset]);
+    }, [assetsInOsmosis, setDestinationAsset, sourceAsset]);
 
     /**
      * Set the osmosis chain based on the direction
@@ -274,13 +326,7 @@ export const AmountScreen = observer(
           chainType: "cosmos",
         });
       }
-    }, [
-      accountStore.osmosisChainId,
-      direction,
-      fromChain,
-      osmosisChain,
-      toChain,
-    ]);
+    }, [direction, fromChain, osmosisChain, setFromChain, setToChain, toChain]);
 
     /**
      * Set the initial chain based on the direction.
@@ -302,7 +348,14 @@ export const AmountScreen = observer(
           chainType: firstChain.chainType,
         } as BridgeChain);
       }
-    }, [direction, fromChain, supportedChains, toChain]);
+    }, [
+      direction,
+      fromChain,
+      setFromChain,
+      setToChain,
+      supportedChains,
+      toChain,
+    ]);
 
     /**
      * Connect cosmos wallet to the counterparty chain
@@ -375,44 +428,6 @@ export const AmountScreen = observer(
       onOpenBridgeWalletSelect,
       toChain,
     ]);
-
-    const {
-      selectedQuote,
-      successfulQuotes,
-      setSelectedBridgeProvider,
-      buttonErrorMessage,
-      buttonText,
-      isLoadingBridgeQuote,
-      isLoadingBridgeTransaction,
-      isRefetchingQuote,
-      selectedQuoteUpdatedAt,
-      refetchInterval,
-      isInsufficientBal,
-      isInsufficientFee,
-      warnUserOfPriceImpact,
-      warnUserOfSlippage,
-    } = useBridgeQuote({
-      destinationAddress: destinationAccount?.address,
-      destinationChain,
-      destinationAsset: destinationAsset
-        ? {
-            address: destinationAsset.coinMinimalDenom,
-            decimals: destinationAsset.coinDecimals,
-            denom: destinationAsset.coinDenom,
-          }
-        : undefined,
-      sourceAddress,
-      sourceChain,
-      sourceAsset,
-      direction,
-      onRequestClose: onClose,
-      inputAmount: cryptoAmount,
-      bridges: sourceAsset?.supportedProviders,
-      onTransfer: () => {
-        setCryptoAmount("0");
-        setFiatAmount("0");
-      },
-    });
 
     if (
       isLoadingCanonicalAssetPrice ||
