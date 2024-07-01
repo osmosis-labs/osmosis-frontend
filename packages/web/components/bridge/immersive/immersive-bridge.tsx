@@ -5,11 +5,11 @@ import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
+import { AmountAndConfirmationScreen } from "~/components/bridge/immersive/amount-and-confirmation-screen";
 import { AssetSelectScreen } from "~/components/bridge/immersive/asset-select-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
-import { Button, IconButton } from "~/components/ui/button";
+import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { BridgeFlowProvider } from "~/hooks/bridge";
@@ -19,9 +19,8 @@ import { FiatRampKey } from "~/integrations";
 import { ModalCloseButton } from "~/modals";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
-import { api } from "~/utils/trpc";
 
-const enum ImmersiveBridgeScreens {
+export const enum ImmersiveBridgeScreens {
   Asset = "0",
   Amount = "1",
   Review = "2",
@@ -45,18 +44,6 @@ export const ImmersiveBridgeFlow = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   const [selectedAssetDenom, setSelectedAssetDenom] = useState<string>();
-
-  const { data: canonicalAssetsWithVariants } =
-    api.edge.assets.getCanonicalAssetWithVariants.useQuery(
-      {
-        findMinDenomOrSymbol: selectedAssetDenom!,
-      },
-      {
-        enabled: !isNil(selectedAssetDenom),
-        cacheTime: 10 * 60 * 1000, // 10 minutes
-        staleTime: 10 * 60 * 1000, // 10 minutes
-      }
-    );
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
@@ -189,21 +176,11 @@ export const ImmersiveBridgeFlow = ({
                     />
                   )}
                 </Screen>
-                <Screen screenName={ImmersiveBridgeScreens.Amount}>
-                  <AmountScreen
-                    type={direction}
-                    assetsInOsmosis={canonicalAssetsWithVariants}
-                  />
-                </Screen>
-                <Screen screenName={ImmersiveBridgeScreens.Review}>
-                  {({ goBack }) => (
-                    <div>
-                      <h6>Step 3: Review</h6>
-                      <Button onClick={goBack}>Back</Button>
-                      <Button onClick={() => onClose()}>Close</Button>
-                    </div>
-                  )}
-                </Screen>
+                <AmountAndConfirmationScreen
+                  direction={direction}
+                  onClose={onClose}
+                  selectedAssetDenom={selectedAssetDenom}
+                />
               </div>
             </div>
           </Transition>

@@ -55,7 +55,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userOsmoAddress,
+          userCosmosAddress: userOsmoAddress,
         });
       }
     ),
@@ -87,7 +87,7 @@ export const assetsRouter = createTRPCRouter({
             mapGetAssetsWithUserBalances({
               ...ctx,
               search,
-              userOsmoAddress,
+              userCosmosAddress: userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -165,7 +165,7 @@ export const assetsRouter = createTRPCRouter({
         const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userOsmoAddress,
+          userCosmosAddress: userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
           asset: userAsset,
@@ -290,7 +290,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               categories,
-              userOsmoAddress,
+              userCosmosAddress: userOsmoAddress,
               includePreview,
             });
 
@@ -543,7 +543,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               // Only get balances for withdraw
-              userOsmoAddress:
+              userCosmosAddress:
                 type === "withdraw" ? userOsmoAddress : undefined,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -571,7 +571,7 @@ export const assetsRouter = createTRPCRouter({
                       asset.variantGroupKey as (typeof variantsNotToBeExcluded)[number]
                     )
                   ) {
-                    return asset.variantGroupKey === asset.coinDenom;
+                    return asset.variantGroupKey === asset.coinMinimalDenom;
                   }
 
                   return true;

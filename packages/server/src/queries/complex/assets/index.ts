@@ -67,7 +67,7 @@ export function getAssetWithVariants({
   return (
     variants
       // place the canonical asset at the beginning
-      .sort((a) => (a.coinDenom === asset.variantGroupKey ? -1 : 1))
+      .sort((a) => (a.coinMinimalDenom === asset.variantGroupKey ? -1 : 1))
   );
 }
 
@@ -193,6 +193,7 @@ function filterAssetList(
 export * from "./bridge";
 export * from "./categories";
 export * from "./config";
+export * from "./ethereum";
 export * from "./gas";
 export * from "./market";
 export * from "./price";

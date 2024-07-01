@@ -268,7 +268,13 @@ async function generateAssetListFile({
       // remove duplicates
       return self.indexOf(groupKey) === index;
     })
-    .map((groupKey) => `"${groupKey}"`)
+    .map(
+      (groupKey) =>
+        `"${groupKey}" /** Symbols: ${assetList.assets
+          .filter((asset) => asset.variantGroupKey === groupKey)!
+          .map((asset) => asset.symbol)
+          .join(",")} */`
+    )
     .join(" | ")};
   `;
 

@@ -7,7 +7,11 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  getAssetFromAssetList,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
   Address,
@@ -19,7 +23,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,

@@ -136,9 +136,9 @@ export const AssetSelectScreen = observer(
 
         <div className="flex flex-col gap-1">
           {isLoading ? (
-            <>
+            <div className="self-center pt-3">
               <Spinner />
-            </>
+            </div>
           ) : (
             <>
               {assets.map((asset) => (

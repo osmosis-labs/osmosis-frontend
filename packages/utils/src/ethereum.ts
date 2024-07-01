@@ -17,15 +17,45 @@ import {
   polygonMumbai,
 } from "viem/chains";
 
-import { SourceChain } from "./chain";
+/**
+ * Placeholder address for the native tokens like ETH, or AVAX. This is used by protocols to refer to the native token, in order,
+ * to be handled similarly to other ERC20 tokens.
+ */
+export const NativeEVMTokenConstantAddress =
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
-// TODO maybe we can use EVM chain ID (numeric) or ethereum chain registry
+/** Human-displayable global source chain identifiers.
+ *  TODO: use global chain IDs instead of display names as keys
+ *
+ * @deprecated
+ */
+export type AxelarSourceChain =
+  | "Bitcoin"
+  | "Bitcoin Testnet"
+  | "Aurora Testnet"
+  | "Avalanche"
+  | "Avalanche Fuji Testnet"
+  | "Binance Smart Chain"
+  | "BSC Testnet"
+  | "Ethereum"
+  | "Goerli Testnet"
+  | "Fantom"
+  | "Fantom Testnet"
+  | "Moonbeam"
+  | "Moonbase Alpha"
+  | "Polygon"
+  | "Mumbai"
+  | "Filecoin"
+  | "Filecoin Hyperspace"
+  | "Arbitrum";
+
+// TODO: maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
   Dict extends Partial<
     Record<
-      SourceChain,
+      AxelarSourceChain,
       Chain & {
-        chainName: SourceChain;
+        chainName: AxelarSourceChain;
         clientChainId: string;
       }
     >
@@ -40,7 +70,7 @@ const mapChainInfo = ({
   clientChainId,
 }: {
   chain: Chain;
-  axelarChainName: SourceChain;
+  axelarChainName: AxelarSourceChain;
   clientChainId: string;
 }) => ({
   ...chain,
@@ -125,10 +155,3 @@ export const EthereumChainInfo = createEthereumChainInfo({
     clientChainId: "Filecoin Hyperspace",
   }),
 });
-
-/**
- * Placeholder address for the native tokens like ETH, or AVAX. This is used by protocols to refer to the native token, in order,
- * to be handled similarly to other ERC20 tokens.
- */
-export const NativeEVMTokenConstantAddress =
-  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
