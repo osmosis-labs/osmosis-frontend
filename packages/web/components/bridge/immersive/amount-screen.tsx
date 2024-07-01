@@ -1,4 +1,12 @@
-import { Disclosure, Menu } from "@headlessui/react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from "@headlessui/react";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
@@ -379,6 +387,10 @@ export const AmountScreen = observer(
       isRefetchingQuote,
       selectedQuoteUpdatedAt,
       refetchInterval,
+      isInsufficientBal,
+      isInsufficientFee,
+      warnUserOfPriceImpact,
+      warnUserOfSlippage,
     } = useBridgeQuote({
       destinationAddress: destinationAccount?.address,
       destinationChain,
@@ -554,7 +566,12 @@ export const AmountScreen = observer(
                     <InputBox
                       currentValue={formatFiatAmount(fiatAmount)}
                       onInput={onInput("fiat")}
-                      classes={{ input: "text-center" }}
+                      classes={{
+                        input: classNames("text-center", {
+                          "text-rust-300":
+                            isInsufficientBal || isInsufficientFee,
+                        }),
+                      }}
                       className="mr-4 border-none bg-transparent text-center"
                     />
                   </>
@@ -568,7 +585,10 @@ export const AmountScreen = observer(
                       onInput={onInput("crypto")}
                       className="w-full border-none bg-transparent text-center"
                       classes={{
-                        input: "px-0",
+                        input: classNames("px-0", {
+                          "text-rust-300":
+                            isInsufficientBal || isInsufficientFee,
+                        }),
                         trailingSymbol:
                           "ml-1 align-middle text-2xl text-osmoverse-500 text-left absolute right-0",
                       }}
@@ -759,7 +779,7 @@ export const AmountScreen = observer(
             <Menu>
               {({ open }) => (
                 <div className="relative w-full">
-                  <Menu.Button className="w-full">
+                  <MenuButton className="w-full">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="body1 text-osmoverse-300">
@@ -798,9 +818,9 @@ export const AmountScreen = observer(
                         />
                       </div>
                     </div>
-                  </Menu.Button>
+                  </MenuButton>
 
-                  <Menu.Items className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                  <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
                     {sourceAsset.supportedVariants.map(
                       (variantCoinMinimalDenom, index) => {
                         const asset = assetsInOsmosis.find(
@@ -812,23 +832,24 @@ export const AmountScreen = observer(
                           setDestinationAsset(asset);
                         };
 
-                        // Show all as deposit as for now
+                        // Show all as 'deposit as' for now
                         const isConvert =
                           false ??
                           asset.coinMinimalDenom === asset.variantGroupKey;
                         const isSelected =
                           destinationAsset?.coinDenom === asset.coinDenom;
 
-                        // Is canonical asset
-                        if (index === 0) {
-                          return (
-                            <Menu.Item key={asset.coinDenom}>
-                              {({ active }) => (
+                        const isCanonicalAsset = index === 0;
+
+                        return (
+                          <MenuItem key={asset.coinDenom}>
+                            <>
+                              {isCanonicalAsset ? (
                                 <button
                                   className={classNames(
-                                    "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                    "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
                                     isSelected && "bg-osmoverse-700",
-                                    !isSelected && active && "bg-osmoverse-800"
+                                    !isSelected && "bg-osmoverse-800"
                                   )}
                                   onClick={onClick}
                                 >
@@ -855,42 +876,36 @@ export const AmountScreen = observer(
                                   </div>
                                   {isSelected && dropdownActiveItemIcon}
                                 </button>
+                              ) : (
+                                <button
+                                  className={classNames(
+                                    "flex items-center gap-3 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-800",
+                                    isSelected && "bg-osmoverse-700",
+                                    !isSelected && "bg-osmoverse-800"
+                                  )}
+                                  onClick={onClick}
+                                >
+                                  <Image
+                                    src={asset.coinImageUrl ?? "/"}
+                                    alt={`${asset.coinDenom} logo`}
+                                    width={32}
+                                    height={32}
+                                  />
+                                  <p className="body1">
+                                    {isConvert
+                                      ? t("transfer.convertTo")
+                                      : t("transfer.depositAs")}{" "}
+                                    {asset.coinDenom}
+                                  </p>
+                                  {isSelected && dropdownActiveItemIcon}
+                                </button>
                               )}
-                            </Menu.Item>
-                          );
-                        }
-
-                        return (
-                          <Menu.Item key={asset.coinDenom}>
-                            {({ active }) => (
-                              <button
-                                className={classNames(
-                                  "flex items-center gap-3 rounded-lg py-2 px-3",
-                                  isSelected && "bg-osmoverse-700",
-                                  !isSelected && active && "bg-osmoverse-800"
-                                )}
-                                onClick={onClick}
-                              >
-                                <Image
-                                  src={asset.coinImageUrl ?? "/"}
-                                  alt={`${asset.coinDenom} logo`}
-                                  width={32}
-                                  height={32}
-                                />
-                                <p className="body1">
-                                  {isConvert
-                                    ? t("transfer.convertTo")
-                                    : t("transfer.depositAs")}{" "}
-                                  {asset.coinDenom}
-                                </p>
-                                {isSelected && dropdownActiveItemIcon}
-                              </button>
-                            )}
-                          </Menu.Item>
+                            </>
+                          </MenuItem>
                         );
                       }
                     )}
-                  </Menu.Items>
+                  </MenuItems>
                 </div>
               )}
             </Menu>
@@ -914,7 +929,7 @@ export const AmountScreen = observer(
               {({ open }) => (
                 <>
                   {" "}
-                  <Disclosure.Button>
+                  <DisclosureButton>
                     <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
                       {open ? (
                         <p className="subtitle1">
@@ -948,6 +963,23 @@ export const AmountScreen = observer(
                               {t("transfer.fees")}
                             </span>
                           )}
+                          {(warnUserOfPriceImpact || warnUserOfSlippage) && (
+                            <Tooltip
+                              content={
+                                warnUserOfSlippage
+                                  ? t("transfer.slippageWarning")
+                                  : t("transfer.priceImpactWarning", {
+                                      priceImpact:
+                                        selectedQuote.priceImpact.toString(),
+                                    })
+                              }
+                            >
+                              <Icon
+                                id="alert-circle"
+                                className="h-6 w-6 text-rust-400"
+                              />
+                            </Tooltip>
+                          )}
                           <Icon
                             id="chevron-down"
                             width={12}
@@ -962,8 +994,8 @@ export const AmountScreen = observer(
                         </div>
                       </div>
                     </div>
-                  </Disclosure.Button>
-                  <Disclosure.Panel className="flex flex-col gap-2">
+                  </DisclosureButton>
+                  <DisclosurePanel className="flex flex-col gap-2">
                     <TransferDetailRow
                       label={t("transfer.provider")}
                       value={
@@ -979,64 +1011,121 @@ export const AmountScreen = observer(
                     />
                     <TransferDetailRow
                       label={t("transfer.estimatedTime")}
-                      value={<p>{selectedQuote.estimatedTime.humanize()}</p>}
+                      value={
+                        <div className="flex items-center gap-1">
+                          <Icon
+                            id="stopwatch"
+                            className="h-4 w-4 text-osmoverse-400"
+                          />{" "}
+                          <p className="text-osmoverse-100">
+                            {selectedQuote.estimatedTime.humanize()}
+                          </p>
+                        </div>
+                      }
                       isLoading={isRefetchingQuote}
                     />
                     <TransferDetailRow
                       label={t("transfer.providerFees")}
                       value={
-                        <p>
-                          {selectedQuote.transferFeeFiat
-                            ? `${selectedQuote.transferFeeFiat.toString()} (${selectedQuote.transferFee
-                                .maxDecimals(4)
-                                .toString()})`
-                            : selectedQuote.transferFee
-                                .maxDecimals(4)
-                                .toString()}
+                        <>
+                          {selectedQuote.transferFee
+                            .toDec()
+                            .equals(new Dec(0)) ? (
+                            <p className="text-bullish-400">
+                              {t("transfer.free")}
+                            </p>
+                          ) : (
+                            <p className="text-osmoverse-100">
+                              {selectedQuote.transferFeeFiat
+                                ? `${selectedQuote.transferFeeFiat.toString()} (${selectedQuote.transferFee
+                                    .maxDecimals(4)
+                                    .toString()})`
+                                : selectedQuote.transferFee
+                                    .maxDecimals(4)
+                                    .toString()}
+                            </p>
+                          )}
+                        </>
+                      }
+                      isLoading={isRefetchingQuote}
+                    />
+
+                    <TransferDetailRow
+                      label={t("transfer.networkFee", {
+                        networkName: sourceChain?.chainName ?? "",
+                      })}
+                      value={
+                        <p className="text-osmoverse-100">
+                          {isNil(selectedQuote.gasCostFiat) &&
+                          isNil(selectedQuote.gasCost) ? (
+                            <Tooltip
+                              content={t("transfer.unknownFeeTooltip", {
+                                networkName: sourceChain?.chainName ?? "",
+                              })}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon
+                                  id="help-circle"
+                                  className="h-4 w-4 text-osmoverse-400"
+                                />
+                                <p className="body2 text-osmoverse-300">
+                                  {t("transfer.unknown")}
+                                </p>
+                              </div>
+                            </Tooltip>
+                          ) : (
+                            <>
+                              {selectedQuote.gasCostFiat
+                                ? selectedQuote.gasCostFiat.toString()
+                                : selectedQuote.gasCost
+                                    ?.maxDecimals(4)
+                                    .toString()}
+                              {selectedQuote.gasCostFiat &&
+                              selectedQuote.gasCost
+                                ? ` (${selectedQuote.gasCost
+                                    .maxDecimals(4)
+                                    .toString()})`
+                                : ""}
+                            </>
+                          )}
                         </p>
                       }
                       isLoading={isRefetchingQuote}
                     />
-                    {(selectedQuote.gasCostFiat || selectedQuote.gasCost) && (
+
+                    {(selectedQuote.gasCostFiat ||
+                      selectedQuote.transferFeeFiat) && (
                       <TransferDetailRow
-                        label={t("transfer.networkFee", {
-                          networkName: sourceChain?.chainName ?? "",
-                        })}
+                        label={t("transfer.totalFees")}
                         value={
-                          <p>
-                            {selectedQuote.gasCostFiat
-                              ? selectedQuote.gasCostFiat.toString()
-                              : selectedQuote.gasCost
-                                  ?.maxDecimals(4)
-                                  .toString()}
-                            {selectedQuote.gasCostFiat && selectedQuote.gasCost
-                              ? ` (${selectedQuote.gasCost
-                                  .maxDecimals(4)
-                                  .toString()})`
-                              : ""}
+                          <p className="text-osmoverse-100">
+                            {(
+                              selectedQuote?.gasCostFiat ??
+                              new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                            )
+                              .add(
+                                selectedQuote.transferFeeFiat ??
+                                  new PricePretty(
+                                    DEFAULT_VS_CURRENCY,
+                                    new Dec(0)
+                                  )
+                              )
+                              .toString()}
                           </p>
                         }
                         isLoading={isRefetchingQuote}
                       />
                     )}
-                    {selectedQuote.gasCostFiat &&
-                      selectedQuote.transferFeeFiat && (
-                        <TransferDetailRow
-                          label={t("transfer.totalFees")}
-                          value={
-                            <p>
-                              {selectedQuote.gasCostFiat
-                                .add(selectedQuote.transferFeeFiat)
-                                .toString()}
-                            </p>
-                          }
-                          isLoading={isRefetchingQuote}
-                        />
-                      )}
                     <TransferDetailRow
                       label={t("transfer.estimatedAmountReceived")}
                       value={
-                        <p>
+                        <p
+                          className={
+                            warnUserOfSlippage
+                              ? "text-rust-300"
+                              : "text-osmoverse-100"
+                          }
+                        >
                           {selectedQuote.expectedOutputFiat.toString()} (
                           {selectedQuote.expectedOutput
                             .maxDecimals(4)
@@ -1046,7 +1135,7 @@ export const AmountScreen = observer(
                       }
                       isLoading={isRefetchingQuote}
                     />
-                  </Disclosure.Panel>
+                  </DisclosurePanel>
                 </>
               )}
             </Disclosure>

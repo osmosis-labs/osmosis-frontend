@@ -107,6 +107,11 @@ export const useBridgeQuote = ({
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
     useState(false);
 
+  const onChangeBridgeProvider = useCallback((bridge: Bridge) => {
+    setSelectedBridgeProvider(bridge);
+    setBridgeProviderControlledMode(true);
+  }, []);
+
   // Input
   const [debouncedInputValue, setDebouncedInputValue] =
     useState(inputAmountRaw);
@@ -659,7 +664,7 @@ export const useBridgeQuote = ({
 
     successfulQuotes,
     selectedBridgeProvider,
-    setSelectedBridgeProvider,
+    setSelectedBridgeProvider: onChangeBridgeProvider,
 
     selectedQuote,
     isLoadingBridgeQuote,
