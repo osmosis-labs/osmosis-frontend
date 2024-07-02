@@ -1140,15 +1140,21 @@
     "tradeDetails": "વેપારની વિગતો",
     "marketOrder": {
       "title": "માર્કેટ ઓર્ડર",
-      "description": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ ખરીદો"
+      "description": {
+        "buy": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ ખરીદો",
+        "sell": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ વેચો"
+      }
     },
     "limitOrder": {
       "title": "મર્યાદા ઓર્ડર",
-      "description": "જ્યારે {denom} કિંમત ઘટે ત્યારે ખરીદો"
+      "description": {
+        "buy": "જ્યારે {denom} કિંમત ઘટે ત્યારે ખરીદો",
+        "sell": "જ્યારે {denom} કિંમત વધે ત્યારે વેચો"
+      }
     },
     "recurringOrder": {
       "title": "રિકરિંગ ઓર્ડર",
-      "description": "સમય જતાં સરેરાશ કિંમતે ખરીદો"
+      "description": "{action} સમયાંતરે સરેરાશ કિંમતે"
     },
     "aboveMarket": {
       "title": "બજાર કિંમત ઉપર મર્યાદા કિંમત",
@@ -1192,7 +1198,9 @@
     "confirm": "પુષ્ટિ કરો",
     "expectedRate": "અપેક્ષિત દર",
     "market": "બજાર",
-    "limit": "મર્યાદા"
+    "limit": "મર્યાદા",
+    "increases": "વધે છે",
+    "decreases": "ઘટે છે"
   },
   "orderHistory": {
     "orders": "ઓર્ડર",

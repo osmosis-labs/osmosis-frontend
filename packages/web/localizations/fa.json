@@ -1140,15 +1140,21 @@
     "tradeDetails": "جزئیات تجارت",
     "marketOrder": {
       "title": "سفارش بازار",
-      "description": "بلافاصله با بهترین قیمت موجود خرید کنید"
+      "description": {
+        "buy": "بلافاصله با بهترین قیمت موجود خرید کنید",
+        "sell": "فروش فوری با بهترین قیمت موجود"
+      }
     },
     "limitOrder": {
       "title": "سفارش محدود",
-      "description": "زمانی که قیمت {denom} کاهش یابد، خرید کنید"
+      "description": {
+        "buy": "زمانی که قیمت {denom} کاهش یابد، خرید کنید",
+        "sell": "فروش زمانی که قیمت {denom} افزایش می یابد"
+      }
     },
     "recurringOrder": {
       "title": "سفارش تکراری",
-      "description": "در طول زمان با قیمت متوسط خرید کنید"
+      "description": "{action} با قیمت متوسط در طول زمان"
     },
     "aboveMarket": {
       "title": "محدودیت قیمت بالاتر از قیمت بازار",
@@ -1177,7 +1183,7 @@
     "below": "زیر",
     "above": "در بالا",
     "currentPrice": "قیمت فعلی",
-    "whenDenomPriceIs": "هنگامی که قیمت {denom} است",
+    "whenDenomPriceIs": "وقتی قیمت {denom} است",
     "estimating": "تخمین زدن",
     "totalFeesWhenFilled": "مجموع هزینه ها هنگام پر شدن",
     "at": "در",
@@ -1192,7 +1198,9 @@
     "confirm": "تایید",
     "expectedRate": "نرخ مورد انتظار",
     "market": "بازار",
-    "limit": "حد"
+    "limit": "حد",
+    "increases": "افزایش",
+    "decreases": "کاهش می دهد"
   },
   "orderHistory": {
     "orders": "سفارشات",

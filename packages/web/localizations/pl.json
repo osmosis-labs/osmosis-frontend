@@ -1139,16 +1139,22 @@
     "reviewOrder": "Przegląd zamówienia",
     "tradeDetails": "Szczegóły handlu",
     "marketOrder": {
-      "title": "Zamówienie rynkowe",
-      "description": "Kup natychmiast po najlepszej dostępnej cenie"
+      "title": "Porządek rynkowy",
+      "description": {
+        "buy": "Kup natychmiast po najlepszej dostępnej cenie",
+        "sell": "Sprzedaj natychmiast po najlepszej dostępnej cenie"
+      }
     },
     "limitOrder": {
       "title": "Zamówienie z limitem",
-      "description": "Kupuj, gdy cena {denom} spadnie"
+      "description": {
+        "buy": "Kupuj, gdy cena {denom} spadnie",
+        "sell": "Sprzedawaj, gdy cena {denom} wzrośnie"
+      }
     },
     "recurringOrder": {
       "title": "Zamówienie powtarzające się",
-      "description": "Kupuj po średniej cenie na przestrzeni czasu"
+      "description": "{action} po średniej cenie w czasie"
     },
     "aboveMarket": {
       "title": "Cena graniczna powyżej ceny rynkowej",
@@ -1179,7 +1185,7 @@
     "currentPrice": "aktualna cena",
     "whenDenomPriceIs": "Gdy cena {denom} wynosi",
     "estimating": "Doceniający",
-    "totalFeesWhenFilled": "Łączne opłaty po wypełnieniu",
+    "totalFeesWhenFilled": "Suma opłat po wypełnieniu",
     "at": "Na",
     "value": "Wartość",
     "estimatedFees": "Szacunkowe opłaty",
@@ -1192,7 +1198,9 @@
     "confirm": "Potwierdzać",
     "expectedRate": "Oczekiwana stawka",
     "market": "Rynek",
-    "limit": "Limit"
+    "limit": "Limit",
+    "increases": "wzrasta",
+    "decreases": "maleje"
   },
   "orderHistory": {
     "orders": "Zamówienia",
