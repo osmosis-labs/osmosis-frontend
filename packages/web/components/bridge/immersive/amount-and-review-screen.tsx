@@ -1,6 +1,6 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { getAddress } from "viem";
@@ -159,7 +159,7 @@ export const AmountAndReviewScreen = observer(
                     quote={quote}
                     onCancel={goBack}
                     onConfirm={() => {
-                      quote.onTransfer();
+                      quote.onTransfer().catch(noop);
                     }}
                   />
                 )}

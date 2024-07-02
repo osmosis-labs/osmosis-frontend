@@ -22,6 +22,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
@@ -1099,61 +1100,15 @@ export const AmountScreen = observer(
               </span>
             </div>
           )}
+
           {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
-            <Disclosure>
-              {({ open }) => (
-                <>
-                  <DisclosureButton>
-                    <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
-                      {open ? (
-                        <p className="subtitle1">
-                          {t("transfer.transferDetails")}
-                        </p>
-                      ) : (
-                        <p className="body1 text-osmoverse-300">
-                          {selectedQuote.estimatedTime.humanize()} ETA
-                        </p>
-                      )}
-                      <ExpandDetailsControlContent
-                        warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
-                        warnUserOfSlippage={quote.warnUserOfSlippage}
-                        selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
-                        refetchInterval={quote.refetchInterval}
-                        selectedQuote={selectedQuote}
-                        open={open}
-                      />
-                    </div>
-                  </DisclosureButton>
-                  <DisclosurePanel className="flex flex-col gap-2">
-                    <BridgeProviderDropdownRow
-                      successfulQuotes={quote.successfulQuotes}
-                      setSelectedBridgeProvider={
-                        quote.setSelectedBridgeProvider
-                      }
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <EstimatedTimeRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <ProviderFeesRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <NetworkFeeRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                      fromChainName={fromChain?.chainName}
-                    />
-                    <TotalFeesRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                  </DisclosurePanel>
-                </>
-              )}
-            </Disclosure>
+            <TransferDetails
+              quote={
+                quote as BridgeQuote & {
+                  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+                }
+              }
+            />
           )}
 
           <div className="flex flex-col items-center gap-4">
@@ -1292,5 +1247,85 @@ const WalletDisplay: FunctionComponent<{
       <span>{name}</span>
       {suffix}
     </div>
+  );
+};
+
+const TransferDetails: FunctionComponent<{
+  quote: BridgeQuote & {
+    selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  };
+}> = ({ quote }) => {
+  const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
+    useMeasure<HTMLDivElement>();
+  const { t } = useTranslation();
+  const {
+    selectedQuote,
+    warnUserOfPriceImpact,
+    warnUserOfSlippage,
+    selectedQuoteUpdatedAt,
+    refetchInterval,
+    successfulQuotes,
+    setSelectedBridgeProvider,
+    isRefetchingQuote,
+  } = quote;
+
+  return (
+    <Disclosure>
+      {({ open }) => (
+        <div
+          className="flex w-full flex-col gap-3 transition-height duration-300 ease-inOutBack"
+          style={{
+            height: open
+              ? (detailsHeight + detailsOffset ?? 288) + 32 // collapsed height
+              : 28,
+          }}
+        >
+          <DisclosureButton>
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              {open ? (
+                <p className="subtitle1">{t("transfer.transferDetails")}</p>
+              ) : (
+                <p className="body1 text-osmoverse-300">
+                  {selectedQuote.estimatedTime.humanize()} ETA
+                </p>
+              )}
+              <ExpandDetailsControlContent
+                warnUserOfPriceImpact={warnUserOfPriceImpact}
+                warnUserOfSlippage={warnUserOfSlippage}
+                selectedQuoteUpdatedAt={selectedQuoteUpdatedAt}
+                refetchInterval={refetchInterval}
+                selectedQuote={selectedQuote}
+                open={open}
+              />
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-2">
+            <BridgeProviderDropdownRow
+              successfulQuotes={successfulQuotes}
+              setSelectedBridgeProvider={setSelectedBridgeProvider}
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <EstimatedTimeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <ProviderFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <NetworkFeeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              fromChainName={selectedQuote.fromChain?.chainName}
+            />
+            <TotalFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+          </DisclosurePanel>
+        </div>
+      )}
+    </Disclosure>
   );
 };
