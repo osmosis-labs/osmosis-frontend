@@ -37,11 +37,13 @@ const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
 export async function getMarketAsset<TAsset extends Asset>({
   asset,
+  extended = false,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
+  extended?: boolean;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
     cache: marketInfoCache,
@@ -55,9 +57,12 @@ export async function getMarketAsset<TAsset extends Asset>({
         getAssetMarketActivity(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
         ),
-        querySupplyTotal({ ...params, denom: asset.coinMinimalDenom }).catch(
-          (e) => captureErrorAndReturn(e, undefined)
-        ),
+        extended
+          ? querySupplyTotal({
+              ...params,
+              denom: asset.coinMinimalDenom,
+            }).catch((e) => captureErrorAndReturn(e, undefined))
+          : undefined,
       ]);
 
       return {

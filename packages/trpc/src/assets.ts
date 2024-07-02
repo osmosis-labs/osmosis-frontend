@@ -156,6 +156,7 @@ export const assetsRouter = createTRPCRouter({
       });
       const userMarketAsset = await getMarketAsset({
         ...ctx,
+        extended: true,
         asset: userAsset,
       });
 
