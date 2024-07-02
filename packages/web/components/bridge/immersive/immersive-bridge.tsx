@@ -5,7 +5,7 @@ import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { AmountAndConfirmationScreen } from "~/components/bridge/immersive/amount-and-confirmation-screen";
+import { AmountAndReviewScreen } from "~/components/bridge/immersive/amount-and-review-screen";
 import { AssetSelectScreen } from "~/components/bridge/immersive/asset-select-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
@@ -176,7 +176,7 @@ export const ImmersiveBridgeFlow = ({
                     />
                   )}
                 </Screen>
-                <AmountAndConfirmationScreen
+                <AmountAndReviewScreen
                   direction={direction}
                   onClose={onClose}
                   selectedAssetDenom={selectedAssetDenom}

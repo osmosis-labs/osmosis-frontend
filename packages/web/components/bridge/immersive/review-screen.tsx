@@ -1,105 +1,99 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { getShortAddress } from "@osmosis-labs/utils";
+import { BridgeChain } from "@osmosis-labs/bridge";
+import { getShortAddress, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import Image from "next/image";
 import { FunctionComponent, PropsWithChildren, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 
-export const ConfirmationScreen: FunctionComponent<{
+import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
+import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
+import { useBridgeQuote } from "./use-bridge-quote";
+
+type QuoteResult = ReturnType<typeof useBridgeQuote>;
+
+interface ConfirmationScreenProps {
   direction: "deposit" | "withdraw";
+
+  fromChain: BridgeChain;
+  toChain: BridgeChain;
+
+  fromAddress: string;
+  toAddress: string;
+
+  fromWalletIcon: string;
+  toWalletIcon: string;
+
+  quote: QuoteResult;
+
   onCancel: () => void;
   onConfirm: () => void;
-}> = ({ direction, onCancel, onConfirm }) => (
+}
+
+export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
+  direction,
+
+  fromChain,
+  toChain,
+
+  fromAddress,
+  toAddress,
+
+  fromWalletIcon,
+  toWalletIcon,
+
+  quote,
+
+  onCancel,
+  onConfirm,
+}) => (
   <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
     <h5>
       Confirm {direction} {direction === "withdraw" ? "from" : "to"} Osmosis
     </h5>
-    <AssetBox
-      type="from"
-      tokenImageUrl="/tokens/generated/USDC.svg"
-      chainName="Noble"
-      address="noble1ckgqk0nfqaqs32rv4akjqkcl9754ylwrkg30ht"
-      walletImageUrl="/wallets/keplr.svg"
-      value={
-        new PricePretty(
-          { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
-          40
-        )
-      }
-      coin={
-        new CoinPretty(
-          {
-            coinDenom: "USDC",
-            coinMinimalDenom: "uusdc",
-            coinDecimals: 6,
-          },
-          "40000000"
-        )
-      }
-    />
-    <TransferDetails
-      providerId="Skip"
-      providerImageUrl="/bridges/skip.svg"
-      estimatedTimeSeconds={920}
-      networkName="Ethereum"
-      networkFee={{
-        amount: new CoinPretty(
-          {
-            coinDenom: "OSMO",
-            coinMinimalDenom: "uosmo",
-            coinDecimals: 6,
-          },
-          "1000000"
-        ),
-        value: new PricePretty(
-          { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
-          0.1
-        ),
-      }}
-      transferFee={{
-        amount: new CoinPretty(
-          {
-            coinDenom: "OSMO",
-            coinMinimalDenom: "uosmo",
-            coinDecimals: 6,
-          },
-          "1000000"
-        ),
-        value: new PricePretty(
-          { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
-          0.1
-        ),
-      }}
-      alternativeProvider={[{ id: "Squid", imageUrl: "/bridges/squid.svg" }]}
-      onSelectProvider={() => {}}
-    />
-    <AssetBox
-      type="to"
-      tokenImageUrl="/tokens/generated/USDC.svg"
-      chainName="Noble"
-      address="noble1ckgqk0nfqaqs32rv4akjqkcl9754ylwrkg30ht"
-      walletImageUrl="/wallets/keplr.svg"
-      value={
-        new PricePretty(
-          { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
-          39.88
-        )
-      }
-      coin={
-        new CoinPretty(
-          {
-            coinDenom: "USDC",
-            coinMinimalDenom: "uusdc",
-            coinDecimals: 6,
-          },
-          "39880000"
-        )
-      }
-    />
+    {quote.selectedQuote && (
+      <AssetBox
+        type="from"
+        tokenImageUrl="/tokens/generated/USDC.svg"
+        chainName={fromChain.chainName ?? fromChain.chainId.toString()}
+        address={fromAddress}
+        walletImageUrl={fromWalletIcon}
+        value={
+          new PricePretty(
+            { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
+            40
+          )
+        }
+        coin={
+          new CoinPretty(
+            {
+              coinDenom: "USDC",
+              coinMinimalDenom: "uusdc",
+              coinDecimals: 6,
+            },
+            "40000000"
+          )
+        }
+      />
+    )}
+    <TransferDetails {...quote} />
+    {quote.selectedQuote && (
+      <AssetBox
+        type="to"
+        tokenImageUrl={
+          quote.selectedQuote.expectedOutput.currency.coinImageUrl ?? ""
+        }
+        chainName={toChain.chainName ?? toChain.chainId.toString()}
+        address={toAddress}
+        walletImageUrl={toWalletIcon}
+        value={quote.selectedQuote.expectedOutputFiat}
+        coin={quote.selectedQuote.expectedOutput}
+      />
+    )}
     <div className="flex w-full items-center gap-3 py-3">
       <Button className="w-full" variant="secondary" onClick={onCancel}>
         <h6>Cancel</h6>
@@ -161,35 +155,33 @@ const AssetBox: FunctionComponent<{
 );
 
 /** Assumes the first provider in the list is the selected provider. */
-const TransferDetails: FunctionComponent<{
-  // TODO: this should be a list of quotes of a single quote type
-  providerId: string;
-  providerImageUrl: string;
-  estimatedTimeSeconds: number;
-  networkName: string;
-  networkFee: {
-    amount: CoinPretty;
-    value: PricePretty;
-  };
-  transferFee: {
-    amount: CoinPretty;
-    value: PricePretty;
-  };
-  alternativeProvider: { id: string; imageUrl: string }[];
-  onSelectProvider: (providerId: string) => void;
-}> = ({
-  providerImageUrl,
-  estimatedTimeSeconds,
-  networkName,
-  networkFee,
-  transferFee,
+const TransferDetails: FunctionComponent<QuoteResult> = ({
+  selectedQuote,
+  successfulQuotes,
+  refetchInterval,
+  selectedQuoteUpdatedAt,
+
+  setSelectedBridgeProvider,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
 
-  const totalFeePrice = networkFee.value.add(transferFee.value);
-  const estTime = dayjs.duration({ seconds: estimatedTimeSeconds }).humanize();
+  if (!selectedQuote) return null;
+  const {
+    estimatedTime,
+    fromChain,
+    gasCost,
+    gasCostFiat,
+    transferFee,
+    transferFeeFiat,
+  } = selectedQuote;
+
+  let totalFeePrice = gasCostFiat;
+  if (totalFeePrice && transferFeeFiat) {
+    totalFeePrice = totalFeePrice.add(transferFeeFiat);
+  }
+  const estTime = estimatedTime.humanize();
 
   const HeaderContents = isOpen ? (
     <div className="subtitle1">Transfer details</div>
@@ -217,7 +209,16 @@ const TransferDetails: FunctionComponent<{
       >
         {HeaderContents}
         <div className="flex items-center gap-2">
-          {!isOpen && (
+          {!isNil(selectedQuoteUpdatedAt) && (
+            <BridgeQuoteRemainingTime
+              dataUpdatedAt={selectedQuoteUpdatedAt}
+              refetchInterval={refetchInterval}
+              expiredElement={
+                <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+              }
+            />
+          )}
+          {!isOpen && totalFeePrice && (
             <div className="subtitle1">{totalFeePrice.toString()} fees</div>
           )}
           <Icon
@@ -233,20 +234,11 @@ const TransferDetails: FunctionComponent<{
       </button>
       <div ref={detailsRef} className="flex flex-col gap-4">
         <DetailRow label="Provider">
-          <div className="flex items-center gap-3">
-            <Image
-              alt="provider logo"
-              src={providerImageUrl}
-              height={24}
-              width={24}
-            />
-            <Icon
-              className="text-osmoverse-300"
-              id="chevron-down"
-              height={16}
-              width={16}
-            />
-          </div>
+          <BridgeProviderDropdown
+            selectedQuote={selectedQuote}
+            quotes={successfulQuotes}
+            onSelect={setSelectedBridgeProvider}
+          />
         </DetailRow>
         <DetailRow label="Estimated time">
           <div className="flex items-center gap-1">
@@ -259,23 +251,31 @@ const TransferDetails: FunctionComponent<{
             <div className="body2 text-osmoverse-100">{estTime}</div>
           </div>
         </DetailRow>
-        <DetailRow label={`${networkName} network fee`}>
+        <DetailRow
+          label={`${fromChain.chainName ?? fromChain.chainId} network fee`}
+        >
           <div className="flex items-center gap-1">
-            <div className="body2 text-osmoverse-100">
-              {networkFee.value.trim(true).toString()}
-            </div>
-            <div className="body2 text-osmoverse-300">
-              {networkFee.amount.trim(true).toString()}
-            </div>
+            {gasCostFiat && (
+              <div className="body2 text-osmoverse-100">
+                {gasCostFiat.trim(true).toString()}
+              </div>
+            )}
+            {gasCost && (
+              <div className="body2 text-osmoverse-300">
+                ({gasCost.trim(true).toString()})
+              </div>
+            )}
           </div>
         </DetailRow>
         <DetailRow label="Provider fee">
           <div className="flex items-center gap-1">
-            <div className="body2 text-osmoverse-100">
-              {transferFee.value.trim(true).toString()}
-            </div>
+            {transferFeeFiat && (
+              <div className="body2 text-osmoverse-100">
+                {transferFeeFiat.trim(true).toString()}
+              </div>
+            )}
             <div className="body2 text-osmoverse-300">
-              {transferFee.amount.trim(true).toString()}
+              ({transferFee.trim(true).toString()})
             </div>
           </div>
         </DetailRow>

@@ -24,7 +24,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-confirmation-screen";
+import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { BridgeProviderDropdown } from "~/components/bridge/immersive/bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
@@ -74,6 +74,8 @@ interface AmountScreenProps {
   setFiatAmount: (amount: string) => void;
 
   quote: ReturnType<typeof useBridgeQuote>;
+
+  onConfirm: () => void;
 }
 
 export const AmountScreen = observer(
@@ -98,6 +100,8 @@ export const AmountScreen = observer(
     setFiatAmount,
 
     quote,
+
+    onConfirm,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
@@ -1288,6 +1292,7 @@ export const AmountScreen = observer(
                       ? "destructive"
                       : "default"
                   }
+                  onClick={onConfirm}
                 >
                   {buttonText}
                 </Button>
