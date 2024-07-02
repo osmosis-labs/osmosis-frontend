@@ -6,6 +6,7 @@ import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import {
   FunctionComponent,
   ReactNode,
@@ -155,6 +156,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
       useState(false);
+    const [sellOpen, setSellOpen] = useQueryState(
+      "sellOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
     const [showToTokenSelectModal, setToTokenSelectDropdownLocal] =
       useState(false);
     const setOneTokenSelectOpen = useCallback((dropdown: "to" | "from") => {
@@ -169,7 +175,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const closeTokenSelectModals = useCallback(() => {
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
-    }, []);
+      setSellOpen(false);
+    }, [setSellOpen]);
 
     // reivew swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
@@ -775,8 +782,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )}
         </div>
         <TokenSelectModalLimit
-          headerTitle={t("limitOrders.selectAnAssetTo.buy")}
-          isOpen={showFromTokenSelectModal}
+          headerTitle={t("limitOrders.selectAnAssetTo.sell")}
+          isOpen={showFromTokenSelectModal || sellOpen}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
           onSelect={useCallback(
@@ -796,7 +803,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           showRecommendedTokens={showTokenSelectRecommendedTokens}
         />
         <TokenSelectModalLimit
-          headerTitle={t("limitOrders.selectAnAssetTo.sell")}
+          headerTitle={t("limitOrders.selectAnAssetTo.buy")}
           isOpen={showToTokenSelectModal}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
