@@ -593,8 +593,8 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         {isPoolIncentivesLoading ? (
                           <Spinner />
                         ) : (
-                          poolIncentives?.aprBreakdown?.swapFee && (
-                            <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee
+                          poolIncentives?.aprBreakdown?.swapFee?.upper && (
+                            <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee.upper
                               .maxDecimals(2)
                               .toString()} ${t("pool.APR")}`}</h6>
                           )

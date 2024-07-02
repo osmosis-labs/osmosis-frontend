@@ -675,18 +675,27 @@ const AprBreakdownCell: PoolCellComponent = ({
       <p
         className={classNames("ml-auto flex items-center gap-1.5", {
           "text-bullish-500": Boolean(
-            aprBreakdown.boost || aprBreakdown.osmosis
+            aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper
           ),
         })}
       >
-        {aprBreakdown.boost || aprBreakdown.osmosis ? (
+        {aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper ? (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
         ) : (
           <Icon id="info" className="h-4 w-4" />
         )}
-        {aprBreakdown.total?.maxDecimals(0).toString() ?? ""}
+        {aprBreakdown?.total?.lower &&
+        aprBreakdown?.total?.upper?.maxDecimals(1).toString() ===
+          aprBreakdown?.total?.lower.maxDecimals(1).toString() ? (
+          <p>{aprBreakdown?.total?.upper?.maxDecimals(1).toString()}</p>
+        ) : (
+          <p>
+            {aprBreakdown?.total?.lower?.maxDecimals(1).toString()} -{" "}
+            {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+          </p>
+        )}
       </p>
     </Tooltip>
   )) ??
