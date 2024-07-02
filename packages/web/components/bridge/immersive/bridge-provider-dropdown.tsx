@@ -61,7 +61,10 @@ export const BridgeProviderDropdown = ({
     <Menu>
       {({ open }) => (
         <div className="relative">
-          <MenuButton className="flex items-center gap-2">
+          <MenuButton
+            className="flex items-center gap-2"
+            disabled={quotes.length <= 1}
+          >
             <Image
               src={selectedQuote.provider.logoUrl}
               alt={`${selectedQuote.provider.id} logo`}
@@ -69,17 +72,19 @@ export const BridgeProviderDropdown = ({
               height={20}
             />
             <span>{selectedQuote.provider.id}</span>{" "}
-            <Icon
-              id="chevron-down"
-              width={12}
-              height={12}
-              className={classNames(
-                "text-osmoverse-300 transition-transform duration-150",
-                {
-                  "rotate-180": open,
-                }
-              )}
-            />
+            {quotes.length > 1 && (
+              <Icon
+                id="chevron-down"
+                width={12}
+                height={12}
+                className={classNames(
+                  "text-osmoverse-300 transition-transform duration-150",
+                  {
+                    "rotate-180": open,
+                  }
+                )}
+              />
+            )}
           </MenuButton>
           <MenuItems
             anchor="bottom end"

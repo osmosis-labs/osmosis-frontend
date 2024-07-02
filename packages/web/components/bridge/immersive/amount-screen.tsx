@@ -895,151 +895,190 @@ export const AmountScreen = observer(
             </>
           )}
 
-          {!isNil(sourceAsset) &&
-            Object.keys(sourceAsset.supportedVariants).length > 1 && (
-              <Menu>
-                {({ open }) => (
-                  <div className="relative w-full">
-                    <MenuButton className="w-full">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="body1 text-osmoverse-300">
-                            {t("transfer.receiveAsset")}
-                          </span>
-                          <Tooltip
-                            content={
-                              <div>
-                                <h1 className="caption mb-1">
-                                  {t("transfer.receiveAsset")}
-                                </h1>
-                                <p className="caption text-osmoverse-300">
-                                  {t("transfer.receiveAssetDescription")}
-                                </p>
-                              </div>
-                            }
-                          >
-                            <Icon id="info" width={16} />
-                          </Tooltip>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="body1 text-white-full">
-                            {destinationAsset?.denom}
-                          </span>
-                          <Icon
-                            id="chevron-down"
-                            width={12}
-                            height={12}
-                            className={classNames(
-                              "text-osmoverse-300 transition-transform duration-150",
-                              {
-                                "rotate-180": open,
-                              }
-                            )}
-                          />
-                        </div>
+          {(direction === "deposit"
+            ? !isNil(sourceAsset) &&
+              Object.keys(sourceAsset.supportedVariants).length > 1
+            : !isNil(destinationAsset) &&
+              counterpartySupportedAssetsByChainId[destinationAsset.chainId]
+                .length > 1) && (
+            <Menu>
+              {({ open }) => (
+                <div className="relative w-full">
+                  <MenuButton className="w-full">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-osmoverse-300">
+                          {t("transfer.receiveAsset")}
+                        </span>
+                        <Tooltip
+                          content={
+                            <div>
+                              <h1 className="caption mb-1">
+                                {t("transfer.receiveAsset")}
+                              </h1>
+                              <p className="caption text-osmoverse-300">
+                                {t("transfer.receiveAssetDescription")}
+                              </p>
+                            </div>
+                          }
+                        >
+                          <Icon id="info" width={16} />
+                        </Tooltip>
                       </div>
-                    </MenuButton>
 
-                    <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
-                      {Object.keys(sourceAsset.supportedVariants).map(
-                        (variantCoinMinimalDenom, index) => {
-                          // TODO: HANDLE WITHDRAW CASE
-                          const asset = assetsInOsmosis.find(
-                            (asset) =>
-                              asset.coinMinimalDenom === variantCoinMinimalDenom
-                          )!;
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-white-full">
+                          {destinationAsset?.denom}
+                        </span>
+                        <Icon
+                          id="chevron-down"
+                          width={12}
+                          height={12}
+                          className={classNames(
+                            "text-osmoverse-300 transition-transform duration-150",
+                            {
+                              "rotate-180": open,
+                            }
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </MenuButton>
 
-                          const onClick = () => {
-                            setDestinationAsset({
-                              chainType: "cosmos",
-                              address: asset.coinMinimalDenom,
-                              decimals: asset.coinDecimals,
-                              chainId: accountStore.osmosisChainId,
-                              denom: asset.coinDenom,
-                              // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
-                              supportedVariants: {},
-                            });
-                          };
+                  <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                    {direction === "deposit" ? (
+                      <>
+                        {Object.keys(sourceAsset.supportedVariants).map(
+                          (variantCoinMinimalDenom, index) => {
+                            // TODO: HANDLE WITHDRAW CASE
+                            const asset = assetsInOsmosis.find(
+                              (asset) =>
+                                asset.coinMinimalDenom ===
+                                variantCoinMinimalDenom
+                            )!;
 
-                          // Show all as 'deposit as' for now
-                          const isConvert =
-                            false ??
-                            asset.coinMinimalDenom === asset.variantGroupKey;
-                          const isSelected =
-                            destinationAsset?.denom === asset.coinDenom;
+                            const onClick = () => {
+                              setDestinationAsset({
+                                chainType: "cosmos",
+                                address: asset.coinMinimalDenom,
+                                decimals: asset.coinDecimals,
+                                chainId: accountStore.osmosisChainId,
+                                denom: asset.coinDenom,
+                                // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
+                                supportedVariants: {},
+                              });
+                            };
 
-                          const isCanonicalAsset = index === 0;
+                            // Show all as 'deposit as' for now
+                            const isConvert =
+                              false ??
+                              asset.coinMinimalDenom === asset.variantGroupKey;
+                            const isSelected =
+                              destinationAsset?.denom === asset.coinDenom;
 
-                          return (
-                            <MenuItem key={asset.coinDenom}>
-                              <>
-                                {isCanonicalAsset ? (
-                                  <button
-                                    className={classNames(
-                                      "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
-                                    )}
-                                    onClick={onClick}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <Image
-                                        src={asset.coinImageUrl ?? "/"}
-                                        alt={`${asset.coinDenom} logo`}
-                                        width={32}
-                                        height={32}
-                                      />
-                                      <div className="flex flex-col">
-                                        <p className="body1">
-                                          {isConvert
-                                            ? t("transfer.convertTo")
-                                            : direction === "withdraw"
-                                            ? t("transfer.withdrawAs")
-                                            : t("transfer.depositAs")}{" "}
-                                          {asset.coinDenom}
-                                        </p>
-                                        <p className="body2 text-osmoverse-300">
-                                          {t("transfer.recommended")}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    {isSelected && dropdownActiveItemIcon}
-                                  </button>
-                                ) : (
-                                  <button
-                                    className={classNames(
-                                      "flex items-center gap-3 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
-                                    )}
-                                    onClick={onClick}
-                                  >
+                            const isCanonicalAsset = index === 0;
+
+                            return (
+                              <MenuItem key={asset.coinDenom}>
+                                <button
+                                  className={classNames(
+                                    "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                    isSelected && "bg-osmoverse-700",
+                                    !isSelected && "bg-osmoverse-800"
+                                  )}
+                                  onClick={onClick}
+                                >
+                                  <div className="flex items-center gap-2">
                                     <Image
                                       src={asset.coinImageUrl ?? "/"}
                                       alt={`${asset.coinDenom} logo`}
                                       width={32}
                                       height={32}
                                     />
-                                    <p className="body1">
-                                      {isConvert
-                                        ? t("transfer.convertTo")
-                                        : t("transfer.depositAs")}{" "}
-                                      {asset.coinDenom}
-                                    </p>
-                                    {isSelected && dropdownActiveItemIcon}
-                                  </button>
+                                    <div className="flex flex-col">
+                                      <p className="body1">
+                                        {isConvert
+                                          ? t("transfer.convertTo")
+                                          : t("transfer.depositAs")}{" "}
+                                        {asset.coinDenom}
+                                      </p>
+                                      {isCanonicalAsset && (
+                                        <p className="body2 text-osmoverse-300">
+                                          {t("transfer.recommended")}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {isSelected && dropdownActiveItemIcon}
+                                </button>
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {counterpartySupportedAssetsByChainId[
+                          destinationAsset.chainId
+                        ].map((asset, index) => {
+                          const onClick = () => {
+                            setDestinationAsset(asset);
+                          };
+
+                          const isSelected =
+                            destinationAsset?.denom === asset.denom;
+
+                          const isCanonicalAsset = index === 0;
+                          const representativeAsset =
+                            assetsInOsmosis.find(
+                              (a) =>
+                                a.coinMinimalDenom === asset.address ||
+                                asset.denom === a.coinDenom
+                            ) ?? assetsInOsmosis[0];
+
+                          return (
+                            <MenuItem key={asset.denom}>
+                              <button
+                                className={classNames(
+                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                  isSelected && "bg-osmoverse-700",
+                                  !isSelected &&
+                                    "data-[active]:bg-osmoverse-800"
                                 )}
-                              </>
+                                onClick={onClick}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Image
+                                    src={
+                                      representativeAsset.coinImageUrl ?? "/"
+                                    }
+                                    alt={`${asset.denom} logo`}
+                                    width={32}
+                                    height={32}
+                                  />
+                                  <div className="flex flex-col">
+                                    <p className="body1">
+                                      {t("transfer.withdrawAs")} {asset.denom}
+                                    </p>
+                                    {isCanonicalAsset && (
+                                      <p className="body2 text-osmoverse-300">
+                                        {t("transfer.recommended")}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                {isSelected && dropdownActiveItemIcon}
+                              </button>
                             </MenuItem>
                           );
-                        }
-                      )}
-                    </MenuItems>
-                  </div>
-                )}
-              </Menu>
-            )}
+                        })}
+                      </>
+                    )}
+                  </MenuItems>
+                </div>
+              )}
+            </Menu>
+          )}
 
           {isLoadingBridgeQuote && (
             <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
