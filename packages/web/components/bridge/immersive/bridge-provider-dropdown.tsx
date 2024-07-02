@@ -121,7 +121,7 @@ export const BridgeProviderDropdown = ({
                       )}
                       onClick={() => onSelect(provider.id)}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Image
                           src={provider.logoUrl}
                           alt={`${provider.id} logo`}
@@ -148,7 +148,7 @@ export const BridgeProviderDropdown = ({
                         </div>
                       </div>
 
-                      <div className="flex flex-col text-start">
+                      <div className="flex flex-col text-end">
                         <p className="body1">{expectedOutputFiat.toString()}</p>
                         <p className="body2 whitespace-nowrap text-osmoverse-200">
                           ~{totalFee} {t("transfer.fee")}

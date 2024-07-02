@@ -411,12 +411,10 @@ export const useBridgeQuotes = ({
     ]
   );
 
-  const [isApprovingToken, setIsApprovingToken] = useState(false);
-
   const isTxPending = (() => {
-    if (!toChain) return false;
-    return toChain.chainType === "cosmos"
-      ? accountStore.getWallet(toChain.chainId)?.txTypeInProgress !== ""
+    if (!fromChain) return false;
+    return fromChain.chainType === "cosmos"
+      ? accountStore.getWallet(fromChain.chainId)?.txTypeInProgress !== ""
       : isEthTxPending;
   })();
 
@@ -427,6 +425,7 @@ export const useBridgeQuotes = ({
     }
   }, [isTxPending, onRequestClose, transferInitiated]);
 
+  const [isApprovingToken, setIsApprovingToken] = useState(false);
   const handleEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
@@ -503,13 +502,13 @@ export const useBridgeQuotes = ({
   const handleCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
-    if (!toChain || toChain?.chainType !== "cosmos") {
-      throw new Error("Destination chain is not cosmos");
+    if (!fromChain || fromChain?.chainType !== "cosmos") {
+      throw new Error("Initiating chain is not cosmos");
     }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     return accountStore.signAndBroadcast(
-      toChain.chainId,
+      fromChain.chainId,
       transactionRequest.msgTypeUrl,
       [
         {
@@ -522,7 +521,7 @@ export const useBridgeQuotes = ({
       undefined,
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(toChain.chainId);
+          const queries = queriesStore.get(fromChain.chainId);
 
           // After succeeding to send token, refresh the balance.
           const queryBalance = queries.queryBalances
@@ -560,14 +559,14 @@ export const useBridgeQuotes = ({
 
     if (!transactionRequest || !quote) return;
 
-    if (transactionRequest.type === "evm") {
-      await handleEvmTx({ ...quote, transactionRequest });
-    } else if (transactionRequest.type === "cosmos") {
-      await handleCosmosTx({
-        ...quote,
-        transactionRequest,
-      });
-    }
+    const tx =
+      transactionRequest.type === "evm"
+        ? handleEvmTx({ ...quote, transactionRequest })
+        : handleCosmosTx({ ...quote, transactionRequest });
+
+    await tx.catch((e) => {
+      console.error(transactionRequest.type, "transaction failed", e);
+    });
   };
 
   const hasNoQuotes = someError?.message.includes(
@@ -662,6 +661,7 @@ export const useBridgeQuotes = ({
     refetchInterval,
 
     userCanInteract,
+    isTxPending,
     onTransfer,
 
     isApprovingToken,

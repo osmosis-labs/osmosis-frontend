@@ -138,7 +138,12 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         />
       )}
       <div className="flex w-full items-center gap-3 py-3">
-        <Button className="w-full" variant="secondary" onClick={onCancel}>
+        <Button
+          className="w-full"
+          variant="secondary"
+          onClick={onCancel}
+          disabled={quote.isTxPending}
+        >
           <h6>{t("transfer.cancel")}</h6>
         </Button>
         <Button
