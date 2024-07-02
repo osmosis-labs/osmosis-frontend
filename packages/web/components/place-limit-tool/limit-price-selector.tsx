@@ -101,7 +101,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           <div>
             <span className="body2 text-osmoverse-300">
               {t("limitOrders.whenDenomPriceIs", {
-                denom: swapState.baseDenom,
+                denom: swapState.baseAsset?.coinDenom ?? "",
               })}{" "}
             </span>
             <button
