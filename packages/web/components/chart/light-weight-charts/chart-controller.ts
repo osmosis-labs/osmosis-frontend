@@ -16,26 +16,38 @@ export interface Series {
   data: SeriesDataItemTypeMap<Time>[keyof SeriesOptionsMap][];
 }
 
-export interface ChartControllerParams<T = TimeChartOptions, K = Time> {
+export interface ChartControllerParams<
+  T = TimeChartOptions,
+  K = Time,
+  N = Series
+> {
   options: DeepPartial<T>;
-  series?: Series[];
+  series?: N[];
   container: HTMLElement;
   onCrosshairMove?: (param: MouseEventParams<K>) => void;
 }
 
-export type ChartControllerEvents<T = TimeChartOptions, K = Time> = {
+export type ChartControllerEvents<
+  T = TimeChartOptions,
+  K = Time,
+  N = Series
+> = {
   crosshairMove: (param: MouseEventParams<K>) => void;
-  init: (params: ChartControllerParams<T, K>) => void;
-  remove: (params: ChartControllerParams<T, K>) => void;
+  init: (params: ChartControllerParams<T, K, N>) => void;
+  remove: (params: ChartControllerParams<T, K, N>) => void;
 };
 
-export abstract class ChartController<T = TimeChartOptions, K = Time> {
+export abstract class ChartController<
+  T = TimeChartOptions,
+  K = Time,
+  N = Series
+> {
   protected api: IChartApi;
   protected onCrosshairMove: ((param: MouseEventParams<K>) => void) | undefined;
 
-  events = new EventEmitter<ChartControllerEvents<T, K>>();
+  events = new EventEmitter<ChartControllerEvents<T, K, N>>();
 
-  constructor(protected params: ChartControllerParams<T, K>) {
+  constructor(protected params: ChartControllerParams<T, K, N>) {
     const { options, container, onCrosshairMove } = params;
 
     this.onCrosshairMove = onCrosshairMove;
@@ -55,7 +67,7 @@ export abstract class ChartController<T = TimeChartOptions, K = Time> {
     this.events.emit("init", this.params);
   }
 
-  applyOptions(params: Partial<ChartControllerParams<T, K>>) {
+  applyOptions(params: Partial<ChartControllerParams<T, K, N>>) {
     if (params.options) {
       this.api.applyOptions(params.options);
     }

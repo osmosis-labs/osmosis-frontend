@@ -33,6 +33,26 @@ interface HistoricalVolumeChartProps {
 }
 
 const chartOptions: DeepPartial<TimeChartOptions> = {
+  rightPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+    entireTextOnly: true,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
+  },
+  leftPriceScale: {
+    autoScale: true,
+    borderVisible: false,
+    ticksVisible: false,
+    entireTextOnly: true,
+    scaleMargins: {
+      top: 0.25,
+      bottom: 0,
+    },
+  },
   crosshair: {
     horzLine: {
       visible: false,

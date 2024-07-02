@@ -109,6 +109,7 @@
     "dompurify": "^3.0.6",
     "ethers": "^6.8.0",
     "eventemitter3": "^4.0.7",
+    "fancy-canvas": "^2.1.0",
     "focus-trap-react": "^10.0.2",
     "fuse.js": "^6.5.3",
     "highcharts": "^9.1.0",
