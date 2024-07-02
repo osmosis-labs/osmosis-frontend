@@ -7,7 +7,7 @@ import { getAddress } from "viem";
 
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
+import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
 import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
@@ -73,7 +73,7 @@ export const AmountAndReviewScreen = observer(
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
 
-    const quote = useBridgeQuote({
+    const quote = useBridgeQuotes({
       toAddress,
       toChain: toChain,
       toAsset: destinationAsset

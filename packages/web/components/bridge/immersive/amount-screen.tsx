@@ -26,12 +26,9 @@ import {
 import { Icon } from "~/components/assets";
 import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
-import { BridgeProviderDropdown } from "~/components/bridge/immersive/bridge-provider-dropdown";
-import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
 import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
@@ -49,6 +46,17 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
+
+import {
+  BridgeProviderDropdownRow,
+  EstimatedTimeRow,
+  ExpandDetailsControlContent,
+  ExpectedOutputRow,
+  NetworkFeeRow,
+  ProviderFeesRow,
+  TotalFeesRow,
+} from "./quote-detail";
+import { BridgeQuotes } from "./use-bridge-quotes";
 
 type SupportedAsset = ReturnType<
   typeof useBridgesSupportedAssets
@@ -73,7 +81,7 @@ interface AmountScreenProps {
   setCryptoAmount: (amount: string) => void;
   setFiatAmount: (amount: string) => void;
 
-  quote: ReturnType<typeof useBridgeQuote>;
+  quote: BridgeQuotes;
 
   onConfirm: () => void;
 }
@@ -110,15 +118,10 @@ export const AmountScreen = observer(
 
     const {
       selectedQuote,
-      successfulQuotes,
-      setSelectedBridgeProvider,
       buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
       isLoadingBridgeTransaction,
-      isRefetchingQuote,
-      selectedQuoteUpdatedAt,
-      refetchInterval,
       isInsufficientBal,
       isInsufficientFee,
       warnUserOfPriceImpact,
@@ -1060,7 +1063,6 @@ export const AmountScreen = observer(
             <Disclosure>
               {({ open }) => (
                 <>
-                  {" "}
                   <DisclosureButton>
                     <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
                       {open ? (
@@ -1072,200 +1074,33 @@ export const AmountScreen = observer(
                           {selectedQuote.estimatedTime.humanize()} ETA
                         </p>
                       )}
-                      <div className="flex items-center gap-2">
-                        {!isNil(selectedQuoteUpdatedAt) && (
-                          <BridgeQuoteRemainingTime
-                            dataUpdatedAt={selectedQuoteUpdatedAt}
-                            refetchInterval={refetchInterval}
-                            expiredElement={
-                              <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                            }
-                          />
-                        )}
-                        <div className="flex items-center gap-2">
-                          {!open && (
-                            <span className="body1">
-                              ~
-                              {(
-                                selectedQuote.transferFeeFiat ??
-                                new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                              )
-                                ?.add(selectedQuote.gasCost ?? new Dec(0))
-                                .toString()}{" "}
-                              {t("transfer.fees")}
-                            </span>
-                          )}
-                          {(warnUserOfPriceImpact || warnUserOfSlippage) && (
-                            <Tooltip
-                              content={
-                                warnUserOfSlippage
-                                  ? t("transfer.slippageWarning")
-                                  : t("transfer.priceImpactWarning", {
-                                      priceImpact:
-                                        selectedQuote.priceImpact.toString(),
-                                    })
-                              }
-                            >
-                              <Icon
-                                id="alert-circle"
-                                className="h-6 w-6 text-rust-400"
-                              />
-                            </Tooltip>
-                          )}
-                          <Icon
-                            id="chevron-down"
-                            width={12}
-                            height={12}
-                            className={classNames(
-                              "text-osmoverse-300 transition-transform duration-150",
-                              {
-                                "rotate-180": open,
-                              }
-                            )}
-                          />
-                        </div>
-                      </div>
+                      <ExpandDetailsControlContent
+                        {...quote}
+                        selectedQuote={selectedQuote}
+                        open={open}
+                      />
                     </div>
                   </DisclosureButton>
                   <DisclosurePanel className="flex flex-col gap-2">
-                    <TransferDetailRow
-                      label={t("transfer.provider")}
-                      value={
-                        <BridgeProviderDropdown
-                          selectedQuote={selectedQuote}
-                          quotes={successfulQuotes}
-                          onSelect={(bridgeId) =>
-                            setSelectedBridgeProvider(bridgeId)
-                          }
-                        />
-                      }
-                      isLoading={isRefetchingQuote}
+                    <BridgeProviderDropdownRow
+                      {...quote}
+                      selectedQuote={selectedQuote}
                     />
-                    <TransferDetailRow
-                      label={t("transfer.estimatedTime")}
-                      value={
-                        <div className="flex items-center gap-1">
-                          <Icon
-                            id="stopwatch"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />{" "}
-                          <p className="text-osmoverse-100">
-                            {selectedQuote.estimatedTime.humanize()}
-                          </p>
-                        </div>
-                      }
-                      isLoading={isRefetchingQuote}
+                    <EstimatedTimeRow
+                      {...quote}
+                      selectedQuote={selectedQuote}
                     />
-                    <TransferDetailRow
-                      label={t("transfer.providerFees")}
-                      value={
-                        <>
-                          {selectedQuote.transferFee
-                            .toDec()
-                            .equals(new Dec(0)) ? (
-                            <p className="text-bullish-400">
-                              {t("transfer.free")}
-                            </p>
-                          ) : (
-                            <p className="text-osmoverse-100">
-                              {selectedQuote.transferFeeFiat
-                                ? `${selectedQuote.transferFeeFiat.toString()} (${selectedQuote.transferFee
-                                    .maxDecimals(4)
-                                    .toString()})`
-                                : selectedQuote.transferFee
-                                    .maxDecimals(4)
-                                    .toString()}
-                            </p>
-                          )}
-                        </>
-                      }
-                      isLoading={isRefetchingQuote}
+                    <ProviderFeesRow {...quote} selectedQuote={selectedQuote} />
+                    <NetworkFeeRow
+                      {...quote}
+                      selectedQuote={selectedQuote}
+                      fromChainName={fromChain?.chainName}
                     />
 
-                    <TransferDetailRow
-                      label={t("transfer.networkFee", {
-                        networkName: fromChain?.chainName ?? "",
-                      })}
-                      value={
-                        <p className="text-osmoverse-100">
-                          {isNil(selectedQuote.gasCostFiat) &&
-                          isNil(selectedQuote.gasCost) ? (
-                            <Tooltip
-                              content={t("transfer.unknownFeeTooltip", {
-                                networkName: fromChain?.chainName ?? "",
-                              })}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Icon
-                                  id="help-circle"
-                                  className="h-4 w-4 text-osmoverse-400"
-                                />
-                                <p className="body2 text-osmoverse-300">
-                                  {t("transfer.unknown")}
-                                </p>
-                              </div>
-                            </Tooltip>
-                          ) : (
-                            <>
-                              {selectedQuote.gasCostFiat
-                                ? selectedQuote.gasCostFiat.toString()
-                                : selectedQuote.gasCost
-                                    ?.maxDecimals(4)
-                                    .toString()}
-                              {selectedQuote.gasCostFiat &&
-                              selectedQuote.gasCost
-                                ? ` (${selectedQuote.gasCost
-                                    .maxDecimals(4)
-                                    .toString()})`
-                                : ""}
-                            </>
-                          )}
-                        </p>
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-
-                    {(selectedQuote.gasCostFiat ||
-                      selectedQuote.transferFeeFiat) && (
-                      <TransferDetailRow
-                        label={t("transfer.totalFees")}
-                        value={
-                          <p className="text-osmoverse-100">
-                            {(
-                              selectedQuote?.gasCostFiat ??
-                              new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                            )
-                              .add(
-                                selectedQuote.transferFeeFiat ??
-                                  new PricePretty(
-                                    DEFAULT_VS_CURRENCY,
-                                    new Dec(0)
-                                  )
-                              )
-                              .toString()}
-                          </p>
-                        }
-                        isLoading={isRefetchingQuote}
-                      />
-                    )}
-                    <TransferDetailRow
-                      label={t("transfer.estimatedAmountReceived")}
-                      value={
-                        <p
-                          className={
-                            warnUserOfSlippage
-                              ? "text-rust-300"
-                              : "text-osmoverse-100"
-                          }
-                        >
-                          {selectedQuote.expectedOutputFiat.toString()} (
-                          {selectedQuote.expectedOutput
-                            .maxDecimals(4)
-                            .toString()}
-                          )
-                        </p>
-                      }
-                      isLoading={isRefetchingQuote}
+                    <TotalFeesRow {...quote} selectedQuote={selectedQuote} />
+                    <ExpectedOutputRow
+                      {...quote}
+                      selectedQuote={selectedQuote}
                     />
                   </DisclosurePanel>
                 </>
@@ -1407,26 +1242,6 @@ const WalletDisplay: FunctionComponent<{
       {!isNil(icon) && <img src={icon} alt={name} className="h-6 w-6" />}
       <span>{name}</span>
       {suffix}
-    </div>
-  );
-};
-
-const TransferDetailRow: FunctionComponent<{
-  label: string;
-  value: ReactNode;
-  isLoading: boolean;
-}> = ({ label, value, isLoading }) => {
-  return (
-    <div className="body2 flex justify-between">
-      <p className="text-osmoverse-300">{label}</p>
-      <span
-        className={classNames({
-          "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress":
-            isLoading,
-        })}
-      >
-        {value}
-      </span>
     </div>
   );
 };

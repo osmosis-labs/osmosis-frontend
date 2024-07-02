@@ -1,22 +1,25 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { getShortAddress, isNil } from "@osmosis-labs/utils";
-import classNames from "classnames";
 import Image from "next/image";
-import { FunctionComponent, PropsWithChildren, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
+import { useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 import { SupportedAsset } from "./amount-and-review-screen";
-import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
-import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
-import { useBridgeQuote } from "./use-bridge-quote";
-
-type QuoteResult = ReturnType<typeof useBridgeQuote>;
+import {
+  BridgeProviderDropdownRow,
+  EstimatedTimeRow,
+  ExpandDetailsControlContent,
+  NetworkFeeRow,
+  ProviderFeesRow,
+  TotalFeesRow,
+} from "./quote-detail";
+import { BridgeQuotes } from "./use-bridge-quotes";
 
 interface ConfirmationScreenProps {
   direction: "deposit" | "withdraw";
@@ -34,7 +37,7 @@ interface ConfirmationScreenProps {
   fromWalletIcon: string;
   toWalletIcon: string;
 
-  quote: QuoteResult;
+  quote: BridgeQuotes;
 
   onCancel: () => void;
   onConfirm: () => void;
@@ -115,7 +118,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         <Button className="w-full" variant="secondary" onClick={onCancel}>
           <h6>Cancel</h6>
         </Button>
-        <Button className="w-full" onClick={onConfirm}>
+        <Button
+          className="w-full"
+          onClick={onConfirm}
+          disabled={!quote.userCanInteract}
+        >
           <h6>Confirm</h6>
         </Button>
       </div>
@@ -173,36 +180,21 @@ const AssetBox: FunctionComponent<{
 );
 
 /** Assumes the first provider in the list is the selected provider. */
-const TransferDetails: FunctionComponent<QuoteResult> = ({
-  selectedQuote,
-  successfulQuotes,
-  refetchInterval,
-  selectedQuoteUpdatedAt,
-
-  setSelectedBridgeProvider,
-}) => {
+const TransferDetails: FunctionComponent<BridgeQuotes> = (quote) => {
   const [isOpen, setIsOpen] = useState(false);
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
+  const { t } = useTranslation();
+
+  const { selectedQuote } = quote;
 
   if (!selectedQuote) return null;
-  const {
-    estimatedTime,
-    fromChain,
-    gasCost,
-    gasCostFiat,
-    transferFee,
-    transferFeeFiat,
-  } = selectedQuote;
+  const { estimatedTime, fromChain } = selectedQuote;
 
-  let totalFeePrice = gasCostFiat;
-  if (totalFeePrice && transferFeeFiat) {
-    totalFeePrice = totalFeePrice.add(transferFeeFiat);
-  }
   const estTime = estimatedTime.humanize();
 
   const HeaderContents = isOpen ? (
-    <div className="subtitle1">Transfer details</div>
+    <div className="subtitle1">{t("transfer.transferDetails")}</div>
   ) : (
     <div className="flex items-center gap-4">
       <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700">
@@ -226,88 +218,24 @@ const TransferDetails: FunctionComponent<QuoteResult> = ({
         onClick={() => setIsOpen(!isOpen)}
       >
         {HeaderContents}
-        <div className="flex items-center gap-2">
-          {!isNil(selectedQuoteUpdatedAt) && (
-            <BridgeQuoteRemainingTime
-              dataUpdatedAt={selectedQuoteUpdatedAt}
-              refetchInterval={refetchInterval}
-              expiredElement={
-                <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-              }
-            />
-          )}
-          {!isOpen && totalFeePrice && (
-            <div className="subtitle1">{totalFeePrice.toString()} fees</div>
-          )}
-          <Icon
-            className={classNames(
-              "text-osmoverse-300 transition-transform",
-              isOpen ? "rotate-180" : ""
-            )}
-            id="chevron-down"
-            height={16}
-            width={16}
-          />
-        </div>
+        <ExpandDetailsControlContent
+          {...quote}
+          selectedQuote={selectedQuote}
+          open={isOpen}
+        />
       </button>
       <div ref={detailsRef} className="flex flex-col gap-4">
-        <DetailRow label="Provider">
-          <BridgeProviderDropdown
-            selectedQuote={selectedQuote}
-            quotes={successfulQuotes}
-            onSelect={setSelectedBridgeProvider}
-          />
-        </DetailRow>
-        <DetailRow label="Estimated time">
-          <div className="flex items-center gap-1">
-            <Icon
-              className="text-osmoverse-300"
-              id="stopwatch"
-              height={16}
-              width={16}
-            />
-            <div className="body2 text-osmoverse-100">{estTime}</div>
-          </div>
-        </DetailRow>
-        <DetailRow
-          label={`${fromChain.chainName ?? fromChain.chainId} network fee`}
-        >
-          <div className="flex items-center gap-1">
-            {gasCostFiat && (
-              <div className="body2 text-osmoverse-100">
-                {gasCostFiat.trim(true).toString()}
-              </div>
-            )}
-            {gasCost && (
-              <div className="body2 text-osmoverse-300">
-                ({gasCost.trim(true).toString()})
-              </div>
-            )}
-          </div>
-        </DetailRow>
-        <DetailRow label="Provider fee">
-          <div className="flex items-center gap-1">
-            {transferFeeFiat && (
-              <div className="body2 text-osmoverse-100">
-                {transferFeeFiat.trim(true).toString()}
-              </div>
-            )}
-            <div className="body2 text-osmoverse-300">
-              ({transferFee.trim(true).toString()})
-            </div>
-          </div>
-        </DetailRow>
+        <BridgeProviderDropdownRow {...quote} selectedQuote={selectedQuote} />
+        <EstimatedTimeRow {...quote} selectedQuote={selectedQuote} />
+        <ProviderFeesRow {...quote} selectedQuote={selectedQuote} />
+        <NetworkFeeRow
+          {...quote}
+          selectedQuote={selectedQuote}
+          fromChainName={fromChain?.chainName}
+        />
+
+        <TotalFeesRow {...quote} selectedQuote={selectedQuote} />
       </div>
     </div>
   );
 };
-
-const DetailRow: FunctionComponent<PropsWithChildren<{ label: string }>> = ({
-  label,
-  children,
-}) => (
-  <div className="flex place-content-between items-center">
-    <div className="body2 text-osmoverse-300">{label}</div>
-    {children}
-  </div>
-);
