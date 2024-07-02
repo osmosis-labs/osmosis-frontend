@@ -114,12 +114,14 @@ export async function getStrategies({
     getFreshValue: async (): Promise<{
       riskReportUrl?: string;
       categories: StategyCMSCategory[];
+      platforms: StategyCMSCategory[];
       strategies: StrategyCMSData[];
     }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
           categories: StategyCMSCategory[];
+          platforms: StategyCMSCategory[];
           riskReportUrl: string;
         }>({ filePath: `cms/earn/strategies.json` });
 
@@ -172,6 +174,7 @@ export async function getStrategies({
         return {
           riskReportUrl: cmsData.riskReportUrl,
           categories: cmsData.categories,
+          platforms: cmsData.platforms,
           strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {

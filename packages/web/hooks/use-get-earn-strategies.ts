@@ -214,6 +214,7 @@ export const useGetEarnStrategies = (
 
   return {
     strategies,
+    cmsData,
     ...additionalBalanceData,
     holdenDenoms,
     areBalancesLoading,
