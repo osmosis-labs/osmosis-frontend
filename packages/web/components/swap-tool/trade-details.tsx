@@ -20,7 +20,7 @@ import {
 import { useSwap } from "~/hooks/use-swap";
 import { RecapRow } from "~/modals/review-limit-order";
 import { formatPretty } from "~/utils/formatter";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
   swapState: ReturnType<typeof useSwap>;
@@ -59,11 +59,6 @@ export const TradeDetails = ({
     () => swapState?.quote?.priceImpactTokenOut,
     [swapState?.quote?.priceImpactTokenOut]
   );
-
-  const { data: toAssetFiatValue, isLoading: isLoadingToAssetFiatValue } =
-    api.edge.assets.getAssetPrice.useQuery({
-      coinMinimalDenom: swapState?.toAsset?.coinDenom ?? "USDC",
-    });
 
   return (
     <div className="flex w-full">
@@ -184,19 +179,23 @@ export const TradeDetails = ({
               <RecapRow
                 left={`Swap fees (${swapState?.quote?.swapFee})`}
                 right={
-                  <span>
-                    <span className="text-osmoverse-100">
-                      ~
-                      {formatPretty(
-                        swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
-                      )}
-                    </span>{" "}
-                    (
-                    {formatPretty(
-                      swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
-                    )}{" "}
-                    USDC)
-                  </span>
+                  <>
+                    {swapState?.tokenInFeeAmountFiatValue && (
+                      <span>
+                        <span className="text-osmoverse-100">
+                          ~
+                          {formatPretty(
+                            swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
+                          )}
+                        </span>{" "}
+                        (
+                        {formatPretty(
+                          swapState?.tokenInFeeAmountFiatValue.toDec()
+                        )}{" "}
+                        USDC)
+                      </span>
+                    )}
+                  </>
                 }
               />
               <hr className="my-2 w-full text-osmoverse-700" />
@@ -209,8 +208,8 @@ export const TradeDetails = ({
                         {formatPretty(swapState?.quote?.amount)}
                       </span>
                     )}{" "}
-                    {!isLoadingToAssetFiatValue && (
-                      <>(~ {formatPretty(toAssetFiatValue ?? new Dec(0))})</>
+                    {swapState?.tokenOutFiatValue && (
+                      <>(~{formatPretty(swapState?.tokenOutFiatValue)})</>
                     )}
                   </span>
                 }

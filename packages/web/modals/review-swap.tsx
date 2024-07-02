@@ -163,7 +163,23 @@ export function ReviewSwapModal({
                   </span>
                 }
               />
-              <RecapRow left={t("limitOrders.receiveMin")} right={<></>} />
+              <RecapRow
+                left={t("limitOrders.receiveMin")}
+                right={
+                  <span>
+                    {swapState?.quote?.amount && (
+                      <span className="text-osmoverse-100">
+                        {formatPretty(swapState?.quote?.amount)}
+                      </span>
+                    )}{" "}
+                    {swapState.tokenOutFiatValue && (
+                      <span className="text-osmoverse-300">
+                        (~{formatPretty(swapState.tokenOutFiatValue)})
+                      </span>
+                    )}
+                  </span>
+                }
+              />
               {/* <div className="body2 flex h-8 w-full items-center justify-between">
                 <span className="text-osmoverse-300">
                   {t("limitOrders.moreDetails")}
