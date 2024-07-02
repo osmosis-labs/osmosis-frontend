@@ -4,19 +4,22 @@ import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookDenoms,
+  getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
-  getOrderbookSpotPrice,
+  getOrderbookState,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
+  HistoricalLimitOrder,
   LimitOrder,
   maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
+import { dayjs } from "@osmosis-labs/server/build/utils/dayjs";
 import { Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { OsmoAddressSchema } from "./parameter-types";
+import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   z.object({
@@ -33,7 +36,7 @@ export type OrderStatus =
 
 export type MappedLimitOrder = Omit<
   LimitOrder,
-  "quantity" | "placed_quantity"
+  "quantity" | "placed_quantity" | "placed_at"
 > & {
   quantity: number;
   placed_quantity: number;
@@ -43,19 +46,31 @@ export type MappedLimitOrder = Omit<
   orderbookAddress: string;
   price: Dec;
   status: OrderStatus;
-  output: number;
+  output: Dec;
   quoteAsset: ReturnType<typeof getAssetFromAssetList>;
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
+  placed_at: number;
 };
 
-function mapOrderStatus(order: LimitOrder): OrderStatus {
+function mapOrderStatus(order: LimitOrder, percentFilled: Dec): OrderStatus {
   const quantInt = parseInt(order.quantity);
-  const placedQuantInt = parseInt(order.placed_quantity);
-  if (quantInt === 0) return "filled";
-  if (quantInt === placedQuantInt) return "open";
-  if (quantInt < placedQuantInt) return "partiallyFilled";
+  if (quantInt === 0 || percentFilled.equals(new Dec(1))) return "filled";
+  if (percentFilled.isZero()) return "open";
+  if (percentFilled.lt(new Dec(1))) return "partiallyFilled";
 
   return "open";
+}
+
+function defaultSortOrders(
+  orderA: MappedLimitOrder,
+  orderB: MappedLimitOrder
+): number {
+  if (orderA.status === orderB.status) {
+    return orderB.placed_at - orderA.placed_at;
+  }
+  if (orderA.status === "filled") return -1;
+  if (orderB.status === "filled") return 1;
+  return orderB.placed_at - orderA.placed_at;
 }
 
 async function getTickInfoAndTransformOrders(
@@ -83,88 +98,105 @@ async function getTickInfoAndTransformOrders(
     unrealizedCancels: unrealizedTickCancels.find((c) => c.tick_id === tick_id),
   }));
 
-  return orders
-    .map((o) => {
-      const { tickState, unrealizedCancels } = fullTickState.find(
-        ({ tickId }) => tickId === o.tick_id
-      ) ?? { tickState: undefined, unrealizedCancels: undefined };
+  return orders.map((o) => {
+    const { tickState, unrealizedCancels } = fullTickState.find(
+      ({ tickId }) => tickId === o.tick_id
+    ) ?? { tickState: undefined, unrealizedCancels: undefined };
 
-      const [tokenInAsset, tokenOutAsset] =
-        o.order_direction === "bid"
-          ? [quoteAsset, baseAsset]
-          : [baseAsset, quoteAsset];
+    const quantity = parseInt(o.quantity);
+    const placedQuantity = parseInt(o.placed_quantity);
 
-      const quantityMin = parseInt(o.quantity);
-      const placedQuantityMin = parseInt(o.placed_quantity);
-      const placedQuantity =
-        placedQuantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
-      const quantity = quantityMin / 10 ** (tokenInAsset?.decimals ?? 0);
+    const percentClaimed = new Dec(
+      (placedQuantity - quantity) / placedQuantity
+    );
+    const [tickEtas, tickUnrealizedCancelled] =
+      o.order_direction === "bid"
+        ? [
+            parseInt(
+              tickState?.bid_values.effective_total_amount_swapped ?? "0"
+            ),
+            parseInt(
+              unrealizedCancels?.unrealized_cancels.bid_unrealized_cancels ??
+                "0"
+            ),
+          ]
+        : [
+            parseInt(
+              tickState?.ask_values.effective_total_amount_swapped ?? "0"
+            ),
+            parseInt(
+              unrealizedCancels?.unrealized_cancels.ask_unrealized_cancels ??
+                "0"
+            ),
+          ];
+    const tickTotalEtas = tickEtas + tickUnrealizedCancelled;
+    const totalFilled = Math.max(
+      tickTotalEtas - (parseInt(o.etas) - (placedQuantity - quantity)),
+      0
+    );
+    const percentFilled = new Dec(Math.min(totalFilled / placedQuantity, 1));
+    const price = tickToPrice(new Int(o.tick_id));
+    const status = mapOrderStatus(o, percentFilled);
+    const output =
+      o.order_direction === "bid"
+        ? new Dec(placedQuantity).quo(price)
+        : new Dec(placedQuantity).mul(price);
+    return {
+      ...o,
+      price,
+      quantity,
+      placed_quantity: placedQuantity,
+      percentClaimed,
+      totalFilled,
+      percentFilled,
+      orderbookAddress,
+      status,
+      output,
+      quoteAsset,
+      baseAsset,
+      placed_at: dayjs(parseInt(o.placed_at) / 1_000).unix(),
+    };
+  });
+}
 
-      const percentClaimed = new Dec(
-        (placedQuantityMin - quantityMin) / placedQuantityMin
-      );
-      const [tickEtas, tickCumulativeCancelled, tickUnrealizedCancelled] =
-        o.order_direction === "bid"
-          ? [
-              parseInt(
-                tickState?.bid_values.effective_total_amount_swapped ?? "0"
-              ),
-              parseInt(
-                tickState?.bid_values.cumulative_realized_cancels ?? "0"
-              ),
-              parseInt(
-                unrealizedCancels?.unrealized_cancels.bid_unrealized_cancels ??
-                  "0"
-              ),
-            ]
-          : [
-              parseInt(
-                tickState?.ask_values.effective_total_amount_swapped ?? "0"
-              ),
-              parseInt(
-                tickState?.ask_values.cumulative_realized_cancels ?? "0"
-              ),
-              parseInt(
-                unrealizedCancels?.unrealized_cancels.ask_unrealized_cancels ??
-                  "0"
-              ),
-            ];
-      const tickTotalEtas =
-        tickEtas + (tickUnrealizedCancelled - tickCumulativeCancelled);
-      const totalFilled = Math.max(
-        tickTotalEtas - (parseInt(o.etas) - (placedQuantityMin - quantityMin)),
-        0
-      );
-      const percentFilled = new Dec(totalFilled / placedQuantityMin);
-      const price = tickToPrice(new Int(o.tick_id));
-      const status = mapOrderStatus(o);
+function mapHistoricalToMapped(
+  historicalOrders: HistoricalLimitOrder[],
+  userAddress: string,
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>,
+  baseAsset: ReturnType<typeof getAssetFromAssetList>
+): MappedLimitOrder[] {
+  return historicalOrders.map((o) => {
+    const quantityMin = parseInt(o.quantity);
+    const placedQuantityMin = parseInt(o.quantity);
 
-      const outputMin =
-        o.order_direction === "bid"
-          ? new Dec(placedQuantityMin).quo(price)
-          : new Dec(placedQuantityMin).mul(price);
-      const output = parseInt(
-        outputMin
-          .quo(new Dec(10 ** (tokenOutAsset?.decimals ?? 0)))
-          .truncate()
-          .toString()
-      );
-      return {
-        ...o,
-        price,
-        quantity,
-        placed_quantity: placedQuantity,
-        percentClaimed,
-        totalFilled,
-        percentFilled,
-        orderbookAddress,
-        status,
-        output,
-        quoteAsset,
-        baseAsset,
-      };
-    })
-    .sort((a, b) => a.order_id - b.order_id);
+    const price = new Dec(o.price);
+    const percentClaimed = new Dec(1);
+    const output =
+      o.order_direction === "bid"
+        ? new Dec(placedQuantityMin).quo(price)
+        : new Dec(placedQuantityMin).mul(price);
+    return {
+      quoteAsset,
+      baseAsset,
+      etas: "0",
+      order_direction: o.order_direction,
+      order_id: parseInt(o.order_id),
+      owner: userAddress,
+      placed_at: dayjs(o.place_timestamp ?? 0).unix() * 1000,
+      placed_quantity: parseInt(o.quantity),
+      placedQuantityMin,
+      quantityMin,
+      quantity: parseInt(o.quantity),
+      price,
+      status: o.status as OrderStatus,
+      tick_id: parseInt(o.tick_id),
+      output,
+      percentClaimed,
+      percentFilled: new Dec(1),
+      totalFilled: parseInt(o.quantity),
+      orderbookAddress: o.contract,
+    };
+  });
 }
 
 export const orderbookRouter = createTRPCRouter({
@@ -239,6 +271,10 @@ export const orderbookRouter = createTRPCRouter({
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
 
+          const historicalOrders = await getOrderbookHistoricalOrders({
+            userOsmoAddress: input.userOsmoAddress,
+          });
+
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
               const resp = await getOrderbookActiveOrders({
@@ -246,8 +282,15 @@ export const orderbookRouter = createTRPCRouter({
                 userOsmoAddress: userOsmoAddress,
                 chainList: ctx.chainList,
               });
+              const historicalOrdersForContract = historicalOrders.filter(
+                (o) => o.contract === contractOsmoAddress
+              );
 
-              if (resp.orders.length === 0) return [];
+              if (
+                resp.orders.length === 0 &&
+                historicalOrdersForContract.length === 0
+              )
+                return [];
               const { base_denom } = await getOrderbookDenoms({
                 orderbookAddress: contractOsmoAddress,
                 chainList: ctx.chainList,
@@ -268,12 +311,20 @@ export const orderbookRouter = createTRPCRouter({
                 quoteAsset,
                 baseAsset
               );
-              return mappedOrders;
+
+              const mappedHistoricalOrders = mapHistoricalToMapped(
+                historicalOrdersForContract,
+                input.userOsmoAddress,
+                quoteAsset,
+                baseAsset
+              );
+
+              return [...mappedOrders, ...mappedHistoricalOrders];
             }
           );
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flatMap((p) => p);
-          return allOrders;
+          return allOrders.sort(defaultSortOrders);
         },
         cacheKey: JSON.stringify([
           "all-active-orders",
@@ -284,24 +335,74 @@ export const orderbookRouter = createTRPCRouter({
         limit: input.limit,
       });
     }),
-  getSpotPrice: publicProcedure
-    .input(
-      z
-        .object({
-          quoteAssetDenom: z.string(),
-          baseAssetDenom: z.string(),
-        })
-        .required()
-        .and(OsmoAddressSchema.required())
-    )
+  getOrderbookState: publicProcedure
+    .input(OsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
-      const { quoteAssetDenom, baseAssetDenom, osmoAddress } = input;
-      const spotPrice = await getOrderbookSpotPrice({
+      const { osmoAddress } = input;
+      const orderbookState = await getOrderbookState({
         orderbookAddress: osmoAddress,
-        quoteAssetDenom: quoteAssetDenom,
-        baseAssetDenom: baseAssetDenom,
         chainList: ctx.chainList,
       });
-      return spotPrice;
+      const askSpotPrice = tickToPrice(new Int(orderbookState.next_ask_tick));
+      const bidSpotPrice = tickToPrice(new Int(orderbookState.next_bid_tick));
+      return {
+        ...orderbookState,
+        askSpotPrice,
+        bidSpotPrice,
+      };
+    }),
+  getClaimableOrders: publicProcedure
+    .input(
+      z
+        .object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
+        .required()
+        .and(UserOsmoAddressSchema.required())
+    )
+    .query(async ({ input, ctx }) => {
+      const { contractAddresses, userOsmoAddress } = input;
+      const promises = contractAddresses.map(
+        async (contractOsmoAddress: string) => {
+          const resp = await getOrderbookActiveOrders({
+            orderbookAddress: contractOsmoAddress,
+            userOsmoAddress: userOsmoAddress,
+            chainList: ctx.chainList,
+          });
+
+          if (resp.orders.length === 0) return [];
+          const { base_denom } = await getOrderbookDenoms({
+            orderbookAddress: contractOsmoAddress,
+            chainList: ctx.chainList,
+          });
+          // TODO: Use actual quote denom here
+          const quoteAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: "uusdc",
+          });
+          const baseAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            sourceDenom: base_denom,
+          });
+          const mappedOrders = await getTickInfoAndTransformOrders(
+            contractOsmoAddress,
+            resp.orders,
+            ctx.chainList,
+            quoteAsset,
+            baseAsset
+          );
+          return mappedOrders.filter((o) => o.percentFilled.gte(new Dec(1)));
+        }
+      );
+      const ordersByContracts = await Promise.all(promises);
+      const allOrders = ordersByContracts.flatMap((p) => p);
+      return allOrders;
+    }),
+  getHistoricalOrders: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input }) => {
+      const { userOsmoAddress } = input;
+      const historicalOrders = await getOrderbookHistoricalOrders({
+        userOsmoAddress,
+      });
+      return historicalOrders;
     }),
 });

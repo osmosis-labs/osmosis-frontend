@@ -14,6 +14,7 @@ import { Spinner } from "~/components/loaders";
 import {
   DisplayableLimitOrder,
   useOrderbookAllActiveOrders,
+  useOrderbookClaimableOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
@@ -32,6 +33,10 @@ export const OrderHistory = observer(() => {
     data: orders,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+  });
+
+  const { count, claimAllOrders } = useOrderbookClaimableOrders({
+    userAddress: wallet?.address ?? "",
   });
 
   const filledOrders = useMemo(
@@ -130,7 +135,7 @@ export const OrderHistory = observer(() => {
                       <div className="flex items-center gap-2 pb-3">
                         <h6>Filled orders to claim</h6>
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                          <span className="caption">1</span>
+                          <span className="caption">{count}</span>
                         </div>
                       </div>
                       <div className="flex h-12 w-12 items-center justify-center">
@@ -142,7 +147,10 @@ export const OrderHistory = observer(() => {
                         />
                       </div>
                     </div>
-                    <button className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4">
+                    <button
+                      className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4"
+                      onClick={claimAllOrders}
+                    >
                       <span className="subtitle1">Claim all</span>
                     </button>
                   </div>

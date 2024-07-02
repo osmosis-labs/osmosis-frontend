@@ -1,3 +1,6 @@
+import { apiClient } from "@osmosis-labs/utils";
+
+import { NUMIA_BASE_URL } from "../../env";
 import { createNodeQuery } from "../create-node-query";
 
 interface OrderbookMakerFeeResponse {
@@ -29,6 +32,7 @@ export interface LimitOrder {
   etas: string;
   claim_bounty?: string;
   placed_quantity: string;
+  placed_at: string;
 }
 
 interface OrderbookActiveOrdersResponse {
@@ -111,7 +115,7 @@ export const queryOrderbookTickUnrealizedCancelsById = createNodeQuery<
 >({
   path: ({ tickIds, orderbookAddress }) => {
     const msg = JSON.stringify({
-      tick_unrealized_cancels_by_id: {
+      get_unrealized_cancels: {
         tick_ids: tickIds,
       },
     });
@@ -167,3 +171,51 @@ export const queryOrderbookDenoms = createNodeQuery<
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
 });
+
+interface OrderbookStateResponse {
+  data: {
+    quote_denom: string;
+    base_denom: string;
+    next_bid_tick: number;
+    next_ask_tick: number;
+  };
+}
+
+export const queryOrderbookState = createNodeQuery<
+  OrderbookStateResponse,
+  {
+    orderbookAddress: string;
+  }
+>({
+  path: ({ orderbookAddress }) => {
+    const msg = JSON.stringify({
+      orderbook_state: {},
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
+export interface HistoricalLimitOrder {
+  place_timestamp: string;
+  place_tx_hash: string;
+  order_denom: string;
+  output_denom: string;
+  quantity: string;
+  tick_id: string;
+  order_id: string;
+  order_direction: "ask" | "bid";
+  price: string;
+  status: string;
+  contract: string;
+}
+
+export function queryHistoricalOrders(
+  userOsmoAddress: string
+): Promise<HistoricalLimitOrder[]> {
+  const url = new URL(
+    `/users/limit_orders/history/closed?address=${userOsmoAddress}`,
+    NUMIA_BASE_URL
+  );
+  return apiClient<HistoricalLimitOrder[]>(url.toString());
+}
