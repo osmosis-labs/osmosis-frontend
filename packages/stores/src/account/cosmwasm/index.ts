@@ -114,6 +114,46 @@ export class CosmwasmAccountImpl {
       onTxEvents
     );
   }
+
+  async sendMultiExecuteContractMsg(
+    type: keyof typeof this.msgOpts | "unknown" = "executeWasm",
+    msgs: {
+      contractAddress: string;
+      msg: object;
+      funds: CoinPrimitive[];
+    }[],
+    backupFee?: Optional<StdFee, "amount">,
+    onTxEvents?:
+      | ((tx: DeliverTxResponse) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: DeliverTxResponse) => void;
+        }
+  ) {
+    const mappedMsgs = msgs.map(({ msg, funds, contractAddress }) => {
+      return this.msgOpts.executeWasm.messageComposer({
+        sender: this.address,
+        contract: contractAddress,
+        msg: Buffer.from(JSON.stringify(msg)),
+        funds,
+      });
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      type,
+      mappedMsgs,
+      "",
+      backupFee
+        ? {
+            amount: backupFee?.amount ?? [],
+            gas: backupFee.gas,
+          }
+        : undefined,
+      undefined,
+      onTxEvents
+    );
+  }
 }
 
 export * from "./types";

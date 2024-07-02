@@ -5,8 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { usePrice } from "~/hooks/queries/assets/use-price";
-import { useSwapAmountInput, useSwapAssets } from "~/hooks/use-swap";
+import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -20,6 +19,7 @@ export interface UsePlaceLimitParams {
   useOtherCurrencies?: boolean;
   baseDenom: string;
   quoteDenom: string;
+  type: "limit" | "market";
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -34,51 +34,59 @@ export const usePlaceLimit = ({
   orderDirection,
   useQueryParams = false,
   useOtherCurrencies = false,
+  type,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
+  const {
+    makerFee,
+    isMakerFeeLoading,
+    contractAddress: orderbookContractAddress,
+    poolId,
+  } = useOrderbook({
+    quoteDenom,
+    baseDenom,
+  });
+  const priceState = useLimitPrice({
+    orderbookContractAddress,
+    orderDirection,
+  });
+
+  const isMarket = useMemo(
+    () => type === "market" || priceState.isBeyondOppositePrice,
+    [type, priceState.isBeyondOppositePrice]
+  );
+
   const swapAssets = useSwapAssets({
     initialFromDenom: baseDenom,
     initialToDenom: quoteDenom,
     useQueryParams,
     useOtherCurrencies,
   });
-  const {
-    makerFee,
-    isMakerFeeLoading,
-    contractAddress: orderbookContractAddress,
-  } = useOrderbook({
-    quoteDenom,
-    baseDenom,
+
+  const marketState = useSwap({
+    initialFromDenom: orderDirection === "ask" ? baseDenom : quoteDenom,
+    initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
+    useQueryParams: false,
+    useOtherCurrencies: false,
+    forceSwapInPoolId: poolId,
+    maxSlippage: new Dec(1),
   });
+
+  const { inAmountInput } = marketState;
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const priceState = useLimitPrice({
-    orderbookContractAddress,
-    quoteAssetDenom:
-      orderDirection === "ask"
-        ? quoteAsset?.coinMinimalDenom ?? ""
-        : baseAsset?.coinMinimalDenom ?? "",
-    baseAssetDenom:
-      orderDirection === "ask"
-        ? baseAsset?.coinMinimalDenom ?? ""
-        : quoteAsset?.coinMinimalDenom ?? "",
-    orderDirection,
-  });
-  const inAmountInput = useSwapAmountInput({
-    swapAssets,
-    forceSwapInPoolId: undefined,
-    maxSlippage: undefined,
-  });
   const account = accountStore.getWallet(osmosisChainId);
 
-  const { price: baseAssetPrice } = usePrice({
-    coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
-  });
-  const { price: quoteAssetPrice } = usePrice({
-    coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
-  });
+  // TODO: Readd this once orderbooks support non-stablecoin pairs
+  // const { price: quoteAssetPrice } = usePrice({
+  //   coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
+  // });
+  const quoteAssetPrice = useMemo(
+    () => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)),
+    []
+  );
 
   /**
    * Calculates the amount of tokens to be sent with the order.
@@ -142,12 +150,15 @@ export const usePlaceLimit = ({
       return;
     }
 
+    if (isMarket) {
+      await marketState.sendTradeTokenInTx();
+      return;
+    }
+
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(
-      priceState.price.quo(quoteAssetPrice?.toDec() ?? new Dec(1))
-    );
+    const tickId = priceToTick(priceState.price.quo(quoteAssetPrice.toDec()));
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
@@ -176,8 +187,10 @@ export const usePlaceLimit = ({
     account,
     orderDirection,
     priceState,
-    quoteAssetPrice,
     paymentTokenValue,
+    isMarket,
+    marketState,
+    quoteAssetPrice,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
@@ -248,8 +261,6 @@ export const usePlaceLimit = ({
   ]);
 
   return {
-    quoteDenom,
-    baseDenom,
     baseAsset,
     quoteAsset,
     priceState,
@@ -260,36 +271,33 @@ export const usePlaceLimit = ({
     isBalancesFetched:
       !isBaseTokenBalanceLoading && !isQuoteTokenBalanceLoading,
     insufficientFunds,
-    quoteAssetPrice,
-    baseAssetPrice,
     paymentFiatValue,
     makerFee,
     isMakerFeeLoading,
     expectedTokenAmountOut,
     expectedFiatAmountOut,
+    marketState,
+    isMarket,
   };
 };
 
 const useLimitPrice = ({
   orderbookContractAddress,
-  quoteAssetDenom,
-  baseAssetDenom,
   orderDirection,
 }: {
   orderbookContractAddress: string;
-  quoteAssetDenom: string;
-  baseAssetDenom: string;
   orderDirection: OrderDirection;
 }) => {
-  // TODO: Fetch spot price from SQS
-  const { data: spotPrice, isLoading } =
-    api.edge.orderbooks.getSpotPrice.useQuery({
-      osmoAddress: orderbookContractAddress,
-      quoteAssetDenom,
-      baseAssetDenom,
-    });
+  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
+    osmoAddress: orderbookContractAddress,
+  });
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
+
+  const spotPrice = useMemo(() => {
+    if (!data) return new Dec(1);
+    return orderDirection === "ask" ? data.askSpotPrice : data.bidSpotPrice;
+  }, [orderDirection, data]);
 
   const adjustByPercentage = useCallback(
     (percentage: Dec) => {
@@ -335,6 +343,13 @@ const useLimitPrice = ({
     [isValidPrice, orderPrice, spotPrice]
   );
 
+  const isBeyondOppositePrice = useMemo(() => {
+    if (!data) return false;
+    return orderDirection === "ask"
+      ? data.bidSpotPrice.gte(price)
+      : data.askSpotPrice.lte(price);
+  }, [orderDirection, data, price]);
+
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
   }, [price]);
@@ -379,5 +394,6 @@ const useLimitPrice = ({
     reset,
     setPrice,
     isValidPrice,
+    isBeyondOppositePrice,
   };
 };
