@@ -576,11 +576,11 @@ export const useBridgeQuote = ({
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (!isEvmWalletConnected) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: evmConnector?.name ?? "Unknown",
+      walletName: evmConnector?.name ?? "EVM Wallet",
     });
   } else if (isDeposit && !isCorrectEvmChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: evmConnector?.name ?? "Unknown",
+      walletName: evmConnector?.name ?? "EVM Wallet",
     });
   } else if (Boolean(someError)) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");

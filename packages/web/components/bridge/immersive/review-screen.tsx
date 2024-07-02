@@ -9,7 +9,9 @@ import { useMeasure } from "react-use";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
+import { api } from "~/utils/trpc";
 
+import { SupportedAsset } from "./amount-and-review-screen";
 import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
 import { useBridgeQuote } from "./use-bridge-quote";
@@ -18,9 +20,13 @@ type QuoteResult = ReturnType<typeof useBridgeQuote>;
 
 interface ConfirmationScreenProps {
   direction: "deposit" | "withdraw";
+  selectedDenom: string;
 
   fromChain: BridgeChain;
   toChain: BridgeChain;
+
+  fromAsset: SupportedAsset;
+  toAsset: SupportedAsset;
 
   fromAddress: string;
   toAddress: string;
@@ -36,9 +42,13 @@ interface ConfirmationScreenProps {
 
 export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   direction,
+  selectedDenom,
 
   fromChain,
   toChain,
+
+  fromAsset,
+  toAsset,
 
   fromAddress,
   toAddress,
@@ -50,64 +60,72 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 
   onCancel,
   onConfirm,
-}) => (
-  <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
-    <h5>
-      Confirm {direction} {direction === "withdraw" ? "from" : "to"} Osmosis
-    </h5>
-    {quote.selectedQuote && (
-      <AssetBox
-        type="from"
-        tokenImageUrl="/tokens/generated/USDC.svg"
-        chainName={fromChain.chainName ?? fromChain.chainId.toString()}
-        address={fromAddress}
-        walletImageUrl={fromWalletIcon}
-        value={
-          new PricePretty(
-            { currency: "usd", locale: "en-US", maxDecimals: 2, symbol: "$" },
-            40
-          )
-        }
-        coin={
-          new CoinPretty(
-            {
-              coinDenom: "USDC",
-              coinMinimalDenom: "uusdc",
-              coinDecimals: 6,
-            },
-            "40000000"
-          )
-        }
-      />
-    )}
-    <TransferDetails {...quote} />
-    {quote.selectedQuote && (
-      <AssetBox
-        type="to"
-        tokenImageUrl={
-          quote.selectedQuote.expectedOutput.currency.coinImageUrl ?? ""
-        }
-        chainName={toChain.chainName ?? toChain.chainId.toString()}
-        address={toAddress}
-        walletImageUrl={toWalletIcon}
-        value={quote.selectedQuote.expectedOutputFiat}
-        coin={quote.selectedQuote.expectedOutput}
-      />
-    )}
-    <div className="flex w-full items-center gap-3 py-3">
-      <Button className="w-full" variant="secondary" onClick={onCancel}>
-        <h6>Cancel</h6>
-      </Button>
-      <Button className="w-full" onClick={onConfirm}>
-        <h6>Confirm</h6>
-      </Button>
+}) => {
+  const { data: assetsInOsmosis } =
+    api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+      {
+        findMinDenomOrSymbol: selectedDenom!,
+      },
+      {
+        enabled: !isNil(selectedDenom),
+        cacheTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 10 * 60 * 1000, // 10 minutes
+      }
+    );
+
+  // Find the asset variant or default to the first asset in the list for display metadata
+  const fromVariantAsset =
+    assetsInOsmosis?.find(
+      (asset) => asset.coinMinimalDenom === fromAsset.address
+    ) ?? assetsInOsmosis?.[0];
+  const toVariantAsset =
+    assetsInOsmosis?.find(
+      (asset) => asset.coinMinimalDenom === toAsset.address
+    ) ?? assetsInOsmosis?.[0];
+
+  return (
+    <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
+      <h5>
+        Confirm {direction} {direction === "withdraw" ? "from" : "to"} Osmosis
+      </h5>
+      {quote.selectedQuote && (
+        <AssetBox
+          type="from"
+          assetImageUrl={fromVariantAsset?.coinImageUrl ?? "/"}
+          chainName={fromChain.chainName ?? fromChain.chainId.toString()}
+          address={fromAddress}
+          walletImageUrl={fromWalletIcon}
+          value={quote.selectedQuote.quote.input.fiatValue}
+          coin={quote.selectedQuote.quote.input.amount}
+        />
+      )}
+      <TransferDetails {...quote} />
+      {quote.selectedQuote && (
+        <AssetBox
+          type="to"
+          assetImageUrl={toVariantAsset?.coinImageUrl ?? "/"}
+          chainName={toChain.chainName ?? toChain.chainId.toString()}
+          address={toAddress}
+          walletImageUrl={toWalletIcon}
+          value={quote.selectedQuote.expectedOutputFiat}
+          coin={quote.selectedQuote.expectedOutput}
+        />
+      )}
+      <div className="flex w-full items-center gap-3 py-3">
+        <Button className="w-full" variant="secondary" onClick={onCancel}>
+          <h6>Cancel</h6>
+        </Button>
+        <Button className="w-full" onClick={onConfirm}>
+          <h6>Confirm</h6>
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const AssetBox: FunctionComponent<{
   type: "from" | "to";
-  tokenImageUrl: string;
+  assetImageUrl: string;
   chainName: string;
   address: string;
   walletImageUrl: string;
@@ -115,7 +133,7 @@ const AssetBox: FunctionComponent<{
   coin: CoinPretty;
 }> = ({
   type,
-  tokenImageUrl,
+  assetImageUrl,
   chainName,
   address,
   walletImageUrl,
@@ -125,7 +143,7 @@ const AssetBox: FunctionComponent<{
   <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
     <div className="flex place-content-between items-center px-6 pt-4 pb-2">
       <div className="flex items-center gap-3">
-        <Image alt="token image" src={tokenImageUrl} width={48} height={48} />
+        <Image alt="token image" src={assetImageUrl} width={48} height={48} />
         <h6>
           {type === "from" ? "Transfer" : "Receive"} {coin.denom}
         </h6>

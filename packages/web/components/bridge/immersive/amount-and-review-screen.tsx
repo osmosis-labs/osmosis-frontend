@@ -146,11 +146,16 @@ export const AmountAndReviewScreen = observer(
                 fromAddress &&
                 toAddress &&
                 fromWalletIcon &&
-                toWalletIcon && (
+                toWalletIcon &&
+                sourceAsset &&
+                destinationAsset && (
                   <ReviewScreen
                     direction={direction}
+                    selectedDenom={selectedAssetDenom!}
                     fromChain={fromChain}
                     toChain={toChain}
+                    fromAsset={sourceAsset}
+                    toAsset={destinationAsset}
                     fromAddress={fromAddress}
                     toAddress={toAddress}
                     fromWalletIcon={fromWalletIcon}
