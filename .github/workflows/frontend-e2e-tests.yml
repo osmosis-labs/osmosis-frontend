@@ -10,6 +10,10 @@ jobs:
     environment:
       name: prod_swap_test
     steps:
+      - name: print gh event
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo ${{github.event}} && echo "$GITHUB_CONTEXT"
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
