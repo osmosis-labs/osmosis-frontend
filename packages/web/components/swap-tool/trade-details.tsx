@@ -203,28 +203,28 @@ export const TradeDetails = ({
                 }
               />
               <hr className="my-2 w-full text-osmoverse-700" />
-              <RecapRow
-                left="Receive (estimated)"
-                right={
-                  <span>
-                    {outAmountLessSlippage &&
-                      outFiatAmountLessSlippage &&
-                      swapState?.toAsset && (
+              {outAmountLessSlippage &&
+                outFiatAmountLessSlippage &&
+                swapState?.toAsset && (
+                  <RecapRow
+                    left="Receive (estimated)"
+                    right={
+                      <span>
                         <span className="text-osmoverse-100">
                           {formatPretty(outAmountLessSlippage, {
                             maxDecimals: 8,
                           })}{" "}
                           {swapState?.toAsset.coinDenom}
-                        </span>
-                      )}{" "}
-                    {outFiatAmountLessSlippage && (
-                      <span className="text-osmoverse-300">
-                        (~{formatPretty(outFiatAmountLessSlippage)})
+                        </span>{" "}
+                        {outFiatAmountLessSlippage && (
+                          <span className="text-osmoverse-300">
+                            (~{formatPretty(outFiatAmountLessSlippage)})
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </span>
-                }
-              />
+                    }
+                  />
+                )}
               <span className="subtitle1 py-3 text-white-full">
                 More details
               </span>
