@@ -46,6 +46,8 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     const signDoc = await this.getTransactionData(params);
 
+    console.log(signDoc);
+
     const txSimulation = await estimateGasFee({
       chainId: fromChainId,
       chainList: this.ctx.chainList,
@@ -138,7 +140,13 @@ export class IbcBridgeProvider implements BridgeProvider {
       ];
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(IbcBridgeProvider.ID, "failed to get supported assets:", e);
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          IbcBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
