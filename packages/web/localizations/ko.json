@@ -968,7 +968,8 @@
     "totalFees": "총 수수료",
     "estimatedAmountReceived": "예상 수령 금액",
     "slippageWarning": "이 거래에 대한 예상 출력은 입력 금액보다 상당히 낮으므로 예상과 다른 최종 금액을 받게 될 수 있습니다.",
-    "priceImpactWarning": "이 거래의 가격 영향은 {priceImpact} 이며, 최종 수령 금액에 영향을 미칠 수 있습니다."
+    "priceImpactWarning": "이 거래의 가격 영향은 {priceImpact} 이며, 최종 수령 금액에 영향을 미칠 수 있습니다.",
+    "connect": "연결하다"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

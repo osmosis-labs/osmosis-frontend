@@ -968,7 +968,8 @@
     "totalFees": "总费用",
     "estimatedAmountReceived": "预计收到金额",
     "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
-    "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。"
+    "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
+    "connect": "连接"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

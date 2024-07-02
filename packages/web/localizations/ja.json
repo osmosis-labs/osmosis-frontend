@@ -968,7 +968,8 @@
     "totalFees": "合計料金",
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
-    "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。"
+    "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
+    "connect": "接続する"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

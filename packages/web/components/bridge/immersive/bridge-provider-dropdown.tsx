@@ -86,18 +86,15 @@ export const BridgeProviderDropdown = ({
             className="z-[1000] mt-3 flex max-h-64 flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2"
           >
             {quotes.map(
-              (
-                {
-                  data: {
-                    provider,
-                    estimatedTime,
-                    transferFeeFiat,
-                    gasCostFiat,
-                    expectedOutputFiat,
-                  },
+              ({
+                data: {
+                  provider,
+                  estimatedTime,
+                  transferFeeFiat,
+                  gasCostFiat,
+                  expectedOutputFiat,
                 },
-                index
-              ) => {
+              }) => {
                 const totalFee = transferFeeFiat
                   ?.add(
                     gasCostFiat ??

@@ -8,10 +8,12 @@ import { Connector } from "wagmi";
 
 import { SearchBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
+import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
   useDisconnectEvmWallet,
   useEvmWalletAccount,
+  useSwitchEvmChain,
 } from "~/hooks/evm-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
@@ -71,9 +73,14 @@ export const BridgeWalletSelectScreen = ({
 
   const [search, setSearch] = useState("");
   const [isManaging, setIsManaging] = useState(false);
+  const [isSwitchingChain, setIsSwitchingChain] = useState(false);
 
-  const { connector: evmConnector, isConnected: isEvmWalletConnected } =
-    useEvmWalletAccount();
+  const {
+    connector: evmConnector,
+    isConnected: isEvmWalletConnected,
+    chainId: currentEvmChainId,
+  } = useEvmWalletAccount();
+  const { switchChainAsync } = useSwitchEvmChain();
 
   const { disconnect: disconnectEvmWallet } = useDisconnectEvmWallet();
 
@@ -117,6 +124,17 @@ export const BridgeWalletSelectScreen = ({
           status={connectingWagmiStatus}
           error={connectingWagmiError}
           onConnect={onConnectWallet}
+        />
+      </div>
+    );
+  }
+
+  if (isEvmWalletConnected && isSwitchingChain) {
+    return (
+      <div className="flex items-center justify-center pt-12">
+        <SwitchingNetworkState
+          walletLogo={evmConnector?.icon}
+          walletName={evmConnector?.name}
         />
       </div>
     );
@@ -176,7 +194,23 @@ export const BridgeWalletSelectScreen = ({
               )}
               {isEvmWalletConnected && !isNil(evmChain) && (
                 <WalletButton
-                  onClick={() => {
+                  onClick={async () => {
+                    const shouldSwitchChain =
+                      isEvmWalletConnected &&
+                      currentEvmChainId !== evmChain.chainId;
+
+                    if (shouldSwitchChain) {
+                      try {
+                        setIsSwitchingChain(true);
+                        await switchChainAsync({
+                          chainId: evmChain.chainId as EthereumChainIds,
+                        });
+                      } catch {
+                        setIsSwitchingChain(false);
+                        return;
+                      }
+                    }
+
                     onSelectChain(evmChain);
                     onClose();
                   }}

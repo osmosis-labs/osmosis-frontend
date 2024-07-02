@@ -968,7 +968,8 @@
     "totalFees": "Total des frais",
     "estimatedAmountReceived": "Montant estimé reçu",
     "slippageWarning": "Le résultat attendu pour cette transaction est nettement inférieur au montant d'entrée, ce qui peut entraîner la réception d'un montant final différent de celui attendu.",
-    "priceImpactWarning": "L'impact sur le prix de cette transaction est {priceImpact} , ce qui peut influencer le montant final reçu."
+    "priceImpactWarning": "L'impact sur le prix de cette transaction est {priceImpact} , ce qui peut influencer le montant final reçu.",
+    "connect": "Connecter"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

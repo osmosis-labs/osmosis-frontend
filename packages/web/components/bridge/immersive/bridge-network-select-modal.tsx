@@ -126,50 +126,57 @@ export const BridgeNetworkSelectModal = ({
                     size="full"
                   />
                   <div className="flex flex-col gap-1">
-                    {filteredChains.map((chain) => (
-                      <button
-                        key={chain.chainId}
-                        className="subtitle1 flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
-                        onClick={async () => {
-                          if (
-                            isEvmWalletConnected &&
-                            chain.chainType === "evm" &&
-                            currentEvmChainId !== chain.chainId
-                          ) {
-                            try {
-                              setIsSwitchingChain(true);
-                              await switchChainAsync({
-                                chainId: chain.chainId as EthereumChainIds,
+                    {filteredChains.map((chain) => {
+                      const shouldSwitchChain =
+                        isEvmWalletConnected &&
+                        chain.chainType === "evm" &&
+                        currentEvmChainId !== chain.chainId;
+                      return (
+                        <button
+                          key={chain.chainId}
+                          className="subtitle1 flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
+                          onClick={async () => {
+                            if (shouldSwitchChain) {
+                              try {
+                                setIsSwitchingChain(true);
+                                await switchChainAsync({
+                                  chainId: chain.chainId as EthereumChainIds,
+                                });
+                              } catch {
+                                setIsSwitchingChain(false);
+                                return;
+                              }
+                            }
+
+                            if (
+                              !isEvmWalletConnected &&
+                              chain.chainType === "evm"
+                            ) {
+                              setConnectingToEvmChain({
+                                chainId: Number(chain.chainId),
+                                chainType: chain.chainType,
+                                chainName: chain.prettyName,
                               });
-                            } catch {
-                              setIsSwitchingChain(false);
+                              setCurrentScreen(Screens.SelectWallet);
                               return;
                             }
-                          }
 
-                          if (
-                            !isEvmWalletConnected &&
-                            chain.chainType === "evm"
-                          ) {
-                            setConnectingToEvmChain({
-                              chainId: Number(chain.chainId),
+                            onSelectChain({
+                              chainId: chain.chainId,
                               chainType: chain.chainType,
                               chainName: chain.prettyName,
-                            });
-                            setCurrentScreen(Screens.SelectWallet);
-                            return;
-                          }
-
-                          onSelectChain({
-                            chainId: chain.chainId,
-                            chainType: chain.chainType,
-                            chainName: chain.prettyName,
-                          } as BridgeChain);
-                        }}
-                      >
-                        {chain.prettyName}
-                      </button>
-                    ))}
+                            } as BridgeChain);
+                          }}
+                        >
+                          <span>{chain.prettyName}</span>
+                          {shouldSwitchChain && (
+                            <span className="body1 text-wosmongton-300">
+                              {t("transfer.connect")}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
