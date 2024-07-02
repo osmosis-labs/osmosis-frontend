@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -114,6 +115,32 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
     }, []);
+
+    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
+      // Compute ratio of 1 - slippage
+      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+
+      // Compute out amount less slippage
+      const outAmountLessSlippage =
+        swapState.quote && swapState.toAsset
+          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+          : undefined;
+
+      // Compute out fiat amount less slippage
+      const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
+        ? new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+          )
+        : undefined;
+
+      return { outAmountLessSlippage, outFiatAmountLessSlippage };
+    }, [
+      slippageConfig.slippage,
+      swapState.quote,
+      swapState.toAsset,
+      swapState.tokenOutFiatValue,
+    ]);
 
     // reivew swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
@@ -246,6 +273,28 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
       ]
     );
+
+    const isConfirmationDisabled = useMemo(() => {
+      return (
+        isSendingTx ||
+        isWalletLoading ||
+        (account?.walletStatus === WalletStatus.Connected &&
+          (swapState.inAmountInput.isEmpty ||
+            !Boolean(swapState.quote) ||
+            isSwapToolLoading ||
+            Boolean(swapState.error) ||
+            Boolean(swapState.networkFeeError)))
+      );
+    }, [
+      account?.walletStatus,
+      isSendingTx,
+      isSwapToolLoading,
+      isWalletLoading,
+      swapState.error,
+      swapState.inAmountInput.isEmpty,
+      swapState.networkFeeError,
+      swapState.quote,
+    ]);
 
     const showTokenSelectRecommendedTokens = useMemo(
       () => isNil(forceSwapInPoolId),
@@ -443,6 +492,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             <TradeDetails
               swapState={swapState}
               slippageConfig={slippageConfig}
+              outAmountLessSlippage={outAmountLessSlippage}
+              outFiatAmountLessSlippage={outFiatAmountLessSlippage}
             />
           </div>
           {!isNil(warningText) && (
@@ -543,6 +594,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           onClose={() => setShowSwapReviewModal(false)}
           swapState={swapState}
           confirmAction={sendSwapTx}
+          isConfirmationDisabled={isConfirmationDisabled}
+          outAmountLessSlippage={outAmountLessSlippage}
+          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
         />
       </>
     );

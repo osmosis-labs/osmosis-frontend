@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { useEffect, useMemo } from "react";
@@ -25,11 +25,15 @@ import { RouterOutputs } from "~/utils/trpc";
 interface TradeDetailsProps {
   swapState: ReturnType<typeof useSwap>;
   slippageConfig: ReturnType<typeof useSlippageConfig>;
+  outAmountLessSlippage?: IntPretty;
+  outFiatAmountLessSlippage?: PricePretty;
 }
 
 export const TradeDetails = ({
   swapState,
   slippageConfig,
+  outAmountLessSlippage,
+  outFiatAmountLessSlippage,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -202,14 +206,21 @@ export const TradeDetails = ({
               <RecapRow
                 left="Receive (estimated)"
                 right={
-                  <span className="inline-flex items-center gap-1">
-                    {swapState?.quote?.amount && (
-                      <span className="text-osmoverse-100">
-                        {formatPretty(swapState?.quote?.amount)}
+                  <span>
+                    {outAmountLessSlippage &&
+                      outFiatAmountLessSlippage &&
+                      swapState?.toAsset && (
+                        <span className="text-osmoverse-100">
+                          {formatPretty(outAmountLessSlippage, {
+                            maxDecimals: 8,
+                          })}{" "}
+                          {swapState?.toAsset.coinDenom}
+                        </span>
+                      )}{" "}
+                    {outFiatAmountLessSlippage && (
+                      <span className="text-osmoverse-300">
+                        (~{formatPretty(outFiatAmountLessSlippage)})
                       </span>
-                    )}{" "}
-                    {swapState?.tokenOutFiatValue && (
-                      <>(~{formatPretty(swapState?.tokenOutFiatValue)})</>
                     )}
                   </span>
                 }

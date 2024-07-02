@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -18,6 +18,9 @@ interface ReviewSwapModalProps {
   onClose: () => void;
   swapState: ReturnType<typeof useSwap>;
   confirmAction: () => void;
+  isConfirmationDisabled: boolean;
+  outAmountLessSlippage?: IntPretty;
+  outFiatAmountLessSlippage?: PricePretty;
 }
 
 export function ReviewSwapModal({
@@ -25,6 +28,9 @@ export function ReviewSwapModal({
   onClose,
   swapState,
   confirmAction,
+  isConfirmationDisabled,
+  outAmountLessSlippage,
+  outFiatAmountLessSlippage,
 }: ReviewSwapModalProps) {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
@@ -167,14 +173,19 @@ export function ReviewSwapModal({
                 left={t("limitOrders.receiveMin")}
                 right={
                   <span>
-                    {swapState?.quote?.amount && (
-                      <span className="text-osmoverse-100">
-                        {formatPretty(swapState?.quote?.amount)}
-                      </span>
-                    )}{" "}
-                    {swapState.tokenOutFiatValue && (
+                    {outAmountLessSlippage &&
+                      outFiatAmountLessSlippage &&
+                      swapState.toAsset && (
+                        <span className="text-osmoverse-100">
+                          {formatPretty(outAmountLessSlippage, {
+                            maxDecimals: 8,
+                          })}{" "}
+                          {swapState.toAsset.coinDenom}
+                        </span>
+                      )}{" "}
+                    {outFiatAmountLessSlippage && (
                       <span className="text-osmoverse-300">
-                        (~{formatPretty(swapState.tokenOutFiatValue)})
+                        (~{formatPretty(outFiatAmountLessSlippage)})
                       </span>
                     )}
                   </span>
@@ -205,7 +216,7 @@ export function ReviewSwapModal({
                   {t("unstableAssetsWarning.buttonCancel")}
                 </h6>
               </Button>
-              <Button onClick={confirmAction}>
+              <Button onClick={confirmAction} disabled={isConfirmationDisabled}>
                 <h6>{t("limitOrders.confirm")}</h6>
               </Button>
             </div>
