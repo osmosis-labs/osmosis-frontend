@@ -8,17 +8,19 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
+import { BridgeQuote } from "~/components/bridge/immersive/use-bridge-quotes";
 import { useTranslation } from "~/hooks";
 
 interface Props {
-  selectedQuote: NonNullable<
-    ReturnType<typeof useBridgeQuote>["selectedQuote"]
-  >;
-  quotes: ReturnType<typeof useBridgeQuote>["successfulQuotes"];
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  quotes: BridgeQuote["successfulQuotes"];
   onSelect: (bridge: Bridge) => void;
 }
 
+/**
+ * Allows user to select alternative bridge provider quotes, with some basic info
+ * about the speed or cost of a quote.
+ */
 export const BridgeProviderDropdown = ({
   selectedQuote,
   quotes,

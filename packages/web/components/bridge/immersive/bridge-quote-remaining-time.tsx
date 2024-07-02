@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { Spinner } from "~/components/loaders";
+
 export const BridgeQuoteRemainingTime: FunctionComponent<{
   className?: string;
   refetchInterval: number;
-  expiredElement?: React.ReactNode;
   dataUpdatedAt: number;
-}> = ({ className, refetchInterval, expiredElement, dataUpdatedAt }) => {
+}> = ({ className, refetchInterval, dataUpdatedAt }) => {
   const [progress, setProgress] = useState(100);
 
   useEffect(() => {
@@ -30,14 +31,14 @@ export const BridgeQuoteRemainingTime: FunctionComponent<{
     return () => clearInterval(intervalId);
   }, [dataUpdatedAt, refetchInterval]);
 
-  if (progress <= 0) {
-    return expiredElement;
-  }
-
   return (
     <div className={classNames("relative h-7 w-7", className)}>
       <div className="absolute top-0 left-0 h-full w-full">
-        <RadialProgress progress={progress} />
+        {progress <= 0 ? (
+          <Spinner className="relative top-0 left-0 !h-full !w-full text-wosmongton-500" />
+        ) : (
+          <RadialProgress progress={progress} />
+        )}
       </div>
     </div>
   );

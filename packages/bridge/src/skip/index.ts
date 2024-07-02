@@ -682,9 +682,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? gasFee.denom,
-        decimals: gasAsset?.decimals ?? 0,
-        address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        denom: gasAsset?.symbol ?? params.fromAsset.denom,
+        decimals: gasAsset?.decimals ?? params.fromAsset.decimals,
+        address: gasAsset?.coinMinimalDenom ?? params.fromAsset.address,
       };
     }
   }
