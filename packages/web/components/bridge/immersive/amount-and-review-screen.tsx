@@ -100,8 +100,8 @@ export const AmountAndReviewScreen = observer(
       inputAmount: cryptoAmount,
       bridges:
         direction === "deposit"
-          ? sourceAsset?.supportedProviders
-          : destinationAsset?.supportedProviders,
+          ? sourceAsset?.supportedVariants[destinationAsset?.address ?? ""]
+          : destinationAsset?.supportedVariants[sourceAsset?.address ?? ""],
       onTransfer: () => {
         setCryptoAmount("0");
         setFiatAmount("0");
