@@ -40,12 +40,12 @@ export const useAssetInfoConfig = (
         numRecentFrames = 12;
         break;
       case "1d":
-        frame = 5;
-        numRecentFrames = 288;
+        frame = 60;
+        numRecentFrames = 25;
         break;
       case "7d":
-        frame = 120;
-        numRecentFrames = 168;
+        frame = 720;
+        numRecentFrames = 15;
         break;
       case "1mo":
         frame = 1440;
