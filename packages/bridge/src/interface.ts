@@ -42,6 +42,23 @@ export interface BridgeProvider {
   ) => Promise<BridgeTransactionRequest>;
 
   /**
+   * Requests the available source assets for a given chain and coin.
+   * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
+   * In practice, this can be used to offer a list of selectable assets for the user to choose from.
+   *
+   * In general should avoid throwing errors, but return an empty array if no source assets are available with the given input.
+   * If an unexpected error occurs, perhaps if the provider is down, then no assets will be returned to prevent the user from selecting an asset that cannot be transferred.
+   *
+   * @param params The parameters for the supported assets request.
+   * @param params.chain The chain the asset is on.
+   * @param asset.asset The asset to derive sources from.
+   * @returns A promise that resolves to an array of assets combined with each assets' chain info.
+   */
+  getSupportedAssets(
+    params: BridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeAsset)[]>;
+
+  /**
    * If the provider supports deposit address transfers:
    * Requests for a deposit address generated from the given params.
    * Sending to the deposit address automatically triggers the transfer.
@@ -52,6 +69,28 @@ export interface BridgeProvider {
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
+
+  /**
+   * Retrieves an external bridge URL for the given assets.
+   *
+   * This method generates a URL that can be used to perform a cross-chain transfer
+   * using an external bridge service. The URL is constructed based on the provided
+   * parameters, which include details about the source and destination chains, as well
+   * as the assets involved in the transfer.
+   *
+   * @param params - The parameters required to generate the external bridge URL.
+   * @param params.fromChain - The source chain from which the asset is being transferred.
+   * @param params.toChain - The destination chain to which the asset is being transferred.
+   * @param params.fromAsset - The asset being transferred from the source chain.
+   * @param params.toAsset - The asset being received on the destination chain.
+   * @param params.toAddress - The address on the destination chain to which the asset is being sent.
+   *
+   * @returns A promise that resolves to a BridgeExternalUrl object containing the URL and the provider name,
+   *          or undefined if the URL could not be generated.
+   */
+  getExternalUrl: (
+    params: GetBridgeExternalUrlParams
+  ) => Promise<BridgeExternalUrl | undefined>;
 }
 
 const cosmosChainSchema = z.object({
@@ -137,6 +176,21 @@ const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
+const bridgeSupportedAssetsSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  chain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  asset: bridgeAssetSchema,
+});
+
+export type BridgeSupportedAssetsParams = z.infer<
+  typeof bridgeSupportedAssetsSchema
+>;
+
 export interface BridgeDepositAddress {
   depositAddress: string;
 }
@@ -182,7 +236,6 @@ export const getBridgeExternalUrlSchema = z.object({
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: z.string(),
-  env: z.union([z.literal("mainnet"), z.literal("testnet")]),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<
@@ -292,6 +345,11 @@ export interface BridgeQuote {
 
   /** Sign doc. */
   transactionRequest?: BridgeTransactionRequest;
+}
+
+export interface BridgeExternalUrl {
+  urlProviderName: string;
+  url: URL;
 }
 
 // Transfer status

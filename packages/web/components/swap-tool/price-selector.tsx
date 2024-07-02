@@ -10,6 +10,7 @@ import React, { Fragment, memo, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -32,6 +33,8 @@ export const PriceSelector = memo(
     disabled,
     showQuoteBalance,
   }: PriceSelectorProps & Disableable) => {
+    const { t } = useTranslation();
+
     const [tab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
       "quote",
@@ -166,7 +169,9 @@ export const PriceSelector = memo(
                     )}
                   >
                     <span className="body2 text-osmoverse-300">
-                      {tab === "buy" ? "Pay with" : "Receive"}
+                      {tab === "buy"
+                        ? t("limitOrders.payWith")
+                        : t("limitOrders.receive")}
                     </span>
                     {quoteAsset.logoURIs && (
                       <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
@@ -196,7 +201,7 @@ export const PriceSelector = memo(
                         {formatPretty(quoteAssetWithBalance.usdValue, {
                           minimumFractionDigits: 5,
                         })}{" "}
-                        available
+                        {t("pool.available").toLowerCase()}
                       </span>
                     )}
                   <div className="flex h-6 w-6 items-center justify-center">
@@ -269,7 +274,7 @@ export const PriceSelector = memo(
                                       {formatPretty(availableBalance)}
                                     </span>
                                     <span className="body2 font-light">
-                                      available
+                                      {t("pool.available").toLowerCase()}
                                     </span>
                                   </p>
                                 )}
@@ -293,7 +298,7 @@ export const PriceSelector = memo(
                   {tab === "buy" && (
                     <button className="flex w-full items-center justify-between py-3">
                       <span className="subtitle1 font-semibold text-wosmongton-200">
-                        Add funds
+                        {t("limitOrders.addFunds")}
                       </span>
                       <div className="flex items-center gap-1">
                         <div className="relative flex items-center">
@@ -324,7 +329,7 @@ export const PriceSelector = memo(
                   )}
                   <button className="flex w-full items-center justify-between py-3">
                     <span className="subtitle1 font-semibold text-wosmongton-200">
-                      Swap from another asset
+                      {t("limitOrders.swapFromAnotherAsset")}
                     </span>
                     <div className="flex items-center gap-1">
                       <Image

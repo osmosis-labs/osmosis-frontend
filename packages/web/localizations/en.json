@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Transaction Broadcasting",
   "transactionFailed": "Transaction Failed",
   "transactionSuccessful": "Transaction Successful",
+  "transfer": {
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "fromNetwork": "From network",
+    "toNetwork": "To network",
+    "max": "Max",
+    "available": "available",
+    "transferWith": "Transfer with",
+    "transferTo": "Transfer to",
+    "receiveAsset": "Receive asset",
+    "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
+    "estimatingTime": "Estimating time",
+    "calculatingFees": "Calculating fees",
+    "reviewDeposit": "Review deposit",
+    "reviewWithdraw": "Review withdraw",
+    "moreDepositOptions": "More deposit options",
+    "moreWithdrawOptions": "More withdraw options",
+    "convertTo": "Convert to",
+    "recommended": "Recommended",
+    "moreBridgeOptions": {
+      "titleDeposit": "More deposit options",
+      "titleWithdraw": "More withdraw options",
+      "descriptionDeposit": "Choose from the following alternative providers to deposit (aka “bridge”) your {asset} to {chain}.",
+      "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
+      "depositWith": "Deposit with",
+      "withdrawWith": "Withdraw with"
+    }
+  },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
@@ -1107,7 +1135,7 @@
     "older": "Older",
     "newer": "Newer"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Review Order",
     "tradeDetails": "Trade Details",
     "marketOrder": {
@@ -1129,6 +1157,45 @@
     "belowMarket": {
       "title": "Limit price below market price",
       "description": "If you proceed, your order will be processed as a market order at market price."
-    }
+    },
+    "enterAnAmountTo": "Enter an amount to",
+    "sell": "Sell",
+    "insufficientFunds": "Insufficient Funds",
+    "addFunds": "Add Funds",
+    "watchOut": "Watch out! Whale incoming",
+    "selectAnAssetTo": {
+      "buy": "Select an asset to buy",
+      "sell": "Select an asset to sell"
+    },
+    "payWith": "Pay With",
+    "receive": "Receive",
+    "swapFromAnotherAsset": "Swap from another asset",
+    "connectYourWallet": "Connect your wallet",
+    "toSeeYourBalances": "to see your balances",
+    "searchAssets": "Search assets",
+    "marketPrice": "market price",
+    "below": "below",
+    "above": "above",
+    "currentPrice": "current price",
+    "whenDenomPriceIs": "When {denom} price is",
+    "estimating": "Estimating",
+    "totalFeesWhenFilled": "Total fees when filled",
+    "at": "at",
+    "value": "Value",
+    "estimatedFees": "Estimated fees",
+    "totalEstimatedFees": "Total Estimated Fees",
+    "receiveMin": "Receive minimum",
+    "receiveAsset": "Receive asset",
+    "orderType": "Order Type",
+    "limitPrice": "Limit Price",
+    "moreDetails": "More details",
+    "confirm": "Confirm",
+    "expectedRate": "Expected rate",
+    "market": "Market",
+    "limit": "Limit"
+  },
+  "orderHistory": {
+    "orders": "Orders",
+    "history": "History"
   }
 }

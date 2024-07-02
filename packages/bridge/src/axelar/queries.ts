@@ -124,7 +124,7 @@ interface AxelarChain {
   };
   prefix_address: string;
   prefix_chain_ids: string[];
-  chain_type: string;
+  chain_type: "evm" | "cosmos";
   provider_params: object[];
 }
 
@@ -153,7 +153,7 @@ export async function getAxelarChains({
 interface AxelarAsset {
   id: string; // ID using in general purpose
   denom: string;
-  denoms: string[];
+  denoms?: string[];
   native_chain: string; // general ID of chain that asset is native on
   name: string; // display name
   symbol: string;
@@ -162,8 +162,8 @@ interface AxelarAsset {
   coingecko_id: string; // asset identifier on coingecko service
   addresses: {
     [chain: string]: {
-      address: string; // EVM token address
-      ibc_denom: string; // Cosmos token address (denom)
+      address?: string; // EVM token address
+      ibc_denom?: string; // Cosmos token address (denom)
       symbol: string; // symbol of asset on each chain
     };
   };

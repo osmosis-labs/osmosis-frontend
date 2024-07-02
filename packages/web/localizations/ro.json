@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Transmitere tranzactie",
   "transactionFailed": "Tranzactie Esuata",
   "transactionSuccessful": "Tranzactie Finalizata",
+  "transfer": {
+    "deposit": "Depozit",
+    "withdraw": "Retrage",
+    "fromNetwork": "Din rețea",
+    "toNetwork": "La rețea",
+    "max": "Max",
+    "available": "disponibil",
+    "transferWith": "Transfer cu",
+    "transferTo": "Transfer către",
+    "receiveAsset": "Primiți activ",
+    "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "estimatingTime": "Estimarea timpului",
+    "calculatingFees": "Calcularea taxelor",
+    "reviewDeposit": "Verificați depozitul",
+    "reviewWithdraw": "Retragerea recenziei",
+    "moreDepositOptions": "Mai multe opțiuni de depunere",
+    "moreWithdrawOptions": "Mai multe opțiuni de retragere",
+    "convertTo": "Schimba in",
+    "recommended": "Recomandat",
+    "moreBridgeOptions": {
+      "titleDeposit": "Mai multe opțiuni de depunere",
+      "titleWithdraw": "Mai multe opțiuni de retragere",
+      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
+      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "depositWith": "Depozit cu",
+      "withdrawWith": "Retrage cu"
+    }
+  },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
@@ -1107,10 +1135,11 @@
     "older": "Mai batran",
     "newer": "Mai nou"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Verificați comanda",
+    "tradeDetails": "Detalii comerciale",
     "marketOrder": {
-      "title": "Ordinul pieței",
+      "title": "Ordinea pietei",
       "description": "Cumpărați imediat la cel mai bun preț disponibil"
     },
     "limitOrder": {
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "Comandă recurentă",
       "description": "Cumpărați la preț mediu în timp"
-    }
+    },
+    "aboveMarket": {
+      "title": "Preț limită peste prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "belowMarket": {
+      "title": "Preț limită sub prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "enterAnAmountTo": "Introduceți o sumă la",
+    "sell": "Vinde",
+    "insufficientFunds": "Fonduri insuficiente",
+    "addFunds": "Adăuga fonduri",
+    "watchOut": "Ai grijă! Sosește balena",
+    "selectAnAssetTo": {
+      "buy": "Selectați un activ de cumpărat",
+      "sell": "Selectați un activ pentru a vinde"
+    },
+    "payWith": "Plateste cu",
+    "receive": "A primi",
+    "swapFromAnotherAsset": "Schimbați de la un alt activ",
+    "connectYourWallet": "Conectați-vă portofelul",
+    "toSeeYourBalances": "pentru a vă vedea soldurile",
+    "searchAssets": "Căutați active",
+    "marketPrice": "pretul din magazin",
+    "below": "de mai jos",
+    "above": "de mai sus",
+    "currentPrice": "pretul curent",
+    "whenDenomPriceIs": "Când prețul {denom} este",
+    "estimating": "Estimarea",
+    "totalFeesWhenFilled": "Taxele totale când sunt completate",
+    "at": "la",
+    "value": "Valoare",
+    "estimatedFees": "Taxe estimative",
+    "totalEstimatedFees": "Taxele totale estimate",
+    "receiveMin": "Primiți minim",
+    "receiveAsset": "Primiți activ",
+    "orderType": "Tip comandă",
+    "limitPrice": "Preț limită",
+    "moreDetails": "Mai multe detalii",
+    "confirm": "A confirma",
+    "expectedRate": "Rata așteptată",
+    "market": "Piaţă",
+    "limit": "Limită"
+  },
+  "orderHistory": {
+    "orders": "Comenzi",
+    "history": "Istorie"
   }
 }

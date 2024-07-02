@@ -903,6 +903,34 @@
   "transactionBroadcasting": "广播交易中",
   "transactionFailed": "交易失败",
   "transactionSuccessful": "交易成功",
+  "transfer": {
+    "deposit": "订金",
+    "withdraw": "提取",
+    "fromNetwork": "摘自网络",
+    "toNetwork": "建立网络",
+    "max": "最大限度",
+    "available": "可用的",
+    "transferWith": "转让",
+    "transferTo": "传送到",
+    "receiveAsset": "接收资产",
+    "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
+    "estimatingTime": "估计时间",
+    "calculatingFees": "计算费用",
+    "reviewDeposit": "审核存款",
+    "reviewWithdraw": "审查撤回",
+    "moreDepositOptions": "更多存款选择",
+    "moreWithdrawOptions": "更多提款选项",
+    "convertTo": "转换成",
+    "recommended": "受到推崇的",
+    "moreBridgeOptions": {
+      "titleDeposit": "更多存款选择",
+      "titleWithdraw": "更多提款选项",
+      "descriptionDeposit": "从以下备选提供商中进行选择，将您的{asset}存入（又称“桥接”）到{chain} 。",
+      "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
+      "depositWith": "存款",
+      "withdrawWith": "提款"
+    }
+  },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
@@ -1107,8 +1135,9 @@
     "older": "较旧",
     "newer": "较新"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "查看订单",
+    "tradeDetails": "交易详情",
     "marketOrder": {
       "title": "市价订单",
       "description": "立即以最佳价格购买"
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "重复订单",
       "description": "按一段时间内的平均价格购买"
-    }
+    },
+    "aboveMarket": {
+      "title": "限制价格高于市场价格",
+      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+    },
+    "belowMarket": {
+      "title": "限制价格低于市场价格",
+      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+    },
+    "enterAnAmountTo": "输入金额",
+    "sell": "卖",
+    "insufficientFunds": "不充足的资金",
+    "addFunds": "增加资金",
+    "watchOut": "小心！鲸鱼来了",
+    "selectAnAssetTo": {
+      "buy": "选择要购买的资产",
+      "sell": "选择要出售的资产"
+    },
+    "payWith": "使用。。。支付",
+    "receive": "收到",
+    "swapFromAnotherAsset": "从另一项资产交换",
+    "connectYourWallet": "连接你的钱包",
+    "toSeeYourBalances": "查看你的余额",
+    "searchAssets": "搜索资产",
+    "marketPrice": "市场价",
+    "below": "以下",
+    "above": "多于",
+    "currentPrice": "时价",
+    "whenDenomPriceIs": "当{denom}价格为",
+    "estimating": "估算",
+    "totalFeesWhenFilled": "填满时的总费用",
+    "at": "在",
+    "value": "价值",
+    "estimatedFees": "预估费用",
+    "totalEstimatedFees": "预计费用总额",
+    "receiveMin": "接收最低",
+    "receiveAsset": "接收资产",
+    "orderType": "订单类型",
+    "limitPrice": "限价",
+    "moreDetails": "更多细节",
+    "confirm": "确认",
+    "expectedRate": "预期利率",
+    "market": "市场",
+    "limit": "限制"
+  },
+  "orderHistory": {
+    "orders": "命令",
+    "history": "历史"
   }
 }

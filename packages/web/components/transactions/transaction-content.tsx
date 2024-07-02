@@ -94,13 +94,7 @@ export const TransactionContent = ({
                     "text-osmoverse-500": defaultTab !== tab,
                   })}
                 >
-                  {/**
-                   * TEMP
-                   *
-                   * We will use i18n keys here
-                   */}
-                  {defaultTab.slice(0, 1).toUpperCase()}
-                  {defaultTab.slice(1)}
+                  {t(`orderHistory.${defaultTab}`)}
                 </h5>
               </Tab>
             ))}

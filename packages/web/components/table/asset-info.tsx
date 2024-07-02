@@ -467,7 +467,6 @@ export const AssetsInfoTable: FunctionComponent<{
         <HighlightsCategories
           className="lg:-mx-4 lg:px-4"
           isCategorySelected={!!selectedCategory}
-          onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>

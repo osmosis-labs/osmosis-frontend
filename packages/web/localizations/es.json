@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Ejecutando transacción",
   "transactionFailed": "Transacción fallida",
   "transactionSuccessful": "Transacción exitosa",
+  "transfer": {
+    "deposit": "Depósito",
+    "withdraw": "Retirar",
+    "fromNetwork": "De la red",
+    "toNetwork": "A la red",
+    "max": "máx.",
+    "available": "disponible",
+    "transferWith": "Transferir con",
+    "transferTo": "Transferir a",
+    "receiveAsset": "Recibir activo",
+    "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
+    "estimatingTime": "tiempo estimado",
+    "calculatingFees": "Calcular tarifas",
+    "reviewDeposit": "Revisar depósito",
+    "reviewWithdraw": "Revisar retirar",
+    "moreDepositOptions": "Más opciones de depósito",
+    "moreWithdrawOptions": "Más opciones de retiro",
+    "convertTo": "Convertir a",
+    "recommended": "Recomendado",
+    "moreBridgeOptions": {
+      "titleDeposit": "Más opciones de depósito",
+      "titleWithdraw": "Más opciones de retiro",
+      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
+      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
+      "depositWith": "Depositar con",
+      "withdrawWith": "Retirarse con"
+    }
+  },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
@@ -1107,8 +1135,9 @@
     "older": "Más viejo",
     "newer": "Más nuevo"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Revisar orden",
+    "tradeDetails": "Detalles comerciales",
     "marketOrder": {
       "title": "Orden de mercado",
       "description": "Compre inmediatamente al mejor precio disponible"
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "Orden recurrente",
       "description": "Compre a precio promedio a lo largo del tiempo"
-    }
+    },
+    "aboveMarket": {
+      "title": "Precio límite por encima del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "belowMarket": {
+      "title": "Precio límite por debajo del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "enterAnAmountTo": "Introduzca una cantidad a",
+    "sell": "Vender",
+    "insufficientFunds": "Fondos insuficientes",
+    "addFunds": "Añadir fondos",
+    "watchOut": "¡Cuidado! ballena entrante",
+    "selectAnAssetTo": {
+      "buy": "Seleccione un activo para comprar",
+      "sell": "Seleccione un activo para vender"
+    },
+    "payWith": "Pagar con",
+    "receive": "Recibir",
+    "swapFromAnotherAsset": "Intercambiar desde otro activo",
+    "connectYourWallet": "Conecta tu billetera",
+    "toSeeYourBalances": "para ver tus saldos",
+    "searchAssets": "Buscar activos",
+    "marketPrice": "precio de mercado",
+    "below": "abajo",
+    "above": "arriba",
+    "currentPrice": "precio actual",
+    "whenDenomPriceIs": "Cuando el precio {denom} es",
+    "estimating": "Estimando",
+    "totalFeesWhenFilled": "Tarifas totales cuando se llenan",
+    "at": "en",
+    "value": "Valor",
+    "estimatedFees": "Tarifas estimadas",
+    "totalEstimatedFees": "Tarifas totales estimadas",
+    "receiveMin": "Recibir mínimo",
+    "receiveAsset": "Recibir activo",
+    "orderType": "Tipo de orden",
+    "limitPrice": "Precio límite",
+    "moreDetails": "Más detalles",
+    "confirm": "Confirmar",
+    "expectedRate": "Expectativa salarial",
+    "market": "Mercado",
+    "limit": "Límite"
+  },
+  "orderHistory": {
+    "orders": "Pedidos",
+    "history": "Historia"
   }
 }

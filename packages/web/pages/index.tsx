@@ -26,7 +26,7 @@ export type PreviousTrade = {
 const Home = () => {
   const featureFlags = useFeatureFlags();
   if (!featureFlags._isInitialized) return null;
-  return featureFlags.limitOrders ? <HomeNew /> : <HomeV1 />;
+  return !featureFlags.limitOrders ? <HomeNew /> : <HomeV1 />;
 };
 
 const HomeNew = () => {
@@ -105,6 +105,14 @@ const HomeV1 = () => {
               y="220"
               width="578.7462"
               height="725.6817"
+            />
+            <ProgressiveSvgImage
+              lowResXlinkHref={"/images/bitcoin-props-low.png"}
+              xlinkHref={"/images/bitcoin-props.png"}
+              x={"61"}
+              y={"600"}
+              width={"448.8865"}
+              height={"285.1699"}
             />
           </g>
         </svg>

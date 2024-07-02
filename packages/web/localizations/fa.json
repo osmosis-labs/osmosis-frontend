@@ -903,6 +903,34 @@
   "transactionBroadcasting": "در حال ارسال تراکنش",
   "transactionFailed": "تراکنش با موفقیت انجام نشد",
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
+  "transfer": {
+    "deposit": "سپرده",
+    "withdraw": "کنار کشیدن",
+    "fromNetwork": "از شبکه",
+    "toNetwork": "به شبکه",
+    "max": "حداکثر",
+    "available": "در دسترس",
+    "transferWith": "انتقال با",
+    "transferTo": "انتقال به",
+    "receiveAsset": "دریافت دارایی",
+    "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
+    "estimatingTime": "تخمین زمان",
+    "calculatingFees": "محاسبه هزینه ها",
+    "reviewDeposit": "بررسی سپرده",
+    "reviewWithdraw": "بازبینی برداشت",
+    "moreDepositOptions": "گزینه های سپرده بیشتر",
+    "moreWithdrawOptions": "گزینه های برداشت بیشتر",
+    "convertTo": "تبدیل به",
+    "recommended": "توصیه شده",
+    "moreBridgeOptions": {
+      "titleDeposit": "گزینه های سپرده بیشتر",
+      "titleWithdraw": "گزینه های برداشت بیشتر",
+      "descriptionDeposit": "از میان ارائه دهندگان جایگزین زیر برای واریز (معروف به \"پل\") {asset} خود را به {chain} .",
+      "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
+      "depositWith": "سپرده گذاری با",
+      "withdrawWith": "برداشت با"
+    }
+  },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
@@ -1107,8 +1135,9 @@
     "older": "مسن تر",
     "newer": "جدیدتر"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "سفارش بررسی",
+    "tradeDetails": "جزئیات تجارت",
     "marketOrder": {
       "title": "سفارش بازار",
       "description": "بلافاصله با بهترین قیمت موجود خرید کنید"
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "سفارش تکراری",
       "description": "در طول زمان با قیمت متوسط خرید کنید"
-    }
+    },
+    "aboveMarket": {
+      "title": "محدودیت قیمت بالاتر از قیمت بازار",
+      "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
+    },
+    "belowMarket": {
+      "title": "محدود کردن قیمت زیر قیمت بازار",
+      "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
+    },
+    "enterAnAmountTo": "مقداری را وارد کنید",
+    "sell": "فروش",
+    "insufficientFunds": "بودجه ناکافی",
+    "addFunds": "اضافه کردن وجوه",
+    "watchOut": "مواظب باش! نهنگ ورودی",
+    "selectAnAssetTo": {
+      "buy": "دارایی را برای خرید انتخاب کنید",
+      "sell": "دارایی را برای فروش انتخاب کنید"
+    },
+    "payWith": "پرداخت با",
+    "receive": "دريافت كردن",
+    "swapFromAnotherAsset": "تعویض از دارایی دیگر",
+    "connectYourWallet": "کیف پول خود را وصل کنید",
+    "toSeeYourBalances": "برای دیدن موجودی خود",
+    "searchAssets": "جستجوی دارایی ها",
+    "marketPrice": "قیمت بازار",
+    "below": "زیر",
+    "above": "در بالا",
+    "currentPrice": "قیمت فعلی",
+    "whenDenomPriceIs": "هنگامی که قیمت {denom} است",
+    "estimating": "تخمین زدن",
+    "totalFeesWhenFilled": "مجموع هزینه ها هنگام پر شدن",
+    "at": "در",
+    "value": "ارزش",
+    "estimatedFees": "هزینه های تخمینی",
+    "totalEstimatedFees": "مجموع هزینه های تخمینی",
+    "receiveMin": "حداقل دریافت کنید",
+    "receiveAsset": "دریافت دارایی",
+    "orderType": "نوع سفارش",
+    "limitPrice": "قیمت محدود",
+    "moreDetails": "جزئیات بیشتر",
+    "confirm": "تایید",
+    "expectedRate": "نرخ مورد انتظار",
+    "market": "بازار",
+    "limit": "حد"
+  },
+  "orderHistory": {
+    "orders": "سفارشات",
+    "history": "تاریخ"
   }
 }

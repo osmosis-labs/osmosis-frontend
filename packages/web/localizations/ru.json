@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Трансляция транзакций",
   "transactionFailed": "Транзакция не удалась",
   "transactionSuccessful": "Транзакция успешна",
+  "transfer": {
+    "deposit": "Депозит",
+    "withdraw": "Отзывать",
+    "fromNetwork": "Из сети",
+    "toNetwork": "В сеть",
+    "max": "Макс",
+    "available": "доступный",
+    "transferWith": "Трансфер с",
+    "transferTo": "Перевести",
+    "receiveAsset": "Получить актив",
+    "receiveAssetDescription": "Когда вы вносите определенные активы, вы можете выбрать, какую версию актива вы хотите получить на Osmosis.",
+    "estimatingTime": "Оценка времени",
+    "calculatingFees": "Расчет комиссий",
+    "reviewDeposit": "Проверка депозита",
+    "reviewWithdraw": "Отзыв отзыва",
+    "moreDepositOptions": "Больше вариантов депозита",
+    "moreWithdrawOptions": "Больше вариантов вывода",
+    "convertTo": "Перевести в",
+    "recommended": "рекомендуемые",
+    "moreBridgeOptions": {
+      "titleDeposit": "Больше вариантов депозита",
+      "titleWithdraw": "Больше вариантов вывода",
+      "descriptionDeposit": "Выберите одного из следующих альтернативных поставщиков для внесения (так называемого «моста») вашего {asset} в {chain} .",
+      "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
+      "depositWith": "Депозит с",
+      "withdrawWith": "Вывод средств с помощью"
+    }
+  },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",
   "waitingForTransaction": "Ожидание включения транзакции в блок",
@@ -1107,19 +1135,67 @@
     "older": "Старшая",
     "newer": "Новее"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Просмотреть заказ",
+    "tradeDetails": "Детали торговли",
     "marketOrder": {
       "title": "Рыночный ордер",
       "description": "Купите немедленно по лучшей доступной цене"
     },
     "limitOrder": {
       "title": "Лимитный ордер",
-      "description": "Покупайте, когда цена {denom} снижается"
+      "description": "Покупайте, когда цена {denom} снижается."
     },
     "recurringOrder": {
       "title": "Повторяющийся заказ",
       "description": "Покупайте по средней цене с течением времени"
-    }
+    },
+    "aboveMarket": {
+      "title": "Лимитная цена выше рыночной цены",
+      "description": "Если вы продолжите, ваш заказ будет обработан как рыночный ордер по рыночной цене."
+    },
+    "belowMarket": {
+      "title": "Лимитная цена ниже рыночной цены",
+      "description": "Если вы продолжите, ваш заказ будет обработан как рыночный ордер по рыночной цене."
+    },
+    "enterAnAmountTo": "Введите сумму для",
+    "sell": "Продавать",
+    "insufficientFunds": "Недостаточно средств",
+    "addFunds": "Добавить средства",
+    "watchOut": "Осторожно! Кит приближается",
+    "selectAnAssetTo": {
+      "buy": "Выберите актив для покупки",
+      "sell": "Выберите актив для продажи"
+    },
+    "payWith": "Оплатить с",
+    "receive": "Получать",
+    "swapFromAnotherAsset": "Обмен с другого актива",
+    "connectYourWallet": "Подключите свой кошелек",
+    "toSeeYourBalances": "чтобы увидеть свой баланс",
+    "searchAssets": "Поиск активов",
+    "marketPrice": "рыночная цена",
+    "below": "ниже",
+    "above": "выше",
+    "currentPrice": "текущая цена",
+    "whenDenomPriceIs": "Когда цена {denom} равна",
+    "estimating": "Оценка",
+    "totalFeesWhenFilled": "Общая сумма сборов при заполнении",
+    "at": "в",
+    "value": "Ценить",
+    "estimatedFees": "Ориентировочные сборы",
+    "totalEstimatedFees": "Общая ориентировочная стоимость",
+    "receiveMin": "Получите минимум",
+    "receiveAsset": "Получить актив",
+    "orderType": "Тип заказа",
+    "limitPrice": "Лимитная цена",
+    "moreDetails": "Подробнее",
+    "confirm": "Подтверждать",
+    "expectedRate": "Ожидаемая ставка",
+    "market": "Рынок",
+    "limit": "Лимит"
+  },
+  "orderHistory": {
+    "orders": "Заказы",
+    "history": "История"
   }
 }

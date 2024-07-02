@@ -903,6 +903,34 @@
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "transactionFailed": "İşlem Başarısız",
   "transactionSuccessful": "İşlem Başarılı",
+  "transfer": {
+    "deposit": "Depozito",
+    "withdraw": "Geri çekilmek",
+    "fromNetwork": "Ağdan",
+    "toNetwork": "Ağa",
+    "max": "Maksimum",
+    "available": "mevcut",
+    "transferWith": "Şununla aktar:",
+    "transferTo": "Transfer",
+    "receiveAsset": "Varlık al",
+    "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
+    "estimatingTime": "Tahmini süre",
+    "calculatingFees": "Ücretlerin hesaplanması",
+    "reviewDeposit": "Ödemeyi inceleyin",
+    "reviewWithdraw": "İncelemeyi geri çek",
+    "moreDepositOptions": "Daha fazla para yatırma seçeneği",
+    "moreWithdrawOptions": "Daha fazla para çekme seçeneği",
+    "convertTo": "E dönüşmek",
+    "recommended": "Tavsiye edilen",
+    "moreBridgeOptions": {
+      "titleDeposit": "Daha fazla para yatırma seçeneği",
+      "titleWithdraw": "Daha fazla para çekme seçeneği",
+      "descriptionDeposit": "{asset} {chain} .",
+      "descriptionWithdraw": "{asset} {chain} .",
+      "depositWith": "Şununla para yatır:",
+      "withdrawWith": "Şununla çekil:"
+    }
+  },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
@@ -1107,8 +1135,9 @@
     "older": "Daha eski",
     "newer": "Daha yeni"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Siparişi İncele",
+    "tradeDetails": "Ticaret Detayları",
     "marketOrder": {
       "title": "Market siparişi",
       "description": "Mevcut en iyi fiyatla hemen satın alın"
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "Yinelenen Sipariş",
       "description": "Zaman içinde ortalama fiyattan satın alın"
-    }
+    },
+    "aboveMarket": {
+      "title": "Piyasa fiyatının üzerinde limit fiyat",
+      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+    },
+    "belowMarket": {
+      "title": "Piyasa fiyatının altındaki limit fiyat",
+      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+    },
+    "enterAnAmountTo": "Bir miktar girin",
+    "sell": "Satmak",
+    "insufficientFunds": "Yetersiz bakiye",
+    "addFunds": "Fon Ekle",
+    "watchOut": "Dikkat! Balina geliyor",
+    "selectAnAssetTo": {
+      "buy": "Satın almak için bir varlık seçin",
+      "sell": "Satılacak bir varlık seçin"
+    },
+    "payWith": "İle ödemek",
+    "receive": "Almak",
+    "swapFromAnotherAsset": "Başka bir varlıktan takas",
+    "connectYourWallet": "Cüzdanınızı bağlayın",
+    "toSeeYourBalances": "bakiyenizi görmek için",
+    "searchAssets": "Varlıkları arayın",
+    "marketPrice": "Market fiyatı",
+    "below": "altında",
+    "above": "üstünde",
+    "currentPrice": "Mevcut fiyat",
+    "whenDenomPriceIs": "{denom} fiyatı şu olduğunda",
+    "estimating": "Tahmin etme",
+    "totalFeesWhenFilled": "Doldurulduğunda toplam ücretler",
+    "at": "en",
+    "value": "Değer",
+    "estimatedFees": "Tahmini ücretler",
+    "totalEstimatedFees": "Toplam Tahmini Ücretler",
+    "receiveMin": "Minimum alma",
+    "receiveAsset": "Varlık al",
+    "orderType": "Sipariş türü",
+    "limitPrice": "Limit Fiyatı",
+    "moreDetails": "Daha fazla detay",
+    "confirm": "Onaylamak",
+    "expectedRate": "Beklenen oran",
+    "market": "Pazar",
+    "limit": "Sınır"
+  },
+  "orderHistory": {
+    "orders": "Emirler",
+    "history": "Tarih"
   }
 }

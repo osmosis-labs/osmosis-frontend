@@ -17,7 +17,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
   ({ swapState }) => {
     const { t } = useTranslation();
     const [displayInfo, setDisplayInfo] = useState<boolean>(false);
-    const { makerFeeFiat, totalFeeFiat } = useMemo(() => {
+    const { makerFeeFiat /*totalFeeFiat*/ } = useMemo(() => {
       const makerFeeFiat = (
         swapState.paymentFiatValue ??
         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
@@ -44,11 +44,11 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
           className="flex w-full cursor-pointer items-center justify-between"
           onClick={() => setDisplayInfo(!displayInfo && !isLoading)}
         >
-          <div className="text-subtitle1">{t("place-limit.tradeDetails")}</div>
+          <div className="text-subtitle1">{t("limitOrders.tradeDetails")}</div>
           <div className="flex items-center justify-end text-body2 text-osmoverse-300">
             {isLoading ? (
               <div className="flex items-center text-body2 text-osmoverse-400">
-                <Spinner className="mr-2" /> Estimating
+                <Spinner className="mr-2" /> {t("limitOrders.estimating")}
               </div>
             ) : (
               <Icon
@@ -76,7 +76,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
         >
           <div className="flex w-full items-center justify-between py-3 text-body2 text-osmoverse-300">
             <div>
-              Total fees when filled ( ~
+              {t("limitOrders.totalFeesWhenFilled")} ( ~
               {formatPretty(swapState.makerFee.mul(new Dec(100)), {
                 maxDecimals: 2,
                 minimumFractionDigits: 2,
@@ -93,7 +93,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
           </div>
           <hr className="my-2 w-full text-osmoverse-700" />
           <div className="flex w-full items-center justify-between py-3 text-body2 text-osmoverse-300">
-            <div>Receive</div>
+            <div>{t("limitOrders.receive")}</div>
             <div>
               ~
               {formatPretty(swapState.expectedFiatAmountOut, {

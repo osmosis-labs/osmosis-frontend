@@ -903,6 +903,34 @@
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
   "transactionSuccessful": "Transakcja Udana",
+  "transfer": {
+    "deposit": "Depozyt",
+    "withdraw": "Wycofać",
+    "fromNetwork": "Z sieci",
+    "toNetwork": "Do sieci",
+    "max": "Maks",
+    "available": "dostępny",
+    "transferWith": "Przenieś z",
+    "transferTo": "Przenieść do",
+    "receiveAsset": "Odbierz zasób",
+    "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
+    "estimatingTime": "Szacowanie czasu",
+    "calculatingFees": "Obliczanie opłat",
+    "reviewDeposit": "Sprawdź depozyt",
+    "reviewWithdraw": "Recenzja wycofana",
+    "moreDepositOptions": "Więcej opcji depozytu",
+    "moreWithdrawOptions": "Więcej opcji wypłat",
+    "convertTo": "Konwertuj na",
+    "recommended": "Zalecana",
+    "moreBridgeOptions": {
+      "titleDeposit": "Więcej opcji depozytu",
+      "titleWithdraw": "Więcej opcji wypłat",
+      "descriptionDeposit": "Wybierz spośród następujących alternatywnych dostawców, aby zdeponować (inaczej „bridge”) swój {asset} na {chain} .",
+      "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
+      "depositWith": "Wpłać za pomocą",
+      "withdrawWith": "Wycofaj się z"
+    }
+  },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
@@ -1107,10 +1135,11 @@
     "older": "Starszy",
     "newer": "Nowsza"
   },
-  "place-limit": {
+  "limitOrders": {
     "reviewOrder": "Przegląd zamówienia",
+    "tradeDetails": "Szczegóły handlu",
     "marketOrder": {
-      "title": "Porządek rynkowy",
+      "title": "Zamówienie rynkowe",
       "description": "Kup natychmiast po najlepszej dostępnej cenie"
     },
     "limitOrder": {
@@ -1120,6 +1149,53 @@
     "recurringOrder": {
       "title": "Zamówienie powtarzające się",
       "description": "Kupuj po średniej cenie na przestrzeni czasu"
-    }
+    },
+    "aboveMarket": {
+      "title": "Cena graniczna powyżej ceny rynkowej",
+      "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
+    },
+    "belowMarket": {
+      "title": "Cena graniczna poniżej ceny rynkowej",
+      "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
+    },
+    "enterAnAmountTo": "Wpisz kwotę do",
+    "sell": "Sprzedać",
+    "insufficientFunds": "Niewystarczające środki",
+    "addFunds": "Dodać fundusze",
+    "watchOut": "Uważaj! Nadchodzi wieloryb",
+    "selectAnAssetTo": {
+      "buy": "Wybierz zasób do kupienia",
+      "sell": "Wybierz zasób do sprzedania"
+    },
+    "payWith": "Zapłacić",
+    "receive": "Odbierać",
+    "swapFromAnotherAsset": "Zamiana z innego zasobu",
+    "connectYourWallet": "Podłącz swój portfel",
+    "toSeeYourBalances": "aby zobaczyć saldo",
+    "searchAssets": "Wyszukaj zasoby",
+    "marketPrice": "Cena rynkowa",
+    "below": "poniżej",
+    "above": "powyżej",
+    "currentPrice": "aktualna cena",
+    "whenDenomPriceIs": "Gdy cena {denom} wynosi",
+    "estimating": "Doceniający",
+    "totalFeesWhenFilled": "Łączne opłaty po wypełnieniu",
+    "at": "Na",
+    "value": "Wartość",
+    "estimatedFees": "Szacunkowe opłaty",
+    "totalEstimatedFees": "Całkowite szacunkowe opłaty",
+    "receiveMin": "Otrzymaj minimum",
+    "receiveAsset": "Odbierz zasób",
+    "orderType": "Typ zamówienia",
+    "limitPrice": "Cena graniczna",
+    "moreDetails": "Więcej szczegółów",
+    "confirm": "Potwierdzać",
+    "expectedRate": "Oczekiwana stawka",
+    "market": "Rynek",
+    "limit": "Limit"
+  },
+  "orderHistory": {
+    "orders": "Zamówienia",
+    "history": "Historia"
   }
 }

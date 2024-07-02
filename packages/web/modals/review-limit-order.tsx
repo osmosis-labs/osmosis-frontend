@@ -7,6 +7,7 @@ import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { ModalBase } from "~/modals/base";
 import { formatPretty } from "~/utils/formatter";
@@ -26,6 +27,8 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   orderDirection,
   makerFee,
 }) => {
+  const { t } = useTranslation();
+
   //TODO: Retrieve maker fee from contract
   const fee = useMemo(() => {
     return (
@@ -56,7 +59,9 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     >
       <div className="relative flex h-20 w-full items-center justify-center p-4">
         <h6>
-          {orderDirection === "bid" ? "Buy" : "Sell"}{" "}
+          {orderDirection === "bid"
+            ? t("portfolio.buy")
+            : t("limitOrders.sell")}{" "}
           {placeLimitState.baseAsset?.coinName}
         </h6>
         <button
@@ -85,7 +90,8 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                   : "0"}
               </h5>
               <span className="text-body1 text-osmoverse-300">
-                at ${formatPretty(placeLimitState.priceState.price)}
+                {t("limitOrders.at")} $
+                {formatPretty(placeLimitState.priceState.price)}
               </span>
             </div>
           </div>
@@ -93,7 +99,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
         <div className="flex w-full flex-col pt-3">
           {placeLimitState.quoteAsset && orderDirection === "bid" && (
             <RecapRow
-              left="Pay With"
+              left={t("limitOrders.payWith")}
               right={
                 <span className="text-osmoverse-100">
                   <Image
@@ -109,7 +115,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             />
           )}
           <RecapRow
-            left="Value"
+            left={t("limitOrders.value")}
             right={
               <span className="text-osmoverse-100">
                 ~
@@ -120,14 +126,17 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             }
           />
           <RecapRow
-            left={"Total Estimated Fees"}
+            left={t("limitOrders.totalEstimatedFees")}
             right={<>~{formatPretty(fee)}</>}
           />
           <hr className="my-2 text-osmoverse-700" />
-          <RecapRow left="Recieve" right={<>{formatPretty(total)}</>} />
+          <RecapRow
+            left={t("limitOrders.receive")}
+            right={<>{formatPretty(total)}</>}
+          />
           {orderType === "market" && (
             <RecapRow
-              left="Recieve minimum"
+              left={t("limitOrders.receiveMin")}
               right={
                 <span className="body2 text-osmoverse-100">
                   {formatPretty(placeLimitState.expectedTokenAmountOut, {
@@ -148,7 +157,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           )}
           {placeLimitState.quoteAsset && orderDirection === "ask" && (
             <RecapRow
-              left="Recieve asset"
+              left={t("limitOrders.receiveAsset")}
               right={
                 <span className="text-osmoverse-100">
                   <Image
@@ -164,16 +173,18 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             />
           )}
           <RecapRow
-            left="Order Type"
+            left={t("limitOrders.orderType")}
             right={
               <span className="text-osmoverse-100">
-                {orderType === "limit" ? "Limit order" : "Market order"}
+                {orderType === "limit"
+                  ? t("limitOrders.limitOrder.title")
+                  : t("limitOrders.marketOrder.title")}
               </span>
             }
           />
           {orderType !== "limit" && (
             <RecapRow
-              left="Price"
+              left={t("assets.table.price")}
               right={
                 <span className="text-osmoverse-100">
                   {placeLimitState.priceState
@@ -185,7 +196,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           )}
           {orderType === "limit" && (
             <RecapRow
-              left="Limit Price"
+              left={t("limitOrders.limitPrice")}
               right={
                 <div className="flex  items-center justify-center text-osmoverse-100">
                   <div className="mr-2 flex items-center justify-between rounded-xl border border-osmoverse-700 px-3 py-1 text-caption text-osmoverse-300">
@@ -218,26 +229,32 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           )}
           {orderType !== "limit" && (
             <div className="body2 flex h-8 w-full items-center justify-between">
-              <span className="text-osmoverse-300">More details</span>
-              <span className="cursor-pointer text-wosmongton-300">Show</span>
+              <span className="text-osmoverse-300">
+                {t("limitOrders.moreDetails")}
+              </span>
+              <span className="cursor-pointer text-wosmongton-300">
+                {t("swap.autoRouterToggle.show")}
+              </span>
             </div>
           )}
-          <div className="body2 mt-3 flex h-[38px] w-full items-center justify-center">
+          {/* <div className="body2 mt-3 flex h-[38px] w-full items-center justify-center">
             <span className="text-caption text-osmoverse-300">
               Disclaimer lorem ipsum.{" "}
               <a className="text-wosmongton-300">Learn more</a>
             </span>
-          </div>
+          </div> */}
           <div className="body2 flex w-full justify-between gap-3 pt-3">
             <Button
               mode="unstyled"
               onClick={onRequestClose}
               className="rounded-xl border border-osmoverse-700"
             >
-              <h6 className="text-wosmongton-200">Cancel</h6>
+              <h6 className="text-wosmongton-200">
+                {t("unstableAssetsWarning.buttonCancel")}
+              </h6>
             </Button>
             <Button onClick={placeLimitState.placeLimit}>
-              <h6>Confirm</h6>
+              <h6>{t("limitOrders.confirm")}</h6>
             </Button>
           </div>
         </div>

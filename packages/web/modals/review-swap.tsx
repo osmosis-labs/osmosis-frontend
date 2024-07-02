@@ -6,6 +6,7 @@ import Image from "next/image";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 import { ModalBase } from "~/modals";
@@ -25,6 +26,7 @@ export function ReviewSwapModal({
   swapState,
   confirmAction,
 }: ReviewSwapModalProps) {
+  const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
   return (
@@ -36,7 +38,7 @@ export function ReviewSwapModal({
     >
       <div className="flex h-auto w-full flex-col bg-osmoverse-850">
         <div className="relative flex h-20 items-center justify-center p-4">
-          <h6>Swap</h6>
+          <h6>{t("menu.swap")}</h6>
           <button
             onClick={onClose}
             className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
@@ -58,7 +60,7 @@ export function ReviewSwapModal({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">Sell</p>
+                  <p className="text-osmoverse-300">{t("limitOrders.sell")}</p>
                   <span className="subtitle1">
                     {swapState.fromAsset?.coinName}
                   </span>
@@ -84,7 +86,9 @@ export function ReviewSwapModal({
                     className="h-6 w-6 text-osmoverse-400"
                   />
                 </div>
-                <span className="body2 text-osmoverse-300">Estimated fees</span>
+                <span className="body2 text-osmoverse-300">
+                  {t("limitOrders.estimatedFees")}
+                </span>
               </div>
               <div className="flex flex-col items-end">
                 <span className="body2 text-osmoverse-300">
@@ -104,7 +108,7 @@ export function ReviewSwapModal({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">Buy</p>
+                  <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
                   <span className="subtitle1">
                     {swapState.toAsset?.coinName}
                   </span>
@@ -124,7 +128,7 @@ export function ReviewSwapModal({
           <div className="flex flex-col">
             <div className="flex flex-col py-3">
               <RecapRow
-                left="Expected rate"
+                left={t("limitOrders.expectedRate")}
                 right={
                   <span
                     className={classNames(
@@ -159,28 +163,34 @@ export function ReviewSwapModal({
                   </span>
                 }
               />
-              <RecapRow left="Recieve minimum" right={<></>} />
+              <RecapRow left={t("limitOrders.receiveMin")} right={<></>} />
               <div className="body2 flex h-8 w-full items-center justify-between">
-                <span className="text-osmoverse-300">More details</span>
-                <span className="cursor-pointer text-wosmongton-300">Show</span>
+                <span className="text-osmoverse-300">
+                  {t("limitOrders.moreDetails")}
+                </span>
+                <span className="cursor-pointer text-wosmongton-300">
+                  {t("swap.autoRouterToggle.show")}
+                </span>
               </div>
             </div>
-            <div className="body2 flex h-[38px] w-full items-center justify-center">
+            {/* <div className="body2 flex h-[38px] w-full items-center justify-center">
               <span className="text-caption text-osmoverse-300">
                 Disclaimer lorem ipsum.{" "}
                 <a className="text-wosmongton-300">Learn more</a>
               </span>
-            </div>
+            </div> */}
             <div className="body2 flex w-full justify-between gap-3 pt-3">
               <Button
                 mode="unstyled"
                 onClick={onClose}
                 className="rounded-xl border border-osmoverse-700"
               >
-                <h6 className="text-wosmongton-200">Cancel</h6>
+                <h6 className="text-wosmongton-200">
+                  {t("unstableAssetsWarning.buttonCancel")}
+                </h6>
               </Button>
               <Button onClick={confirmAction}>
-                <h6>Confirm</h6>
+                <h6>{t("limitOrders.confirm")}</h6>
               </Button>
             </div>
           </div>

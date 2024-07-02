@@ -49,6 +49,14 @@ export type QuoteStdFee = {
   }[];
 };
 
+/** Tx body portions relevant for simulation */
+export type SimBody = Partial<
+  Pick<
+    TxBody,
+    "messages" | "memo" | "extensionOptions" | "nonCriticalExtensionOptions"
+  >
+>;
+
 /**
  * Estimates the full gas fee payment for the given encoded messages on the chain specified by given chain ID.
  * Useful for providing the user with an accurate and dynamic fee amount estimate before sending a transaction.
@@ -122,13 +130,6 @@ export async function estimateGasFee({
 }
 
 export class SimulateNotAvailableError extends Error {}
-/** Tx body portions relevant for simulation */
-export type SimBody = Partial<
-  Pick<
-    TxBody,
-    "messages" | "memo" | "extensionOptions" | "nonCriticalExtensionOptions"
-  >
->;
 
 /**
  * Attempts to estimate gas amount of the given messages in a tx via a POST to the

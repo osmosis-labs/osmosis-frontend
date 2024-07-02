@@ -566,6 +566,126 @@ export const MockAxelarAssets = [
     coingecko_id: "usd-coin",
     id: "uusdc",
   },
+  {
+    denom: "uaxl",
+    native_chain: "axelarnet",
+    name: "Axelar",
+    symbol: "AXL",
+    decimals: 6,
+    image: "/logos/assets/axl.svg",
+    addresses: {
+      ethereum: {
+        symbol: "AXL",
+        address: "0x467719aD09025FcC6cF6F8311755809d45a5E5f3",
+      },
+      binance: {
+        symbol: "AXL",
+        address: "0x8b1f4432F943c465A973FeDC6d7aa50Fc96f1f65",
+      },
+      polygon: {
+        symbol: "AXL",
+        address: "0x6e4E624106Cb12E168E6533F8ec7c82263358940",
+      },
+      avalanche: {
+        symbol: "AXL",
+        address: "0x44c784266cf024a60e8acF2427b9857Ace194C5d",
+      },
+      fantom: {
+        symbol: "AXL",
+        address: "0x8b1f4432F943c465A973FeDC6d7aa50Fc96f1f65",
+      },
+      moonbeam: {
+        symbol: "AXL",
+        address: "0x467719aD09025FcC6cF6F8311755809d45a5E5f3",
+      },
+      arbitrum: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      optimism: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      base: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      mantle: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      celo: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      kava: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      filecoin: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      linea: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      scroll: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      axelarnet: { symbol: "AXL", ibc_denom: "uaxl" },
+      osmosis: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+      },
+      juno: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/EBE900AED8FF6BB2E186B17B066138F647CDD9647EF4FBE2DE6C8D4013A2C990",
+      },
+      crescent: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/0634D0993744740D675AD01E81156EAC945AEAAE17C074918DC7FF52F41B263E",
+      },
+      kujira: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/C01154C2547F4CB10A985EA78E7CD4BA891C1504360703A37E1D7043F06B5E1F",
+      },
+      umee: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/D1CB2804AA5EB64D503F28E8DF3552F8A4D642802B66EFE50DE432B755F37AE1",
+      },
+      carbon: {
+        ibc_denom:
+          "ibc/062588846168EDFECF20F7681F2A0A131A53B9A3C8535BCA8F7D1A268246974B",
+      },
+      neutron: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/C0E66D1C81D8AAF0E6896E05190FDFBC222367148F86AC3EA679C28327A763CD",
+      },
+      blast: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      fraxtal: {
+        symbol: "AXL",
+        address: "0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f",
+      },
+      ojo: {
+        symbol: "AXL",
+        ibc_denom:
+          "ibc/0E1517E2771CA7C03F2ED3F9BAECCAEADF0BFD79B89679E834933BC0F179AD98",
+      },
+    },
+    coingecko_id: "axelar",
+    id: "uaxl",
+  },
 ];
 
 export const MockAxelarChains = [
@@ -621,11 +741,7 @@ export const MockAxelarChains = [
         "https://rpc.ankr.com/eth",
       ],
     },
-    native_token: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
+    native_token: { name: "Ethereum", symbol: "ETH", decimals: 18 },
     name: "Ethereum",
     short_name: "ETH",
     image: "/logos/chains/ethereum.svg",
@@ -639,6 +755,23 @@ export const MockAxelarChains = [
       contract_path: "/token/{address}",
       transaction_path: "/tx/{tx}",
     },
+    id: "ethereum",
+    chain_type: "evm",
+    provider_params: [
+      {
+        chainId: "0x1",
+        chainName: "Ethereum Mainnet",
+        rpcUrls: [
+          "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+          "https://1rpc.io/eth",
+          "https://rpc.ankr.com/eth",
+        ],
+        nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+        blockExplorerUrls: ["https://etherscan.io"],
+      },
+    ],
+    no_inflation: false,
+    no_tvl: false,
   },
   {
     chain_id: 43114,
@@ -651,11 +784,7 @@ export const MockAxelarChains = [
         "https://rpc.ankr.com/avalanche",
       ],
     },
-    native_token: {
-      name: "Avalanche",
-      symbol: "AVAX",
-      decimals: 18,
-    },
+    native_token: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
     name: "Avalanche",
     short_name: "AVAX",
     image: "/logos/chains/avalanche.svg",
@@ -680,11 +809,7 @@ export const MockAxelarChains = [
           "https://1rpc.io/avax/c",
           "https://rpc.ankr.com/avalanche",
         ],
-        nativeCurrency: {
-          name: "Avalanche",
-          symbol: "AVAX",
-          decimals: 18,
-        },
+        nativeCurrency: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
         blockExplorerUrls: ["https://snowtrace.io"],
       },
     ],
