@@ -35,7 +35,7 @@ export const PriceSelector = memo(
   }: PriceSelectorProps & Disableable) => {
     const { t } = useTranslation();
 
-    const [tab] = useQueryState("tab");
+    const [tab, setTab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault("USDC")
@@ -297,7 +297,7 @@ export const PriceSelector = memo(
                 <div className="flex flex-col px-5 py-2">
                   {tab === "buy" && (
                     <button className="flex w-full items-center justify-between py-3">
-                      <span className="subtitle1 font-semibold text-wosmongton-200">
+                      <span className="subtitle1 text-left font-semibold text-wosmongton-200">
                         {t("limitOrders.addFunds")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -327,8 +327,11 @@ export const PriceSelector = memo(
                       </div>
                     </button>
                   )}
-                  <button className="flex w-full items-center justify-between py-3">
-                    <span className="subtitle1 font-semibold text-wosmongton-200">
+                  <button
+                    onClick={() => setTab("swap")}
+                    className="flex w-full items-center justify-between py-3"
+                  >
+                    <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
                       {t("limitOrders.swapFromAnotherAsset")}
                     </span>
                     <div className="flex items-center gap-1">
