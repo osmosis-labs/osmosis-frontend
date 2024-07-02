@@ -37,7 +37,7 @@ export const useAssetInfoConfig = (
     switch (config.historicalRange) {
       case "1h":
         frame = 5;
-        numRecentFrames = 12;
+        numRecentFrames = 14;
         break;
       case "1d":
         frame = 60;

@@ -8,6 +8,10 @@ export const priceFormatter = (price: number) => {
   const minimumDecimals = 2;
   const maxDecimals = Math.max(getDecimalCount(price), minimumDecimals);
 
+  if (price < 0) {
+    return "";
+  }
+
   const priceDec = new Dec(price);
 
   const formatOpts: FormatOptions = {
