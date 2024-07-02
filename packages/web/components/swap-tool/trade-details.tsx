@@ -218,69 +218,74 @@ export const TradeDetails = ({
               <span className="subtitle1 py-3 text-white-full">
                 More details
               </span>
-              <RecapRow
-                left="Slippage tolerance"
-                right={
-                  <div className="flex items-center justify-end">
-                    {slippageConfig?.selectableSlippages.map((props) => (
-                      <SlippageButton
-                        key={`slippage-${props.index}`}
-                        {...props}
-                        onSelect={() => {
-                          slippageConfig.select(props.index);
+              {slippageConfig && (
+                <RecapRow
+                  left="Slippage tolerance"
+                  right={
+                    <div className="flex items-center justify-end">
+                      {slippageConfig?.selectableSlippages.map((props) => (
+                        <SlippageButton
+                          key={`slippage-${props.index}`}
+                          {...props}
+                          onSelect={() => {
+                            slippageConfig.select(props.index);
 
-                          logEvent([
-                            EventName.Swap.slippageToleranceSet,
-                            {
-                              percentage: slippageConfig.slippage.toString(),
-                              page: "Swap Page",
-                            },
-                          ]);
-                        }}
-                      />
-                    ))}
-                    <div
-                      className={classNames(
-                        "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
-                        { "bg-osmoverse-825": slippageConfig?.isManualSlippage }
-                      )}
-                    >
-                      <AutosizeInput
-                        type="number"
-                        minWidth={30}
-                        placeholder="Custom"
-                        className="w-fit bg-transparent px-0"
-                        inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px]"
-                        value={slippageConfig?.manualSlippageStr}
-                        onFocus={() =>
-                          slippageConfig?.setIsManualSlippage(true)
-                        }
-                        autoFocus={slippageConfig?.isManualSlippage}
-                        onChange={(e) => {
-                          if (e.target.value.trim() === "") {
-                            slippageConfig?.setManualSlippage("0");
-                          } else {
-                            slippageConfig?.setManualSlippage(e.target.value);
+                            logEvent([
+                              EventName.Swap.slippageToleranceSet,
+                              {
+                                percentage: slippageConfig.slippage.toString(),
+                                page: "Swap Page",
+                              },
+                            ]);
+                          }}
+                        />
+                      ))}
+                      <div
+                        className={classNames(
+                          "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
+                          {
+                            "bg-osmoverse-825":
+                              slippageConfig?.isManualSlippage,
                           }
+                        )}
+                      >
+                        <AutosizeInput
+                          type="number"
+                          minWidth={30}
+                          placeholder="Custom"
+                          className="w-fit bg-transparent px-0"
+                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px]"
+                          value={slippageConfig?.manualSlippageStr}
+                          onFocus={() =>
+                            slippageConfig?.setIsManualSlippage(true)
+                          }
+                          autoFocus={slippageConfig?.isManualSlippage}
+                          onChange={(e) => {
+                            if (e.target.value.trim() === "") {
+                              slippageConfig?.setManualSlippage("0");
+                            } else {
+                              slippageConfig?.setManualSlippage(e.target.value);
+                            }
 
-                          logEvent([
-                            EventName.Swap.slippageToleranceSet,
-                            {
-                              fromToken: swapState?.fromAsset?.coinDenom,
-                              toToken: swapState?.toAsset?.coinDenom,
-                              // isOnHome: page === "Swap Page",
-                              isOnHome: true,
-                              percentage: slippageConfig?.slippage.toString(),
-                              page: "Swap Page",
-                            },
-                          ]);
-                        }}
-                      />
-                      <span>%</span>
+                            logEvent([
+                              EventName.Swap.slippageToleranceSet,
+                              {
+                                fromToken: swapState?.fromAsset?.coinDenom,
+                                toToken: swapState?.toAsset?.coinDenom,
+                                // isOnHome: page === "Swap Page",
+                                isOnHome: true,
+                                percentage: slippageConfig?.slippage.toString(),
+                                page: "Swap Page",
+                              },
+                            ]);
+                          }}
+                        />
+                        <span>%</span>
+                      </div>
                     </div>
-                  </div>
-                }
-              />
+                  }
+                />
+              )}
               <div ref={swapRouteRef} className="flex w-full">
                 <RecapRow
                   left="Swap route"
