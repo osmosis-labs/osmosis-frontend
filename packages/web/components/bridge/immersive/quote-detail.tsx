@@ -8,17 +8,14 @@ import { t } from "~/hooks";
 
 import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
-import { BridgeQuotes } from "./use-bridge-quotes";
+import { BridgeQuote } from "./use-bridge-quotes";
 
-/** Bridge quotes result type, but with some modifications to require a quote to be selected. */
-export type BridgeQuotesDetails = Omit<BridgeQuotes, "selectedQuote"> & {
-  selectedQuote: NonNullable<BridgeQuotes["selectedQuote"]>;
-};
-
-/** Selected bridge provider, with dropdown to select a different one. */
-export const BridgeProviderDropdownRow: FunctionComponent<
-  BridgeQuotesDetails
-> = ({
+export const BridgeProviderDropdownRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  successfulQuotes: BridgeQuote["successfulQuotes"];
+  setSelectedBridgeProvider: BridgeQuote["setSelectedBridgeProvider"];
+  isRefetchingQuote: boolean;
+}> = ({
   selectedQuote,
   successfulQuotes,
   setSelectedBridgeProvider,
@@ -33,10 +30,10 @@ export const BridgeProviderDropdownRow: FunctionComponent<
   </QuoteDetailRow>
 );
 
-export const EstimatedTimeRow: FunctionComponent<BridgeQuotesDetails> = ({
-  selectedQuote,
-  isRefetchingQuote,
-}) => (
+export const EstimatedTimeRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  isRefetchingQuote: boolean;
+}> = ({ selectedQuote, isRefetchingQuote }) => (
   <QuoteDetailRow
     label={t("transfer.estimatedTime")}
     isLoading={isRefetchingQuote}
@@ -50,10 +47,10 @@ export const EstimatedTimeRow: FunctionComponent<BridgeQuotesDetails> = ({
   </QuoteDetailRow>
 );
 
-export const ProviderFeesRow: FunctionComponent<BridgeQuotesDetails> = ({
-  selectedQuote,
-  isRefetchingQuote,
-}) => (
+export const ProviderFeesRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  isRefetchingQuote: boolean;
+}> = ({ selectedQuote, isRefetchingQuote }) => (
   <QuoteDetailRow
     label={t("transfer.providerFees")}
     isLoading={isRefetchingQuote}
@@ -77,9 +74,11 @@ export const ProviderFeesRow: FunctionComponent<BridgeQuotesDetails> = ({
   </QuoteDetailRow>
 );
 
-export const NetworkFeeRow: FunctionComponent<
-  BridgeQuotesDetails & { fromChainName?: string }
-> = ({ selectedQuote, isRefetchingQuote, fromChainName }) => (
+export const NetworkFeeRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  isRefetchingQuote: boolean;
+  fromChainName?: string;
+}> = ({ selectedQuote, isRefetchingQuote, fromChainName }) => (
   <QuoteDetailRow
     label={t("transfer.networkFee", {
       networkName: fromChainName ?? "",
@@ -116,23 +115,10 @@ export const NetworkFeeRow: FunctionComponent<
   </QuoteDetailRow>
 );
 
-export function calcSelectedQuoteTotalFee(
-  quote: BridgeQuotesDetails["selectedQuote"]
-) {
-  let totalCost = quote.gasCostFiat;
-
-  if (quote.transferFeeFiat) {
-    if (!totalCost) totalCost = quote.transferFeeFiat;
-    else totalCost = totalCost.add(quote.transferFeeFiat);
-  }
-
-  return totalCost;
-}
-
-export const TotalFeesRow: FunctionComponent<BridgeQuotesDetails> = ({
-  selectedQuote,
-  isRefetchingQuote,
-}) => {
+export const TotalFeesRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  isRefetchingQuote: boolean;
+}> = ({ selectedQuote, isRefetchingQuote }) => {
   const totalCost = calcSelectedQuoteTotalFee(selectedQuote);
   if (!totalCost) return null;
 
@@ -146,11 +132,11 @@ export const TotalFeesRow: FunctionComponent<BridgeQuotesDetails> = ({
   );
 };
 
-export const ExpectedOutputRow: FunctionComponent<BridgeQuotesDetails> = ({
-  selectedQuote,
-  isRefetchingQuote,
-  warnUserOfSlippage,
-}) => (
+export const ExpectedOutputRow: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  isRefetchingQuote: boolean;
+  warnUserOfSlippage: boolean;
+}> = ({ selectedQuote, isRefetchingQuote, warnUserOfSlippage }) => (
   <QuoteDetailRow
     label={t("transfer.estimatedAmountReceived")}
     isLoading={isRefetchingQuote}
@@ -168,9 +154,26 @@ export const ExpectedOutputRow: FunctionComponent<BridgeQuotesDetails> = ({
   </QuoteDetailRow>
 );
 
-export const ExpandDetailsControlContent: FunctionComponent<
-  BridgeQuotesDetails & { open: boolean }
-> = ({
+export function calcSelectedQuoteTotalFee(
+  quote: NonNullable<BridgeQuote["selectedQuote"]>
+) {
+  let totalCost = quote.gasCostFiat;
+  if (quote.transferFeeFiat) {
+    totalCost = totalCost
+      ? totalCost.add(quote.transferFeeFiat)
+      : quote.transferFeeFiat;
+  }
+  return totalCost;
+}
+
+export const ExpandDetailsControlContent: FunctionComponent<{
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  warnUserOfPriceImpact: boolean | undefined;
+  warnUserOfSlippage: boolean | undefined;
+  selectedQuoteUpdatedAt: number | undefined;
+  refetchInterval: number;
+  open: boolean;
+}> = ({
   selectedQuote,
   warnUserOfPriceImpact,
   warnUserOfSlippage,

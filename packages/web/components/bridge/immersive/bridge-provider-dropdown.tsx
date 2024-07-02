@@ -8,12 +8,12 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { BridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
+import { BridgeQuote } from "~/components/bridge/immersive/use-bridge-quotes";
 import { useTranslation } from "~/hooks";
 
 interface Props {
-  selectedQuote: NonNullable<BridgeQuotes["selectedQuote"]>;
-  quotes: BridgeQuotes["successfulQuotes"];
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  quotes: BridgeQuote["successfulQuotes"];
   onSelect: (bridge: Bridge) => void;
 }
 

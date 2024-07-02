@@ -27,7 +27,7 @@ import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
 
-export type BridgeQuotes = ReturnType<typeof useBridgeQuotes>;
+export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given

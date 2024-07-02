@@ -54,12 +54,11 @@ import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
   ExpandDetailsControlContent,
-  ExpectedOutputRow,
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
 } from "./quote-detail";
-import { BridgeQuotes } from "./use-bridge-quotes";
+import { BridgeQuote } from "./use-bridge-quotes";
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
@@ -80,7 +79,7 @@ interface AmountScreenProps {
   setCryptoAmount: (amount: string) => void;
   setFiatAmount: (amount: string) => void;
 
-  quote: BridgeQuotes;
+  quote: BridgeQuote;
 
   onConfirm: () => void;
 }
@@ -1076,7 +1075,10 @@ export const AmountScreen = observer(
                         </p>
                       )}
                       <ExpandDetailsControlContent
-                        {...quote}
+                        warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
+                        warnUserOfSlippage={quote.warnUserOfSlippage}
+                        selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
+                        refetchInterval={quote.refetchInterval}
                         selectedQuote={selectedQuote}
                         open={open}
                       />
@@ -1084,23 +1086,28 @@ export const AmountScreen = observer(
                   </DisclosureButton>
                   <DisclosurePanel className="flex flex-col gap-2">
                     <BridgeProviderDropdownRow
-                      {...quote}
+                      successfulQuotes={quote.successfulQuotes}
+                      setSelectedBridgeProvider={
+                        quote.setSelectedBridgeProvider
+                      }
+                      isRefetchingQuote={quote.isRefetchingQuote}
                       selectedQuote={selectedQuote}
                     />
                     <EstimatedTimeRow
-                      {...quote}
+                      isRefetchingQuote={quote.isRefetchingQuote}
                       selectedQuote={selectedQuote}
                     />
-                    <ProviderFeesRow {...quote} selectedQuote={selectedQuote} />
+                    <ProviderFeesRow
+                      isRefetchingQuote={quote.isRefetchingQuote}
+                      selectedQuote={selectedQuote}
+                    />
                     <NetworkFeeRow
-                      {...quote}
+                      isRefetchingQuote={quote.isRefetchingQuote}
                       selectedQuote={selectedQuote}
                       fromChainName={fromChain?.chainName}
                     />
-
-                    <TotalFeesRow {...quote} selectedQuote={selectedQuote} />
-                    <ExpectedOutputRow
-                      {...quote}
+                    <TotalFeesRow
+                      isRefetchingQuote={quote.isRefetchingQuote}
                       selectedQuote={selectedQuote}
                     />
                   </DisclosurePanel>

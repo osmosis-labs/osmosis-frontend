@@ -19,7 +19,7 @@ import {
   ProviderFeesRow,
   TotalFeesRow,
 } from "./quote-detail";
-import { BridgeQuotes } from "./use-bridge-quotes";
+import { BridgeQuote } from "./use-bridge-quotes";
 import { SupportedAsset } from "./use-bridges-supported-assets";
 
 interface ConfirmationScreenProps {
@@ -38,7 +38,7 @@ interface ConfirmationScreenProps {
   fromWalletIcon: string;
   toWalletIcon: string;
 
-  quote: BridgeQuotes;
+  quote: BridgeQuote;
 
   onCancel: () => void;
   onConfirm: () => void;
@@ -222,7 +222,7 @@ const AssetBox: FunctionComponent<{
 };
 
 /** Assumes the first provider in the list is the selected provider. */
-const TransferDetails: FunctionComponent<BridgeQuotes> = (quote) => {
+const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
   const [isOpen, setIsOpen] = useState(false);
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
@@ -261,22 +261,38 @@ const TransferDetails: FunctionComponent<BridgeQuotes> = (quote) => {
       >
         {HeaderContents}
         <ExpandDetailsControlContent
-          {...quote}
+          warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
+          warnUserOfSlippage={quote.warnUserOfSlippage}
+          selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
+          refetchInterval={quote.refetchInterval}
           selectedQuote={selectedQuote}
           open={isOpen}
         />
       </button>
       <div ref={detailsRef} className="flex flex-col gap-4">
-        <BridgeProviderDropdownRow {...quote} selectedQuote={selectedQuote} />
-        <EstimatedTimeRow {...quote} selectedQuote={selectedQuote} />
-        <ProviderFeesRow {...quote} selectedQuote={selectedQuote} />
+        <BridgeProviderDropdownRow
+          successfulQuotes={quote.successfulQuotes}
+          setSelectedBridgeProvider={quote.setSelectedBridgeProvider}
+          isRefetchingQuote={quote.isRefetchingQuote}
+          selectedQuote={selectedQuote}
+        />
+        <EstimatedTimeRow
+          isRefetchingQuote={quote.isRefetchingQuote}
+          selectedQuote={selectedQuote}
+        />
+        <ProviderFeesRow
+          isRefetchingQuote={quote.isRefetchingQuote}
+          selectedQuote={selectedQuote}
+        />
         <NetworkFeeRow
-          {...quote}
+          isRefetchingQuote={quote.isRefetchingQuote}
           selectedQuote={selectedQuote}
           fromChainName={fromChain?.chainName}
         />
-
-        <TotalFeesRow {...quote} selectedQuote={selectedQuote} />
+        <TotalFeesRow
+          isRefetchingQuote={quote.isRefetchingQuote}
+          selectedQuote={selectedQuote}
+        />
       </div>
     </div>
   );
