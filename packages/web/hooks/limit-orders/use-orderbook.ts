@@ -272,8 +272,10 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 
 export const useOrderbookAllActiveOrders = ({
   userAddress,
+  pageSize = 10,
 }: {
   userAddress: string;
+  pageSize?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
@@ -282,21 +284,20 @@ export const useOrderbookAllActiveOrders = ({
     isLoading,
     fetchNextPage,
     isFetching,
+    isFetchingNextPage,
+    hasNextPage,
   } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
     {
       contractAddresses: addresses,
       userOsmoAddress: userAddress,
+      limit: pageSize,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      keepPreviousData: true,
     }
   );
-
-  const { data: historicalOrders } =
-    api.edge.orderbooks.getHistoricalOrders.useQuery({
-      userOsmoAddress: userAddress,
-    });
 
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
@@ -306,6 +307,8 @@ export const useOrderbookAllActiveOrders = ({
     isLoading,
     fetchNextPage,
     isFetching,
+    isFetchingNextPage,
+    hasNextPage,
   };
 };
 

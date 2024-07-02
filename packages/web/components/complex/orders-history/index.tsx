@@ -3,10 +3,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { tableColumns } from "~/components/complex/orders-history/columns";
@@ -24,10 +25,11 @@ export const OrderHistory = observer(() => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  // In the future we need to merge in the past orders
-  const { orders, isLoading } = useOrderbookAllActiveOrders({
-    userAddress: wallet?.address ?? "",
-  });
+  const { orders, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useOrderbookAllActiveOrders({
+      userAddress: wallet?.address ?? "",
+      pageSize: 10,
+    });
 
   const table = useReactTable<DisplayableLimitOrder>({
     data: orders,
@@ -74,6 +76,54 @@ export const OrderHistory = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [table, orders]
   );
+
+  const { rows } = table.getRowModel();
+
+  const rowVirtualizer = useWindowVirtualizer({
+    count:
+      rows.length +
+      (filledOrders.length > 0 ? 1 : 0) +
+      (pendingOrders.length > 0 ? 1 : 0) +
+      (pastOrders.length > 0 ? 1 : 0),
+    estimateSize: () => 84,
+    paddingStart: 272,
+    overscan: 3,
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  // pagination
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
+  const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+  useEffect(() => {
+    if (
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index ===
+        lastVirtualRow.index -
+          (filledOrders.length > 0 ? 1 : 0) -
+          (pendingOrders.length > 0 ? 1 : 0) -
+          (pastOrders.length > 0 ? 1 : 0) &&
+      canLoadMore
+    )
+      fetchNextPage();
+  }, [
+    lastRow,
+    lastVirtualRow,
+    canLoadMore,
+    fetchNextPage,
+    filledOrders,
+    pendingOrders,
+    pastOrders,
+  ]);
 
   if (isLoading) {
     return (
@@ -126,9 +176,14 @@ export const OrderHistory = observer(() => {
           ))}
         </thead>
         <tbody className="bg-transparent">
+          {paddingTop > 0 && paddingTop - 272 > 0 && (
+            <tr>
+              <td style={{ height: paddingTop - 272 }} />
+            </tr>
+          )}
           {filledOrders.length > 0 && (
             <>
-              <tr>
+              <tr className="h-[84px]">
                 <td colSpan={5} className="!p-0">
                   <div className="flex w-full items-end justify-between pr-4">
                     <div className="relative flex items-end gap-3 pt-5">
@@ -156,53 +211,110 @@ export const OrderHistory = observer(() => {
                   </div>
                 </td>
               </tr>
-              {filledOrders.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="!px-0 !text-left">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {virtualRows
+                .filter(
+                  (row) => row.index <= filledOrders.length && row.index > 0
+                )
+                .map((virtualRow) => {
+                  const row = rows[virtualRow.index - 1];
+                  return (
+                    <tr key={row.id} className="h-[84px]">
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="!px-0 !text-left">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
             </>
           )}
           {pendingOrders.length > 0 && (
             <>
-              <h6 className="pb-4 pt-8">Pending</h6>
-              {pendingOrders.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="!px-0 !text-left">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              <h6 className="h-[84px] pb-4 pt-8">Pending</h6>
+              {virtualRows
+                .filter(
+                  (row) =>
+                    row.index >=
+                      filledOrders.length + (filledOrders.length > 0 ? 1 : 0) &&
+                    row.index <
+                      filledOrders.length +
+                        (filledOrders.length > 0 ? 1 : 0) +
+                        pendingOrders.length
+                )
+                .map((virtualRow) => {
+                  const row =
+                    rows[
+                      virtualRow.index - (1 + filledOrders.length > 0 ? 1 : 0)
+                    ];
+                  return (
+                    <tr key={row.id} className="h-[84px]">
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="!px-0 !text-left">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
             </>
           )}
           {pastOrders.length > 0 && (
             <>
-              <h6 className="pb-4 pt-8">Past</h6>
-              {pastOrders.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="!px-0 !text-left">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              <h6 className="h-[84px] pb-4 pt-8">Past</h6>
+              {virtualRows
+                .filter(
+                  (row) =>
+                    row.index >
+                      filledOrders.length +
+                        pendingOrders.length +
+                        (filledOrders.length > 0 ? 1 : 0) +
+                        (pendingOrders.length > 0 ? 1 : 0) &&
+                    row.index <=
+                      orders.length +
+                        (filledOrders.length > 0 ? 1 : 0) +
+                        (pendingOrders.length > 0 ? 1 : 0)
+                )
+                .map((virtualRow) => {
+                  const row =
+                    rows[
+                      virtualRow.index -
+                        (1 +
+                          (filledOrders.length > 0 ? 1 : 0) +
+                          (pendingOrders.length > 0 ? 1 : 0))
+                    ];
+                  return (
+                    <tr key={row.id} className="h-[84px]">
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="!px-0 !text-left">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
             </>
+          )}
+          {isFetchingNextPage && (
+            <tr>
+              <td className="!text-center" colSpan={5}>
+                <Spinner />
+              </td>
+            </tr>
+          )}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: paddingBottom - 272 }} />
+            </tr>
           )}
         </tbody>
       </table>
