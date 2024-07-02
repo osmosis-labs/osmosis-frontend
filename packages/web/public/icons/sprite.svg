@@ -1258,5 +1258,26 @@
         fill="currentColor"
       />
     </symbol>
+    <symbol id="generate-stars" viewBox="0 0 24 24" fill="none">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M17.4914 11.4914L15 17L12.5086 11.4914L7 9L12.5086 6.50857L15 1L17.4914 6.50857L23 9L17.4914 11.4914ZM7.55714 19.5571L6 23L4.44286 19.5571L1 18L4.44286 16.4429L6 13L7.55714 16.4429L11 18L7.55714 19.5571Z"
+        fill="url(#paint0_linear_7444_24314)"
+      />
+      <defs>
+        <linearGradient
+          id="paint0_linear_7444_24314"
+          x1="1.00931"
+          y1="11.9872"
+          x2="22.9947"
+          y2="11.9872"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#8A86FF" />
+          <stop offset="0.9952" stop-color="#E13CBD" />
+        </linearGradient>
+      </defs>
+    </symbol>
   </defs>
 </svg>

@@ -906,25 +906,26 @@ export const AmountScreen = observer(
                 <div className="relative w-full">
                   <MenuButton className="w-full">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="body1 text-osmoverse-300">
-                          {t("transfer.receiveAsset")}
-                        </span>
-                        <Tooltip
-                          content={
-                            <div>
-                              <h1 className="caption mb-1">
-                                {t("transfer.receiveAsset")}
-                              </h1>
-                              <p className="caption text-osmoverse-300">
-                                {t("transfer.receiveAssetDescription")}
-                              </p>
-                            </div>
-                          }
-                        >
-                          <Icon id="info" width={16} />
-                        </Tooltip>
-                      </div>
+                      <Tooltip
+                        content={
+                          <div>
+                            <h1 className="caption mb-1">
+                              {t("transfer.receiveAsset")}
+                            </h1>
+                            <p className="caption text-osmoverse-300">
+                              {t("transfer.receiveAssetDescription")}
+                            </p>
+                          </div>
+                        }
+                        enablePropagation
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="body1 text-osmoverse-300">
+                            {t("transfer.receiveAsset")}
+                          </span>
+                          <Icon id="generate-stars" width={24} />
+                        </div>
+                      </Tooltip>
 
                       <div className="flex items-center gap-2">
                         <span className="body1 text-white-full">
