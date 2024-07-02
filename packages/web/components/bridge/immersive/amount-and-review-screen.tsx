@@ -8,16 +8,12 @@ import { getAddress } from "viem";
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
 import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
-import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
+import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useStore } from "~/stores";
 
 import { ReviewScreen } from "./review-screen";
-
-export type SupportedAsset = ReturnType<
-  typeof useBridgesSupportedAssets
->["supportedAssetsByChainId"][string][number];
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
 

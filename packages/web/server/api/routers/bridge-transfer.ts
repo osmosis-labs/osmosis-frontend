@@ -293,7 +293,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             }
 
             return {
-              prettyName: cosmosChain.chain_name,
+              prettyName: cosmosChain.pretty_name,
               chainId: cosmosChain.chain_id,
               chainType,
             };

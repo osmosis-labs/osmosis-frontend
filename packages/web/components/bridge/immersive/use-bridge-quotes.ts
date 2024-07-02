@@ -18,6 +18,7 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import { useChainDisplayInfo } from "~/components/chain/use-chain-display-info";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
@@ -412,7 +413,7 @@ export const useBridgeQuotes = ({
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
 
-  const isSendTxPending = (() => {
+  const isTxPending = (() => {
     if (!toChain) return false;
     return toChain.chainType === "cosmos"
       ? accountStore.getWallet(toChain.chainId)?.txTypeInProgress !== ""
@@ -421,10 +422,10 @@ export const useBridgeQuotes = ({
 
   // close modal when initial eth transaction is committed
   useEffect(() => {
-    if (transferInitiated && !isSendTxPending) {
+    if (transferInitiated && !isTxPending) {
       onRequestClose();
     }
-  }, [isSendTxPending, onRequestClose, transferInitiated]);
+  }, [isTxPending, onRequestClose, transferInitiated]);
 
   const handleEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
@@ -609,13 +610,19 @@ export const useBridgeQuotes = ({
     quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady = isWithdraw && !isSendTxPending;
+  const isWithdrawReady = isWithdraw && !isTxPending;
+  const isWalletConnected =
+    fromChain?.chainType === "evm"
+      ? isEvmWalletConnected
+      : fromChain?.chainId
+      ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
+      : false;
   const isDepositReady =
     isDeposit &&
-    !isEvmWalletConnected &&
+    isWalletConnected &&
     isCorrectEvmChainSelected &&
     !isLoadingBridgeQuote &&
-    !isEthTxPending;
+    !isTxPending;
   const userCanInteract = isDepositReady || isWithdrawReady;
 
   let buttonText: string;
@@ -625,7 +632,7 @@ export const useBridgeQuotes = ({
     buttonText = t("assets.transfer.transferAnyway");
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
-  } else if (isSendTxPending) {
+  } else if (isTxPending) {
     buttonText = t("assets.transfer.sending");
   } else if (
     selectedQuote?.quote?.transactionRequest?.type === "evm" &&
@@ -644,6 +651,9 @@ export const useBridgeQuotes = ({
     throw new Error("Expected output is not defined.");
   }
 
+  const fromChainInfo = useChainDisplayInfo(fromChain?.chainId);
+  const toChainInfo = useChainDisplayInfo(toChain?.chainId);
+
   return {
     buttonText,
     buttonErrorMessage,
@@ -660,6 +670,9 @@ export const useBridgeQuotes = ({
     isInsufficientBal,
     warnUserOfSlippage,
     warnUserOfPriceImpact,
+
+    fromChainInfo,
+    toChainInfo,
 
     successfulQuotes,
     selectedBridgeProvider,

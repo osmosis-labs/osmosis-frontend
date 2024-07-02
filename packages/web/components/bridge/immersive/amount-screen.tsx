@@ -29,7 +29,10 @@ import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-n
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
-import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
+import {
+  SupportedAsset,
+  useBridgesSupportedAssets,
+} from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
@@ -57,10 +60,6 @@ import {
   TotalFeesRow,
 } from "./quote-detail";
 import { BridgeQuotes } from "./use-bridge-quotes";
-
-type SupportedAsset = ReturnType<
-  typeof useBridgesSupportedAssets
->["supportedAssetsByChainId"][string][number];
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";

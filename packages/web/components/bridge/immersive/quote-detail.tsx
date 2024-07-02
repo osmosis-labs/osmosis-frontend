@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { FunctionComponent, PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { t } from "~/hooks";
 
@@ -187,7 +186,6 @@ export const ExpandDetailsControlContent: FunctionComponent<
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
-          expiredElement={<Spinner className="!h-6 !w-6 text-wosmongton-500" />}
         />
       )}
       <div className="flex items-center gap-2">

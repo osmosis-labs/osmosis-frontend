@@ -7,6 +7,10 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 const bridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar", "IBC"];
 
+export type SupportedAsset = ReturnType<
+  typeof useBridgesSupportedAssets
+>["supportedAssetsByChainId"][string][number];
+
 export const useBridgesSupportedAssets = ({
   assets,
   chain,

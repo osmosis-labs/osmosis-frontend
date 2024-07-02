@@ -2,6 +2,7 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { getShortAddress, isNil } from "@osmosis-labs/utils";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -10,7 +11,6 @@ import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
 
-import { SupportedAsset } from "./amount-and-review-screen";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -20,6 +20,7 @@ import {
   TotalFeesRow,
 } from "./quote-detail";
 import { BridgeQuotes } from "./use-bridge-quotes";
+import { SupportedAsset } from "./use-bridges-supported-assets";
 
 interface ConfirmationScreenProps {
   direction: "deposit" | "withdraw";
@@ -64,6 +65,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   onCancel,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
+
   const { data: assetsInOsmosis } =
     api.edge.assets.getCanonicalAssetWithVariants.useQuery(
       {
@@ -86,16 +89,34 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       (asset) => asset.coinMinimalDenom === toAsset.address
     ) ?? assetsInOsmosis?.[0];
 
+  console.log({ can: quote.userCanInteract });
+
   return (
     <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
-      <h5>
-        Confirm {direction} {direction === "withdraw" ? "from" : "to"} Osmosis
+      <h5 className="pb-6 text-center">
+        {t(
+          direction === "withdraw"
+            ? "transfer.confirmWithdrawTo"
+            : "transfer.confirmDepositTo",
+          { chain: quote.toChainInfo?.prettyName ?? "" }
+        )}
       </h5>
+      <p className="body1 pb-3 text-center text-osmoverse-400">
+        {t(
+          direction === "withdraw"
+            ? "transfer.reviewWithdrawP"
+            : "transfer.reviewDepositP"
+        )}
+      </p>
       {quote.selectedQuote && (
         <AssetBox
           type="from"
           assetImageUrl={fromVariantAsset?.coinImageUrl ?? "/"}
-          chainName={fromChain.chainName ?? fromChain.chainId.toString()}
+          chainName={
+            quote.fromChainInfo?.prettyName ??
+            fromChain.chainName ??
+            fromChain.chainId.toString()
+          }
           address={fromAddress}
           walletImageUrl={fromWalletIcon}
           value={quote.selectedQuote.quote.input.fiatValue}
@@ -107,7 +128,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         <AssetBox
           type="to"
           assetImageUrl={toVariantAsset?.coinImageUrl ?? "/"}
-          chainName={toChain.chainName ?? toChain.chainId.toString()}
+          chainName={
+            quote.toChainInfo?.prettyName ??
+            toChain.chainName ??
+            toChain.chainId.toString()
+          }
           address={toAddress}
           walletImageUrl={toWalletIcon}
           value={quote.selectedQuote.expectedOutputFiat}
@@ -116,16 +141,23 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       )}
       <div className="flex w-full items-center gap-3 py-3">
         <Button className="w-full" variant="secondary" onClick={onCancel}>
-          <h6>Cancel</h6>
+          <h6>{t("transfer.cancel")}</h6>
         </Button>
         <Button
           className="w-full"
           onClick={onConfirm}
           disabled={!quote.userCanInteract}
         >
-          <h6>Confirm</h6>
+          <h6>{t("transfer.confirm")}</h6>
         </Button>
       </div>
+      <Link
+        href="/disclaimer#providers-and-bridge-disclaimer"
+        target="_blank"
+        className="mx-auto text-xs font-semibold text-wosmongton-100 hover:text-rust-200"
+      >
+        {t("disclaimer")}
+      </Link>
     </div>
   );
 };
@@ -146,38 +178,50 @@ const AssetBox: FunctionComponent<{
   walletImageUrl,
   value,
   coin,
-}) => (
-  <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
-    <div className="flex place-content-between items-center px-6 pt-4 pb-2">
-      <div className="flex items-center gap-3">
-        <Image alt="token image" src={assetImageUrl} width={48} height={48} />
-        <h6>
-          {type === "from" ? "Transfer" : "Receive"} {coin.denom}
-        </h6>
-      </div>
-      <div className="text-right">
-        <div className="subtitle1">
-          {type === "to" && "~"} {value.toString()}
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
+      <div className="flex place-content-between items-center px-6 pt-4 pb-2">
+        <div className="flex items-center gap-3">
+          <Image alt="token image" src={assetImageUrl} width={48} height={48} />
+          <h6>
+            {t(type === "from" ? "transfer.transfer" : "transfer.receive", {
+              denom: coin.denom,
+            })}
+          </h6>
         </div>
-        <div className="body1 text-osmoverse-300">
-          {type === "to" && "~"} {coin.trim(true).toString()}
+        <div className="text-right">
+          <div className="subtitle1">
+            {type === "to" && "~"} {value.toString()}
+          </div>
+          <div className="body1 text-osmoverse-300">
+            {type === "to" && "~"} {coin.trim(true).toString()}
+          </div>
+        </div>
+      </div>
+      <div className="h-[1px] w-full self-center bg-osmoverse-700" />
+      <div className="flex place-content-between items-center px-6 pb-3 pt-1">
+        <div>
+          {t(type === "from" ? "transfer.from" : "transfer.to", {
+            network: chainName,
+          })}
+        </div>
+        <div className="flex items-center gap-2">
+          <Image
+            alt="wallet image"
+            src={walletImageUrl}
+            width={24}
+            height={24}
+          />
+          <div className="body1 text-wosmongton-200">
+            {getShortAddress(address)}
+          </div>
         </div>
       </div>
     </div>
-    <div className="h-[1px] w-full self-center bg-osmoverse-700" />
-    <div className="flex place-content-between items-center px-6 pb-3 pt-1">
-      <div>
-        {type === "from" ? "From" : "To"} {chainName}
-      </div>
-      <div className="flex items-center gap-2">
-        <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
-        <div className="body1 text-wosmongton-200">
-          {getShortAddress(address)}
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 /** Assumes the first provider in the list is the selected provider. */
 const TransferDetails: FunctionComponent<BridgeQuotes> = (quote) => {
