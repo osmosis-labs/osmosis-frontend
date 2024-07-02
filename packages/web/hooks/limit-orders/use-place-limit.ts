@@ -158,7 +158,7 @@ export const usePlaceLimit = ({
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(priceState.price);
+    const tickId = priceToTick(priceState.price.quo(quoteAssetPrice.toDec()));
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
@@ -190,6 +190,7 @@ export const usePlaceLimit = ({
     paymentTokenValue,
     isMarket,
     marketState,
+    quoteAssetPrice,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =

@@ -1,8 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
+import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { Asset } from "@osmosis-labs/server";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useSwapAsset } from "~/hooks/use-swap";
@@ -292,6 +293,11 @@ export const useOrderbookAllActiveOrders = ({
     }
   );
 
+  const { data: historicalOrders } =
+    api.edge.orderbooks.getHistoricalOrders.useQuery({
+      userOsmoAddress: userAddress,
+    });
+
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
@@ -303,37 +309,59 @@ export const useOrderbookAllActiveOrders = ({
   };
 };
 
-/**
- * Hook to fetch the current spot price of a given pair from an orderbook.
- *
- * The spot price is determined by the provided quote asset and base asset.
- *
- * For a BID the quote asset is the base asset and the base asset is the quote asset of the orderbook.
- *
- * For an ASK the quote asset is the quote asset and the base asset is the base asset of the orderbook.
- *
- * @param {string} orderbookAddress - The contract address of the orderbook.
- * @param {string} quoteAssetDenom - The token out asset denom.
- * @param {string} baseAssetDenom - The token in asset denom.
- * @returns {Object} An object containing the spot price and the loading state.
- */
-export const useOrderbookSpotPrice = ({
-  orderbookAddress,
-  quoteAssetDenom,
-  baseAssetDenom,
+export const useOrderbookClaimableOrders = ({
+  userAddress,
 }: {
-  orderbookAddress: string;
-  quoteAssetDenom: string;
-  baseAssetDenom: string;
+  userAddress: string;
 }) => {
-  const { data: spotPrice, isLoading } =
-    api.edge.orderbooks.getSpotPrice.useQuery({
-      osmoAddress: orderbookAddress,
-      quoteAssetDenom,
-      baseAssetDenom,
-    });
-  return {
-    spotPrice,
+  const { orderbooks } = useOrderbooks();
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const {
+    data: orders,
     isLoading,
+    isFetching,
+  } = api.edge.orderbooks.getClaimableOrders.useQuery({
+    contractAddresses: addresses,
+    userOsmoAddress: userAddress,
+  });
+
+  const claimAllOrders = useCallback(async () => {
+    if (!account || !orders) return;
+    const msgs = addresses
+      .map((contractAddress) => {
+        const ordersForAddress = orders.filter(
+          (o) => o.orderbookAddress === contractAddress
+        );
+        if (ordersForAddress.length === 0) return;
+
+        const msg = {
+          batch_claim: {
+            orders: ordersForAddress.map((o) => [o.tick_id, o.order_id]),
+          },
+        };
+        return {
+          contractAddress,
+          msg,
+          funds: [],
+        };
+      })
+      .filter(Boolean) as {
+      contractAddress: string;
+      msg: object;
+      funds: CoinPrimitive[];
+    }[];
+
+    if (msgs.length > 0) {
+      await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+    }
+  }, [orders, account, addresses]);
+
+  return {
+    orders: orders ?? [],
+    count: orders?.length ?? 0,
+    isLoading: isLoading || isFetching,
+    claimAllOrders,
   };
 };
