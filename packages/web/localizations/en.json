@@ -968,7 +968,8 @@
     "totalFees": "Total fees",
     "estimatedAmountReceived": "Estimated amount received",
     "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
-    "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received."
+    "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received.",
+    "connect": "Connect"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

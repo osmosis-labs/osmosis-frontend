@@ -968,7 +968,8 @@
     "totalFees": "Taxele totale",
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
-    "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită."
+    "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
+    "connect": "Conectați"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

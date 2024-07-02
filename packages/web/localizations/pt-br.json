@@ -968,7 +968,8 @@
     "totalFees": "Taxas totais",
     "estimatedAmountReceived": "Valor estimado recebido",
     "slippageWarning": "O resultado esperado para esta transação é significativamente inferior ao valor do insumo, o que pode resultar no recebimento de um valor final diferente do esperado.",
-    "priceImpactWarning": "O impacto no preço desta transação é {priceImpact} , o que pode influenciar o valor final recebido."
+    "priceImpactWarning": "O impacto no preço desta transação é {priceImpact} , o que pode influenciar o valor final recebido.",
+    "connect": "Conectar"
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

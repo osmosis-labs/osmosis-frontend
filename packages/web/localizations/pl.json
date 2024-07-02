@@ -968,7 +968,8 @@
     "totalFees": "Wszystkie koszty",
     "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
     "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
-    "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę."
+    "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
+    "connect": "Łączyć"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
