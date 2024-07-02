@@ -3,6 +3,7 @@ import { BridgeChain } from "@osmosis-labs/bridge";
 import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { getAddress } from "viem";
 
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
@@ -60,13 +61,32 @@ export const AmountAndConfirmationScreen = observer(
           ? evmAddress
           : toChainCosmosAccount?.address,
       toChain: toChain,
-      toAsset: destinationAsset,
+      toAsset: destinationAsset
+        ? {
+            address:
+              toChain?.chainType === "evm"
+                ? getAddress(destinationAsset.address)
+                : destinationAsset.address,
+            decimals: destinationAsset.decimals,
+            denom: destinationAsset.denom,
+          }
+        : undefined,
       fromAddress:
         fromChain?.chainType === "evm"
           ? evmAddress
           : fromChainCosmosAccount?.address,
       fromChain: fromChain,
-      fromAsset: sourceAsset,
+      fromAsset: sourceAsset
+        ? {
+            address:
+              fromChain?.chainType === "evm"
+                ? getAddress(sourceAsset.address)
+                : sourceAsset.address,
+            decimals: sourceAsset.decimals,
+            denom: sourceAsset.denom,
+            amount: sourceAsset.amount,
+          }
+        : undefined,
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
