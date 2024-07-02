@@ -181,7 +181,11 @@ export const TradeDetails = ({
                 }
               />
               <RecapRow
-                left={`Swap fees (${swapState?.quote?.swapFee})`}
+                left={`Swap fees ${
+                  swapState?.quote?.swapFee
+                    ? `(${swapState?.quote?.swapFee})`
+                    : ""
+                }`}
                 right={
                   <>
                     {swapState?.tokenInFeeAmountFiatValue && (
