@@ -82,7 +82,8 @@ export const CosmosWalletState: FunctionComponent<
     const show1CT =
       hasInstalledWallets &&
       featureFlags.oneClickTrading &&
-      walletRepo?.chainRecord.chain.chain_name === chainStore.osmosis.chainName;
+      walletRepo?.chainRecord?.chain?.chain_name ===
+        chainStore.osmosis.chainName;
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;

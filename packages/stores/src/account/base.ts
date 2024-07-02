@@ -67,7 +67,6 @@ import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
@@ -119,6 +118,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @observable
   private _refreshRequests = 0;
+
+  @observable
+  private _refreshing = false;
 
   @observable
   useOneClickTrading = false;
@@ -222,12 +224,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.walletManagerAssets,
       wallets,
       logger,
       true,
       true,
-      false,
+      ["https://daodao.zone", "https://dao.daodao.zone"],
+      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -248,17 +250,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         },
       }
     );
+    /* 
+    this._walletManager.on("refresh_connection", () => {
+      this.refresh();
+    }); */
 
-    this._walletManager.setActions({
+    /*  this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
-    });
+    }); */
     this._walletManager.walletRepos.forEach((repo) => {
-      repo.setActions({
+      /* repo.setActions({
         viewWalletRepo: () => this.refresh(),
-      });
+      }); */
       repo.wallets.forEach((wallet) => {
         wallet.updateCallbacks({
           ...wallet.callbacks,
@@ -276,9 +282,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         });
 
         wallet.setActions({
-          data: () => this.refresh(),
-          state: () => this.refresh(),
-          message: () => this.refresh(),
+          data: () => {
+            this.refresh();
+          },
         });
       });
     });
@@ -290,7 +296,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @action
   private refresh() {
-    this._refreshRequests++;
+    /**
+     * We make sure this method is idempotent to avoid spam
+     */
+    if (!this._refreshing) {
+      this._refreshing = true;
+      this._refreshRequests++;
+
+      setTimeout(() => {
+        this._refreshing = false;
+      }, 100);
+    }
   }
 
   async addWallet(wallet: MainWalletBase) {
@@ -1161,10 +1177,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          {
-            ...signDoc,
-            accountNumber: Long.fromString(signDoc.accountNumber.toString()),
-          },
+          signDoc,
           signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
