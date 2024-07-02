@@ -194,20 +194,33 @@ export class SquidBridgeProvider implements BridgeProvider {
           },
           fromChain,
           toChain,
-          transferFee: {
-            denom: feeCosts[0].token.symbol,
-            amount: feeCosts[0].amount,
-            chainId: feeCosts[0].token.chainId,
-            decimals: feeCosts[0].token.decimals,
-            address: feeCosts[0].token.address,
-          },
+          transferFee:
+            feeCosts.length === 1
+              ? {
+                  denom: feeCosts[0].token.symbol,
+                  amount: feeCosts[0].amount,
+                  chainId: feeCosts[0].token.chainId,
+                  decimals: feeCosts[0].token.decimals,
+                  address: feeCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  chainId: fromChain.chainId,
+                  amount: "0",
+                },
           estimatedTime: estimatedRouteDuration,
-          estimatedGasFee: {
-            denom: gasCosts[0].token.symbol,
-            amount: gasCosts[0].amount,
-            decimals: gasCosts[0].token.decimals,
-            address: gasCosts[0].token.address,
-          },
+          estimatedGasFee:
+            gasCosts.length === 1
+              ? {
+                  denom: gasCosts[0].token.symbol,
+                  amount: gasCosts[0].amount,
+                  decimals: gasCosts[0].token.decimals,
+                  address: gasCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  amount: "0",
+                },
           transactionRequest: isEvmTransaction
             ? await this.createEvmTransaction({
                 fromAsset,

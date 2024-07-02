@@ -1,7 +1,8 @@
 import { Registry } from "@cosmjs/proto-signing";
 import { Int } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { queryRPCStatus } from "@osmosis-labs/server";
+import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeQuoteError } from "../errors";
@@ -31,9 +32,11 @@ export class IbcBridgeProvider implements BridgeProvider {
     this.validate(params);
 
     const fromChainId = params.fromChain.chainId;
+    const toChainId = params.toChain.chainId;
 
     if (
       typeof fromChainId !== "string" ||
+      typeof toChainId !== "string" ||
       params.fromChain.chainType !== "cosmos" ||
       params.toChain.chainType !== "cosmos"
     ) {
@@ -44,9 +47,10 @@ export class IbcBridgeProvider implements BridgeProvider {
       });
     }
 
-    const signDoc = await this.getTransactionData(params);
-
-    console.log(signDoc);
+    const [signDoc, estimatedTime] = await Promise.all([
+      this.getTransactionData(params),
+      this.estimateTransferTime(fromChainId, toChainId),
+    ]);
 
     const txSimulation = await estimateGasFee({
       chainId: fromChainId,
@@ -100,7 +104,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         chainId: fromChainId,
         amount: "0",
       },
-      estimatedTime: 6,
+      estimatedTime,
       estimatedGasFee: {
         amount: gasFee.amount,
         denom: gasFee.denom,
@@ -268,6 +272,47 @@ export class IbcBridgeProvider implements BridgeProvider {
         message: "IBC Bridge only supports cosmos chains",
       });
     }
+  }
+
+  /**
+   * Estimates the transfer time for IBC transfers in seconds.
+   * Looks at the average block time of the two chains.
+   */
+  async estimateTransferTime(
+    fromChainId: string,
+    toChainId: string
+  ): Promise<number> {
+    const fromChain = this.ctx.chainList.find(
+      (c) => c.chain_id === fromChainId
+    );
+    const toChain = this.ctx.chainList.find((c) => c.chain_id === toChainId);
+
+    const fromRpc = fromChain?.apis.rpc[0]?.address;
+    const toRpc = toChain?.apis.rpc[0]?.address;
+
+    if (!fromChain || !toChain || !fromRpc || !toRpc) {
+      throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
+        errorType: "UnsupportedQuoteError",
+        message: "Chain not found",
+      });
+    }
+
+    const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
+      queryRPCStatus({ restUrl: fromRpc }).then(calcAverageBlockTimeMs),
+      queryRPCStatus({ restUrl: toRpc }).then(calcAverageBlockTimeMs),
+    ]);
+
+    // convert to seconds
+    return Math.floor(
+      // initiating tx
+      (fromBlockTimeMs +
+        // lockup tx
+        toBlockTimeMs +
+        // timeout ack tx
+        fromBlockTimeMs) /
+        1000
+    );
   }
 
   async getExternalUrl({
