@@ -1273,6 +1273,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           })
         : undefined;
 
+      const walletSupportsAltFeeTokens = Boolean(
+        wallet.walletInfo.features?.includes("alt-fee-tokens")
+      );
+
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
@@ -1280,7 +1284,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           nonCriticalExtensionOptions:
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
-          onlyDefaultFeeDenom: signOptions.useOneClickTrading,
+          onlyDefaultFeeDenom:
+            signOptions.useOneClickTrading || !walletSupportsAltFeeTokens,
           gasMultiplier: GasMultiplier,
         },
       });

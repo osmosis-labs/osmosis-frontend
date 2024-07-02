@@ -17,7 +17,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     windowPropertyName: "keplr",
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: ["notifications"],
+    features: ["notifications", "alt-fee-tokens"],
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
@@ -60,7 +60,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: [],
+    features: ["alt-fee-tokens"],
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -71,7 +71,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     windowPropertyName: "leap",
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
-    features: ["notifications"],
+    features: ["notifications", "alt-fee-tokens"],
   },
   {
     ...CosmosKitWalletList["leap-cosmos-mobile"],
@@ -152,7 +152,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
 
     stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
     governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
-    features: [],
+    features: ["alt-fee-tokens"],
   },
   {
     ...CosmosKitWalletList["okxwallet-extension"],
