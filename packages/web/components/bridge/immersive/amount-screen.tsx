@@ -1322,7 +1322,8 @@ export const AmountScreen = observer(
                     isLoadingBridgeQuote ||
                     isLoadingBridgeTransaction ||
                     cryptoAmount === "" ||
-                    cryptoAmount === "0"
+                    cryptoAmount === "0" ||
+                    isNil(selectedQuote)
                   }
                   className="w-full text-h6 font-h6"
                   variant={
@@ -1330,6 +1331,9 @@ export const AmountScreen = observer(
                       ? "destructive"
                       : "default"
                   }
+                  onClick={() => {
+                    setCurrentScreen(ImmersiveBridgeScreens.Review);
+                  }}
                 >
                   {buttonText}
                 </Button>
