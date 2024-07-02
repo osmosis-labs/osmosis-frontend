@@ -7,16 +7,13 @@ import { getAddress } from "viem";
 
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
-import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
+import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
+import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
-import { Button } from "~/components/ui/button";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useStore } from "~/stores";
 
-export type SupportedAsset = ReturnType<
-  typeof useBridgesSupportedAssets
->["supportedAssetsByChainId"][string][number];
+import { ReviewScreen } from "./review-screen";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
 
@@ -26,7 +23,7 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
-export const AmountAndConfirmationScreen = observer(
+export const AmountAndReviewScreen = observer(
   ({
     direction,
     selectedAssetDenom,
@@ -43,7 +40,8 @@ export const AmountAndConfirmationScreen = observer(
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
     // Wallets
-    const { address: evmAddress } = useEvmWalletAccount();
+    const { address: evmAddress, connector: evmConnector } =
+      useEvmWalletAccount();
 
     const fromChainCosmosAccount =
       fromChain?.chainType === "evm" || isNil(fromChain)
@@ -55,11 +53,24 @@ export const AmountAndConfirmationScreen = observer(
         ? undefined
         : accountStore.getWallet(toChain.chainId);
 
-    const quote = useBridgeQuote({
-      toAddress:
-        toChain?.chainType === "evm"
-          ? evmAddress
-          : toChainCosmosAccount?.address,
+    const fromAddress =
+      fromChain?.chainType === "evm"
+        ? evmAddress
+        : fromChainCosmosAccount?.address;
+    const toAddress =
+      toChain?.chainType === "evm" ? evmAddress : toChainCosmosAccount?.address;
+
+    const fromWalletIcon =
+      fromChain?.chainType === "evm"
+        ? evmConnector?.icon
+        : fromChainCosmosAccount?.walletInfo.logo;
+    const toWalletIcon =
+      toChain?.chainType === "evm"
+        ? evmConnector?.icon
+        : toChainCosmosAccount?.walletInfo.logo;
+
+    const quote = useBridgeQuotes({
+      toAddress,
       toChain: toChain,
       toAsset: destinationAsset
         ? {
@@ -71,10 +82,7 @@ export const AmountAndConfirmationScreen = observer(
             denom: destinationAsset.denom,
           }
         : undefined,
-      fromAddress:
-        fromChain?.chainType === "evm"
-          ? evmAddress
-          : fromChainCosmosAccount?.address,
+      fromAddress,
       fromChain: fromChain,
       fromAsset: sourceAsset
         ? {
@@ -105,7 +113,7 @@ export const AmountAndConfirmationScreen = observer(
     return (
       <>
         <Screen screenName={ImmersiveBridgeScreens.Amount}>
-          {() => (
+          {({ setCurrentScreen }) => (
             <AmountScreen
               direction={direction}
               selectedDenom={selectedAssetDenom!}
@@ -122,16 +130,40 @@ export const AmountAndConfirmationScreen = observer(
               fiatAmount={fiatAmount}
               setFiatAmount={setFiatAmount}
               quote={quote}
+              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreens.Review)}
             />
           )}
         </Screen>
         <Screen screenName={ImmersiveBridgeScreens.Review}>
           {({ goBack }) => (
-            <div>
-              <h6>Step 3: Review</h6>
-              <Button onClick={goBack}>Back</Button>
-              <Button onClick={onClose}>Close</Button>
-            </div>
+            <>
+              {fromChain &&
+                toChain &&
+                fromAddress &&
+                toAddress &&
+                fromWalletIcon &&
+                toWalletIcon &&
+                sourceAsset &&
+                destinationAsset && (
+                  <ReviewScreen
+                    direction={direction}
+                    selectedDenom={selectedAssetDenom!}
+                    fromChain={fromChain}
+                    toChain={toChain}
+                    fromAsset={sourceAsset}
+                    toAsset={destinationAsset}
+                    fromAddress={fromAddress}
+                    toAddress={toAddress}
+                    fromWalletIcon={fromWalletIcon}
+                    toWalletIcon={toWalletIcon}
+                    quote={quote}
+                    onCancel={goBack}
+                    onConfirm={() => {
+                      quote.onTransfer();
+                    }}
+                  />
+                )}
+            </>
           )}
         </Screen>
       </>

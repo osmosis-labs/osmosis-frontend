@@ -1,4 +1,4 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
   BridgeChain,
@@ -169,6 +169,14 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...quote,
           input: {
             ...quote.input,
+            amount: new CoinPretty(
+              {
+                coinDenom: quote.input.denom,
+                coinMinimalDenom: quote.input.address,
+                coinDecimals: quote.input.decimals,
+              },
+              quote.input.amount
+            ),
             fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
           },
           expectedOutput: {
@@ -285,7 +293,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             }
 
             return {
-              prettyName: cosmosChain.chain_name,
+              prettyName: cosmosChain.pretty_name,
               chainId: cosmosChain.chain_id,
               chainType,
             };
