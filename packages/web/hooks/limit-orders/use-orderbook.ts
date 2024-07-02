@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/server";
+import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
@@ -266,6 +267,8 @@ export const useActiveLimitOrdersByOrderbook = ({
   };
 };
 
+export type DisplayableLimitOrder = MappedLimitOrder;
+
 export const useOrderbookAllActiveOrders = ({
   userAddress,
 }: {
@@ -292,21 +295,8 @@ export const useOrderbookAllActiveOrders = ({
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
-  const ordersWithDenoms = useMemo(() => {
-    return allOrders.map((o) => {
-      const orderbook = orderbooks.find(
-        (ob) => ob.contractAddress === o.orderbookAddress
-      );
-      return {
-        ...o,
-        baseDenom: orderbook?.baseDenom ?? "",
-        quoteDenom: orderbook?.quoteDenom ?? "",
-      };
-    });
-  }, [allOrders, orderbooks]);
-
   return {
-    orders: ordersWithDenoms,
+    orders: allOrders,
     isLoading,
     fetchNextPage,
     isFetching,

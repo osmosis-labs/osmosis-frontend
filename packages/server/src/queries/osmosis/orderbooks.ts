@@ -145,3 +145,25 @@ export const queryOrderbookSpotPrice = createNodeQuery<
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
 });
+
+interface OrderbookDenomsResponse {
+  data: {
+    quote_denom: string;
+    base_denom: string;
+  };
+}
+
+export const queryOrderbookDenoms = createNodeQuery<
+  OrderbookDenomsResponse,
+  {
+    orderbookAddress: string;
+  }
+>({
+  path: ({ orderbookAddress }) => {
+    const msg = JSON.stringify({
+      denoms: {},
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
