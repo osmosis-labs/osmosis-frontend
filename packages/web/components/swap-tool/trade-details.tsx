@@ -309,7 +309,7 @@ export const TradeDetails = ({
   );
 };
 
-function Closer({
+export function Closer({
   close,
   isInAmountEmpty,
 }: {
