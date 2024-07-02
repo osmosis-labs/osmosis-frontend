@@ -89,8 +89,6 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       (asset) => asset.coinMinimalDenom === toAsset.address
     ) ?? assetsInOsmosis?.[0];
 
-  console.log({ can: quote.userCanInteract });
-
   return (
     <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
       <h5 className="pb-6 text-center">
