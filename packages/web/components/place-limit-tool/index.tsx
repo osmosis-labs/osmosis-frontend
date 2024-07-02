@@ -57,6 +57,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       useQueryParams: false,
       baseDenom: base,
       quoteDenom: quote,
+      type,
     });
 
     // Adjust price to base price if the type changes to "market"
@@ -120,9 +121,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ) : (
             <div className="inline-flex items-center gap-1 py-3.5">
               <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} price ≈{" "}
+                {swapState.baseAsset?.coinDenom} price ≈{" "}
                 {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
-                {swapState.quoteDenom}
+                {swapState.quoteAsset?.coinDenom}
               </span>
             </div>
           )}
@@ -151,7 +152,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     !swapState.inAmountInput.inputAmount ||
                     swapState.inAmountInput.inputAmount === "0" ||
                     (!swapState.priceState.isValidPrice &&
-                      swapState.priceState.orderPrice.length > 0)
+                      swapState.priceState.orderPrice.length > 0) ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.inAmountInput.isEmpty ||
+                        !Boolean(swapState.marketState.quote) ||
+                        Boolean(swapState.marketState.error) ||
+                        Boolean(swapState.marketState.networkFeeError)))
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
