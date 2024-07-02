@@ -15,10 +15,10 @@ export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
   const { percentFilled, status } = order;
 
   const roundedAmountFilled = useMemo(() => {
-    if (percentFilled.lt(new Dec(1)) && !percentFilled.isZero()) {
+    if (percentFilled.lt(new Dec(0.01)) && !percentFilled.isZero()) {
       return new Int(1);
     }
-    return percentFilled.round().mul(new Int(100));
+    return percentFilled.mul(new Dec(100)).round();
   }, [percentFilled]);
 
   const progressSegments = useMemo(
