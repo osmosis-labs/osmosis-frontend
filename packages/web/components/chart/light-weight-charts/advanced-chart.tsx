@@ -69,7 +69,6 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
         "symbol_search_hot_key",
         "symbol_info",
         "go_to_date",
-        "timeframes_toolbar",
         "header_quick_search",
         "header_symbol_search",
         "symbol_search_hot_key",
