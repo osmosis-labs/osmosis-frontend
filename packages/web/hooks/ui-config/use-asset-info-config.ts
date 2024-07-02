@@ -52,8 +52,8 @@ export const useAssetInfoConfig = (
         numRecentFrames = 30;
         break;
       case "1y":
-        frame = 1440;
-        numRecentFrames = 365;
+        frame = 10080;
+        numRecentFrames = 54;
         break;
       case "all":
         frame = 43800;
