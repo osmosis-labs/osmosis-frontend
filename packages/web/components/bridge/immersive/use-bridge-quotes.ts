@@ -26,7 +26,17 @@ import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
 
-export const useBridgeQuote = ({
+export type BridgeQuotes = ReturnType<typeof useBridgeQuotes>;
+
+/**
+ * Sends and collects bridge qoutes from multiple bridge providers given
+ * the from and to chain & asset info. Defaults selection to the cheapest quote.
+ *
+ * Includes utilities for selecting a preferred quote,
+ * and sending the transaction for the
+ * currently selected quote.
+ */
+export const useBridgeQuotes = ({
   direction,
 
   inputAmount: inputAmountRaw,
@@ -576,11 +586,11 @@ export const useBridgeQuote = ({
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (!isEvmWalletConnected) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: evmConnector?.name ?? "Unknown",
+      walletName: evmConnector?.name ?? "EVM Wallet",
     });
   } else if (isDeposit && !isCorrectEvmChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: evmConnector?.name ?? "Unknown",
+      walletName: evmConnector?.name ?? "EVM Wallet",
     });
   } else if (Boolean(someError)) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");

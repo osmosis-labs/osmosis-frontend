@@ -25,9 +25,8 @@ export function useConnectWalletModalRedirect(
   _onRequestClose: () => void,
   connectWalletMessage = t("connectWallet")
 ) {
-  const { accountStore, chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getWallet(chainId);
+  const { accountStore } = useStore();
+  const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
 
   const { onOpenWalletSelect } = useWalletSelect();
 
@@ -63,7 +62,9 @@ export function useConnectWalletModalRedirect(
           disabled={false}
           onClick={() => {
             onOpenWalletSelect({
-              walletOptions: [{ walletType: "cosmos", chainId }],
+              walletOptions: [
+                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+              ],
             }); // show select connect modal
             setShowSelf(false);
           }}
