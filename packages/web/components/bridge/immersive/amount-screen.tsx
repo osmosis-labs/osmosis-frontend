@@ -139,28 +139,35 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const destinationAccount = accountStore.getWallet(
-      accountStore.osmosisChainId
-    );
+    const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
     const {
       address: evmAddress,
       connector: evmConnector,
       isConnected: isEvmWalletConnected,
     } = useEvmWalletAccount();
 
-    const cosmosCounterpartyAccountRepo =
+    const fromCosmosCounterpartyAccountRepo =
       fromChain?.chainType === "evm" || isNil(fromChain)
         ? undefined
         : accountStore.getWalletRepo(fromChain.chainId);
-    const cosmosCounterpartyAccount =
+    const fromCosmosCounterpartyAccount =
       fromChain?.chainType === "evm" || isNil(fromChain)
         ? undefined
         : accountStore.getWallet(fromChain.chainId);
 
-    const sourceAddress =
-      fromChain?.chainType === "evm"
+    const toCosmosCounterpartyAccountRepo =
+      toChain?.chainType === "evm" || isNil(toChain)
+        ? undefined
+        : accountStore.getWalletRepo(toChain.chainId);
+    const toCosmosCounterpartyAccount =
+      toChain?.chainType === "evm" || isNil(toChain)
+        ? undefined
+        : accountStore.getWallet(toChain.chainId);
+
+    const toAddress =
+      toChain?.chainType === "evm"
         ? evmAddress
-        : cosmosCounterpartyAccount?.address;
+        : toCosmosCounterpartyAccount?.address;
 
     const { data: assetsInOsmosis } =
       api.edge.assets.getCanonicalAssetWithVariants.useQuery(
@@ -287,7 +294,7 @@ export const AmountScreen = observer(
                 SupportedAsset,
                 { chainType: "cosmos" }
               >[],
-              userCosmosAddress: cosmosCounterpartyAccount?.address,
+              userCosmosAddress: fromCosmosCounterpartyAccount?.address,
             },
         {
           enabled: !isNil(fromChain) && !isNil(supportedSourceAssets),
@@ -434,40 +441,48 @@ export const AmountScreen = observer(
     useEffect(() => {
       if (!fromChain || !toChain) return;
 
+      const account =
+        direction === "deposit"
+          ? fromCosmosCounterpartyAccount
+          : toCosmosCounterpartyAccount;
+      const accountRepo =
+        direction === "deposit"
+          ? fromCosmosCounterpartyAccountRepo
+          : toCosmosCounterpartyAccountRepo;
       const chain = direction === "deposit" ? fromChain : toChain;
 
       if (
         // If the chain is an EVM chain, we don't need to connect the cosmos chain
         chain.chainType !== "cosmos" ||
         // Or if the account is already connected
-        !!cosmosCounterpartyAccount?.address ||
+        !!account?.address ||
         // Or if there's no available cosmos chain
         !firstSupportedCosmosChain ||
         // Or if the account is already connected
-        !!cosmosCounterpartyAccountRepo?.current
+        !!accountRepo?.current
       ) {
         return;
       }
 
-      cosmosCounterpartyAccountRepo
-        ?.connect(destinationAccount?.walletName)
-        .catch(() =>
-          // Display the connect modal if the user for some reason rejects the connection
-          onOpenWalletSelect({
-            walletOptions: [
-              { walletType: "cosmos", chainId: String(chain.chainId) },
-            ],
-          })
-        );
+      accountRepo?.connect(osmosisAccount?.walletName).catch(() =>
+        // Display the connect modal if the user for some reason rejects the connection
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: String(chain.chainId) },
+          ],
+        })
+      );
     }, [
-      destinationAccount?.walletName,
-      cosmosCounterpartyAccount?.address,
-      cosmosCounterpartyAccountRepo,
       direction,
       firstSupportedCosmosChain,
       fromChain,
+      fromCosmosCounterpartyAccount,
+      fromCosmosCounterpartyAccountRepo,
       onOpenWalletSelect,
+      osmosisAccount?.walletName,
       toChain,
+      toCosmosCounterpartyAccount,
+      toCosmosCounterpartyAccountRepo,
     ]);
 
     /**
@@ -807,14 +822,16 @@ export const AmountScreen = observer(
 
                     <WalletDisplay
                       icon={
-                        fromChain?.chainType === "evm"
+                        (direction === "deposit" ? fromChain : toChain)
+                          ?.chainType === "evm"
                           ? evmConnector?.icon
-                          : cosmosCounterpartyAccount?.walletInfo.logo
+                          : fromCosmosCounterpartyAccount?.walletInfo.logo
                       }
                       name={
-                        fromChain?.chainType === "evm"
+                        (direction === "deposit" ? fromChain : toChain)
+                          ?.chainType === "evm"
                           ? evmConnector?.name
-                          : cosmosCounterpartyAccount?.walletInfo.prettyName
+                          : fromCosmosCounterpartyAccount?.walletInfo.prettyName
                       }
                       suffix={
                         <Icon
@@ -837,16 +854,20 @@ export const AmountScreen = observer(
                       setChain(chain);
                       resetAssets();
                     }}
-                    evmChain={
-                      fromChain?.chainType === "evm"
-                        ? fromChain
-                        : firstSupportedEvmChain
-                    }
-                    cosmosChain={
-                      fromChain?.chainType === "cosmos"
-                        ? fromChain
-                        : firstSupportedCosmosChain
-                    }
+                    evmChain={(() => {
+                      const chain =
+                        direction === "deposit" ? fromChain : toChain;
+                      return chain?.chainType === "evm"
+                        ? chain
+                        : firstSupportedEvmChain;
+                    })()}
+                    cosmosChain={(() => {
+                      const chain =
+                        direction === "deposit" ? fromChain : toChain;
+                      return chain?.chainType === "cosmos"
+                        ? chain
+                        : firstSupportedCosmosChain;
+                    })()}
                   />
                 </>
               ) : (
@@ -860,12 +881,12 @@ export const AmountScreen = observer(
                     icon={
                       fromChain?.chainType === "evm"
                         ? evmConnector?.icon
-                        : destinationAccount?.walletInfo.logo
+                        : osmosisAccount?.walletInfo.logo
                     }
                     name={
                       fromChain?.chainType === "evm"
                         ? evmConnector?.name
-                        : destinationAccount?.walletInfo.prettyName
+                        : osmosisAccount?.walletInfo.prettyName
                     }
                   />
                 </div>
@@ -1257,7 +1278,9 @@ export const AmountScreen = observer(
                   disabled={
                     !isNil(buttonErrorMessage) ||
                     isLoadingBridgeQuote ||
-                    isLoadingBridgeTransaction
+                    isLoadingBridgeTransaction ||
+                    cryptoAmount === "" ||
+                    cryptoAmount === "0"
                   }
                   className="w-full text-h6 font-h6"
                   variant={
@@ -1285,7 +1308,7 @@ export const AmountScreen = observer(
                   toAsset={destinationAsset}
                   fromChain={fromChain}
                   toChain={toChain}
-                  toAddress={sourceAddress}
+                  toAddress={toAddress}
                   onRequestClose={() => setAreMoreOptionsVisible(false)}
                 />
               </>
