@@ -156,7 +156,10 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        if (data.route.params.toToken.address.toLowerCase() !== toAsset.address.toLowerCase()) {
+        if (
+          data.route.params.toToken.address.toLowerCase() !==
+          toAsset.address.toLowerCase()
+        ) {
           throw new BridgeQuoteError({
             bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
