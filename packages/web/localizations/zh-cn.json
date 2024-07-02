@@ -921,7 +921,21 @@
     "moreDepositOptions": "更多存款选择",
     "moreWithdrawOptions": "更多提款选项",
     "convertTo": "转换成",
+    "depositAs": "存款为",
+    "withdrawAs": "提款方式",
     "recommended": "受到推崇的",
+    "fee": "费用",
+    "fees": "费用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前无法计算{networkName}上的网络费用。交易批准后，网络费用应显示在您的钱包中。",
+    "free": "自由的",
+    "cheapest": "最便宜的",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "资产",
+      "amount": "数量",
+      "review": "审查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",
@@ -929,7 +943,33 @@
       "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
       "depositWith": "存款",
       "withdrawWith": "提款"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "选择要存入的资产",
+      "titleWithdraw": "选择要提取的资产",
+      "searchAssets": "搜索资产"
+    },
+    "bridgeNetworkSelect": {
+      "title": "选择网络",
+      "searchPlaceholder": "搜索支持的网络"
+    },
+    "pendingWithdraw": "等待提款",
+    "pendingDeposit": "待存款",
+    "completedWithdraw": "提现完成",
+    "completedDeposit": "存款已完成",
+    "failedWithdraw": "提现失败",
+    "failedDeposit": "存款失败",
+    "connectionError": "连接错误",
+    "transferDetails": "转账详情",
+    "provider": "提供者",
+    "estimatedTime": "预计时间",
+    "providerFees": "供应商费用",
+    "networkFee": "{networkName}网络费",
+    "totalFees": "总费用",
+    "estimatedAmountReceived": "预计收到金额",
+    "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
+    "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
+    "connect": "连接"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

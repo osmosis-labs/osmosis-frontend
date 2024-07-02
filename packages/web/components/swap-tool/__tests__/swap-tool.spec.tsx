@@ -21,6 +21,16 @@ import { appRouter } from "~/server/api/root-router";
 
 jest.mock("next/router", () => jest.requireActual("next-router-mock"));
 
+// Mock the ResizeObserver
+const ResizeObserverMock = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+// Stub the global ResizeObserver
+global.ResizeObserver = ResizeObserverMock;
+
 const createCaller = createCallerFactory(appRouter);
 const caller = createCaller({
   /**

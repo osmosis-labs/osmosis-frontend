@@ -1,5 +1,5 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { AssetList, Chain } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import {
   aggregateCoinsByDenom,
   isNil,
@@ -16,7 +16,7 @@ import {
   getUserTotalDelegatedCoin,
   getUserTotalUndelegations,
 } from "../staking/user";
-import { Asset, AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
+import { AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -27,24 +27,24 @@ export type MaybeUserAssetCoin = Partial<{
 }>;
 
 /** Given an asset, appends the user's balance if applicable. */
-export async function getAssetWithUserBalance<TAsset extends Asset>({
+export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
   assetLists,
   chainList,
   asset,
-  userOsmoAddress,
+  userCosmosAddress,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
-  userOsmoAddress?: string;
+  userCosmosAddress?: string;
 }): Promise<TAsset & MaybeUserAssetCoin> {
-  if (!userOsmoAddress) return asset;
+  if (!userCosmosAddress) return asset;
 
   const userAssets = await mapGetAssetsWithUserBalances({
     assetLists,
     chainList,
     assets: [asset],
-    userOsmoAddress,
+    userCosmosAddress: userCosmosAddress,
     includePreview: true,
   });
   return userAssets[0];
@@ -53,21 +53,23 @@ export async function getAssetWithUserBalance<TAsset extends Asset>({
 /** Maps user coin data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
-export async function mapGetAssetsWithUserBalances<TAsset extends Asset>({
+export async function mapGetAssetsWithUserBalances<
+  TAsset extends MinimalAsset
+>({
   poolId,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
-  userOsmoAddress?: string;
+  userCosmosAddress?: string;
   sortFiatValueDirection?: SortDirection;
   /**
    * If poolId is provided, only include assets that are part of the pool.
    */
   poolId?: string;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
-  const { userOsmoAddress, search, sortFiatValueDirection } = params;
+  const { userCosmosAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
 
@@ -85,11 +87,11 @@ export async function mapGetAssetsWithUserBalances<TAsset extends Asset>({
     ) as TAsset[];
   }
 
-  if (!userOsmoAddress) return assets;
+  if (!userCosmosAddress) return assets;
 
   const { balances } = await queryBalances({
     ...params,
-    bech32Address: userOsmoAddress,
+    bech32Address: userCosmosAddress,
   });
 
   const eventualUserAssets = assets

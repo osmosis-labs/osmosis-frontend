@@ -60,13 +60,13 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
       {
         label: t("assets.table.depositButton"),
         onClick: () => {
-          startBridge("deposit");
+          startBridge({ direction: "deposit" });
         },
       },
       {
         label: t("assets.table.withdrawButton"),
         onClick: () => {
-          startBridge("withdraw");
+          startBridge({ direction: "withdraw" });
         },
       },
     ],
@@ -75,7 +75,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableDeposit = useCallback(
     (_chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
-        bridgeAsset(coinDenom, "deposit");
+        bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
       }
     },
     [bridgeAsset]
@@ -83,7 +83,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableWithdraw = useCallback(
     (_chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
-        bridgeAsset(coinDenom, "withdraw");
+        bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
       }
     },
     [bridgeAsset]

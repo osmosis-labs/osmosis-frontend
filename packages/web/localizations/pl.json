@@ -921,7 +921,21 @@
     "moreDepositOptions": "Więcej opcji depozytu",
     "moreWithdrawOptions": "Więcej opcji wypłat",
     "convertTo": "Konwertuj na",
+    "depositAs": "Wpłać jako",
+    "withdrawAs": "Wycofaj jako",
     "recommended": "Zalecana",
+    "fee": "opłata",
+    "fees": "opłaty",
+    "unknown": "Nieznany",
+    "unknownFeeTooltip": "Obecnie nie można obliczyć opłat sieciowych dla {networkName} . Opłaty sieciowe powinny zostać wyświetlone w Twoim portfelu po zatwierdzeniu transakcji.",
+    "free": "Bezpłatny",
+    "cheapest": "Najtańszy",
+    "fastest": "Najszybszy",
+    "stepLabels": {
+      "asset": "Zaleta",
+      "amount": "Kwota",
+      "review": "Recenzja"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
@@ -929,7 +943,33 @@
       "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wybierz zasób do zdeponowania",
+      "titleWithdraw": "Wybierz zasób do wypłaty",
+      "searchAssets": "Wyszukaj zasoby"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Wybierz sieć",
+      "searchPlaceholder": "Wyszukaj obsługiwane sieci"
+    },
+    "pendingWithdraw": "Oczekuje na wycofanie",
+    "pendingDeposit": "Oczekujący depozyt",
+    "completedWithdraw": "Wypłata zakończona",
+    "completedDeposit": "Depozyt zrealizowany",
+    "failedWithdraw": "Wypłata nie powiodła się",
+    "failedDeposit": "Wpłata nie powiodła się",
+    "connectionError": "Błąd połączenia",
+    "transferDetails": "Szczegóły przelewu",
+    "provider": "Dostawca",
+    "estimatedTime": "Szacowany czas",
+    "providerFees": "Opłaty dostawcy",
+    "networkFee": "{networkName} Opłata sieciowa",
+    "totalFees": "Wszystkie koszty",
+    "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
+    "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
+    "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
+    "connect": "Łączyć"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

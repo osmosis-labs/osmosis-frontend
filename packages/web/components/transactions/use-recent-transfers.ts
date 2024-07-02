@@ -26,14 +26,14 @@ const osmosisChainId = ChainList[0].chain_id;
 
 /** Gets recent (pending and recent) bridge transfers from history stores. Requires caller to wrap in `observer`. */
 export function useRecentTransfers(address?: string): RecentTransfer[] {
-  const { ibcTransferHistoryStore, nonIbcBridgeHistoryStore } = useStore();
+  const { ibcTransferHistoryStore, transferHistoryStore } = useStore();
 
   if (!address) {
     return [];
   }
 
   // reconcile histories from IBC and non-IBC history stores
-  return nonIbcBridgeHistoryStore
+  return transferHistoryStore
     .getHistoriesByAccount(address)
     .map(
       ({

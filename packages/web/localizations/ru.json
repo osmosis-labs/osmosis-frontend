@@ -921,7 +921,21 @@
     "moreDepositOptions": "Больше вариантов депозита",
     "moreWithdrawOptions": "Больше вариантов вывода",
     "convertTo": "Перевести в",
+    "depositAs": "Депозит как",
+    "withdrawAs": "Вывести как",
     "recommended": "рекомендуемые",
+    "fee": "платеж",
+    "fees": "сборы",
+    "unknown": "Неизвестный",
+    "unknownFeeTooltip": "В настоящее время сетевые сборы для {networkName} не могут быть рассчитаны. Сетевые комиссии должны отображаться в вашем кошельке после одобрения транзакции.",
+    "free": "Бесплатно",
+    "cheapest": "Самый дешевый",
+    "fastest": "Самый быстрый",
+    "stepLabels": {
+      "asset": "Объект",
+      "amount": "Количество",
+      "review": "Обзор"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
@@ -929,7 +943,33 @@
       "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Выберите актив для депозита",
+      "titleWithdraw": "Выберите актив для вывода",
+      "searchAssets": "Поиск активов"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Выберите сеть",
+      "searchPlaceholder": "Поиск поддерживаемых сетей"
+    },
+    "pendingWithdraw": "Ожидание вывода",
+    "pendingDeposit": "Ожидается депозит",
+    "completedWithdraw": "Вывод завершен",
+    "completedDeposit": "Депозит завершен",
+    "failedWithdraw": "Вывести не удалось",
+    "failedDeposit": "Депозит не выполнен",
+    "connectionError": "Ошибка подключения",
+    "transferDetails": "Детали трансфера",
+    "provider": "Поставщик",
+    "estimatedTime": "Расчетное время",
+    "providerFees": "Комиссия поставщика",
+    "networkFee": "{networkName} Сетевая плата",
+    "totalFees": "Общая сумма сборов",
+    "estimatedAmountReceived": "Ориентировочная полученная сумма",
+    "slippageWarning": "Ожидаемый результат этой транзакции значительно ниже входной суммы, что может привести к получению другой конечной суммы, чем ожидалось.",
+    "priceImpactWarning": "Влияние этой транзакции на цену составляет {priceImpact} , что может повлиять на конечную полученную сумму.",
+    "connect": "Соединять"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

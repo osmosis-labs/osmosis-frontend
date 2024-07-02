@@ -921,7 +921,21 @@
     "moreDepositOptions": "Más opciones de depósito",
     "moreWithdrawOptions": "Más opciones de retiro",
     "convertTo": "Convertir a",
+    "depositAs": "Depositar como",
+    "withdrawAs": "Retirarse como",
     "recommended": "Recomendado",
+    "fee": "tarifa",
+    "fees": "honorarios",
+    "unknown": "Desconocido",
+    "unknownFeeTooltip": "Actualmente, las tarifas de red de {networkName} no se pueden calcular. Las tarifas de la red deben aparecer en su billetera al momento de la aprobación de la transacción.",
+    "free": "Gratis",
+    "cheapest": "Lo mas barato",
+    "fastest": "Lo más rápido",
+    "stepLabels": {
+      "asset": "Activo",
+      "amount": "Cantidad",
+      "review": "Revisar"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",
@@ -929,7 +943,33 @@
       "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Seleccione un activo para depositar",
+      "titleWithdraw": "Seleccione un activo para retirar",
+      "searchAssets": "Buscar activos"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Seleccione la red",
+      "searchPlaceholder": "Buscar redes compatibles"
+    },
+    "pendingWithdraw": "A la espera de Retiro",
+    "pendingDeposit": "Deposito pendiente",
+    "completedWithdraw": "Retiro completado",
+    "completedDeposit": "Depósito completado",
+    "failedWithdraw": "Retiro fallido",
+    "failedDeposit": "El depósito falló",
+    "connectionError": "Error de conexión",
+    "transferDetails": "Detalles de la transferencia",
+    "provider": "Proveedor",
+    "estimatedTime": "Hora prevista",
+    "providerFees": "Tarifas del proveedor",
+    "networkFee": "{networkName} Tarifa de red",
+    "totalFees": "Tarifas totales",
+    "estimatedAmountReceived": "Cantidad estimada recibida",
+    "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
+    "priceImpactWarning": "El impacto en el precio de esta transacción es {priceImpact} , lo que puede influir en el importe final recibido.",
+    "connect": "Conectar"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
