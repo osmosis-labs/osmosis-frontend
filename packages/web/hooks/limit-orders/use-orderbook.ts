@@ -293,6 +293,11 @@ export const useOrderbookAllActiveOrders = ({
     }
   );
 
+  const { data: historicalOrders } =
+    api.edge.orderbooks.getHistoricalOrders.useQuery({
+      userOsmoAddress: userAddress,
+    });
+
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
