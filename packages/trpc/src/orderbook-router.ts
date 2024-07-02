@@ -54,10 +54,9 @@ export type MappedLimitOrder = Omit<
 
 function mapOrderStatus(order: LimitOrder, percentFilled: Dec): OrderStatus {
   const quantInt = parseInt(order.quantity);
-  const placedQuantInt = parseInt(order.placed_quantity);
   if (quantInt === 0 || percentFilled.equals(new Dec(1))) return "filled";
-  if (quantInt === placedQuantInt) return "open";
-  if (quantInt < placedQuantInt) return "partiallyFilled";
+  if (percentFilled.isZero()) return "open";
+  if (percentFilled.lt(new Dec(1))) return "partiallyFilled";
 
   return "open";
 }
@@ -69,11 +68,9 @@ function defaultSortOrders(
   if (orderA.status === orderB.status) {
     return orderB.placed_at - orderA.placed_at;
   }
-  return orderA.status === "filled"
-    ? 1
-    : orderA.status === "partiallyFilled" || orderA.status === "open"
-    ? 1
-    : orderB.placed_at - orderA.placed_at;
+  if (orderA.status === "filled") return -1;
+  if (orderB.status === "filled") return 1;
+  return orderB.placed_at - orderA.placed_at;
 }
 
 async function getTickInfoAndTransformOrders(
@@ -322,15 +319,12 @@ export const orderbookRouter = createTRPCRouter({
                 baseAsset
               );
 
-              return [...mappedOrders, ...mappedHistoricalOrders].sort(
-                defaultSortOrders
-              );
+              return [...mappedOrders, ...mappedHistoricalOrders];
             }
           );
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flatMap((p) => p);
-
-          return allOrders;
+          return allOrders.sort(defaultSortOrders);
         },
         cacheKey: JSON.stringify([
           "all-active-orders",

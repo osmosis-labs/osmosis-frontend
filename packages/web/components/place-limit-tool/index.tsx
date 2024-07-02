@@ -121,9 +121,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ) : (
             <div className="inline-flex items-center gap-1 py-3.5">
               <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} price ≈{" "}
+                {swapState.baseAsset?.coinDenom} price ≈{" "}
                 {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
-                {swapState.quoteDenom}
+                {swapState.quoteAsset?.coinDenom}
               </span>
             </div>
           )}
