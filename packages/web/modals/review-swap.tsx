@@ -164,14 +164,14 @@ export function ReviewSwapModal({
                 }
               />
               <RecapRow left={t("limitOrders.receiveMin")} right={<></>} />
-              <div className="body2 flex h-8 w-full items-center justify-between">
+              {/* <div className="body2 flex h-8 w-full items-center justify-between">
                 <span className="text-osmoverse-300">
                   {t("limitOrders.moreDetails")}
                 </span>
                 <span className="cursor-pointer text-wosmongton-300">
                   {t("swap.autoRouterToggle.show")}
                 </span>
-              </div>
+              </div> */}
             </div>
             {/* <div className="body2 flex h-[38px] w-full items-center justify-center">
               <span className="text-caption text-osmoverse-300">

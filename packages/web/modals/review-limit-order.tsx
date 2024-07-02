@@ -227,7 +227,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               }
             />
           )}
-          {orderType !== "limit" && (
+          {/* {orderType !== "limit" && (
             <div className="body2 flex h-8 w-full items-center justify-between">
               <span className="text-osmoverse-300">
                 {t("limitOrders.moreDetails")}
@@ -236,7 +236,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                 {t("swap.autoRouterToggle.show")}
               </span>
             </div>
-          )}
+          )} */}
           {/* <div className="body2 mt-3 flex h-[38px] w-full items-center justify-center">
             <span className="text-caption text-osmoverse-300">
               Disclaimer lorem ipsum.{" "}
