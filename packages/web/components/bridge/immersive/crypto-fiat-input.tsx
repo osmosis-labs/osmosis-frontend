@@ -209,18 +209,20 @@ export const CryptoFiatInput: FunctionComponent<{
   );
 };
 
-function calcTextSizeClass(numChars: number): string {
-  if (numChars <= 8) {
-    return "text-4xl";
-  } else if (numChars <= 10) {
-    return "text-3xl";
-  } else if (numChars <= 12) {
-    return "text-2xl";
-  } else if (numChars <= 18) {
-    return "text-xl";
-  } else if (numChars <= 24) {
-    return "text-lg";
+const calcTextSizeClass = (numChars: number): string => {
+  const sizeMapping: { [key: number]: string } = {
+    8: "text-4xl",
+    10: "text-3xl",
+    12: "text-2xl",
+    18: "text-xl",
+    24: "text-lg",
+  };
+
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
   }
 
   return "text-md";
-}
+};
