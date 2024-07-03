@@ -29,8 +29,8 @@ def wait_for_deployment(timeout):
     os.system(f'echo "{gh_out}" >> $GITHUB_ENV')
     os.system(f'echo Vercel deployment: "{gh_out}" >> $GITHUB_STEP_SUMMARY')
     for i in range(1, timeout):
-        print(f"Sleep for 60 seconds and get deployment uid {vercel_uid} and url: {vercel_url}")
-        time.sleep(60)
+        print(f"Sleep for 30 seconds and get deployment uid {vercel_uid} and url: {vercel_url}")
+        time.sleep(30)
         current_url = f"https://api.vercel.com/v13/deployments/{vercel_uid}"
         current_response = requests.get(current_url, headers=headers)
         status = current_response.json()['status']
@@ -43,4 +43,4 @@ def wait_for_deployment(timeout):
     return f"environment_url={vercel_url}"
 
 
-wait_for_deployment(20)
+wait_for_deployment(40)
