@@ -12,6 +12,8 @@ jobs:
     environment:
       name: prod_swap_test
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
       - name: print gh event
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -22,8 +24,6 @@ jobs:
           ls -la
           python -m pip install requests
           python main.py
-      - name: Check out repository
-        uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
