@@ -24,7 +24,7 @@ def wait_for_deployment(timeout):
         if deployment['meta']['githubCommitRef'] == branch_name:
             vercel_uid = deployment['uid']
             vercel_url = deployment['url']
-
+    print(f"::set-output name=environment_url::{vercel_url}")
     for i in range(1, timeout):
         # print(f"Sleep for 60 seconds and get deployment uid {vercel_uid} and url: {vercel_url}")
         time.sleep(60)

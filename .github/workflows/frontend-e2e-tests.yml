@@ -25,7 +25,7 @@ jobs:
           ls -la
           echo "### Hello wait step! :rocket:" >> $GITHUB_STEP_SUMMARY
           python -m pip install requests
-          python main.py >> "$GITHUB_OUTPUT"
+          python main.py
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
