@@ -20,6 +20,7 @@ interface Props
   extends Optional<InputProps<string>, "currentValue">,
     Disableable,
     CustomClasses {
+  inputKey?: string;
   /** Style of the component, see Figma. */
   style?: "no-border" | "enabled" | "active" | "error";
   type?: HTMLInputTypeAttribute;
@@ -39,6 +40,7 @@ interface Props
 }
 
 export const InputBox: FunctionComponent<Props> = ({
+  inputKey,
   currentValue,
   onInput,
   onFocus,
@@ -65,6 +67,18 @@ export const InputBox: FunctionComponent<Props> = ({
     onChange: onInput,
   });
 
+  const inputClassName_ = classNames(
+    "md:leading-0 w-full appearance-none bg-transparent pt-px align-middle leading-10 placeholder:text-osmoverse-500 md:p-0",
+    {
+      "text-white-disabled": disabled,
+      "text-white-high": currentValue != "" && !disabled,
+      "float-right text-right": rightEntry,
+      "pr-1": !trailingSymbol,
+    },
+    classes?.input,
+    inputClassName
+  );
+
   return (
     <div
       className={classNames(
@@ -90,12 +104,13 @@ export const InputBox: FunctionComponent<Props> = ({
       >
         {isAutosize ? (
           <AutosizeInput
+            key={inputKey}
             inputRef={(ref) => {
               if (inputRef) {
                 inputRef.current = ref;
               }
             }}
-            inputClassName={inputClassName}
+            inputClassName={inputClassName_}
             minWidth={0}
             value={inputValue}
             onInput={(e: any) => setValue(e.target.value)}
@@ -108,19 +123,10 @@ export const InputBox: FunctionComponent<Props> = ({
           />
         ) : (
           <input
+            key={inputKey}
             ref={inputRef}
             id="text-input"
-            className={classNames(
-              "md:leading-0 w-full appearance-none bg-transparent pt-px align-middle leading-10 placeholder:text-osmoverse-500 md:p-0",
-              {
-                "text-white-disabled": disabled,
-                "text-white-high": currentValue != "" && !disabled,
-                "float-right text-right": rightEntry,
-                "pr-1": !trailingSymbol,
-              },
-              classes?.input,
-              inputClassName
-            )}
+            className={inputClassName_}
             value={currentValue}
             placeholder={placeholder ?? ""}
             autoComplete="off"
