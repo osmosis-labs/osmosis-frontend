@@ -540,6 +540,7 @@ export const useBridgeQuotes = ({
 
     await tx.catch((e) => {
       console.error(transactionRequest.type, "transaction failed", e);
+      throw e;
     });
   };
 
