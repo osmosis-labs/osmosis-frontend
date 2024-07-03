@@ -19,8 +19,9 @@ jobs:
         run: |
           echo "$GITHUB_CONTEXT"
           echo "$BRANCH_NAME"
+          ls -la
           python -m pip install requests
-          cd .github && python main.py
+          python main.py
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
