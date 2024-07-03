@@ -23,7 +23,6 @@ jobs:
           echo "$GITHUB_CONTEXT"
           echo "$BRANCH_NAME"
           ls -la
-          echo "### Hello wait step! :rocket:" >> $GITHUB_STEP_SUMMARY
           python -m pip install requests
           python main.py
       - name: Setup Node.js
