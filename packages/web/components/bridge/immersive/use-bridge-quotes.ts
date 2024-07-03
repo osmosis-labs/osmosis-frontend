@@ -558,11 +558,15 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
   } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  } else if (!isEvmWalletConnected) {
+  } else if (!isEvmWalletConnected && fromChain?.chainType === "evm") {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (isDeposit && !isCorrectEvmChainSelected) {
+  } else if (
+    isDeposit &&
+    !isCorrectEvmChainSelected &&
+    fromChain?.chainType === "evm"
+  ) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
