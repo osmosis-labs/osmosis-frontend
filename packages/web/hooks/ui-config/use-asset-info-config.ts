@@ -44,19 +44,19 @@ export const useAssetInfoConfig = (
         numRecentFrames = 97;
         break;
       case "7d":
-        frame = 720;
-        numRecentFrames = 15;
+        frame = config.dataType === "price" ? 60 : 720;
+        numRecentFrames = config.dataType === "price" ? 168 : 15;
         break;
       case "1mo":
-        frame = 1440;
-        numRecentFrames = 30;
+        frame = config.dataType === "price" ? 240 : 1440;
+        numRecentFrames = config.dataType === "price" ? 180 : 30;
         break;
       case "1y":
-        frame = 10080;
-        numRecentFrames = 54;
+        frame = config.dataType === "price" ? 1440 : 10080;
+        numRecentFrames = config.dataType === "price" ? 365 : 54;
         break;
       case "all":
-        frame = 43800;
+        frame = config.dataType === "price" ? 10080 : 43800;
         break;
     }
 
@@ -64,7 +64,7 @@ export const useAssetInfoConfig = (
       timeFrame: frame,
       numRecentFrames,
     };
-  }, [config.historicalRange]);
+  }, [config.historicalRange, config.dataType]);
 
   const {
     data: historicalPriceData,
