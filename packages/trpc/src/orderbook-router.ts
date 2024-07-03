@@ -6,6 +6,7 @@ import {
   getOrderbookDenoms,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
+  getOrderbookPools,
   getOrderbookState,
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
@@ -291,15 +292,15 @@ export const orderbookRouter = createTRPCRouter({
                 historicalOrdersForContract.length === 0
               )
                 return [];
-              const { base_denom } = await getOrderbookDenoms({
+              const { base_denom, quote_denom } = await getOrderbookDenoms({
                 orderbookAddress: contractOsmoAddress,
                 chainList: ctx.chainList,
               });
-              // TODO: Use actual quote denom here
               const quoteAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
-                sourceDenom: "uusdc",
+                sourceDenom: quote_denom,
               });
+
               const baseAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
                 sourceDenom: base_denom,
@@ -369,14 +370,14 @@ export const orderbookRouter = createTRPCRouter({
           });
 
           if (resp.orders.length === 0) return [];
-          const { base_denom } = await getOrderbookDenoms({
+          const { base_denom, quote_denom } = await getOrderbookDenoms({
             orderbookAddress: contractOsmoAddress,
             chainList: ctx.chainList,
           });
           // TODO: Use actual quote denom here
           const quoteAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
-            sourceDenom: "uusdc",
+            sourceDenom: quote_denom,
           });
           const baseAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
@@ -405,4 +406,8 @@ export const orderbookRouter = createTRPCRouter({
       });
       return historicalOrders;
     }),
+  getPools: publicProcedure.query(async () => {
+    const pools = await getOrderbookPools();
+    return pools;
+  }),
 });

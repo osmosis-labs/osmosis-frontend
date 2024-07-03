@@ -69,7 +69,7 @@ export const usePlaceLimit = ({
     useQueryParams: false,
     useOtherCurrencies: false,
     forceSwapInPoolId: poolId,
-    maxSlippage: new Dec(1),
+    maxSlippage: new Dec(0),
   });
 
   const { inAmountInput } = marketState;
