@@ -4,11 +4,6 @@ import requests
 import os
 
 
-def set_output(name, value):
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-        print(f'{name}={value}', file=fh)
-
-
 def wait_for_deployment(timeout):
     branch_name = os.getenv('BRANCH_NAME')
     print(f"Wait for a deployment for a branch name: {branch_name}")
@@ -32,8 +27,6 @@ def wait_for_deployment(timeout):
             vercel_uid = deployment['uid']
             vercel_url = deployment['url']
 
-    set_output('environment_url', vercel_url)
-
     for i in range(1, timeout):
         print(f"Sleep for 60 seconds and get deployment uid {vercel_uid} and url: {vercel_url}")
         time.sleep(60)
@@ -45,6 +38,8 @@ def wait_for_deployment(timeout):
             break
         if status == "ERROR":
             raise Exception(f"Vercel deployment {current_url} has failed!")
+
+    return f"environment_url={vercel_url}"
 
 
 if __name__ == '__main__':
