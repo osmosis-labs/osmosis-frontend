@@ -979,7 +979,8 @@
     "confirmDepositTo": "{chain}への入金を確認します",
     "confirmWithdrawTo": "{chain}への撤退を確認します",
     "reviewDepositP": "確認する前に入金の詳細を確認してください。入金後は取引を取り消すことはできません。",
-    "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。"
+    "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。",
+    "lookingForBalances": "バランスを探す"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

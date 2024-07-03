@@ -1,6 +1,10 @@
 import { queryRPCStatus, QueryStatusResponse } from "@osmosis-labs/server";
 
-import { calcAverageBlockTimeMs,PollingStatusSubscription, StatusHandler } from "../index";
+import {
+  calcAverageBlockTimeMs,
+  PollingStatusSubscription,
+  StatusHandler,
+} from "../index";
 
 jest.useFakeTimers();
 

@@ -979,7 +979,8 @@
     "confirmDepositTo": "Confirmez le dépôt à {chain}",
     "confirmWithdrawTo": "Confirmez le retrait à {chain}",
     "reviewDepositP": "Vérifiez les détails de votre dépôt avant de confirmer. Une fois déposée, votre transaction est irréversible.",
-    "reviewWithdrawP": "Vérifiez les détails de votre retrait avant de confirmer. Une fois retirée, votre transaction est irréversible."
+    "reviewWithdrawP": "Vérifiez les détails de votre retrait avant de confirmer. Une fois retirée, votre transaction est irréversible.",
+    "lookingForBalances": "À la recherche de soldes"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

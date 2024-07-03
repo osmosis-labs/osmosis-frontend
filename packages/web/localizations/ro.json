@@ -979,7 +979,8 @@
     "confirmDepositTo": "Confirmați depunerea către {chain}",
     "confirmWithdrawTo": "Confirmați retragerea la {chain}",
     "reviewDepositP": "Verificați detaliile depunerii înainte de a confirma. Odată depusă, tranzacția dvs. este ireversibilă.",
-    "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă."
+    "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă.",
+    "lookingForBalances": "Caut echilibre"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

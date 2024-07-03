@@ -979,7 +979,8 @@
     "confirmDepositTo": "確認充值至{chain}",
     "confirmWithdrawTo": "確認提現至{chain}",
     "reviewDepositP": "確認前請檢查您的存款詳細資料。一旦存入，您的交易就不可逆轉。",
-    "reviewWithdrawP": "確認前請檢查您的提款詳細資料。一旦撤回，您的交易將不可逆轉。"
+    "reviewWithdrawP": "確認前請檢查您的提款詳細資料。一旦撤回，您的交易將不可逆轉。",
+    "lookingForBalances": "尋找餘額"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
