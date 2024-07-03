@@ -34,8 +34,7 @@ export const CryptoFiatInput: FunctionComponent<{
   setInputUnit,
 }) => {
   const { t } = useTranslation();
-  const cryptoInputRef = useRef<HTMLInputElement>(null);
-  const fiatInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const cryptoAmountPretty = new CoinPretty(
     {
@@ -98,13 +97,10 @@ export const CryptoFiatInput: FunctionComponent<{
   // causing the input to lose focus,
   // so we use an effect to re-focus the input if it's already focused
   useEffect(() => {
-    if (isInputFocused && currentUnit === "fiat" && fiatInputRef.current) {
-      fiatInputRef.current.focus();
+    if (isInputFocused && inputRef.current) {
+      inputRef.current.focus();
     }
-    if (isInputFocused && currentUnit === "crypto" && cryptoInputRef.current) {
-      cryptoInputRef.current.focus();
-    }
-  }, [isInputFocused, currentUnit, fiatInputFontSize, cryptoInputFontSize]);
+  }, [isInputFocused, fiatInputFontSize, cryptoInputFontSize]);
 
   return (
     <div className="flex flex-col items-center">
@@ -113,11 +109,7 @@ export const CryptoFiatInput: FunctionComponent<{
         <div
           className="max-w-full overflow-clip whitespace-nowrap text-center"
           onClick={() => {
-            if (currentUnit === "fiat") {
-              fiatInputRef.current?.focus();
-            } else {
-              cryptoInputRef.current?.focus();
-            }
+            inputRef.current?.focus();
           }}
         >
           {currentUnit === "fiat" ? (
@@ -125,7 +117,7 @@ export const CryptoFiatInput: FunctionComponent<{
               // when the font size changes, we need to prompt the autosize input to re-mount
               // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
               key={fiatInputFontSize}
-              inputRef={fiatInputRef}
+              inputRef={inputRef}
               className={classNames(
                 "border-none bg-transparent text-center font-bold",
                 fiatInputFontSize
@@ -147,7 +139,7 @@ export const CryptoFiatInput: FunctionComponent<{
               // when the font size changes, we need to prompt the autosize input to re-mount
               // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
               key={cryptoInputFontSize}
-              inputRef={cryptoInputRef}
+              inputRef={inputRef}
               className={classNames(
                 "border-none bg-transparent font-bold",
                 cryptoInputFontSize

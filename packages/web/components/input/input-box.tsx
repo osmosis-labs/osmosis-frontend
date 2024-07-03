@@ -124,7 +124,11 @@ export const InputBox: FunctionComponent<Props> = ({
         ) : (
           <input
             key={inputKey}
-            ref={inputRef}
+            ref={(ref) => {
+              if (inputRef) {
+                inputRef.current = ref;
+              }
+            }}
             id="text-input"
             className={inputClassName_}
             value={currentValue}
