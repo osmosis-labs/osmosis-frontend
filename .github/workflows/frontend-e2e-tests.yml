@@ -21,7 +21,7 @@ jobs:
           echo "$BRANCH_NAME"
           python -m pip install requests
           python main.py
-      - name: Echo GITHUB_OUTPUT
+      - name: Echo GITHUB_OUTPUT environment_url
         env:
           environment_url: ${{ steps.vercel.outputs.environment_url }}
         run: echo "$environment_url"
@@ -34,14 +34,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: print gh
+      - name: print environment_url and BRANCH_NAME
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
-          echo "$GITHUB_CONTEXT"
+          echo "$BASE_URL"
           echo "$BRANCH_NAME"
-          ls -la
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
