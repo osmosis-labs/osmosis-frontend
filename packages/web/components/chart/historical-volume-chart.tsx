@@ -76,7 +76,21 @@ export const HistoricalVolumeChart = memo(
         series={[
           {
             type: "Histogram",
-            options: seriesOpt,
+            options: {
+              ...seriesOpt,
+              autoscaleInfoProvider: () => {
+                const values = data
+                  .map((entry) => entry.value)
+                  .filter((entry) => entry >= 0);
+
+                return {
+                  priceRange: {
+                    minValue: Math.min(...values),
+                    maxValue: Math.max(...values),
+                  },
+                };
+              },
+            },
             data,
           },
         ]}

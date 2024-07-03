@@ -52,7 +52,21 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
       series={[
         {
           type: "Area",
-          options: seriesOpt,
+          options: {
+            ...seriesOpt,
+            autoscaleInfoProvider: () => {
+              const values = data
+                .map((entry) => entry.value)
+                .filter((entry) => entry >= 0);
+
+              return {
+                priceRange: {
+                  minValue: Math.min(...values),
+                  maxValue: Math.max(...values),
+                },
+              };
+            },
+          },
           data,
         },
       ]}
