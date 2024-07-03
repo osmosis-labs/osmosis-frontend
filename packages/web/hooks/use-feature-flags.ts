@@ -43,7 +43,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
-  transactionsPage: true,
+  transactionsPage: false,
   sidecarRouter: true,
   legacyRouter: true,
   tfmRouter: true,
@@ -58,7 +58,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
   oneClickTrading: false,
-  limitOrders: true,
+  limitOrders: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
@@ -78,7 +78,6 @@ export const useFeatureFlags = () => {
   const isDevModeWithoutClientID =
     process.env.NODE_ENV === "development" &&
     !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
-
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
