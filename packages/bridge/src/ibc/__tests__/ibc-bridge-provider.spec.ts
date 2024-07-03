@@ -17,6 +17,53 @@ jest.mock("@osmosis-labs/tx", () => ({
   estimateGasFee: jest.fn(),
 }));
 
+jest.mock("@osmosis-labs/server", () => ({
+  queryRPCStatus: jest.fn().mockResolvedValue({
+    jsonrpc: "2.0",
+    id: 1,
+    result: {
+      validator_info: {
+        address: "mock_address",
+        pub_key: {
+          type: "mock_type",
+          value: "mock_value",
+        },
+        voting_power: "mock_voting_power",
+      },
+      node_info: {
+        protocol_version: {
+          p2p: "mock_p2p",
+          block: "mock_block",
+          app: "mock_app",
+        },
+        id: "mock_id",
+        listen_addr: "mock_listen_addr",
+        network: "mock_network",
+        version: "mock_version",
+        channels: "mock_channels",
+        moniker: "mock_moniker",
+        other: {
+          tx_index: "on" as const,
+          rpc_address: "mock_rpc_address",
+        },
+      },
+      sync_info: {
+        // reasonable time range
+        latest_block_hash: "mock_latest_block_hash",
+        latest_app_hash: "mock_latest_app_hash",
+        earliest_block_hash: "mock_earliest_block_hash",
+        earliest_app_hash: "mock_earliest_app_hash",
+        latest_block_height: "100",
+        earliest_block_height: "90",
+        latest_block_time: new Date(Date.now() - 10000).toISOString(),
+        earliest_block_time: new Date(Date.now() - 20000).toISOString(),
+        catching_up: false,
+      },
+    },
+  }),
+  DEFAULT_LRU_OPTIONS: { max: 10 },
+}));
+
 const mockContext: BridgeProviderContext = {
   chainList: MockChains,
   assetLists: MockAssetLists,
