@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import Link from "next/link";
 
 import { Icon } from "~/components/assets";
 import { ClientOnly } from "~/components/client-only";
@@ -12,7 +11,7 @@ export const TokenNavigation = observer(() => {
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { token, twitterUrl, websiteURL, coingeckoURL, title } = useAssetInfo();
+  const { token, title } = useAssetInfo();
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
@@ -50,42 +49,6 @@ export const TokenNavigation = observer(() => {
           </ClientOnly>
           {t("tokenInfos.watchlist")}
         </Button>
-        {twitterUrl ? (
-          <Button
-            size="sm-icon"
-            variant="secondary"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-            asChild
-          >
-            <Link href={twitterUrl} target="_blank" rel="external">
-              <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
-            </Link>
-          </Button>
-        ) : null}
-        {websiteURL ? (
-          <Button
-            size="sm-icon"
-            variant="secondary"
-            aria-label={t("tokenInfos.ariaView", { name: "website" })}
-            asChild
-          >
-            <Link href={websiteURL} target="_blank" rel="external">
-              <Icon className="h-4 w-4 text-osmoverse-400" id="web" />
-            </Link>
-          </Button>
-        ) : null}
-        {coingeckoURL ? (
-          <Button
-            size="sm-icon"
-            variant="secondary"
-            aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
-            asChild
-          >
-            <Link href={coingeckoURL} target="_blank" rel="external">
-              <Icon className="h-4 w-4 text-osmoverse-300" id="coingecko" />
-            </Link>
-          </Button>
-        ) : null}
       </div>
     </nav>
   );
