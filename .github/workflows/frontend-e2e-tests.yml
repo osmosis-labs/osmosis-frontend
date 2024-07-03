@@ -10,7 +10,7 @@ jobs:
   wait-for-deployment:
     runs-on: ubuntu-latest
     outputs:
-      vercel_url: ${{steps.vercel.outputs.environment_url}}
+      environment_url: ${{steps.vercel.outputs.environment_url}}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -22,9 +22,9 @@ jobs:
           python -m pip install requests
           python main.py
       - name: Echo GITHUB_OUTPUT
-        run: echo "$GITHUB_OUTPUT"
-      - name: Echo GITHUB_ENV
-        run: echo "$GITHUB_ENV"
+        env:
+          environment_url: ${{ steps.vercel.outputs.environment_url }}
+        run: echo "$environment_url"
 
   preview-e2e-swap-tests:
     runs-on: macos-latest
@@ -59,7 +59,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Stage
         env:
-          BASE_URL: ${{ needs.wait-for-deployment.outputs.vercel_url }}
+          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
@@ -96,7 +96,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Portfolio tests on Stage
         env:
-          BASE_URL: ${{ needs.wait-for-deployment.outputs.vercel_url }}
+          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
