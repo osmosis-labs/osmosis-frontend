@@ -33,7 +33,7 @@ const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   priceFormat: {
     type: "custom",
     formatter: priceFormatter,
-    minMove: 0.0000001,
+    minMove: 0.0000000001,
   },
 };
 
