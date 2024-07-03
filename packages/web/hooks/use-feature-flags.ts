@@ -43,7 +43,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
-  transactionsPage: true,
+  transactionsPage: false,
   sidecarRouter: true,
   legacyRouter: true,
   tfmRouter: true,
@@ -58,7 +58,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
   oneClickTrading: false,
-  limitOrders: true,
+  limitOrders: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
