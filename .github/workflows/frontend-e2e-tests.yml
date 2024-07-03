@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
       - name: print environment_url and BRANCH_NAME
         env:
-          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           echo "$BASE_URL"
@@ -58,7 +58,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Stage
         env:
-          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
