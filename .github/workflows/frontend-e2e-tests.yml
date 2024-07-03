@@ -1,11 +1,13 @@
 name: Preview frontend E2E tests
 
 on:
-  deployment_status:
+  push:
+    branches:
+      - "FE-600"
+      - "!master"
 
 jobs:
   preview-e2e-swap-tests:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
     runs-on: macos-latest
     environment:
       name: prod_swap_test
@@ -13,7 +15,10 @@ jobs:
       - name: print gh event
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo ${{github.event}} && echo "$GITHUB_CONTEXT"
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+          echo "$BRANCH_NAME"
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -46,8 +51,7 @@ jobs:
           path: packages/web/playwright-report
 
   preview-e2e-portfolio-tests:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment:
       name: prod_swap_test
     steps:
