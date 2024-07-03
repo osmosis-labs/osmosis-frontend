@@ -200,35 +200,9 @@ export const useBridgeQuotes = ({
             }
 
             return {
-              gasCost: estimatedGasFee
-                ? new CoinPretty(
-                    {
-                      coinDecimals: estimatedGasFee.decimals,
-                      coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.address,
-                    },
-                    new Dec(estimatedGasFee.amount)
-                  ).maxDecimals(8)
-                : undefined,
-
-              transferFee: new CoinPretty(
-                {
-                  coinDecimals: transferFee.decimals,
-                  coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.address,
-                },
-                new Dec(transferFee.amount)
-              ).maxDecimals(8),
-
-              expectedOutput: new CoinPretty(
-                {
-                  coinDecimals: expectedOutput.decimals,
-                  coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.address,
-                },
-                new Dec(expectedOutput.amount)
-              ),
-
+              gasCost: estimatedGasFee?.amount.maxDecimals(8),
+              transferFee: transferFee.amount.maxDecimals(8),
+              expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
               gasCostFiat: estimatedGasFee?.fiatValue,
@@ -411,8 +385,6 @@ export const useBridgeQuotes = ({
     ]
   );
 
-  const [isApprovingToken, setIsApprovingToken] = useState(false);
-
   const isTxPending = (() => {
     if (!fromChain) return false;
     return fromChain.chainType === "cosmos"
@@ -427,6 +399,7 @@ export const useBridgeQuotes = ({
     }
   }, [isTxPending, onRequestClose, transferInitiated]);
 
+  const [isApprovingToken, setIsApprovingToken] = useState(false);
   const handleEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
@@ -504,7 +477,7 @@ export const useBridgeQuotes = ({
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!fromChain || fromChain?.chainType !== "cosmos") {
-      throw new Error("Destination chain is not cosmos");
+      throw new Error("Initiating chain is not cosmos");
     }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -560,14 +533,15 @@ export const useBridgeQuotes = ({
 
     if (!transactionRequest || !quote) return;
 
-    if (transactionRequest.type === "evm") {
-      await handleEvmTx({ ...quote, transactionRequest });
-    } else if (transactionRequest.type === "cosmos") {
-      await handleCosmosTx({
-        ...quote,
-        transactionRequest,
-      });
-    }
+    const tx =
+      transactionRequest.type === "evm"
+        ? handleEvmTx({ ...quote, transactionRequest })
+        : handleCosmosTx({ ...quote, transactionRequest });
+
+    await tx.catch((e) => {
+      console.error(transactionRequest.type, "transaction failed", e);
+      throw e;
+    });
   };
 
   const hasNoQuotes = someError?.message.includes(
@@ -585,11 +559,15 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
   } else if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  } else if (!isEvmWalletConnected) {
+  } else if (!isEvmWalletConnected && fromChain?.chainType === "evm") {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (isDeposit && !isCorrectEvmChainSelected) {
+  } else if (
+    isDeposit &&
+    !isCorrectEvmChainSelected &&
+    fromChain?.chainType === "evm"
+  ) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
@@ -662,10 +640,9 @@ export const useBridgeQuotes = ({
     refetchInterval,
 
     userCanInteract,
-    onTransfer,
-
-    isApprovingToken,
     isTxPending,
+    isApprovingToken,
+    onTransfer,
 
     isInsufficientFee,
     isInsufficientBal,
