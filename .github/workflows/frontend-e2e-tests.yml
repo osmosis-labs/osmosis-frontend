@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: print gh event
+      - name: print gh
+        id: vercel
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -40,7 +41,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Stage
         env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: ${{ steps.vercel.outputs.environment_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
