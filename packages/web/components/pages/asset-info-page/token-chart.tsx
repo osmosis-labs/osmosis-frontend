@@ -7,10 +7,13 @@ import { ChartUnavailable } from "~/components/chart";
 import {
   HistoricalChart,
   HistoricalChartHeader,
+  HistoricalChartSkeleton,
 } from "~/components/chart/historical-chart";
-import { HistoricalVolumeChart } from "~/components/chart/historical-volume-chart";
+import {
+  HistoricalVolumeChart,
+  HistoricalVolumeChartSkeleton,
+} from "~/components/chart/historical-volume-chart";
 import { AdvancedChart } from "~/components/chart/light-weight-charts/advanced-chart";
-import { Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
 import {
@@ -51,9 +54,11 @@ export const TokenChart = observer(() => {
             load_last_chart
           />
         ) : assetInfoConfig.isHistoricalDataLoading ? (
-          <div className="flex h-full flex-col items-center justify-center">
-            <Spinner />
-          </div>
+          assetInfoConfig.dataType === "price" ? (
+            <HistoricalChartSkeleton />
+          ) : (
+            <HistoricalVolumeChartSkeleton />
+          )
         ) : !assetInfoConfig.historicalChartUnavailable ? (
           assetInfoConfig.dataType === "price" ? (
             <HistoricalChart
@@ -198,7 +203,7 @@ export const TokenChartHeader = observer(() => {
   return (
     <header className="absolute left-0 top-0 z-10">
       <HistoricalChartHeader
-        isLoading={isLoading}
+        isLoading={isLoading || assetInfoConfig.isHistoricalDataLoading}
         hoverData={hoverData}
         hoverDate={assetInfoConfig.hoverDate}
         fiatSymbol={fiatSymbol}
