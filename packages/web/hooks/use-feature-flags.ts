@@ -43,7 +43,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
-  transactionsPage: false,
+  transactionsPage: true,
   sidecarRouter: true,
   legacyRouter: true,
   tfmRouter: true,

@@ -127,7 +127,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ) : (
             <div className="inline-flex items-center gap-1 py-3.5">
               <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                {swapState.baseAsset?.coinDenom}{" "}
+                {t("assets.table.price").toLowerCase()} ≈{" "}
                 {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
                 {swapState.quoteAsset?.coinDenom}
               </span>
