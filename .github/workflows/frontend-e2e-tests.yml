@@ -21,6 +21,10 @@ jobs:
           echo "$BRANCH_NAME"
           python -m pip install requests
           python main.py
+      - name: Echo GITHUB_OUTPUT
+        run: echo "$GITHUB_OUTPUT"
+      - name: Echo GITHUB_ENV
+        run: echo "$GITHUB_ENV"
 
   preview-e2e-swap-tests:
     runs-on: macos-latest
