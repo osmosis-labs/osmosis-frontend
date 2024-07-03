@@ -129,7 +129,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               <span className="body2 text-osmoverse-300">
                 {swapState.baseAsset?.coinDenom}{" "}
                 {t("assets.table.price").toLowerCase()} ≈{" "}
-                {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
+                {formatPretty(
+                  orderDirection === "bid"
+                    ? swapState.priceState.askSpotPrice ?? new Dec(0)
+                    : swapState.priceState.bidSpotPrice ?? new Dec(0)
+                )}{" "}
                 {swapState.quoteAsset?.coinDenom}
               </span>
             </div>

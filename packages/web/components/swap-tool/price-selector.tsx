@@ -11,6 +11,7 @@ import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -18,6 +19,7 @@ import { api } from "~/utils/trpc";
 interface PriceSelectorProps {
   tokenSelectionAvailable: boolean;
   showQuoteBalance: boolean;
+  baseDenom: string;
 }
 
 type AssetWithBalance = Asset & {
@@ -32,6 +34,7 @@ export const PriceSelector = memo(
     tokenSelectionAvailable,
     disabled,
     showQuoteBalance,
+    baseDenom,
   }: PriceSelectorProps & Disableable) => {
     const { t } = useTranslation();
 
@@ -40,6 +43,8 @@ export const PriceSelector = memo(
       "quote",
       parseAsString.withDefault("USDC")
     );
+
+    const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
     const quoteAsset = useMemo(
       () =>
@@ -69,6 +74,11 @@ export const PriceSelector = memo(
         enabled: Boolean(wallet?.address),
         select: (data) =>
           data.items
+            .filter((walletAsset) =>
+              (selectableQuoteDenoms[baseDenom] ?? []).includes(
+                walletAsset.coinMinimalDenom
+              )
+            )
             .map((walletAsset) => {
               const asset = getAssetFromAssetList({
                 assetLists: AssetLists,

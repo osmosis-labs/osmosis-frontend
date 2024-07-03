@@ -395,5 +395,7 @@ const useLimitPrice = ({
     setPrice,
     isValidPrice,
     isBeyondOppositePrice,
+    bidSpotPrice: data?.bidSpotPrice,
+    askSpotPrice: data?.askSpotPrice,
   };
 };
