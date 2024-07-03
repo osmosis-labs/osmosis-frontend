@@ -7,11 +7,10 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
-import { isNil, isNumeric, noop } from "@osmosis-labs/utils";
+import { isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -34,7 +33,6 @@ import {
   SupportedAsset,
   useBridgesSupportedAssets,
 } from "~/components/bridge/immersive/use-bridges-supported-assets";
-import { InputBox } from "~/components/input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
@@ -48,9 +46,9 @@ import {
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
+import { CryptoFiatInput } from "./crypto-fiat-input";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -536,65 +534,6 @@ export const AmountScreen = observer(
       return <AmountScreenSkeletonLoader />;
     }
 
-    const cryptoAmountPretty = new CoinPretty(
-      {
-        coinDecimals: sourceAsset.decimals,
-        coinDenom: sourceAsset.denom,
-        coinMinimalDenom: sourceAsset.address,
-      },
-      cryptoAmount === ""
-        ? new Dec(0)
-        : new Dec(cryptoAmount).mul(
-            DecUtils.getTenExponentN(sourceAsset.decimals)
-          )
-    );
-
-    const fiatAmountPretty = new PricePretty(
-      DEFAULT_VS_CURRENCY,
-      new Dec(fiatAmount === "" ? 0 : fiatAmount)
-    );
-
-    const parseFiatAmount = (value: string) => {
-      return value.replace("$", "");
-    };
-
-    const formatFiatAmount = (value: string) => {
-      return `$${value}`;
-    };
-
-    const onInput = (type: "fiat" | "crypto") => (value: string) => {
-      let nextValue = type === "fiat" ? parseFiatAmount(value) : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
-
-      if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
-        nextValue = nextValue.slice(1);
-      }
-      if (nextValue === "") {
-        nextValue = "0";
-      }
-      if (nextValue === ".") {
-        nextValue = "0.";
-      }
-
-      if (type === "fiat") {
-        // Update the crypto amount based on the fiat amount
-        const priceInFiat = assetInOsmosisPrice.toDec();
-        const nextFiatAmount = new Dec(nextValue);
-        const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
-
-        setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
-      } else {
-        // Update the fiat amount based on the crypto amount
-        const priceInFiat = assetInOsmosisPrice.toDec();
-        const nextCryptoAmount = new Dec(nextValue);
-        const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
-
-        setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
-      }
-
-      type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
-    };
-
     const resetAssets = () => {
       setSourceAsset(undefined);
       setDestinationAsset(undefined);
@@ -671,95 +610,26 @@ export const AmountScreen = observer(
         </div>
 
         <div className="flex w-full flex-col gap-6">
-          <div className="relative flex items-center justify-center">
-            <div className="flex flex-col items-center">
-              <div className="text-center text-4xl font-bold">
-                {inputUnit === "fiat" ? (
-                  <InputBox
-                    currentValue={formatFiatAmount(fiatAmount)}
-                    onInput={onInput("fiat")}
-                    classes={{
-                      input: classNames("text-center", {
-                        "text-rust-300": isInsufficientBal || isInsufficientFee,
-                      }),
-                    }}
-                    className="mr-4 border-none bg-transparent text-center"
-                  />
-                ) : (
-                  <div className="flex items-center">
-                    <p className="ml-1 w-full text-right align-middle text-2xl text-osmoverse-500">
-                      {cryptoAmountPretty?.denom}
-                    </p>
-                    <InputBox
-                      currentValue={cryptoAmount}
-                      onInput={onInput("crypto")}
-                      className="w-full border-none bg-transparent text-center"
-                      classes={{
-                        input: classNames("px-0", {
-                          "text-rust-300":
-                            isInsufficientBal || isInsufficientFee,
-                        }),
-                        trailingSymbol:
-                          "ml-1 align-middle text-2xl text-osmoverse-500 text-left absolute right-0",
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="relative flex w-full justify-center">
-                <button
-                  className="body1 flex items-center gap-2 text-center text-wosmongton-200"
-                  onClick={() => {
-                    setInputUnit(inputUnit === "fiat" ? "crypto" : "fiat");
-                  }}
-                >
-                  <span>
-                    {inputUnit === "fiat" ? (
-                      <>
-                        {trimPlaceholderZeros(
-                          cryptoAmountPretty?.toDec().toString(2) ?? "0"
-                        )}{" "}
-                        {cryptoAmountPretty?.denom}
-                      </>
-                    ) : (
-                      fiatAmountPretty.maxDecimals(2).toString()
-                    )}
-                  </span>
-                  <span>
-                    <Icon
-                      id="switch"
-                      className="text-wosmongton-200"
-                      width={16}
-                      height={16}
-                    />
-                  </span>
-                </button>
-
-                <button
-                  disabled={isNil(sourceAsset)}
-                  onClick={() => {
-                    if (isNil(sourceAsset)) return;
-                    // TODO: Subtract fees from the amount
-                    onInput("crypto")(
-                      trimPlaceholderZeros(
-                        sourceAsset.amount.toDec().toString()
-                      )
-                    );
-                  }}
-                  className="body2 absolute right-0 top-1/2 -translate-y-1/2 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80"
-                >
-                  {t("transfer.max")}
-                </button>
-              </div>
-            </div>
-          </div>
+          <CryptoFiatInput
+            currentUnit={inputUnit}
+            cryptoInputRaw={cryptoAmount}
+            fiatInputRaw={fiatAmount}
+            assetPrice={assetInOsmosisPrice}
+            asset={sourceAsset}
+            isInsufficientBal={Boolean(isInsufficientBal)}
+            isInsufficientFee={Boolean(isInsufficientFee)}
+            setFiatAmount={setFiatAmount}
+            setCryptoAmount={setCryptoAmount}
+            setInputUnit={setInputUnit}
+          />
 
           <>
             {isLoadingAssetsBalance && (
               <div className="flex w-full items-center justify-center gap-3">
                 <Spinner className="text-wosmongton-500" />
-                <p className="body1 text-osmoverse-300">Looking for balances</p>
+                <p className="body1 text-osmoverse-300">
+                  {t("transfer.lookingForBalances")}
+                </p>
               </div>
             )}
 
@@ -1273,11 +1143,11 @@ const TransferDetails: FunctionComponent<{
     <Disclosure>
       {({ open }) => (
         <div
-          className="flex w-full flex-col gap-3 transition-height duration-300 ease-inOutBack"
+          className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 32 // collapsed height
-              : 28,
+              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              : 36,
           }}
         >
           <DisclosureButton>

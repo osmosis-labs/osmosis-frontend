@@ -979,7 +979,8 @@
     "confirmDepositTo": "{chain} 에 입금 확인",
     "confirmWithdrawTo": "{chain} 철회를 확인하세요",
     "reviewDepositP": "확인하기 전에 입금 세부정보를 검토하세요. 일단 입금되면 거래를 되돌릴 수 없습니다.",
-    "reviewWithdrawP": "확인하기 전에 출금 세부정보를 검토하세요. 일단 철회되면 거래를 되돌릴 수 없습니다."
+    "reviewWithdrawP": "확인하기 전에 출금 세부정보를 검토하세요. 일단 철회되면 거래를 되돌릴 수 없습니다.",
+    "lookingForBalances": "잔액을 찾고 있어요"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
