@@ -1,9 +1,14 @@
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { getShortAddress, isNil } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -147,6 +152,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           <h6>{t("transfer.cancel")}</h6>
         </Button>
         <Button
+          isLoading={quote.isTxPending}
+          loadingText={t("transfer.confirm")}
           className="w-full"
           onClick={onConfirm}
           disabled={!quote.userCanInteract}
@@ -228,7 +235,6 @@ const AssetBox: FunctionComponent<{
 
 /** Assumes the first provider in the list is the selected provider. */
 const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
@@ -240,65 +246,64 @@ const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
 
   const estTime = estimatedTime.humanize();
 
-  const HeaderContents = isOpen ? (
-    <div className="subtitle1">{t("transfer.transferDetails")}</div>
-  ) : (
-    <div className="flex items-center gap-4">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700">
-        <Icon id="down-arrow" />
-      </div>
-      <div>{estTime} ETA</div>
-    </div>
-  );
-
   return (
-    <div
-      className="flex flex-col gap-4 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
-      style={{
-        height: isOpen
-          ? (detailsHeight + detailsOffset ?? 288) + 74 // collapsed height
-          : 74,
-      }}
-    >
-      <button
-        className="flex place-content-between items-center py-3"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {HeaderContents}
-        <ExpandDetailsControlContent
-          warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
-          warnUserOfSlippage={quote.warnUserOfSlippage}
-          selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
-          refetchInterval={quote.refetchInterval}
-          selectedQuote={selectedQuote}
-          open={isOpen}
-        />
-      </button>
-      <div ref={detailsRef} className="flex flex-col gap-4">
-        <BridgeProviderDropdownRow
-          successfulQuotes={quote.successfulQuotes}
-          setSelectedBridgeProvider={quote.setSelectedBridgeProvider}
-          isRefetchingQuote={quote.isRefetchingQuote}
-          selectedQuote={selectedQuote}
-        />
-        <EstimatedTimeRow
-          isRefetchingQuote={quote.isRefetchingQuote}
-          selectedQuote={selectedQuote}
-        />
-        <ProviderFeesRow
-          isRefetchingQuote={quote.isRefetchingQuote}
-          selectedQuote={selectedQuote}
-        />
-        <NetworkFeeRow
-          isRefetchingQuote={quote.isRefetchingQuote}
-          selectedQuote={selectedQuote}
-          fromChainName={fromChain?.chainName}
-        />
-        <TotalFeesRow
-          isRefetchingQuote={quote.isRefetchingQuote}
-          selectedQuote={selectedQuote}
-        />
-      </div>
-    </div>
+    <Disclosure>
+      {({ open }) => (
+        <div
+          className="flex flex-col gap-4 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
+          style={{
+            height: open
+              ? (detailsHeight + detailsOffset ?? 288) + 85 // collapsed height
+              : 74,
+          }}
+        >
+          <DisclosureButton className="flex place-content-between items-center py-3">
+            {open ? (
+              <div className="subtitle1">{t("transfer.transferDetails")}</div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700">
+                  <Icon id="down-arrow" />
+                </div>
+                <div>{estTime} ETA</div>
+              </div>
+            )}
+            <ExpandDetailsControlContent
+              warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
+              warnUserOfSlippage={quote.warnUserOfSlippage}
+              selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
+              refetchInterval={quote.refetchInterval}
+              selectedQuote={selectedQuote}
+              open={open}
+            />
+          </DisclosureButton>
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-4">
+            <BridgeProviderDropdownRow
+              successfulQuotes={quote.successfulQuotes}
+              setSelectedBridgeProvider={quote.setSelectedBridgeProvider}
+              isRefetchingQuote={quote.isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <EstimatedTimeRow
+              isRefetchingQuote={quote.isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <ProviderFeesRow
+              isRefetchingQuote={quote.isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <NetworkFeeRow
+              isRefetchingQuote={quote.isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              fromChainName={fromChain?.chainName}
+            />
+            <TotalFeesRow
+              isRefetchingQuote={quote.isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+          </DisclosurePanel>
+        </div>
+      )}
+    </Disclosure>
   );
 };

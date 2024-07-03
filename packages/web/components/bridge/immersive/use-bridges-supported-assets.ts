@@ -161,18 +161,12 @@ export const useBridgesSupportedAssets = ({
 
           .filter(
             (asset, index, originalArray) =>
-              // Make sure the asset has at least one supported variant
-              Object.keys(asset.supportedVariants).length > 0 &&
-              // Make sure the asset has at least one supported provider
-              Object.values(asset.supportedVariants).some(
-                (value) => value.length > 0
-              ) &&
               // Remove Duplicates
               index ===
-                // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
-                originalArray.findIndex(
-                  (t) => t.address.toLowerCase() === asset.address.toLowerCase()
-                )
+              // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
+              originalArray.findIndex(
+                (t) => t.address.toLowerCase() === asset.address.toLowerCase()
+              )
           ),
       ]
     );

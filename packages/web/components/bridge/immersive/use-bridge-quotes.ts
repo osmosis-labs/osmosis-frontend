@@ -641,9 +641,8 @@ export const useBridgeQuotes = ({
 
     userCanInteract,
     isTxPending,
-    onTransfer,
-
     isApprovingToken,
+    onTransfer,
 
     isInsufficientFee,
     isInsufficientBal,
