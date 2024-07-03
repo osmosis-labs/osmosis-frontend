@@ -1,15 +1,8 @@
-import { Transition } from "@headlessui/react";
 import { FormattedTransaction } from "@osmosis-labs/server";
 import { getShortAddress } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import {
-  forwardRef,
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -19,18 +12,18 @@ import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
-export const TransactionDetailsContent = forwardRef<
-  HTMLDivElement,
-  {
-    onRequestClose: () => void;
-    isModal: boolean;
-    transaction: FormattedTransaction;
-  }
->(({ onRequestClose, isModal, transaction }, forwardedRef) => {
+export const TransactionDetailsContent = ({
+  onRequestClose,
+  isModal,
+  transaction,
+}: {
+  onRequestClose: () => void;
+  isModal: boolean;
+  transaction: FormattedTransaction;
+}) => {
   const { t } = useTranslation();
 
   const { tokenIn, tokenOut } = transaction.metadata[0].value[0].txInfo;
@@ -86,7 +79,7 @@ export const TransactionDetailsContent = forwardRef<
 
   return (
     <div
-      ref={forwardedRef}
+      // ref={forwardedRef}
       className={classNames("flex flex-col overflow-y-auto", {
         // 4.5rem is the height of the navbar
         "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
@@ -236,53 +229,5 @@ export const TransactionDetailsContent = forwardRef<
         </Button>
       </div>
     </div>
-  );
-});
-
-export const TransactionDetailsSlideover = ({
-  onRequestClose,
-  open,
-  transaction,
-}: {
-  onRequestClose: () => void;
-  open: boolean;
-  transaction?: FormattedTransaction;
-}) => {
-  if (!transaction) return null;
-  return (
-    <Transition
-      show={open}
-      enter="transition-all ease-out duration-300"
-      enterFrom="w-0 opacity-0"
-      enterTo="w-[512px] opacity-100"
-      leave="transition-all ease-out duration-300"
-      leaveFrom="w-[512px] opacity-100"
-      leaveTo="w-0 opacity-0"
-    >
-      <TransactionDetailsContent
-        onRequestClose={onRequestClose}
-        isModal={false}
-        transaction={transaction}
-      />
-    </Transition>
-  );
-};
-
-export const TransactionDetailsModal: FunctionComponent<
-  ModalBaseProps & { transaction?: FormattedTransaction }
-> = ({ onRequestClose, isOpen, transaction }) => {
-  if (!transaction) return null;
-  return (
-    <ModalBase
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      className="max-w-[32.25rem]" // 516px
-    >
-      <TransactionDetailsContent
-        onRequestClose={onRequestClose}
-        isModal={true}
-        transaction={transaction}
-      />
-    </ModalBase>
   );
 };
