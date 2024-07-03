@@ -22,6 +22,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
@@ -900,151 +901,191 @@ export const AmountScreen = observer(
             </>
           )}
 
-          {!isNil(sourceAsset) &&
-            Object.keys(sourceAsset.supportedVariants).length > 1 && (
-              <Menu>
-                {({ open }) => (
-                  <div className="relative w-full">
-                    <MenuButton className="w-full">
-                      <div className="flex items-center justify-between">
+          {(direction === "deposit"
+            ? !isNil(sourceAsset) &&
+              Object.keys(sourceAsset.supportedVariants).length > 1
+            : !isNil(destinationAsset) &&
+              counterpartySupportedAssetsByChainId[destinationAsset.chainId]
+                .length > 1) && (
+            <Menu>
+              {({ open }) => (
+                <div className="relative w-full">
+                  <MenuButton className="w-full">
+                    <div className="flex items-center justify-between">
+                      <Tooltip
+                        content={
+                          <div>
+                            <h1 className="caption mb-1">
+                              {t("transfer.receiveAsset")}
+                            </h1>
+                            <p className="caption text-osmoverse-300">
+                              {t("transfer.receiveAssetDescription")}
+                            </p>
+                          </div>
+                        }
+                        enablePropagation
+                      >
                         <div className="flex items-center gap-2">
                           <span className="body1 text-osmoverse-300">
                             {t("transfer.receiveAsset")}
                           </span>
-                          <Tooltip
-                            content={
-                              <div>
-                                <h1 className="caption mb-1">
-                                  {t("transfer.receiveAsset")}
-                                </h1>
-                                <p className="caption text-osmoverse-300">
-                                  {t("transfer.receiveAssetDescription")}
-                                </p>
-                              </div>
+                          <Icon id="generate-stars" width={24} />
+                        </div>
+                      </Tooltip>
+
+                      <div className="flex items-center gap-2">
+                        <span className="body1 text-white-full">
+                          {destinationAsset?.denom}
+                        </span>
+                        <Icon
+                          id="chevron-down"
+                          width={12}
+                          height={12}
+                          className={classNames(
+                            "text-osmoverse-300 transition-transform duration-150",
+                            {
+                              "rotate-180": open,
                             }
-                          >
-                            <Icon id="info" width={16} />
-                          </Tooltip>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="body1 text-white-full">
-                            {destinationAsset?.denom}
-                          </span>
-                          <Icon
-                            id="chevron-down"
-                            width={12}
-                            height={12}
-                            className={classNames(
-                              "text-osmoverse-300 transition-transform duration-150",
-                              {
-                                "rotate-180": open,
-                              }
-                            )}
-                          />
-                        </div>
+                          )}
+                        />
                       </div>
-                    </MenuButton>
+                    </div>
+                  </MenuButton>
 
-                    <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
-                      {Object.keys(sourceAsset.supportedVariants).map(
-                        (variantCoinMinimalDenom, index) => {
-                          // TODO: HANDLE WITHDRAW CASE
-                          const asset = assetsInOsmosis.find(
-                            (asset) =>
-                              asset.coinMinimalDenom === variantCoinMinimalDenom
-                          )!;
+                  <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                    {direction === "deposit" ? (
+                      <>
+                        {Object.keys(sourceAsset.supportedVariants).map(
+                          (variantCoinMinimalDenom, index) => {
+                            // TODO: HANDLE WITHDRAW CASE
+                            const asset = assetsInOsmosis.find(
+                              (asset) =>
+                                asset.coinMinimalDenom ===
+                                variantCoinMinimalDenom
+                            )!;
 
-                          const onClick = () => {
-                            setDestinationAsset({
-                              chainType: "cosmos",
-                              address: asset.coinMinimalDenom,
-                              decimals: asset.coinDecimals,
-                              chainId: accountStore.osmosisChainId,
-                              denom: asset.coinDenom,
-                              // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
-                              supportedVariants: {},
-                            });
-                          };
+                            const onClick = () => {
+                              setDestinationAsset({
+                                chainType: "cosmos",
+                                address: asset.coinMinimalDenom,
+                                decimals: asset.coinDecimals,
+                                chainId: accountStore.osmosisChainId,
+                                denom: asset.coinDenom,
+                                // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
+                                supportedVariants: {},
+                              });
+                            };
 
-                          // Show all as 'deposit as' for now
-                          const isConvert =
-                            false ??
-                            asset.coinMinimalDenom === asset.variantGroupKey;
-                          const isSelected =
-                            destinationAsset?.denom === asset.coinDenom;
+                            // Show all as 'deposit as' for now
+                            const isConvert =
+                              false ??
+                              asset.coinMinimalDenom === asset.variantGroupKey;
+                            const isSelected =
+                              destinationAsset?.denom === asset.coinDenom;
 
-                          const isCanonicalAsset = index === 0;
+                            const isCanonicalAsset = index === 0;
 
-                          return (
-                            <MenuItem key={asset.coinDenom}>
-                              <>
-                                {isCanonicalAsset ? (
-                                  <button
-                                    className={classNames(
-                                      "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
-                                    )}
-                                    onClick={onClick}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <Image
-                                        src={asset.coinImageUrl ?? "/"}
-                                        alt={`${asset.coinDenom} logo`}
-                                        width={32}
-                                        height={32}
-                                      />
-                                      <div className="flex flex-col">
-                                        <p className="body1">
-                                          {isConvert
-                                            ? t("transfer.convertTo")
-                                            : direction === "withdraw"
-                                            ? t("transfer.withdrawAs")
-                                            : t("transfer.depositAs")}{" "}
-                                          {asset.coinDenom}
-                                        </p>
-                                        <p className="body2 text-osmoverse-300">
-                                          {t("transfer.recommended")}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    {isSelected && dropdownActiveItemIcon}
-                                  </button>
-                                ) : (
-                                  <button
-                                    className={classNames(
-                                      "flex items-center gap-3 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
-                                    )}
-                                    onClick={onClick}
-                                  >
+                            return (
+                              <MenuItem key={asset.coinDenom}>
+                                <button
+                                  className={classNames(
+                                    "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                    isSelected && "bg-osmoverse-700",
+                                    !isSelected && "bg-osmoverse-800"
+                                  )}
+                                  onClick={onClick}
+                                >
+                                  <div className="flex items-center gap-2">
                                     <Image
                                       src={asset.coinImageUrl ?? "/"}
                                       alt={`${asset.coinDenom} logo`}
                                       width={32}
                                       height={32}
                                     />
-                                    <p className="body1">
-                                      {isConvert
-                                        ? t("transfer.convertTo")
-                                        : t("transfer.depositAs")}{" "}
-                                      {asset.coinDenom}
-                                    </p>
-                                    {isSelected && dropdownActiveItemIcon}
-                                  </button>
+                                    <div className="flex flex-col">
+                                      <p className="body1">
+                                        {isConvert
+                                          ? t("transfer.convertTo")
+                                          : t("transfer.depositAs")}{" "}
+                                        {asset.coinDenom}
+                                      </p>
+                                      {isCanonicalAsset && (
+                                        <p className="body2 text-osmoverse-300">
+                                          {t("transfer.recommended")}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {isSelected && dropdownActiveItemIcon}
+                                </button>
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {counterpartySupportedAssetsByChainId[
+                          destinationAsset.chainId
+                        ].map((asset, index) => {
+                          const onClick = () => {
+                            setDestinationAsset(asset);
+                          };
+
+                          const isSelected =
+                            destinationAsset?.denom === asset.denom;
+
+                          const isCanonicalAsset = index === 0;
+                          const representativeAsset =
+                            assetsInOsmosis.find(
+                              (a) =>
+                                a.coinMinimalDenom === asset.address ||
+                                asset.denom === a.coinDenom
+                            ) ?? assetsInOsmosis[0];
+
+                          return (
+                            <MenuItem key={asset.denom}>
+                              <button
+                                className={classNames(
+                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                  isSelected && "bg-osmoverse-700",
+                                  !isSelected &&
+                                    "data-[active]:bg-osmoverse-800"
                                 )}
-                              </>
+                                onClick={onClick}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Image
+                                    src={
+                                      representativeAsset.coinImageUrl ?? "/"
+                                    }
+                                    alt={`${asset.denom} logo`}
+                                    width={32}
+                                    height={32}
+                                  />
+                                  <div className="flex flex-col">
+                                    <p className="body1">
+                                      {t("transfer.withdrawAs")} {asset.denom}
+                                    </p>
+                                    {isCanonicalAsset && (
+                                      <p className="body2 text-osmoverse-300">
+                                        {t("transfer.recommended")}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                {isSelected && dropdownActiveItemIcon}
+                              </button>
                             </MenuItem>
                           );
-                        }
-                      )}
-                    </MenuItems>
-                  </div>
-                )}
-              </Menu>
-            )}
+                        })}
+                      </>
+                    )}
+                  </MenuItems>
+                </div>
+              )}
+            </Menu>
+          )}
 
           {isLoadingBridgeQuote && (
             <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
@@ -1059,61 +1100,15 @@ export const AmountScreen = observer(
               </span>
             </div>
           )}
+
           {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
-            <Disclosure>
-              {({ open }) => (
-                <>
-                  <DisclosureButton>
-                    <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
-                      {open ? (
-                        <p className="subtitle1">
-                          {t("transfer.transferDetails")}
-                        </p>
-                      ) : (
-                        <p className="body1 text-osmoverse-300">
-                          {selectedQuote.estimatedTime.humanize()} ETA
-                        </p>
-                      )}
-                      <ExpandDetailsControlContent
-                        warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
-                        warnUserOfSlippage={quote.warnUserOfSlippage}
-                        selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
-                        refetchInterval={quote.refetchInterval}
-                        selectedQuote={selectedQuote}
-                        open={open}
-                      />
-                    </div>
-                  </DisclosureButton>
-                  <DisclosurePanel className="flex flex-col gap-2">
-                    <BridgeProviderDropdownRow
-                      successfulQuotes={quote.successfulQuotes}
-                      setSelectedBridgeProvider={
-                        quote.setSelectedBridgeProvider
-                      }
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <EstimatedTimeRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <ProviderFeesRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                    <NetworkFeeRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                      fromChainName={fromChain?.chainName}
-                    />
-                    <TotalFeesRow
-                      isRefetchingQuote={quote.isRefetchingQuote}
-                      selectedQuote={selectedQuote}
-                    />
-                  </DisclosurePanel>
-                </>
-              )}
-            </Disclosure>
+            <TransferDetails
+              quote={
+                quote as BridgeQuote & {
+                  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+                }
+              }
+            />
           )}
 
           <div className="flex flex-col items-center gap-4">
@@ -1127,7 +1122,8 @@ export const AmountScreen = observer(
                     isLoadingBridgeQuote ||
                     isLoadingBridgeTransaction ||
                     cryptoAmount === "" ||
-                    cryptoAmount === "0"
+                    cryptoAmount === "0" ||
+                    isNil(selectedQuote)
                   }
                   className="w-full text-h6 font-h6"
                   variant={
@@ -1251,5 +1247,85 @@ const WalletDisplay: FunctionComponent<{
       <span>{name}</span>
       {suffix}
     </div>
+  );
+};
+
+const TransferDetails: FunctionComponent<{
+  quote: BridgeQuote & {
+    selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  };
+}> = ({ quote }) => {
+  const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
+    useMeasure<HTMLDivElement>();
+  const { t } = useTranslation();
+  const {
+    selectedQuote,
+    warnUserOfPriceImpact,
+    warnUserOfSlippage,
+    selectedQuoteUpdatedAt,
+    refetchInterval,
+    successfulQuotes,
+    setSelectedBridgeProvider,
+    isRefetchingQuote,
+  } = quote;
+
+  return (
+    <Disclosure>
+      {({ open }) => (
+        <div
+          className="flex w-full flex-col gap-3 transition-height duration-300 ease-inOutBack"
+          style={{
+            height: open
+              ? (detailsHeight + detailsOffset ?? 288) + 32 // collapsed height
+              : 28,
+          }}
+        >
+          <DisclosureButton>
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              {open ? (
+                <p className="subtitle1">{t("transfer.transferDetails")}</p>
+              ) : (
+                <p className="body1 text-osmoverse-300">
+                  {selectedQuote.estimatedTime.humanize()} ETA
+                </p>
+              )}
+              <ExpandDetailsControlContent
+                warnUserOfPriceImpact={warnUserOfPriceImpact}
+                warnUserOfSlippage={warnUserOfSlippage}
+                selectedQuoteUpdatedAt={selectedQuoteUpdatedAt}
+                refetchInterval={refetchInterval}
+                selectedQuote={selectedQuote}
+                open={open}
+              />
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-2">
+            <BridgeProviderDropdownRow
+              successfulQuotes={successfulQuotes}
+              setSelectedBridgeProvider={setSelectedBridgeProvider}
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <EstimatedTimeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <ProviderFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <NetworkFeeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              fromChainName={selectedQuote.fromChain?.chainName}
+            />
+            <TotalFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+          </DisclosurePanel>
+        </div>
+      )}
+    </Disclosure>
   );
 };
