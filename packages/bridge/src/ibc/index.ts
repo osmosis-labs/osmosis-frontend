@@ -67,10 +67,6 @@ export class IbcBridgeProvider implements BridgeProvider {
     });
     const gasFee = txSimulation.amount[0];
 
-    const gasAsset = this.ctx.assetLists
-      .flatMap((list) => list.assets)
-      .find((asset) => asset.coinMinimalDenom === gasFee.denom);
-
     /** If the sent tokens are needed for fees, account for that in expected output. */
     const toAmount =
       gasFee.isNeededForTx &&
@@ -106,11 +102,8 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       estimatedTime,
       estimatedGasFee: {
+        ...params.fromAsset,
         amount: gasFee.amount,
-        denom: gasFee.denom,
-        // should be same as denom since it's on the same chain
-        address: gasFee.denom,
-        decimals: gasAsset?.decimals ?? 6,
       },
       transactionRequest: signDoc,
     };
@@ -206,10 +199,10 @@ export class IbcBridgeProvider implements BridgeProvider {
       .flatMap((list) => list.assets)
       .find(
         (asset) =>
-          asset.coinMinimalDenom === toAsset.address ||
-          asset.sourceDenom === toAsset.address ||
-          asset.coinMinimalDenom === fromAsset.address ||
-          asset.sourceDenom === fromAsset.address
+          asset.coinMinimalDenom.toLowerCase() ===
+            toAsset.address.toLowerCase() ||
+          asset.coinMinimalDenom.toLowerCase() ===
+            fromAsset.address.toLowerCase()
       );
 
     if (!transferAsset)
