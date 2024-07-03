@@ -1,5 +1,4 @@
 import { Registry } from "@cosmjs/proto-signing";
-import { Int } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
@@ -67,28 +66,13 @@ export class IbcBridgeProvider implements BridgeProvider {
     });
     const gasFee = txSimulation.amount[0];
 
-    /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount =
-      gasFee.isNeededForTx &&
-      gasFee.denom.toLowerCase() === params.fromAsset.address.toLowerCase()
-        ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
-        : params.fromAmount;
-
-    if (new Int(toAmount).lte(new Int(0))) {
-      throw new BridgeQuoteError({
-        bridgeId: IbcBridgeProvider.ID,
-        errorType: "InsufficientAmountError",
-        message: "Insufficient amount for fees",
-      });
-    }
-
     return {
       input: {
         amount: params.fromAmount,
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: toAmount,
+        amount: params.fromAmount,
         ...params.toAsset,
         priceImpact: "0",
       },

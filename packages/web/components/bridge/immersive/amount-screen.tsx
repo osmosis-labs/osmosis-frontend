@@ -7,7 +7,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil, noop } from "@osmosis-labs/utils";
@@ -46,6 +46,7 @@ import {
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useStore } from "~/stores";
+import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 import { CryptoFiatInput } from "./crypto-fiat-input";
@@ -518,6 +519,66 @@ export const AmountScreen = observer(
       isEvmWalletConnected,
       onOpenBridgeWalletSelect,
       toChain,
+    ]);
+
+    // adjust input if input amount exceeds gas fees + balance
+    const availableBalance = sourceAsset?.amount;
+    const { inputAmount } = useMemo(() => {
+      const fromAssetDecMultiplier = DecUtils.getTenExponentNInPrecisionRange(
+        sourceAsset?.decimals ?? 0
+      );
+      return {
+        fromAssetDecMultiplier,
+        inputAmount: new Dec(cryptoAmount === "" ? "0" : cryptoAmount)
+          .mul(
+            // CoinPretty only accepts whole amounts
+            fromAssetDecMultiplier
+          )
+          .truncate(),
+      };
+    }, [cryptoAmount, sourceAsset?.decimals]);
+    const inputCoin = useMemo(
+      () =>
+        availableBalance
+          ? new CoinPretty(availableBalance.currency, inputAmount)
+          : undefined,
+      [availableBalance, inputAmount]
+    );
+    useEffect(() => {
+      if (
+        selectedQuote &&
+        selectedQuote.gasCost &&
+        availableBalance &&
+        assetInOsmosisPrice &&
+        // input currency is same as fee currency
+        inputCoin?.currency.coinMinimalDenom ===
+          selectedQuote.gasCost.currency.coinMinimalDenom &&
+        // available balance currency is same as fee currency
+        availableBalance.currency.coinMinimalDenom ===
+          selectedQuote.gasCost.currency.coinMinimalDenom
+      ) {
+        const maxTransferAmount = availableBalance
+          .toDec()
+          .sub(selectedQuote.gasCost.toDec());
+
+        if (inputCoin.toDec().gt(maxTransferAmount)) {
+          setCryptoAmount(trimPlaceholderZeros(maxTransferAmount.toString()));
+
+          // Update the fiat amount based on the crypto amount
+          const priceInFiat = assetInOsmosisPrice.toDec();
+          const nextFiatAmount = maxTransferAmount.mul(priceInFiat).toString();
+
+          setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
+        }
+      }
+    }, [
+      selectedQuote,
+      availableBalance,
+      assetInOsmosisPrice,
+      inputCoin,
+
+      setCryptoAmount,
+      setFiatAmount,
     ]);
 
     if (
