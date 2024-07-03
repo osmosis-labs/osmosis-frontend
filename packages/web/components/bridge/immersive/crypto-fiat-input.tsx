@@ -171,6 +171,14 @@ export const CryptoFiatInput: FunctionComponent<{
             onInput("crypto")(
               trimPlaceholderZeros(asset.amount.toDec().toString())
             );
+
+            const priceInFiat = assetPrice.toDec();
+            const maxFiatValue = asset.amount
+              .toDec()
+              .mul(priceInFiat)
+              .toString();
+
+            onInput("fiat")(trimPlaceholderZeros(maxFiatValue));
           }}
           className="body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80"
         >
