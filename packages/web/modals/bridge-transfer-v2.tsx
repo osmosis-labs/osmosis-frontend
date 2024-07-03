@@ -594,9 +594,7 @@ export const TransferContent: FunctionComponent<
             }
 
             return {
-              gasCost: estimatedGasFee
-                ? estimatedGasFee.amount.maxDecimals(8)
-                : undefined,
+              gasCost: estimatedGasFee?.amount.maxDecimals(8),
               transferFee: transferFee.amount.maxDecimals(8),
               expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
