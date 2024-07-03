@@ -49,6 +49,8 @@ const Transactions: React.FC = observer(() => {
   // /transactions?page=0&address=osmoADDRESS
   const address = addressFromQueryString || wallet?.address || "";
 
+  console.log("address: ", address);
+
   const isWalletConnected = Boolean(wallet?.isWalletConnected);
 
   const { isLoading: isWalletLoading } = useWalletSelect();

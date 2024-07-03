@@ -143,6 +143,8 @@ export async function getTransactions({
         pageSize,
       });
 
+      console.log("------------- transaction data: ", data);
+
       // if the length of the data is equal to the page size, there is a next page
       const hasNextPage = data?.length === parseInt(pageSize, 10);
 
