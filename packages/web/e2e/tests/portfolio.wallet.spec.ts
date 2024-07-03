@@ -8,7 +8,9 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+  const privateKey =
+    process.env.PRIVATE_KEY ??
+    "0x9866a7f11faf50d5ccc36b0ce57e6fa72c5032367c44279b9ca829713c78bab8";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
