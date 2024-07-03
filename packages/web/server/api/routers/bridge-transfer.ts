@@ -181,6 +181,14 @@ export const bridgeTransferRouter = createTRPCRouter({
           },
           expectedOutput: {
             ...quote.expectedOutput,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.expectedOutput.decimals,
+                coinDenom: quote.expectedOutput.denom,
+                coinMinimalDenom: quote.expectedOutput.address,
+              },
+              quote.expectedOutput.amount
+            ),
             fiatValue: priceFromBridgeCoin(
               quote.expectedOutput,
               // output is same token as input
@@ -188,14 +196,28 @@ export const bridgeTransferRouter = createTRPCRouter({
             ),
           },
           transferFee: {
-            ...quote.transferFee,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.transferFee.decimals,
+                coinDenom: quote.transferFee.denom,
+                coinMinimalDenom: quote.transferFee.address,
+              },
+              quote.transferFee.amount
+            ),
             fiatValue: feeAssetPrice
               ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
               : undefined,
           },
           estimatedGasFee: quote.estimatedGasFee
             ? {
-                ...quote.estimatedGasFee,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: quote.estimatedGasFee.decimals,
+                    coinDenom: quote.estimatedGasFee.denom,
+                    coinMinimalDenom: quote.estimatedGasFee.address,
+                  },
+                  quote.estimatedGasFee.amount
+                ),
                 fiatValue:
                   gasFeeAssetPrice && quote.estimatedGasFee
                     ? priceFromBridgeCoin(

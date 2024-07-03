@@ -201,34 +201,10 @@ export const useBridgeQuotes = ({
 
             return {
               gasCost: estimatedGasFee
-                ? new CoinPretty(
-                    {
-                      coinDecimals: estimatedGasFee.decimals,
-                      coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.address,
-                    },
-                    new Dec(estimatedGasFee.amount)
-                  ).maxDecimals(8)
+                ? estimatedGasFee.amount.maxDecimals(8)
                 : undefined,
-
-              transferFee: new CoinPretty(
-                {
-                  coinDecimals: transferFee.decimals,
-                  coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.address,
-                },
-                new Dec(transferFee.amount)
-              ).maxDecimals(8),
-
-              expectedOutput: new CoinPretty(
-                {
-                  coinDecimals: expectedOutput.decimals,
-                  coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.address,
-                },
-                new Dec(expectedOutput.amount)
-              ),
-
+              transferFee: transferFee.amount.maxDecimals(8),
+              expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
               gasCostFiat: estimatedGasFee?.fiatValue,
