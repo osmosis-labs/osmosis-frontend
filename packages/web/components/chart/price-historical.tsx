@@ -20,7 +20,6 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
-import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
@@ -430,9 +429,8 @@ export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="gap m-auto flex items-center gap-2 px-8 md:px-6">
-      <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
-      <span className="subtitle1 text-osmoverse-400">
+    <div className="flex h-full flex-1 items-center justify-center">
+      <span className="spacing text-center text-[32px] font-h4 text-osmoverse-500">
         {t("errors.chartUnavailable")}
       </span>
     </div>
