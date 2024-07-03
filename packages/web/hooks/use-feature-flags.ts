@@ -78,7 +78,6 @@ export const useFeatureFlags = () => {
   const isDevModeWithoutClientID =
     process.env.NODE_ENV === "development" &&
     !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
-
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
