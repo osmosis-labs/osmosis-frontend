@@ -2,7 +2,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { BridgeChain } from "@osmosis-labs/bridge";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAddress } from "viem";
 
 import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
@@ -38,6 +38,12 @@ export const AmountAndReviewScreen = observer(
 
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
+
+    // if the chains change, reset the amounts
+    useEffect(() => {
+      setCryptoAmount("0");
+      setFiatAmount("0");
+    }, [fromChain, toChain]);
 
     // Wallets
     const { address: evmAddress, connector: evmConnector } =
