@@ -3,6 +3,7 @@ name: Preview frontend E2E tests
 on:
   push:
     branches:
+      - "FE-600"
       - "!master"
 
 jobs:
