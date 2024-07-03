@@ -3,6 +3,7 @@ import {
   AreaData,
   AreaSeriesOptions,
   DeepPartial,
+  LineType,
   Time,
 } from "lightweight-charts";
 import React, { FunctionComponent, memo } from "react";
@@ -19,6 +20,8 @@ import { Chart } from "./light-weight-charts/chart";
 
 const seriesOpt: DeepPartial<AreaSeriesOptions> = {
   lineColor: theme.colors.wosmongton[300],
+  lineWidth: 2,
+  lineType: LineType.Curved,
   topColor: theme.colors.osmoverse[700],
   bottomColor: theme.colors.osmoverse[850],
   priceLineVisible: false,

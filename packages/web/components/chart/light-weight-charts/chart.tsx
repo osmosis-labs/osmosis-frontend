@@ -38,13 +38,13 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
 
 export const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
-    fontFamily: theme.fontFamily.subtitle1.join(","),
+    fontFamily: theme.fontFamily.caption.join(","),
     background: {
       type: ColorType.Solid,
       color: "transparent",
     },
     textColor: theme.colors.osmoverse[500],
-    fontSize: 14,
+    fontSize: 12,
   },
   grid: { horzLines: { visible: false }, vertLines: { visible: false } },
   rightPriceScale: {
@@ -70,15 +70,15 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
   crosshair: {
     horzLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.Dashed,
-      width: 2,
+      style: LineStyle.Solid,
+      width: 1,
       color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
     vertLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.Dashed,
-      width: 2,
+      style: LineStyle.Solid,
+      width: 1,
       color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
