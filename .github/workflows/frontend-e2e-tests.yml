@@ -7,15 +7,30 @@ on:
       - "!master"
 
 jobs:
+  wait-for-deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      vercel_url: ${{steps.vercel.outputs.environment_url}}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - id: vercel
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          echo "$BRANCH_NAME"
+          python -m pip install requests
+          python main.py
+
   preview-e2e-swap-tests:
     runs-on: macos-latest
+    needs: wait-for-deployment
     environment:
       name: prod_swap_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: print gh
-        id: vercel
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -23,8 +38,6 @@ jobs:
           echo "$GITHUB_CONTEXT"
           echo "$BRANCH_NAME"
           ls -la
-          python -m pip install requests
-          python main.py
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,7 +55,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Stage
         env:
-          BASE_URL: ${{ steps.vercel.outputs.environment_url }}
+          BASE_URL: ${{ needs.wait-for-deployment.outputs.vercel_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
@@ -56,6 +69,7 @@ jobs:
           path: packages/web/playwright-report
 
   preview-e2e-portfolio-tests:
+    needs: wait-for-deployment
     runs-on: ubuntu-latest
     environment:
       name: prod_swap_test
@@ -78,7 +92,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Portfolio tests on Stage
         env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: ${{ needs.wait-for-deployment.outputs.vercel_url }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
