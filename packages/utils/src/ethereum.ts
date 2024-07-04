@@ -15,6 +15,8 @@ import {
   moonbeam,
   polygon,
   polygonMumbai,
+  base,
+  baseSepolia,
 } from "viem/chains";
 
 /**
@@ -47,7 +49,10 @@ export type AxelarSourceChain =
   | "Mumbai"
   | "Filecoin"
   | "Filecoin Hyperspace"
-  | "Arbitrum";
+  | "Arbitrum"
+  | "Arbitrum Sepolia Testnet"
+  | "Base"
+  | "Base Sepolia Testnet";
 
 // TODO: maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
@@ -191,5 +196,12 @@ export const EthereumChainInfo = createEthereumChainInfo({
     clientChainId: "Filecoin Hyperspace",
     color: "#0494fc",
     relativeLogoUrl: "/networks/filecoin.svg",
+  }),
+  Base: mapChainInfo({
+    chain: base,
+    axelarChainName: "Base",
+    clientChainId: "Base",
+    color: "#0e76fd",
+    relativeLogoUrl: "/networks/base.svg",
   }),
 });
