@@ -136,6 +136,7 @@ describe("IbcTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -184,7 +185,7 @@ describe("IbcTransferStatusProvider", () => {
 
   it("should handle missing events", async () => {
     (queryTx as jest.Mock).mockResolvedValue({
-      tx_response: { code: 0, events: [] },
+      tx_response: { code: 0, raw_log: "", events: [] },
     });
 
     const params = JSON.stringify({
@@ -205,6 +206,7 @@ describe("IbcTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -241,6 +243,7 @@ describe("IbcTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -277,6 +280,7 @@ describe("IbcTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
