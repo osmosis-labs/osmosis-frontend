@@ -49,11 +49,11 @@ export const CreateCLPool = observer(
   ({
     onBack,
     onClose,
-    currentStep,
-    // advanceStep,
-    // backStep,
-    config,
-  }: CreateCLPoolProps) => {
+    // currentStep,
+    advanceStep,
+  }: // backStep,
+  CreateCLPoolProps) => {
+    const currentStep: 0 | 1 | 2 | 3 | undefined = 2;
     // const selectableCurrencies = useMemo(
     //   () => config.remainingSelectableCurrencies,
     //   [config.remainingSelectableCurrencies]
@@ -223,6 +223,7 @@ export const CreateCLPool = observer(
                         (res) => {
                           if (res.code === 0) {
                             setIsTxLoading(false);
+                            advanceStep?.();
                           }
                         }
                       )
@@ -235,9 +236,30 @@ export const CreateCLPool = observer(
               </div>
             </>
           );
+        case 2:
+          return (
+            <>
+              <div className="flex items-center gap-3 self-center">
+                <Icon
+                  id="info-uncolored"
+                  className="h-4 w-4 text-osmoverse-400"
+                  width={16}
+                  height={16}
+                />
+                <span className="subtitle2 text-osmoverse-100">
+                  Initial liquidity will be deposited as a full range position
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <TokenLiquiditySelector selectedAsset={selectedBase} />
+                <TokenLiquiditySelector selectedAsset={selectedQuote} isQuote />
+              </div>
+            </>
+          );
       }
     }, [
       account?.osmosis,
+      advanceStep,
       baseTokens,
       clParams,
       currentStep,
@@ -251,7 +273,7 @@ export const CreateCLPool = observer(
     ]);
 
     return (
-      <div className="flex w-fit flex-col justify-center gap-[38px] rounded-5xl bg-osmoverse-850 p-10">
+      <div className="flex w-fit flex-col items-center justify-center gap-[38px] rounded-5xl bg-osmoverse-850 p-10">
         <div className="flex w-[641px] items-center justify-between lg:w-full">
           <button
             type="button"
@@ -265,7 +287,9 @@ export const CreateCLPool = observer(
               className="text-osmoverse-400"
             />
           </button>
-          <h6 className="text-white-emphasis">Create New Supercharged Pool</h6>
+          <h6 className="text-white-emphasis">
+            {getStepHeader(currentStep, "1446")}
+          </h6>
           <button
             type="button"
             onClick={onClose}
@@ -284,6 +308,16 @@ export const CreateCLPool = observer(
     );
   }
 );
+
+function getStepHeader(currentStep?: 0 | 1 | 2 | 3, poolNumber?: string) {
+  if (!currentStep) return;
+  switch (currentStep) {
+    case 1:
+      return "Create New Supercharged Pool";
+    case 2:
+      return `Add initial liquidity to Pool #${poolNumber}`;
+  }
+}
 
 interface TokenSelectorProps {
   assets: SelectionToken[];
@@ -415,5 +449,43 @@ function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
         </Transition>
       </div>
     </Listbox>
+  );
+}
+
+function TokenLiquiditySelector({
+  selectedAsset,
+  isQuote,
+}: Omit<TokenSelectorProps, "assets" | "setSelectedAsset"> & {
+  isQuote?: boolean;
+}) {
+  if (!selectedAsset) return;
+
+  return (
+    <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
+      <div className="flex items-center gap-3">
+        <Image
+          src={selectedAsset.token.coinImageUrl ?? ""}
+          alt={`${selectedAsset.token.coinDenom}`}
+          width={52}
+          height={52}
+          className="rounded-full"
+        />
+        <h5>{selectedAsset.token.coinDenom}</h5>
+      </div>
+      <div className="flex flex-col items-end gap-1">
+        <button>
+          <span className="caption text-wosmongton-300">
+            6532 {selectedAsset.token.coinDenom}
+          </span>
+        </button>
+        <input
+          type="number"
+          className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
+        />
+        <span className="caption h-3.5 text-osmoverse-400">
+          {isQuote && "~$12.00 USD"}
+        </span>
+      </div>
+    </div>
   );
 }
