@@ -139,6 +139,30 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
         },
       },
     },
+    etharbaxl: {
+      arbitrum: {
+        id: EthereumChainInfo["Arbitrum"].chainName,
+        chainId: EthereumChainInfo["Arbitrum"].id,
+        erc20ContractAddress: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        logoUrl: "/networks/abritrum.svg",
+      },
+    },
+    ethbaseaxl: {
+      base: {
+        id: EthereumChainInfo["Base"].chainName,
+        chainId: EthereumChainInfo["Base"].id,
+        erc20ContractAddress: "0x4200000000000000000000000000000000000006",
+        logoUrl: "/networks/base.svg",
+      },
+    },
+    ethmaticaxl: {
+      polygon: {
+        id: EthereumChainInfo["Polygon"].chainName,
+        chainId: EthereumChainInfo["Polygon"].id,
+        erc20ContractAddress: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+        logoUrl: "/networks/polygon.svg",
+      },
+    },
     wglmr: {
       moonbeam: {
         id: isTestnet
@@ -151,10 +175,6 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
           : "0xAcc15dC74880C9944775448304B263D191c6077F",
         logoUrl: "/networks/moonbeam.svg",
-        nativeWrapEquivalent: {
-          wrapDenom: "WGLMR",
-          tokenMinDenom: "glmr",
-        },
       },
     },
     wbtc: {
