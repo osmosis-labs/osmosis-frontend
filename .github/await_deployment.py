@@ -8,7 +8,7 @@ def wait_for_deployment(timeout):
     print(f"Wait for a deployment for a branch name: {branch_name}")
     time.sleep(30)
     bearer_token = os.getenv('VERCEL_TOKEN')
-    project_id = "prj_80UzRn6hG8nvUJSwujWUqqho3osT"
+    project_id = os.getenv('VERCEL_PROJECT')
     headers = {
         "Authorization": f"Bearer {bearer_token}"
     }
