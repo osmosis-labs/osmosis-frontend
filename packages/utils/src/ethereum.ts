@@ -2,6 +2,7 @@ import {
   arbitrum,
   avalanche,
   avalancheFuji,
+  base,
   bsc,
   bscTestnet,
   Chain,
@@ -15,8 +16,6 @@ import {
   moonbeam,
   polygon,
   polygonMumbai,
-  base,
-  baseSepolia,
 } from "viem/chains";
 
 /**
