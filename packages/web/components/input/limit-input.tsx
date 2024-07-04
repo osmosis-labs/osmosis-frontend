@@ -84,14 +84,14 @@ export const LimitInput: FC<LimitInputProps> = ({
 
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
-      if (tab === "buy" && type === "market" && updatedValue.length > 0) {
+      if (tab === "buy" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
       isFocused
         ? setFiatAmount(updatedValue)
         : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
-    [setFiatAmount, focused, tab, type, setMarketAmount, quoteAssetPrice]
+    [setFiatAmount, focused, tab, setMarketAmount, quoteAssetPrice]
   );
 
   const setTokenAmountSafe = useCallback(
