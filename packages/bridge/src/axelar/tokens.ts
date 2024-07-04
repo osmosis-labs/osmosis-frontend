@@ -1,11 +1,11 @@
-import { SourceChain } from "../chain";
-import { EthereumChainInfo } from "../ethereum";
+import { AxelarSourceChain, EthereumChainInfo } from "@osmosis-labs/utils";
+
 import { BridgeEnvironment } from "../interface";
 
 /** @deprecated Prefer using Axelar chain/asset list API via bridge providers instead */
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */
-  id: SourceChain;
+  id: AxelarSourceChain;
   chainId?: number;
   /** Address of origin ERC20 token for that origin chain. Leave blank to
    *  prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.

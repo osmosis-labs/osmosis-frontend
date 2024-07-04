@@ -9,6 +9,19 @@ const config = {
   images: {
     domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
   },
+  async headers() {
+    return [
+      {
+        source: "/favicon.ico",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=864000", // Cache for 10 days
+          },
+        ],
+      },
+    ];
+  },
   webpack(config) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
