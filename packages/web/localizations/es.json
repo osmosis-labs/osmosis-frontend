@@ -979,7 +979,8 @@
     "confirmDepositTo": "Confirmar depósito a {chain}",
     "confirmWithdrawTo": "Confirmar retiro a {chain}",
     "reviewDepositP": "Revise los detalles de su depósito antes de confirmar. Una vez depositada, su transacción es irreversible.",
-    "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible."
+    "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible.",
+    "lookingForBalances": "buscando saldos"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

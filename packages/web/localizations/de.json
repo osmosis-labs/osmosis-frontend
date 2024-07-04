@@ -979,7 +979,8 @@
     "confirmDepositTo": "Einzahlung an {chain} bestätigen",
     "confirmWithdrawTo": "Auszahlung an {chain} bestätigen",
     "reviewDepositP": "Überprüfen Sie vor der Bestätigung Ihre Einzahlungsdetails. Nach der Einzahlung ist Ihre Transaktion unumkehrbar.",
-    "reviewWithdrawP": "Überprüfen Sie vor der Bestätigung Ihre Auszahlungsdetails. Nach der Auszahlung ist Ihre Transaktion unumkehrbar."
+    "reviewWithdrawP": "Überprüfen Sie vor der Bestätigung Ihre Auszahlungsdetails. Nach der Auszahlung ist Ihre Transaktion unumkehrbar.",
+    "lookingForBalances": "Auf der Suche nach Gleichgewichten"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

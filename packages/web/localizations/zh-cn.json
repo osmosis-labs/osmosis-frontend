@@ -979,7 +979,8 @@
     "confirmDepositTo": "确认存款至{chain}",
     "confirmWithdrawTo": "确认提现至{chain}",
     "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
-    "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。"
+    "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
+    "lookingForBalances": "寻找平衡"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

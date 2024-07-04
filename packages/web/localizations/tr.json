@@ -979,7 +979,8 @@
     "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",
     "confirmWithdrawTo": "{chain} bağlantısına çekilmeyi onaylayın",
     "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
-    "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz."
+    "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
+    "lookingForBalances": "Bakiyeler arıyorum"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

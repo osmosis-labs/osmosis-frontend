@@ -979,7 +979,8 @@
     "confirmDepositTo": "Potwierdź wpłatę do {chain}",
     "confirmWithdrawTo": "Potwierdź wypłatę do {chain}",
     "reviewDepositP": "Przed potwierdzeniem sprawdź szczegóły swojej wpłaty. Po złożeniu depozytu Twoja transakcja jest nieodwracalna.",
-    "reviewWithdrawP": "Przed potwierdzeniem przejrzyj szczegóły wypłaty. Po wycofaniu transakcja jest nieodwracalna."
+    "reviewWithdrawP": "Przed potwierdzeniem przejrzyj szczegóły wypłaty. Po wycofaniu transakcja jest nieodwracalna.",
+    "lookingForBalances": "Szukasz sald"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
