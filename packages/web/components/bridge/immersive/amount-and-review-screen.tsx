@@ -1,5 +1,4 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { BridgeChain } from "@osmosis-labs/bridge";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -11,6 +10,7 @@ import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes
 import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 
 import { ReviewScreen } from "./review-screen";
@@ -33,8 +33,8 @@ export const AmountAndReviewScreen = observer(
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
-    const [fromChain, setFromChain] = useState<BridgeChain>();
-    const [toChain, setToChain] = useState<BridgeChain>();
+    const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
+    const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");

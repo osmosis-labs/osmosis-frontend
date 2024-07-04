@@ -4,7 +4,6 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { BridgeChain } from "@osmosis-labs/bridge";
 import { getShortAddress, isNil } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,8 +11,10 @@ import { FunctionComponent } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { ChainLogo } from "~/components/assets/chain-logo";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { api } from "~/utils/trpc";
 
 import {
@@ -31,8 +32,8 @@ interface ConfirmationScreenProps {
   direction: "deposit" | "withdraw";
   selectedDenom: string;
 
-  fromChain: BridgeChain;
-  toChain: BridgeChain;
+  fromChain: BridgeChainWithDisplayInfo;
+  toChain: BridgeChainWithDisplayInfo;
 
   fromAsset: SupportedAsset;
   toAsset: SupportedAsset;
@@ -101,7 +102,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           direction === "withdraw"
             ? "transfer.confirmWithdrawTo"
             : "transfer.confirmDepositTo",
-          { chain: quote.toChainInfo?.prettyName ?? "" }
+          { chain: toChain.prettyName }
         )}
       </h5>
       <p className="body1 pb-3 text-center text-osmoverse-400">
@@ -115,11 +116,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         <AssetBox
           type="from"
           assetImageUrl={fromVariantAsset?.coinImageUrl ?? "/"}
-          chainName={
-            quote.fromChainInfo?.prettyName ??
-            fromChain.chainName ??
-            fromChain.chainId.toString()
-          }
+          chain={fromChain}
           address={fromAddress}
           walletImageUrl={fromWalletIcon}
           value={quote.selectedQuote.quote.input.fiatValue}
@@ -131,11 +128,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         <AssetBox
           type="to"
           assetImageUrl={toVariantAsset?.coinImageUrl ?? "/"}
-          chainName={
-            quote.toChainInfo?.prettyName ??
-            toChain.chainName ??
-            toChain.chainId.toString()
-          }
+          chain={toChain}
           address={toAddress}
           walletImageUrl={toWalletIcon}
           value={quote.selectedQuote.expectedOutputFiat}
@@ -174,20 +167,12 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 const AssetBox: FunctionComponent<{
   type: "from" | "to";
   assetImageUrl: string;
-  chainName: string;
   address: string;
+  chain: BridgeChainWithDisplayInfo;
   walletImageUrl: string;
   value: PricePretty;
   coin: CoinPretty;
-}> = ({
-  type,
-  assetImageUrl,
-  chainName,
-  address,
-  walletImageUrl,
-  value,
-  coin,
-}) => {
+}> = ({ type, assetImageUrl, chain, address, walletImageUrl, value, coin }) => {
   const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
@@ -211,10 +196,14 @@ const AssetBox: FunctionComponent<{
       </div>
       <div className="h-[1px] w-full self-center bg-osmoverse-700" />
       <div className="flex place-content-between items-center px-6 pb-3 pt-1">
-        <div>
-          {t(type === "from" ? "transfer.from" : "transfer.to", {
-            network: chainName,
-          })}
+        <div className="flex items-center gap-2">
+          {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
+          <ChainLogo
+            prettyName={chain.prettyName}
+            color={chain.color}
+            logoUri={chain.logoUri}
+          />{" "}
+          <span>{chain.prettyName}</span>
         </div>
         <div className="flex items-center gap-2">
           <Image

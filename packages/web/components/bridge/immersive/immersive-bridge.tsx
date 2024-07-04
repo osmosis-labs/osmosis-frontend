@@ -107,7 +107,7 @@ export const ImmersiveBridgeFlow = ({
           return setStep(screen as ImmersiveBridgeScreens);
         }}
       >
-        {() => (
+        {({ currentScreen }) => (
           <Transition
             show={isVisible}
             as="div"
@@ -176,11 +176,13 @@ export const ImmersiveBridgeFlow = ({
                     />
                   )}
                 </Screen>
-                <AmountAndReviewScreen
-                  direction={direction}
-                  onClose={onClose}
-                  selectedAssetDenom={selectedAssetDenom}
-                />
+                {currentScreen !== ImmersiveBridgeScreens.Asset && (
+                  <AmountAndReviewScreen
+                    direction={direction}
+                    onClose={onClose}
+                    selectedAssetDenom={selectedAssetDenom}
+                  />
+                )}
               </div>
             </div>
           </Transition>

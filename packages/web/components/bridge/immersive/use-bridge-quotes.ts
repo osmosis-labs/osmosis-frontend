@@ -18,7 +18,6 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useChainDisplayInfo } from "~/components/chain/use-chain-display-info";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
@@ -636,9 +635,6 @@ export const useBridgeQuotes = ({
     throw new Error("Expected output is not defined.");
   }
 
-  const fromChainInfo = useChainDisplayInfo(fromChain?.chainId);
-  const toChainInfo = useChainDisplayInfo(toChain?.chainId);
-
   return {
     buttonText,
     buttonErrorMessage,
@@ -652,9 +648,6 @@ export const useBridgeQuotes = ({
     isInsufficientBal,
     warnUserOfSlippage,
     warnUserOfPriceImpact,
-
-    fromChainInfo,
-    toChainInfo,
 
     successfulQuotes,
     selectedBridgeProvider,

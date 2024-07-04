@@ -22,6 +22,12 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 
+export type BridgeChainWithDisplayInfo = BridgeChain & {
+  logoUri?: string;
+  color?: string;
+  prettyName: string;
+};
+
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
@@ -298,9 +304,12 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
+              chainName: evmChain.chainName,
               chainId: evmChain.id,
               chainType,
-            };
+              logoUri: evmChain.relativeLogoUrl,
+              color: evmChain.color,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
           } else if (chainType === "cosmos") {
             let cosmosChain: ReturnType<typeof getChain> | undefined;
             try {
@@ -317,8 +326,11 @@ export const bridgeTransferRouter = createTRPCRouter({
             return {
               prettyName: cosmosChain.pretty_name,
               chainId: cosmosChain.chain_id,
+              chainName: cosmosChain.chain_name,
               chainType,
-            };
+              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
+              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           }
 
           return undefined;

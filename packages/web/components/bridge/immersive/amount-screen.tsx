@@ -8,7 +8,6 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Dec } from "@keplr-wallet/unit";
-import { BridgeChain } from "@osmosis-labs/bridge";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -24,6 +23,7 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { ChainLogo } from "~/components/assets/chain-logo";
 import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
@@ -45,6 +45,7 @@ import {
 } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -63,10 +64,10 @@ interface AmountScreenProps {
   direction: "deposit" | "withdraw";
   selectedDenom: string;
 
-  fromChain: BridgeChain | undefined;
-  setFromChain: (chain: BridgeChain) => void;
-  toChain: BridgeChain | undefined;
-  setToChain: (chain: BridgeChain) => void;
+  fromChain: BridgeChainWithDisplayInfo | undefined;
+  setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
+  toChain: BridgeChainWithDisplayInfo | undefined;
+  setToChain: (chain: BridgeChainWithDisplayInfo) => void;
 
   fromAsset: SupportedAssetWithAmount | undefined;
   setFromAsset: (asset: SupportedAssetWithAmount | undefined) => void;
@@ -247,34 +248,29 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
-    const supportedChainsAsBridgeChain = useMemo(
+    const firstSupportedEvmChain = useMemo(
       () =>
-        supportedChains.map(
-          ({ chainId, chainType, prettyName }) =>
-            ({
-              chainId,
-              chainType,
-              chainName: prettyName,
-            } as BridgeChain)
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "evm" }
+          > => chain.chainType === "evm"
         ),
       [supportedChains]
     );
-
-    const firstSupportedEvmChain = useMemo(
-      () =>
-        supportedChainsAsBridgeChain.find(
-          (chain): chain is Extract<BridgeChain, { chainType: "evm" }> =>
-            chain.chainType === "evm"
-        ),
-      [supportedChainsAsBridgeChain]
-    );
     const firstSupportedCosmosChain = useMemo(
       () =>
-        supportedChainsAsBridgeChain.find(
-          (chain): chain is Extract<BridgeChain, { chainType: "cosmos" }> =>
-            chain.chainType === "cosmos"
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "cosmos" }
+          > => chain.chainType === "cosmos"
         ),
-      [supportedChainsAsBridgeChain]
+      [supportedChains]
     );
 
     const hasMoreThanOneChainType =
@@ -404,8 +400,11 @@ export const AmountScreen = observer(
       if (isNil(chain) && !isNil(osmosisChain)) {
         setChain({
           chainId: osmosisChain.chain_id,
-          chainName: osmosisChain.pretty_name,
+          chainName: osmosisChain.chain_name,
+          prettyName: osmosisChain.pretty_name,
           chainType: "cosmos",
+          logoUri: osmosisChain.logoURIs?.svg ?? osmosisChain.logoURIs?.png,
+          color: osmosisChain.logoURIs?.theme?.primary_color_hex,
         });
       }
     }, [direction, fromChain, osmosisChain, setFromChain, setToChain, toChain]);
@@ -424,11 +423,7 @@ export const AmountScreen = observer(
         supportedChains.length > 0
       ) {
         const firstChain = supportedChains[0];
-        setChain({
-          chainId: firstChain.chainId,
-          chainName: firstChain.prettyName,
-          chainType: firstChain.chainType,
-        } as BridgeChain);
+        setChain(firstChain);
       }
     }, [
       direction,
@@ -585,7 +580,8 @@ export const AmountScreen = observer(
           <div className="flex items-center gap-2">
             <ChainSelectorButton
               direction={direction}
-              chainLogo={""}
+              chainColor={fromChain.color}
+              chainLogo={fromChain.logoUri}
               chains={supportedChains}
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
@@ -596,14 +592,15 @@ export const AmountScreen = observer(
               }}
               readonly={direction === "withdraw"}
             >
-              {fromChain.chainName}
+              {fromChain.prettyName}
             </ChainSelectorButton>
 
             <Icon id="arrow-right" className="text-osmoverse-300" />
 
             <ChainSelectorButton
               direction={direction}
-              chainLogo=""
+              chainColor={toChain.color}
+              chainLogo={toChain.logoUri}
               chains={supportedChains}
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
@@ -614,7 +611,7 @@ export const AmountScreen = observer(
               }}
               readonly={direction === "deposit"}
             >
-              {toChain.chainName}
+              {toChain.prettyName}
             </ChainSelectorButton>
           </div>
         </div>
@@ -1048,14 +1045,16 @@ const ChainSelectorButton: FunctionComponent<{
   direction: BridgeTransactionDirection;
   readonly: boolean;
   children: ReactNode;
-  chainLogo: string;
+  chainLogo: string | undefined;
+  chainColor: string | undefined;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
-  onSelectChain: (chain: BridgeChain) => void;
+  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }> = ({
   direction,
   readonly,
   children,
-  chainLogo: _chainLogo,
+  chainLogo,
+  chainColor,
   chains,
   onSelectChain,
 }) => {
@@ -1063,8 +1062,9 @@ const ChainSelectorButton: FunctionComponent<{
 
   if (readonly) {
     return (
-      <div className="subtitle1 flex-1 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
-        {children}
+      <div className="subtitle1 flex w-[45%] flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
+        <ChainLogo prettyName="" logoUri={chainLogo} color={chainColor} />
+        <span className="truncate">{children}</span>
       </div>
     );
   }
@@ -1075,12 +1075,20 @@ const ChainSelectorButton: FunctionComponent<{
         onClick={() => {
           setIsNetworkSelectVisible(true);
         }}
-        className="subtitle1 group flex flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
+        className="subtitle1 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
       >
-        <span>{children}</span>
+        <div className="flex w-[90%] items-center gap-2">
+          <ChainLogo
+            className="flex-shrink-0"
+            prettyName=""
+            logoUri={chainLogo}
+            color={chainColor}
+          />
+          <span className="truncate">{children}</span>
+        </div>
         <Icon
           id="chevron-down"
-          className="text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
+          className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
           width={12}
           height={12}
         />
