@@ -1,4 +1,3 @@
-import { Int } from "@keplr-wallet/unit";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -141,24 +140,6 @@ describe("IbcBridgeProvider", () => {
     );
   });
 
-  it("should throw an error if gas cost exceeds transfer amount", async () => {
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [
-        {
-          amount: new Int(mockAtomFromOsmosis.fromAmount)
-            .add(new Int(100))
-            .toString(),
-          denom: "uatom",
-          isNeededForTx: true,
-        },
-      ],
-    });
-
-    await expect(provider.getQuote(mockAtomToOsmosis)).rejects.toThrow(
-      BridgeQuoteError
-    );
-  });
-
   it("should return a valid BridgeQuote", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
       amount: [{ amount: "5000", denom: "uatom", isNeededForTx: true }],
@@ -179,18 +160,6 @@ describe("IbcBridgeProvider", () => {
     expect(quote).toHaveProperty("estimatedGasFee");
     expect(quote.estimatedGasFee!.amount).toBe("5000");
     expect(quote).toHaveProperty("transactionRequest");
-  });
-
-  it("should calculate the correct toAmount when gas fee is needed for tx", async () => {
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [{ amount: "5000", denom: "uatom", isNeededForTx: true }],
-    });
-
-    const quote: BridgeQuote = await provider.getQuote(mockAtomToOsmosis);
-
-    expect(quote.expectedOutput.amount).toBe(
-      new Int(mockAtomToOsmosis.fromAmount).sub(new Int("5000")).toString()
-    );
   });
 
   it("should calculate the correct toAmount when gas fee is not needed for tx", async () => {

@@ -91,7 +91,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             )}
           >
             <Spinner className={classes?.spinner} />
-            {loadingText && <span>{loadingText}</span>}
+            {loadingText ? <span>{loadingText}</span> : props.children}
           </div>
         ) : (
           props.children
