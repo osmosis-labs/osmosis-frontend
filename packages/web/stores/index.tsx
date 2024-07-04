@@ -26,6 +26,7 @@ function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.pools.getUserSharePool.invalidate();
   apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
   apiUtils.local.balances.getUserBalances.invalidate();
+  apiUtils.local.bridgeTransfer.getSupportedAssetsBalances.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";

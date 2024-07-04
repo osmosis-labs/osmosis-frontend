@@ -377,7 +377,7 @@ export const useBridgeQuotes = ({
           `${providerId}${JSON.stringify(params)}`,
           inputCoin.trim(true).toString(),
           isWithdraw,
-          toAddress ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
+          (isWithdraw ? fromAddress : toAddress) ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
         );
       }
     },
@@ -385,6 +385,7 @@ export const useBridgeQuotes = ({
       availableBalance,
       inputCoin,
       toAddress,
+      fromAddress,
       inputAmountRaw,
       isWithdraw,
       transferHistoryStore,
