@@ -27,6 +27,7 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
+  baseSpotPrice: Dec;
 }
 
 export const TradeDetails = ({
@@ -34,6 +35,7 @@ export const TradeDetails = ({
   slippageConfig,
   outAmountLessSlippage,
   outFiatAmountLessSlippage,
+  baseSpotPrice,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -90,17 +92,18 @@ export const TradeDetails = ({
                 )}
               >
                 {swapState?.fromAsset?.coinDenom} price ≈{" "}
-                {swapState?.toAsset
-                  ? formatPretty(
-                      swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
-                      {
-                        maxDecimals: Math.min(
-                          swapState.toAsset.coinDecimals,
-                          8
-                        ),
-                      }
-                    )
-                  : "0"}{" "}
+                {swapState?.toAsset &&
+                  formatPretty(
+                    swapState.inBaseOutQuoteSpotPrice ??
+                      baseSpotPrice ??
+                      new Dec(0),
+                    {
+                      maxDecimals: baseSpotPrice
+                        ? 2
+                        : Math.min(swapState.toAsset.coinDecimals, 8),
+                    }
+                  )}{" "}
+                {baseSpotPrice && swapState?.toAsset?.coinDenom}
               </span>
               <span
                 className={classNames("absolute transition-opacity", {

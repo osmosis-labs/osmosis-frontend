@@ -130,7 +130,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </>
             )}
             {type === "market" && (
-              <TradeDetails swapState={swapState.marketState} />
+              <TradeDetails
+                swapState={swapState.marketState}
+                baseSpotPrice={swapState.priceState.spotPrice}
+              />
             )}
           </>
           {!account?.isWalletConnected ? (
