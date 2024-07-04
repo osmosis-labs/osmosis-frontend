@@ -188,10 +188,7 @@ export const useBridgesSupportedAssets = ({
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
-          .map(({ chainId, chainType, prettyName }) => [
-            chainId,
-            { chainId, chainType, prettyName },
-          ])
+          .map((chain) => [chain.chainId, chain])
       ).values()
     );
   }, [successfulQueries]);

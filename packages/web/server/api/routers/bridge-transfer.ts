@@ -20,6 +20,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
+import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { IS_TESTNET } from "~/config/env";
 
 const lruCache = new LRUCache<string, CacheEntry>({
@@ -298,9 +299,12 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
+              chainName: evmChain.chainName,
               chainId: evmChain.id,
               chainType,
-            };
+              logoUri: evmChain.relativeLogoUrl,
+              color: evmChain.color,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
           } else if (chainType === "cosmos") {
             let cosmosChain: ReturnType<typeof getChain> | undefined;
             try {
@@ -317,8 +321,11 @@ export const bridgeTransferRouter = createTRPCRouter({
             return {
               prettyName: cosmosChain.pretty_name,
               chainId: cosmosChain.chain_id,
+              chainName: cosmosChain.chain_name,
               chainType,
-            };
+              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
+              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           }
 
           return undefined;

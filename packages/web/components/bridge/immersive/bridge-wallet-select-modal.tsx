@@ -1,4 +1,3 @@
-import { BridgeChain } from "@osmosis-labs/bridge";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -6,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import React, { ReactNode, useState } from "react";
 import { Connector } from "wagmi";
 
+import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { SearchBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
@@ -23,9 +23,9 @@ import { useStore } from "~/stores";
 
 interface BridgeWalletSelectProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
-  cosmosChain?: Extract<BridgeChain, { chainType: "cosmos" }>;
-  evmChain?: Extract<BridgeChain, { chainType: "evm" }>;
-  onSelectChain: (chain: BridgeChain) => void;
+  cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
+  evmChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
+  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }
 
 export const BridgeWalletSelectModal = observer(

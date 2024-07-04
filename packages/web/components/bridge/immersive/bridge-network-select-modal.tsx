@@ -1,9 +1,11 @@
-import type { BridgeChain } from "@osmosis-labs/bridge";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
 import React, { useMemo, useState } from "react";
 
+import { ChainLogo } from "~/components/assets/chain-logo";
+import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeWalletSelectScreen } from "~/components/bridge/immersive/bridge-wallet-select-modal";
+import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { SearchBox } from "~/components/input";
 import {
   Screen,
@@ -22,12 +24,8 @@ enum Screens {
 }
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
-  chains: {
-    prettyName: string;
-    chainId: BridgeChain["chainId"];
-    chainType: BridgeChain["chainType"];
-  }[];
-  onSelectChain: (chain: BridgeChain) => void;
+  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }
 
 export const BridgeNetworkSelectModal = ({
@@ -41,7 +39,7 @@ export const BridgeNetworkSelectModal = ({
   const [isSwitchingChain, setIsSwitchingChain] = useState(false);
 
   const [connectingToEvmChain, setConnectingToEvmChain] =
-    useState<Extract<BridgeChain, { chainType: "evm" }>>();
+    useState<Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>>();
 
   const {
     isConnected: isEvmWalletConnected,
@@ -153,22 +151,26 @@ export const BridgeNetworkSelectModal = ({
                               chain.chainType === "evm"
                             ) {
                               setConnectingToEvmChain({
+                                ...chain,
                                 chainId: Number(chain.chainId),
-                                chainType: chain.chainType,
-                                chainName: chain.prettyName,
                               });
                               setCurrentScreen(Screens.SelectWallet);
                               return;
                             }
 
-                            onSelectChain({
-                              chainId: chain.chainId,
-                              chainType: chain.chainType,
-                              chainName: chain.prettyName,
-                            } as BridgeChain);
+                            onSelectChain(chain);
                           }}
                         >
-                          <span>{chain.prettyName}</span>
+                          <div className="flex items-center gap-4">
+                            <ChainLogo
+                              prettyName={chain.prettyName}
+                              logoUri={chain.logoUri}
+                              color={chain.color}
+                              size="lg"
+                            />
+
+                            <span>{chain.prettyName}</span>
+                          </div>
                           {shouldSwitchChain && (
                             <span className="body1 text-wosmongton-300">
                               {t("transfer.connect")}

@@ -16,6 +16,11 @@ import { useStore } from "~/stores";
 import { ReviewScreen } from "./review-screen";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
+export type BridgeChainWithDisplayInfo = BridgeChain & {
+  logoUri?: string;
+  color?: string;
+  prettyName: string;
+};
 
 interface AmountAndConfirmationScreenProps {
   direction: "deposit" | "withdraw";
@@ -33,8 +38,8 @@ export const AmountAndReviewScreen = observer(
 
     const [sourceAsset, setSourceAsset] = useState<SupportedAssetWithAmount>();
     const [destinationAsset, setDestinationAsset] = useState<SupportedAsset>();
-    const [fromChain, setFromChain] = useState<BridgeChain>();
-    const [toChain, setToChain] = useState<BridgeChain>();
+    const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
+    const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
