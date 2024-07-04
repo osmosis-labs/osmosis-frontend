@@ -150,6 +150,13 @@ export const useBridgeQuotes = ({
     availableBalance &&
     inputCoin?.toDec().gt(availableBalance.toDec());
 
+  const isTxPending = (() => {
+    if (!fromChain) return false;
+    return fromChain.chainType === "cosmos"
+      ? accountStore.getWallet(fromChain.chainId)?.txTypeInProgress !== ""
+      : isEthTxPending;
+  })();
+
   const quoteResults = api.useQueries((t) =>
     bridges.map((bridge) =>
       t.bridgeTransfer.getQuoteByBridge(
@@ -160,6 +167,7 @@ export const useBridgeQuotes = ({
         },
         {
           enabled:
+            !isTxPending &&
             inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&
             !isInsufficientBal,
@@ -392,14 +400,7 @@ export const useBridgeQuotes = ({
     ]
   );
 
-  const isTxPending = (() => {
-    if (!fromChain) return false;
-    return fromChain.chainType === "cosmos"
-      ? accountStore.getWallet(fromChain.chainId)?.txTypeInProgress !== ""
-      : isEthTxPending;
-  })();
-
-  // close modal when initial eth transaction is committed
+  // close modal when initial transaction is committed
   useEffect(() => {
     if (transferInitiated && !isTxPending) {
       onRequestClose();

@@ -103,6 +103,8 @@ export const AmountAndReviewScreen = observer(
           ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
           : toAsset?.supportedVariants[fromAsset?.address ?? ""],
       onTransfer: () => {
+        setToAsset(undefined);
+        setFromAsset(undefined);
         setCryptoAmount("0");
         setFiatAmount("0");
       },
