@@ -209,7 +209,7 @@ export const CreateCLPool = observer(
                     !selectedBase
                   }
                   className={classNames(
-                    "flex h-13 w-[520px] items-center justify-center rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:opacity-70"
+                    "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
                   )}
                   onClick={() => {
                     setIsTxLoading(true);
@@ -229,7 +229,8 @@ export const CreateCLPool = observer(
                       .finally(() => setIsTxLoading(false));
                   }}
                 >
-                  <h6>Create Pool</h6>
+                  <h6>{isTxLoading ? "Creating" : "Create"} Pool</h6>
+                  {isTxLoading && <Spinner />}
                 </button>
               </div>
             </>
