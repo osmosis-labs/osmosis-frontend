@@ -49,6 +49,8 @@ export const ChainNames: { [chainId: string]: string } = {
   "0xa869": "Avalanche Fuji Testnet",
   "0x4e454152": "Aurora Mainnet",
   "0x4e454153": "Aurora Testnet",
+  "0x2105": "Base",
+  "0x14a33": "Base Goerli Testnet",
 };
 
 export const ChainNetworkConfigs: { [chainId: string]: object } = {};
