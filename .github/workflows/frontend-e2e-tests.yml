@@ -95,7 +95,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Portfolio tests on Stage
         env:
-          BASE_URL: ${{ needs.wait-for-deployment.outputs.environment_url }}
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
