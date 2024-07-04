@@ -146,7 +146,6 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         </Button>
         <Button
           isLoading={quote.isTxPending}
-          loadingText={t("transfer.confirm")}
           className="w-full"
           onClick={onConfirm}
           disabled={!quote.userCanInteract}

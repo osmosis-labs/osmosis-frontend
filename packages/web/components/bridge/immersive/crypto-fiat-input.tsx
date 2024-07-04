@@ -1,7 +1,14 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { InputBox } from "~/components/input";
@@ -18,6 +25,7 @@ export const CryptoFiatInput: FunctionComponent<{
   asset: SupportedAssetWithAmount;
   isInsufficientBal: boolean;
   isInsufficientFee: boolean;
+  transferGasCost: CoinPretty | undefined;
   setFiatAmount: (amount: string) => void;
   setCryptoAmount: (amount: string) => void;
   setInputUnit: (unit: "fiat" | "crypto") => void;
@@ -29,6 +37,7 @@ export const CryptoFiatInput: FunctionComponent<{
   asset,
   isInsufficientBal,
   isInsufficientFee,
+  transferGasCost,
   setFiatAmount,
   setCryptoAmount,
   setInputUnit,
@@ -36,60 +45,89 @@ export const CryptoFiatInput: FunctionComponent<{
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const cryptoAmountPretty = new CoinPretty(
-    {
-      coinDecimals: asset.decimals,
-      coinDenom: asset.denom,
-      coinMinimalDenom: asset.address,
-    },
-    cryptoInputRaw === ""
-      ? new Dec(0)
-      : new Dec(cryptoInputRaw).mul(DecUtils.getTenExponentN(asset.decimals))
+  const [isMax, setIsMax] = useState(false);
+
+  const inputCoin = useMemo(
+    () =>
+      new CoinPretty(
+        {
+          coinDecimals: asset.decimals,
+          coinDenom: asset.denom,
+          coinMinimalDenom: asset.address,
+        },
+        cryptoInputRaw === ""
+          ? new Dec(0)
+          : new Dec(cryptoInputRaw).mul(
+              DecUtils.getTenExponentN(asset.decimals)
+            )
+      ),
+    [asset, cryptoInputRaw]
   );
 
-  const fiatAmountPretty = new PricePretty(
+  const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
     new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
   );
 
-  const onInput = (type: "fiat" | "crypto") => (value: string) => {
-    let nextValue = type === "fiat" ? value.replace("$", "") : value;
-    if (!isNumeric(nextValue) && nextValue !== "") return;
+  const onInput = useCallback(
+    (type: "fiat" | "crypto") => (value: string) => {
+      let nextValue = type === "fiat" ? value.replace("$", "") : value;
+      if (!isNumeric(nextValue) && nextValue !== "") return;
 
-    if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
-      nextValue = nextValue.slice(1);
+      if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
+        nextValue = nextValue.slice(1);
+      }
+
+      if (nextValue === "") {
+        nextValue = "0";
+      }
+      if (nextValue === ".") {
+        nextValue = "0.";
+      }
+
+      if (type === "fiat") {
+        // Update the crypto amount based on the fiat amount
+        const priceInFiat = assetPrice.toDec();
+        const nextFiatAmount = new Dec(nextValue);
+        const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
+
+        setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
+      } else {
+        // Update the fiat amount based on the crypto amount
+        const priceInFiat = assetPrice.toDec();
+        const nextCryptoAmount = new Dec(nextValue);
+        const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
+
+        setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
+      }
+
+      type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
+    },
+    [assetPrice, setCryptoAmount, setFiatAmount]
+  );
+
+  // Subtract gas cost and adjust input when selecting max amount
+  useEffect(() => {
+    if (
+      isMax &&
+      transferGasCost &&
+      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
+      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
+    ) {
+      const maxTransferAmount = asset.amount
+        .toDec()
+        .sub(transferGasCost.toDec());
+
+      if (inputCoin.toDec().gt(maxTransferAmount)) {
+        onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+      }
     }
-
-    if (nextValue === "") {
-      nextValue = "0";
-    }
-    if (nextValue === ".") {
-      nextValue = "0.";
-    }
-
-    if (type === "fiat") {
-      // Update the crypto amount based on the fiat amount
-      const priceInFiat = assetPrice.toDec();
-      const nextFiatAmount = new Dec(nextValue);
-      const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
-
-      setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
-    } else {
-      // Update the fiat amount based on the crypto amount
-      const priceInFiat = assetPrice.toDec();
-      const nextCryptoAmount = new Dec(nextValue);
-      const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
-
-      setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
-    }
-
-    type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
-  };
+  }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
 
   const fiatCurrentValue = `${assetPrice?.symbol ?? ""}${fiatInputRaw}`;
   const fiatInputFontSize = calcTextSizeClass(fiatCurrentValue.length);
   const cryptoInputFontSize = calcTextSizeClass(
-    cryptoInputRaw.length + cryptoAmountPretty.denom.length
+    cryptoInputRaw.length + inputCoin.denom.length
   );
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -131,7 +169,10 @@ export const CryptoFiatInput: FunctionComponent<{
               onBlur={() => setIsInputFocused(false)}
               onFocus={() => setIsInputFocused(true)}
               currentValue={fiatCurrentValue}
-              onInput={onInput("fiat")}
+              onInput={(value) => {
+                onInput("fiat")(value);
+                setIsMax(false);
+              }}
               isAutosize
             />
           ) : (
@@ -159,20 +200,33 @@ export const CryptoFiatInput: FunctionComponent<{
               onBlur={() => setIsInputFocused(false)}
               onFocus={() => setIsInputFocused(true)}
               currentValue={cryptoInputRaw}
-              onInput={onInput("crypto")}
-              trailingSymbol={cryptoAmountPretty.denom}
+              onInput={(value) => {
+                onInput("crypto")(value);
+                setIsMax(false);
+              }}
+              trailingSymbol={inputCoin.denom}
               isAutosize
             />
           )}
         </div>
         <button
           onClick={() => {
-            // TODO: Subtract fees from the amount
-            onInput("crypto")(
-              trimPlaceholderZeros(asset.amount.toDec().toString())
-            );
+            if (isMax) {
+              onInput("crypto")("0");
+              setIsMax(false);
+            } else {
+              onInput("crypto")(
+                trimPlaceholderZeros(asset.amount.toDec().toString())
+              );
+              setIsMax(true);
+            }
           }}
-          className="body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80"
+          className={classNames(
+            "body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80",
+            {
+              "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+            }
+          )}
         >
           {t("transfer.max")}
         </button>
@@ -187,13 +241,11 @@ export const CryptoFiatInput: FunctionComponent<{
         <span>
           {currentUnit === "fiat" ? (
             <>
-              {trimPlaceholderZeros(
-                cryptoAmountPretty?.toDec().toString(2) ?? "0"
-              )}{" "}
-              {cryptoAmountPretty.denom}
+              {trimPlaceholderZeros(inputCoin?.toDec().toString(2) ?? "0")}{" "}
+              {inputCoin.denom}
             </>
           ) : (
-            fiatAmountPretty.maxDecimals(2).toString()
+            inputValue.maxDecimals(2).toString()
           )}
         </span>
         <span>

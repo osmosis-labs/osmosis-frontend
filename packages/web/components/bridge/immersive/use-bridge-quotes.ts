@@ -125,21 +125,30 @@ export const useBridgeQuotes = ({
     300,
     [inputAmountRaw]
   );
-  const inputAmount = new Dec(
-    debouncedInputValue === "" ? "0" : debouncedInputValue
-  ).mul(
-    // CoinPretty only accepts whole amounts
-    DecUtils.getTenExponentNInPrecisionRange(toAsset?.decimals ?? 0)
+  /** NOTE: Debounced amount. */
+  const inputAmount = useMemo(
+    () =>
+      new Dec(debouncedInputValue === "" ? "0" : debouncedInputValue)
+        .mul(
+          // CoinPretty only accepts whole amounts
+          DecUtils.getTenExponentNInPrecisionRange(fromAsset?.decimals ?? 0)
+        )
+        .truncate(),
+    [debouncedInputValue, fromAsset?.decimals]
   );
-
   const availableBalance = fromAsset?.amount;
+  const inputCoin = useMemo(
+    () =>
+      availableBalance
+        ? new CoinPretty(availableBalance.currency, inputAmount)
+        : undefined,
+    [availableBalance, inputAmount]
+  );
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
     availableBalance &&
-    new CoinPretty(availableBalance.currency, inputAmount)
-      .toDec()
-      .gt(availableBalance.toDec());
+    inputCoin?.toDec().gt(availableBalance.toDec());
 
   const quoteResults = api.useQueries((t) =>
     bridges.map((bridge) =>
@@ -147,11 +156,11 @@ export const useBridgeQuotes = ({
         {
           ...(quoteParams as Required<typeof quoteParams>),
           bridge,
-          fromAmount: inputAmount.truncate().toString(),
+          fromAmount: inputAmount.toString(),
         },
         {
           enabled:
-            inputAmount.gt(new Dec(0)) &&
+            inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&
             !isInsufficientBal,
           staleTime: 5_000,
@@ -326,8 +335,8 @@ export const useBridgeQuotes = ({
     availableBalance &&
     selectedQuote?.transferFee !== undefined &&
     selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-    new CoinPretty(availableBalance.currency, inputAmount)
-      .toDec()
+    inputCoin
+      ?.toDec()
       .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
       .abs()
       .lt(selectedQuote?.transferFee.toDec());
@@ -336,7 +345,7 @@ export const useBridgeQuotes = ({
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
       {
         ...(quoteParams as Required<typeof quoteParams>),
-        fromAmount: inputAmount.truncate().toString(),
+        fromAmount: inputAmount.toString(),
         bridge: selectedBridgeProvider!,
       },
       {
@@ -347,7 +356,7 @@ export const useBridgeQuotes = ({
           Boolean(selectedQuote) &&
           Boolean(selectedBridgeProvider) &&
           !selectedQuote?.transactionRequest &&
-          inputAmount.gt(new Dec(0)) &&
+          inputAmount.isPositive() &&
           !isInsufficientBal &&
           !isInsufficientFee &&
           Object.values(quoteParams).every((param) => !isNil(param)),
@@ -363,12 +372,10 @@ export const useBridgeQuotes = ({
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
-      if (inputAmountRaw !== "" && availableBalance) {
+      if (inputAmountRaw !== "" && availableBalance && inputCoin) {
         transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
-          new CoinPretty(availableBalance.currency, inputAmount)
-            .trim(true)
-            .toString(),
+          inputCoin.trim(true).toString(),
           isWithdraw,
           toAddress ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
         );
@@ -376,8 +383,8 @@ export const useBridgeQuotes = ({
     },
     [
       availableBalance,
+      inputCoin,
       toAddress,
-      inputAmount,
       inputAmountRaw,
       isWithdraw,
       transferHistoryStore,
@@ -632,9 +639,6 @@ export const useBridgeQuotes = ({
     buttonText,
     buttonErrorMessage,
 
-    selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,
-    refetchInterval,
-
     userCanInteract,
     isTxPending,
     isApprovingToken,
@@ -650,6 +654,8 @@ export const useBridgeQuotes = ({
     setSelectedBridgeProvider: onChangeBridgeProvider,
 
     selectedQuote,
+    selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,
+    refetchInterval,
     isLoadingBridgeQuote,
     isLoadingBridgeTransaction,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
