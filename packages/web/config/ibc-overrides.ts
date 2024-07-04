@@ -741,6 +741,39 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
+  "ETH.arb.axl": {
+    sourceChainNameOverride: "Arbitrum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).etharbaxl.arbitrum,
+      ],
+    },
+  },
+  "ETH.base.axl": {
+    sourceChainNameOverride: "Base",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).ethbaseaxl.base,
+      ],
+    },
+  },
+  "ETH.matic.axl": {
+    sourceChainNameOverride: "Polygon",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChainTokens: [
+        AxelarSourceChainTokenConfigs(environment).ethmaticaxl.polygon,
+      ],
+    },
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
