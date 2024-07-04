@@ -1139,16 +1139,22 @@
     "reviewOrder": "Verificați comanda",
     "tradeDetails": "Detalii comerciale",
     "marketOrder": {
-      "title": "Ordinea pietei",
-      "description": "Cumpărați imediat la cel mai bun preț disponibil"
+      "title": "Ordinul pieței",
+      "description": {
+        "buy": "Cumpărați imediat la cel mai bun preț disponibil",
+        "sell": "Vinde imediat la cel mai bun pret disponibil"
+      }
     },
     "limitOrder": {
       "title": "Ordin limită",
-      "description": "Cumpărați când prețul {denom} scade"
+      "description": {
+        "buy": "Cumpărați când prețul {denom} scade",
+        "sell": "Vindeți când prețul {denom} crește"
+      }
     },
     "recurringOrder": {
       "title": "Comandă recurentă",
-      "description": "Cumpărați la preț mediu în timp"
+      "description": "{action} la preț mediu în timp"
     },
     "aboveMarket": {
       "title": "Preț limită peste prețul pieței",
@@ -1186,13 +1192,19 @@
     "totalEstimatedFees": "Taxele totale estimate",
     "receiveMin": "Primiți minim",
     "receiveAsset": "Primiți activ",
-    "orderType": "Tip comandă",
+    "orderType": "Tip de comandă",
     "limitPrice": "Preț limită",
     "moreDetails": "Mai multe detalii",
     "confirm": "A confirma",
     "expectedRate": "Rata așteptată",
     "market": "Piaţă",
-    "limit": "Limită"
+    "limit": "Limită",
+    "increases": "crește",
+    "decreases": "scade",
+    "estimatingFees": "Estimarea taxelor",
+    "fees": "taxe",
+    "receiveEstimated": "Primire (estimat)",
+    "swapRoute": "Schimbați ruta"
   },
   "orderHistory": {
     "orders": "Comenzi",

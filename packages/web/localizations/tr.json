@@ -1140,22 +1140,28 @@
     "tradeDetails": "Ticaret Detayları",
     "marketOrder": {
       "title": "Market siparişi",
-      "description": "Mevcut en iyi fiyatla hemen satın alın"
+      "description": {
+        "buy": "Mevcut en iyi fiyatla hemen satın alın",
+        "sell": "Mümkün olan en iyi fiyatla hemen satış yapın"
+      }
     },
     "limitOrder": {
       "title": "Limit Emri",
-      "description": "{denom} fiyatı düştüğünde satın alın"
+      "description": {
+        "buy": "{denom} fiyatı düştüğünde satın alın",
+        "sell": "{denom} fiyatı arttığında sat"
+      }
     },
     "recurringOrder": {
       "title": "Yinelenen Sipariş",
-      "description": "Zaman içinde ortalama fiyattan satın alın"
+      "description": "Zaman içindeki ortalama fiyata {action}"
     },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
     "belowMarket": {
-      "title": "Piyasa fiyatının altındaki limit fiyat",
+      "title": "Limit fiyatı piyasa fiyatının altında",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
     "enterAnAmountTo": "Bir miktar girin",
@@ -1192,7 +1198,13 @@
     "confirm": "Onaylamak",
     "expectedRate": "Beklenen oran",
     "market": "Pazar",
-    "limit": "Sınır"
+    "limit": "Sınır",
+    "increases": "artışlar",
+    "decreases": "azalır",
+    "estimatingFees": "Ücretlerin tahmin edilmesi",
+    "fees": "ücretler",
+    "receiveEstimated": "Alma (tahmini)",
+    "swapRoute": "Rotayı değiştir"
   },
   "orderHistory": {
     "orders": "Emirler",

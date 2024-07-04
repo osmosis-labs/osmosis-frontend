@@ -1140,15 +1140,21 @@
     "tradeDetails": "交易詳情",
     "marketOrder": {
       "title": "市價訂單",
-      "description": "立即以最優惠的價格購買"
+      "description": {
+        "buy": "立即以最優惠的價格購買",
+        "sell": "立即以最優惠的價格出售"
+      }
     },
     "limitOrder": {
       "title": "限價訂單",
-      "description": "當{denom}價格下跌時購買"
+      "description": {
+        "buy": "當{denom}價格下跌時購買",
+        "sell": "當{denom}價格上漲時出售"
+      }
     },
     "recurringOrder": {
       "title": "重複訂單",
-      "description": "以一段時間內的平均價格購買"
+      "description": "{action}以一段時間內的平均價格"
     },
     "aboveMarket": {
       "title": "限價高於市場價格",
@@ -1192,7 +1198,13 @@
     "confirm": "確認",
     "expectedRate": "預期利率",
     "market": "市場",
-    "limit": "限制"
+    "limit": "限制",
+    "increases": "增加",
+    "decreases": "減少",
+    "estimatingFees": "估算費用",
+    "fees": "費用",
+    "receiveEstimated": "收到（預計）",
+    "swapRoute": "交換路線"
   },
   "orderHistory": {
     "orders": "命令",

@@ -1140,15 +1140,21 @@
     "tradeDetails": "交易详情",
     "marketOrder": {
       "title": "市价订单",
-      "description": "立即以最佳价格购买"
+      "description": {
+        "buy": "立即以最佳价格购买",
+        "sell": "立即以最佳价格出售"
+      }
     },
     "limitOrder": {
       "title": "限价订单",
-      "description": "当{denom}价格下降时买入"
+      "description": {
+        "buy": "当{denom}价格下降时买入",
+        "sell": "当{denom}价格上涨时卖出"
+      }
     },
     "recurringOrder": {
       "title": "重复订单",
-      "description": "按一段时间内的平均价格购买"
+      "description": "{action}随时间的平均价格"
     },
     "aboveMarket": {
       "title": "限制价格高于市场价格",
@@ -1192,7 +1198,13 @@
     "confirm": "确认",
     "expectedRate": "预期利率",
     "market": "市场",
-    "limit": "限制"
+    "limit": "限制",
+    "increases": "增加",
+    "decreases": "减少",
+    "estimatingFees": "估算费用",
+    "fees": "费用",
+    "receiveEstimated": "收到（估计）",
+    "swapRoute": "交换路线"
   },
   "orderHistory": {
     "orders": "命令",

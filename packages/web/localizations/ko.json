@@ -1140,15 +1140,21 @@
     "tradeDetails": "거래내역",
     "marketOrder": {
       "title": "시장가 주문",
-      "description": "가장 좋은 가격으로 즉시 구매하세요"
+      "description": {
+        "buy": "가장 좋은 가격으로 즉시 구매하세요",
+        "sell": "가장 좋은 가격으로 즉시 판매"
+      }
     },
     "limitOrder": {
       "title": "제한 주문",
-      "description": "{denom} 가격이 하락하면 구매하세요."
+      "description": {
+        "buy": "{denom} 가격이 하락하면 구매하세요.",
+        "sell": "{denom} 가격이 상승하면 매도하세요"
+      }
     },
     "recurringOrder": {
       "title": "반복 주문",
-      "description": "시간이 지남에 따라 평균 가격으로 구매"
+      "description": "시간 경과에 따른 평균 가격의 {action}"
     },
     "aboveMarket": {
       "title": "시장가보다 높은 가격 제한",
@@ -1192,7 +1198,13 @@
     "confirm": "확인하다",
     "expectedRate": "예상비율",
     "market": "시장",
-    "limit": "한계"
+    "limit": "한계",
+    "increases": "증가하다",
+    "decreases": "감소하다",
+    "estimatingFees": "수수료 추정",
+    "fees": "수수료",
+    "receiveEstimated": "수신 (예상)",
+    "swapRoute": "경로 교환"
   },
   "orderHistory": {
     "orders": "명령",

@@ -14,13 +14,13 @@ import { LimitInput } from "~/components/input/limit-input";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
@@ -92,7 +92,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           );
       }
     };
-
+    console.log(swapState.marketState);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -119,26 +119,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
             />
           </div>
-          {type === "limit" ? (
-            <LimitPriceSelector
-              swapState={swapState}
-              orderDirection={orderDirection}
-            />
-          ) : (
-            <div className="inline-flex items-center gap-1 py-3.5">
-              <span className="body2 text-osmoverse-300">
-                {swapState.baseAsset?.coinDenom}{" "}
-                {t("assets.table.price").toLowerCase()} ≈{" "}
-                {formatPretty(
-                  orderDirection === "bid"
-                    ? swapState.priceState.askSpotPrice ?? new Dec(0)
-                    : swapState.priceState.bidSpotPrice ?? new Dec(0)
-                )}{" "}
-                {swapState.quoteAsset?.coinDenom}
-              </span>
-            </div>
-          )}
-          <LimitTradeDetails swapState={swapState} />
+          <>
+            {!swapState.isMarket && (
+              <>
+                <LimitPriceSelector
+                  swapState={swapState}
+                  orderDirection={orderDirection}
+                />
+                <LimitTradeDetails swapState={swapState} />
+              </>
+            )}
+            {swapState.isMarket && (
+              <TradeDetails
+                swapState={swapState.marketState}
+                baseSpotPrice={swapState.priceState.spotPrice}
+              />
+            )}
+          </>
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>
@@ -159,16 +156,20 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {hasFunds ? (
                 <Button
                   disabled={
-                    swapState.insufficientFunds ||
-                    !swapState.inAmountInput.inputAmount ||
-                    swapState.inAmountInput.inputAmount === "0" ||
-                    (!swapState.priceState.isValidPrice &&
-                      swapState.priceState.orderPrice.length > 0) ||
+                    (!swapState.isMarket &&
+                      (swapState.insufficientFunds ||
+                        !swapState.inAmountInput.inputAmount ||
+                        swapState.inAmountInput.inputAmount === "0" ||
+                        (!swapState.priceState.isValidPrice &&
+                          swapState.priceState.orderPrice.length > 0))) ||
                     (swapState.isMarket &&
-                      (swapState.marketState.inAmountInput.isEmpty ||
+                      (swapState.inAmountInput.isEmpty ||
                         !Boolean(swapState.marketState.quote) ||
                         Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError)))
+                        Boolean(swapState.marketState.networkFeeError))) ||
+                    !swapState.isBalancesFetched ||
+                    swapState.isMakerFeeLoading ||
+                    swapState.marketState.isQuoteLoading
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||

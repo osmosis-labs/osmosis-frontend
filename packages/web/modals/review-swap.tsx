@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -18,6 +18,9 @@ interface ReviewSwapModalProps {
   onClose: () => void;
   swapState: ReturnType<typeof useSwap>;
   confirmAction: () => void;
+  isConfirmationDisabled: boolean;
+  outAmountLessSlippage?: IntPretty;
+  outFiatAmountLessSlippage?: PricePretty;
 }
 
 export function ReviewSwapModal({
@@ -25,6 +28,9 @@ export function ReviewSwapModal({
   onClose,
   swapState,
   confirmAction,
+  isConfirmationDisabled,
+  outAmountLessSlippage,
+  outFiatAmountLessSlippage,
 }: ReviewSwapModalProps) {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
@@ -163,15 +169,36 @@ export function ReviewSwapModal({
                   </span>
                 }
               />
-              <RecapRow left={t("limitOrders.receiveMin")} right={<></>} />
-              <div className="body2 flex h-8 w-full items-center justify-between">
+              <RecapRow
+                left={t("limitOrders.receiveMin")}
+                right={
+                  <span>
+                    {outAmountLessSlippage &&
+                      outFiatAmountLessSlippage &&
+                      swapState.toAsset && (
+                        <span className="text-osmoverse-100">
+                          {formatPretty(outAmountLessSlippage, {
+                            maxDecimals: 8,
+                          })}{" "}
+                          {swapState.toAsset.coinDenom}
+                        </span>
+                      )}{" "}
+                    {outFiatAmountLessSlippage && (
+                      <span className="text-osmoverse-300">
+                        (~{formatPretty(outFiatAmountLessSlippage)})
+                      </span>
+                    )}
+                  </span>
+                }
+              />
+              {/* <div className="body2 flex h-8 w-full items-center justify-between">
                 <span className="text-osmoverse-300">
                   {t("limitOrders.moreDetails")}
                 </span>
                 <span className="cursor-pointer text-wosmongton-300">
                   {t("swap.autoRouterToggle.show")}
                 </span>
-              </div>
+              </div> */}
             </div>
             {/* <div className="body2 flex h-[38px] w-full items-center justify-center">
               <span className="text-caption text-osmoverse-300">
@@ -189,7 +216,7 @@ export function ReviewSwapModal({
                   {t("unstableAssetsWarning.buttonCancel")}
                 </h6>
               </Button>
-              <Button onClick={confirmAction}>
+              <Button onClick={confirmAction} disabled={isConfirmationDisabled}>
                 <h6>{t("limitOrders.confirm")}</h6>
               </Button>
             </div>
