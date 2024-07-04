@@ -175,6 +175,10 @@ export const AxelarSourceChainTokenConfigs: (env: BridgeEnvironment) => {
           ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
           : "0xAcc15dC74880C9944775448304B263D191c6077F",
         logoUrl: "/networks/moonbeam.svg",
+        nativeWrapEquivalent: {
+          wrapDenom: "WGLMR",
+          tokenMinDenom: "glmr",
+        },
       },
     },
     wbtc: {
