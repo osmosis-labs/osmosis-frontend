@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
@@ -63,16 +64,18 @@ export const usePlaceLimit = ({
     useOtherCurrencies,
   });
 
+  const inAmountInput = useAmountInput({
+    currency: swapAssets.fromAsset,
+  });
+
   const marketState = useSwap({
     initialFromDenom: orderDirection === "ask" ? baseDenom : quoteDenom,
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
     useOtherCurrencies: false,
     forceSwapInPoolId: poolId,
-    maxSlippage: new Dec(0),
+    maxSlippage: new Dec(0.1),
   });
-
-  const { inAmountInput } = marketState;
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
@@ -100,18 +103,23 @@ export const usePlaceLimit = ({
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
       inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
+    console.log("TOKEN AMT", baseTokenAmount.toString());
     if (orderDirection === "ask") {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
     }
 
+    const price = isMarket
+      ? orderDirection === "bid"
+        ? priceState.askSpotPrice
+        : priceState.bidSpotPrice
+      : priceState.price;
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue =
-      mulPrice(
-        baseTokenAmount,
-        new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
-        DEFAULT_VS_CURRENCY
-      ) ?? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+    const outgoingFiatValue = mulPrice(
+      baseTokenAmount,
+      new PricePretty(DEFAULT_VS_CURRENCY, price ?? new Dec(1)),
+      DEFAULT_VS_CURRENCY
+    );
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
@@ -127,6 +135,9 @@ export const usePlaceLimit = ({
     inAmountInput.amount,
     quoteAsset,
     priceState.price,
+    isMarket,
+    priceState.askSpotPrice,
+    priceState.bidSpotPrice,
   ]);
 
   /**
@@ -143,6 +154,13 @@ export const usePlaceLimit = ({
         )
       : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
   }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
+
+  useEffect(() => {
+    if (orderDirection === "bid") return;
+
+    const normalizedAmount = paymentTokenValue.toDec().toString();
+    marketState.inAmountInput.setAmount(normalizedAmount);
+  }, [paymentTokenValue, orderDirection, marketState.inAmountInput]);
 
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
@@ -278,6 +296,7 @@ export const usePlaceLimit = ({
     expectedFiatAmountOut,
     marketState,
     isMarket,
+    quoteAssetPrice,
   };
 };
 

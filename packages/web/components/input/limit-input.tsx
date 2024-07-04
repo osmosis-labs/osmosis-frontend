@@ -1,4 +1,5 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
+import { Asset } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -8,12 +9,14 @@ import { Icon } from "~/components/assets";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
-  baseAsset: CoinPretty;
+  baseAsset: Asset;
   onChange: (value: string) => void;
+  setMarketAmount: (value: string) => void;
   tokenAmount: string;
   price: Dec;
   insufficentFunds?: boolean;
   disableSwitching?: boolean;
+  quoteAssetPrice: Dec;
 }
 
 export enum FocusedInput {
@@ -45,6 +48,8 @@ export const LimitInput: FC<LimitInputProps> = ({
   price,
   insufficentFunds,
   disableSwitching,
+  setMarketAmount,
+  quoteAssetPrice,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   const [tab] = useQueryState("tab");
@@ -76,11 +81,17 @@ export const LimitInput: FC<LimitInputProps> = ({
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
         return;
       }
+
+      // Hacky solution to deal with rounding
+      // TODO: Remove this when quote is not a stablecoin
+      if (tab === "buy" && type === "market") {
+        setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
+      }
       isFocused
         ? setFiatAmount(updatedValue)
         : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
-    [setFiatAmount, focused]
+    [setFiatAmount, focused, tab, type, setMarketAmount, quoteAssetPrice]
   );
 
   const setTokenAmountSafe = useCallback(
@@ -101,14 +112,14 @@ export const LimitInput: FC<LimitInputProps> = ({
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
     const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
-    const fiatValue = price?.mul(value) ?? new Dec(0);
+    const fiatValue = price.mul(value);
     setFiatAmountSafe(formatPretty(fiatValue));
-  }, [price, tokenAmount, setFiatAmountSafe, focused]);
+  }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
-    const tokenValue = new Dec(value)?.quo(price);
+    const tokenValue = new Dec(value).quo(price);
     setTokenAmountSafe(tokenValue.toString());
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
 
@@ -140,7 +151,10 @@ type AutoInputProps = {
   setter: (v: string) => void;
   amount: string;
   type: "fiat" | "token";
-} & Omit<LimitInputProps, "onChange" | "price" | "tokenAmount">;
+} & Omit<
+  LimitInputProps,
+  "onChange" | "price" | "tokenAmount" | "setMarketAmount" | "quoteAssetPrice"
+>;
 
 function AutoInput({
   focused,
@@ -208,7 +222,7 @@ function AutoInput({
             "font-normal": !isFocused,
           })}
         >
-          {baseAsset ? baseAsset.denom : ""}
+          {baseAsset ? baseAsset.coinDenom : ""}
         </span>
       )}
       {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}

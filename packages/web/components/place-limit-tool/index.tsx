@@ -92,7 +92,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           );
       }
     };
-    console.log(swapState.marketState);
+
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -112,27 +112,37 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </p>
             <LimitInput
               onChange={swapState.inAmountInput.setAmount}
-              baseAsset={swapState.inAmountInput.balance!}
+              baseAsset={swapState.baseAsset!}
               tokenAmount={swapState.inAmountInput.inputAmount}
-              price={swapState.priceState.price}
+              price={
+                type === "market"
+                  ? orderDirection === "bid"
+                    ? swapState.priceState.askSpotPrice!
+                    : swapState.priceState.bidSpotPrice!
+                  : swapState.priceState.price
+              }
               insufficentFunds={swapState.insufficientFunds}
               disableSwitching={type === "market"}
+              setMarketAmount={swapState.marketState.inAmountInput.setAmount}
+              quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
             />
           </div>
           <>
-            {!swapState.isMarket && (
-              <>
-                <LimitPriceSelector
-                  swapState={swapState}
-                  orderDirection={orderDirection}
-                />
-                <LimitTradeDetails swapState={swapState} />
-              </>
+            {type === "limit" && (
+              <LimitPriceSelector
+                swapState={swapState}
+                orderDirection={orderDirection}
+              />
             )}
+            {!swapState.isMarket && <LimitTradeDetails swapState={swapState} />}
             {swapState.isMarket && (
               <TradeDetails
                 swapState={swapState.marketState}
-                baseSpotPrice={swapState.priceState.spotPrice}
+                baseSpotPrice={
+                  orderDirection === "bid"
+                    ? swapState.priceState.askSpotPrice!
+                    : swapState.priceState.bidSpotPrice!
+                }
               />
             )}
           </>
@@ -163,7 +173,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         (!swapState.priceState.isValidPrice &&
                           swapState.priceState.orderPrice.length > 0))) ||
                     (swapState.isMarket &&
-                      (swapState.inAmountInput.isEmpty ||
+                      (swapState.marketState.inAmountInput.isEmpty ||
                         !Boolean(swapState.marketState.quote) ||
                         Boolean(swapState.marketState.error) ||
                         Boolean(swapState.marketState.networkFeeError))) ||
