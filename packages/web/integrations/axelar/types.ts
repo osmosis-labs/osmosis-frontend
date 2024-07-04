@@ -86,6 +86,6 @@ export const EthClientChainIds_SourceChainMap: {
   "Filecoin - Mainnet": "Filecoin",
   "Arbitrum One": "Arbitrum",
   "Arbitrum Sepolia": "Arbitrum Sepolia",
-  "Base": "Base",
+  Base: "Base",
   "Base Sepolia Testnet": "Base Sepolia Testnet",
 };
