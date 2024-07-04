@@ -74,6 +74,12 @@
       <circle cx="8.5" cy="4" r="1" fill="#090524" />
       <rect x="7.5" y="6" width="2" height="6" fill="#090524" />
     </symbol>
+
+    <symbol viewBox="0 0 17 16" id="info-uncolored">
+      <rect x="0.5" width="16" height="16" rx="8" fill="currentColor" />
+      <circle cx="8.5" cy="4" r="1" fill="#090524" />
+      <rect x="7.5" y="6" width="2" height="6" fill="#090524" />
+    </symbol>
     <symbol viewBox="0 0 30 30" id="hamburger">
       <path
         d="M3.75 15H26.25"
