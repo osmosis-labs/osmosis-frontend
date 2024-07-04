@@ -169,7 +169,7 @@ function mapHistoricalToMapped(
     const quantityMin = parseInt(o.quantity);
     const placedQuantityMin = parseInt(o.quantity);
 
-    const price = new Dec(o.price);
+    const price = tickToPrice(new Int(o.tick_id));
     const percentClaimed = new Dec(1);
     const output =
       o.order_direction === "bid"
@@ -182,7 +182,12 @@ function mapHistoricalToMapped(
       order_direction: o.order_direction,
       order_id: parseInt(o.order_id),
       owner: userAddress,
-      placed_at: dayjs(o.place_timestamp ?? 0).unix() * 1000,
+      placed_at:
+        dayjs(
+          o.place_timestamp && o.place_timestamp.length > 0
+            ? o.place_timestamp
+            : 0
+        ).unix() * 1000,
       placed_quantity: parseInt(o.quantity),
       placedQuantityMin,
       quantityMin,
