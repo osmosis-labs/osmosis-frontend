@@ -103,7 +103,6 @@ export const usePlaceLimit = ({
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
       inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
-    console.log("TOKEN AMT", baseTokenAmount.toString());
     if (orderDirection === "ask") {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
@@ -155,6 +154,12 @@ export const usePlaceLimit = ({
       : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
   }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
 
+  /**
+   * When creating a market order we want to update the market state with the input amount
+   * with the amount of base tokens.
+   *
+   * Only runs on an ASK order. A BID order is handled by the input directly.
+   */
   useEffect(() => {
     if (orderDirection === "bid") return;
 

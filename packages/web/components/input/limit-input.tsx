@@ -83,8 +83,8 @@ export const LimitInput: FC<LimitInputProps> = ({
       }
 
       // Hacky solution to deal with rounding
-      // TODO: Remove this when quote is not a stablecoin
-      if (tab === "buy" && type === "market") {
+      // TODO: Investigate a way to improve this
+      if (tab === "buy" && type === "market" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
       isFocused
