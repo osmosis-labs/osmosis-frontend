@@ -31,8 +31,8 @@ export const AmountAndReviewScreen = observer(
   }: AmountAndConfirmationScreenProps) => {
     const { accountStore } = useStore();
 
-    const [sourceAsset, setSourceAsset] = useState<SupportedAssetWithAmount>();
-    const [destinationAsset, setDestinationAsset] = useState<SupportedAsset>();
+    const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
+    const [toAsset, setToAsset] = useState<SupportedAsset>();
     const [fromChain, setFromChain] = useState<BridgeChain>();
     const [toChain, setToChain] = useState<BridgeChain>();
 
@@ -72,27 +72,27 @@ export const AmountAndReviewScreen = observer(
     const quote = useBridgeQuotes({
       toAddress,
       toChain: toChain,
-      toAsset: destinationAsset
+      toAsset: toAsset
         ? {
             address:
               toChain?.chainType === "evm"
-                ? getAddress(destinationAsset.address)
-                : destinationAsset.address,
-            decimals: destinationAsset.decimals,
-            denom: destinationAsset.denom,
+                ? getAddress(toAsset.address)
+                : toAsset.address,
+            decimals: toAsset.decimals,
+            denom: toAsset.denom,
           }
         : undefined,
       fromAddress,
       fromChain: fromChain,
-      fromAsset: sourceAsset
+      fromAsset: fromAsset
         ? {
             address:
               fromChain?.chainType === "evm"
-                ? getAddress(sourceAsset.address)
-                : sourceAsset.address,
-            decimals: sourceAsset.decimals,
-            denom: sourceAsset.denom,
-            amount: sourceAsset.amount,
+                ? getAddress(fromAsset.address)
+                : fromAsset.address,
+            decimals: fromAsset.decimals,
+            denom: fromAsset.denom,
+            amount: fromAsset.amount,
           }
         : undefined,
       direction,
@@ -100,8 +100,8 @@ export const AmountAndReviewScreen = observer(
       inputAmount: cryptoAmount,
       bridges:
         direction === "deposit"
-          ? sourceAsset?.supportedVariants[destinationAsset?.address ?? ""]
-          : destinationAsset?.supportedVariants[sourceAsset?.address ?? ""],
+          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
+          : toAsset?.supportedVariants[fromAsset?.address ?? ""],
       onTransfer: () => {
         setCryptoAmount("0");
         setFiatAmount("0");
@@ -121,10 +121,10 @@ export const AmountAndReviewScreen = observer(
               setFromChain={setFromChain}
               toChain={toChain}
               setToChain={setToChain}
-              sourceAsset={sourceAsset}
-              setSourceAsset={setSourceAsset}
-              destinationAsset={destinationAsset}
-              setDestinationAsset={setDestinationAsset}
+              fromAsset={fromAsset}
+              setFromAsset={setFromAsset}
+              toAsset={toAsset}
+              setToAsset={setToAsset}
               cryptoAmount={cryptoAmount}
               setCryptoAmount={setCryptoAmount}
               fiatAmount={fiatAmount}
@@ -143,15 +143,15 @@ export const AmountAndReviewScreen = observer(
                 toAddress &&
                 fromWalletIcon &&
                 toWalletIcon &&
-                sourceAsset &&
-                destinationAsset && (
+                fromAsset &&
+                toAsset && (
                   <ReviewScreen
                     direction={direction}
                     selectedDenom={selectedAssetDenom!}
                     fromChain={fromChain}
                     toChain={toChain}
-                    fromAsset={sourceAsset}
-                    toAsset={destinationAsset}
+                    fromAsset={fromAsset}
+                    toAsset={toAsset}
                     fromAddress={fromAddress}
                     toAddress={toAddress}
                     fromWalletIcon={fromWalletIcon}

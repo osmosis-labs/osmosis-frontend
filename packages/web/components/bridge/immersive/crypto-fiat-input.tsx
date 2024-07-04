@@ -108,31 +108,18 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax) {
-      console.log("input zero", inputCoin.toDec().isZero());
-      // only subtract the gas cost once we know what it is given max input
-      if (
-        transferGasCost &&
-        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-      ) {
-        console.log("measure gas cost");
-        const maxTransferAmount = asset.amount
-          .toDec()
-          .sub(transferGasCost.toDec());
+    if (
+      isMax &&
+      transferGasCost &&
+      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
+      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
+    ) {
+      const maxTransferAmount = asset.amount
+        .toDec()
+        .sub(transferGasCost.toDec());
 
-        if (inputCoin.toDec().gt(maxTransferAmount)) {
-          onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
-        }
-      } else if (
-        inputCoin.toCoin().denom === asset.amount.toCoin().denom &&
-        inputCoin.toDec().isZero()
-      ) {
-        console.log("set initial");
-        // initially set input to max
-        onInput("crypto")(
-          trimPlaceholderZeros(asset.amount.toDec().toString())
-        );
+      if (inputCoin.toDec().gt(maxTransferAmount)) {
+        onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
     }
   }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
@@ -228,6 +215,9 @@ export const CryptoFiatInput: FunctionComponent<{
               onInput("crypto")("0");
               setIsMax(false);
             } else {
+              onInput("crypto")(
+                trimPlaceholderZeros(asset.amount.toDec().toString())
+              );
               setIsMax(true);
             }
           }}
