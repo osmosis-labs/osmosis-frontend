@@ -12,6 +12,7 @@ import Image from "next/image";
 import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
+import { AddInitialLiquidity } from "~/components/complex/pool/create/cl/add-initial-liquidity";
 import { Spinner } from "~/components/loaders";
 import { Checkbox } from "~/components/ui/checkbox";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -29,7 +30,7 @@ interface CreateCLPoolProps {
   backStep?: () => void;
 }
 
-type SelectionToken = {
+export type SelectionToken = {
   token: AppCurrency;
   chainName: string;
 };
@@ -49,11 +50,10 @@ export const CreateCLPool = observer(
   ({
     onBack,
     onClose,
-    // currentStep,
+    currentStep,
     advanceStep,
   }: // backStep,
   CreateCLPoolProps) => {
-    const currentStep: 0 | 1 | 2 | 3 | undefined = 2;
     // const selectableCurrencies = useMemo(
     //   () => config.remainingSelectableCurrencies,
     //   [config.remainingSelectableCurrencies]
@@ -212,22 +212,23 @@ export const CreateCLPool = observer(
                     "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
                   )}
                   onClick={() => {
-                    setIsTxLoading(true);
-                    account?.osmosis
-                      .sendCreateConcentratedPoolMsg(
-                        selectedBase?.token.coinMinimalDenom!,
-                        selectedQuote?.token.coinMinimalDenom!,
-                        100,
-                        +selectedSpread,
-                        undefined,
-                        (res) => {
-                          if (res.code === 0) {
-                            setIsTxLoading(false);
-                            advanceStep?.();
-                          }
-                        }
-                      )
-                      .finally(() => setIsTxLoading(false));
+                    // setIsTxLoading(true);
+                    // account?.osmosis
+                    //   .sendCreateConcentratedPoolMsg(
+                    //     selectedBase?.token.coinMinimalDenom!,
+                    //     selectedQuote?.token.coinMinimalDenom!,
+                    //     100,
+                    //     +selectedSpread,
+                    //     undefined,
+                    //     (res) => {
+                    //       if (res.code === 0) {
+                    //         setIsTxLoading(false);
+                    //         advanceStep?.();
+                    //       }
+                    //     }
+                    //   )
+                    //   .finally(() => setIsTxLoading(false));
+                    advanceStep?.();
                   }}
                 >
                   <h6>{isTxLoading ? "Creating" : "Create"} Pool</h6>
@@ -238,27 +239,13 @@ export const CreateCLPool = observer(
           );
         case 2:
           return (
-            <>
-              <div className="flex items-center gap-3 self-center">
-                <Icon
-                  id="info-uncolored"
-                  className="h-4 w-4 text-osmoverse-400"
-                  width={16}
-                  height={16}
-                />
-                <span className="subtitle2 text-osmoverse-100">
-                  Initial liquidity will be deposited as a full range position
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <TokenLiquiditySelector selectedAsset={selectedBase} />
-                <TokenLiquiditySelector selectedAsset={selectedQuote} isQuote />
-              </div>
-            </>
+            <AddInitialLiquidity
+              selectedBase={selectedBase}
+              selectedQuote={selectedQuote}
+            />
           );
       }
     }, [
-      account?.osmosis,
       advanceStep,
       baseTokens,
       clParams,
@@ -319,7 +306,7 @@ function getStepHeader(currentStep?: 0 | 1 | 2 | 3, poolNumber?: string) {
   }
 }
 
-interface TokenSelectorProps {
+export interface TokenSelectorProps {
   assets: SelectionToken[];
   setSelectedAsset: (asset: SelectionToken) => void;
   selectedAsset?: SelectionToken;
@@ -449,43 +436,5 @@ function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
         </Transition>
       </div>
     </Listbox>
-  );
-}
-
-function TokenLiquiditySelector({
-  selectedAsset,
-  isQuote,
-}: Omit<TokenSelectorProps, "assets" | "setSelectedAsset"> & {
-  isQuote?: boolean;
-}) {
-  if (!selectedAsset) return;
-
-  return (
-    <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
-      <div className="flex items-center gap-3">
-        <Image
-          src={selectedAsset.token.coinImageUrl ?? ""}
-          alt={`${selectedAsset.token.coinDenom}`}
-          width={52}
-          height={52}
-          className="rounded-full"
-        />
-        <h5>{selectedAsset.token.coinDenom}</h5>
-      </div>
-      <div className="flex flex-col items-end gap-1">
-        <button>
-          <span className="caption text-wosmongton-300">
-            6532 {selectedAsset.token.coinDenom}
-          </span>
-        </button>
-        <input
-          type="number"
-          className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
-        />
-        <span className="caption h-3.5 text-osmoverse-400">
-          {isQuote && "~$12.00 USD"}
-        </span>
-      </div>
-    </div>
   );
 }
