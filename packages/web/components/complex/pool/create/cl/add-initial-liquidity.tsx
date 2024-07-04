@@ -1,5 +1,6 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
@@ -14,48 +15,104 @@ import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface AddInitialLiquidityProps {
+  poolId: string;
   selectedBase?: SelectionToken;
   selectedQuote?: SelectionToken;
+  onClose?: () => void;
 }
 
-export const AddInitialLiquidity = ({
-  selectedBase,
-  selectedQuote,
-}: AddInitialLiquidityProps) => {
-  const [baseAmount, setBaseAmount] = useState(0);
-  const [quoteAmount, setQuoteAmount] = useState(0);
+export const AddInitialLiquidity = observer(
+  ({
+    selectedBase,
+    selectedQuote,
+    poolId,
+    onClose,
+  }: AddInitialLiquidityProps) => {
+    const [baseAmount, setBaseAmount] = useState(0);
+    const [quoteAmount, setQuoteAmount] = useState(0);
 
-  if (!selectedBase || !selectedQuote) return;
+    const [isTxLoading, setIsTxLoading] = useState(false);
+    const { accountStore } = useStore();
 
-  return (
-    <>
-      <div className="flex items-center gap-3 self-center">
-        <Icon
-          id="info-uncolored"
-          className="h-4 w-4 text-osmoverse-400"
-          width={16}
-          height={16}
-        />
-        <span className="subtitle2 text-osmoverse-100">
-          Initial liquidity will be deposited as a full range position
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+    if (!selectedBase || !selectedQuote) return;
+
+    return (
+      <>
+        <div className="flex items-center gap-3 self-center">
+          <Icon
+            id="info-uncolored"
+            className="h-4 w-4 text-osmoverse-400"
+            width={16}
+            height={16}
+          />
+          <span className="subtitle2 text-osmoverse-100">
+            Initial liquidity will be deposited as a full range position
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <TokenLiquiditySelector
+            selectedAsset={selectedBase}
+            value={baseAmount}
+            setter={setBaseAmount}
+          />
+          <TokenLiquiditySelector
+            selectedAsset={selectedQuote}
+            isQuote
+            value={quoteAmount}
+            setter={setQuoteAmount}
+          />
+        </div>
+        <span className="subtitle1 text-osmoverse-300">
+          Implied value: 1 {selectedBase.token.coinDenom}{" "}
+          <span className="font-bold">≈ $1.23</span>
         </span>
-      </div>
-      <div className="flex items-center gap-3">
-        <TokenLiquiditySelector
-          selectedAsset={selectedBase}
-          value={baseAmount}
-          setter={setBaseAmount}
-        />
-        <TokenLiquiditySelector
-          selectedAsset={selectedQuote}
-          isQuote
-          value={quoteAmount}
-          setter={setQuoteAmount}
-        />
-      </div>
-    </>
-  );
-};
+        <div className="flex flex-col gap-[26px]">
+          <button
+            onClick={() => {
+              setIsTxLoading(true);
+              account?.osmosis
+                .sendCreateConcentratedLiquidityPositionMsg(
+                  poolId,
+                  new Int(0),
+                  // TODO: put actual max tick
+                  new Int(1),
+                  undefined,
+                  {
+                    currency: selectedBase.token,
+                    amount: baseAmount.toString(),
+                  },
+                  {
+                    currency: selectedQuote.token,
+                    amount: quoteAmount.toString(),
+                  },
+                  undefined,
+                  undefined,
+                  (res) => {
+                    if (res.code === 0) {
+                      setIsTxLoading(false);
+                      onClose?.();
+                    }
+                  }
+                )
+                .finally(() => setIsTxLoading(false));
+            }}
+            disabled={isTxLoading}
+            className={classNames(
+              "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
+            )}
+          >
+            <h6>Next</h6>
+          </button>
+          <button onClick={onClose}>
+            <span className="subtitle1 text-osmoverse-100">Skip</span>
+          </button>
+        </div>
+      </>
+    );
+  }
+);
 
 const TokenLiquiditySelector = observer(
   ({
@@ -99,7 +156,9 @@ const TokenLiquiditySelector = observer(
             height={52}
             className="rounded-full"
           />
-          <h5>{selectedAsset.token.coinDenom}</h5>
+          <h5 className="max-w-[90px] truncate">
+            {selectedAsset.token.coinDenom}
+          </h5>
         </div>
         <div className="flex flex-col items-end gap-1">
           <button

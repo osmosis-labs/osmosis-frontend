@@ -77,6 +77,10 @@ export const CreatePoolModal: FunctionComponent<
           currentStep={curStep}
           onClose={props.onRequestClose}
           config={config}
+          fullClose={() => {
+            setCurStep(1);
+            props.onRequestClose();
+          }}
         />
       ) : (
         <>

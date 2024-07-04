@@ -28,6 +28,7 @@ interface CreateCLPoolProps {
   currentStep?: 1 | 2 | 3 | 0;
   advanceStep?: () => void;
   backStep?: () => void;
+  fullClose?: () => void;
 }
 
 export type SelectionToken = {
@@ -52,8 +53,8 @@ export const CreateCLPool = observer(
     onClose,
     currentStep,
     advanceStep,
-  }: // backStep,
-  CreateCLPoolProps) => {
+    fullClose,
+  }: CreateCLPoolProps) => {
     // const selectableCurrencies = useMemo(
     //   () => config.remainingSelectableCurrencies,
     //   [config.remainingSelectableCurrencies]
@@ -212,23 +213,22 @@ export const CreateCLPool = observer(
                     "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
                   )}
                   onClick={() => {
-                    // setIsTxLoading(true);
-                    // account?.osmosis
-                    //   .sendCreateConcentratedPoolMsg(
-                    //     selectedBase?.token.coinMinimalDenom!,
-                    //     selectedQuote?.token.coinMinimalDenom!,
-                    //     100,
-                    //     +selectedSpread,
-                    //     undefined,
-                    //     (res) => {
-                    //       if (res.code === 0) {
-                    //         setIsTxLoading(false);
-                    //         advanceStep?.();
-                    //       }
-                    //     }
-                    //   )
-                    //   .finally(() => setIsTxLoading(false));
-                    advanceStep?.();
+                    setIsTxLoading(true);
+                    account?.osmosis
+                      .sendCreateConcentratedPoolMsg(
+                        selectedBase?.token.coinMinimalDenom!,
+                        selectedQuote?.token.coinMinimalDenom!,
+                        100,
+                        +selectedSpread,
+                        undefined,
+                        (res) => {
+                          if (res.code === 0) {
+                            setIsTxLoading(false);
+                            advanceStep?.();
+                          }
+                        }
+                      )
+                      .finally(() => setIsTxLoading(false));
                   }}
                 >
                   <h6>{isTxLoading ? "Creating" : "Create"} Pool</h6>
@@ -242,14 +242,19 @@ export const CreateCLPool = observer(
             <AddInitialLiquidity
               selectedBase={selectedBase}
               selectedQuote={selectedQuote}
+              // TODO: compute actual poolId
+              poolId="1234"
+              onClose={fullClose}
             />
           );
       }
     }, [
+      account?.osmosis,
       advanceStep,
       baseTokens,
       clParams,
       currentStep,
+      fullClose,
       isAgreementChecked,
       isLoadingCLParams,
       isTxLoading,
