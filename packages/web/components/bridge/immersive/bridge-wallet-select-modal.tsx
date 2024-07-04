@@ -5,7 +5,6 @@ import { observer } from "mobx-react-lite";
 import React, { ReactNode, useState } from "react";
 import { Connector } from "wagmi";
 
-import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { SearchBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
@@ -19,6 +18,7 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 
 interface BridgeWalletSelectProps extends ModalBaseProps {
