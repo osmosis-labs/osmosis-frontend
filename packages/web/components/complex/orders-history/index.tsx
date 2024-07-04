@@ -28,7 +28,7 @@ export const OrderHistory = observer(() => {
   const { orders, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
-      pageSize: 5,
+      pageSize: 10,
     });
 
   const table = useReactTable<DisplayableLimitOrder>({
@@ -79,12 +79,27 @@ export const OrderHistory = observer(() => {
 
   const { rows } = table.getRowModel();
 
+  const filledOrdersCount = useMemo(() => filledOrders.length, [filledOrders]);
+  const pendingOrdersCount = useMemo(
+    () => pendingOrders.length,
+    [pendingOrders]
+  );
+  // Whether a filled header was added
+  const hasFilledOrders = useMemo(
+    () => (filledOrdersCount > 0 ? 1 : 0),
+    [filledOrdersCount]
+  );
+  // Whether a pending header was added
+  const hasPendingOrders = useMemo(
+    () => (pendingOrdersCount > 0 ? 1 : 0),
+    [pendingOrdersCount]
+  );
+
   const rowVirtualizer = useWindowVirtualizer({
+    // To account for headers we add an additional row to virtualization per header added
     count:
       rows.length +
-      (filledOrders.length > 0 ? 1 : 0) +
-      (pendingOrders.length > 0 ? 1 : 0) +
-      (pastOrders.length > 0 ? 1 : 0),
+      (hasFilledOrders + hasPendingOrders + pastOrders.length > 0 ? 1 : 0),
     estimateSize: () => 84,
     paddingStart: 272,
     overscan: 3,
@@ -109,8 +124,8 @@ export const OrderHistory = observer(() => {
       lastVirtualRow &&
       lastRow.index ===
         lastVirtualRow.index -
-          (filledOrders.length > 0 ? 1 : 0) -
-          (pendingOrders.length > 0 ? 1 : 0) -
+          hasFilledOrders -
+          hasPendingOrders -
           (pastOrders.length > 0 ? 1 : 0) &&
       canLoadMore
     )
@@ -120,26 +135,24 @@ export const OrderHistory = observer(() => {
     lastVirtualRow,
     canLoadMore,
     fetchNextPage,
-    filledOrders,
-    pendingOrders,
     pastOrders,
+    hasFilledOrders,
+    hasPendingOrders,
   ]);
 
-  const filledOrdersCount = filledOrders.length;
-  const pendingOrdersCount = pendingOrders.length;
-  const hasFilledOrders = filledOrdersCount > 0 ? 1 : 0;
-  const hasPendingOrders = pendingOrdersCount > 0 ? 1 : 0;
-
   const filledOrderRows = useMemo(() => {
+    const minIndex = hasFilledOrders;
+    const maxIndex = filledOrdersCount + hasFilledOrders;
     return virtualRows
-      .filter((row) => 0 < row.index && row.index <= filledOrdersCount)
+      .filter((row) => row.index > minIndex && row.index <= maxIndex)
       .map((virtualRow) => {
         const row = rows[virtualRow.index - 1];
         return row;
       });
-  }, [filledOrdersCount, rows, virtualRows]);
+  }, [filledOrdersCount, rows, virtualRows, hasFilledOrders]);
 
   const pendingOrderRows = useMemo(() => {
+    // Pending orders only adjust for any filled orders and if there was a filled orders header
     const minIndex = filledOrdersCount + hasFilledOrders;
     const maxIndex = filledOrdersCount + hasFilledOrders + pendingOrdersCount;
     return virtualRows
@@ -157,11 +170,13 @@ export const OrderHistory = observer(() => {
   ]);
 
   const pastOrderRows = useMemo(() => {
+    // For past orders we must account for all of the previous orders and if they added headers
     const minIndex =
       filledOrdersCount +
       hasFilledOrders +
       pendingOrdersCount +
       hasPendingOrders;
+    // Past orders fill the rest of the array so we account for that plus and headers
     const maxIndex = orders.length + hasFilledOrders + hasPendingOrders;
     return virtualRows
       .filter((row) => row.index > minIndex && row.index <= maxIndex)
