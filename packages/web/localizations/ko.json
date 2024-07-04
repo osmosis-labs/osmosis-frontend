@@ -1200,7 +1200,11 @@
     "market": "시장",
     "limit": "한계",
     "increases": "증가하다",
-    "decreases": "감소하다"
+    "decreases": "감소하다",
+    "estimatingFees": "수수료 추정",
+    "fees": "수수료",
+    "receiveEstimated": "수신 (예상)",
+    "swapRoute": "경로 교환"
   },
   "orderHistory": {
     "orders": "명령",

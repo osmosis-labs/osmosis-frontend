@@ -1200,7 +1200,11 @@
     "market": "Рынок",
     "limit": "Лимит",
     "increases": "увеличивается",
-    "decreases": "уменьшается"
+    "decreases": "уменьшается",
+    "estimatingFees": "Оценка сборов",
+    "fees": "сборы",
+    "receiveEstimated": "Получить (оценка)",
+    "swapRoute": "Обменять маршрут"
   },
   "orderHistory": {
     "orders": "Заказы",

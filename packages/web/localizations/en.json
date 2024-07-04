@@ -1200,7 +1200,11 @@
     "market": "Market",
     "limit": "Limit",
     "increases": "increases",
-    "decreases": "decreases"
+    "decreases": "decreases",
+    "estimatingFees": "Estimating fees",
+    "fees": "fees",
+    "receiveEstimated": "Receive (estimated)",
+    "swapRoute": "Swap route"
   },
   "orderHistory": {
     "orders": "Orders",

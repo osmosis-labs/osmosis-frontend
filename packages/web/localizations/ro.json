@@ -1200,7 +1200,11 @@
     "market": "Piaţă",
     "limit": "Limită",
     "increases": "crește",
-    "decreases": "scade"
+    "decreases": "scade",
+    "estimatingFees": "Estimarea taxelor",
+    "fees": "taxe",
+    "receiveEstimated": "Primire (estimat)",
+    "swapRoute": "Schimbați ruta"
   },
   "orderHistory": {
     "orders": "Comenzi",

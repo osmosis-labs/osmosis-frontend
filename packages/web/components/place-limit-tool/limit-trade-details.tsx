@@ -74,7 +74,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                     }
                   )}
                 >
-                  Total Fees
+                  {t("transactions.totalFees")}
                 </span>
                 <span
                   className={classNames("absolute transition-opacity", {
@@ -82,7 +82,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                     "opacity-0": !open,
                   })}
                 >
-                  Trade Details
+                  {t("limitOrders.tradeDetails")}
                 </span>
                 <div
                   className={classNames(
@@ -92,7 +92,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                 >
                   <Spinner className="!h-6 !w-6 text-wosmongton-500" />
                   <span className="body2 text-osmoverse-400">
-                    Estimating fees
+                    {t("limitOrders.estimatingFees")}
                   </span>
                 </div>
                 <div

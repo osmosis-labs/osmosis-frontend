@@ -1200,7 +1200,11 @@
     "market": "बाज़ार",
     "limit": "आप LIMIT",
     "increases": "बढ़ती है",
-    "decreases": "कम हो जाती है"
+    "decreases": "कम हो जाती है",
+    "estimatingFees": "शुल्क का अनुमान लगाना",
+    "fees": "फीस",
+    "receiveEstimated": "प्राप्त (अनुमानित)",
+    "swapRoute": "मार्ग बदलें"
   },
   "orderHistory": {
     "orders": "आदेश",

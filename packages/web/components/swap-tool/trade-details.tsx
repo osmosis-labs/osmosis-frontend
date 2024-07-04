@@ -16,6 +16,7 @@ import {
   UseDisclosureReturn,
   usePreviousWhen,
   useSlippageConfig,
+  useTranslation,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { RecapRow } from "~/modals/review-limit-order";
@@ -38,6 +39,7 @@ export const TradeDetails = ({
   baseSpotPrice,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
+  const { t } = useTranslation();
 
   const routesVisDisclosure = useDisclosure();
 
@@ -91,7 +93,8 @@ export const TradeDetails = ({
                   }
                 )}
               >
-                {swapState?.fromAsset?.coinDenom} price ≈{" "}
+                {swapState?.fromAsset?.coinDenom}{" "}
+                {t("assets.table.price").toLowerCase()} ≈{" "}
                 {swapState?.toAsset &&
                   formatPretty(
                     swapState.inBaseOutQuoteSpotPrice ??
@@ -111,7 +114,7 @@ export const TradeDetails = ({
                   "opacity-0": !open,
                 })}
               >
-                Trade Details
+                {t("limitOrders.tradeDetails")}
               </span>
               <div
                 className={classNames(
@@ -121,7 +124,7 @@ export const TradeDetails = ({
               >
                 <Spinner className="!h-6 !w-6 text-wosmongton-500" />
                 <span className="body2 text-osmoverse-400">
-                  Estimating fees
+                  {t("limitOrders.estimatingFees")}
                 </span>
               </div>
               <div
@@ -133,7 +136,8 @@ export const TradeDetails = ({
                 )}
               >
                 <span className="body2 text-osmoverse-300">
-                  ~${formatPretty(swapState?.totalFee ?? new Dec(0))} fees
+                  ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
+                  {t("limitOrders.fees")}
                 </span>
                 <Icon
                   id="chevron-down"
@@ -150,7 +154,7 @@ export const TradeDetails = ({
             </Disclosure.Button>
             <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
               <RecapRow
-                left="Expected rate"
+                left={t("limitOrders.expectedRate")}
                 right={
                   <span>
                     1 {swapState?.fromAsset?.coinDenom} ≈{" "}
@@ -169,7 +173,7 @@ export const TradeDetails = ({
                 }
               />
               <RecapRow
-                left="Price impact"
+                left={t("swap.priceImpact")}
                 right={
                   <span
                     className={classNames({
@@ -184,7 +188,7 @@ export const TradeDetails = ({
                 }
               />
               <RecapRow
-                left={`Swap fees ${
+                left={`${t("pools.aprBreakdown.swapFees")} ${
                   swapState?.quote?.swapFee
                     ? `(${swapState?.quote?.swapFee})`
                     : ""
@@ -214,7 +218,7 @@ export const TradeDetails = ({
                 outFiatAmountLessSlippage &&
                 swapState?.toAsset && (
                   <RecapRow
-                    left="Receive (estimated)"
+                    left={t("limitOrders.receiveEstimated")}
                     right={
                       <span>
                         <span className="text-osmoverse-100">
@@ -233,11 +237,11 @@ export const TradeDetails = ({
                   />
                 )}
               <span className="subtitle1 py-3 text-white-full">
-                More details
+                {t("limitOrders.moreDetails")}
               </span>
               {slippageConfig && (
                 <RecapRow
-                  left="Slippage tolerance"
+                  left={t("swap.settings.slippage")}
                   right={
                     <div className="flex items-center justify-end">
                       {slippageConfig?.selectableSlippages.map((props) => (
@@ -269,7 +273,7 @@ export const TradeDetails = ({
                         <AutosizeInput
                           type="number"
                           minWidth={30}
-                          placeholder="Custom"
+                          placeholder={t("pool.custom")}
                           className="w-fit bg-transparent px-0"
                           inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px]"
                           value={slippageConfig?.manualSlippageStr}
@@ -305,7 +309,7 @@ export const TradeDetails = ({
               )}
               <div ref={swapRouteRef} className="flex w-full">
                 <RecapRow
-                  left="Swap route"
+                  left={t("limitOrders.swapRoute")}
                   className="!h-auto flex-col !items-start gap-2.5"
                   right={
                     <div className="flex w-full flex-col gap-2">
