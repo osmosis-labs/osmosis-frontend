@@ -46,6 +46,7 @@ export const AxelarChainIds_SourceChainMap: {
       Moonbeam: "Moonbase Alpha",
       Polygon: "Mumbai",
       filecoin: "Filecoin Hyperspace",
+      "base-sepolia": "Base Sepolia Testnet",
     }
   : {
       Avalanche: "Avalanche",
@@ -56,6 +57,7 @@ export const AxelarChainIds_SourceChainMap: {
       Polygon: "Polygon",
       filecoin: "Filecoin",
       arbitrum: "Arbitrum",
+      base: "Base",
     };
 
 /** Maps eth client chainIDs => source chain ids.
@@ -83,4 +85,6 @@ export const EthClientChainIds_SourceChainMap: {
   "Polygon Mainnet": "Polygon",
   "Filecoin - Mainnet": "Filecoin",
   "Arbitrum One": "Arbitrum",
+  "Base": "Base",
+  "Base Sepolia Testnet": "Base Sepolia Testnet",
 };
