@@ -14,13 +14,13 @@ import { LimitInput } from "~/components/input/limit-input";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
@@ -119,22 +119,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
             />
           </div>
-          {type === "limit" ? (
-            <LimitPriceSelector
-              swapState={swapState}
-              orderDirection={orderDirection}
-            />
-          ) : (
-            <div className="inline-flex items-center gap-1 py-3.5">
-              <span className="body2 text-osmoverse-300">
-                {swapState.baseAsset?.coinDenom}{" "}
-                {t("assets.table.price").toLowerCase()} ≈{" "}
-                {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
-                {swapState.quoteAsset?.coinDenom}
-              </span>
-            </div>
-          )}
-          <LimitTradeDetails swapState={swapState} />
+          <>
+            {type === "limit" && (
+              <>
+                <LimitPriceSelector
+                  swapState={swapState}
+                  orderDirection={orderDirection}
+                />
+                <LimitTradeDetails swapState={swapState} />
+              </>
+            )}
+            {type === "market" && (
+              <TradeDetails
+                swapState={swapState.marketState}
+                baseSpotPrice={swapState.priceState.spotPrice}
+              />
+            )}
+          </>
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>
