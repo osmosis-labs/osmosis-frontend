@@ -28,7 +28,7 @@ export const OrderHistory = observer(() => {
   const { orders, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
-      pageSize: 10,
+      pageSize: 5,
     });
 
   const table = useReactTable<DisplayableLimitOrder>({
@@ -125,6 +125,61 @@ export const OrderHistory = observer(() => {
     pastOrders,
   ]);
 
+  const filledOrdersCount = filledOrders.length;
+  const pendingOrdersCount = pendingOrders.length;
+  const hasFilledOrders = filledOrdersCount > 0 ? 1 : 0;
+  const hasPendingOrders = pendingOrdersCount > 0 ? 1 : 0;
+
+  const filledOrderRows = useMemo(() => {
+    return virtualRows
+      .filter((row) => 0 < row.index && row.index <= filledOrdersCount)
+      .map((virtualRow) => {
+        const row = rows[virtualRow.index - 1];
+        return row;
+      });
+  }, [filledOrdersCount, rows, virtualRows]);
+
+  const pendingOrderRows = useMemo(() => {
+    const minIndex = filledOrdersCount + hasFilledOrders;
+    const maxIndex = filledOrdersCount + hasFilledOrders + pendingOrdersCount;
+    return virtualRows
+      .filter((row) => row.index > minIndex && row.index <= maxIndex)
+      .map((virtualRow) => {
+        const row = rows[virtualRow.index - (1 + hasFilledOrders)];
+        return row;
+      });
+  }, [
+    filledOrdersCount,
+    hasFilledOrders,
+    pendingOrdersCount,
+    rows,
+    virtualRows,
+  ]);
+
+  const pastOrderRows = useMemo(() => {
+    const minIndex =
+      filledOrdersCount +
+      hasFilledOrders +
+      pendingOrdersCount +
+      hasPendingOrders;
+    const maxIndex = orders.length + hasFilledOrders + hasPendingOrders;
+    return virtualRows
+      .filter((row) => row.index > minIndex && row.index <= maxIndex)
+      .map((virtualRow) => {
+        const row =
+          rows[virtualRow.index - (1 + hasFilledOrders + hasPendingOrders)];
+        return row;
+      });
+  }, [
+    filledOrdersCount,
+    hasFilledOrders,
+    hasPendingOrders,
+    pendingOrdersCount,
+    rows,
+    virtualRows,
+    orders.length,
+  ]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10">
@@ -181,7 +236,7 @@ export const OrderHistory = observer(() => {
               <td style={{ height: paddingTop - 272 }} />
             </tr>
           )}
-          {filledOrders.length > 0 && (
+          {filledOrdersCount > 0 && (
             <>
               <tr className="h-[84px]">
                 <td colSpan={5} className="!p-0">
@@ -211,97 +266,58 @@ export const OrderHistory = observer(() => {
                   </div>
                 </td>
               </tr>
-              {virtualRows
-                .filter(
-                  (row) => row.index <= filledOrders.length && row.index > 0
-                )
-                .map((virtualRow) => {
-                  const row = rows[virtualRow.index - 1];
-                  return (
-                    <tr key={row.id} className="h-[84px]">
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="!px-0 !text-left">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
+              {filledOrderRows.map((row) => {
+                return (
+                  <tr key={row.id} className="h-[84px]">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="!px-0 !text-left">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </>
           )}
-          {pendingOrders.length > 0 && (
+          {pendingOrdersCount > 0 && (
             <>
               <h6 className="h-[84px] pb-4 pt-8">Pending</h6>
-              {virtualRows
-                .filter(
-                  (row) =>
-                    row.index >=
-                      filledOrders.length + (filledOrders.length > 0 ? 1 : 0) &&
-                    row.index <
-                      filledOrders.length +
-                        (filledOrders.length > 0 ? 1 : 0) +
-                        pendingOrders.length
-                )
-                .map((virtualRow) => {
-                  const row =
-                    rows[
-                      virtualRow.index - (1 + filledOrders.length > 0 ? 1 : 0)
-                    ];
-                  return (
-                    <tr key={row.id} className="h-[84px]">
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="!px-0 !text-left">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
+              {pendingOrderRows.map((row) => {
+                return (
+                  <tr key={row.id} className="h-[84px]">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="!px-0 !text-left">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </>
           )}
           {pastOrders.length > 0 && (
             <>
               <h6 className="h-[84px] pb-4 pt-8">Past</h6>
-              {virtualRows
-                .filter(
-                  (row) =>
-                    row.index >
-                      filledOrders.length +
-                        pendingOrders.length +
-                        (filledOrders.length > 0 ? 1 : 0) +
-                        (pendingOrders.length > 0 ? 1 : 0) &&
-                    row.index <=
-                      orders.length +
-                        (filledOrders.length > 0 ? 1 : 0) +
-                        (pendingOrders.length > 0 ? 1 : 0)
-                )
-                .map((virtualRow) => {
-                  const row =
-                    rows[
-                      virtualRow.index -
-                        (1 +
-                          (filledOrders.length > 0 ? 1 : 0) +
-                          (pendingOrders.length > 0 ? 1 : 0))
-                    ];
-                  return (
-                    <tr key={row.id} className="h-[84px]">
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="!px-0 !text-left">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
+              {pastOrderRows.map((row) => {
+                return (
+                  <tr key={row.id} className="h-[84px]">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="!px-0 !text-left">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </>
           )}
           {isFetchingNextPage && (
