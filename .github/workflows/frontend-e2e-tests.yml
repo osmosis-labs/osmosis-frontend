@@ -2,9 +2,9 @@ name: Preview frontend E2E tests
 
 on:
   push:
-    branches:
-      - "FE-600"
-      - "!master"
+    branches-ignore:
+      - master
+  pull_request:
 
 jobs:
   wait-for-deployment:
@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "$BRANCH_NAME"
           python -m pip install requests
-          python main.py
+          cd .github && python await_deployment.py
       - name: Echo GITHUB_OUTPUT environment_url
         env:
           environment_url: ${{ steps.vercel.outputs.environment_url }}
