@@ -20,8 +20,13 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { IS_TESTNET } from "~/config/env";
+
+export type BridgeChainWithDisplayInfo = BridgeChain & {
+  logoUri?: string;
+  color?: string;
+  prettyName: string;
+};
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,

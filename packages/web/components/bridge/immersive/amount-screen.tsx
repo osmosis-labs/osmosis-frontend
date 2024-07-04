@@ -24,10 +24,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
-import {
-  BridgeChainWithDisplayInfo,
-  SupportedAssetWithAmount,
-} from "~/components/bridge/immersive/amount-and-review-screen";
+import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
@@ -48,6 +45,7 @@ import {
 } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -1064,9 +1062,9 @@ const ChainSelectorButton: FunctionComponent<{
 
   if (readonly) {
     return (
-      <div className="subtitle1 flex flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
+      <div className="subtitle1 flex w-[45%] flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
         <ChainLogo prettyName="" logoUri={chainLogo} color={chainColor} />
-        <span>{children}</span>
+        <span className="truncate">{children}</span>
       </div>
     );
   }
@@ -1077,15 +1075,20 @@ const ChainSelectorButton: FunctionComponent<{
         onClick={() => {
           setIsNetworkSelectVisible(true);
         }}
-        className="subtitle1 group flex flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
+        className="subtitle1 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
       >
-        <div className="flex items-center gap-2">
-          <ChainLogo prettyName="" logoUri={chainLogo} color={chainColor} />
-          <span>{children}</span>
+        <div className="flex w-[90%] items-center gap-2">
+          <ChainLogo
+            className="flex-shrink-0"
+            prettyName=""
+            logoUri={chainLogo}
+            color={chainColor}
+          />
+          <span className="truncate">{children}</span>
         </div>
         <Icon
           id="chevron-down"
-          className="text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
+          className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
           width={12}
           height={12}
         />

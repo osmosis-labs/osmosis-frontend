@@ -12,9 +12,9 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
-import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { api } from "~/utils/trpc";
 
 import {
@@ -102,7 +102,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           direction === "withdraw"
             ? "transfer.confirmWithdrawTo"
             : "transfer.confirmDepositTo",
-          { chain: toChain.prettyName ?? "" }
+          { chain: toChain.prettyName }
         )}
       </h5>
       <p className="body1 pb-3 text-center text-osmoverse-400">

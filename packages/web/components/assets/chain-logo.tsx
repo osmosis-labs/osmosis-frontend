@@ -7,6 +7,7 @@ interface ChainLogoProps {
   logoUri: string | undefined;
   prettyName?: string;
   size?: "sm" | "lg";
+  className: string;
 }
 
 export const ChainLogo: React.FC<ChainLogoProps> = ({
@@ -14,13 +15,15 @@ export const ChainLogo: React.FC<ChainLogoProps> = ({
   logoUri,
   prettyName,
   size = "sm",
+  className,
 }) => {
   return (
     <div
       className={classNames(
         "flex items-center justify-center",
         !color && "bg-wosmongton-200/30",
-        size === "sm" ? "h-6 w-6 rounded-md" : "h-12 w-12 rounded-xl"
+        size === "sm" ? "h-6 w-6 rounded-md" : "h-12 w-12 rounded-xl",
+        className
       )}
       style={{
         background: color ? rgba(color, 0.3) : undefined,

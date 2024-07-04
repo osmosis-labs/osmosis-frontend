@@ -3,7 +3,6 @@ import classNames from "classnames";
 import React, { useMemo, useState } from "react";
 
 import { ChainLogo } from "~/components/assets/chain-logo";
-import { BridgeChainWithDisplayInfo } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeWalletSelectScreen } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { SearchBox } from "~/components/input";
@@ -17,6 +16,7 @@ import { EthereumChainIds } from "~/config/wagmi";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 enum Screens {
   Main = "main",
