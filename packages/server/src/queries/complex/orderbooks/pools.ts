@@ -2,7 +2,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { queryPools } from "../../sidecar";
+import { ChainCosmwasmPool, queryPools } from "../../sidecar";
 
 const orderbookPoolsCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -25,15 +25,17 @@ export function getOrderbookPools() {
     getFreshValue: () =>
       queryPools().then((data) => {
         return data
-          .filter((pool) =>
-            orderBookCodeIds.includes((pool as any).chain_model.code_id)
-          )
+          .filter((pool) => {
+            const chainModel = pool.chain_model as ChainCosmwasmPool;
+            return orderBookCodeIds.includes(chainModel.code_id);
+          })
           .map((pool) => {
+            const chainModel = pool.chain_model as ChainCosmwasmPool;
             return {
-              baseDenom: (pool as any).balances[1].denom,
-              quoteDenom: (pool as any).balances[0].denom,
-              contractAddress: (pool as any).chain_model.contract_address,
-              poolId: (pool as any).pool_id,
+              baseDenom: pool.balances[1].denom,
+              quoteDenom: pool.balances[0].denom,
+              contractAddress: chainModel.contract_address,
+              poolId: chainModel.pool_id.toString(),
             };
           }) as Orderbook[];
       }),
