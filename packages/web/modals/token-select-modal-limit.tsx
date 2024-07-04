@@ -87,7 +87,6 @@ export const TokenSelectModalLimit: FunctionComponent<{
       keyboardSelectedIndexRef,
     ] = useStateRef(0);
 
-    const [assets, _setAssets] = useState(selectableAssets);
     const [_isRequestingClose, setIsRequestingClose] = useState(false);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
@@ -99,7 +98,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     const shouldShowUnverifiedAssets =
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
-    const assetsRef = useLatest(assets);
+    const assetsRef = useLatest(selectableAssets);
 
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -120,7 +119,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
 
     const onClickAsset = (coinDenom: string) => {
       let isRecommended = false;
-      const selectedAsset = assets.find(
+      const selectedAsset = selectableAssets.find(
         (asset) => asset && asset.coinDenom === coinDenom
       );
 
@@ -196,7 +195,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     // });
 
     // TODO: Wire up search
-    const [, setQuery, results] = useFilteredData(assets, [
+    const [, setQuery, results] = useFilteredData(selectableAssets, [
       "coinDenom",
       "coinName",
     ]);
@@ -206,7 +205,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
       setQuery(nextValue);
     };
 
-    const assetToActivate = assets.find(
+    const assetToActivate = selectableAssets.find(
       (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
     );
 

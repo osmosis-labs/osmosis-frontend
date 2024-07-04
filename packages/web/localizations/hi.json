@@ -1140,15 +1140,21 @@
     "tradeDetails": "व्यापार विवरण",
     "marketOrder": {
       "title": "बाजार आदेश",
-      "description": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत खरीदें"
+      "description": {
+        "buy": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत खरीदें",
+        "sell": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत बेचें"
+      }
     },
     "limitOrder": {
       "title": "सीमा आदेश",
-      "description": "जब {denom} कीमत घट जाए तो खरीदें"
+      "description": {
+        "buy": "जब {denom} कीमत घट जाए तो खरीदें",
+        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें"
+      }
     },
     "recurringOrder": {
       "title": "आवर्ती आदेश",
-      "description": "समय के साथ औसत कीमत पर खरीदें"
+      "description": "{action} समय के साथ औसत कीमत पर"
     },
     "aboveMarket": {
       "title": "सीमा मूल्य बाजार मूल्य से ऊपर",
@@ -1192,7 +1198,9 @@
     "confirm": "पुष्टि करना",
     "expectedRate": "अपेक्षित दर",
     "market": "बाज़ार",
-    "limit": "आप LIMIT"
+    "limit": "आप LIMIT",
+    "increases": "बढ़ती है",
+    "decreases": "कम हो जाती है"
   },
   "orderHistory": {
     "orders": "आदेश",

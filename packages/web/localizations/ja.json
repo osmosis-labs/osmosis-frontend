@@ -1140,15 +1140,21 @@
     "tradeDetails": "取引の詳細",
     "marketOrder": {
       "title": "成行注文",
-      "description": "最安価格で今すぐご購入ください"
+      "description": {
+        "buy": "最安価格で今すぐご購入ください",
+        "sell": "最高価格ですぐに販売"
+      }
     },
     "limitOrder": {
       "title": "指値注文",
-      "description": "{denom}価格が下がったら購入する"
+      "description": {
+        "buy": "{denom}価格が下がったら購入する",
+        "sell": "{denom}価格が上昇したら売る"
+      }
     },
     "recurringOrder": {
       "title": "定期注文",
-      "description": "時間の経過とともに平均価格で購入する"
+      "description": "{action}時間の経過に伴う平均価格"
     },
     "aboveMarket": {
       "title": "市場価格を上回る制限価格",
@@ -1165,7 +1171,7 @@
     "watchOut": "気をつけろ！クジラが来る",
     "selectAnAssetTo": {
       "buy": "購入する資産を選択",
-      "sell": "売却する資産を選択"
+      "sell": "売却する資産を選択する"
     },
     "payWith": "お支払い方法",
     "receive": "受け取る",
@@ -1192,7 +1198,9 @@
     "confirm": "確認する",
     "expectedRate": "予想レート",
     "market": "市場",
-    "limit": "制限"
+    "limit": "制限",
+    "increases": "増加する",
+    "decreases": "減少する"
   },
   "orderHistory": {
     "orders": "注文",

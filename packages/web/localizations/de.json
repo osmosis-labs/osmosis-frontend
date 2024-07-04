@@ -1140,15 +1140,21 @@
     "tradeDetails": "Handelsdetails",
     "marketOrder": {
       "title": "Marktauftrag",
-      "description": "Sofort zum besten verfügbaren Preis kaufen"
+      "description": {
+        "buy": "Sofort zum besten verfügbaren Preis kaufen",
+        "sell": "Sofort zum besten verfügbaren Preis verkaufen"
+      }
     },
     "limitOrder": {
       "title": "Limit-Auftrag",
-      "description": "Kaufen, wenn der Preis {denom} sinkt"
+      "description": {
+        "buy": "Kaufen, wenn der Preis {denom} sinkt",
+        "sell": "Verkaufen, wenn der Preis {denom} steigt"
+      }
     },
     "recurringOrder": {
       "title": "Wiederkehrende Bestellung",
-      "description": "Kaufen Sie zum Durchschnittspreis im Laufe der Zeit"
+      "description": "{action} zum Durchschnittspreis im Zeitverlauf"
     },
     "aboveMarket": {
       "title": "Limitpreis über Marktpreis",
@@ -1192,7 +1198,9 @@
     "confirm": "Bestätigen",
     "expectedRate": "Erwarteter Kurs",
     "market": "Markt",
-    "limit": "Grenze"
+    "limit": "Grenze",
+    "increases": "erhöht sich",
+    "decreases": "nimmt ab"
   },
   "orderHistory": {
     "orders": "Aufträge",
