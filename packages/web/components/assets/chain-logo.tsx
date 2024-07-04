@@ -7,7 +7,7 @@ interface ChainLogoProps {
   logoUri: string | undefined;
   prettyName?: string;
   size?: "sm" | "lg";
-  className: string;
+  className?: string;
 }
 
 export const ChainLogo: React.FC<ChainLogoProps> = ({
