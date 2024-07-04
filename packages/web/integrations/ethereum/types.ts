@@ -45,6 +45,7 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x507": "Moonbase Alpha",
   "0x2329": "Evmos",
   "0xa4b1": "Arbitrum One",
+  "0x66eee": "Arbitrum Sepolia",
   "0xa86a": "Avalanche C-Chain",
   "0xa869": "Avalanche Fuji Testnet",
   "0x4e454152": "Aurora Mainnet",
