@@ -14,8 +14,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
+  Dispatch,
   FunctionComponent,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -42,7 +44,6 @@ import {
   useConnectWalletModalRedirect,
   useDisclosure,
   useTranslation,
-  useWalletSelect,
 } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -117,7 +118,6 @@ export const AmountScreen = observer(
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
-    const { onOpenWalletSelect } = useWalletSelect();
     const { t } = useTranslation();
 
     const {
@@ -133,6 +133,7 @@ export const AmountScreen = observer(
     } = quote;
 
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
+    const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const {
@@ -159,6 +160,27 @@ export const AmountScreen = observer(
       toChain?.chainType === "evm" || isNil(toChain)
         ? undefined
         : accountStore.getWallet(toChain.chainId);
+
+    const chainThatNeedsWalletConnection =
+      direction === "deposit" ? fromChain : toChain;
+    const accountThatNeedsWalletConnection =
+      chainThatNeedsWalletConnection?.chainType === "cosmos" &&
+      !isNil(chainThatNeedsWalletConnection)
+        ? accountStore.getWallet(chainThatNeedsWalletConnection.chainId)
+        : undefined;
+    const isWalletNeededConnected = useMemo(() => {
+      if (isNil(chainThatNeedsWalletConnection)) return false;
+
+      if (chainThatNeedsWalletConnection.chainType === "evm") {
+        return isEvmWalletConnected;
+      }
+
+      return !!accountThatNeedsWalletConnection?.address;
+    }, [
+      accountThatNeedsWalletConnection?.address,
+      chainThatNeedsWalletConnection,
+      isEvmWalletConnected,
+    ]);
 
     const toAddress =
       toChain?.chainType === "evm"
@@ -239,9 +261,9 @@ export const AmountScreen = observer(
         const chain =
           chainParam ?? (direction === "deposit" ? fromChain : toChain);
 
+        console.log(chain);
         if (!chain) return;
         if (chain.chainType === "evm") {
-          // TODO: Fix dead-end when the user disconnects the wallet in manage
           if (isEvmWalletConnected || isConnecting) {
             return;
           }
@@ -253,22 +275,16 @@ export const AmountScreen = observer(
 
           if (
             // If the account is already connected
-            !!account?.address ||
-            // Or if the repo is already connected
-            !!accountRepo?.current
+            !!account?.address
           ) {
             return;
           }
 
-          accountRepo?.connect(osmosisAccount?.walletName).catch(() =>
-            // Display the connect modal if the user for some reason rejects the connection
-            // TODO: Open the network select modal
-            onOpenWalletSelect({
-              walletOptions: [
-                { walletType: "cosmos", chainId: String(chain.chainId) },
-              ],
-            })
-          );
+          accountRepo?.connect(osmosisAccount?.walletName).catch(() => {
+            if (supportedChains.length > 1) {
+              setIsNetworkSelectVisible(true);
+            }
+          });
         }
       },
       [
@@ -278,23 +294,25 @@ export const AmountScreen = observer(
         isConnecting,
         isEvmWalletConnected,
         onOpenBridgeWalletSelect,
-        onOpenWalletSelect,
         osmosisAccount?.walletName,
+        supportedChains.length,
         toChain,
       ]
     );
 
-    const { accountActionButton: connectWalletButton, walletConnected } =
-      useConnectWalletModalRedirect(
-        {
-          className: "w-full",
-        },
-        noop,
-        undefined,
-        () => {
-          checkChainAndConnectWallet();
-        }
-      );
+    const {
+      accountActionButton: connectWalletButton,
+      walletConnected: osmosisWalletConnected,
+    } = useConnectWalletModalRedirect(
+      {
+        className: "w-full",
+      },
+      noop,
+      undefined,
+      () => {
+        checkChainAndConnectWallet();
+      }
+    );
 
     const supportedSourceAssets: SupportedAsset[] | undefined = useMemo(() => {
       if (!fromChain) return undefined;
@@ -487,7 +505,7 @@ export const AmountScreen = observer(
       setToChain,
       supportedChains,
       toChain,
-      walletConnected,
+      osmosisWalletConnected,
     ]);
 
     if (
@@ -563,12 +581,19 @@ export const AmountScreen = observer(
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
-                if (walletConnected) checkChainAndConnectWallet(nextChain);
+                if (osmosisWalletConnected)
+                  checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   resetInput();
                 }
               }}
               readonly={direction === "withdraw"}
+              isNetworkSelectVisible={
+                direction === "withdraw" ? false : isNetworkSelectVisible
+              }
+              setIsNetworkSelectVisible={
+                direction === "withdraw" ? noop : setIsNetworkSelectVisible
+              }
             >
               {fromChain.prettyName}
             </ChainSelectorButton>
@@ -584,12 +609,19 @@ export const AmountScreen = observer(
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
-                if (walletConnected) checkChainAndConnectWallet(nextChain);
+                if (osmosisWalletConnected)
+                  checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   resetInput();
                 }
               }}
               readonly={direction === "deposit"}
+              isNetworkSelectVisible={
+                direction === "deposit" ? false : isNetworkSelectVisible
+              }
+              setIsNetworkSelectVisible={
+                direction === "deposit" ? noop : setIsNetworkSelectVisible
+              }
             >
               {toChain.prettyName}
             </ChainSelectorButton>
@@ -672,7 +704,31 @@ export const AmountScreen = observer(
             )}
           </>
 
-          {walletConnected && (
+          <BridgeWalletSelectModal
+            direction={direction}
+            isOpen={isBridgeWalletSelectOpen}
+            onRequestClose={onCloseBridgeWalletSelect}
+            onSelectChain={(chain) => {
+              const setChain =
+                direction === "deposit" ? setFromChain : setToChain;
+              setChain(chain);
+              resetAssets();
+            }}
+            evmChain={(() => {
+              const chain = direction === "deposit" ? fromChain : toChain;
+              return chain?.chainType === "evm"
+                ? chain
+                : firstSupportedEvmChain;
+            })()}
+            cosmosChain={(() => {
+              const chain = direction === "deposit" ? fromChain : toChain;
+              return chain?.chainType === "cosmos"
+                ? chain
+                : firstSupportedCosmosChain;
+            })()}
+            toChain={toChain}
+          />
+          {osmosisWalletConnected && isWalletNeededConnected && (
             <>
               {hasMoreThanOneChainType ? (
                 <>
@@ -709,33 +765,6 @@ export const AmountScreen = observer(
                       }
                     />
                   </button>
-
-                  <BridgeWalletSelectModal
-                    direction={direction}
-                    isOpen={isBridgeWalletSelectOpen}
-                    onRequestClose={onCloseBridgeWalletSelect}
-                    onSelectChain={(chain) => {
-                      const setChain =
-                        direction === "deposit" ? setFromChain : setToChain;
-                      setChain(chain);
-                      resetAssets();
-                    }}
-                    evmChain={(() => {
-                      const chain =
-                        direction === "deposit" ? fromChain : toChain;
-                      return chain?.chainType === "evm"
-                        ? chain
-                        : firstSupportedEvmChain;
-                    })()}
-                    cosmosChain={(() => {
-                      const chain =
-                        direction === "deposit" ? fromChain : toChain;
-                      return chain?.chainType === "cosmos"
-                        ? chain
-                        : firstSupportedCosmosChain;
-                    })()}
-                    toChain={toChain}
-                  />
                 </>
               ) : (
                 <div className="flex items-center justify-between">
@@ -971,8 +1000,20 @@ export const AmountScreen = observer(
           )}
 
           <div className="flex flex-col items-center gap-4">
-            {!walletConnected ? (
+            {!osmosisWalletConnected ? (
               connectWalletButton
+            ) : !isWalletNeededConnected ? (
+              <Button
+                onClick={() => {
+                  checkChainAndConnectWallet();
+                }}
+                className="w-full"
+              >
+                <h6 className="flex items-center gap-3">
+                  <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
+                  {t("connectWallet")}
+                </h6>
+              </Button>
             ) : (
               <>
                 <Button
@@ -1023,7 +1064,7 @@ export const AmountScreen = observer(
   }
 );
 
-const ChainSelectorButton: FunctionComponent<{
+interface ChainSelectorButtonProps {
   direction: BridgeTransactionDirection;
   readonly: boolean;
   children: ReactNode;
@@ -1032,7 +1073,11 @@ const ChainSelectorButton: FunctionComponent<{
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
   toChain: BridgeChainWithDisplayInfo;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
-}> = ({
+  isNetworkSelectVisible: boolean;
+  setIsNetworkSelectVisible: Dispatch<SetStateAction<boolean>>;
+}
+
+const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
   direction,
   readonly,
   children,
@@ -1041,9 +1086,9 @@ const ChainSelectorButton: FunctionComponent<{
   chains,
   onSelectChain,
   toChain,
+  isNetworkSelectVisible,
+  setIsNetworkSelectVisible,
 }) => {
-  const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
-
   if (readonly) {
     return (
       <div className="subtitle1 flex w-[45%] flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
