@@ -11,7 +11,8 @@ import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-suppor
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
+import { refetchUserQueries, useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 import { ReviewScreen } from "./review-screen";
 
@@ -30,6 +31,7 @@ export const AmountAndReviewScreen = observer(
     onClose,
   }: AmountAndConfirmationScreenProps) => {
     const { accountStore } = useStore();
+    const apiUtils = api.useUtils();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -103,8 +105,14 @@ export const AmountAndReviewScreen = observer(
           ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
           : toAsset?.supportedVariants[fromAsset?.address ?? ""],
       onTransfer: () => {
+        setToAsset(undefined);
+        setFromAsset(undefined);
         setCryptoAmount("0");
         setFiatAmount("0");
+
+        // redundantly ensures user queries are reset for EVM txs, since
+        // only cosmos txs reset queries from root store
+        refetchUserQueries(apiUtils);
       },
     });
 

@@ -1,4 +1,4 @@
-import { queryTx, Tx } from "@osmosis-labs/server";
+import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
 import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { ChainIdHelper } from "@osmosis-labs/utils";
@@ -53,12 +53,14 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       });
 
       if (tx_response.code) {
+        console.error("IBC transfer status: initial tx failed:", sendTxHash);
         return this.pushNewStatus(serializedParamsOrHash, "failed");
       }
 
       const msgEvents = parseMsgTransferEvents(tx_response);
 
       if (!msgEvents) {
+        console.error("IBC transfer status: no IBC events found:", sendTxHash);
         return this.pushNewStatus(serializedParamsOrHash, "failed");
       }
 
@@ -276,7 +278,12 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
 /** Extract IBC-related events from the initial tx containing MsgTransfer message. */
 function parseMsgTransferEvents(tx: Tx["tx_response"]) {
-  for (const event of tx.events ?? []) {
+  // prefer raw log. If present, the tx.events are likely base64 encoded. If not present, tx.events are likely decoded.
+  const events =
+    tx.raw_log !== ""
+      ? (JSON.parse(tx.raw_log)[0].events as TxEvent[])
+      : tx.events;
+  for (const event of events) {
     if (event.type === "send_packet") {
       const attributes = event.attributes;
       const sourceChannelAttr = attributes.find(
