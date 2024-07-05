@@ -165,22 +165,33 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
               <TokenNavigation />
               <TokenChart />
             </div>
+            <YourBalance className="hidden xl:block" />
             <TokenDetails token={token} />
+            <TokenStats className="hidden xl:flex" />
             <TokenPools denom={token.coinDenom} />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                 {SwapTool_}
               </div>
             </div>
+            {token.isAlloyed && token.contract ? (
+              <AlloyedAssetsSection
+                className="hidden xl:flex"
+                title={title ?? token.coinDenom}
+                denom={token.coinDenom}
+                contractAddress={token.contract}
+              />
+            ) : null}
             <TwitterSection tweets={tweets} />
           </div>
 
           <div className="flex flex-col gap-11 sm:gap-6">
             <div className="xl:hidden">{SwapTool_}</div>
-            <YourBalance />
-            <TokenStats />
+            <YourBalance className="xl:hidden" />
+            <TokenStats className="xl:hidden" />
             {token.isAlloyed && token.contract ? (
               <AlloyedAssetsSection
+                className="xl:hidden"
                 title={title ?? token.coinDenom}
                 denom={token.coinDenom}
                 contractAddress={token.contract}

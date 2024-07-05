@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 
 import { Icon } from "~/components/assets";
@@ -39,7 +40,10 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
 
   return (
     <section
-      className={`${className} rounded-3xl border border-osmoverse-700 p-6`}
+      className={classNames(
+        "rounded-3xl border border-osmoverse-700 p-6",
+        className
+      )}
     >
       <header className="mb-2">
         <h5 className="text-body2 font-body2 text-osmoverse-400">

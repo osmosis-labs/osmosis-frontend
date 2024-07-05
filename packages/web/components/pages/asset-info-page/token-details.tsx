@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React, { ReactNode, useMemo, useState } from "react";
@@ -182,7 +183,12 @@ const formatCompact = (value: PricePretty | Dec | number) => {
   });
 };
 
-export const TokenStats = observer(() => {
+interface TokenStatsProps {
+  className?: string;
+}
+
+export const TokenStats = observer((props: TokenStatsProps) => {
+  const { className } = props;
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -285,7 +291,7 @@ export const TokenStats = observer(() => {
   ]);
 
   return (
-    <section className="flex flex-col gap-8">
+    <section className={classNames("flex flex-col gap-8", className)}>
       <header>
         <h6>{t("tokenInfos.info.title")}</h6>
       </header>
