@@ -62,7 +62,6 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       custom_css_url: "/tradingview/custom.css",
       custom_font_family: '"Inter", sans-serif',
       locale: "en",
-      debug: true,
       disabled_features: [
         "header_symbol_search",
         "header_compare",

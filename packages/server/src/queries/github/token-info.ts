@@ -1,14 +1,4 @@
-import axios from "axios";
-
-import { CMS_REPOSITORY_PATH, GITHUB_URL } from "../../env";
-
-const githubApi = axios.create({
-  baseURL: GITHUB_URL,
-  headers: {
-    Accept: "application/vnd.github.v3+json",
-  },
-});
-
+import { queryOsmosisCMS } from "./osmosis-cms";
 export interface TokenCMSData {
   name?: string;
   symbol?: string;
@@ -19,21 +9,15 @@ export interface TokenCMSData {
   stakingURL?: string;
 }
 
-export const getTokenInfo = (denom: string, lang: string) => {
-  const fileName = `${denom.toLowerCase()}_asset_detail_${lang.toLowerCase()}.json`;
+export const getTokenInfo = (
+  denom: string,
+  lang: string
+): Promise<TokenCMSData> => {
+  const filePath = `osmosis-1/generated/asset_detail/${denom.toLowerCase()}_asset_detail_${lang.toLowerCase()}.json`;
 
-  if (!CMS_REPOSITORY_PATH || !GITHUB_URL) {
-    const missingVars = [
-      !CMS_REPOSITORY_PATH ? "CMS_REPOSITORY_PATH" : "",
-      !GITHUB_URL ? "GITHUB_URL" : "",
-    ]
-      .filter(Boolean)
-      .join(", ");
-    console.error(`Missing environment variables: ${missingVars}`);
-    throw new Error(`Missing environment variables: ${missingVars}`);
-  }
-
-  return githubApi
-    .get<TokenCMSData>(`${CMS_REPOSITORY_PATH}/${fileName}`)
-    .then((r) => r.data);
+  return queryOsmosisCMS({
+    repo: "osmosis-labs/assetlists",
+    filePath,
+    commitHash: undefined,
+  });
 };
