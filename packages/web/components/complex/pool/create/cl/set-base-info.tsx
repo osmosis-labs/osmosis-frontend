@@ -1,5 +1,13 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { Listbox, Transition } from "@headlessui/react";
+import {
+  Checkbox,
+  Field,
+  Label,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  Transition,
+} from "@headlessui/react";
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { getAssets } from "@osmosis-labs/server";
 import { ConcentratedLiquidityParams } from "@osmosis-labs/stores";
@@ -13,7 +21,6 @@ import React, { Fragment, useMemo, useState } from "react";
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { Spinner } from "~/components/loaders";
-import { Checkbox } from "~/components/ui/checkbox";
 import { AssetLists } from "~/config/mock-asset-lists";
 import { useDisclosure, useFilteredData } from "~/hooks";
 import { TokenSelectModal } from "~/modals";
@@ -49,6 +56,7 @@ export const SetBaseInfos = observer(
       queryKey: ["queryConcentratedLiquidityParams"],
       select: (d) =>
         (d?.data as unknown as { params: ConcentratedLiquidityParams }).params,
+      cacheTime: 1000 * 60 * 60,
     });
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
@@ -159,17 +167,32 @@ export const SetBaseInfos = observer(
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-6">
-          <div className="flex items-center gap-3">
+          <Field className="flex items-center gap-3">
             <Checkbox
-              className="h-[26px] w-[26px]"
-              id="clCreationAgreement"
+              className="group flex h-[26px] w-[26px] items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors data-[checked]:bg-osmoverse-400"
               checked={isAgreementChecked}
-              onCheckedChange={(e) => setIsAgreementChecked(e as boolean)}
-            />
-            <label htmlFor="clCreationAgreement" className="body2">
+              onChange={setIsAgreementChecked}
+            >
+              <svg
+                width="15"
+                height="12"
+                viewBox="0 0 15 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="opacity-0 transition-opacity group-data-[checked]:opacity-100"
+              >
+                <path
+                  d="M1.5 6L4.80769 9.5L13 2"
+                  stroke="#231D4B"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </Checkbox>
+            <Label className="body2">
               I understand that creating a new pool will cost 100 OSMO
-            </label>
-          </div>
+            </Label>
+          </Field>
           <button
             disabled={
               isTxLoading ||
@@ -296,18 +319,14 @@ interface SpreadSelctorProps {
 
 function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
   return (
-    <Listbox value={options} onChange={() => {}}>
+    <Listbox value={value} onChange={onChange} defaultValue={value}>
       <div className="relative flex">
-        <Listbox.Button
-          className={classNames(
-            "flex items-center justify-center gap-2.5 rounded-xl bg-osmoverse-825 py-3 px-4"
-          )}
-        >
+        <ListboxButton className="flex items-center justify-center gap-2.5 rounded-xl bg-osmoverse-825 py-3 px-4">
           <span className="max-w-[100px] truncate font-subtitle1 leading-6 sm:max-w-none">
             {formatPretty(new RatePretty(value))}
           </span>
           <Icon id="caret-down" />
-        </Listbox.Button>
+        </ListboxButton>
         <Transition
           as={Fragment}
           enter="transition ease-in duration-150"
@@ -317,35 +336,39 @@ function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options
-            className={
-              "absolute inset-x-0 z-[51] mt-13 flex w-[150px] flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
-            }
+          <ListboxOptions
+            transition
+            className="absolute inset-x-0 z-[51] mt-13 flex w-[150px] flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
           >
             {options.map((option, i) => (
-              <Listbox.Option
-                className={({ active }) =>
-                  classNames(
-                    "relative inline-flex cursor-default select-none items-center gap-3 py-2 px-4",
-                    {
-                      "bg-osmoverse-825": active,
-                    }
-                  )
-                }
-                onClick={() => onChange(option)}
+              <ListboxOption
+                className="group relative inline-flex cursor-default select-none items-center gap-3 py-2 px-4"
                 key={`${value} ${i}`}
-                value={value}
+                value={option}
               >
-                <Checkbox id={`c${i}`} checked={value === option} />
-                <label
-                  htmlFor={`c${i}`}
-                  className="pointer-events-none block truncate capitalize"
-                >
+                <button className="flex h-6 w-6 items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors group-data-[selected]:bg-osmoverse-400">
+                  <svg
+                    width="15"
+                    height="12"
+                    viewBox="0 0 15 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="opacity-0 transition-opacity group-data-[selected]:opacity-100"
+                  >
+                    <path
+                      d="M1.5 6L4.80769 9.5L13 2"
+                      stroke="#231D4B"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <span className="truncate capitalize">
                   {formatPretty(new RatePretty(option))}
-                </label>
-              </Listbox.Option>
+                </span>
+              </ListboxOption>
             ))}
-          </Listbox.Options>
+          </ListboxOptions>
         </Transition>
       </div>
     </Listbox>
