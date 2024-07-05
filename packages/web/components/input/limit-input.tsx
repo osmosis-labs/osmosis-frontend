@@ -70,7 +70,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   // Set focus to Fiat / Token on type/tab change
   useEffect(() => {
     if (type === "market") {
-      setFocused(tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN);
+      setFocused(tab === "buy" ? FocusedInput.TOKEN : FocusedInput.FIAT);
     }
   }, [tab, type]);
 
