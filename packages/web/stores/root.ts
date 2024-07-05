@@ -17,7 +17,6 @@ import {
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
-  NonIbcBridgeHistoryStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
@@ -58,6 +57,8 @@ import {
   UserSettings,
 } from "~/stores/user-settings";
 
+import { TransferHistoryStore } from "./transfer-history";
+
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
@@ -78,7 +79,7 @@ export class RootStore {
   public readonly derivedDataStore: DerivedDataStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
-  public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
+  public readonly transferHistoryStore: TransferHistoryStore;
 
   public readonly assetsStore: ObservableAssets;
 
@@ -249,16 +250,26 @@ export class RootStore {
       makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
     );
-    this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
-      this.queriesStore,
-      this.chainStore.osmosis.chainId,
+
+    const transferStatusProviders = [
+      new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new IbcTransferStatusProvider(ChainList, AssetLists),
+    ];
+
+    this.transferHistoryStore = new TransferHistoryStore(
+      (accountAddress) => {
+        this.queriesStore
+          .get(this.chainStore.osmosis.chainId)
+          .queryBalances.getQueryBech32Address(accountAddress)
+          .fetch();
+        // txEvents passed to root store is used to invalidate
+        // tRPC queries, the params are not used
+        txEvents?.onFulfill?.("", "");
+      },
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [
-        new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-        new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-        new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-        new IbcTransferStatusProvider(ChainList, AssetLists),
-      ]
+      transferStatusProviders
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

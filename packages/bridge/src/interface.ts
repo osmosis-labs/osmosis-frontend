@@ -139,7 +139,10 @@ const evmChainSchema = z.object({
   chainType: z.literal("evm"),
 });
 
-const bridgeChainSchema = z.union([cosmosChainSchema, evmChainSchema]);
+export const bridgeChainSchema = z.discriminatedUnion("chainType", [
+  cosmosChainSchema,
+  evmChainSchema,
+]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
@@ -154,7 +157,7 @@ export interface BridgeStatus {
   maintenanceMessage?: string;
 }
 
-const bridgeAssetSchema = z.object({
+export const bridgeAssetSchema = z.object({
   /**
    * The displayable denomination of the asset.
    */
@@ -171,7 +174,7 @@ const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
-const getBridgeSupportedAssetsParams = z.object({
+export const getBridgeSupportedAssetsParams = z.object({
   /**
    * The originating chain information.
    */

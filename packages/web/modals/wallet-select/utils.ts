@@ -1,8 +1,4 @@
-import { ChainWalletBase, State, WalletStatus } from "@cosmos-kit/core";
-import { CosmosRegistryWallet } from "@osmosis-labs/stores";
-import { Connector } from "wagmi";
-
-import { EthereumChainIds } from "~/config/wagmi";
+import { State, WalletStatus } from "@cosmos-kit/core";
 
 export type ModalView =
   | "list"
@@ -57,16 +53,3 @@ export function getModalView({
 
   return "list";
 }
-
-export type OnConnectWallet = (
-  params:
-    | {
-        walletType: "cosmos";
-        wallet: CosmosRegistryWallet | ChainWalletBase | undefined;
-      }
-    | {
-        walletType: "evm";
-        wallet: Connector;
-        chainId?: EthereumChainIds;
-      }
-) => void;

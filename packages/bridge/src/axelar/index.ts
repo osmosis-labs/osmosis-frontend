@@ -7,7 +7,11 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  getAssetFromAssetList,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
   Address,
@@ -19,7 +23,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -327,11 +330,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        AxelarBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          AxelarBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }

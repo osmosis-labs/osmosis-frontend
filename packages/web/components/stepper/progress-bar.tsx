@@ -1,3 +1,4 @@
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -34,14 +35,19 @@ export const StepProgress: FunctionComponent<
           const stepPercentage = (index / (steps.length - 1)) * 100;
           const selected = index === currentStep;
 
+          const isClickable = !isNil(onClick);
+
           return (
-            <button
+            <div
               key={displayLabel}
+              role={isClickable ? "button" : undefined}
               className={classNames(
                 "body2 transition-color absolute top-2 -translate-x-1/2 duration-150",
                 {
                   "text-white-full": selected,
                   "text-osmoverse-300": !selected,
+                  "cursor-pointer": isClickable,
+                  "cursor-default": !isClickable,
                 }
               )}
               style={{
@@ -50,7 +56,7 @@ export const StepProgress: FunctionComponent<
               onClick={onClick}
             >
               {displayLabel}
-            </button>
+            </div>
           );
         })}
     </div>

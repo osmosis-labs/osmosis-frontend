@@ -5,7 +5,6 @@ import {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "@osmosis-labs/bridge";
-import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   action,
   autorun,
@@ -15,6 +14,8 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { displayToast, ToastType } from "~/components/alert";
 
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
@@ -30,25 +31,33 @@ type TxSnapshot = {
 
 const STORE_KEY = "nonibc_history_tx_snapshots";
 
-/** Stores and tracks status for non-IBC bridge transfers.
- *  Supports querying state from arbitrary remote chains via dependency injection.
- *  NOTE: source keyPrefix values must be unique.
+/**
+ * Stores and tracks status for bridge transfers.
+ * NOTE: source keyPrefix values must be unique.
  */
-export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
+export class TransferHistoryStore implements TransferStatusReceiver {
   /** Volatile store of tx statuses. `prefixedKey => TxSnapshot` */
   @observable
   protected snapshots: TxSnapshot[] = [];
   @observable
   private isRestoredFromLocalStorage = false;
 
+  /**
+   * Since we can't control how many times a status provider
+   * will call `receiveNewTxStatus`, we need to track which
+   * tx statuses have already been resolved to avoid duplicity in UI.
+   */
+  private readonly _resolvedTxStatusKeys = new Set<string>();
+
   constructor(
-    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
-    protected readonly chainId: string,
+    protected readonly onAccountTransferSuccess: (
+      accountAddress: string
+    ) => void,
     protected readonly kvStore: KVStore,
-    protected readonly txStatusSources: TransferStatusProvider[] = [],
+    protected readonly transferStatusProviders: TransferStatusProvider[] = [],
     protected readonly historyExpireDays = 3
   ) {
-    this.txStatusSources.forEach(
+    this.transferStatusProviders.forEach(
       (source) => (source.statusReceiverDelegate = this)
     );
 
@@ -64,10 +73,6 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     this.restoreSnapshots();
   }
 
-  addStatusSource(source: TransferStatusProvider) {
-    this.txStatusSources.push(source);
-  }
-
   getHistoriesByAccount = computedFn((accountAddress: string) => {
     const histories: {
       key: string;
@@ -80,7 +85,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
       isWithdraw: boolean;
     }[] = [];
     this.snapshots.forEach((snapshot) => {
-      const statusSource = this.txStatusSources.find((source) =>
+      const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
       if (statusSource && snapshot.accountAddress === accountAddress) {
@@ -116,7 +121,7 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     isWithdraw: boolean,
     accountAddress: string
   ) {
-    const statusSource = this.txStatusSources.find((source) =>
+    const statusSource = this.transferStatusProviders.find((source) =>
       prefixedKey.startsWith(source.keyPrefix)
     );
 
@@ -124,6 +129,19 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     statusSource?.trackTxStatus(
       prefixedKey.slice(statusSource.keyPrefix.length)
     );
+
+    setTimeout(() => {
+      displayToast(
+        {
+          titleTranslationKey: isWithdraw
+            ? "transfer.pendingWithdraw"
+            : "transfer.pendingDeposit",
+          captionTranslationKey: amount,
+        },
+        ToastType.LOADING,
+        { toastId: prefixedKey, autoClose: false }
+      );
+    }, 500);
 
     this.snapshots.push({
       createdAtMs: Date.now(),
@@ -135,6 +153,10 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
     });
   }
 
+  /**
+   * Forward tx info the relevant status source to start tracking the transfer status
+   * of an initiated transfer.
+   */
   @action
   receiveNewTxStatus(
     prefixedKey: string,
@@ -150,16 +172,64 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
       return;
     }
 
-    // update balances if successful
-    if (status === "success") {
-      this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(snapshot.accountAddress)
-        .fetch();
-    }
-
+    // set updates
     snapshot.status = status;
     snapshot.reason = reason;
+
+    switch (status) {
+      case "pending":
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.pendingWithdraw"
+              : "transfer.pendingDeposit",
+          },
+          ToastType.LOADING,
+          { updateToastId: prefixedKey, autoClose: false }
+        );
+        break;
+      case "success":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.completedWithdraw"
+              : "transfer.completedDeposit",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.SUCCESS,
+          { updateToastId: prefixedKey }
+        );
+        this.onAccountTransferSuccess(snapshot.accountAddress);
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        break;
+      case "failed":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: snapshot.isWithdraw
+              ? "transfer.failedWithdraw"
+              : "transfer.failedDeposit",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.ERROR,
+          { updateToastId: prefixedKey }
+        );
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        break;
+      case "connection-error":
+        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        displayToast(
+          {
+            titleTranslationKey: "transfer.connectionError",
+            captionTranslationKey: snapshot.amount,
+          },
+          ToastType.ERROR,
+          { updateToastId: prefixedKey }
+        );
+        this._resolvedTxStatusKeys.add(prefixedKey);
+        break;
+    }
   }
 
   /** Use persisted tx snapshots to resume Tx monitoring after browser first loads.
@@ -173,14 +243,18 @@ export class NonIbcBridgeHistoryStore implements TransferStatusReceiver {
       if (this.isSnapshotExpired(snapshot)) {
         return;
       }
-      const statusSource = this.txStatusSources.find((source) =>
+      const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.prefixedKey.startsWith(source.keyPrefix)
       );
 
-      // start receiving tx status updates again
-      statusSource?.trackTxStatus(
-        snapshot.prefixedKey.slice(statusSource.keyPrefix.length)
-      );
+      // start receiving tx status updates again for snapshots that were still pending
+      if (snapshot.status === "pending" && statusSource) {
+        statusSource.trackTxStatus(
+          snapshot.prefixedKey.slice(statusSource.keyPrefix.length)
+        );
+      } else {
+        this._resolvedTxStatusKeys.add(snapshot.prefixedKey);
+      }
 
       runInAction(() => {
         this.snapshots.push(snapshot);

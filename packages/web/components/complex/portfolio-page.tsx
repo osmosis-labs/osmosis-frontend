@@ -59,13 +59,13 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const onDeposit = useCallback(
     (coinMinimalDenom: string) => {
-      bridgeAsset(coinMinimalDenom, "deposit");
+      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "deposit" });
     },
     [bridgeAsset]
   );
   const onWithdraw = useCallback(
     (coinMinimalDenom: string) => {
-      bridgeAsset(coinMinimalDenom, "withdraw");
+      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "withdraw" });
     },
     [bridgeAsset]
   );
@@ -173,7 +173,7 @@ const AssetsOverview: FunctionComponent<
           <div className="flex items-center gap-3 py-3">
             <Button
               className="flex items-center gap-2 !rounded-full"
-              onClick={() => startBridge("deposit")}
+              onClick={() => startBridge({ direction: "deposit" })}
             >
               <Icon id="deposit" height={16} width={16} />
               <div className="subtitle1">{t("assets.table.depositButton")}</div>
@@ -194,7 +194,7 @@ const AssetsOverview: FunctionComponent<
             </Button>
             <Button
               className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
-              onClick={() => startBridge("withdraw")}
+              onClick={() => startBridge({ direction: "withdraw" })}
               disabled={totalValue && totalValue.toDec().isZero()}
             >
               <Icon id="withdraw" height={16} width={16} />
@@ -294,7 +294,7 @@ const UserZeroBalanceTableSplash: FunctionComponent = () => {
       <div className="flex items-center justify-center gap-2">
         <Button
           className="flex !w-fit items-center gap-2 !rounded-full"
-          onClick={() => startBridge("deposit")}
+          onClick={() => startBridge({ direction: "deposit" })}
         >
           <Icon id="deposit" height={16} width={16} />
           <span className="subtitle1">{t("assets.table.depositButton")}</span>

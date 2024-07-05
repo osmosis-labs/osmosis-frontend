@@ -1,1 +1,1 @@
-export * from "./provider";
+export * from "./immersive-bridge";

@@ -6,12 +6,15 @@ import type {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetTransferStatusParams,
-  SourceChain,
   SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import {
+  AxelarSourceChain,
+  getKeyByValue,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { noop } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -45,7 +48,6 @@ import {
 import {
   ChainNames,
   EthWallet,
-  NativeEVMTokenConstantAddress,
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
@@ -63,7 +65,7 @@ interface BridgeTransferContext {
   useNativeToken: boolean;
   setUseWrappedToken: (nextValue: boolean) => void;
   sourceChainConfig?: SourceChainTokenConfig;
-  sourceChainKeyMapped: SourceChain;
+  sourceChainKeyMapped: AxelarSourceChain;
   originCurrency: Currency;
 }
 
@@ -76,7 +78,7 @@ const [BridgeTransferModalProvider, useBridgeTransfer] =
 interface BridgeTransferModalProps extends ModalBaseProps {
   isWithdraw: boolean;
   balance: IBCBalance;
-  sourceChainKey: SourceChain;
+  sourceChainKey: AxelarSourceChain;
   walletClient?: ObservableWallet;
   onRequestSwitchWallet: () => void;
 }
@@ -321,7 +323,7 @@ export const TransferContent: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChain;
+    sourceChainKey: AxelarSourceChain;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
     isCounterpartyAddressValid?: boolean;
@@ -371,7 +373,7 @@ export const TransferContent: FunctionComponent<
     chainStore,
     accountStore,
     queriesStore,
-    nonIbcBridgeHistoryStore,
+    transferHistoryStore,
   } = useStore();
   const {
     showModalBase,
@@ -592,35 +594,9 @@ export const TransferContent: FunctionComponent<
             }
 
             return {
-              gasCost: estimatedGasFee
-                ? new CoinPretty(
-                    {
-                      coinDecimals: estimatedGasFee.decimals,
-                      coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.address,
-                    },
-                    new Dec(estimatedGasFee.amount)
-                  ).maxDecimals(8)
-                : undefined,
-
-              transferFee: new CoinPretty(
-                {
-                  coinDecimals: transferFee.decimals,
-                  coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.address,
-                },
-                new Dec(transferFee.amount)
-              ).maxDecimals(8),
-
-              expectedOutput: new CoinPretty(
-                {
-                  coinDecimals: expectedOutput.decimals,
-                  coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.address,
-                },
-                new Dec(expectedOutput.amount)
-              ),
-
+              gasCost: estimatedGasFee?.amount.maxDecimals(8),
+              transferFee: transferFee.amount.maxDecimals(8),
+              expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
               gasCostFiat: estimatedGasFee?.fiatValue,
@@ -772,7 +748,7 @@ export const TransferContent: FunctionComponent<
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
-        nonIbcBridgeHistoryStore.pushTxNow(
+        transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
@@ -782,7 +758,7 @@ export const TransferContent: FunctionComponent<
     },
     [
       inputAmountRaw,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
       originCurrency,
       inputAmount,
       isWithdraw,
