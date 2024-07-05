@@ -18,6 +18,13 @@ export interface Chain {
   bech32_config: Bech32Config;
   slip44: number;
   alternative_slip44s?: number[];
+  logoURIs?: {
+    png?: string;
+    svg?: string;
+    jpeg?: string;
+    layout?: string;
+    theme?: unknown;
+  };
   fees: {
     fee_tokens: FeeToken[];
   };
