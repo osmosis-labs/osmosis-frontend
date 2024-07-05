@@ -123,7 +123,10 @@ export const CryptoFiatInput: FunctionComponent<{
         .toDec()
         .sub(transferGasCost.toDec());
 
-      if (inputCoin.toDec().gt(maxTransferAmount)) {
+      if (
+        maxTransferAmount.isPositive() &&
+        inputCoin.toDec().gt(maxTransferAmount)
+      ) {
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
         setHasSubtractedAmount(true);
       }

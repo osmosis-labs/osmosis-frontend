@@ -67,7 +67,6 @@ import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
@@ -222,12 +221,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.walletManagerAssets,
       wallets,
       logger,
       true,
       true,
-      false,
+      ["https://daodao.zone", "https://dao.daodao.zone"],
+      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -1161,10 +1160,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          {
-            ...signDoc,
-            accountNumber: Long.fromString(signDoc.accountNumber.toString()),
-          },
+          signDoc,
           signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
