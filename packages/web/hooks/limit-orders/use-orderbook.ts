@@ -11,7 +11,7 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
-  ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
+  ? "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
   : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
 const validDenoms = [USDC_DENOM, USDT_DENOM];
@@ -34,7 +34,7 @@ export const useOrderbooks = (): {
       ),
     [orderbooks]
   );
-
+  console.log("ORDERBOOKS", orderbooks, onlyStableOrderbooks);
   return { orderbooks: onlyStableOrderbooks, isLoading };
 };
 
@@ -126,7 +126,6 @@ export const useOrderbook = ({
   quoteDenom: string;
 }) => {
   const { accountStore } = useStore();
-
   const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
   const { data: selectableAssetPages } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
@@ -179,7 +178,7 @@ export const useOrderbook = ({
       ),
     [orderbooks, baseAsset, quoteAsset]
   );
-
+  console.log("USING ORDERBOOK", orderbook);
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
