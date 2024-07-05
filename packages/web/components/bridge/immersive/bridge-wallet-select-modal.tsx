@@ -39,6 +39,8 @@ interface BridgeWalletSelectProps extends ModalBaseProps {
   cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
   evmChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
+  initialManualAddress: string | undefined;
+  onConfirmManualAddress: ((address: string) => void) | undefined;
 }
 
 export const BridgeWalletSelectModal = observer(
@@ -49,6 +51,8 @@ export const BridgeWalletSelectModal = observer(
       evmChain,
       onSelectChain,
       toChain,
+      initialManualAddress,
+      onConfirmManualAddress,
       ...modalProps
     } = props;
 
@@ -69,6 +73,8 @@ export const BridgeWalletSelectModal = observer(
           onClose={modalProps.onRequestClose}
           onSelectChain={onSelectChain}
           toChain={toChain}
+          initialManualAddress={initialManualAddress}
+          onConfirmManualAddress={onConfirmManualAddress}
         />
       </ModalBase>
     );
@@ -87,9 +93,17 @@ export const BridgeWalletSelectScreen = ({
   onClose,
   onSelectChain,
   toChain,
+  initialManualAddress,
+  onConfirmManualAddress,
 }: Pick<
   BridgeWalletSelectProps,
-  "cosmosChain" | "evmChain" | "direction" | "onSelectChain" | "toChain"
+  | "cosmosChain"
+  | "evmChain"
+  | "direction"
+  | "onSelectChain"
+  | "toChain"
+  | "onConfirmManualAddress"
+  | "initialManualAddress"
 > & {
   onClose: () => void;
 }) => {
@@ -180,7 +194,14 @@ export const BridgeWalletSelectScreen = ({
                 setCurrentScreen(WalletSelectScreens.WalletSelect);
               }}
             />
-            <SendToAnotherAddressForm onConfirm={() => {}} toChain={toChain} />
+            <SendToAnotherAddressForm
+              onConfirm={(address) => {
+                onConfirmManualAddress?.(address);
+                onClose();
+              }}
+              toChain={toChain}
+              initialManualAddress={initialManualAddress}
+            />
           </Screen>
 
           <Screen screenName={WalletSelectScreens.WalletSelect}>
@@ -386,22 +407,24 @@ const WalletButton: React.FC<{
 };
 
 interface SendToAnotherAddressFormProps {
-  onConfirm: (address: string) => void;
+  initialManualAddress?: string;
+  onConfirm: ((address: string) => void) | undefined;
   toChain: BridgeChainWithDisplayInfo;
 }
 
 const SendToAnotherAddressForm = ({
+  initialManualAddress,
   onConfirm,
   toChain,
 }: SendToAnotherAddressFormProps) => {
   const { t } = useTranslation();
   const [isInvalidAddress, setIsInvalidAddress] = useState(false);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(initialManualAddress ?? "");
   const [isAcknowledged, setIsAcknowledged] = useState(false);
 
   const handleConfirm = () => {
     if (isAcknowledged) {
-      onConfirm(address);
+      onConfirm?.(address);
     }
   };
 

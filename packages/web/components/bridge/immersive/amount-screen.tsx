@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { Dec } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
-import { isNil, noop } from "@osmosis-labs/utils";
+import { getShortAddress, isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -171,6 +171,8 @@ export const AmountScreen = observer(
     const isWalletNeededConnected = useMemo(() => {
       if (isNil(chainThatNeedsWalletConnection)) return false;
 
+      if (!isNil(manualToAddress)) return true;
+
       if (chainThatNeedsWalletConnection.chainType === "evm") {
         return isEvmWalletConnected;
       }
@@ -180,6 +182,7 @@ export const AmountScreen = observer(
       accountThatNeedsWalletConnection?.address,
       chainThatNeedsWalletConnection,
       isEvmWalletConnected,
+      manualToAddress,
     ]);
 
     const toAddress =
@@ -261,8 +264,7 @@ export const AmountScreen = observer(
         const chain =
           chainParam ?? (direction === "deposit" ? fromChain : toChain);
 
-        console.log(chain);
-        if (!chain) return;
+        if (!chain || !isNil(manualToAddress)) return;
         if (chain.chainType === "evm") {
           if (isEvmWalletConnected || isConnecting) {
             return;
@@ -293,6 +295,7 @@ export const AmountScreen = observer(
         fromChain,
         isConnecting,
         isEvmWalletConnected,
+        manualToAddress,
         onOpenBridgeWalletSelect,
         osmosisAccount?.walletName,
         supportedChains.length,
@@ -532,6 +535,8 @@ export const AmountScreen = observer(
       setFiatAmount("0");
     };
 
+    console.log(manualToAddress);
+
     const dropdownActiveItemIcon = (
       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ammelia-400">
         <Icon id="check-mark" className="text-osmoverse-700" width={14} />
@@ -584,16 +589,23 @@ export const AmountScreen = observer(
                 if (osmosisWalletConnected)
                   checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
+                  setManualToAddress(undefined);
                   resetInput();
                 }
               }}
-              readonly={direction === "withdraw"}
+              readonly={
+                direction === "withdraw" || supportedChains.length === 1
+              }
               isNetworkSelectVisible={
                 direction === "withdraw" ? false : isNetworkSelectVisible
               }
               setIsNetworkSelectVisible={
                 direction === "withdraw" ? noop : setIsNetworkSelectVisible
               }
+              initialManualAddress={manualToAddress}
+              onConfirmManualAddress={(address) => {
+                setManualToAddress(address);
+              }}
             >
               {fromChain.prettyName}
             </ChainSelectorButton>
@@ -612,16 +624,21 @@ export const AmountScreen = observer(
                 if (osmosisWalletConnected)
                   checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
+                  setManualToAddress(undefined);
                   resetInput();
                 }
               }}
-              readonly={direction === "deposit"}
+              readonly={direction === "deposit" || supportedChains.length === 1}
               isNetworkSelectVisible={
                 direction === "deposit" ? false : isNetworkSelectVisible
               }
               setIsNetworkSelectVisible={
                 direction === "deposit" ? noop : setIsNetworkSelectVisible
               }
+              initialManualAddress={manualToAddress}
+              onConfirmManualAddress={(address) => {
+                setManualToAddress(address);
+              }}
             >
               {toChain.prettyName}
             </ChainSelectorButton>
@@ -713,6 +730,7 @@ export const AmountScreen = observer(
                 direction === "deposit" ? setFromChain : setToChain;
               setChain(chain);
               resetAssets();
+              setManualToAddress(undefined);
             }}
             evmChain={(() => {
               const chain = direction === "deposit" ? fromChain : toChain;
@@ -727,10 +745,14 @@ export const AmountScreen = observer(
                 : firstSupportedCosmosChain;
             })()}
             toChain={toChain}
+            initialManualAddress={manualToAddress}
+            onConfirmManualAddress={(address) => {
+              setManualToAddress(address);
+            }}
           />
           {osmosisWalletConnected && isWalletNeededConnected && (
             <>
-              {hasMoreThanOneChainType ? (
+              {hasMoreThanOneChainType || direction === "withdraw" ? (
                 <>
                   <button
                     onClick={onOpenBridgeWalletSelect}
@@ -743,18 +765,37 @@ export const AmountScreen = observer(
                     </span>
 
                     <WalletDisplay
-                      icon={
-                        (direction === "deposit" ? fromChain : toChain)
-                          ?.chainType === "evm"
+                      icon={(() => {
+                        if (
+                          direction === "withdraw" &&
+                          !isNil(manualToAddress)
+                        ) {
+                          return (
+                            <Icon id="wallet" className="text-wosmongton-200" />
+                          );
+                        }
+
+                        const chain =
+                          direction === "deposit" ? fromChain : toChain;
+                        return chain?.chainType === "evm"
                           ? evmConnector?.icon
-                          : fromCosmosCounterpartyAccount?.walletInfo.logo
-                      }
-                      name={
-                        (direction === "deposit" ? fromChain : toChain)
-                          ?.chainType === "evm"
+                          : fromCosmosCounterpartyAccount?.walletInfo.logo;
+                      })()}
+                      name={(() => {
+                        if (
+                          direction === "withdraw" &&
+                          !isNil(manualToAddress)
+                        ) {
+                          return getShortAddress(manualToAddress);
+                        }
+
+                        const chain =
+                          direction === "deposit" ? fromChain : toChain;
+                        return chain?.chainType === "evm"
                           ? evmConnector?.name
-                          : fromCosmosCounterpartyAccount?.walletInfo.prettyName
-                      }
+                          : fromCosmosCounterpartyAccount?.walletInfo
+                              .prettyName;
+                      })()}
                       suffix={
                         <Icon
                           id="chevron-down"
@@ -1075,6 +1116,8 @@ interface ChainSelectorButtonProps {
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   isNetworkSelectVisible: boolean;
   setIsNetworkSelectVisible: Dispatch<SetStateAction<boolean>>;
+  initialManualAddress?: string;
+  onConfirmManualAddress: (address: string) => void;
 }
 
 const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
@@ -1088,6 +1131,8 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
   toChain,
   isNetworkSelectVisible,
   setIsNetworkSelectVisible,
+  onConfirmManualAddress,
+  initialManualAddress,
 }) => {
   if (readonly) {
     return (
@@ -1133,6 +1178,8 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
           onRequestClose={() => setIsNetworkSelectVisible(false)}
           direction={direction}
           toChain={toChain}
+          initialManualAddress={initialManualAddress}
+          onConfirmManualAddress={onConfirmManualAddress}
         />
       )}
     </>
@@ -1155,14 +1202,22 @@ const AmountScreenSkeletonLoader = () => {
 };
 
 const WalletDisplay: FunctionComponent<{
-  icon: string | undefined;
+  icon: string | ReactNode | undefined;
   name: string | undefined;
   suffix?: ReactNode;
 }> = ({ icon, name, suffix }) => {
   return (
     <div className="flex items-center gap-2 rounded-lg">
-      {!isNil(icon) && <img src={icon} alt={name} className="h-6 w-6" />}
-      <span>{name}</span>
+      {!isNil(icon) && (
+        <>
+          {typeof icon === "string" ? (
+            <img src={icon} alt={name} className="h-6 w-6" />
+          ) : (
+            icon
+          )}
+        </>
+      )}
+      <span title={name}>{name}</span>
       {suffix}
     </div>
   );

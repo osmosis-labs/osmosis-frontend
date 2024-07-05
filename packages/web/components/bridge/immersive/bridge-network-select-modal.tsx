@@ -27,6 +27,8 @@ interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   toChain: BridgeChainWithDisplayInfo;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
+  onConfirmManualAddress: ((address: string) => void) | undefined;
+  initialManualAddress: string | undefined;
 }
 
 export const BridgeNetworkSelectModal = ({
@@ -34,6 +36,8 @@ export const BridgeNetworkSelectModal = ({
   chains,
   onSelectChain,
   toChain,
+  onConfirmManualAddress,
+  initialManualAddress,
   ...modalProps
 }: BridgeNetworkSelectModalProps) => {
   const { t } = useTranslation();
@@ -97,6 +101,8 @@ export const BridgeNetworkSelectModal = ({
                   }}
                   evmChain={connectingToEvmChain}
                   toChain={toChain}
+                  initialManualAddress={initialManualAddress}
+                  onConfirmManualAddress={onConfirmManualAddress}
                 />
               </div>
             </Screen>

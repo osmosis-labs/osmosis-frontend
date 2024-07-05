@@ -168,6 +168,7 @@ export const AmountAndReviewScreen = observer(
                     onConfirm={() => {
                       quote.onTransfer().catch(noop);
                     }}
+                    isManualAddress={!isNil(manualToAddress)}
                   />
                 )}
             </>
