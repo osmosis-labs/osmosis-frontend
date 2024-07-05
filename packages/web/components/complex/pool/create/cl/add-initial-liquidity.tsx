@@ -6,10 +6,8 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
-import {
-  SelectionToken,
-  TokenSelectorProps,
-} from "~/components/complex/pool/create/cl-pool";
+import { TokenSelectorProps } from "~/components/complex/pool/create/cl/set-base-info";
+import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
