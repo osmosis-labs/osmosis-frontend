@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { Asset } from "@osmosis-labs/server";
+import { MaybeUserAssetCoin } from "@osmosis-labs/server";
+import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -19,7 +20,7 @@ import { api } from "~/utils/trpc";
 const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
-  token: Asset;
+  token: MinimalAsset & MaybeUserAssetCoin;
   className?: string;
 }
 
