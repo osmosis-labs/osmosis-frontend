@@ -34,7 +34,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {
     const {
       chainStore,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
       ibcTransferHistoryStore,
       accountStore,
     } = useStore();
@@ -42,7 +42,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
     const { chainId } = chainStore.osmosis;
     const address = accountStore.getWallet(chainId)?.address ?? "";
 
-    const histories: History[] = nonIbcBridgeHistoryStore
+    const histories: History[] = transferHistoryStore
       .getHistoriesByAccount(address)
       .map(
         ({

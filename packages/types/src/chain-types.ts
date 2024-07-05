@@ -21,9 +21,12 @@ export interface Chain {
   logoURIs?: {
     png?: string;
     svg?: string;
-    jpeg?: string;
-    layout?: string;
-    theme?: unknown;
+    layout?: "logomark";
+    theme?: {
+      primary_color_hex?: string;
+      dark_mode?: false;
+      circle?: true;
+    };
   };
   fees: {
     fee_tokens: FeeToken[];

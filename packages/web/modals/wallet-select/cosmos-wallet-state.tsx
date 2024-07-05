@@ -23,7 +23,8 @@ import { CosmosWalletRegistry } from "~/config";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
-import { ModalView, OnConnectWallet } from "~/modals/wallet-select/utils";
+import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
+import { ModalView } from "~/modals/wallet-select/utils";
 import { useStore } from "~/stores";
 
 import { QRCodeView } from "./qr-code-view";

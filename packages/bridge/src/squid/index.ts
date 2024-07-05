@@ -8,7 +8,13 @@ import {
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
 import {
@@ -21,7 +27,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -151,7 +156,10 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        if (data.route.params.toToken.address !== toAsset.address) {
+        if (
+          data.route.params.toToken.address.toLowerCase() !==
+          toAsset.address.toLowerCase()
+        ) {
           throw new BridgeQuoteError({
             bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
@@ -186,20 +194,33 @@ export class SquidBridgeProvider implements BridgeProvider {
           },
           fromChain,
           toChain,
-          transferFee: {
-            denom: feeCosts[0].token.symbol,
-            amount: feeCosts[0].amount,
-            chainId: feeCosts[0].token.chainId,
-            decimals: feeCosts[0].token.decimals,
-            address: feeCosts[0].token.address,
-          },
+          transferFee:
+            feeCosts.length === 1
+              ? {
+                  denom: feeCosts[0].token.symbol,
+                  amount: feeCosts[0].amount,
+                  chainId: feeCosts[0].token.chainId,
+                  decimals: feeCosts[0].token.decimals,
+                  address: feeCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  chainId: fromChain.chainId,
+                  amount: "0",
+                },
           estimatedTime: estimatedRouteDuration,
-          estimatedGasFee: {
-            denom: gasCosts[0].token.symbol,
-            amount: gasCosts[0].amount,
-            decimals: gasCosts[0].token.decimals,
-            address: gasCosts[0].token.address,
-          },
+          estimatedGasFee:
+            gasCosts.length === 1
+              ? {
+                  denom: gasCosts[0].token.symbol,
+                  amount: gasCosts[0].amount,
+                  decimals: gasCosts[0].token.decimals,
+                  address: gasCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  amount: "0",
+                },
           transactionRequest: isEvmTransaction
             ? await this.createEvmTransaction({
                 fromAsset,
@@ -319,11 +340,13 @@ export class SquidBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        SquidBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          SquidBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }

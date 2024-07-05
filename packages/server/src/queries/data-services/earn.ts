@@ -1,8 +1,8 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { NUMIA_BASE_URL } from "../../env";
-import { Asset } from "../../queries/complex/assets";
 
 export const EarnStrategyCategories = [
   "Staking",
@@ -197,15 +197,15 @@ export interface StrategyCMSData {
   /**
    * Array describing assets deposited for participation in the strategy.
    */
-  depositAssets: Asset[];
+  depositAssets: MinimalAsset[];
   /**
    * Array describing assets representing a position in the strategy.
    */
-  positionAssets: Asset[];
+  positionAssets: MinimalAsset[];
   /**
    * Array describing rewarded assets for participating in the strategy.
    */
-  rewardAssets: Asset[];
+  rewardAssets: MinimalAsset[];
   /**
    * Array of tags associated with the strategy.
    * The currently accepted tags are:
