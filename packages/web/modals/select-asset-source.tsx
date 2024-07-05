@@ -1,4 +1,4 @@
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 
@@ -16,7 +16,7 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 export const SelectAssetSourceModal: FunctionComponent<
   ModalBaseProps & {
     initiallySelectedWalletId?: string;
-    desiredSourceKey?: SourceChain;
+    desiredSourceKey?: AxelarSourceChain;
     isWithdraw: boolean;
     wallets: ObservableWallet[];
     fiatRamps?: FiatRampKey[];

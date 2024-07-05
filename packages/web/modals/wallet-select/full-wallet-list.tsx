@@ -4,8 +4,9 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
 
 import { useTranslation, WalletSelectOption } from "~/hooks";
+import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
-import { ModalView, OnConnectWallet } from "~/modals/wallet-select/utils";
+import { ModalView } from "~/modals/wallet-select/utils";
 
 export const FullWalletList: FunctionComponent<{
   walletRepo: WalletRepo | undefined;

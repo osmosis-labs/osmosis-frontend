@@ -9,12 +9,11 @@ import {
 
 export class TrustClient extends WCClient {
   async signAmino(
-    chainId: string,
-    signer: string,
-    signDoc: StdSignDoc,
-    signOptions?: SignOptions
+    _chainId: string,
+    _signer: string,
+    _signDoc: StdSignDoc,
+    _signOptions?: SignOptions
   ): Promise<AminoSignResponse> {
-    console.log(chainId, signer, signDoc, signOptions);
     throw new Error("Trust doesn't support `signAmino` method.");
   }
 

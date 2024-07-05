@@ -1,89 +1,47 @@
-name: Frontend E2E tests Workflow
+name: Preview frontend E2E tests
 
 on:
-  deployment_status:
+  push:
+    branches-ignore:
+      - master
 
 jobs:
-  master-e2e-tests:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production – osmosis-frontend'
-    runs-on: macos-latest
-    environment:
-      name: prod_swap_test
+  wait-for-deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment_url: ${{steps.vercel.outputs.environment_url}}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap Pair tests on Master
+      - id: vercel
         env:
-          BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
         run: |
-          cd packages/web
-          npx playwright test -g "Test Swap feature"
-      - name: upload test results
-        if: always()
-        id: e2e-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: main-e2e-test-results
-          path: packages/web/playwright-report
-      - name: Send Slack alert if test fails
-        id: slack
-        if: failure()
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "text": "🚨 FE E2E Tests Failure Alert 🚨",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "FE E2E Tests Failure"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
+          echo "$BRANCH_NAME"
+          python -m pip install requests
+          cd .github && python await_deployment.py
+      - name: Echo GITHUB_OUTPUT environment_url
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          environment_url: ${{ steps.vercel.outputs.environment_url }}
+        run: echo "$environment_url"
 
-  preview-e2e-tests:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – osmosis-frontend'
+  preview-swap-tests:
     runs-on: macos-latest
+    needs: wait-for-deployment
     environment:
       name: prod_swap_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: print environment_url and BRANCH_NAME
+        env:
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          echo "$BASE_URL"
+          echo "$BRANCH_NAME"
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -97,53 +55,56 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
+          echo "$GITHUB_OUTPUT"
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Stage
         env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"
-      - name: upload test results
+      - name: upload Swap test results
         if: always()
-        id: e2e-test-results
+        id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: preview-e2e-test-results
+          name: preview-swap-test-results
           path: packages/web/playwright-report
-      - name: Send Slack alert if test fails
-        id: slack
-        if: failure()
-        uses: slackapi/slack-github-action@v1.26.0
+
+  preview-portfolio-tests:
+    needs: wait-for-deployment
+    runs-on: macos-latest
+    environment:
+      name: prod_swap_test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          payload: |
-            {
-              "text": "🚨 FE E2E Tests Failure Alert 🚨",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "FE E2E Tests Failure"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Environment:* preview\n*App URL:* ${{ github.event.deployment_status.environment_url }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Portfolio tests on Stage
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Portfolio feature"
+      - name: upload Portfolio test results
+        if: always()
+        id: portfolio-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-portfolio-test-results
+          path: packages/web/playwright-report

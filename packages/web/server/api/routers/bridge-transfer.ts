@@ -1,23 +1,32 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
+  BridgeChain,
   BridgeCoin,
   BridgeProviders,
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
+  getBridgeSupportedAssetsParams,
 } from "@osmosis-labs/bridge";
 import {
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
+  getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
-import { isNil, timeout } from "@osmosis-labs/utils";
+import { EthereumChainInfo, isNil, timeout } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+
+export type BridgeChainWithDisplayInfo = BridgeChain & {
+  logoUri?: string;
+  color?: string;
+  prettyName: string;
+};
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -78,31 +87,38 @@ export const bridgeTransferRouter = createTRPCRouter({
       // Getting the fiat value from quotes here
       // results in more accurate fiat prices
       // and fair competition amongst bridge providers.
+      // Prices are on Osmosis, so a counterparty asset should match either the source denom in the asset list
+      // or the coinMinimalDenom on Osmosis. If not on Osmosis & no match, no price is provided.
+      // TODO: add coingeckoId to bridge provider assets to get price from coingecko in those cases.
       const [toAssetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all(
         [
           getAssetPrice({
             ...ctx,
             asset: {
-              coinDenom: input.toAsset.denom,
-              coinMinimalDenom: input.toAsset.denom,
-              sourceDenom: input.toAsset.sourceDenom,
+              coinMinimalDenom: input.toAsset.address,
+              sourceDenom: input.toAsset.address,
+              chainId: input.toChain.chainId,
+              address: input.toAsset.address,
             },
           }),
           getAssetPrice({
             ...ctx,
             asset: {
-              coinDenom: quote.transferFee.denom,
-              coinMinimalDenom: quote.transferFee.denom,
-              sourceDenom: quote.transferFee.sourceDenom,
+              coinMinimalDenom: quote.transferFee.address,
+              sourceDenom: quote.transferFee.address,
+              chainId: quote.transferFee.chainId,
+              address: quote.transferFee.address,
             },
           }).catch(() => {
             // it's common for bridge providers to not provide correct denoms
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
               {
-                coinDenom: quote.transferFee.denom,
-                coinMinimalDenom: quote.transferFee.denom,
-                sourceDenom: quote.transferFee.sourceDenom,
+                bridge: input.bridge,
+                coinMinimalDenom: quote.transferFee.address,
+                sourceDenom: quote.transferFee.address,
+                chainId: quote.transferFee.chainId,
+                address: quote.transferFee.address,
               }
             );
             return undefined;
@@ -111,9 +127,10 @@ export const bridgeTransferRouter = createTRPCRouter({
             ? getAssetPrice({
                 ...ctx,
                 asset: {
-                  coinDenom: quote.estimatedGasFee.denom,
-                  coinMinimalDenom: quote.estimatedGasFee.denom,
-                  sourceDenom: quote.estimatedGasFee.sourceDenom,
+                  coinMinimalDenom: quote.estimatedGasFee.address,
+                  sourceDenom: quote.estimatedGasFee.address,
+                  chainId: quote.fromChain.chainId,
+                  address: quote.estimatedGasFee.address,
                 },
               }).catch(() => {
                 // it's common for bridge providers to not provide correct denoms
@@ -121,9 +138,11 @@ export const bridgeTransferRouter = createTRPCRouter({
                   console.warn(
                     "getQuoteByBridge: Failed to get asset price for gas fee",
                     {
-                      coinDenom: quote.estimatedGasFee.denom,
-                      coinMinimalDenom: quote.estimatedGasFee.denom,
-                      sourceDenom: quote.estimatedGasFee.sourceDenom,
+                      bridge: input.bridge,
+                      coinMinimalDenom: quote.estimatedGasFee.address,
+                      sourceDenom: quote.estimatedGasFee.address,
+                      chainId: quote.fromChain.chainId,
+                      address: quote.estimatedGasFee.address,
                     }
                   );
                 return undefined;
@@ -156,10 +175,26 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...quote,
           input: {
             ...quote.input,
+            amount: new CoinPretty(
+              {
+                coinDenom: quote.input.denom,
+                coinMinimalDenom: quote.input.address,
+                coinDecimals: quote.input.decimals,
+              },
+              quote.input.amount
+            ),
             fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
           },
           expectedOutput: {
             ...quote.expectedOutput,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.expectedOutput.decimals,
+                coinDenom: quote.expectedOutput.denom,
+                coinMinimalDenom: quote.expectedOutput.address,
+              },
+              quote.expectedOutput.amount
+            ),
             fiatValue: priceFromBridgeCoin(
               quote.expectedOutput,
               // output is same token as input
@@ -167,14 +202,28 @@ export const bridgeTransferRouter = createTRPCRouter({
             ),
           },
           transferFee: {
-            ...quote.transferFee,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.transferFee.decimals,
+                coinDenom: quote.transferFee.denom,
+                coinMinimalDenom: quote.transferFee.address,
+              },
+              quote.transferFee.amount
+            ),
             fiatValue: feeAssetPrice
               ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
               : undefined,
           },
           estimatedGasFee: quote.estimatedGasFee
             ? {
-                ...quote.estimatedGasFee,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: quote.estimatedGasFee.decimals,
+                    coinDenom: quote.estimatedGasFee.denom,
+                    coinMinimalDenom: quote.estimatedGasFee.address,
+                  },
+                  quote.estimatedGasFee.amount
+                ),
                 fiatValue:
                   gasFeeAssetPrice && quote.estimatedGasFee
                     ? priceFromBridgeCoin(
@@ -184,6 +233,116 @@ export const bridgeTransferRouter = createTRPCRouter({
                     : undefined,
               }
             : undefined,
+        },
+      };
+    }),
+
+  getSupportedAssetsByBridge: publicProcedure
+    .input(getBridgeSupportedAssetsParams.extend({ bridge: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: ({ destinationAddress }) =>
+            getTimeoutHeight({ ...ctx, destinationAddress }),
+        }
+      );
+
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
+
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id: " + input.bridge);
+      }
+
+      const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
+
+      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
+      const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
+
+      const assetsByChainId = supportedAssets.reduce<
+        Record<
+          BridgeChain["chainId"],
+          ((typeof supportedAssets)[number] & { providerName: string })[]
+        >
+      >((acc, asset) => {
+        if (!acc[asset.chainId]) {
+          acc[asset.chainId] = [];
+        }
+
+        acc[asset.chainId].push({ ...asset, providerName: input.bridge });
+
+        return acc;
+      }, {});
+
+      const eventualChains = Array.from(
+        // Remove duplicate chains
+        new Map(
+          supportedAssets.map(({ chainId, chainType }) => [
+            chainId,
+            { chainId, chainType },
+          ])
+        ).values()
+      );
+
+      const availableChains = eventualChains
+        .map(({ chainId, chainType }) => {
+          if (chainType === "evm") {
+            // TODO: Find a way to get eth chains from `getChain` function
+            const evmChain = Object.values(EthereumChainInfo).find(
+              (chain) => chain.id === chainId
+            );
+
+            if (!evmChain) {
+              return undefined;
+            }
+
+            return {
+              prettyName: evmChain.name,
+              chainName: evmChain.chainName,
+              chainId: evmChain.id,
+              chainType,
+              logoUri: evmChain.relativeLogoUrl,
+              color: evmChain.color,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
+          } else if (chainType === "cosmos") {
+            let cosmosChain: ReturnType<typeof getChain> | undefined;
+            try {
+              cosmosChain = getChain({
+                chainList: ctx.chainList,
+                chainNameOrId: String(chainId),
+              });
+            } catch {}
+
+            if (!cosmosChain) {
+              return undefined;
+            }
+
+            return {
+              prettyName: cosmosChain.pretty_name,
+              chainId: cosmosChain.chain_id,
+              chainName: cosmosChain.chain_name,
+              chainType,
+              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
+              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
+          }
+
+          return undefined;
+        })
+        .filter((chain): chain is NonNullable<typeof chain> => Boolean(chain));
+
+      return {
+        supportedAssets: {
+          providerName: bridgeProvider.providerName as Bridge,
+          inputAssetAddress: input.asset.address,
+          assetsByChainId,
+          availableChains,
         },
       };
     }),

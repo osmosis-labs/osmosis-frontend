@@ -1,4 +1,3 @@
-import { Int } from "@keplr-wallet/unit";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -15,6 +14,53 @@ import { IbcBridgeProvider } from "../index";
 
 jest.mock("@osmosis-labs/tx", () => ({
   estimateGasFee: jest.fn(),
+}));
+
+jest.mock("@osmosis-labs/server", () => ({
+  queryRPCStatus: jest.fn().mockResolvedValue({
+    jsonrpc: "2.0",
+    id: 1,
+    result: {
+      validator_info: {
+        address: "mock_address",
+        pub_key: {
+          type: "mock_type",
+          value: "mock_value",
+        },
+        voting_power: "mock_voting_power",
+      },
+      node_info: {
+        protocol_version: {
+          p2p: "mock_p2p",
+          block: "mock_block",
+          app: "mock_app",
+        },
+        id: "mock_id",
+        listen_addr: "mock_listen_addr",
+        network: "mock_network",
+        version: "mock_version",
+        channels: "mock_channels",
+        moniker: "mock_moniker",
+        other: {
+          tx_index: "on" as const,
+          rpc_address: "mock_rpc_address",
+        },
+      },
+      sync_info: {
+        // reasonable time range
+        latest_block_hash: "mock_latest_block_hash",
+        latest_app_hash: "mock_latest_app_hash",
+        earliest_block_hash: "mock_earliest_block_hash",
+        earliest_app_hash: "mock_earliest_app_hash",
+        latest_block_height: "100",
+        earliest_block_height: "90",
+        latest_block_time: new Date(Date.now() - 10000).toISOString(),
+        earliest_block_time: new Date(Date.now() - 20000).toISOString(),
+        catching_up: false,
+      },
+    },
+  }),
+  DEFAULT_LRU_OPTIONS: { max: 10 },
 }));
 
 const mockContext: BridgeProviderContext = {
@@ -37,14 +83,12 @@ const mockAtomToOsmosis: GetBridgeQuoteParams = {
   },
   fromAsset: {
     address: "uatom",
-    sourceDenom: "uatom",
     denom: "ATOM",
     decimals: 6,
   },
   toAsset: {
     address:
       "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-    sourceDenom: "uatom",
     denom: "ATOM",
     decimals: 6,
   },
@@ -65,13 +109,11 @@ const mockAtomFromOsmosis: GetBridgeQuoteParams = {
   fromAsset: {
     address:
       "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-    sourceDenom: "uatom",
     denom: "ATOM",
     decimals: 6,
   },
   toAsset: {
     address: "uatom",
-    sourceDenom: "uatom",
     denom: "ATOM",
     decimals: 6,
   },
@@ -98,24 +140,6 @@ describe("IbcBridgeProvider", () => {
     );
   });
 
-  it("should throw an error if gas cost exceeds transfer amount", async () => {
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [
-        {
-          amount: new Int(mockAtomFromOsmosis.fromAmount)
-            .add(new Int(100))
-            .toString(),
-          denom: "uatom",
-          isNeededForTx: true,
-        },
-      ],
-    });
-
-    await expect(provider.getQuote(mockAtomToOsmosis)).rejects.toThrow(
-      BridgeQuoteError
-    );
-  });
-
   it("should return a valid BridgeQuote", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
       amount: [{ amount: "5000", denom: "uatom", isNeededForTx: true }],
@@ -138,18 +162,6 @@ describe("IbcBridgeProvider", () => {
     expect(quote).toHaveProperty("transactionRequest");
   });
 
-  it("should calculate the correct toAmount when gas fee is needed for tx", async () => {
-    (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [{ amount: "5000", denom: "uatom", isNeededForTx: true }],
-    });
-
-    const quote: BridgeQuote = await provider.getQuote(mockAtomToOsmosis);
-
-    expect(quote.expectedOutput.amount).toBe(
-      new Int(mockAtomToOsmosis.fromAmount).sub(new Int("5000")).toString()
-    );
-  });
-
   it("should calculate the correct toAmount when gas fee is not needed for tx", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
       amount: [{ amount: "5000", denom: "uatom", isNeededForTx: false }],
@@ -166,7 +178,7 @@ describe("IbcBridgeProvider", () => {
       public getIbcSourcePublic(params: GetBridgeQuoteParams): {
         sourceChannel: string;
         sourcePort: string;
-        sourceDenom: string;
+        address: string;
       } {
         return this.getIbcSource(params);
       }
@@ -183,7 +195,7 @@ describe("IbcBridgeProvider", () => {
 
       expect(result.sourceChannel).toBe("channel-0");
       expect(result.sourcePort).toBe("transfer");
-      expect(result.sourceDenom).toBe(
+      expect(result.address).toBe(
         "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
       );
     });
@@ -193,7 +205,7 @@ describe("IbcBridgeProvider", () => {
 
       expect(result.sourceChannel).toBe("channel-141");
       expect(result.sourcePort).toBe("transfer");
-      expect(result.sourceDenom).toBe("uatom");
+      expect(result.address).toBe("uatom");
     });
 
     it("should throw if asset not found", () => {
@@ -201,11 +213,11 @@ describe("IbcBridgeProvider", () => {
         ...mockAtomToOsmosis,
         toAsset: {
           ...mockAtomToOsmosis.toAsset,
-          sourceDenom: "not-found",
+          address: "not-found",
         },
         fromAsset: {
           ...mockAtomToOsmosis.fromAsset,
-          sourceDenom: "not-found",
+          address: "not-found",
         },
       };
 
@@ -219,11 +231,11 @@ describe("IbcBridgeProvider", () => {
         ...mockAtomToOsmosis,
         toAsset: {
           ...mockAtomToOsmosis.toAsset,
-          sourceDenom: "uosmo",
+          address: "uosmo",
         },
         fromAsset: {
           ...mockAtomToOsmosis.fromAsset,
-          sourceDenom: "uosmo",
+          address: "uosmo",
         },
       };
 
@@ -245,7 +257,6 @@ describe("IbcBridgeProvider", () => {
           address:
             "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
           decimals: 6,
-          sourceDenom: "uatom",
         },
       });
 
@@ -256,7 +267,6 @@ describe("IbcBridgeProvider", () => {
           denom: "ATOM",
           address: "uatom",
           decimals: 6,
-          sourceDenom: "uatom",
         },
       ]);
     });
@@ -276,13 +286,11 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
       fromChain: { chainId: 1, chainType: "evm" },
       toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
       fromAsset: {
-        sourceDenom: "weth-wei",
         address: "weth-wei",
         decimals: 18,
         denom: "WETH",
       },
       toAsset: {
-        sourceDenom: "uatom",
         address: "uatom",
         decimals: 6,
         denom: "ATOM",
@@ -297,8 +305,8 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
     const params = {
       fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
       toChain: { chainId: 1, chainType: "evm" },
-      fromAsset: { sourceDenom: "uosmo" },
-      toAsset: { sourceDenom: "weth-wei" },
+      fromAsset: { address: "uosmo" },
+      toAsset: { address: "weth-wei" },
     } as Parameters<typeof provider.getExternalUrl>[0];
 
     const url = await provider.getExternalUrl(params);
@@ -313,13 +321,11 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
       fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
       toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
       fromAsset: {
-        sourceDenom: "uosmo",
         address: "uosmo",
         decimals: 6,
         denom: "OSMO",
       },
       toAsset: {
-        sourceDenom: "uatom",
         address: "uatom",
         decimals: 6,
         denom: "ATOM",

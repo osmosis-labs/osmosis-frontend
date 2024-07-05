@@ -70,7 +70,12 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
         <Button
           size="lg-full"
           className="flex flex-1 items-center"
-          onClick={() => bridgeAsset(token.coinMinimalDenom, "deposit")}
+          onClick={() =>
+            bridgeAsset({
+              anyDenom: token.coinMinimalDenom,
+              direction: "deposit",
+            })
+          }
           disabled={!data?.transferMethods.length}
         >
           <Icon className="mr-2" id="deposit" height={16} width={16} />
@@ -80,7 +85,12 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           size="lg-full"
           className="flex flex-1 items-center"
           variant="secondary"
-          onClick={() => bridgeAsset(token.coinMinimalDenom, "withdraw")}
+          onClick={() =>
+            bridgeAsset({
+              anyDenom: token.coinMinimalDenom,
+              direction: "withdraw",
+            })
+          }
           disabled={!data?.amount || !data?.transferMethods.length}
         >
           <Icon className="mr-2" id="withdraw" height={16} width={16} />

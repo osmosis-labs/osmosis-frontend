@@ -1,10 +1,13 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
   Address,
@@ -19,7 +22,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -28,12 +30,12 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -76,11 +78,13 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
+      ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
         const sourceAsset = await this.getAsset(fromChain, fromAsset);
 
         if (!sourceAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
           });
@@ -90,6 +94,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         if (!destinationAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
           });
@@ -111,42 +116,27 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain
         );
 
-        const amountOut = new CoinPretty(
-          {
-            coinDecimals: toAsset.decimals,
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom,
-          },
-          route.amount_out
-        );
-
-        let transferFee: BridgeCoin = {
+        let transferFee: BridgeCoin & { chainId: number | string } = {
+          ...fromAsset,
           amount: "0",
-          denom: fromAsset.denom,
-          sourceDenom: fromAsset.sourceDenom,
-          decimals: fromAsset.decimals,
+          chainId: fromChain.chainId,
         };
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
-            const feeAmount = new CoinPretty(
-              {
-                coinDecimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
-                coinDenom:
-                  operation.axelar_transfer.fee_asset.symbol ??
-                  operation.axelar_transfer.fee_asset.denom,
-                coinMinimalDenom: operation.axelar_transfer.fee_asset.denom,
-              },
-              operation.axelar_transfer.fee_amount
-            );
+            const feeAsset = operation.axelar_transfer.fee_asset;
 
             transferFee = {
-              amount: feeAmount.toCoin().amount,
-              denom:
-                operation.axelar_transfer.fee_asset.symbol ??
-                operation.axelar_transfer.fee_asset.denom,
-              sourceDenom: operation.axelar_transfer.fee_asset.denom,
-              decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
+              amount: operation.axelar_transfer.fee_amount,
+              denom: feeAsset.symbol ?? feeAsset.denom,
+              chainId: feeAsset.is_evm
+                ? Number(feeAsset.chain_id)
+                : feeAsset.chain_id,
+              address:
+                feeAsset.is_evm && !Boolean(feeAsset.token_contract)
+                  ? NativeEVMTokenConstantAddress
+                  : feeAsset.token_contract!,
+              decimals: feeAsset.decimals ?? 6,
             };
           }
         }
@@ -179,10 +169,10 @@ export class SkipBridgeProvider implements BridgeProvider {
           destinationAsset.chain_id
         );
 
-        const estimatedTime =
-          sourceChainFinalityTime > destinationChainFinalityTime
-            ? sourceChainFinalityTime
-            : destinationChainFinalityTime;
+        const estimatedTime = Math.max(
+          sourceChainFinalityTime,
+          destinationChainFinalityTime
+        );
 
         const estimatedGasFee = await this.estimateGasCost(
           params,
@@ -191,16 +181,12 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            ...fromAsset,
             amount: fromAmount,
-            denom: fromAsset.denom,
-            sourceDenom: fromAsset.sourceDenom,
-            decimals: fromAsset.decimals,
           },
           expectedOutput: {
-            amount: amountOut.toCoin().amount,
-            denom: toAsset.denom,
-            sourceDenom: toAsset.sourceDenom,
-            decimals: toAsset.decimals,
+            amount: route.amount_out,
+            ...toAsset,
             priceImpact: "0",
           },
           fromChain,
@@ -211,7 +197,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           estimatedGasFee,
         };
       },
-      ttl: 20 * 1000, // 20 seconds,
     });
   }
 
@@ -224,7 +209,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -271,7 +256,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: c.sourceDenom,
               denom: c.symbol,
               decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
             });
           }
         }
@@ -290,7 +274,6 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: c.sourceDenom,
               denom: c.symbol,
               decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
             });
           }
         }
@@ -331,11 +314,11 @@ export class SkipBridgeProvider implements BridgeProvider {
             ...chainInfo,
             address: sharedOriginAsset.denom,
             denom:
+              sharedOriginAsset.recommended_symbol ??
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
             decimals: sharedOriginAsset.decimals ?? asset.decimals,
-            sourceDenom: sharedOriginAsset.origin_denom,
           }
         );
       }
@@ -347,11 +330,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        SkipBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          SkipBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
@@ -642,7 +627,10 @@ export class SkipBridgeProvider implements BridgeProvider {
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 
-      if (!evmChain) throw new Error("Could not find EVM chain");
+      if (!evmChain)
+        throw new Error(
+          "Could not find EVM chain: " + params.fromChain.chainId
+        );
 
       const provider = createPublicClient({
         chain: evmChain,
@@ -668,9 +656,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasCost.toString(),
-        sourceDenom: evmChain.nativeCurrency.symbol,
-        decimals: evmChain.nativeCurrency.decimals,
         denom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        address: NativeEVMTokenConstantAddress,
       };
     }
 
@@ -696,9 +684,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? gasFee.denom,
-        decimals: gasAsset?.decimals ?? 0,
-        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        denom: gasAsset?.symbol ?? params.fromAsset.denom,
+        decimals: gasAsset?.decimals ?? params.fromAsset.decimals,
+        address: gasAsset?.coinMinimalDenom ?? params.fromAsset.address,
       };
     }
   }
@@ -710,53 +698,54 @@ export class SkipBridgeProvider implements BridgeProvider {
   ) {
     try {
       if (!txData.approvalTransactionRequest) {
-        const estimatedGas = await provider.estimateGas({
-          account: params.fromAddress as Address,
-          to: txData.to,
-          data: txData.data,
-          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
-        });
-
-        return BigInt(estimatedGas);
+        return await provider
+          .estimateGas({
+            account: params.fromAddress as Address,
+            to: txData.to,
+            data: txData.data,
+            value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          })
+          .then((gas) => BigInt(gas));
       }
 
-      const slot = 10; // Allowance slot (differs from contract to contract but is usually 10)
+      // Adding a stateDiff override allows us to estimate the gas without the user having first approved the ERC20 transfer
+      // Otherwise, the estimate call would fail with an error indicating the user has not approved the transfer
 
-      const temp = keccak256(
+      /* Allowance slot (differs from contract to contract but is usually 10) */
+      const slot = 10;
+
+      const erc20Balance = keccak256(
         encodePacked(
           ["uint256", "uint256"],
           [BigInt(params.fromAddress), BigInt(slot)]
         )
       );
       const index = keccak256(
-        encodePacked(["uint256", "uint256"], [BigInt(txData.to), BigInt(temp)])
+        encodePacked(
+          ["uint256", "uint256"],
+          [BigInt(txData.to), BigInt(erc20Balance)]
+        )
       );
 
-      const callParams = [
-        {
-          from: params.fromAddress,
+      return await provider
+        .estimateGas({
+          account: params.fromAddress as Address,
           to: txData.to,
           data: txData.data,
-          value: txData.value,
-        },
-        "latest",
-      ];
-
-      const stateDiff = {
-        [txData.approvalTransactionRequest.to]: {
-          stateDiff: {
-            [index]: `0x${maxUint256.toString(16)}`,
-          },
-        },
-      };
-
-      // Call with no state overrides
-      const callResult = await provider.request({
-        method: "eth_estimateGas",
-        params: [...callParams, stateDiff],
-      });
-
-      return BigInt(callResult);
+          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          stateOverride: [
+            {
+              address: txData.approvalTransactionRequest.to as Address,
+              stateDiff: [
+                {
+                  slot: index,
+                  value: `0x${maxUint256.toString(16)}`,
+                },
+              ],
+            },
+          ],
+        })
+        .then((gas) => BigInt(gas));
     } catch (err) {
       console.error("failed to estimate gas:", err);
       return BigInt(0);
@@ -773,9 +762,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const url = new URL("https://ibc.fun/");
     url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address);
+    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
     url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address);
+    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
 
     return { urlProviderName: "IBC.fun", url };
   }
