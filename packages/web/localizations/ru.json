@@ -151,7 +151,8 @@
       "successDeposit": "Депонированный",
       "successWithdraw": "Снял",
       "failDeposit": "Депозит не выполнен",
-      "failWithdraw": "Вывести не удалось"
+      "failWithdraw": "Вывести не удалось",
+      "connectionError": "Ошибка подключения"
     },
     "ibcTransfer": {
       "buttonAdd": "Добавлять",

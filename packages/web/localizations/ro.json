@@ -151,7 +151,8 @@
       "successDeposit": "Depunere reușită",
       "successWithdraw": "Retragere reușită",
       "failDeposit": "Depunere nereușită",
-      "failWithdraw": "Retragere nereușită"
+      "failWithdraw": "Retragere nereușită",
+      "connectionError": "Eroare de conexiune"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",

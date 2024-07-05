@@ -151,7 +151,8 @@
       "successDeposit": "Deposited",
       "successWithdraw": "Withdrew",
       "failDeposit": "Deposit failed",
-      "failWithdraw": "Withdraw failed"
+      "failWithdraw": "Withdraw failed",
+      "connectionError": "Connection error"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",

@@ -151,7 +151,8 @@
       "successDeposit": "Zdeponowane",
       "successWithdraw": "Wycofał się",
       "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się"
+      "failWithdraw": "Wypłata nie powiodła się",
+      "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",

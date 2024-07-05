@@ -151,7 +151,8 @@
       "successDeposit": "Hinterlegt",
       "successWithdraw": "Zurückgezogen",
       "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen"
+      "failWithdraw": "Auszahlung fehlgeschlagen",
+      "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",

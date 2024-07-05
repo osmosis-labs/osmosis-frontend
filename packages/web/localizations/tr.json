@@ -151,7 +151,8 @@
       "successDeposit": "Yatırıldı",
       "successWithdraw": "Geri çekildi",
       "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu"
+      "failWithdraw": "Para çekme işlemi başarısız oldu",
+      "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",

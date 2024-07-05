@@ -151,7 +151,8 @@
       "successDeposit": "Depositado",
       "successWithdraw": "se retiró",
       "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido"
+      "failWithdraw": "Retiro fallido",
+      "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",

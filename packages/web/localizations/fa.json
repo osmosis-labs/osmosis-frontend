@@ -151,7 +151,8 @@
       "successDeposit": "سپرده شد",
       "successWithdraw": "عقب نشینی کرد",
       "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود"
+      "failWithdraw": "برداشت ناموفق بود",
+      "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",

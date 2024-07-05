@@ -2,23 +2,21 @@ import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import type {
   GetTransferStatusParams,
   TransferFailureReason,
+  TransferStatus,
 } from "@osmosis-labs/bridge";
-import {
-  IBCTransferHistory,
-  IBCTransferHistoryStatus,
-} from "@osmosis-labs/stores";
+import { IBCTransferHistory } from "@osmosis-labs/stores";
 import { ChainIdHelper, isNumeric } from "@osmosis-labs/utils";
 
 import { ChainList } from "~/config/generated/chain-list";
 import { useStore } from "~/stores";
 
-type RecentTransfer = {
+export type RecentTransfer = {
   txHash: string;
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
   reason?: TransferFailureReason;
-  status: IBCTransferHistoryStatus | "failed";
+  status: TransferStatus;
   isWithdraw: boolean;
 };
 
@@ -52,9 +50,7 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
         explorerUrl,
         amount,
         reason,
-        status: (status === "success" ? "complete" : status) as
-          | IBCTransferHistoryStatus
-          | "failed",
+        status,
         isWithdraw,
       })
     )
@@ -64,10 +60,18 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
         .map((history) => {
           const { txHash, createdAt, amount, sourceChainId, destChainId } =
             history;
-          const status =
+          let status: TransferStatus = "pending";
+          const ibcStatus =
             typeof (history as IBCTransferHistory).status !== "undefined"
               ? (history as IBCTransferHistory).status
-              : ("pending" as IBCTransferHistoryStatus);
+              : "pending";
+          if (ibcStatus === "complete") {
+            status = "success";
+          } else if (ibcStatus === "timeout") {
+            status = "refunded";
+          } else {
+            status = ibcStatus;
+          }
 
           const counterpartyExplorerUrl = ChainList.find(
             (chain) => chain.chain_id === sourceChainId

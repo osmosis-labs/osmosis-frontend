@@ -151,7 +151,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "已退出",
       "failDeposit": "存款失败",
-      "failWithdraw": "提现失败"
+      "failWithdraw": "提现失败",
+      "connectionError": "连接错误"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",

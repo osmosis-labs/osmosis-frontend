@@ -151,7 +151,8 @@
       "successDeposit": "寄託",
       "successWithdraw": "撤退",
       "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました"
+      "failWithdraw": "引き出しに失敗しました",
+      "connectionError": "接続エラー"
     },
     "ibcTransfer": {
       "buttonAdd": "追加",
