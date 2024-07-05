@@ -1,3 +1,5 @@
+import { TokenHistoricalPrice } from "@osmosis-labs/server";
+
 import type {
   DatafeedConfiguration,
   ErrorCallback,
@@ -56,6 +58,7 @@ export const historicalDatafeed: IBasicDataFeed = {
       const symbolInfo: LibrarySymbolInfo = {
         ticker: asset.coinName,
         name: asset.coinDenom,
+        base_name: [asset.coinMinimalDenom],
         description: asset.coinName,
         type: "crypto",
         exchange: "Osmosis",
@@ -117,8 +120,12 @@ export const historicalDatafeed: IBasicDataFeed = {
           break;
       }
 
-      const bars = await trpcHelpers.edge.assets.getAssetHistoricalPrice.fetch({
-        coinDenom: symbolInfo.name,
+      let bars: TokenHistoricalPrice[] = [];
+
+      bars = await trpcHelpers.edge.assets.getAssetHistoricalPrice.fetch({
+        coinDenom: symbolInfo.base_name
+          ? symbolInfo.base_name[0]
+          : symbolInfo.name,
         timeFrame: {
           custom: customTimeFrame,
         },
