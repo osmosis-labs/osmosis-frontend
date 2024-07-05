@@ -561,7 +561,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if (
         chain.chain_type === "evm" &&
-        chain.chain_id === fromChain.chainId &&
+        chain.chain_id === String(fromChain.chainId) &&
         fromChain.chainType === "evm"
       ) {
         addressList.push(fromAddress);
@@ -569,7 +569,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if (
         chain.chain_type === "evm" &&
-        chain.chain_id === toChain.chainId &&
+        chain.chain_id === String(toChain.chainId) &&
         toChain.chainType === "evm"
       ) {
         addressList.push(toAddress);
@@ -577,17 +577,18 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if (
         chain.chain_type === "cosmos" &&
-        chain.chain_id === fromChain.chainId &&
+        chain.chain_id === String(fromChain.chainId) &&
         fromChain.chainType === "cosmos"
       ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
         );
+        continue;
       }
 
       if (
         chain.chain_type === "cosmos" &&
-        chain.chain_id === toChain.chainId &&
+        chain.chain_id === String(toChain.chainId) &&
         toChain.chainType === "cosmos"
       ) {
         addressList.push(
