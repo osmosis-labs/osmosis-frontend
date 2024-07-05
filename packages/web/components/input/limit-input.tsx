@@ -52,8 +52,8 @@ export const LimitInput: FC<LimitInputProps> = ({
   quoteAssetPrice,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  const [tab] = useQueryState("tab");
-  const [type] = useQueryState("type");
+  const [tab] = useQueryState("tab", { defaultValue: "buy" });
+  const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
     tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN
   );
