@@ -45,7 +45,7 @@ export class BasePage {
   }
 
   async gotoPools() {
-    await this.portfolioLink.click();
+    await this.poolsLink.click();
   }
 
   async printUrl() {
