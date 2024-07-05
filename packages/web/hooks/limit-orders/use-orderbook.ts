@@ -34,7 +34,6 @@ export const useOrderbooks = (): {
       ),
     [orderbooks]
   );
-  console.log("ORDERBOOKS", orderbooks, onlyStableOrderbooks);
   return { orderbooks: onlyStableOrderbooks, isLoading };
 };
 
@@ -178,7 +177,6 @@ export const useOrderbook = ({
       ),
     [orderbooks, baseAsset, quoteAsset]
   );
-  console.log("USING ORDERBOOK", orderbook);
   const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
