@@ -120,9 +120,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _refreshRequests = 0;
 
   @observable
-  private _refreshing = false;
-
-  @observable
   useOneClickTrading = false;
 
   @observable.ref
@@ -250,21 +247,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         },
       }
     );
-    /* 
-    this._walletManager.on("refresh_connection", () => {
-      this.refresh();
-    }); */
 
-    /*  this._walletManager.setActions({
+    this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
-    }); */
+    });
     this._walletManager.walletRepos.forEach((repo) => {
-      /* repo.setActions({
+      repo.setActions({
         viewWalletRepo: () => this.refresh(),
-      }); */
+      });
       repo.wallets.forEach((wallet) => {
         wallet.updateCallbacks({
           ...wallet.callbacks,
@@ -282,9 +275,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         });
 
         wallet.setActions({
-          data: () => {
-            this.refresh();
-          },
+          data: () => this.refresh(),
+          state: () => this.refresh(),
+          message: () => this.refresh(),
         });
       });
     });
@@ -296,17 +289,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @action
   private refresh() {
-    /**
-     * We make sure this method is idempotent to avoid spam
-     */
-    if (!this._refreshing) {
-      this._refreshing = true;
-      this._refreshRequests++;
-
-      setTimeout(() => {
-        this._refreshing = false;
-      }, 100);
-    }
+    this._refreshRequests++;
   }
 
   async addWallet(wallet: MainWalletBase) {
