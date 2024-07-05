@@ -980,7 +980,15 @@
     "confirmWithdrawTo": "Confirmar retiro a {chain}",
     "reviewDepositP": "Revise los detalles de su depósito antes de confirmar. Una vez depositada, su transacción es irreversible.",
     "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible.",
-    "lookingForBalances": "buscando saldos"
+    "lookingForBalances": "buscando saldos",
+    "dontForgetFees": "¡No te olvides de las tarifas!",
+    "feesReserved": "Se ha reservado una pequeña cantidad de su saldo total de {assetName} para pagar tarifas en {networkName} .",
+    "verifyAddressWarning": "Verifique la dirección a la que está retirando sus fondos. Proporcionar una dirección incorrecta resultará en la pérdida de fondos.",
+    "recipientAddress": "Dirección del destinatario en {chain}",
+    "enterAddress": "Introduce una direccion",
+    "invalidAddress": "Dirección {chain} no válida",
+    "acknowledgement": "Reconozco que soy totalmente responsable del fin del mundo, etc.",
+    "done": "Hecho"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

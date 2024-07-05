@@ -980,7 +980,15 @@
     "confirmWithdrawTo": "{chain} 철회를 확인하세요",
     "reviewDepositP": "확인하기 전에 입금 세부정보를 검토하세요. 일단 입금되면 거래를 되돌릴 수 없습니다.",
     "reviewWithdrawP": "확인하기 전에 출금 세부정보를 검토하세요. 일단 철회되면 거래를 되돌릴 수 없습니다.",
-    "lookingForBalances": "잔액을 찾고 있어요"
+    "lookingForBalances": "잔액을 찾고 있어요",
+    "dontForgetFees": "수수료도 잊지 마세요!",
+    "feesReserved": "귀하의 총 {assetName} 잔액 중 소액이 {networkName} 에 대한 수수료를 지불하기 위해 예약되었습니다.",
+    "verifyAddressWarning": "자금을 인출할 주소를 확인하세요. 잘못된 주소를 제공하면 자금이 손실될 수 있습니다.",
+    "recipientAddress": "{chain} 의 수신자 주소",
+    "enterAddress": "주소를 입력하세요",
+    "invalidAddress": "잘못된 {chain} 주소",
+    "acknowledgement": "월드 엔딩 등에 대한 모든 책임은 본인에게 있음을 인정합니다.",
+    "done": "완료"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

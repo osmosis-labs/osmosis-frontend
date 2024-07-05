@@ -980,7 +980,15 @@
     "confirmWithdrawTo": "Confirmați retragerea la {chain}",
     "reviewDepositP": "Verificați detaliile depunerii înainte de a confirma. Odată depusă, tranzacția dvs. este ireversibilă.",
     "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă.",
-    "lookingForBalances": "Caut echilibre"
+    "lookingForBalances": "Caut echilibre",
+    "dontForgetFees": "Nu uita de taxe!",
+    "feesReserved": "O mică parte din soldul dvs. total {assetName} a fost rezervată pentru a plăti taxe pentru {networkName} .",
+    "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",
+    "recipientAddress": "Adresa destinatarului pe {chain}",
+    "enterAddress": "Introduceți o adresă",
+    "invalidAddress": "Adresă {chain} nevalidă",
+    "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
+    "done": "Terminat"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
