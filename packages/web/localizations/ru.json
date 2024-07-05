@@ -142,7 +142,6 @@
       "failed": "Неуспешный",
       "failedWithReason": "Ошибка: {reason}",
       "pending": "В ожидании",
-      "pendingRefunded": "Не удалось: ожидается возврат средств.",
       "refunded": "Возвращено",
       "success": "Успех",
       "title": "История трансферов",

@@ -142,7 +142,6 @@
       "failed": "실패했습니다",
       "failedWithReason": "실패: {reason}",
       "pending": "보류중",
-      "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",

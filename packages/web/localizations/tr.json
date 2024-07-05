@@ -142,7 +142,6 @@
       "failed": "Arızalı",
       "failedWithReason": "Arızalı: {reason}",
       "pending": "Beklemede",
-      "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",

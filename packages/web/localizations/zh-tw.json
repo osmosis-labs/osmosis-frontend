@@ -142,7 +142,6 @@
       "failed": "失敗的",
       "failedWithReason": "失敗的: {reason}",
       "pending": "待處理中",
-      "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",

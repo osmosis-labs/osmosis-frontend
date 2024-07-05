@@ -142,7 +142,6 @@
       "failed": "نا موفق",
       "failedWithReason": "دلیل: {reason}",
       "pending": "معلق",
-      "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",

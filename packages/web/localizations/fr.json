@@ -142,7 +142,6 @@
       "failed": "Échoué",
       "failedWithReason": "Échoué: {reason}",
       "pending": "En cours",
-      "pendingRefunded": "Échec: remboursement en cours",
       "refunded": "Rembourser",
       "success": "Succès",
       "title": "Historique des transferts",

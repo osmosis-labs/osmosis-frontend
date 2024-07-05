@@ -142,7 +142,6 @@
       "failed": "Fehlgeschlagen",
       "failedWithReason": "Fehlgeschlagen: {reason}",
       "pending": "Ausstehend",
-      "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",

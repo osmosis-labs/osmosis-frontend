@@ -142,7 +142,6 @@
       "failed": "失敗した",
       "failedWithReason": "失敗: {reason}",
       "pending": "保留中",
-      "pendingRefunded": "失敗: 返金保留中",
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",

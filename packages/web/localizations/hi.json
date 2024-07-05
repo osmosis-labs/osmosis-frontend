@@ -142,7 +142,6 @@
       "failed": "असफल",
       "failedWithReason": "विफल: {reason}",
       "pending": "लंबित",
-      "pendingRefunded": "विफल: धनवापसी लंबित है",
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",

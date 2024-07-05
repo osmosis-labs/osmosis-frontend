@@ -142,7 +142,6 @@
       "failed": "Przegrany",
       "failedWithReason": "Przegrany: {reason}",
       "pending": "Oczekujące",
-      "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",

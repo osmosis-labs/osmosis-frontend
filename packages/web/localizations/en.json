@@ -142,7 +142,6 @@
       "failed": "Failed",
       "failedWithReason": "Failed: {reason}",
       "pending": "Pending",
-      "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
