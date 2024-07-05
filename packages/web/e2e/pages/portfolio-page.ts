@@ -6,6 +6,7 @@ import { BasePage } from "~/e2e/pages/base-page";
 export class PortfolioPage extends BasePage {
   readonly hideZeros: Locator;
   readonly viewMore: Locator;
+  readonly portfolioLink: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -13,10 +14,14 @@ export class PortfolioPage extends BasePage {
       '//label[.="Hide zero balances"]/following-sibling::button'
     );
     this.viewMore = page.getByText("View more");
+    this.portfolioLink = page.locator(
+      '//a//div[contains(text(), "Portfolio")]'
+    );
   }
 
   async goto() {
-    await this.page.goto("/portfolio");
+    await this.page.goto("/");
+    await this.portfolioLink.click();
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
     const currentUrl = this.page.url();
