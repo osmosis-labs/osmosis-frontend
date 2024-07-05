@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { Asset } from "@osmosis-labs/server";
+import { Asset, Orderbook } from "@osmosis-labs/server";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
@@ -10,33 +10,11 @@ import { useSwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-interface Orderbook {
-  baseDenom: string;
-  quoteDenom: string;
-  contractAddress: string;
-}
-
 const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
   ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
-  : "";
+  : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
 const validDenoms = [USDC_DENOM, USDT_DENOM];
-
-const testnetOrderbooks: Orderbook[] = [
-  {
-    baseDenom: "uosmo",
-    quoteDenom:
-      "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58",
-    contractAddress:
-      "osmo1kgvlc4gmd9rvxuq2e63m0fn4j58cdnzdnrxx924mrzrjclcgqx5qxn3dga",
-  },
-  {
-    baseDenom: "uion",
-    quoteDenom: "uosmo",
-    contractAddress:
-      "osmo1ruxn39qj6x44gms8pfzw22kd7kemslc5fahgua3wuz0tkyks0uhq2f25wh",
-  },
-];
 
 /**
  * Retrieves all available orderbooks for the current chain.
@@ -47,12 +25,8 @@ export const useOrderbooks = (): {
   orderbooks: Orderbook[];
   isLoading: boolean;
 } => {
-  const { orderbooks, isLoading } = {
-    // TODO: Replace with SQS filtered response
-    orderbooks: testnetOrderbooks,
-    isLoading: false,
-  };
-
+  const { data: orderbooks, isLoading } =
+    api.edge.orderbooks.getPools.useQuery();
   const onlyStableOrderbooks = useMemo(
     () =>
       (orderbooks ?? []).filter(({ quoteDenom }) =>
@@ -211,7 +185,7 @@ export const useOrderbook = ({
   });
 
   return {
-    poolId: "1",
+    poolId: orderbook?.poolId ?? "",
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,

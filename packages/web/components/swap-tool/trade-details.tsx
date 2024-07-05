@@ -97,16 +97,15 @@ export const TradeDetails = ({
                 {t("assets.table.price").toLowerCase()} ≈{" "}
                 {swapState?.toAsset &&
                   formatPretty(
-                    swapState.inBaseOutQuoteSpotPrice ??
-                      baseSpotPrice ??
+                    baseSpotPrice ??
+                      swapState.inBaseOutQuoteSpotPrice ??
                       new Dec(0),
                     {
                       maxDecimals: baseSpotPrice
                         ? 2
                         : Math.min(swapState.toAsset.coinDecimals, 8),
                     }
-                  )}{" "}
-                {baseSpotPrice && swapState?.toAsset?.coinDenom}
+                  )}
               </span>
               <span
                 className={classNames("absolute transition-opacity", {
