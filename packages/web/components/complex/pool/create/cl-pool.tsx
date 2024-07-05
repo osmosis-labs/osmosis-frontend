@@ -22,14 +22,15 @@ export type SelectionToken = {
   chainName: string;
 };
 
-const OSMO_ASSET: SelectionToken = {
-  chainName: "Osmosis",
+const USDC_ASSET: SelectionToken = {
+  chainName: "noble",
   token: {
-    coinDenom: "OSMO",
+    coinDenom: "USDC",
     coinDecimals: 6,
-    coinMinimalDenom: "uosmo",
+    coinMinimalDenom:
+      "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
     coinImageUrl:
-      "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg",
   },
 };
 
@@ -42,9 +43,9 @@ export const CreateCLPool = observer(
     fullClose,
   }: CreateCLPoolProps) => {
     const [selectedBase, setSelectedBase] = useState<SelectionToken>();
-    // I think we can default to OSMO for quote asset
     const [selectedQuote, setSelectedQuote] =
-      useState<SelectionToken>(OSMO_ASSET);
+      useState<SelectionToken>(USDC_ASSET);
+    const [poolId, setPoolId] = useState<string>();
 
     const content = useMemo(() => {
       switch (currentStep) {
@@ -56,6 +57,7 @@ export const CreateCLPool = observer(
               selectedQuote={selectedQuote}
               setSelectedBase={setSelectedBase}
               setSelectedQuote={setSelectedQuote}
+              setPoolId={setPoolId}
             />
           );
         case 2:
@@ -64,12 +66,19 @@ export const CreateCLPool = observer(
               selectedBase={selectedBase}
               selectedQuote={selectedQuote}
               // TODO: compute actual poolId
-              poolId="1234"
+              poolId={poolId ?? ""}
               onClose={fullClose}
             />
           );
       }
-    }, [advanceStep, currentStep, fullClose, selectedBase, selectedQuote]);
+    }, [
+      advanceStep,
+      currentStep,
+      fullClose,
+      poolId,
+      selectedBase,
+      selectedQuote,
+    ]);
 
     return (
       <div className="flex w-fit flex-col items-center justify-center gap-[38px] rounded-5xl bg-osmoverse-850 p-10">
@@ -87,7 +96,7 @@ export const CreateCLPool = observer(
             />
           </button>
           <h6 className="text-white-emphasis">
-            {getStepHeader(currentStep, "1446")}
+            {getStepHeader(currentStep, poolId)}
           </h6>
           <button
             type="button"

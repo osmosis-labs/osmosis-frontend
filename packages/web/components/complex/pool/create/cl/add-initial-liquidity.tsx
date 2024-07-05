@@ -1,4 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { maxTick, minTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -32,6 +33,13 @@ export const AddInitialLiquidity = observer(
     const [isTxLoading, setIsTxLoading] = useState(false);
     const { accountStore } = useStore();
 
+    const { data: quoteUsdValue } = api.edge.assets.getAssetPrice.useQuery(
+      {
+        coinMinimalDenom: selectedQuote?.token.coinMinimalDenom ?? "",
+      },
+      { enabled: !!selectedQuote?.token.coinMinimalDenom }
+    );
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     if (!selectedBase || !selectedQuote) return;
@@ -60,12 +68,25 @@ export const AddInitialLiquidity = observer(
             isQuote
             value={quoteAmount}
             setter={setQuoteAmount}
+            assetPrice={quoteUsdValue}
           />
         </div>
-        <span className="subtitle1 text-osmoverse-300">
-          Implied value: 1 {selectedBase.token.coinDenom}{" "}
-          <span className="font-bold">≈ $1.23</span>
-        </span>
+        {baseAmount !== 0 && quoteAmount !== 0 && quoteUsdValue && (
+          <span className="subtitle1 text-osmoverse-300">
+            Implied value: 1 {selectedBase.token.coinDenom}{" "}
+            <span className="font-bold">
+              ≈{" "}
+              {formatPretty(
+                new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  new Dec(quoteAmount)
+                    .mul(quoteUsdValue?.toDec())
+                    .quo(new Dec(baseAmount))
+                )
+              )}
+            </span>
+          </span>
+        )}
         <div className="flex flex-col gap-[26px]">
           <button
             onClick={() => {
@@ -73,9 +94,8 @@ export const AddInitialLiquidity = observer(
               account?.osmosis
                 .sendCreateConcentratedLiquidityPositionMsg(
                   poolId,
-                  new Int(0),
-                  // TODO: put actual max tick
-                  new Int(1),
+                  minTick,
+                  maxTick,
                   undefined,
                   {
                     currency: selectedBase.token,
@@ -104,7 +124,7 @@ export const AddInitialLiquidity = observer(
             <h6>Next</h6>
           </button>
           <button onClick={onClose}>
-            <span className="subtitle1 text-osmoverse-100">Skip</span>
+            <span className="subtitle1 text-wosmongton-200">Skip</span>
           </button>
         </div>
       </>
@@ -118,10 +138,12 @@ const TokenLiquiditySelector = observer(
     isQuote,
     value,
     setter,
+    assetPrice,
   }: Omit<TokenSelectorProps, "assets" | "setSelectedAsset"> & {
     value: number;
     setter: (value: number) => void;
     isQuote?: boolean;
+    assetPrice?: PricePretty;
   }) => {
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -134,13 +156,6 @@ const TokenLiquiditySelector = observer(
         },
         { enabled: !!wallet?.address }
       );
-
-    const { data: assetPrice } = api.edge.assets.getAssetPrice.useQuery(
-      {
-        coinMinimalDenom: selectedAsset?.token.coinMinimalDenom ?? "",
-      },
-      { enabled: !!selectedAsset?.token.coinMinimalDenom }
-    );
 
     if (!selectedAsset) return;
 

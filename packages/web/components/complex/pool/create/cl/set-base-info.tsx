@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Listbox, Transition } from "@headlessui/react";
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { getAssets } from "@osmosis-labs/server";
@@ -25,6 +26,7 @@ interface SetBaseInfosProps {
   selectedQuote: SelectionToken;
   setSelectedBase: (value: SelectionToken) => void;
   setSelectedQuote: (value: SelectionToken) => void;
+  setPoolId: (value: string) => void;
 }
 
 export const SetBaseInfos = observer(
@@ -34,6 +36,7 @@ export const SetBaseInfos = observer(
     selectedQuote,
     setSelectedBase,
     setSelectedQuote,
+    setPoolId,
   }: SetBaseInfosProps) => {
     const { accountStore, queriesStore } = useStore();
 
@@ -189,6 +192,17 @@ export const SetBaseInfos = observer(
                   (res) => {
                     if (res.code === 0) {
                       setIsTxLoading(false);
+                      if (!res.events) return;
+
+                      const poolId = res.events
+                        .find(({ type }) => type === "pool_created")
+                        ?.attributes.find(
+                          ({ key }) => key === "pool_id"
+                        )?.value;
+
+                      if (!poolId) return;
+
+                      setPoolId(poolId);
                       advanceStep?.();
                     }
                   }
