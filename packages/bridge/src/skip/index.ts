@@ -565,7 +565,6 @@ export class SkipBridgeProvider implements BridgeProvider {
         fromChain.chainType === "evm"
       ) {
         addressList.push(fromAddress);
-        continue;
       }
 
       if (
@@ -574,7 +573,6 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain.chainType === "evm"
       ) {
         addressList.push(toAddress);
-        continue;
       }
 
       if (
@@ -585,7 +583,6 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
         );
-        continue;
       }
 
       if (
@@ -596,7 +593,6 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
-        continue;
       }
     }
 
