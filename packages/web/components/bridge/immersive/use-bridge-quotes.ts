@@ -167,6 +167,7 @@ export const useBridgeQuotes = ({
         },
         {
           enabled:
+            // ensure new quote queries are not sent in bg when tx is being approved
             !isTxPending &&
             inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&

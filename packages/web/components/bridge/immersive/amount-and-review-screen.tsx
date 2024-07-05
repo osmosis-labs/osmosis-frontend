@@ -110,6 +110,8 @@ export const AmountAndReviewScreen = observer(
         setCryptoAmount("0");
         setFiatAmount("0");
 
+        // redundantly ensures user queries are reset for EVM txs, since
+        // only cosmos txs reset queries from root store
         refetchUserQueries(apiUtils);
       },
     });
