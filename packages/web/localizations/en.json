@@ -980,7 +980,15 @@
     "confirmWithdrawTo": "Confirm withdraw to {chain}",
     "reviewDepositP": "Review your deposit details before confirming. Once deposited, your transaction is irreversible.",
     "reviewWithdrawP": "Review your withdraw details before confirming. Once withdrawn, your transaction is irreversible.",
-    "lookingForBalances": "Looking for balances"
+    "lookingForBalances": "Looking for balances",
+    "dontForgetFees": "Don't forget about fees!",
+    "feesReserved": "A small amount of your total {assetName} balance has been reserved to pay fees on {networkName}.",
+    "verifyAddressWarning": "Verify the address you are withdrawing your funds to. Providing an incorrect address will result in loss of funds.",
+    "recipientAddress": "Recipient address on {chain}",
+    "enterAddress": "Enter an address",
+    "invalidAddress": "Invalid {chain} address",
+    "acknowledgement": "I acknowledge that I am fully responsible for the world ending etc.",
+    "done": "Done"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

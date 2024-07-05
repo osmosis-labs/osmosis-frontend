@@ -16,6 +16,7 @@ import Image from "next/image";
 import {
   FunctionComponent,
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -74,6 +75,9 @@ interface AmountScreenProps {
   toAsset: SupportedAsset | undefined;
   setToAsset: (asset: SupportedAsset | undefined) => void;
 
+  manualToAddress: string | undefined;
+  setManualToAddress: (address: string | undefined) => void;
+
   cryptoAmount: string;
   fiatAmount: string;
   setCryptoAmount: (amount: string) => void;
@@ -98,6 +102,9 @@ export const AmountScreen = observer(
     setFromAsset,
     toAsset,
     setToAsset,
+
+    manualToAddress,
+    setManualToAddress,
 
     cryptoAmount,
     setCryptoAmount,
@@ -125,14 +132,6 @@ export const AmountScreen = observer(
       warnUserOfSlippage,
     } = quote;
 
-    const { accountActionButton: connectWalletButton, walletConnected } =
-      useConnectWalletModalRedirect(
-        {
-          className: "w-full",
-        },
-        noop
-      );
-
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
@@ -148,21 +147,14 @@ export const AmountScreen = observer(
       address: evmAddress,
       connector: evmConnector,
       isConnected: isEvmWalletConnected,
+      isConnecting,
     } = useEvmWalletAccount();
 
-    const fromCosmosCounterpartyAccountRepo =
-      fromChain?.chainType === "evm" || isNil(fromChain)
-        ? undefined
-        : accountStore.getWalletRepo(fromChain.chainId);
     const fromCosmosCounterpartyAccount =
       fromChain?.chainType === "evm" || isNil(fromChain)
         ? undefined
         : accountStore.getWallet(fromChain.chainId);
 
-    const toCosmosCounterpartyAccountRepo =
-      toChain?.chainType === "evm" || isNil(toChain)
-        ? undefined
-        : accountStore.getWalletRepo(toChain.chainId);
     const toCosmosCounterpartyAccount =
       toChain?.chainType === "evm" || isNil(toChain)
         ? undefined
@@ -199,8 +191,6 @@ export const AmountScreen = observer(
        * Use the canonical osmosis asset to determine the price of the assets.
        * This is because providers can return variant assets that are missing in
        * our asset list.
-       *
-       * TODO: Weigh the pros and cons of filtering variant assets not in our asset list.
        */
       canonicalAsset
     );
@@ -215,6 +205,96 @@ export const AmountScreen = observer(
         chainType: "cosmos",
       },
     });
+
+    const firstSupportedEvmChain = useMemo(
+      () =>
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "evm" }
+          > => chain.chainType === "evm"
+        ),
+      [supportedChains]
+    );
+    const firstSupportedCosmosChain = useMemo(
+      () =>
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "cosmos" }
+          > => chain.chainType === "cosmos"
+        ),
+      [supportedChains]
+    );
+
+    const hasMoreThanOneChainType =
+      !isNil(firstSupportedCosmosChain) && !isNil(firstSupportedEvmChain);
+
+    const checkChainAndConnectWallet = useCallback(
+      (chainParam?: BridgeChainWithDisplayInfo) => {
+        const chain =
+          chainParam ?? (direction === "deposit" ? fromChain : toChain);
+
+        if (!chain) return;
+        if (chain.chainType === "evm") {
+          // TODO: Fix dead-end when the user disconnects the wallet in manage
+          if (isEvmWalletConnected || isConnecting) {
+            return;
+          }
+
+          onOpenBridgeWalletSelect();
+        } else if (chain.chainType === "cosmos") {
+          const account = accountStore.getWallet(chain.chainId);
+          const accountRepo = accountStore.getWalletRepo(chain.chainId);
+
+          if (
+            // If the account is already connected
+            !!account?.address ||
+            // Or if the repo is already connected
+            !!accountRepo?.current
+          ) {
+            return;
+          }
+
+          accountRepo?.connect(osmosisAccount?.walletName).catch(() =>
+            // Display the connect modal if the user for some reason rejects the connection
+            // TODO: Open the network select modal
+            onOpenWalletSelect({
+              walletOptions: [
+                { walletType: "cosmos", chainId: String(chain.chainId) },
+              ],
+            })
+          );
+        }
+      },
+      [
+        accountStore,
+        direction,
+        fromChain,
+        isConnecting,
+        isEvmWalletConnected,
+        onOpenBridgeWalletSelect,
+        onOpenWalletSelect,
+        osmosisAccount?.walletName,
+        toChain,
+      ]
+    );
+
+    const { accountActionButton: connectWalletButton, walletConnected } =
+      useConnectWalletModalRedirect(
+        {
+          className: "w-full",
+        },
+        noop,
+        undefined,
+        () => {
+          checkChainAndConnectWallet();
+        }
+      );
 
     const supportedSourceAssets: SupportedAsset[] | undefined = useMemo(() => {
       if (!fromChain) return undefined;
@@ -247,34 +327,6 @@ export const AmountScreen = observer(
       fromChain,
       selectedDenom,
     ]);
-
-    const firstSupportedEvmChain = useMemo(
-      () =>
-        supportedChains.find(
-          (
-            chain
-          ): chain is Extract<
-            BridgeChainWithDisplayInfo,
-            { chainType: "evm" }
-          > => chain.chainType === "evm"
-        ),
-      [supportedChains]
-    );
-    const firstSupportedCosmosChain = useMemo(
-      () =>
-        supportedChains.find(
-          (
-            chain
-          ): chain is Extract<
-            BridgeChainWithDisplayInfo,
-            { chainType: "cosmos" }
-          > => chain.chainType === "cosmos"
-        ),
-      [supportedChains]
-    );
-
-    const hasMoreThanOneChainType =
-      !isNil(firstSupportedCosmosChain) && !isNil(firstSupportedEvmChain);
 
     const { data: assetsBalances, isLoading: isLoadingAssetsBalance } =
       api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
@@ -405,6 +457,7 @@ export const AmountScreen = observer(
           chainType: "cosmos",
           logoUri: osmosisChain.logoURIs?.svg ?? osmosisChain.logoURIs?.png,
           color: osmosisChain.logoURIs?.theme?.primary_color_hex,
+          bech32Prefix: osmosisChain.bech32_prefix,
         });
       }
     }, [direction, fromChain, osmosisChain, setFromChain, setToChain, toChain]);
@@ -424,94 +477,17 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
+        checkChainAndConnectWallet(firstChain);
       }
     }, [
+      checkChainAndConnectWallet,
       direction,
       fromChain,
       setFromChain,
       setToChain,
       supportedChains,
       toChain,
-    ]);
-
-    /**
-     * Connect cosmos wallet to the counterparty chain
-     */
-    useEffect(() => {
-      if (!fromChain || !toChain) return;
-
-      const account =
-        direction === "deposit"
-          ? fromCosmosCounterpartyAccount
-          : toCosmosCounterpartyAccount;
-      const accountRepo =
-        direction === "deposit"
-          ? fromCosmosCounterpartyAccountRepo
-          : toCosmosCounterpartyAccountRepo;
-      const chain = direction === "deposit" ? fromChain : toChain;
-
-      if (
-        // If the chain is an EVM chain, we don't need to connect the cosmos chain
-        chain.chainType !== "cosmos" ||
-        // Or if the account is already connected
-        !!account?.address ||
-        // Or if there's no available cosmos chain
-        !firstSupportedCosmosChain ||
-        // Or if the account is already connected
-        !!accountRepo?.current
-      ) {
-        return;
-      }
-
-      accountRepo?.connect(osmosisAccount?.walletName).catch(() =>
-        // Display the connect modal if the user for some reason rejects the connection
-        onOpenWalletSelect({
-          walletOptions: [
-            { walletType: "cosmos", chainId: String(chain.chainId) },
-          ],
-        })
-      );
-    }, [
-      direction,
-      firstSupportedCosmosChain,
-      fromChain,
-      fromCosmosCounterpartyAccount,
-      fromCosmosCounterpartyAccountRepo,
-      onOpenWalletSelect,
-      osmosisAccount?.walletName,
-      toChain,
-      toCosmosCounterpartyAccount,
-      toCosmosCounterpartyAccountRepo,
-    ]);
-
-    /**
-     * Connect evm wallet to the counterparty chain
-     */
-    useEffect(() => {
-      if (!fromChain || !toChain) return;
-
-      const chain = direction === "deposit" ? fromChain : toChain;
-
-      if (
-        // If the chain is an Cosmos chain, we don't need to connect the cosmos chain
-        chain.chainType !== "evm" ||
-        // Or if the account is already connected
-        isEvmWalletConnected ||
-        // Or if there's no available evm chain
-        !firstSupportedEvmChain
-      ) {
-        return;
-      }
-
-      onOpenBridgeWalletSelect();
-    }, [
-      direction,
-      evmAddress,
-      firstSupportedEvmChain,
-      fromChain,
-      isEvmWalletConnected,
-      onOpenBridgeWalletSelect,
-      toChain,
+      walletConnected,
     ]);
 
     if (
@@ -583,9 +559,11 @@ export const AmountScreen = observer(
               chainColor={fromChain.color}
               chainLogo={fromChain.logoUri}
               chains={supportedChains}
+              toChain={toChain}
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
+                if (walletConnected) checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   resetInput();
                 }
@@ -602,9 +580,11 @@ export const AmountScreen = observer(
               chainColor={toChain.color}
               chainLogo={toChain.logoUri}
               chains={supportedChains}
+              toChain={toChain}
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
+                if (walletConnected) checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   resetInput();
                 }
@@ -629,6 +609,7 @@ export const AmountScreen = observer(
             setFiatAmount={setFiatAmount}
             setCryptoAmount={setCryptoAmount}
             setInputUnit={setInputUnit}
+            fromChain={fromChain}
           />
 
           <>
@@ -753,6 +734,7 @@ export const AmountScreen = observer(
                         ? chain
                         : firstSupportedCosmosChain;
                     })()}
+                    toChain={toChain}
                   />
                 </>
               ) : (
@@ -1048,6 +1030,7 @@ const ChainSelectorButton: FunctionComponent<{
   chainLogo: string | undefined;
   chainColor: string | undefined;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  toChain: BridgeChainWithDisplayInfo;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }> = ({
   direction,
@@ -1057,6 +1040,7 @@ const ChainSelectorButton: FunctionComponent<{
   chainColor,
   chains,
   onSelectChain,
+  toChain,
 }) => {
   const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
 
@@ -1103,6 +1087,7 @@ const ChainSelectorButton: FunctionComponent<{
           }}
           onRequestClose={() => setIsNetworkSelectVisible(false)}
           direction={direction}
+          toChain={toChain}
         />
       )}
     </>

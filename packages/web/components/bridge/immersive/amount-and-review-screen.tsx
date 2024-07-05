@@ -39,6 +39,8 @@ export const AmountAndReviewScreen = observer(
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
+    const [manualToAddress, setManualToAddress] = useState<string>();
+
     // Wallets
     const { address: evmAddress, connector: evmConnector } =
       useEvmWalletAccount();
@@ -57,8 +59,11 @@ export const AmountAndReviewScreen = observer(
       fromChain?.chainType === "evm"
         ? evmAddress
         : fromChainCosmosAccount?.address;
-    const toAddress =
-      toChain?.chainType === "evm" ? evmAddress : toChainCosmosAccount?.address;
+    const toAddress = !isNil(manualToAddress)
+      ? manualToAddress
+      : toChain?.chainType === "evm"
+      ? evmAddress
+      : toChainCosmosAccount?.address;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
@@ -121,6 +126,8 @@ export const AmountAndReviewScreen = observer(
               setFromChain={setFromChain}
               toChain={toChain}
               setToChain={setToChain}
+              manualToAddress={manualToAddress}
+              setManualToAddress={setManualToAddress}
               fromAsset={fromAsset}
               setFromAsset={setFromAsset}
               toAsset={toAsset}

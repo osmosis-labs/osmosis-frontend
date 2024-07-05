@@ -238,7 +238,7 @@ const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
     <Disclosure>
       {({ open }) => (
         <div
-          className="flex flex-col gap-4 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
+          className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
           style={{
             height: open
               ? (detailsHeight + detailsOffset ?? 288) + 85 // collapsed height

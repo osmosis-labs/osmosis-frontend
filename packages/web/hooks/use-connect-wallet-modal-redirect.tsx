@@ -22,8 +22,9 @@ import { useStore } from "~/stores";
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
-  _onRequestClose: () => void,
-  connectWalletMessage = t("connectWallet")
+  _onRequestClose?: () => void,
+  connectWalletMessage = t("connectWallet"),
+  onConnect?: () => void
 ) {
   const { accountStore } = useStore();
   const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
@@ -65,6 +66,7 @@ export function useConnectWalletModalRedirect(
               walletOptions: [
                 { walletType: "cosmos", chainId: accountStore.osmosisChainId },
               ],
+              onConnect,
             }); // show select connect modal
             setShowSelf(false);
           }}
