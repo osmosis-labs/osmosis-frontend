@@ -201,4 +201,16 @@ export class SwapPage extends BasePage {
       fullPage: true,
     });
   }
+
+  async getSelectedPair() {
+    const tokenLocator =
+      '//img[@alt="token icon"]/../..//h5 | //img[@alt="token icon"]/../..//span[@class="subtitle1"]';
+    const fromToken = this.page.locator(tokenLocator).nth(0);
+    const toToken = this.page.locator(tokenLocator).nth(1);
+
+    let fromTokenText = await fromToken.innerText();
+    let toTokenText = await toToken.innerText();
+    console.log("Current pair: " + `${fromTokenText}/${toTokenText}`);
+    return `${fromTokenText}/${toTokenText}`;
+  }
 }

@@ -6,6 +6,7 @@ export class BasePage {
   readonly connectWalletBtn: Locator;
   readonly kepltWalletBtn: Locator;
   readonly portfolioLink: Locator;
+  readonly poolsLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +15,7 @@ export class BasePage {
       .first();
     this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
     this.portfolioLink = page.getByText("Portfolio");
+    this.poolsLink = page.getByText("Pools");
   }
 
   async connectWallet() {
@@ -40,5 +42,14 @@ export class BasePage {
 
   async gotoPortfolio() {
     await this.portfolioLink.click();
+  }
+
+  async gotoPools() {
+    await this.portfolioLink.click();
+  }
+
+  async printUrl() {
+    const currentUrl = this.page.url();
+    console.log("FE opened at: " + currentUrl);
   }
 }
