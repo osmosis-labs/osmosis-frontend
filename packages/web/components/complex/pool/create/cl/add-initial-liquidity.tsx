@@ -21,6 +21,8 @@ interface AddInitialLiquidityProps {
   onClose?: () => void;
 }
 
+const isAmountValid = (amount?: string) => !!amount && !/^0*$/.test(amount);
+
 export const AddInitialLiquidity = observer(
   ({
     selectedBase,
@@ -28,8 +30,8 @@ export const AddInitialLiquidity = observer(
     poolId,
     onClose,
   }: AddInitialLiquidityProps) => {
-    const [baseAmount, setBaseAmount] = useState(0);
-    const [quoteAmount, setQuoteAmount] = useState(0);
+    const [baseAmount, setBaseAmount] = useState<string>();
+    const [quoteAmount, setQuoteAmount] = useState<string>();
 
     const [isTxLoading, setIsTxLoading] = useState(false);
     const { accountStore } = useStore();
@@ -100,34 +102,38 @@ export const AddInitialLiquidity = observer(
             isQuote
           />
         </div>
-        {baseAmount !== 0 && quoteAmount !== 0 && quoteUsdValue && (
-          <span className="subtitle1 text-osmoverse-300">
-            Implied value: 1 {selectedBase.token.coinDenom}{" "}
-            <span className="font-bold">
-              ≈{" "}
-              {formatPretty(
-                new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  new Dec(quoteAmount)
-                    .mul(quoteUsdValue?.toDec())
-                    .quo(new Dec(baseAmount))
-                )
-              )}
+        {isAmountValid(baseAmount) &&
+          isAmountValid(quoteAmount) &&
+          quoteUsdValue && (
+            <span className="subtitle1 text-osmoverse-300">
+              Implied value: 1 {selectedBase.token.coinDenom}{" "}
+              <span className="font-bold">
+                ≈{" "}
+                {formatPretty(
+                  new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    new Dec(quoteAmount!)
+                      .mul(quoteUsdValue?.toDec())
+                      .quo(new Dec(baseAmount!))
+                  )
+                )}
+              </span>
             </span>
-          </span>
-        )}
+          )}
         <div className="flex flex-col gap-[26px]">
           <button
             disabled={
               isTxLoading ||
-              new Dec(baseAmount).gt(
+              new Dec(baseAmount ?? 0).gt(
                 baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               ) ||
-              new Dec(quoteAmount).gt(
+              new Dec(quoteAmount ?? 0).gt(
                 quoteAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               )
             }
             onClick={() => {
+              if (!baseAmount || !quoteAmount) return;
+
               setIsTxLoading(true);
               account?.osmosis
                 .sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
@@ -173,8 +179,8 @@ const TokenLiquiditySelector = observer(
     balanceData,
     isLoadingBalanceData,
   }: Omit<TokenSelectorProps, "assets" | "setSelectedAsset"> & {
-    value: number;
-    setter: (value: number) => void;
+    value?: string;
+    setter: (value?: string) => void;
     isQuote?: boolean;
     assetPrice?: PricePretty;
     balanceData?: MinimalAsset &
@@ -204,7 +210,7 @@ const TokenLiquiditySelector = observer(
           <button
             onClick={() => {
               if (balanceData?.amount) {
-                setter(+balanceData.amount.toDec().toString());
+                setter(balanceData.amount.toDec().toString());
               }
             }}
           >
@@ -221,11 +227,19 @@ const TokenLiquiditySelector = observer(
           <input
             type="number"
             className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
+            placeholder="0"
             value={value}
-            onChange={(e) => setter(+new Dec(+e.target.value).toString())}
+            onChange={(e) => {
+              // we might have to adjust this treshold
+              if (e.target.value.length > 32) return;
+              if (e.target.value === "") return setter();
+
+              setter(e.target.value);
+            }}
           />
           <span className="caption h-3.5 text-osmoverse-400">
             {isQuote &&
+              value &&
               "~" +
                 formatPretty(
                   new PricePretty(
