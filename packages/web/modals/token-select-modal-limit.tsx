@@ -233,7 +233,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
           className="w-[512px] rounded-5xl !p-0"
         >
           <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-850">
-            <div className="relative flex h-20 items-center justify-center p-4">
+            <div className="relative flex min-h-[80px] items-center justify-center p-4">
               <h6>{headerTitle}</h6>
               <button
                 onClick={onClose}
