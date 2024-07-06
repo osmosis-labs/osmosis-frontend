@@ -1200,7 +1200,11 @@
     "market": "Rynek",
     "limit": "Limit",
     "increases": "wzrasta",
-    "decreases": "maleje"
+    "decreases": "maleje",
+    "estimatingFees": "Szacowanie opłat",
+    "fees": "opłaty",
+    "receiveEstimated": "Otrzymaj (szacunkowo)",
+    "swapRoute": "Zmień trasę"
   },
   "orderHistory": {
     "orders": "Zamówienia",

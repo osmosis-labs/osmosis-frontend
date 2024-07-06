@@ -1200,7 +1200,11 @@
     "market": "市場",
     "limit": "制限",
     "increases": "増加する",
-    "decreases": "減少する"
+    "decreases": "減少する",
+    "estimatingFees": "料金の見積り",
+    "fees": "手数料",
+    "receiveEstimated": "受け取る（推定）",
+    "swapRoute": "ルートの交換"
   },
   "orderHistory": {
     "orders": "注文",

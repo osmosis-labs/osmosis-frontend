@@ -19,7 +19,7 @@ import {
 } from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
-import { useRouter } from "next/router";
+import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
@@ -48,7 +48,6 @@ import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
-import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
 export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
@@ -897,21 +896,19 @@ export function useToFromDenoms({
   initialFromDenom?: string;
   initialToDenom?: string;
 }) {
-  const router = useRouter();
-
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
    */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
+  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    useQueryParams ? initialFromDenom : undefined
+    parseAsString.withDefault(initialFromDenom ?? "ATOM")
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryParamState(
+  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    useQueryParams ? initialToDenom : undefined
+    parseAsString.withDefault(initialToDenom ?? "OSMO")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
@@ -933,14 +930,17 @@ export function useToFromDenoms({
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {
     if (useQueryParams) {
-      const existingParams = router.query;
-      router.replace({
-        query: {
-          ...existingParams,
-          from: toDenomQueryParamStr,
-          to: fromDenomQueryParamStr,
-        },
-      });
+      // const existingParams = router.query;
+      // router.replace({
+      //   query: {
+      //     ...existingParams,
+      //     from: toDenomQueryParamStr,
+      //     to: fromDenomQueryParamStr,
+      //   },
+      // });
+      const temp = fromDenomQueryParam;
+      setFromDenomQueryParam(toAssetQueryParam);
+      setToAssetQueryParam(temp);
       return;
     }
 

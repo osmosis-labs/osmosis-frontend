@@ -1200,7 +1200,11 @@
     "market": "Pazar",
     "limit": "Sınır",
     "increases": "artışlar",
-    "decreases": "azalır"
+    "decreases": "azalır",
+    "estimatingFees": "Ücretlerin tahmin edilmesi",
+    "fees": "ücretler",
+    "receiveEstimated": "Alma (tahmini)",
+    "swapRoute": "Rotayı değiştir"
   },
   "orderHistory": {
     "orders": "Emirler",

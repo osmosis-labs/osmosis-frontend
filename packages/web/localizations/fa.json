@@ -1200,7 +1200,11 @@
     "market": "بازار",
     "limit": "حد",
     "increases": "افزایش",
-    "decreases": "کاهش می دهد"
+    "decreases": "کاهش می دهد",
+    "estimatingFees": "برآورد هزینه ها",
+    "fees": "هزینه ها",
+    "receiveEstimated": "دریافت (تخمینی)",
+    "swapRoute": "تعویض مسیر"
   },
   "orderHistory": {
     "orders": "سفارشات",

@@ -1200,7 +1200,11 @@
     "market": "市場",
     "limit": "限制",
     "increases": "增加",
-    "decreases": "減少"
+    "decreases": "減少",
+    "estimatingFees": "估算費用",
+    "fees": "費用",
+    "receiveEstimated": "收到（預計）",
+    "swapRoute": "交換路線"
   },
   "orderHistory": {
     "orders": "命令",

@@ -87,7 +87,7 @@ export const SplitRoute: FunctionComponent<
   );
 };
 
-const RouteLane: FunctionComponent<{
+export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = observer(({ route }) => {
   const { chainStore } = useStore();
