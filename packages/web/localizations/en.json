@@ -406,7 +406,8 @@
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
-    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue."
+    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "noData": "No data"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
