@@ -1,6 +1,6 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { maxTick, minTick } from "@osmosis-labs/math";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectorProps } from "~/components/complex/pool/create/cl/set-base-info";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
+import { Spinner } from "~/components/loaders";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -33,11 +34,35 @@ export const AddInitialLiquidity = observer(
     const [isTxLoading, setIsTxLoading] = useState(false);
     const { accountStore } = useStore();
 
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
     const { data: quoteUsdValue } = api.edge.assets.getAssetPrice.useQuery(
       {
         coinMinimalDenom: selectedQuote?.token.coinMinimalDenom ?? "",
       },
       { enabled: !!selectedQuote?.token.coinMinimalDenom }
+    );
+
+    const {
+      data: baseAssetBalanceData,
+      isLoading: isLoadingBaseAssetBalanceData,
+    } = api.edge.assets.getUserAsset.useQuery(
+      {
+        userOsmoAddress: wallet?.address ?? "",
+        findMinDenomOrSymbol: selectedBase?.token.coinMinimalDenom ?? "",
+      },
+      { enabled: !!wallet?.address }
+    );
+
+    const {
+      data: quoteAssetBalanceData,
+      isLoading: isLoadingQuoteAssetBalanceData,
+    } = api.edge.assets.getUserAsset.useQuery(
+      {
+        userOsmoAddress: wallet?.address ?? "",
+        findMinDenomOrSymbol: selectedQuote?.token.coinMinimalDenom ?? "",
+      },
+      { enabled: !!wallet?.address }
     );
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
@@ -62,13 +87,17 @@ export const AddInitialLiquidity = observer(
             selectedAsset={selectedBase}
             value={baseAmount}
             setter={setBaseAmount}
+            balanceData={baseAssetBalanceData}
+            isLoadingBalanceData={isLoadingBaseAssetBalanceData}
           />
           <TokenLiquiditySelector
             selectedAsset={selectedQuote}
-            isQuote
             value={quoteAmount}
             setter={setQuoteAmount}
+            balanceData={quoteAssetBalanceData}
+            isLoadingBalanceData={isLoadingQuoteAssetBalanceData}
             assetPrice={quoteUsdValue}
+            isQuote
           />
         </div>
         {baseAmount !== 0 && quoteAmount !== 0 && quoteUsdValue && (
@@ -89,39 +118,41 @@ export const AddInitialLiquidity = observer(
         )}
         <div className="flex flex-col gap-[26px]">
           <button
+            disabled={
+              isTxLoading ||
+              new Dec(baseAmount).gt(
+                baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
+              ) ||
+              new Dec(quoteAmount).gt(
+                quoteAssetBalanceData?.amount?.toDec() ?? new Dec(0)
+              )
+            }
             onClick={() => {
               setIsTxLoading(true);
               account?.osmosis
-                .sendCreateConcentratedLiquidityPositionMsg(
+                .sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
                   poolId,
-                  minTick,
-                  maxTick,
                   undefined,
                   {
-                    currency: selectedBase.token,
-                    amount: baseAmount.toString(),
+                    amount: new Int(baseAmount.toString()),
+                    denom: selectedBase.token.coinMinimalDenom,
                   },
                   {
-                    currency: selectedQuote.token,
-                    amount: quoteAmount.toString(),
+                    amount: new Int(quoteAmount.toString()),
+                    denom: selectedQuote.token.coinMinimalDenom,
                   },
-                  undefined,
-                  undefined,
-                  (res) => {
-                    if (res.code === 0) {
-                      setIsTxLoading(false);
-                      onClose?.();
-                    }
+                  () => {
+                    onClose?.();
                   }
                 )
                 .finally(() => setIsTxLoading(false));
             }}
-            disabled={isTxLoading}
             className={classNames(
               "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
             )}
           >
             <h6>Next</h6>
+            {isTxLoading && <Spinner />}
           </button>
           <button onClick={onClose}>
             <span className="subtitle1 text-wosmongton-200">Skip</span>
@@ -139,24 +170,20 @@ const TokenLiquiditySelector = observer(
     value,
     setter,
     assetPrice,
+    balanceData,
+    isLoadingBalanceData,
   }: Omit<TokenSelectorProps, "assets" | "setSelectedAsset"> & {
     value: number;
     setter: (value: number) => void;
     isQuote?: boolean;
     assetPrice?: PricePretty;
+    balanceData?: MinimalAsset &
+      Partial<{
+        amount: CoinPretty;
+        usdValue: PricePretty;
+      }>;
+    isLoadingBalanceData?: boolean;
   }) => {
-    const { accountStore } = useStore();
-    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-
-    const { data: assetData, isLoading } =
-      api.edge.assets.getUserAsset.useQuery(
-        {
-          userOsmoAddress: wallet?.address ?? "",
-          findMinDenomOrSymbol: selectedAsset?.token.coinMinimalDenom ?? "",
-        },
-        { enabled: !!wallet?.address }
-      );
-
     if (!selectedAsset) return;
 
     return (
@@ -176,17 +203,17 @@ const TokenLiquiditySelector = observer(
         <div className="flex flex-col items-end gap-1">
           <button
             onClick={() => {
-              if (assetData?.amount) {
-                setter(+assetData.amount.toDec().toString());
+              if (balanceData?.amount) {
+                setter(+balanceData.amount.toDec().toString());
               }
             }}
           >
             <span className="caption text-wosmongton-300">
-              {isLoading ? (
+              {isLoadingBalanceData ? (
                 <div className="h-3.5 w-25 animate-pulse rounded-xl bg-osmoverse-800" />
               ) : (
                 formatPretty(
-                  assetData?.amount ?? new CoinPretty(selectedAsset.token, 0)
+                  balanceData?.amount ?? new CoinPretty(selectedAsset.token, 0)
                 )
               )}
             </span>
