@@ -196,9 +196,9 @@ export const tableColumns = [
             className={classNames({
               "text-bullish-400":
                 status === "filled" || status === "fullyClaimed",
-              "text-wosmongton-300":
+              "text-osmoverse-300":
                 status === "open" || status === "partiallyFilled",
-              "text-rust-400": status === "cancelled",
+              "text-osmoverse-500": status === "cancelled",
             })}
           >
             {statusString}
@@ -206,52 +206,9 @@ export const tableColumns = [
         </div>
       );
     },
-    // cell: MOCK_PercentOpenStatus,
-    // cell: MOCK_FailedStatus,
-    // cell: MOCK_CancelledStatus,
   }),
   columnHelper.display({
     id: "actions",
     cell: ActionsCell,
   }),
 ];
-
-// function MOCK_PercentOpenStatus() {
-//   // For testing purposes change this value
-//   const percentFilled = 0.5;
-
-//   return (
-//     <div className="flex flex-col gap-1">
-//       <div className="flex h-5 items-center gap-2">
-//         <div className="relative h-2 w-16 overflow-hidden rounded-full bg-osmoverse-700">
-//           <div
-//             className="absolute left-0 h-2 bg-bullish-400"
-//             style={{ width: `${64 * percentFilled}px` }}
-//           />
-//         </div>
-//         <small className="caption text-bullish-400">
-//           {percentFilled * 100}%
-//         </small>
-//       </div>
-//       <p className="text-wosmongton-300">Open</p>
-//     </div>
-//   );
-// }
-
-// function MOCK_FailedStatus() {
-//   return (
-//     <div className="flex flex-col gap-1">
-//       <p className="body2 text-osmoverse-300">82d ago</p>
-//       <p className="text-rust-400">Expired</p>
-//     </div>
-//   );
-// }
-
-// function MOCK_CancelledStatus() {
-//   return (
-//     <div className="flex flex-col gap-1">
-//       <p className="body2 text-osmoverse-300">82d ago</p>
-//       <p className="text-osmoverse-300">Cancelled</p>
-//     </div>
-//   );
-// }
