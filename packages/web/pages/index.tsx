@@ -39,7 +39,7 @@ const HomeNew = () => {
   });
 
   return (
-    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+    <main className="relative flex h-full overflow-auto bg-osmoverse-900 pb-2 pt-8">
       {/* <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"
@@ -68,7 +68,7 @@ const HomeNew = () => {
           </g>
         </svg>
       </div> */}
-      <div className="my-auto flex h-auto w-full items-center justify-center">
+      <div className="flex h-auto w-full justify-center">
         <div className="flex w-[35rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
           <TradeTool />
