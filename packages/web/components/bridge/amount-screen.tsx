@@ -650,39 +650,43 @@ export const AmountScreen = observer(
               </p>
             )}
 
-            {!isLoadingAssetsBalance && (assetsBalances?.length ?? 0) > 1 && (
-              <div className="flex flex-wrap items-center justify-between rounded-2xl bg-osmoverse-1000">
-                {(assetsBalances ?? []).map((asset) => {
-                  const isActive =
-                    asset.amount.currency.coinMinimalDenom ===
-                    fromAsset?.address;
-                  return (
-                    <button
-                      key={asset.amount.currency.coinMinimalDenom}
-                      className={classNames(
-                        "subtitle1 flex w-1/3 flex-col items-center rounded-lg py-3 px-2",
-                        {
-                          "bg-osmoverse-825 text-wosmongton-100": isActive,
-                          "text-osmoverse-100": !isActive,
-                        }
-                      )}
-                      onClick={() => setFromAsset(asset)}
-                    >
-                      <span>{asset.denom}</span>
-                      <span className="body2 text-osmoverse-300">
-                        {inputUnit === "crypto"
-                          ? asset.amount
-                              .trim(true)
-                              .maxDecimals(6)
-                              .hideDenom(true)
-                              .toString()
-                          : asset.usdValue.toString()}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            {!isLoadingAssetsBalance &&
+              assetsBalances &&
+              (assetsBalances.length ?? 0) > 1 && (
+                <div className="mx-auto flex w-full flex-wrap items-center rounded-2xl bg-osmoverse-1000">
+                  {assetsBalances.map((asset) => {
+                    const isActive =
+                      asset.amount.currency.coinMinimalDenom ===
+                      fromAsset?.address;
+                    return (
+                      <button
+                        key={asset.amount.currency.coinMinimalDenom}
+                        className={classNames(
+                          "flex flex-grow flex-col items-center rounded-lg py-2 px-4",
+                          {
+                            "bg-osmoverse-825 text-wosmongton-100": isActive,
+                            "text-osmoverse-100": !isActive,
+                          }
+                        )}
+                        onClick={() => setFromAsset(asset)}
+                      >
+                        <span className="subtitle1 md:body2">
+                          {asset.denom}
+                        </span>
+                        <span className="body2 md:caption text-osmoverse-300">
+                          {inputUnit === "crypto"
+                            ? asset.amount
+                                .trim(true)
+                                .maxDecimals(6)
+                                .hideDenom(true)
+                                .toString()
+                            : asset.usdValue.toString()}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
           </>
 
           {walletConnected && (
