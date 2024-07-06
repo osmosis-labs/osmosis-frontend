@@ -221,11 +221,20 @@ function AutoInput({
         placeholder="0"
         value={amount}
         inputClassName={classNames(
-          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
+          "bg-transparent !m-0 !p-0 text-h3 font-h3 text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
           { "cursor-pointer font-normal": !isFocused }
         )}
         onChange={(e) => setter(e.target.value)}
         onClick={!isFocused ? swapFocus : undefined}
+        extraWidth={
+          isFocused
+            ? type === "fiat"
+              ? 0
+              : 4
+            : type === "fiat"
+            ? 0
+            : undefined
+        }
       />
       {type === "token" && (
         <span
