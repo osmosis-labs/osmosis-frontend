@@ -20,8 +20,6 @@ interface TextareaBoxProps
   trailingSymbol?: React.ReactNode;
   textareaRef?: React.MutableRefObject<HTMLTextAreaElement | null>;
   classes?: Partial<Record<ClassVariants, string>>;
-  /** Use a textarea instead of an input */
-  isTextarea?: boolean;
   rows?: number;
   className?: string;
   disabled?: boolean;
