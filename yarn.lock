@@ -5611,7 +5611,6 @@
     delay "^4.4.0"
 
 "@keplr-wallet/cosmos@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/cosmos@0.12.12", "@keplr-wallet/cosmos@0.12.28":
-"@keplr-wallet/cosmos@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/cosmos@0.12.12", "@keplr-wallet/cosmos@0.12.28":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/cosmos/-/cosmos-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-/A/wHyYo5gQIW5YkAQYZadEv/12EcAuDclO0KboIb9ti4XFJW6S4VY8LnA16R7DZyBx1cnQknyDm101fUrJfJQ==
