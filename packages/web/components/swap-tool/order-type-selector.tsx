@@ -78,7 +78,7 @@ export const OrderTypeSelector = () => {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="absolute right-0 z-50 mt-2 flex w-[280px] origin-top-right flex-col rounded-xl bg-osmoverse-800">
-          <div className="flex items-center border-b border-osmoverse-700 py-2 px-4">
+          <div className="flex items-center border-b border-osmoverse-700 py-3 px-4">
             <p className="text-subtitle1 font-semibold">
               {t("limitOrders.orderType")}
             </p>
