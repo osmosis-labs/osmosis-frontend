@@ -623,6 +623,7 @@ export const AssetActionsCell: AssetCellComponent<{
   }) => void;
 }> = ({
   coinDenom,
+  coinMinimalDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
@@ -647,7 +648,10 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       ) : (
-        <HistoricalPriceSparkline coinDenom={coinDenom} timeFrame="1W" />
+        <HistoricalPriceSparkline
+          coinMinimalDenom={coinMinimalDenom}
+          timeFrame="1W"
+        />
       )}
     </div>
   );

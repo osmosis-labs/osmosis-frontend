@@ -62,15 +62,15 @@ export const PriceChange: FunctionComponent<
 
 /** Historical price sparkline. */
 export const HistoricalPriceSparkline: FunctionComponent<{
-  coinDenom: string;
+  coinMinimalDenom: string;
   timeFrame: CommonPriceChartTimeFrame;
   height?: number;
   width?: number;
-}> = ({ coinDenom, timeFrame, height, width }) => {
-  const { data: recentPrices } =
+}> = ({ coinMinimalDenom, timeFrame, height, width }) => {
+  const { data: recentPrices, isFetched } =
     api.edge.assets.getAssetHistoricalPrice.useQuery(
       {
-        coinDenom,
+        coinMinimalDenom,
         timeFrame,
       },
       {

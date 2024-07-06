@@ -27,6 +27,10 @@ export interface Chain {
       dark_mode?: false;
       circle?: true;
     };
+    image_sync?: {
+      chain_name: string;
+      base_denom: string;
+    };
   };
   fees: {
     fee_tokens: FeeToken[];
