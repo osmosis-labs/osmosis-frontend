@@ -272,7 +272,9 @@ const TokenSelector = observer(
                   height={52}
                   className="rounded-full"
                 />
-                <h5>{selectedAsset.token.coinDenom}</h5>
+                <h5 className="max-w-[130px] truncate">
+                  {selectedAsset.token.coinDenom}
+                </h5>
               </>
             ) : (
               <>
