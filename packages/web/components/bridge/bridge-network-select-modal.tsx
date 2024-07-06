@@ -3,8 +3,6 @@ import classNames from "classnames";
 import React, { useMemo, useState } from "react";
 
 import { ChainLogo } from "~/components/assets/chain-logo";
-import { BridgeWalletSelectScreen } from "~/components/bridge/immersive/bridge-wallet-select-modal";
-import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { SearchBox } from "~/components/input";
 import {
   Screen,
@@ -17,6 +15,9 @@ import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+
+import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
+import { useBridgesSupportedAssets } from "./use-bridges-supported-assets";
 
 enum Screens {
   Main = "main",

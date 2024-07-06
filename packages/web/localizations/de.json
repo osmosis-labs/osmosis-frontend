@@ -971,7 +971,6 @@
     "provider": "Anbieter",
     "estimatedTime": "Geschätzte Zeit",
     "providerFees": "Anbietergebühren",
-    "networkFee": "{networkName} Netzwerkgebühr",
     "totalFees": "Gesamtkosten",
     "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
     "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",

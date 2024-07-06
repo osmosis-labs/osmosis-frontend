@@ -5,8 +5,6 @@ import { memo, PropsWithChildren, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { AmountAndReviewScreen } from "~/components/bridge/immersive/amount-and-review-screen";
-import { AssetSelectScreen } from "~/components/bridge/immersive/asset-select-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
@@ -20,7 +18,10 @@ import { ModalCloseButton } from "~/modals";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
 
-export const enum ImmersiveBridgeScreens {
+import { AmountAndReviewScreen } from "./amount-and-review-screen";
+import { AssetSelectScreen } from "./asset-select-screen";
+
+export enum ImmersiveBridgeScreen {
   Asset = "0",
   Amount = "1",
   Review = "2",
@@ -37,8 +38,8 @@ export const ImmersiveBridgeFlow = ({
   const { t } = useTranslation();
 
   const [isVisible, setIsVisible] = useState(false);
-  const [step, setStep] = useState<ImmersiveBridgeScreens>(
-    ImmersiveBridgeScreens.Asset
+  const [step, setStep] = useState<ImmersiveBridgeScreen>(
+    ImmersiveBridgeScreen.Asset
   );
   const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit");
   const { logEvent } = useAmplitudeAnalytics();
@@ -85,7 +86,7 @@ export const ImmersiveBridgeFlow = ({
           direction: BridgeTransactionDirection;
         }) => {
           onOpen(direction);
-          setStep(ImmersiveBridgeScreens.Amount);
+          setStep(ImmersiveBridgeScreen.Amount);
           setSelectedAssetDenom(anyDenom);
         },
         fiatRamp: ({
@@ -103,15 +104,13 @@ export const ImmersiveBridgeFlow = ({
       <MemoizedChildren>{children}</MemoizedChildren>
       <ScreenManager
         currentScreen={String(step)}
-        onChangeScreen={(screen) => {
-          return setStep(screen as ImmersiveBridgeScreens);
-        }}
+        onChangeScreen={(screen) => setStep(screen as ImmersiveBridgeScreen)}
       >
         {({ currentScreen }) => (
           <Transition
             show={isVisible}
             as="div"
-            className="fixed inset-0 z-[999] flex items-center justify-center overflow-auto bg-osmoverse-900"
+            className="fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-osmoverse-900"
             enter="transition-opacity duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -120,16 +119,16 @@ export const ImmersiveBridgeFlow = ({
             leaveTo="opacity-0"
             afterLeave={() => {
               setSelectedAssetDenom(undefined);
-              setStep(ImmersiveBridgeScreens.Asset);
+              setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
             <ModalCloseButton onClick={() => onClose()} />
-            {step !== ImmersiveBridgeScreens.Asset && (
+            {step !== ImmersiveBridgeScreen.Asset && (
               <IconButton
                 onClick={() => {
-                  const previousStep = Number(step) - 1;
-                  // @ts-expect-error
-                  setStep(previousStep);
+                  setStep(
+                    (Number(step) - 1).toString() as ImmersiveBridgeScreen
+                  );
                 }}
                 className={
                   "absolute left-8 top-[28px] z-50 w-fit text-osmoverse-400 hover:text-osmoverse-100"
@@ -139,22 +138,22 @@ export const ImmersiveBridgeFlow = ({
               />
             )}
 
-            <div className="flex h-full w-full max-w-[30rem] flex-col gap-10 py-12">
+            <div className="flex h-full w-[30rem] flex-col gap-10 pt-12 1.5lg:w-screen 1.5lg:pt-20">
               <StepProgress
-                className="w-full"
+                className="w-full 1.5lg:hidden"
                 steps={[
                   {
                     displayLabel: t("transfer.stepLabels.asset"),
                     onClick:
-                      step !== ImmersiveBridgeScreens.Asset
-                        ? () => setStep(ImmersiveBridgeScreens.Asset)
+                      step !== ImmersiveBridgeScreen.Asset
+                        ? () => setStep(ImmersiveBridgeScreen.Asset)
                         : undefined,
                   },
                   {
                     displayLabel: t("transfer.stepLabels.amount"),
                     onClick:
-                      step === ImmersiveBridgeScreens.Review
-                        ? () => setStep(ImmersiveBridgeScreens.Amount)
+                      step === ImmersiveBridgeScreen.Review
+                        ? () => setStep(ImmersiveBridgeScreen.Amount)
                         : undefined,
                   },
                   {
@@ -164,19 +163,19 @@ export const ImmersiveBridgeFlow = ({
                 currentStep={Number(step)}
               />
 
-              <div className="flex-1">
-                <Screen screenName={ImmersiveBridgeScreens.Asset}>
+              <div className="h-full flex-1 overflow-y-scroll px-2">
+                <Screen screenName={ImmersiveBridgeScreen.Asset}>
                   {({ setCurrentScreen }) => (
                     <AssetSelectScreen
                       type={direction}
                       onSelectAsset={(asset) => {
-                        setCurrentScreen(ImmersiveBridgeScreens.Amount);
+                        setCurrentScreen(ImmersiveBridgeScreen.Amount);
                         setSelectedAssetDenom(asset.coinDenom);
                       }}
                     />
                   )}
                 </Screen>
-                {currentScreen !== ImmersiveBridgeScreens.Asset && (
+                {currentScreen !== ImmersiveBridgeScreen.Asset && (
                   <AmountAndReviewScreen
                     direction={direction}
                     onClose={onClose}

@@ -1,15 +1,15 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Bridge } from "@osmosis-labs/bridge";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { BridgeQuote } from "~/components/bridge/immersive/use-bridge-quotes";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
+
+import { BridgeQuote } from "./use-bridge-quotes";
 
 interface Props {
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
@@ -27,6 +27,8 @@ export const BridgeProviderDropdown = ({
   onSelect,
 }: Props) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
+
   const fastestQuote = useMemo(() => {
     const minTime = Math.min(
       ...quotes.map((q) => q.data.estimatedTime.asMilliseconds())
@@ -70,8 +72,8 @@ export const BridgeProviderDropdown = ({
             <Image
               src={selectedQuote.provider.logoUrl}
               alt={`${selectedQuote.provider.id} logo`}
-              width={20}
-              height={20}
+              width={isMobile ? 18 : 20}
+              height={isMobile ? 18 : 20}
             />
             <span>{selectedQuote.provider.id}</span>{" "}
             {quotes.length > 1 && (
@@ -105,7 +107,7 @@ export const BridgeProviderDropdown = ({
                 const totalFee = transferFeeFiat
                   ?.add(
                     gasCostFiat ??
-                      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                      new PricePretty(transferFeeFiat.fiatCurrency, 0)
                   )
                   .toString();
                 const isSelected = selectedQuote.provider.id === provider.id;
@@ -118,7 +120,7 @@ export const BridgeProviderDropdown = ({
                   <MenuItem key={provider.id}>
                     <button
                       className={classNames(
-                        "flex w-full justify-between gap-12 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-700",
+                        "flex w-full justify-between gap-12 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-700 md:gap-10",
                         {
                           "bg-osmoverse-700": isSelected,
                           "hover:bg-osmoverse-800": !isSelected,
@@ -134,18 +136,18 @@ export const BridgeProviderDropdown = ({
                           height={32}
                         />
                         <div className="flex flex-col items-start">
-                          <span className="body1">{provider.id}</span>
+                          <span className="body1 md:body2">{provider.id}</span>
                           <div className="flex items-center gap-2">
-                            <span className="body2 text-osmoverse-300">
+                            <span className="body2 md:caption text-osmoverse-300">
                               {estimatedTime.humanize()}
                             </span>
                             {/* First quote is the cheapest */}
                             {isCheapest ? (
-                              <span className="body2 text-bullish-400">
+                              <span className="body2 md:caption text-bullish-400">
                                 {t("transfer.cheapest")}
                               </span>
                             ) : isFastest ? (
-                              <span className="body2 text-ammelia-400">
+                              <span className="body2 md:caption text-ammelia-400">
                                 {t("transfer.fastest")}
                               </span>
                             ) : null}
@@ -154,8 +156,10 @@ export const BridgeProviderDropdown = ({
                       </div>
 
                       <div className="flex flex-col text-end">
-                        <p className="body1">{expectedOutputFiat.toString()}</p>
-                        <p className="body2 whitespace-nowrap text-osmoverse-200">
+                        <p className="body1 md:body2">
+                          {expectedOutputFiat.toString()}
+                        </p>
+                        <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
                           ~{totalFee} {t("transfer.fee")}
                         </p>
                       </div>

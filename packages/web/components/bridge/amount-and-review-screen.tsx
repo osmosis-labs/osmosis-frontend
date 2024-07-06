@@ -4,17 +4,17 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { getAddress } from "viem";
 
-import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
-import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
-import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
-import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { AmountScreen } from "./amount-screen";
+import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
+import { useBridgeQuotes } from "./use-bridge-quotes";
+import { SupportedAsset } from "./use-bridges-supported-assets";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
 
@@ -120,7 +120,7 @@ export const AmountAndReviewScreen = observer(
 
     return (
       <>
-        <Screen screenName={ImmersiveBridgeScreens.Amount}>
+        <Screen screenName={ImmersiveBridgeScreen.Amount}>
           {({ setCurrentScreen }) => (
             <AmountScreen
               direction={direction}
@@ -138,11 +138,11 @@ export const AmountAndReviewScreen = observer(
               fiatAmount={fiatAmount}
               setFiatAmount={setFiatAmount}
               quote={quote}
-              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreens.Review)}
+              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreen.Review)}
             />
           )}
         </Screen>
-        <Screen screenName={ImmersiveBridgeScreens.Review}>
+        <Screen screenName={ImmersiveBridgeScreen.Review}>
           {({ goBack }) => (
             <>
               {fromChain &&

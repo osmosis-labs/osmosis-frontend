@@ -254,7 +254,7 @@ export const NavBar: FunctionComponent<
                 ({ className, ...rest }, index) => (
                   <Button
                     size="md"
-                    className={`w-48 lg:w-fit ${className ?? ""}`}
+                    className={`w-48 1.5lg:w-fit ${className ?? ""}`}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
                     {...rest}

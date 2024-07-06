@@ -971,7 +971,6 @@
     "provider": "공급자",
     "estimatedTime": "예상 시간",
     "providerFees": "공급자 수수료",
-    "networkFee": "{networkName} 네트워크 요금",
     "totalFees": "총 수수료",
     "estimatedAmountReceived": "예상 수령 금액",
     "slippageWarning": "이 거래에 대한 예상 출력은 입력 금액보다 상당히 낮으므로 예상과 다른 최종 금액을 받게 될 수 있습니다.",

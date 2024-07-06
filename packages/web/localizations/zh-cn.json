@@ -971,7 +971,6 @@
     "provider": "提供者",
     "estimatedTime": "预计时间",
     "providerFees": "供应商费用",
-    "networkFee": "{networkName}网络费",
     "totalFees": "总费用",
     "estimatedAmountReceived": "预计收到金额",
     "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",

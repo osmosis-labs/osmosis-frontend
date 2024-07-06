@@ -971,7 +971,6 @@
     "provider": "Sağlayıcı",
     "estimatedTime": "Tahmini süresi",
     "providerFees": "Sağlayıcı ücretleri",
-    "networkFee": "{networkName} Ağ ücreti",
     "totalFees": "Toplam ücretler",
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
