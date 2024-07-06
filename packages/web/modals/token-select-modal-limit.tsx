@@ -374,11 +374,11 @@ export const TokenSelectModalLimit: FunctionComponent<{
                                 />
                               </div>
                             )}
-                            <div className="flex flex-col gap-1">
-                              <h6 className="font-semibold">{coinName}</h6>
-                              <div className="subtitle2 text-osmoverse-400">
+                            <div className="flex flex-col">
+                              <span className="subtitle1">{coinName}</span>
+                              <span className="subtitle2 text-osmoverse-400">
                                 {amount ? formatPretty(amount) : coinDenom}
-                              </div>
+                              </span>
                             </div>
                             {/* {!isVerified && shouldShowUnverifiedAssets && (
                               <Tooltip
