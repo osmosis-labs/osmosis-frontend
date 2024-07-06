@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "没有找到“ {query} ”的结果",
-    "adjust": "尝试调整您的搜索查询"
+    "adjust": "尝试调整您的搜索查询",
+    "noPools": "没有泳池",
+    "poolsEmpty": "目前 Osmosis 上没有适用于{denom}池"
   },
   "stake": {
     "available": "可用的",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
-    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
+    "onOsmosis": "论渗透",
     "aboutDenom": "关于{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "信息",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多统计数据"
+    },
     "followTheConversation": "关注对话",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "价格",
+      "volume": "体积",
+      "advanced": "先进的",
+      "simple": "简单的"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全稀释估值",
+    "volume24h": "24小时总成交量",
+    "volumeOnOsmosis": "24 小时渗透量",
+    "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",
-    "buyToken": "购买{coinDenom}",
-    "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性",
+    "supplyOnOsmosis": "渗透供给",
     "underlyingAssets": {
       "title": "基础资产",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",

@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \"에 대한 결과가 없습니다.",
-    "adjust": "검색어를 조정해 보세요."
+    "adjust": "검색어를 조정해 보세요.",
+    "noPools": "수영장 없음",
+    "poolsEmpty": "현재 Osmosis에는 {denom} 에 대한 풀이 없습니다."
   },
   "stake": {
     "available": "사용 가능",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
-    "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
-    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
-    "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
+    "onOsmosis": "삼투에",
     "aboutDenom": "{name} 정보",
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
     "collapse": "무너지다",
+    "info": {
+      "title": "정보",
+      "show": "보여주다",
+      "collapse": "무너지다",
+      "moreStats": "더 많은 통계"
+    },
     "followTheConversation": "대화를 따라가세요",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "모두"
+      "all": "모두",
+      "price": "가격",
+      "volume": "용량",
+      "advanced": "고급의",
+      "simple": "단순한"
     },
     "watchlist": "관심 목록",
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
+    "fullyDilutedValuation": "완전희석평가",
+    "volume24h": "24시간 총 볼륨",
+    "volumeOnOsmosis": "Osmosis의 24시간 볼륨",
+    "liquidityOnOsmosis": "삼투의 유동성",
     "circulatingSupply": "순환 공급",
-    "buyToken": "{coinDenom} 구매",
-    "staking": "스테이킹",
-    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성",
+    "supplyOnOsmosis": "삼투에 대한 공급",
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",

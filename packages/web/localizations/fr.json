@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Aucun résultat pour \" {query} \"",
-    "adjust": "Essayez d'ajuster votre requête de recherche"
+    "adjust": "Essayez d'ajuster votre requête de recherche",
+    "noPools": "Pas de piscines",
+    "poolsEmpty": "Il n'y a actuellement aucun pool pour {denom} sur Osmosis"
   },
   "stake": {
     "available": "Disponible",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
-    "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
-    "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
+    "onOsmosis": "sur l'osmose",
     "aboutDenom": "À propos de {name}",
     "ariaView": "Afficher {name}",
     "ariaViewOn": "Afficher sur {name}",
     "collapse": "Effondrement",
+    "info": {
+      "title": "Info",
+      "show": "Montrer",
+      "collapse": "Effondrement",
+      "moreStats": "Plus de statistiques"
+    },
     "followTheConversation": "Suivez la conversation",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}Oui",
-      "all": "TOUS"
+      "all": "TOUS",
+      "price": "Prix",
+      "volume": "Volume",
+      "advanced": "Avancé",
+      "simple": "Simple"
     },
     "watchlist": "Liste de surveillance",
     "marketCapRank": "Classement de la capitalisation boursière",
     "marketCap": "Capitalisation boursière",
+    "fullyDilutedValuation": "Valorisation entièrement diluée",
+    "volume24h": "Volume total 24h",
+    "volumeOnOsmosis": "Volume 24h sur Osmose",
+    "liquidityOnOsmosis": "Liquidité sur osmose",
     "circulatingSupply": "Approvisionnement en circulation",
-    "buyToken": "Acheter {coinDenom}",
-    "staking": "Jalonnement",
-    "liquidityInOSMOPools": "Liquidité dans les pools {number} {denom}",
+    "supplyOnOsmosis": "Alimentation sur osmose",
     "underlyingAssets": {
       "title": "Atouts sous-jacents",
       "description": "{name} ( {denom} ) sur Osmose est composé de {count} différents types de {name} .",

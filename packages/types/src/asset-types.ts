@@ -193,5 +193,9 @@ export type MinimalAsset = {
   coinName: string;
   isUnstable: boolean;
   isVerified: boolean;
+  /** Flag indicating if this asset is an alloyed asset. */
+  isAlloyed: boolean;
+  /** Contract address of alloyed asset CW pool. */
+  contract?: string;
   variantGroupKey: string | undefined;
 };

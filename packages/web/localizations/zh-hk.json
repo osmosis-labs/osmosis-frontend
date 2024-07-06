@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "沒有“ {query} ”的結果",
-    "adjust": "嘗試調整您的搜尋查詢"
+    "adjust": "嘗試調整您的搜尋查詢",
+    "noPools": "沒有泳池",
+    "poolsEmpty": "目前 Osmosis 上沒有{denom}"
   },
   "stake": {
     "available": "可用的",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
-    "provideLiquidity": "提供流動性並賺取費用和掉期費用",
     "yourBalance": "您的餘額",
+    "onOsmosis": "關於滲透",
     "aboutDenom": "關於{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "資訊",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多統計數據"
+    },
     "followTheConversation": "關注對話",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "價格",
+      "volume": "體積",
+      "advanced": "先進的",
+      "simple": "簡單的"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全攤薄估值",
+    "volume24h": "24小時總量",
+    "volumeOnOsmosis": "24 小時滲透體積",
+    "liquidityOnOsmosis": "滲透流動性",
     "circulatingSupply": "循環供應",
-    "buyToken": "購買{coinDenom}",
-    "staking": "質押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流動性",
+    "supplyOnOsmosis": "滲透供應",
     "underlyingAssets": {
       "title": "基礎資產",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同類型的{name} 。",

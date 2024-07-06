@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Brak wyników dla „ {query} „",
-    "adjust": "Spróbuj dostosować zapytanie"
+    "adjust": "Spróbuj dostosować zapytanie",
+    "noPools": "Żadnych basenów",
+    "poolsEmpty": "Obecnie w serwisie Osmosis nie ma puli dla {denom}"
   },
   "stake": {
     "available": "Dostępny",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Zarabiaj dzięki {denom}",
     "explorePools": "Przeglądaj baseny",
-    "stakeYourDenomToEarn": "Postaw swój {denom} aby zarobić {apr} % RRSO",
-    "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",
-    "provideLiquidity": "Zapewnij płynność i zarabiaj na opłatach i swapach",
     "yourBalance": "Twój balans",
+    "onOsmosis": "na Osmozie",
     "aboutDenom": "Informacje o {name}",
     "ariaView": "Wyświetl {name}",
     "ariaViewOn": "Wyświetl na {name}",
     "collapse": "Zawalić się",
+    "info": {
+      "title": "Informacje",
+      "show": "Pokazywać",
+      "collapse": "Zawalić się",
+      "moreStats": "Więcej statystyk"
+    },
     "followTheConversation": "Śledź rozmowę",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}T",
-      "all": "WSZYSTKO"
+      "all": "WSZYSTKO",
+      "price": "Cena",
+      "volume": "Tom",
+      "advanced": "Zaawansowany",
+      "simple": "Prosty"
     },
     "watchlist": "Lista obserwowanych",
     "marketCapRank": "Ranking kapitalizacji rynkowej",
     "marketCap": "Kapitalizacja rynkowa",
+    "fullyDilutedValuation": "W pełni rozwodniona wycena",
+    "volume24h": "Całkowita objętość 24h",
+    "volumeOnOsmosis": "24-godzinny tom na Osmozie",
+    "liquidityOnOsmosis": "Płynność na osmozie",
     "circulatingSupply": "Krążące zaopatrzenie",
-    "buyToken": "Kup {coinDenom}",
-    "staking": "Stawianie",
-    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}",
+    "supplyOnOsmosis": "Zaopatrzenie w osmozę",
     "underlyingAssets": {
       "title": "Aktywa bazowe",
       "description": "{name} ( {denom} ) na osmozie składa się z {count} różne typy {name} .",

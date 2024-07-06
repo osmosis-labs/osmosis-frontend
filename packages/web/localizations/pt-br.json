@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Nenhum resultado para \" {query} \"",
-    "adjust": "Tente ajustar sua consulta de pesquisa"
+    "adjust": "Tente ajustar sua consulta de pesquisa",
+    "noPools": "Sem piscinas",
+    "poolsEmpty": "Atualmente não há pools para {denom} no Osmosis"
   },
   "stake": {
     "available": "Disponível",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
-    "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
-    "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
+    "onOsmosis": "em osmose",
     "aboutDenom": "Sobre {name}",
     "ariaView": "Visualizar {name}",
     "ariaViewOn": "Visualizar em {name}",
     "collapse": "Colapso",
+    "info": {
+      "title": "Informações",
+      "show": "Mostrar",
+      "collapse": "Colapso",
+      "moreStats": "Mais estatísticas"
+    },
     "followTheConversation": "Acompanhe a conversa",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}S",
-      "all": "TODOS"
+      "all": "TODOS",
+      "price": "Preço",
+      "volume": "Volume",
+      "advanced": "Avançado",
+      "simple": "Simples"
     },
     "watchlist": "Lista de observação",
     "marketCapRank": "Classificação de capitalização de mercado",
     "marketCap": "Valor de mercado",
+    "fullyDilutedValuation": "Avaliação Totalmente Diluída",
+    "volume24h": "Volume total 24h",
+    "volumeOnOsmosis": "Volume 24h em Osmose",
+    "liquidityOnOsmosis": "Liquidez em Osmose",
     "circulatingSupply": "Fornecimento Circulante",
-    "buyToken": "Compre {coinDenom}",
-    "staking": "Estacamento",
-    "liquidityInOSMOPools": "Liquidez em pools {number} {denom}",
+    "supplyOnOsmosis": "Fornecimento em Osmose",
     "underlyingAssets": {
       "title": "Ativos subjacentes",
       "description": "{name} ( {denom} ) no Osmose é composto por {count} diferentes tipos de {name} .",

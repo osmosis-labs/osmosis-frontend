@@ -27,7 +27,8 @@ export type AvailableFlags =
   | "displayDailyEarn"
   | "newAssetsPage"
   | "newDepositWithdrawFlow"
-  | "oneClickTrading";
+  | "oneClickTrading"
+  | "advancedChart";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -57,6 +58,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
   oneClickTrading: false,
+  advancedChart: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };

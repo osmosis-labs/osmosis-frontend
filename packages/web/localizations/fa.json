@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
-    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید",
+    "noPools": "بدون استخر",
+    "poolsEmpty": "در حال حاضر هیچ استخری برای {denom} در اسمز وجود ندارد"
   },
   "stake": {
     "available": "دسترس",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
-    "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
-    "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
-    "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
+    "onOsmosis": "در اسمز",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
+    "info": {
+      "title": "اطلاعات",
+      "show": "نمایش دهید",
+      "collapse": "سقوط - فروپاشی",
+      "moreStats": "آمار بیشتر"
+    },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "همه"
+      "all": "همه",
+      "price": "قیمت",
+      "volume": "جلد",
+      "advanced": "پیشرفته",
+      "simple": "ساده"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
+    "fullyDilutedValuation": "ارزش گذاری کاملا رقیق شده",
+    "volume24h": "حجم کل 24 ساعت",
+    "volumeOnOsmosis": "جلد 24 ساعته اسمز",
+    "liquidityOnOsmosis": "نقدینگی در اسمز",
     "circulatingSupply": "عرضه در گردش",
-    "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی",
-    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
+    "supplyOnOsmosis": "عرضه بر روی اسمز",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",

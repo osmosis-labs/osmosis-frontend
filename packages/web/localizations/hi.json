@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" के लिए कोई परिणाम नहीं मिला",
-    "adjust": "अपनी खोज क्वेरी समायोजित करने का प्रयास करें"
+    "adjust": "अपनी खोज क्वेरी समायोजित करने का प्रयास करें",
+    "noPools": "कोई पूल नहीं",
+    "poolsEmpty": "वर्तमान में Osmosis पर {denom} के लिए कोई पूल नहीं है"
   },
   "stake": {
     "available": "उपलब्ध",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
-    "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
-    "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",
-    "provideLiquidity": "तरलता प्रदान करें और फीस और स्वैप पर कमाई करें",
     "yourBalance": "आपका बैलेंस",
+    "onOsmosis": "परासरण पर",
     "aboutDenom": "{name} के बारे में",
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
     "collapse": "गिर जाना",
+    "info": {
+      "title": "जानकारी",
+      "show": "दिखाओ",
+      "collapse": "गिर जाना",
+      "moreStats": "अधिक आँकड़े"
+    },
     "followTheConversation": "बातचीत का पालन करें",
     "chart": {
       "xHour": "{h} एच",
       "xDay": "{d} डी",
       "xYear": "{y} Y",
-      "all": "सभी"
+      "all": "सभी",
+      "price": "कीमत",
+      "volume": "आयतन",
+      "advanced": "विकसित",
+      "simple": "सरल"
     },
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
+    "fullyDilutedValuation": "पूर्णतया तनुकृत मूल्यांकन",
+    "volume24h": "24 घंटे का कुल वॉल्यूम",
+    "volumeOnOsmosis": "ओस्मोसिस पर 24 घंटे का वॉल्यूम",
+    "liquidityOnOsmosis": "ऑस्मोसिस पर तरलता",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "buyToken": "खरीदें {coinDenom}",
-    "staking": "जताया",
-    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता",
+    "supplyOnOsmosis": "ऑस्मोसिस पर आपूर्ति",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",

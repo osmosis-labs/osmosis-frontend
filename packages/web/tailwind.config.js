@@ -62,6 +62,7 @@ module.exports = {
       ammelia: {
         300: "#E196DB",
         400: "#D779CF",
+        500: "#CC54C2",
         600: "#CA2EBD",
         900: "#87087C",
       },

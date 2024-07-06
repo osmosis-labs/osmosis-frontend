@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "「 {query}に該当する結果はありません",
-    "adjust": "検索クエリを調整してみてください"
+    "adjust": "検索クエリを調整してみてください",
+    "noPools": "プールなし",
+    "poolsEmpty": "現在、Osmosis には{denom}のプールはありません"
   },
   "stake": {
     "available": "利用可能",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
-    "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
-    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
-    "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
     "yourBalance": "あなたのバランス",
+    "onOsmosis": "浸透について",
     "aboutDenom": "{name}について",
     "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
+    "info": {
+      "title": "情報",
+      "show": "見せる",
+      "collapse": "崩壊",
+      "moreStats": "詳しい統計"
+    },
     "followTheConversation": "会話に従ってください",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全て"
+      "all": "全て",
+      "price": "価格",
+      "volume": "音量",
+      "advanced": "高度な",
+      "simple": "単純"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
+    "fullyDilutedValuation": "完全希薄化後評価額",
+    "volume24h": "24時間総量",
+    "volumeOnOsmosis": "Osmosisの24時間ボリューム",
+    "liquidityOnOsmosis": "浸透による流動性",
     "circulatingSupply": "循環供給",
-    "buyToken": "{coinDenom}を購入する",
-    "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
+    "supplyOnOsmosis": "浸透圧供給",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",

@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Keine Ergebnisse für \" {query} \"",
-    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen",
+    "noPools": "Keine Pools",
+    "poolsEmpty": "Derzeit gibt es keine Pools für {denom} auf Osmosis"
   },
   "stake": {
     "available": "Verfügbar",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
-    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
-    "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
-    "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
     "yourBalance": "Dein Kontostand",
+    "onOsmosis": "auf Osmosis",
     "aboutDenom": "Über {name}",
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
     "collapse": "Zusammenbruch",
+    "info": {
+      "title": "Die Info",
+      "show": "Zeigen",
+      "collapse": "Zusammenbruch",
+      "moreStats": "Weitere Statistiken"
+    },
     "followTheConversation": "Verfolgen Sie das Gespräch",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ALLE"
+      "all": "ALLE",
+      "price": "Preis",
+      "volume": "Volumen",
+      "advanced": "Fortschrittlich",
+      "simple": "Einfach"
     },
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
+    "fullyDilutedValuation": "Vollständig verwässerte Bewertung",
+    "volume24h": "24h Gesamtvolumen",
+    "volumeOnOsmosis": "24h Volumen auf Osmose",
+    "liquidityOnOsmosis": "Liquidität durch Osmose",
     "circulatingSupply": "Umlaufversorgung",
-    "buyToken": "Kaufen Sie {coinDenom}",
-    "staking": "Abstecken",
-    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools",
+    "supplyOnOsmosis": "Versorgung durch Osmose",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",

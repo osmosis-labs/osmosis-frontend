@@ -718,7 +718,9 @@
   },
   "search": {
     "noResultsFor": "Нет результатов для \" {query} \"",
-    "adjust": "Попробуйте изменить поисковый запрос"
+    "adjust": "Попробуйте изменить поисковый запрос",
+    "noPools": "Нет бассейнов",
+    "poolsEmpty": "В настоящее время в Osmosis нет пулов для {denom}"
   },
   "stake": {
     "available": "Доступный",
@@ -1023,30 +1025,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Зарабатывайте с помощью {denom}",
     "explorePools": "Исследуйте бассейны",
-    "stakeYourDenomToEarn": "Сделайте ставку на свой {denom} чтобы заработать {apr} % годовых",
-    "stakeYourDenomToEarnNoAPR": "Сделайте ставку на свой {denom} чтобы получить вознаграждение",
-    "provideLiquidity": "Обеспечьте ликвидность и зарабатывайте на комиссиях и свопах",
     "yourBalance": "Ваш баланс",
+    "onOsmosis": "по осмосу",
     "aboutDenom": "О {name}",
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",
     "collapse": "Крах",
+    "info": {
+      "title": "Информация",
+      "show": "Показывать",
+      "collapse": "Крах",
+      "moreStats": "Больше статистики"
+    },
     "followTheConversation": "Следите за разговором",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ВСЕ"
+      "all": "ВСЕ",
+      "price": "Цена",
+      "volume": "Объем",
+      "advanced": "Передовой",
+      "simple": "Простой"
     },
     "watchlist": "Список наблюдения",
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
+    "fullyDilutedValuation": "Полностью разводненная оценка",
+    "volume24h": "общий объем за 24 часа",
+    "volumeOnOsmosis": "24-часовой объем по осмосу",
+    "liquidityOnOsmosis": "Ликвидность по осмосу",
     "circulatingSupply": "Оборотное снабжение",
-    "buyToken": "Купить {coinDenom}",
-    "staking": "Стейкинг",
-    "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}",
+    "supplyOnOsmosis": "Поставка по осмосу",
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",
