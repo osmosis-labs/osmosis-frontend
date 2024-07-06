@@ -7,7 +7,6 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Dec } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -304,7 +303,7 @@ export const AmountScreen = observer(
             // Filter out assets with no balance
             if (nextData) {
               const filteredData = nextData.filter((asset) =>
-                asset.amount.toDec().gt(new Dec(0))
+                asset.amount.toDec().isPositive()
               );
 
               // If there are no assets with balance, leave one to be selected

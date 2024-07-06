@@ -138,9 +138,9 @@ export const ImmersiveBridgeFlow = ({
               />
             )}
 
-            <div className="flex h-full w-[30rem] flex-col gap-10 pt-12 1.5lg:w-screen 1.5lg:pt-20">
+            <div className="flex h-full w-[30rem] flex-col gap-10 pt-12 md:w-screen md:pt-20">
               <StepProgress
-                className="w-full 1.5lg:hidden"
+                className="w-full md:hidden"
                 steps={[
                   {
                     displayLabel: t("transfer.stepLabels.asset"),

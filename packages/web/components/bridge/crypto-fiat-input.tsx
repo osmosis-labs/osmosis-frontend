@@ -1,4 +1,10 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
@@ -128,7 +134,17 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
 
-  const fiatCurrentValue = `${assetPrice?.symbol ?? ""}${fiatInputRaw}`;
+  // Apply max amount if asset changes
+  useEffect(() => {
+    if (isMax) {
+      onInput("crypto")(trimPlaceholderZeros(asset.amount.toDec().toString()));
+    }
+  }, [asset, isMax, onInput]);
+
+  const fiatCurrentValue = `${assetPrice.symbol}${new IntPretty(fiatInputRaw)
+    .locale(false)
+    .trim(true)
+    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)}`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile
@@ -235,6 +251,7 @@ export const CryptoFiatInput: FunctionComponent<{
               "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
             }
           )}
+          disabled={asset.amount.toDec().isZero()}
         >
           {t("transfer.max")}
         </button>
