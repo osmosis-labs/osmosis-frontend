@@ -11,6 +11,7 @@ import {
 } from "~/components/screen-manager";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
 import { EthereumChainIds } from "~/config/wagmi";
+import { useWindowSize } from "~/hooks";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
@@ -19,7 +20,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
 import { useBridgesSupportedAssets } from "./use-bridges-supported-assets";
 
-enum Screens {
+enum NetworkSelectScreen {
   Main = "main",
   SelectWallet = "select-wallet",
 }
@@ -36,6 +37,7 @@ export const BridgeNetworkSelectModal = ({
   ...modalProps
 }: BridgeNetworkSelectModalProps) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const [isSwitchingChain, setIsSwitchingChain] = useState(false);
 
@@ -58,12 +60,12 @@ export const BridgeNetworkSelectModal = ({
   }, [chains, query]);
 
   return (
-    <ScreenManager defaultScreen={Screens.Main}>
+    <ScreenManager defaultScreen={NetworkSelectScreen.Main}>
       {({ currentScreen, setCurrentScreen }) => (
         <>
           <ModalBase
             title={
-              currentScreen === Screens.SelectWallet
+              currentScreen === NetworkSelectScreen.SelectWallet
                 ? `Select ${
                     direction === "deposit" ? "deposit" : "withdraw"
                   } wallet`
@@ -73,10 +75,10 @@ export const BridgeNetworkSelectModal = ({
             {...modalProps}
             onAfterClose={() => {
               setQuery("");
-              setCurrentScreen(Screens.Main);
+              setCurrentScreen(NetworkSelectScreen.Main);
             }}
           >
-            <Screen screenName={Screens.SelectWallet}>
+            <Screen screenName={NetworkSelectScreen.SelectWallet}>
               <div className="animate-[fadeIn_0.25s]">
                 <ScreenGoBackButton
                   className="absolute top-7 left-4"
@@ -97,7 +99,7 @@ export const BridgeNetworkSelectModal = ({
               </div>
             </Screen>
 
-            <Screen screenName={Screens.Main}>
+            <Screen screenName={NetworkSelectScreen.Main}>
               <div className="animate-[fadeIn_0.25s]">
                 {isEvmWalletConnected && isSwitchingChain && (
                   <div className="flex items-center justify-center pt-12">
@@ -118,11 +120,11 @@ export const BridgeNetworkSelectModal = ({
                     onInput={(nextValue) => {
                       setQuery(nextValue);
                     }}
-                    className="my-4 flex-shrink-0"
+                    className="my-4 flex-shrink-0 md:w-full"
                     placeholder={t(
                       "transfer.bridgeNetworkSelect.searchPlaceholder"
                     )}
-                    size="full"
+                    size={isMobile ? "small" : "full"}
                   />
                   <div className="flex flex-col gap-1">
                     {filteredChains.map((chain) => {
@@ -133,7 +135,7 @@ export const BridgeNetworkSelectModal = ({
                       return (
                         <button
                           key={chain.chainId}
-                          className="subtitle1 flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
+                          className="flex items-center justify-between rounded-2xl p-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0"
                           onClick={async () => {
                             if (shouldSwitchChain) {
                               try {
@@ -155,14 +157,16 @@ export const BridgeNetworkSelectModal = ({
                                 ...chain,
                                 chainId: Number(chain.chainId),
                               });
-                              setCurrentScreen(Screens.SelectWallet);
+                              setCurrentScreen(
+                                NetworkSelectScreen.SelectWallet
+                              );
                               return;
                             }
 
                             onSelectChain(chain);
                           }}
                         >
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-4 md:gap-3">
                             <ChainLogo
                               prettyName={chain.prettyName}
                               logoUri={chain.logoUri}
@@ -170,10 +174,12 @@ export const BridgeNetworkSelectModal = ({
                               size="lg"
                             />
 
-                            <span>{chain.prettyName}</span>
+                            <span className="subtitle1 md:body2">
+                              {chain.prettyName}
+                            </span>
                           </div>
                           {shouldSwitchChain && (
-                            <span className="body1 text-wosmongton-300">
+                            <span className="body1 md:body2 text-wosmongton-300">
                               {t("transfer.connect")}
                             </span>
                           )}

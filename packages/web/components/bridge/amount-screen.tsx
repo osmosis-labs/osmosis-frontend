@@ -632,7 +632,7 @@ export const AmountScreen = observer(
             {isLoadingAssetsBalance && (
               <div className="flex w-full items-center justify-center gap-3">
                 <Spinner className="text-wosmongton-500" />
-                <p className="body1 text-osmoverse-300">
+                <p className="body1 md:body2 text-osmoverse-300">
                   {t("transfer.lookingForBalances")}
                 </p>
               </div>
