@@ -971,6 +971,7 @@
     "provider": "Proveedor",
     "estimatedTime": "Hora prevista",
     "providerFees": "Tarifas del proveedor",
+    "networkFee": "{networkName} tarifa de red",
     "totalFees": "Tarifas totales",
     "estimatedAmountReceived": "Cantidad estimada recibida",
     "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",

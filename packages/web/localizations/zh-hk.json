@@ -971,6 +971,7 @@
     "provider": "提供者",
     "estimatedTime": "預計時間",
     "providerFees": "提供者費用",
+    "networkFee": "{networkName}網路費用",
     "totalFees": "總費用",
     "estimatedAmountReceived": "預計收到金額",
     "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
