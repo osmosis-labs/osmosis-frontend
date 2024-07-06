@@ -27,8 +27,9 @@ const USDC_ASSET: SelectionToken = {
   token: {
     coinDenom: "USDC",
     coinDecimals: 6,
-    coinMinimalDenom:
-      "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+    coinMinimalDenom: process.env.IS_TESNET
+      ? "ibc/DE6792CF9E521F6AD6E9A4BDF6225C9571A3B74ACC0A529F92BC5122A39D2E58"
+      : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
     coinImageUrl:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg",
   },
@@ -65,7 +66,6 @@ export const CreateCLPool = observer(
             <AddInitialLiquidity
               selectedBase={selectedBase}
               selectedQuote={selectedQuote}
-              // TODO: compute actual poolId
               poolId={poolId ?? ""}
               onClose={fullClose}
             />
