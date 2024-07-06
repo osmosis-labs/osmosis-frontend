@@ -62,7 +62,7 @@ export const SetBaseInfos = observer(
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [selectedSpread, setSelectedSpread] = useState(
-      clParams?.authorized_spread_factors[0] ?? "0.000000000000000000"
+      "0.000000000000000000"
     );
 
     const { baseTokens, quoteTokens } = useMemo(() => {
@@ -311,15 +311,15 @@ const TokenSelector = observer(
   }
 );
 
-interface SpreadSelctorProps {
+interface SpreadSelectorProps {
   options: string[];
   value: string;
   onChange: (v: string) => void;
 }
 
-function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
+function SpreadSelector({ options, value, onChange }: SpreadSelectorProps) {
   return (
-    <Listbox value={value} onChange={onChange} defaultValue={value}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative flex">
         <ListboxButton className="flex items-center justify-center gap-2.5 rounded-xl bg-osmoverse-825 py-3 px-4">
           <span className="max-w-[100px] truncate font-subtitle1 leading-6 sm:max-w-none">
@@ -336,17 +336,14 @@ function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <ListboxOptions
-            transition
-            className="absolute inset-x-0 z-[51] mt-13 flex w-[150px] flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
-          >
+          <ListboxOptions className="absolute inset-x-0 z-[51] mt-13 flex max-h-[200px] w-max flex-col gap-2 overflow-scroll rounded-lg bg-osmoverse-800 pt-2">
             {options.map((option, i) => (
               <ListboxOption
-                className="group relative inline-flex cursor-default select-none items-center gap-3 py-2 px-4"
-                key={`${value} ${i}`}
+                className="group relative inline-flex select-none items-center gap-3 py-2 px-4 data-[selected]:bg-osmoverse-850"
+                key={`${option} ${i}`}
                 value={option}
               >
-                <button className="flex h-6 w-6 items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors group-data-[selected]:bg-osmoverse-400">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg">
                   <svg
                     width="15"
                     height="12"
@@ -357,12 +354,12 @@ function SpreadSelector({ options, value, onChange }: SpreadSelctorProps) {
                   >
                     <path
                       d="M1.5 6L4.80769 9.5L13 2"
-                      stroke="#231D4B"
+                      stroke="#FFFFFF"
                       strokeWidth="3"
                       strokeLinecap="round"
                     />
                   </svg>
-                </button>
+                </div>
                 <span className="truncate capitalize">
                   {formatPretty(new RatePretty(option))}
                 </span>
