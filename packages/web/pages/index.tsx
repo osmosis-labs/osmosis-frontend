@@ -11,6 +11,7 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useFeatureFlags,
+  useNavBar,
   useTranslation,
 } from "~/hooks";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
@@ -34,9 +35,13 @@ const HomeNew = () => {
   // const [previousTrade, setPreviousTrade] =
   //   useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
+  const { t } = useTranslation();
+
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
+
+  useNavBar({ title: t("limitOrders.trade") });
 
   return (
     <main className="relative flex h-full overflow-auto bg-osmoverse-900 pb-2 pt-8">
