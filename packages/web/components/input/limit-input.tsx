@@ -243,7 +243,7 @@ function AutoInput({
             "font-normal": !isFocused,
           })}
         >
-          {baseAsset ? baseAsset.coinDenom : ""}
+          {baseAsset && baseAsset.coinDenom}
         </span>
       )}
       {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
