@@ -75,7 +75,11 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, type]);
 
   const setFiatAmountSafe = useCallback(
-    (value: string) => {
+    (value?: string) => {
+      if (!value) {
+        return setFiatAmount("");
+      }
+
       const updatedValue = transformAmount(value);
       const isFocused = focused === FocusedInput.FIAT;
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
@@ -95,7 +99,11 @@ export const LimitInput: FC<LimitInputProps> = ({
   );
 
   const setTokenAmountSafe = useCallback(
-    (value: string) => {
+    (value?: string) => {
+      if (!value) {
+        return onChange("");
+      }
+
       const updatedValue = transformAmount(value);
       const isFocused = focused === FocusedInput.TOKEN;
 
@@ -111,16 +119,20 @@ export const LimitInput: FC<LimitInputProps> = ({
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
-    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
-    const fiatValue = price.mul(value);
-    setFiatAmountSafe(formatPretty(fiatValue));
+
+    const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+    const fiatValue = value ? price.mul(value) : undefined;
+
+    setFiatAmountSafe(fiatValue ? formatPretty(fiatValue) : undefined);
   }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
-    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
-    const tokenValue = new Dec(value).quo(price);
-    setTokenAmountSafe(tokenValue.toString());
+
+    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+    const tokenValue = value ? new Dec(value).quo(price) : undefined;
+
+    setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
 
   return (
