@@ -44,6 +44,9 @@ export const CreatePoolModal: FunctionComponent<
     <ModalBase
       {...props}
       onRequestClose={() => {
+        if (isConcentrated) {
+          setCurStep(1);
+        }
         props.onRequestClose();
       }}
       onRequestBack={
