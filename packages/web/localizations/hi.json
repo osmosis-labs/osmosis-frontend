@@ -1205,7 +1205,8 @@
     "fees": "फीस",
     "receiveEstimated": "प्राप्त (अनुमानित)",
     "swapRoute": "मार्ग बदलें",
-    "trade": "व्यापार"
+    "trade": "व्यापार",
+    "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें"
   },
   "orderHistory": {
     "orders": "आदेश",

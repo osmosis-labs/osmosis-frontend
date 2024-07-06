@@ -1205,7 +1205,8 @@
     "fees": "هزینه ها",
     "receiveEstimated": "دریافت (تخمینی)",
     "swapRoute": "تعویض مسیر",
-    "trade": "تجارت"
+    "trade": "تجارت",
+    "swapToAnotherAsset": "تعویض به دارایی دیگر"
   },
   "orderHistory": {
     "orders": "سفارشات",

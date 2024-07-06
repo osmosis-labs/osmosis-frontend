@@ -1205,7 +1205,8 @@
     "fees": "taxe",
     "receiveEstimated": "Primire (estimat)",
     "swapRoute": "Schimbați ruta",
-    "trade": "Comerț"
+    "trade": "Comerț",
+    "swapToAnotherAsset": "Schimbați cu un alt activ"
   },
   "orderHistory": {
     "orders": "Comenzi",

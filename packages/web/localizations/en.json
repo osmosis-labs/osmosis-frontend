@@ -1205,7 +1205,8 @@
     "fees": "fees",
     "receiveEstimated": "Receive (estimated)",
     "swapRoute": "Swap route",
-    "trade": "Trade"
+    "trade": "Trade",
+    "swapToAnotherAsset": "Swap to another asset"
   },
   "orderHistory": {
     "orders": "Orders",

@@ -1205,7 +1205,8 @@
     "fees": "費用",
     "receiveEstimated": "收到（預計）",
     "swapRoute": "交換路線",
-    "trade": "貿易"
+    "trade": "貿易",
+    "swapToAnotherAsset": "交換到另一種資產"
   },
   "orderHistory": {
     "orders": "命令",

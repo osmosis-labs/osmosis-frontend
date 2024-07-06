@@ -1205,7 +1205,8 @@
     "fees": "费用",
     "receiveEstimated": "收到（估计）",
     "swapRoute": "交换路线",
-    "trade": "贸易"
+    "trade": "贸易",
+    "swapToAnotherAsset": "转换为其他资产"
   },
   "orderHistory": {
     "orders": "命令",

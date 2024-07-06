@@ -1205,7 +1205,8 @@
     "fees": "tarifas",
     "receiveEstimated": "Receber (estimado)",
     "swapRoute": "Trocar rota",
-    "trade": "Troca"
+    "trade": "Troca",
+    "swapToAnotherAsset": "Trocar por outro ativo"
   },
   "orderHistory": {
     "orders": "Pedidos",

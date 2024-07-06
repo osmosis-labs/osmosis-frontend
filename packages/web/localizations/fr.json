@@ -1205,7 +1205,8 @@
     "fees": "frais",
     "receiveEstimated": "Recevoir (estimé)",
     "swapRoute": "Changer d'itinéraire",
-    "trade": "Commerce"
+    "trade": "Commerce",
+    "swapToAnotherAsset": "Échanger vers un autre actif"
   },
   "orderHistory": {
     "orders": "Ordres",

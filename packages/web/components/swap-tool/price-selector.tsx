@@ -349,7 +349,9 @@ export const PriceSelector = memo(
                     className="flex w-full items-center justify-between py-3"
                   >
                     <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
-                      {t("limitOrders.swapFromAnotherAsset")}
+                      {tab === "buy"
+                        ? t("limitOrders.swapFromAnotherAsset")
+                        : t("limitOrders.swapToAnotherAsset")}
                     </span>
                     <div className="flex items-center gap-1">
                       <Image

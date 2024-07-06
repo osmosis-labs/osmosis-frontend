@@ -1205,7 +1205,8 @@
     "fees": "сборы",
     "receiveEstimated": "Получить (оценка)",
     "swapRoute": "Обменять маршрут",
-    "trade": "Торговля"
+    "trade": "Торговля",
+    "swapToAnotherAsset": "Обмен на другой актив"
   },
   "orderHistory": {
     "orders": "Заказы",
