@@ -47,7 +47,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
             {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
             {isWalletConnected && (
               <Link
-                href={"/transactions?tab=orders&from=swap"}
+                href={"/transactions?tab=orders&fromPage=swap"}
                 className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
               >
                 <Icon

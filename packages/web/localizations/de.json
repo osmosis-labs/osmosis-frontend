@@ -1204,7 +1204,8 @@
     "estimatingFees": "Gebührenschätzung",
     "fees": "Gebühren",
     "receiveEstimated": "Erhalten (geschätzt)",
-    "swapRoute": "Route wechseln"
+    "swapRoute": "Route wechseln",
+    "trade": "Handel"
   },
   "orderHistory": {
     "orders": "Aufträge",

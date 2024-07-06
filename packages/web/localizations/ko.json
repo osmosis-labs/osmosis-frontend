@@ -1204,7 +1204,8 @@
     "estimatingFees": "수수료 추정",
     "fees": "수수료",
     "receiveEstimated": "수신 (예상)",
-    "swapRoute": "경로 교환"
+    "swapRoute": "경로 교환",
+    "trade": "거래"
   },
   "orderHistory": {
     "orders": "명령",

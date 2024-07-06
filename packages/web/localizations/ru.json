@@ -1204,7 +1204,8 @@
     "estimatingFees": "Оценка сборов",
     "fees": "сборы",
     "receiveEstimated": "Получить (оценка)",
-    "swapRoute": "Обменять маршрут"
+    "swapRoute": "Обменять маршрут",
+    "trade": "Торговля"
   },
   "orderHistory": {
     "orders": "Заказы",

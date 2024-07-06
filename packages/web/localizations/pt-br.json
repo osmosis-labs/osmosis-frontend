@@ -1204,7 +1204,8 @@
     "estimatingFees": "Estimando taxas",
     "fees": "tarifas",
     "receiveEstimated": "Receber (estimado)",
-    "swapRoute": "Trocar rota"
+    "swapRoute": "Trocar rota",
+    "trade": "Troca"
   },
   "orderHistory": {
     "orders": "Pedidos",

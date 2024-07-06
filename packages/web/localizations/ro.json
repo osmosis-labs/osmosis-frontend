@@ -1204,7 +1204,8 @@
     "estimatingFees": "Estimarea taxelor",
     "fees": "taxe",
     "receiveEstimated": "Primire (estimat)",
-    "swapRoute": "Schimbați ruta"
+    "swapRoute": "Schimbați ruta",
+    "trade": "Comerț"
   },
   "orderHistory": {
     "orders": "Comenzi",
