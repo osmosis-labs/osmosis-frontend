@@ -414,7 +414,7 @@ export const assetsRouter = createTRPCRouter({
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
-        coinDenom: z.string(),
+        coinMinimalDenom: z.string(),
         timeFrame: z.union([
           z.object({
             custom: z.object({
@@ -428,9 +428,9 @@ export const assetsRouter = createTRPCRouter({
         ]),
       })
     )
-    .query(({ input: { coinDenom, timeFrame } }) =>
+    .query(({ input: { coinMinimalDenom, timeFrame } }) =>
       getAssetHistoricalPrice({
-        coinDenom,
+        coinMinimalDenom,
         ...(typeof timeFrame === "string"
           ? { timeFrame }
           : (timeFrame.custom as {

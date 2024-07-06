@@ -406,7 +406,8 @@
     "swapSlippage": "A troca por {coinDenom} falhou devido a derrapagem. Tente aumentar a tolerância ao deslizamento.",
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
-    "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar."
+    "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
+    "noData": "Sem dados"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",

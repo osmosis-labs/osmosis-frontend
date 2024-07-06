@@ -406,7 +406,8 @@
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
-    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。"
+    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "noData": "データなし"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",

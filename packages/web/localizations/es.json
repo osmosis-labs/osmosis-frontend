@@ -406,7 +406,8 @@
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
     "invalidAmounts": "Montos no válidos",
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
-    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
+    "noData": "Sin datos"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",

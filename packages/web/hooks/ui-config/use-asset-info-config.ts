@@ -72,7 +72,7 @@ export const useAssetInfoConfig = (
     isError,
   } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
-      coinDenom: coinMinimalDenom ?? denom,
+      coinMinimalDenom: coinMinimalDenom ?? denom,
       timeFrame: {
         custom: customTimeFrame,
       },

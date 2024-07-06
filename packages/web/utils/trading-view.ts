@@ -123,7 +123,7 @@ export const historicalDatafeed: IBasicDataFeed = {
       let bars: TokenHistoricalPrice[] = [];
 
       bars = await trpcHelpers.edge.assets.getAssetHistoricalPrice.fetch({
-        coinDenom: symbolInfo.base_name
+        coinMinimalDenom: symbolInfo.base_name
           ? symbolInfo.base_name[0]
           : symbolInfo.name,
         timeFrame: {
