@@ -253,7 +253,12 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                 {t("unstableAssetsWarning.buttonCancel")}
               </h6>
             </Button>
-            <Button onClick={placeLimitState.placeLimit}>
+            <Button
+              onClick={async () => {
+                await placeLimitState.placeLimit();
+                onRequestClose();
+              }}
+            >
               <h6>{t("limitOrders.confirm")}</h6>
             </Button>
           </div>
