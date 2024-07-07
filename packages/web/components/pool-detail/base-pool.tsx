@@ -75,7 +75,7 @@ export const BasePoolDetails: FunctionComponent<{
                 </div>
                 <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
-                    {t("pool.swapFee")}
+                    {t("pool.spreadFactor")}
                   </span>
                   <h4 className="text-osmoverse-100">
                     {pool.spreadFactor.maxDecimals(2).toString()}
