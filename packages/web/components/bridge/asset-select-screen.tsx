@@ -138,7 +138,7 @@ export const AssetSelectScreen = observer(
           onInput={debounce((nextValue) => {
             setSearch(nextValue);
           }, 300)}
-          className="sticky top-0 my-4 flex-shrink-0 md:w-full"
+          className="sticky top-0 z-[1000] my-4 flex-shrink-0 md:w-full"
           placeholder={t("transfer.assetSelectScreen.searchAssets")}
           size={isMobile ? "small" : "full"}
         />
