@@ -145,6 +145,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@keplr-wallet/simple-fetch": "0.12.12",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@playwright/test": "^1.44.1",
     "@simbathesailor/use-what-changed": "^2.0.0",
