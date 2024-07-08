@@ -176,7 +176,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
             </div>
             {token.isAlloyed && token.contract ? (
               <AlloyedAssetsSection
-                className="hidden xl:flex"
+                className="hidden xl:block"
                 title={title ?? token.coinDenom}
                 denom={token.coinDenom}
                 contractAddress={token.contract}
