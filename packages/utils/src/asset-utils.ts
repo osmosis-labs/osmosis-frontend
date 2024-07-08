@@ -60,6 +60,8 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     name,
     unstable,
     verified,
+    isAlloyed,
+    contract,
     variantGroupKey,
   } = assetListAsset;
 
@@ -73,5 +75,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     isUnstable: unstable,
     isVerified: verified,
     variantGroupKey,
+    isAlloyed,
+    contract,
   };
 }

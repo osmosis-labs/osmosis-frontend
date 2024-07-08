@@ -7,11 +7,9 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { BridgeChain } from "@osmosis-labs/bridge";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
-import { isNil, isNumeric, noop } from "@osmosis-labs/utils";
+import { isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -22,18 +20,19 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-confirmation-screen";
+import { ChainLogo } from "~/components/assets/chain-logo";
+import { SupportedAssetWithAmount } from "~/components/bridge/immersive/amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "~/components/bridge/immersive/bridge-network-select-modal";
-import { BridgeProviderDropdown } from "~/components/bridge/immersive/bridge-provider-dropdown";
-import { BridgeQuoteRemainingTime } from "~/components/bridge/immersive/bridge-quote-remaining-time";
 import { BridgeWalletSelectModal } from "~/components/bridge/immersive/bridge-wallet-select-modal";
 import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
 import { MoreBridgeOptions } from "~/components/bridge/immersive/more-bridge-options";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
-import { useBridgesSupportedAssets } from "~/components/bridge/immersive/use-bridges-supported-assets";
-import { InputBox } from "~/components/input";
+import {
+  SupportedAsset,
+  useBridgesSupportedAssets,
+} from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
@@ -46,34 +45,43 @@ import {
 } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
-type SupportedAsset = ReturnType<
-  typeof useBridgesSupportedAssets
->["supportedAssetsByChainId"][string][number];
+import { CryptoFiatInput } from "./crypto-fiat-input";
+import {
+  BridgeProviderDropdownRow,
+  EstimatedTimeRow,
+  ExpandDetailsControlContent,
+  NetworkFeeRow,
+  ProviderFeesRow,
+  TotalFeesRow,
+} from "./quote-detail";
+import { BridgeQuote } from "./use-bridge-quotes";
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
   selectedDenom: string;
 
-  fromChain: BridgeChain | undefined;
-  setFromChain: (chain: BridgeChain) => void;
-  toChain: BridgeChain | undefined;
-  setToChain: (chain: BridgeChain) => void;
+  fromChain: BridgeChainWithDisplayInfo | undefined;
+  setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
+  toChain: BridgeChainWithDisplayInfo | undefined;
+  setToChain: (chain: BridgeChainWithDisplayInfo) => void;
 
-  sourceAsset: SupportedAssetWithAmount | undefined;
-  setSourceAsset: (asset: SupportedAssetWithAmount | undefined) => void;
-  destinationAsset: SupportedAsset | undefined;
-  setDestinationAsset: (asset: SupportedAsset | undefined) => void;
+  fromAsset: SupportedAssetWithAmount | undefined;
+  setFromAsset: (asset: SupportedAssetWithAmount | undefined) => void;
+  toAsset: SupportedAsset | undefined;
+  setToAsset: (asset: SupportedAsset | undefined) => void;
 
   cryptoAmount: string;
   fiatAmount: string;
   setCryptoAmount: (amount: string) => void;
   setFiatAmount: (amount: string) => void;
 
-  quote: ReturnType<typeof useBridgeQuote>;
+  quote: BridgeQuote;
+
+  onConfirm: () => void;
 }
 
 export const AmountScreen = observer(
@@ -86,11 +94,10 @@ export const AmountScreen = observer(
     toChain,
     setToChain,
 
-    sourceAsset,
-    setSourceAsset,
-
-    destinationAsset,
-    setDestinationAsset,
+    fromAsset,
+    setFromAsset,
+    toAsset,
+    setToAsset,
 
     cryptoAmount,
     setCryptoAmount,
@@ -98,6 +105,8 @@ export const AmountScreen = observer(
     setFiatAmount,
 
     quote,
+
+    onConfirm,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
@@ -106,15 +115,10 @@ export const AmountScreen = observer(
 
     const {
       selectedQuote,
-      successfulQuotes,
-      setSelectedBridgeProvider,
       buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
       isLoadingBridgeTransaction,
-      isRefetchingQuote,
-      selectedQuoteUpdatedAt,
-      refetchInterval,
       isInsufficientBal,
       isInsufficientFee,
       warnUserOfPriceImpact,
@@ -228,9 +232,9 @@ export const AmountScreen = observer(
             chainId: fromChain.chainId,
             chainType: fromChain.chainType,
             denom: selectedAsset.coinDenom,
-            // Providers are not needed for withdrawals; they will be derived from the destinationAsset
-            supportedProviders: [],
-            supportedVariants: [selectedAsset.coinMinimalDenom],
+            supportedVariants: {
+              [selectedAsset.coinMinimalDenom]: [],
+            },
           },
         ];
       }
@@ -244,34 +248,29 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
-    const supportedChainsAsBridgeChain = useMemo(
+    const firstSupportedEvmChain = useMemo(
       () =>
-        supportedChains.map(
-          ({ chainId, chainType, prettyName }) =>
-            ({
-              chainId,
-              chainType,
-              chainName: prettyName,
-            } as BridgeChain)
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "evm" }
+          > => chain.chainType === "evm"
         ),
       [supportedChains]
     );
-
-    const firstSupportedEvmChain = useMemo(
-      () =>
-        supportedChainsAsBridgeChain.find(
-          (chain): chain is Extract<BridgeChain, { chainType: "evm" }> =>
-            chain.chainType === "evm"
-        ),
-      [supportedChainsAsBridgeChain]
-    );
     const firstSupportedCosmosChain = useMemo(
       () =>
-        supportedChainsAsBridgeChain.find(
-          (chain): chain is Extract<BridgeChain, { chainType: "cosmos" }> =>
-            chain.chainType === "cosmos"
+        supportedChains.find(
+          (
+            chain
+          ): chain is Extract<
+            BridgeChainWithDisplayInfo,
+            { chainType: "cosmos" }
+          > => chain.chainType === "cosmos"
         ),
-      [supportedChainsAsBridgeChain]
+      [supportedChains]
     );
 
     const hasMoreThanOneChainType =
@@ -316,14 +315,14 @@ export const AmountScreen = observer(
               }
             }
 
-            if (!sourceAsset && nextData) {
+            if (!fromAsset && nextData) {
               const highestBalance = nextData.reduce(
                 (acc, curr) =>
                   curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
                 nextData[0]
               );
 
-              setSourceAsset(highestBalance);
+              setFromAsset(highestBalance);
             }
 
             return nextData;
@@ -338,31 +337,32 @@ export const AmountScreen = observer(
     useEffect(() => {
       if (
         direction === "deposit" &&
-        !isNil(sourceAsset) &&
+        !isNil(fromAsset) &&
         !isNil(assetsInOsmosis) &&
-        isNil(destinationAsset)
+        isNil(toAsset)
       ) {
         const destinationAsset = assetsInOsmosis.find(
-          (a) => a.coinMinimalDenom === sourceAsset.supportedVariants[0]
+          (a) =>
+            a.coinMinimalDenom === Object.keys(fromAsset.supportedVariants)[0]
         )!;
 
-        setDestinationAsset({
+        setToAsset({
           address: destinationAsset.coinMinimalDenom,
           decimals: destinationAsset.coinDecimals,
           chainId: accountStore.osmosisChainId,
           chainType: "cosmos",
           denom: destinationAsset.coinDenom,
-          supportedProviders: sourceAsset.supportedProviders,
-          supportedVariants: [destinationAsset.coinMinimalDenom],
+          // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
+          supportedVariants: {},
         });
       }
     }, [
       accountStore.osmosisChainId,
       assetsInOsmosis,
-      destinationAsset,
+      toAsset,
       direction,
-      setDestinationAsset,
-      sourceAsset,
+      setToAsset,
+      fromAsset,
     ]);
 
     /**
@@ -372,7 +372,7 @@ export const AmountScreen = observer(
     useEffect(() => {
       if (
         direction === "withdraw" &&
-        isNil(destinationAsset) &&
+        isNil(toAsset) &&
         counterpartySupportedAssetsByChainId &&
         toChain
       ) {
@@ -380,14 +380,14 @@ export const AmountScreen = observer(
           counterpartySupportedAssetsByChainId[toChain.chainId];
 
         if (counterpartyAssets && counterpartyAssets.length > 0) {
-          setDestinationAsset(counterpartyAssets[0]);
+          setToAsset(counterpartyAssets[0]);
         }
       }
     }, [
       counterpartySupportedAssetsByChainId,
-      destinationAsset,
+      toAsset,
       direction,
-      setDestinationAsset,
+      setToAsset,
       toChain,
     ]);
 
@@ -400,8 +400,11 @@ export const AmountScreen = observer(
       if (isNil(chain) && !isNil(osmosisChain)) {
         setChain({
           chainId: osmosisChain.chain_id,
-          chainName: osmosisChain.pretty_name,
+          chainName: osmosisChain.chain_name,
+          prettyName: osmosisChain.pretty_name,
           chainType: "cosmos",
+          logoUri: osmosisChain.logoURIs?.svg ?? osmosisChain.logoURIs?.png,
+          color: osmosisChain.logoURIs?.theme?.primary_color_hex,
         });
       }
     }, [direction, fromChain, osmosisChain, setFromChain, setToChain, toChain]);
@@ -420,11 +423,7 @@ export const AmountScreen = observer(
         supportedChains.length > 0
       ) {
         const firstChain = supportedChains[0];
-        setChain({
-          chainId: firstChain.chainId,
-          chainName: firstChain.prettyName,
-          chainType: firstChain.chainType,
-        } as BridgeChain);
+        setChain(firstChain);
       }
     }, [
       direction,
@@ -520,77 +519,23 @@ export const AmountScreen = observer(
       isNil(supportedSourceAssets) ||
       !assetsInOsmosis ||
       !canonicalAsset ||
-      !destinationAsset ||
+      !toAsset ||
       !assetInOsmosisPrice ||
       !fromChain ||
       !toChain ||
-      !sourceAsset
+      !fromAsset
     ) {
       return <AmountScreenSkeletonLoader />;
     }
 
-    const cryptoAmountPretty = new CoinPretty(
-      {
-        coinDecimals: sourceAsset.decimals,
-        coinDenom: sourceAsset.denom,
-        coinMinimalDenom: sourceAsset.address,
-      },
-      cryptoAmount === ""
-        ? new Dec(0)
-        : new Dec(cryptoAmount).mul(
-            DecUtils.getTenExponentN(sourceAsset.decimals)
-          )
-    );
-
-    const fiatAmountPretty = new PricePretty(
-      DEFAULT_VS_CURRENCY,
-      new Dec(fiatAmount === "" ? 0 : fiatAmount)
-    );
-
-    const parseFiatAmount = (value: string) => {
-      return value.replace("$", "");
-    };
-
-    const formatFiatAmount = (value: string) => {
-      return `$${value}`;
-    };
-
-    const onInput = (type: "fiat" | "crypto") => (value: string) => {
-      let nextValue = type === "fiat" ? parseFiatAmount(value) : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
-
-      if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
-        nextValue = nextValue.slice(1);
-      }
-      if (nextValue === "") {
-        nextValue = "0";
-      }
-      if (nextValue === ".") {
-        nextValue = "0.";
-      }
-
-      if (type === "fiat") {
-        // Update the crypto amount based on the fiat amount
-        const priceInFiat = assetInOsmosisPrice.toDec();
-        const nextFiatAmount = new Dec(nextValue);
-        const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
-
-        setCryptoAmount(trimPlaceholderZeros(nextCryptoAmount));
-      } else {
-        // Update the fiat amount based on the crypto amount
-        const priceInFiat = assetInOsmosisPrice.toDec();
-        const nextCryptoAmount = new Dec(nextValue);
-        const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
-
-        setFiatAmount(trimPlaceholderZeros(nextFiatAmount));
-      }
-
-      type === "fiat" ? setFiatAmount(nextValue) : setCryptoAmount(nextValue);
-    };
-
     const resetAssets = () => {
-      setSourceAsset(undefined);
-      setDestinationAsset(undefined);
+      setFromAsset(undefined);
+      setToAsset(undefined);
+    };
+
+    const resetInput = () => {
+      setCryptoAmount("0");
+      setFiatAmount("0");
     };
 
     const dropdownActiveItemIcon = (
@@ -635,124 +580,64 @@ export const AmountScreen = observer(
           <div className="flex items-center gap-2">
             <ChainSelectorButton
               direction={direction}
-              chainLogo={""}
+              chainColor={fromChain.color}
+              chainLogo={fromChain.logoUri}
               chains={supportedChains}
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
+                if (fromChain?.chainId !== nextChain.chainId) {
+                  resetInput();
+                }
               }}
               readonly={direction === "withdraw"}
             >
-              {fromChain.chainName}
+              {fromChain.prettyName}
             </ChainSelectorButton>
 
             <Icon id="arrow-right" className="text-osmoverse-300" />
 
             <ChainSelectorButton
               direction={direction}
-              chainLogo=""
+              chainColor={toChain.color}
+              chainLogo={toChain.logoUri}
               chains={supportedChains}
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
+                if (fromChain?.chainId !== nextChain.chainId) {
+                  resetInput();
+                }
               }}
               readonly={direction === "deposit"}
             >
-              {toChain.chainName}
+              {toChain.prettyName}
             </ChainSelectorButton>
           </div>
         </div>
 
         <div className="flex w-full flex-col gap-6">
-          <div className="relative flex items-center justify-center">
-            <div className="flex flex-col items-center">
-              <div className="text-center text-4xl font-bold">
-                {inputUnit === "fiat" ? (
-                  <InputBox
-                    currentValue={formatFiatAmount(fiatAmount)}
-                    onInput={onInput("fiat")}
-                    classes={{
-                      input: classNames("text-center", {
-                        "text-rust-300": isInsufficientBal || isInsufficientFee,
-                      }),
-                    }}
-                    className="mr-4 border-none bg-transparent text-center"
-                  />
-                ) : (
-                  <div className="flex items-center">
-                    <p className="ml-1 w-full text-right align-middle text-2xl text-osmoverse-500">
-                      {cryptoAmountPretty?.denom}
-                    </p>
-                    <InputBox
-                      currentValue={cryptoAmount}
-                      onInput={onInput("crypto")}
-                      className="w-full border-none bg-transparent text-center"
-                      classes={{
-                        input: classNames("px-0", {
-                          "text-rust-300":
-                            isInsufficientBal || isInsufficientFee,
-                        }),
-                        trailingSymbol:
-                          "ml-1 align-middle text-2xl text-osmoverse-500 text-left absolute right-0",
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="relative flex w-full justify-center">
-                <button
-                  className="body1 flex items-center gap-2 text-center text-wosmongton-200"
-                  onClick={() => {
-                    setInputUnit(inputUnit === "fiat" ? "crypto" : "fiat");
-                  }}
-                >
-                  <span>
-                    {inputUnit === "fiat" ? (
-                      <>
-                        {trimPlaceholderZeros(
-                          cryptoAmountPretty?.toDec().toString(2) ?? "0"
-                        )}{" "}
-                        {cryptoAmountPretty?.denom}
-                      </>
-                    ) : (
-                      fiatAmountPretty.maxDecimals(2).toString()
-                    )}
-                  </span>
-                  <span>
-                    <Icon
-                      id="switch"
-                      className="text-wosmongton-200"
-                      width={16}
-                      height={16}
-                    />
-                  </span>
-                </button>
-
-                <button
-                  disabled={isNil(sourceAsset)}
-                  onClick={() => {
-                    if (isNil(sourceAsset)) return;
-                    // TODO: Subtract fees from the amount
-                    onInput("crypto")(
-                      trimPlaceholderZeros(
-                        sourceAsset.amount.toDec().toString()
-                      )
-                    );
-                  }}
-                  className="body2 absolute right-0 top-1/2 -translate-y-1/2 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80"
-                >
-                  {t("transfer.max")}
-                </button>
-              </div>
-            </div>
-          </div>
+          <CryptoFiatInput
+            currentUnit={inputUnit}
+            cryptoInputRaw={cryptoAmount}
+            fiatInputRaw={fiatAmount}
+            assetPrice={assetInOsmosisPrice}
+            asset={fromAsset}
+            isInsufficientBal={Boolean(isInsufficientBal)}
+            isInsufficientFee={Boolean(isInsufficientFee)}
+            transferGasCost={selectedQuote?.gasCost}
+            setFiatAmount={setFiatAmount}
+            setCryptoAmount={setCryptoAmount}
+            setInputUnit={setInputUnit}
+          />
 
           <>
             {isLoadingAssetsBalance && (
               <div className="flex w-full items-center justify-center gap-3">
                 <Spinner className="text-wosmongton-500" />
-                <p className="body1 text-osmoverse-300">Looking for balances</p>
+                <p className="body1 text-osmoverse-300">
+                  {t("transfer.lookingForBalances")}
+                </p>
               </div>
             )}
 
@@ -776,7 +661,7 @@ export const AmountScreen = observer(
                 {(assetsBalances ?? []).map((asset) => {
                   const isActive =
                     asset.amount.currency.coinMinimalDenom ===
-                    sourceAsset?.address;
+                    fromAsset?.address;
                   return (
                     <button
                       key={asset.amount.currency.coinMinimalDenom}
@@ -787,7 +672,7 @@ export const AmountScreen = observer(
                           "text-osmoverse-100": !isActive,
                         }
                       )}
-                      onClick={() => setSourceAsset(asset)}
+                      onClick={() => setFromAsset(asset)}
                     >
                       <span>{asset.denom}</span>
                       <span className="body2 text-osmoverse-300">
@@ -894,35 +779,41 @@ export const AmountScreen = observer(
             </>
           )}
 
-          {!isNil(sourceAsset) && sourceAsset.supportedVariants.length > 1 && (
+          {(direction === "deposit"
+            ? !isNil(fromAsset) &&
+              Object.keys(fromAsset.supportedVariants).length > 1
+            : !isNil(toAsset) &&
+              counterpartySupportedAssetsByChainId[toAsset.chainId].length >
+                1) && (
             <Menu>
               {({ open }) => (
                 <div className="relative w-full">
                   <MenuButton className="w-full">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="body1 text-osmoverse-300">
-                          {t("transfer.receiveAsset")}
-                        </span>
-                        <Tooltip
-                          content={
-                            <div>
-                              <h1 className="caption mb-1">
-                                {t("transfer.receiveAsset")}
-                              </h1>
-                              <p className="caption text-osmoverse-300">
-                                {t("transfer.receiveAssetDescription")}
-                              </p>
-                            </div>
-                          }
-                        >
-                          <Icon id="info" width={16} />
-                        </Tooltip>
-                      </div>
+                      <Tooltip
+                        content={
+                          <div>
+                            <h1 className="caption mb-1">
+                              {t("transfer.receiveAsset")}
+                            </h1>
+                            <p className="caption text-osmoverse-300">
+                              {t("transfer.receiveAssetDescription")}
+                            </p>
+                          </div>
+                        }
+                        enablePropagation
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="body1 text-osmoverse-300">
+                            {t("transfer.receiveAsset")}
+                          </span>
+                          <Icon id="generate-stars" width={24} />
+                        </div>
+                      </Tooltip>
 
                       <div className="flex items-center gap-2">
                         <span className="body1 text-white-full">
-                          {destinationAsset?.denom}
+                          {toAsset?.denom}
                         </span>
                         <Icon
                           id="chevron-down"
@@ -940,39 +831,40 @@ export const AmountScreen = observer(
                   </MenuButton>
 
                   <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
-                    {sourceAsset.supportedVariants.map(
-                      (variantCoinMinimalDenom, index) => {
-                        // TODO: HANDLE WITHDRAW CASE
-                        const asset = assetsInOsmosis.find(
-                          (asset) =>
-                            asset.coinMinimalDenom === variantCoinMinimalDenom
-                        )!;
+                    {direction === "deposit" ? (
+                      <>
+                        {Object.keys(fromAsset.supportedVariants).map(
+                          (variantCoinMinimalDenom, index) => {
+                            // TODO: HANDLE WITHDRAW CASE
+                            const asset = assetsInOsmosis.find(
+                              (asset) =>
+                                asset.coinMinimalDenom ===
+                                variantCoinMinimalDenom
+                            )!;
 
-                        const onClick = () => {
-                          setDestinationAsset({
-                            chainType: "cosmos",
-                            address: asset.coinMinimalDenom,
-                            decimals: asset.coinDecimals,
-                            chainId: accountStore.osmosisChainId,
-                            denom: asset.coinDenom,
-                            supportedProviders: sourceAsset.supportedProviders,
-                            supportedVariants: [asset.coinMinimalDenom],
-                          });
-                        };
+                            const onClick = () => {
+                              setToAsset({
+                                chainType: "cosmos",
+                                address: asset.coinMinimalDenom,
+                                decimals: asset.coinDecimals,
+                                chainId: accountStore.osmosisChainId,
+                                denom: asset.coinDenom,
+                                // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
+                                supportedVariants: {},
+                              });
+                            };
 
-                        // Show all as 'deposit as' for now
-                        const isConvert =
-                          false ??
-                          asset.coinMinimalDenom === asset.variantGroupKey;
-                        const isSelected =
-                          destinationAsset?.denom === asset.coinDenom;
+                            // Show all as 'deposit as' for now
+                            const isConvert =
+                              false ??
+                              asset.coinMinimalDenom === asset.variantGroupKey;
+                            const isSelected =
+                              toAsset?.denom === asset.coinDenom;
 
-                        const isCanonicalAsset = index === 0;
+                            const isCanonicalAsset = index === 0;
 
-                        return (
-                          <MenuItem key={asset.coinDenom}>
-                            <>
-                              {isCanonicalAsset ? (
+                            return (
+                              <MenuItem key={asset.coinDenom}>
                                 <button
                                   className={classNames(
                                     "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
@@ -992,46 +884,79 @@ export const AmountScreen = observer(
                                       <p className="body1">
                                         {isConvert
                                           ? t("transfer.convertTo")
-                                          : direction === "withdraw"
-                                          ? t("transfer.withdrawAs")
                                           : t("transfer.depositAs")}{" "}
                                         {asset.coinDenom}
                                       </p>
-                                      <p className="body2 text-osmoverse-300">
-                                        {t("transfer.recommended")}
-                                      </p>
+                                      {isCanonicalAsset && (
+                                        <p className="body2 text-osmoverse-300">
+                                          {t("transfer.recommended")}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                   {isSelected && dropdownActiveItemIcon}
                                 </button>
-                              ) : (
-                                <button
-                                  className={classNames(
-                                    "flex items-center gap-3 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-800",
-                                    isSelected && "bg-osmoverse-700",
-                                    !isSelected && "bg-osmoverse-800"
-                                  )}
-                                  onClick={onClick}
-                                >
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {counterpartySupportedAssetsByChainId[
+                          toAsset.chainId
+                        ].map((asset, index) => {
+                          const onClick = () => {
+                            setToAsset(asset);
+                          };
+
+                          const isSelected = toAsset?.denom === asset.denom;
+
+                          const isCanonicalAsset = index === 0;
+                          const representativeAsset =
+                            assetsInOsmosis.find(
+                              (a) =>
+                                a.coinMinimalDenom === asset.address ||
+                                asset.denom === a.coinDenom
+                            ) ?? assetsInOsmosis[0];
+
+                          return (
+                            <MenuItem key={asset.denom}>
+                              <button
+                                className={classNames(
+                                  "flex items-center justify-between gap-3 rounded-lg py-2 px-3 text-left",
+                                  isSelected && "bg-osmoverse-700",
+                                  !isSelected &&
+                                    "data-[active]:bg-osmoverse-800"
+                                )}
+                                onClick={onClick}
+                              >
+                                <div className="flex items-center gap-2">
                                   <Image
-                                    src={asset.coinImageUrl ?? "/"}
-                                    alt={`${asset.coinDenom} logo`}
+                                    src={
+                                      representativeAsset.coinImageUrl ?? "/"
+                                    }
+                                    alt={`${asset.denom} logo`}
                                     width={32}
                                     height={32}
                                   />
-                                  <p className="body1">
-                                    {isConvert
-                                      ? t("transfer.convertTo")
-                                      : t("transfer.depositAs")}{" "}
-                                    {asset.coinDenom}
-                                  </p>
-                                  {isSelected && dropdownActiveItemIcon}
-                                </button>
-                              )}
-                            </>
-                          </MenuItem>
-                        );
-                      }
+                                  <div className="flex flex-col">
+                                    <p className="body1">
+                                      {t("transfer.withdrawAs")} {asset.denom}
+                                    </p>
+                                    {isCanonicalAsset && (
+                                      <p className="body2 text-osmoverse-300">
+                                        {t("transfer.recommended")}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                {isSelected && dropdownActiveItemIcon}
+                              </button>
+                            </MenuItem>
+                          );
+                        })}
+                      </>
                     )}
                   </MenuItems>
                 </div>
@@ -1052,221 +977,15 @@ export const AmountScreen = observer(
               </span>
             </div>
           )}
+
           {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
-            <Disclosure>
-              {({ open }) => (
-                <>
-                  {" "}
-                  <DisclosureButton>
-                    <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
-                      {open ? (
-                        <p className="subtitle1">
-                          {t("transfer.transferDetails")}
-                        </p>
-                      ) : (
-                        <p className="body1 text-osmoverse-300">
-                          {selectedQuote.estimatedTime.humanize()} ETA
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2">
-                        {!isNil(selectedQuoteUpdatedAt) && (
-                          <BridgeQuoteRemainingTime
-                            dataUpdatedAt={selectedQuoteUpdatedAt}
-                            refetchInterval={refetchInterval}
-                            expiredElement={
-                              <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                            }
-                          />
-                        )}
-                        <div className="flex items-center gap-2">
-                          {!open && (
-                            <span className="body1">
-                              ~
-                              {(
-                                selectedQuote.transferFeeFiat ??
-                                new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                              )
-                                ?.add(selectedQuote.gasCost ?? new Dec(0))
-                                .toString()}{" "}
-                              {t("transfer.fees")}
-                            </span>
-                          )}
-                          {(warnUserOfPriceImpact || warnUserOfSlippage) && (
-                            <Tooltip
-                              content={
-                                warnUserOfSlippage
-                                  ? t("transfer.slippageWarning")
-                                  : t("transfer.priceImpactWarning", {
-                                      priceImpact:
-                                        selectedQuote.priceImpact.toString(),
-                                    })
-                              }
-                            >
-                              <Icon
-                                id="alert-circle"
-                                className="h-6 w-6 text-rust-400"
-                              />
-                            </Tooltip>
-                          )}
-                          <Icon
-                            id="chevron-down"
-                            width={12}
-                            height={12}
-                            className={classNames(
-                              "text-osmoverse-300 transition-transform duration-150",
-                              {
-                                "rotate-180": open,
-                              }
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </DisclosureButton>
-                  <DisclosurePanel className="flex flex-col gap-2">
-                    <TransferDetailRow
-                      label={t("transfer.provider")}
-                      value={
-                        <BridgeProviderDropdown
-                          selectedQuote={selectedQuote}
-                          quotes={successfulQuotes}
-                          onSelect={(bridgeId) =>
-                            setSelectedBridgeProvider(bridgeId)
-                          }
-                        />
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-                    <TransferDetailRow
-                      label={t("transfer.estimatedTime")}
-                      value={
-                        <div className="flex items-center gap-1">
-                          <Icon
-                            id="stopwatch"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />{" "}
-                          <p className="text-osmoverse-100">
-                            {selectedQuote.estimatedTime.humanize()}
-                          </p>
-                        </div>
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-                    <TransferDetailRow
-                      label={t("transfer.providerFees")}
-                      value={
-                        <>
-                          {selectedQuote.transferFee
-                            .toDec()
-                            .equals(new Dec(0)) ? (
-                            <p className="text-bullish-400">
-                              {t("transfer.free")}
-                            </p>
-                          ) : (
-                            <p className="text-osmoverse-100">
-                              {selectedQuote.transferFeeFiat
-                                ? `${selectedQuote.transferFeeFiat.toString()} (${selectedQuote.transferFee
-                                    .maxDecimals(4)
-                                    .toString()})`
-                                : selectedQuote.transferFee
-                                    .maxDecimals(4)
-                                    .toString()}
-                            </p>
-                          )}
-                        </>
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-
-                    <TransferDetailRow
-                      label={t("transfer.networkFee", {
-                        networkName: fromChain?.chainName ?? "",
-                      })}
-                      value={
-                        <p className="text-osmoverse-100">
-                          {isNil(selectedQuote.gasCostFiat) &&
-                          isNil(selectedQuote.gasCost) ? (
-                            <Tooltip
-                              content={t("transfer.unknownFeeTooltip", {
-                                networkName: fromChain?.chainName ?? "",
-                              })}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Icon
-                                  id="help-circle"
-                                  className="h-4 w-4 text-osmoverse-400"
-                                />
-                                <p className="body2 text-osmoverse-300">
-                                  {t("transfer.unknown")}
-                                </p>
-                              </div>
-                            </Tooltip>
-                          ) : (
-                            <>
-                              {selectedQuote.gasCostFiat
-                                ? selectedQuote.gasCostFiat.toString()
-                                : selectedQuote.gasCost
-                                    ?.maxDecimals(4)
-                                    .toString()}
-                              {selectedQuote.gasCostFiat &&
-                              selectedQuote.gasCost
-                                ? ` (${selectedQuote.gasCost
-                                    .maxDecimals(4)
-                                    .toString()})`
-                                : ""}
-                            </>
-                          )}
-                        </p>
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-
-                    {(selectedQuote.gasCostFiat ||
-                      selectedQuote.transferFeeFiat) && (
-                      <TransferDetailRow
-                        label={t("transfer.totalFees")}
-                        value={
-                          <p className="text-osmoverse-100">
-                            {(
-                              selectedQuote?.gasCostFiat ??
-                              new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                            )
-                              .add(
-                                selectedQuote.transferFeeFiat ??
-                                  new PricePretty(
-                                    DEFAULT_VS_CURRENCY,
-                                    new Dec(0)
-                                  )
-                              )
-                              .toString()}
-                          </p>
-                        }
-                        isLoading={isRefetchingQuote}
-                      />
-                    )}
-                    <TransferDetailRow
-                      label={t("transfer.estimatedAmountReceived")}
-                      value={
-                        <p
-                          className={
-                            warnUserOfSlippage
-                              ? "text-rust-300"
-                              : "text-osmoverse-100"
-                          }
-                        >
-                          {selectedQuote.expectedOutputFiat.toString()} (
-                          {selectedQuote.expectedOutput
-                            .maxDecimals(4)
-                            .toString()}
-                          )
-                        </p>
-                      }
-                      isLoading={isRefetchingQuote}
-                    />
-                  </DisclosurePanel>
-                </>
-              )}
-            </Disclosure>
+            <TransferDetails
+              quote={
+                quote as BridgeQuote & {
+                  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+                }
+              }
+            />
           )}
 
           <div className="flex flex-col items-center gap-4">
@@ -1280,7 +999,8 @@ export const AmountScreen = observer(
                     isLoadingBridgeQuote ||
                     isLoadingBridgeTransaction ||
                     cryptoAmount === "" ||
-                    cryptoAmount === "0"
+                    cryptoAmount === "0" ||
+                    isNil(selectedQuote)
                   }
                   className="w-full text-h6 font-h6"
                   variant={
@@ -1288,6 +1008,7 @@ export const AmountScreen = observer(
                       ? "destructive"
                       : "default"
                   }
+                  onClick={onConfirm}
                 >
                   {buttonText}
                 </Button>
@@ -1295,7 +1016,7 @@ export const AmountScreen = observer(
                   variant="ghost"
                   className="w-full text-lg font-h6 text-wosmongton-200 hover:text-white-full"
                   onClick={() => setAreMoreOptionsVisible(true)}
-                  disabled={isNil(sourceAsset) || isNil(destinationAsset)}
+                  disabled={isNil(fromAsset) || isNil(toAsset)}
                 >
                   {direction === "deposit"
                     ? t("transfer.moreDepositOptions")
@@ -1304,8 +1025,8 @@ export const AmountScreen = observer(
                 <MoreBridgeOptions
                   direction={direction}
                   isOpen={areMoreOptionsVisible}
-                  fromAsset={sourceAsset}
-                  toAsset={destinationAsset}
+                  fromAsset={fromAsset}
+                  toAsset={toAsset}
                   fromChain={fromChain}
                   toChain={toChain}
                   toAddress={toAddress}
@@ -1324,14 +1045,16 @@ const ChainSelectorButton: FunctionComponent<{
   direction: BridgeTransactionDirection;
   readonly: boolean;
   children: ReactNode;
-  chainLogo: string;
+  chainLogo: string | undefined;
+  chainColor: string | undefined;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
-  onSelectChain: (chain: BridgeChain) => void;
+  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }> = ({
   direction,
   readonly,
   children,
-  chainLogo: _chainLogo,
+  chainLogo,
+  chainColor,
   chains,
   onSelectChain,
 }) => {
@@ -1339,8 +1062,9 @@ const ChainSelectorButton: FunctionComponent<{
 
   if (readonly) {
     return (
-      <div className="subtitle1 flex-1 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
-        {children}
+      <div className="subtitle1 flex w-[45%] flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200">
+        <ChainLogo prettyName="" logoUri={chainLogo} color={chainColor} />
+        <span className="truncate">{children}</span>
       </div>
     );
   }
@@ -1351,12 +1075,20 @@ const ChainSelectorButton: FunctionComponent<{
         onClick={() => {
           setIsNetworkSelectVisible(true);
         }}
-        className="subtitle1 group flex flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
+        className="subtitle1 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850"
       >
-        <span>{children}</span>
+        <div className="flex w-[90%] items-center gap-2">
+          <ChainLogo
+            className="flex-shrink-0"
+            prettyName=""
+            logoUri={chainLogo}
+            color={chainColor}
+          />
+          <span className="truncate">{children}</span>
+        </div>
         <Icon
           id="chevron-down"
-          className="text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
+          className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
           width={12}
           height={12}
         />
@@ -1406,22 +1138,82 @@ const WalletDisplay: FunctionComponent<{
   );
 };
 
-const TransferDetailRow: FunctionComponent<{
-  label: string;
-  value: ReactNode;
-  isLoading: boolean;
-}> = ({ label, value, isLoading }) => {
+const TransferDetails: FunctionComponent<{
+  quote: BridgeQuote & {
+    selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  };
+}> = ({ quote }) => {
+  const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
+    useMeasure<HTMLDivElement>();
+  const { t } = useTranslation();
+  const {
+    selectedQuote,
+    warnUserOfPriceImpact,
+    warnUserOfSlippage,
+    selectedQuoteUpdatedAt,
+    refetchInterval,
+    successfulQuotes,
+    setSelectedBridgeProvider,
+    isRefetchingQuote,
+  } = quote;
+
   return (
-    <div className="body2 flex justify-between">
-      <p className="text-osmoverse-300">{label}</p>
-      <span
-        className={classNames({
-          "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress":
-            isLoading,
-        })}
-      >
-        {value}
-      </span>
-    </div>
+    <Disclosure>
+      {({ open }) => (
+        <div
+          className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
+          style={{
+            height: open
+              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              : 36,
+          }}
+        >
+          <DisclosureButton>
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              {open ? (
+                <p className="subtitle1">{t("transfer.transferDetails")}</p>
+              ) : (
+                <p className="body1 text-osmoverse-300">
+                  {selectedQuote.estimatedTime.humanize()} ETA
+                </p>
+              )}
+              <ExpandDetailsControlContent
+                warnUserOfPriceImpact={warnUserOfPriceImpact}
+                warnUserOfSlippage={warnUserOfSlippage}
+                selectedQuoteUpdatedAt={selectedQuoteUpdatedAt}
+                refetchInterval={refetchInterval}
+                selectedQuote={selectedQuote}
+                open={open}
+              />
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-2">
+            <BridgeProviderDropdownRow
+              successfulQuotes={successfulQuotes}
+              setSelectedBridgeProvider={setSelectedBridgeProvider}
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <EstimatedTimeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <ProviderFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+            <NetworkFeeRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              fromChainName={selectedQuote.fromChain?.chainName}
+            />
+            <TotalFeesRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+            />
+          </DisclosurePanel>
+        </div>
+      )}
+    </Disclosure>
   );
 };

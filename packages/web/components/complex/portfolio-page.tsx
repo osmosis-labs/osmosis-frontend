@@ -175,7 +175,7 @@ const AssetsOverview: FunctionComponent<
               className="flex items-center gap-2 !rounded-full"
               onClick={() => startBridge({ direction: "deposit" })}
             >
-              <Icon id="deposit" height={16} width={16} />
+              <Icon id="deposit" className=" h-4 w-4" height={16} width={16} />
               <div className="subtitle1">{t("assets.table.depositButton")}</div>
             </Button>
             <Button

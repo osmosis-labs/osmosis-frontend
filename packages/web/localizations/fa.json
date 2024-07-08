@@ -406,7 +406,8 @@
     "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
-    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید."
+    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
+    "noData": "اطلاعاتی وجود ندارد"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
-    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید",
+    "noPools": "بدون استخر",
+    "poolsEmpty": "در حال حاضر هیچ استخری برای {denom} در اسمز وجود ندارد"
   },
   "stake": {
     "available": "دسترس",
@@ -908,11 +911,15 @@
     "withdraw": "کنار کشیدن",
     "fromNetwork": "از شبکه",
     "toNetwork": "به شبکه",
+    "from": "از",
+    "to": "برای",
     "max": "حداکثر",
     "available": "در دسترس",
     "transferWith": "انتقال با",
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",
+    "transfer": "انتقال {denom}",
+    "receive": "دریافت {denom}",
     "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
     "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
     "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد.",
-    "connect": "اتصال"
+    "connect": "اتصال",
+    "confirm": "تایید",
+    "cancel": "لغو کنید",
+    "confirmDepositTo": "تایید سپرده به {chain}",
+    "confirmWithdrawTo": "تأیید خروج به {chain}",
+    "reviewDepositP": "قبل از تایید، جزئیات سپرده خود را بررسی کنید. پس از واریز، تراکنش شما برگشت ناپذیر است.",
+    "reviewWithdrawP": "قبل از تایید، جزئیات برداشت خود را بررسی کنید. پس از برداشت، تراکنش شما برگشت ناپذیر است.",
+    "lookingForBalances": "به دنبال تعادل"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
-    "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
-    "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
-    "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
+    "onOsmosis": "در اسمز",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
+    "info": {
+      "title": "اطلاعات",
+      "show": "نمایش دهید",
+      "collapse": "سقوط - فروپاشی",
+      "moreStats": "آمار بیشتر"
+    },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "همه"
+      "all": "همه",
+      "price": "قیمت",
+      "volume": "جلد",
+      "advanced": "پیشرفته",
+      "simple": "ساده"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
+    "fullyDilutedValuation": "ارزش گذاری کاملا رقیق شده",
+    "volume24h": "حجم کل 24 ساعت",
+    "volumeOnOsmosis": "جلد 24 ساعته اسمز",
+    "liquidityOnOsmosis": "نقدینگی در اسمز",
     "circulatingSupply": "عرضه در گردش",
-    "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی",
-    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
+    "supplyOnOsmosis": "عرضه بر روی اسمز",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",

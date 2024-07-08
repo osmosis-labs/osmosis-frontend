@@ -1,15 +1,6 @@
+import { EthereumChainInfo } from "@osmosis-labs/utils";
+import { Transport } from "viem";
 import { createConfig, http } from "wagmi";
-import {
-  arbitrum,
-  avalanche,
-  bsc,
-  fantom,
-  filecoin,
-  mainnet,
-  moonbeam,
-  polygon,
-  sepolia,
-} from "wagmi/chains";
 import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 
 import { WALLETCONNECT_PROJECT_KEY } from "~/config/env";
@@ -21,29 +12,48 @@ declare module "wagmi" {
   }
 }
 
+/**
+ * PLEASE DO NOT USE THIS OUTSIDE THIS FILE
+ * This is a workaround to get the tuple chain ids from the EthereumChainInfo object
+ * Since wagmi does not care about item order, it's ok to do this. However, this should not be used outside this file.
+ */
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never;
+type LastOf<T> = UnionToIntersection<
+  T extends any ? () => T : never
+> extends () => infer R
+  ? R
+  : never;
+
+type Push<T extends any[], V> = [...T, V];
+
+type TuplifyUnion<
+  T,
+  L = LastOf<T>,
+  N = [T] extends [never] ? true : false
+> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
+
+type ObjValueTuple<
+  T,
+  KS extends any[] = TuplifyUnion<keyof T>,
+  R extends any[] = []
+> = KS extends [infer K, ...infer KT]
+  ? ObjValueTuple<T, KT, [...R, T[K & keyof T]]>
+  : R;
+
+const chains = Object.values(EthereumChainInfo) as ObjValueTuple<
+  typeof EthereumChainInfo
+>;
+const transports = Object.fromEntries(
+  chains.map((info) => [info.id, http()])
+) as Record<keyof typeof chains, Transport>;
+
 export const wagmiConfig = createConfig({
-  chains: [
-    mainnet,
-    sepolia,
-    avalanche,
-    bsc,
-    fantom,
-    moonbeam,
-    polygon,
-    filecoin,
-    arbitrum,
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [avalanche.id]: http(),
-    [bsc.id]: http(),
-    [fantom.id]: http(),
-    [moonbeam.id]: http(),
-    [polygon.id]: http(),
-    [filecoin.id]: http(),
-    [arbitrum.id]: http(),
-  },
+  chains,
+  transports,
   connectors: [
     metaMask({
       dappMetadata: {

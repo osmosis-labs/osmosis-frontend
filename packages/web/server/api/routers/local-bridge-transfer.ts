@@ -31,9 +31,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
             assets: z.array(
               bridgeChainSchema.and(bridgeAssetSchema).and(
                 z.object({
-                  supportedVariants: z.array(z.string()),
-                  supportedProviders: z.array(
-                    z.string().transform((v) => v as Bridge)
+                  supportedVariants: z.record(
+                    z.string(),
+                    z.array(z.string().transform((v) => v as Bridge))
                   ),
                 })
               )
@@ -46,9 +46,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
             assets: z.array(
               bridgeChainSchema.and(bridgeAssetSchema).and(
                 z.object({
-                  supportedVariants: z.array(z.string()),
-                  supportedProviders: z.array(
-                    z.string().transform((v) => v as Bridge)
+                  supportedVariants: z.record(
+                    z.string(),
+                    z.array(z.string().transform((v) => v as Bridge))
                   ),
                 })
               )
@@ -99,7 +99,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
                */
               const usdValue = await calcAssetValue({
                 ...ctx,
-                anyDenom: asset.supportedVariants[0],
+                anyDenom: Object.keys(asset.supportedVariants)[0],
                 amount: decAmount,
               }).catch((e) => captureErrorAndReturn(e, undefined));
 
@@ -170,8 +170,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 };
               }
 
-              const representativeAssetMinimalDenom =
-                asset.supportedVariants[0];
+              const representativeAssetMinimalDenom = Object.keys(
+                asset.supportedVariants
+              )[0];
               const representativeAsset = getAsset({
                 ...ctx,
                 anyDenom: representativeAssetMinimalDenom,

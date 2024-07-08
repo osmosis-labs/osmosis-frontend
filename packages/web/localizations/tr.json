@@ -406,7 +406,8 @@
     "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
-    "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin."
+    "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
+    "noData": "Veri yok"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" için sonuç yok",
-    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin",
+    "noPools": "Havuz yok",
+    "poolsEmpty": "Şu anda Osmosis'te {denom} için havuz yok"
   },
   "stake": {
     "available": "Mevcut",
@@ -908,11 +911,15 @@
     "withdraw": "Geri çekilmek",
     "fromNetwork": "Ağdan",
     "toNetwork": "Ağa",
+    "from": "kaynağından",
+    "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",
+    "transfer": "{denom}",
+    "receive": "{denom}",
     "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
     "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
-    "connect": "Bağlamak"
+    "connect": "Bağlamak",
+    "confirm": "Onaylamak",
+    "cancel": "İptal etmek",
+    "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",
+    "confirmWithdrawTo": "{chain} bağlantısına çekilmeyi onaylayın",
+    "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
+    "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
+    "lookingForBalances": "Bakiyeler arıyorum"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
-    "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
-    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
-    "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
+    "onOsmosis": "Osmoz üzerinde",
     "aboutDenom": "{name} hakkında",
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
     "collapse": "Yıkılmak",
+    "info": {
+      "title": "Bilgi",
+      "show": "Göstermek",
+      "collapse": "Yıkılmak",
+      "moreStats": "Daha fazla istatistik"
+    },
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}E",
-      "all": "TÜM"
+      "all": "TÜM",
+      "price": "Fiyat",
+      "volume": "Hacim",
+      "advanced": "Gelişmiş",
+      "simple": "Basit"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
+    "fullyDilutedValuation": "Tamamen Seyreltilmiş Değerleme",
+    "volume24h": "24 saatlik toplam hacim",
+    "volumeOnOsmosis": "Osmosis'te 24 saatlik hacim",
+    "liquidityOnOsmosis": "Osmozda Likidite",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "buyToken": "{coinDenom} satın alın",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite",
+    "supplyOnOsmosis": "Osmozda Tedarik",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",

@@ -406,7 +406,8 @@
     "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
-    "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua."
+    "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
+    "noData": "Nu există date"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "Niciun rezultat pentru \" {query} \"",
-    "adjust": "Încercați să ajustați interogarea de căutare"
+    "adjust": "Încercați să ajustați interogarea de căutare",
+    "noPools": "Fara piscine",
+    "poolsEmpty": "În prezent, nu există pool-uri pentru {denom} pe osmoză"
   },
   "stake": {
     "available": "Disponibil",
@@ -908,11 +911,15 @@
     "withdraw": "Retrage",
     "fromNetwork": "Din rețea",
     "toNetwork": "La rețea",
+    "from": "De la",
+    "to": "Către",
     "max": "Max",
     "available": "disponibil",
     "transferWith": "Transfer cu",
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",
+    "transfer": "Transferați {denom}",
+    "receive": "Primiți {denom}",
     "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
     "estimatingTime": "Estimarea timpului",
     "calculatingFees": "Calcularea taxelor",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
     "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
-    "connect": "Conectați"
+    "connect": "Conectați",
+    "confirm": "A confirma",
+    "cancel": "Anulare",
+    "confirmDepositTo": "Confirmați depunerea către {chain}",
+    "confirmWithdrawTo": "Confirmați retragerea la {chain}",
+    "reviewDepositP": "Verificați detaliile depunerii înainte de a confirma. Odată depusă, tranzacția dvs. este ireversibilă.",
+    "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă.",
+    "lookingForBalances": "Caut echilibre"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
-    "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
-    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
-    "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
+    "onOsmosis": "pe osmoză",
     "aboutDenom": "Despre {name}",
     "ariaView": "Vedeți {name}",
     "ariaViewOn": "Vedeți pe {name}",
     "collapse": "Colaps",
+    "info": {
+      "title": "Info",
+      "show": "Spectacol",
+      "collapse": "Colaps",
+      "moreStats": "Mai multe statistici"
+    },
     "followTheConversation": "Urmăriți conversația",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "TOATE"
+      "all": "TOATE",
+      "price": "Preț",
+      "volume": "Volum",
+      "advanced": "Avansat",
+      "simple": "Simplu"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",
     "marketCap": "Capitalizarea pieței",
+    "fullyDilutedValuation": "Evaluare complet diluată",
+    "volume24h": "Volum total 24 de ore",
+    "volumeOnOsmosis": "Volum 24h pe osmoză",
+    "liquidityOnOsmosis": "Lichiditate pe osmoză",
     "circulatingSupply": "Aprovizionare în circulație",
-    "buyToken": "Cumpărați {coinDenom}",
-    "staking": "Miza",
-    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}",
+    "supplyOnOsmosis": "Alimentare pe osmoză",
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",

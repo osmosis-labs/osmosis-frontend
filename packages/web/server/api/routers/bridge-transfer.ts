@@ -1,4 +1,4 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
   BridgeChain,
@@ -21,6 +21,12 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+
+export type BridgeChainWithDisplayInfo = BridgeChain & {
+  logoUri?: string;
+  color?: string;
+  prettyName: string;
+};
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -169,10 +175,26 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...quote,
           input: {
             ...quote.input,
+            amount: new CoinPretty(
+              {
+                coinDenom: quote.input.denom,
+                coinMinimalDenom: quote.input.address,
+                coinDecimals: quote.input.decimals,
+              },
+              quote.input.amount
+            ),
             fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
           },
           expectedOutput: {
             ...quote.expectedOutput,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.expectedOutput.decimals,
+                coinDenom: quote.expectedOutput.denom,
+                coinMinimalDenom: quote.expectedOutput.address,
+              },
+              quote.expectedOutput.amount
+            ),
             fiatValue: priceFromBridgeCoin(
               quote.expectedOutput,
               // output is same token as input
@@ -180,14 +202,28 @@ export const bridgeTransferRouter = createTRPCRouter({
             ),
           },
           transferFee: {
-            ...quote.transferFee,
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.transferFee.decimals,
+                coinDenom: quote.transferFee.denom,
+                coinMinimalDenom: quote.transferFee.address,
+              },
+              quote.transferFee.amount
+            ),
             fiatValue: feeAssetPrice
               ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
               : undefined,
           },
           estimatedGasFee: quote.estimatedGasFee
             ? {
-                ...quote.estimatedGasFee,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: quote.estimatedGasFee.decimals,
+                    coinDenom: quote.estimatedGasFee.denom,
+                    coinMinimalDenom: quote.estimatedGasFee.address,
+                  },
+                  quote.estimatedGasFee.amount
+                ),
                 fiatValue:
                   gasFeeAssetPrice && quote.estimatedGasFee
                     ? priceFromBridgeCoin(
@@ -268,9 +304,12 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
+              chainName: evmChain.chainName,
               chainId: evmChain.id,
               chainType,
-            };
+              logoUri: evmChain.relativeLogoUrl,
+              color: evmChain.color,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
           } else if (chainType === "cosmos") {
             let cosmosChain: ReturnType<typeof getChain> | undefined;
             try {
@@ -285,10 +324,13 @@ export const bridgeTransferRouter = createTRPCRouter({
             }
 
             return {
-              prettyName: cosmosChain.chain_name,
+              prettyName: cosmosChain.pretty_name,
               chainId: cosmosChain.chain_id,
+              chainName: cosmosChain.chain_name,
               chainType,
-            };
+              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
+              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           }
 
           return undefined;

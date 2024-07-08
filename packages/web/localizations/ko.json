@@ -406,7 +406,8 @@
     "swapSlippage": "슬리피지로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 슬리피지 내성을 높여보세요.",
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
-    "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요."
+    "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
+    "noData": "데이터 없음"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \"에 대한 결과가 없습니다.",
-    "adjust": "검색어를 조정해 보세요."
+    "adjust": "검색어를 조정해 보세요.",
+    "noPools": "수영장 없음",
+    "poolsEmpty": "현재 Osmosis에는 {denom} 에 대한 풀이 없습니다."
   },
   "stake": {
     "available": "사용 가능",
@@ -908,11 +911,15 @@
     "withdraw": "철회하다",
     "fromNetwork": "네트워크에서",
     "toNetwork": "네트워크로",
+    "from": "에서",
+    "to": "에게",
     "max": "맥스",
     "available": "사용 가능",
     "transferWith": "다음으로 환승",
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",
+    "transfer": "{denom} 전송",
+    "receive": "{denom} 수신",
     "receiveAssetDescription": "특정 자산을 입금할 때 Osmosis에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
     "estimatingTime": "추정 시간",
     "calculatingFees": "수수료 계산",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "예상 수령 금액",
     "slippageWarning": "이 거래에 대한 예상 출력은 입력 금액보다 상당히 낮으므로 예상과 다른 최종 금액을 받게 될 수 있습니다.",
     "priceImpactWarning": "이 거래의 가격 영향은 {priceImpact} 이며, 최종 수령 금액에 영향을 미칠 수 있습니다.",
-    "connect": "연결하다"
+    "connect": "연결하다",
+    "confirm": "확인하다",
+    "cancel": "취소",
+    "confirmDepositTo": "{chain} 에 입금 확인",
+    "confirmWithdrawTo": "{chain} 철회를 확인하세요",
+    "reviewDepositP": "확인하기 전에 입금 세부정보를 검토하세요. 일단 입금되면 거래를 되돌릴 수 없습니다.",
+    "reviewWithdrawP": "확인하기 전에 출금 세부정보를 검토하세요. 일단 철회되면 거래를 되돌릴 수 없습니다.",
+    "lookingForBalances": "잔액을 찾고 있어요"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
-    "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
-    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
-    "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
+    "onOsmosis": "삼투에",
     "aboutDenom": "{name} 정보",
     "ariaView": "{name} 보기",
     "ariaViewOn": "{name} 에 대한 보기",
     "collapse": "무너지다",
+    "info": {
+      "title": "정보",
+      "show": "보여주다",
+      "collapse": "무너지다",
+      "moreStats": "더 많은 통계"
+    },
     "followTheConversation": "대화를 따라가세요",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "모두"
+      "all": "모두",
+      "price": "가격",
+      "volume": "용량",
+      "advanced": "고급의",
+      "simple": "단순한"
     },
     "watchlist": "관심 목록",
     "marketCapRank": "시가총액 순위",
     "marketCap": "시가총액",
+    "fullyDilutedValuation": "완전희석평가",
+    "volume24h": "24시간 총 볼륨",
+    "volumeOnOsmosis": "Osmosis의 24시간 볼륨",
+    "liquidityOnOsmosis": "삼투의 유동성",
     "circulatingSupply": "순환 공급",
-    "buyToken": "{coinDenom} 구매",
-    "staking": "스테이킹",
-    "liquidityInOSMOPools": "{number} {denom} 풀의 유동성",
+    "supplyOnOsmosis": "삼투에 대한 공급",
     "underlyingAssets": {
       "title": "기초자산",
       "description": "Osmosis의 {name} ( {denom} )은 {count} 다양한 유형의 {name} .",

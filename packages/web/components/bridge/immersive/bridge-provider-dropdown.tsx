@@ -8,17 +8,19 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { useBridgeQuote } from "~/components/bridge/immersive/use-bridge-quote";
+import { BridgeQuote } from "~/components/bridge/immersive/use-bridge-quotes";
 import { useTranslation } from "~/hooks";
 
 interface Props {
-  selectedQuote: NonNullable<
-    ReturnType<typeof useBridgeQuote>["selectedQuote"]
-  >;
-  quotes: ReturnType<typeof useBridgeQuote>["successfulQuotes"];
+  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+  quotes: BridgeQuote["successfulQuotes"];
   onSelect: (bridge: Bridge) => void;
 }
 
+/**
+ * Allows user to select alternative bridge provider quotes, with some basic info
+ * about the speed or cost of a quote.
+ */
 export const BridgeProviderDropdown = ({
   selectedQuote,
   quotes,
@@ -61,7 +63,10 @@ export const BridgeProviderDropdown = ({
     <Menu>
       {({ open }) => (
         <div className="relative">
-          <MenuButton className="flex items-center gap-2">
+          <MenuButton
+            className="flex items-center gap-2"
+            disabled={quotes.length <= 1}
+          >
             <Image
               src={selectedQuote.provider.logoUrl}
               alt={`${selectedQuote.provider.id} logo`}
@@ -69,17 +74,19 @@ export const BridgeProviderDropdown = ({
               height={20}
             />
             <span>{selectedQuote.provider.id}</span>{" "}
-            <Icon
-              id="chevron-down"
-              width={12}
-              height={12}
-              className={classNames(
-                "text-osmoverse-300 transition-transform duration-150",
-                {
-                  "rotate-180": open,
-                }
-              )}
-            />
+            {quotes.length > 1 && (
+              <Icon
+                id="chevron-down"
+                width={12}
+                height={12}
+                className={classNames(
+                  "text-osmoverse-300 transition-transform duration-150",
+                  {
+                    "rotate-180": open,
+                  }
+                )}
+              />
+            )}
           </MenuButton>
           <MenuItems
             anchor="bottom end"
@@ -119,7 +126,7 @@ export const BridgeProviderDropdown = ({
                       )}
                       onClick={() => onSelect(provider.id)}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Image
                           src={provider.logoUrl}
                           alt={`${provider.id} logo`}
@@ -146,7 +153,7 @@ export const BridgeProviderDropdown = ({
                         </div>
                       </div>
 
-                      <div className="flex flex-col text-start">
+                      <div className="flex flex-col text-end">
                         <p className="body1">{expectedOutputFiat.toString()}</p>
                         <p className="body2 whitespace-nowrap text-osmoverse-200">
                           ~{totalFee} {t("transfer.fee")}

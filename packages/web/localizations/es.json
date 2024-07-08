@@ -406,7 +406,8 @@
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
     "invalidAmounts": "Montos no válidos",
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
-    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
+    "noData": "Sin datos"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "No hay resultados para \" {query} \"",
-    "adjust": "Intente ajustar su consulta de búsqueda"
+    "adjust": "Intente ajustar su consulta de búsqueda",
+    "noPools": "Sin piscinas",
+    "poolsEmpty": "Actualmente no hay grupos para {denom} en Osmosis"
   },
   "stake": {
     "available": "Disponible",
@@ -908,11 +911,15 @@
     "withdraw": "Retirar",
     "fromNetwork": "De la red",
     "toNetwork": "A la red",
+    "from": "De",
+    "to": "A",
     "max": "máx.",
     "available": "disponible",
     "transferWith": "Transferir con",
     "transferTo": "Transferir a",
     "receiveAsset": "Recibir activo",
+    "transfer": "Transferir {denom}",
+    "receive": "Recibir {denom}",
     "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
     "estimatingTime": "tiempo estimado",
     "calculatingFees": "Calcular tarifas",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "Cantidad estimada recibida",
     "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
     "priceImpactWarning": "El impacto en el precio de esta transacción es {priceImpact} , lo que puede influir en el importe final recibido.",
-    "connect": "Conectar"
+    "connect": "Conectar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "confirmDepositTo": "Confirmar depósito a {chain}",
+    "confirmWithdrawTo": "Confirmar retiro a {chain}",
+    "reviewDepositP": "Revise los detalles de su depósito antes de confirmar. Una vez depositada, su transacción es irreversible.",
+    "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible.",
+    "lookingForBalances": "buscando saldos"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Gana con {denom}",
     "explorePools": "Explorar piscinas",
-    "stakeYourDenomToEarn": "Apuesta tu {denom} para ganar un {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Apuesta tu {denom} para ganar recompensas",
-    "provideLiquidity": "Proporcione liquidez y gane con comisiones y swaps",
     "yourBalance": "Tu balance",
+    "onOsmosis": "en ósmosis",
     "aboutDenom": "Acerca de {name}",
     "ariaView": "Ver {name}",
     "ariaViewOn": "Ver en {name}",
     "collapse": "Colapsar",
+    "info": {
+      "title": "Información",
+      "show": "Espectáculo",
+      "collapse": "Colapsar",
+      "moreStats": "Más estadísticas"
+    },
     "followTheConversation": "Sigue la conversación",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "TODO"
+      "all": "TODO",
+      "price": "Precio",
+      "volume": "Volumen",
+      "advanced": "Avanzado",
+      "simple": "Simple"
     },
     "watchlist": "Lista de seguimiento",
     "marketCapRank": "Rango de capitalización de mercado",
     "marketCap": "Tapa del mercado",
+    "fullyDilutedValuation": "Valoración totalmente diluida",
+    "volume24h": "Volumen total 24h",
+    "volumeOnOsmosis": "Volumen 24h en Osmosis",
+    "liquidityOnOsmosis": "Liquidez por ósmosis",
     "circulatingSupply": "Suministro circulante",
-    "buyToken": "Comprar {coinDenom}",
-    "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
+    "supplyOnOsmosis": "Suministro por Ósmosis",
     "underlyingAssets": {
       "title": "Activos subyacentes",
       "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",

@@ -401,12 +401,13 @@
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
     "fallbackSupport": "support",
-    "chartUnavailable": "Chart unavailable",
+    "chartUnavailable": "No data available",
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
-    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue."
+    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "noData": "No data"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "No results for \"{query}\"",
-    "adjust": "Try adjusting your search query"
+    "adjust": "Try adjusting your search query",
+    "noPools": "No pools",
+    "poolsEmpty": "Currently there are no pools for {denom} on Osmosis"
   },
   "stake": {
     "available": "Available",
@@ -908,11 +911,15 @@
     "withdraw": "Withdraw",
     "fromNetwork": "From network",
     "toNetwork": "To network",
+    "from": "From",
+    "to": "To",
     "max": "Max",
     "available": "available",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",
+    "transfer": "Transfer {denom}",
+    "receive": "Receive {denom}",
     "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "Estimated amount received",
     "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
     "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received.",
-    "connect": "Connect"
+    "connect": "Connect",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmDepositTo": "Confirm deposit to {chain}",
+    "confirmWithdrawTo": "Confirm withdraw to {chain}",
+    "reviewDepositP": "Review your deposit details before confirming. Once deposited, your transaction is irreversible.",
+    "reviewWithdrawP": "Review your withdraw details before confirming. Once withdrawn, your transaction is irreversible.",
+    "lookingForBalances": "Looking for balances"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
+    "onOsmosis": "on Osmosis",
     "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
     "collapse": "Collapse",
+    "info": {
+      "title": "Info",
+      "show": "Show",
+      "collapse": "Collapse",
+      "moreStats": "More stats"
+    },
     "followTheConversation": "Follow the conversation",
     "chart": {
       "xHour": "{h}H",
       "xDay": "{d}D",
       "xYear": "{y}Y",
-      "all": "ALL"
+      "all": "ALL",
+      "price": "Price",
+      "volume": "Volume",
+      "advanced": "Advanced",
+      "simple": "Simple"
     },
     "watchlist": "Watchlist",
-    "marketCapRank": "Market Cap Rank",
-    "marketCap": "Market Cap",
-    "circulatingSupply": "Circulating Supply",
-    "buyToken": "Buy {coinDenom}",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools",
+    "marketCapRank": "Market cap rank",
+    "marketCap": "Market cap",
+    "fullyDilutedValuation": "Fully diluted valuation",
+    "volume24h": "Total volume (24h)",
+    "volumeOnOsmosis": "Osmosis volume (24h)",
+    "liquidityOnOsmosis": "Liquidity on Osmosis",
+    "circulatingSupply": "Circulating supply",
+    "supplyOnOsmosis": "Supply on Osmosis",
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",

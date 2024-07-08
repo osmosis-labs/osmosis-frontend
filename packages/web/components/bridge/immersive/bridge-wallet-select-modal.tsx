@@ -1,4 +1,3 @@
-import { BridgeChain } from "@osmosis-labs/bridge";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -19,13 +18,14 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 
 interface BridgeWalletSelectProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
-  cosmosChain?: Extract<BridgeChain, { chainType: "cosmos" }>;
-  evmChain?: Extract<BridgeChain, { chainType: "evm" }>;
-  onSelectChain: (chain: BridgeChain) => void;
+  cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
+  evmChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
+  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
 }
 
 export const BridgeWalletSelectModal = observer(

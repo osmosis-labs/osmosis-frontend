@@ -406,7 +406,8 @@
     "swapSlippage": "由于滑点，兑换{coinDenom}失败。尝试增加滑动容差。",
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
-    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。"
+    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "noData": "没有数据"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "没有找到“ {query} ”的结果",
-    "adjust": "尝试调整您的搜索查询"
+    "adjust": "尝试调整您的搜索查询",
+    "noPools": "没有泳池",
+    "poolsEmpty": "目前 Osmosis 上没有适用于{denom}池"
   },
   "stake": {
     "available": "可用的",
@@ -908,11 +911,15 @@
     "withdraw": "提取",
     "fromNetwork": "摘自网络",
     "toNetwork": "建立网络",
+    "from": "从",
+    "to": "到",
     "max": "最大限度",
     "available": "可用的",
     "transferWith": "转让",
     "transferTo": "传送到",
     "receiveAsset": "接收资产",
+    "transfer": "转移{denom}",
+    "receive": "接收{denom}",
     "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
     "calculatingFees": "计算费用",
@@ -969,7 +976,14 @@
     "estimatedAmountReceived": "预计收到金额",
     "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
     "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
-    "connect": "连接"
+    "connect": "连接",
+    "confirm": "确认",
+    "cancel": "取消",
+    "confirmDepositTo": "确认存款至{chain}",
+    "confirmWithdrawTo": "确认提现至{chain}",
+    "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
+    "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
+    "lookingForBalances": "寻找平衡"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -1012,30 +1026,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
-    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
+    "onOsmosis": "论渗透",
     "aboutDenom": "关于{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "信息",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多统计数据"
+    },
     "followTheConversation": "关注对话",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "价格",
+      "volume": "体积",
+      "advanced": "先进的",
+      "simple": "简单的"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全稀释估值",
+    "volume24h": "24小时总成交量",
+    "volumeOnOsmosis": "24 小时渗透量",
+    "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",
-    "buyToken": "购买{coinDenom}",
-    "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性",
+    "supplyOnOsmosis": "渗透供给",
     "underlyingAssets": {
       "title": "基础资产",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",
