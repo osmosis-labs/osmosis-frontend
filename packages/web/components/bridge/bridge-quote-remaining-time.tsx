@@ -1,13 +1,21 @@
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
 
 import { Spinner } from "~/components/loaders";
 
-export const BridgeQuoteRemainingTime: FunctionComponent<{
-  className?: string;
-  refetchInterval: number;
-  dataUpdatedAt: number;
-}> = ({ className, refetchInterval, dataUpdatedAt }) => {
+export const BridgeQuoteRemainingTime: FunctionComponent<
+  PropsWithChildren<{
+    className?: string;
+    refetchInterval: number;
+    dataUpdatedAt: number;
+    strokeWidth?: number;
+  }>
+> = ({ className, refetchInterval, dataUpdatedAt, children, strokeWidth }) => {
   const [progress, setProgress] = useState(100);
 
   useEffect(() => {
@@ -37,16 +45,18 @@ export const BridgeQuoteRemainingTime: FunctionComponent<{
         {progress <= 0 ? (
           <Spinner className="relative top-0 left-0 !h-full !w-full text-wosmongton-500" />
         ) : (
-          <RadialProgress progress={progress} />
+          <RadialProgress progress={progress} strokeWidth={strokeWidth} />
         )}
       </div>
+      {children}
     </div>
   );
 };
 
-const RadialProgress: FunctionComponent<{ progress: number }> = ({
-  progress,
-}) => {
+const RadialProgress: FunctionComponent<{
+  progress: number;
+  strokeWidth?: number;
+}> = ({ progress, strokeWidth = 4 }) => {
   const radius = 20;
   const circumference = 2 * Math.PI * radius;
   const offset = (progress / 100) * circumference;
@@ -54,7 +64,7 @@ const RadialProgress: FunctionComponent<{ progress: number }> = ({
     <svg className="h-full w-full" viewBox="0 0 50 50">
       <circle
         className="text-wosmongton-500"
-        strokeWidth="4"
+        strokeWidth={strokeWidth}
         stroke="currentColor"
         fill="transparent"
         r={radius}
@@ -63,7 +73,7 @@ const RadialProgress: FunctionComponent<{ progress: number }> = ({
       />
       <circle
         className="origin-[50%_50%] -rotate-90 transform text-osmoverse-700 transition-[stroke-dashoffset] duration-[0.35s]"
-        strokeWidth="4"
+        strokeWidth={strokeWidth}
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"

@@ -173,6 +173,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt: number | undefined;
   refetchInterval: number;
   open: boolean;
+  showRemainingTime?: boolean;
 }> = ({
   selectedQuote,
   warnUserOfPriceImpact,
@@ -180,12 +181,13 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt,
   refetchInterval,
   open,
+  showRemainingTime = false,
 }) => {
   const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
 
   return (
     <div className="flex items-center gap-2 md:gap-1">
-      {!isNil(selectedQuoteUpdatedAt) && (
+      {!isNil(selectedQuoteUpdatedAt) && showRemainingTime && (
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}

@@ -18,6 +18,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
+import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -227,7 +228,7 @@ const AssetBox: FunctionComponent<{
       </div>
     </div>
   ) : (
-    <div className="flex place-content-between items-center px-6 pb-3 pt-1">
+    <div className="flex place-content-between items-center px-6 pb-3 pt-1 text-osmoverse-300">
       <div className="flex items-center gap-2">
         {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
         <ChainLogo
@@ -293,7 +294,12 @@ const TransferDetails: FunctionComponent<
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
-  const { selectedQuote, fromDisplayChain } = quote;
+  const {
+    selectedQuote,
+    fromDisplayChain,
+    selectedQuoteUpdatedAt,
+    refetchInterval,
+  } = quote;
 
   if (!selectedQuote) return null;
 
@@ -316,10 +322,17 @@ const TransferDetails: FunctionComponent<
             {open ? (
               <div className="subtitle1">{t("transfer.transferDetails")}</div>
             ) : (
-              <div className="flex items-center gap-4 md:gap-1.5 md:text-osmoverse-300">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700 md:h-8 md:w-8">
-                  <Icon id="down-arrow" className="md:h-4 md:w-4" />
-                </div>
+              <div className="flex items-center gap-3 text-osmoverse-300 md:gap-1.5">
+                {selectedQuoteUpdatedAt && (
+                  <BridgeQuoteRemainingTime
+                    className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
+                    dataUpdatedAt={selectedQuoteUpdatedAt}
+                    refetchInterval={refetchInterval}
+                    strokeWidth={2}
+                  >
+                    <Icon id="down-arrow" className="md:h-4 md:w-4" />
+                  </BridgeQuoteRemainingTime>
+                )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
                   <p>{estTime}</p>

@@ -1264,6 +1264,7 @@ const TransferDetails: FunctionComponent<{
                 refetchInterval={refetchInterval}
                 selectedQuote={selectedQuote}
                 open={open}
+                showRemainingTime
               />
             </div>
           </DisclosureButton>
