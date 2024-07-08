@@ -60,13 +60,11 @@ describe("compare1CTTransactionParams", () => {
     const nextParams: OneClickTradingTransactionParams = {
       ...prevParams,
       spendLimit: mockPricePretty(7000),
-      networkFeeLimit: mockCoinPretty(16000),
       sessionPeriod: { end: "3hours" },
     };
 
     const changes = compare1CTTransactionParams({ prevParams, nextParams });
     expect(changes).toContain("spendLimit");
-    expect(changes).toContain("networkFeeLimit");
     expect(changes).toContain("sessionPeriod");
   });
 });
