@@ -142,7 +142,6 @@
       "failed": "નિષ્ફળ",
       "failedWithReason": "નિષ્ફળ: {reason}",
       "pending": "બાકી છે",
-      "pendingRefunded": "નિષ્ફળ: બાકી રિફંડ",
       "refunded": "રિફંડ",
       "success": "સફળતા",
       "title": "ટ્રાન્સફર ઇતિહાસ",
@@ -151,7 +150,8 @@
       "successDeposit": "જમા કરાવ્યું",
       "successWithdraw": "પાછી ખેંચી લીધી",
       "failDeposit": "ડિપોઝિટ નિષ્ફળ",
-      "failWithdraw": "ઉપાડ નિષ્ફળ"
+      "failWithdraw": "ઉપાડ નિષ્ફળ",
+      "connectionError": "કનેક્શન ભૂલ"
     },
     "ibcTransfer": {
       "buttonAdd": "ઉમેરો",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "{chain} માં પાછી ખેંચવાની પુષ્ટિ કરો",
     "reviewDepositP": "પુષ્ટિ કરતા પહેલા તમારી ડિપોઝિટ વિગતોની સમીક્ષા કરો. એકવાર જમા થઈ ગયા પછી, તમારો વ્યવહાર ઉલટાવી ન શકાય એવો છે.",
     "reviewWithdrawP": "પુષ્ટિ કરતા પહેલા તમારી ઉપાડની વિગતોની સમીક્ષા કરો. એકવાર પાછી ખેંચી લીધા પછી, તમારો વ્યવહાર ઉલટાવી શકાતો નથી.",
-    "lookingForBalances": "બેલેન્સ શોધી રહ્યાં છીએ"
+    "lookingForBalances": "બેલેન્સ શોધી રહ્યાં છીએ",
+    "dontForgetFees": "ફી વિશે ભૂલશો નહીં!",
+    "feesReserved": "તમારા કુલ {assetName} બેલેન્સની થોડી રકમ {networkName} પર ફી ચૂકવવા માટે આરક્ષિત કરવામાં આવી છે.",
+    "verifyAddressWarning": "તમે જે સરનામે તમારું ભંડોળ ઉપાડો છો તેની ચકાસણી કરો. ખોટું સરનામું આપવાથી ભંડોળની ખોટ થશે.",
+    "recipientAddress": "{chain} પર પ્રાપ્તકર્તાનું સરનામું",
+    "enterAddress": "સરનામું દાખલ કરો",
+    "invalidAddress": "અમાન્ય {chain} સરનામું",
+    "acknowledgement": "હું સ્વીકારું છું કે વિશ્વના અંત વગેરે માટે હું સંપૂર્ણપણે જવાબદાર છું.",
+    "done": "થઈ ગયું"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

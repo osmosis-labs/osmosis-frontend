@@ -46,6 +46,8 @@ interface ConfirmationScreenProps {
 
   quote: BridgeQuote;
 
+  isManualAddress: boolean;
+
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -70,6 +72,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 
   onCancel,
   onConfirm,
+
+  isManualAddress,
 }) => {
   const { t } = useTranslation();
 
@@ -133,6 +137,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           walletImageUrl={toWalletIcon}
           value={quote.selectedQuote.expectedOutputFiat}
           coin={quote.selectedQuote.expectedOutput}
+          isManualAddress={isManualAddress}
         />
       )}
       <div className="flex w-full items-center gap-3 py-3">
@@ -176,7 +181,17 @@ const AssetBox: FunctionComponent<{
   walletImageUrl: string;
   value: PricePretty;
   coin: CoinPretty;
-}> = ({ type, assetImageUrl, chain, address, walletImageUrl, value, coin }) => {
+  isManualAddress?: boolean;
+}> = ({
+  type,
+  assetImageUrl,
+  chain,
+  address,
+  walletImageUrl,
+  value,
+  coin,
+  isManualAddress,
+}) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
@@ -194,13 +209,17 @@ const AssetBox: FunctionComponent<{
           <span>{chain.prettyName}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Image
-            alt="wallet image"
-            src={walletImageUrl}
-            width={16}
-            height={16}
-          />
-          <div className="text-wosmongton-200">
+          {isManualAddress ? (
+            <Icon id="wallet" className="text-wosmongton-200" />
+          ) : (
+            <Image
+              alt="wallet image"
+              src={walletImageUrl}
+              width={16}
+              height={16}
+            />
+          )}
+          <div className="body1 text-wosmongton-200">
             {getShortAddress(address, { prefixLength: 12 })}
           </div>
         </div>

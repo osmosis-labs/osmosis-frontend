@@ -164,9 +164,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
                       coinDenom: asset.denom,
                       coinMinimalDenom: asset.denom,
                     },
-                    new Dec(0)
+                    0
                   ),
-                  usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                  usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
                 };
               }
 
@@ -194,7 +194,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
                       coinDenom: asset.denom,
                       coinMinimalDenom: asset.address,
                     },
-                    new Dec(balance.amount)
+                    balance.amount
                   ) ??
                   new CoinPretty(
                     {
@@ -202,12 +202,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
                       coinDenom: asset.denom,
                       coinMinimalDenom: asset.address,
                     },
-                    new Dec(0)
+                    0
                   ),
-                usdValue: new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  usdValue ?? new Dec(0)
-                ),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, usdValue ?? 0),
               };
             })
         );

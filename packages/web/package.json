@@ -106,6 +106,7 @@
     "classnames": "^2.3.2",
     "dayjs": "^1.10.7",
     "debounce": "^1.2.1",
+    "decompress": "^4.2.1",
     "dompurify": "^3.0.6",
     "ethers": "^6.8.0",
     "eventemitter3": "^4.0.7",
@@ -147,6 +148,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@keplr-wallet/simple-fetch": "0.12.12",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@playwright/test": "^1.44.1",
     "@simbathesailor/use-what-changed": "^2.0.0",

@@ -142,7 +142,6 @@
       "failed": "失敗した",
       "failedWithReason": "失敗: {reason}",
       "pending": "保留中",
-      "pendingRefunded": "失敗: 返金保留中",
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",
@@ -151,7 +150,8 @@
       "successDeposit": "寄託",
       "successWithdraw": "撤退",
       "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました"
+      "failWithdraw": "引き出しに失敗しました",
+      "connectionError": "接続エラー"
     },
     "ibcTransfer": {
       "buttonAdd": "追加",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "{chain}への撤退を確認します",
     "reviewDepositP": "確認する前に入金の詳細を確認してください。入金後は取引を取り消すことはできません。",
     "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。",
-    "lookingForBalances": "バランスを探す"
+    "lookingForBalances": "バランスを探す",
+    "dontForgetFees": "手数料を忘れないでください！",
+    "feesReserved": "合計{assetName}残高の少額{networkName}の手数料の支払い用に確保されています。",
+    "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",
+    "recipientAddress": "{chain}の受信者アドレス",
+    "enterAddress": "住所を入力してください",
+    "invalidAddress": "無効な{chain}アドレス",
+    "acknowledgement": "私は世界の終焉などについて全責任を負っていることを認めます。",
+    "done": "終わり"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

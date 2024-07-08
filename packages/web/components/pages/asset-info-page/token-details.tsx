@@ -201,16 +201,9 @@ export const TokenStats = observer((props: TokenStatsProps) => {
   } = useAssetInfo();
 
   const { data: tokenMarket, isLoading: isLoadingTokenMarket } =
-    api.edge.assets.getMarketAsset.useQuery(
-      {
-        findMinDenomOrSymbol: tokenDenom,
-      },
-      {
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        staleTime: 1_000 * 60 * 15,
-      }
-    );
+    api.edge.assets.getMarketAsset.useQuery({
+      findMinDenomOrSymbol: tokenDenom,
+    });
 
   const stats: TokenStatProps[] = useMemo(() => {
     const data = [

@@ -22,7 +22,10 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 
-export type BridgeChainWithDisplayInfo = BridgeChain & {
+export type BridgeChainWithDisplayInfo = (
+  | Extract<BridgeChain, { chainType: "evm" }>
+  | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
+) & {
   logoUri?: string;
   color?: string;
   prettyName: string;
@@ -330,6 +333,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               chainType,
               logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
               color: cosmosChain.logoURIs?.theme?.primary_color_hex,
+              bech32Prefix: cosmosChain.bech32_prefix,
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           }
 
