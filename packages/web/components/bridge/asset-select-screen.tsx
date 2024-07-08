@@ -1,4 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -174,7 +175,7 @@ export const AssetSelectScreen = observer(
                     />
                     <span className="flex flex-col text-left">
                       <span className="subtitle1 md:body2">
-                        {asset.coinName}
+                        {truncateString(asset.coinName, 22)}
                       </span>
                       <span className="body2 md:caption text-osmoverse-300">
                         {asset.coinDenom}
