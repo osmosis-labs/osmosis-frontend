@@ -142,7 +142,6 @@
       "failed": "Przegrany",
       "failedWithReason": "Przegrany: {reason}",
       "pending": "Oczekujące",
-      "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
@@ -151,7 +150,8 @@
       "successDeposit": "Zdeponowane",
       "successWithdraw": "Wycofał się",
       "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się"
+      "failWithdraw": "Wypłata nie powiodła się",
+      "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "Potwierdź wypłatę do {chain}",
     "reviewDepositP": "Przed potwierdzeniem sprawdź szczegóły swojej wpłaty. Po złożeniu depozytu Twoja transakcja jest nieodwracalna.",
     "reviewWithdrawP": "Przed potwierdzeniem przejrzyj szczegóły wypłaty. Po wycofaniu transakcja jest nieodwracalna.",
-    "lookingForBalances": "Szukasz sald"
+    "lookingForBalances": "Szukasz sald",
+    "dontForgetFees": "Nie zapomnij o opłatach!",
+    "feesReserved": "Niewielka część Twojego całkowitego salda {assetName} została zarezerwowana na pokrycie opłat za usługę {networkName} .",
+    "verifyAddressWarning": "Sprawdź adres, na który wypłacasz środki. Podanie błędnego adresu skutkować będzie utratą środków.",
+    "recipientAddress": "Adres odbiorcy w {chain}",
+    "enterAddress": "Podaj adres",
+    "invalidAddress": "Nieprawidłowy adres {chain}",
+    "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
+    "done": "Zrobione"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

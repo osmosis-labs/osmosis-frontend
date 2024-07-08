@@ -24,14 +24,20 @@ enum Screens {
 }
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
+  toChain: BridgeChainWithDisplayInfo;
   chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
+  onConfirmManualAddress: ((address: string) => void) | undefined;
+  initialManualAddress: string | undefined;
 }
 
 export const BridgeNetworkSelectModal = ({
   direction,
   chains,
   onSelectChain,
+  toChain,
+  onConfirmManualAddress,
+  initialManualAddress,
   ...modalProps
 }: BridgeNetworkSelectModalProps) => {
   const { t } = useTranslation();
@@ -57,8 +63,10 @@ export const BridgeNetworkSelectModal = ({
   }, [chains, query]);
 
   return (
-    <ScreenManager defaultScreen={Screens.Main}>
-      {({ currentScreen, setCurrentScreen }) => (
+    <ScreenManager
+      currentScreen={connectingToEvmChain ? Screens.SelectWallet : Screens.Main}
+    >
+      {({ currentScreen }) => (
         <>
           <ModalBase
             title={
@@ -72,7 +80,7 @@ export const BridgeNetworkSelectModal = ({
             {...modalProps}
             onAfterClose={() => {
               setQuery("");
-              setCurrentScreen(Screens.Main);
+              setConnectingToEvmChain(undefined);
             }}
           >
             <Screen screenName={Screens.SelectWallet}>
@@ -92,6 +100,9 @@ export const BridgeNetworkSelectModal = ({
                     onSelectChain(chain);
                   }}
                   evmChain={connectingToEvmChain}
+                  toChain={toChain}
+                  initialManualAddress={initialManualAddress}
+                  onConfirmManualAddress={onConfirmManualAddress}
                 />
               </div>
             </Screen>
@@ -154,7 +165,6 @@ export const BridgeNetworkSelectModal = ({
                                 ...chain,
                                 chainId: Number(chain.chainId),
                               });
-                              setCurrentScreen(Screens.SelectWallet);
                               return;
                             }
 

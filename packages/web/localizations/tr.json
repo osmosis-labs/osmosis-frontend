@@ -142,7 +142,6 @@
       "failed": "Arızalı",
       "failedWithReason": "Arızalı: {reason}",
       "pending": "Beklemede",
-      "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
@@ -151,7 +150,8 @@
       "successDeposit": "Yatırıldı",
       "successWithdraw": "Geri çekildi",
       "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu"
+      "failWithdraw": "Para çekme işlemi başarısız oldu",
+      "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "{chain} bağlantısına çekilmeyi onaylayın",
     "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
     "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
-    "lookingForBalances": "Bakiyeler arıyorum"
+    "lookingForBalances": "Bakiyeler arıyorum",
+    "dontForgetFees": "Ücretleri unutmayın!",
+    "feesReserved": "Toplam {assetName} bakiyenizin küçük bir kısmı {networkName} ücretlerini ödemek için ayrıldı.",
+    "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
+    "recipientAddress": "{chain} üzerindeki alıcı adresi",
+    "enterAddress": "Bir adres girin",
+    "invalidAddress": "Geçersiz {chain} adresi",
+    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "done": "Tamamlamak"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

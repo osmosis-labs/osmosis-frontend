@@ -89,7 +89,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap OSMO to USDC", async () => {
     await swapPage.goto();
     await swapPage.selectPair("OSMO", "USDC");
-    await swapPage.enterAmount("0.1");
+    await swapPage.enterAmount("0.2");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
@@ -115,7 +115,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap ATOM to USDC", async () => {
     await swapPage.goto();
     await swapPage.selectPair("ATOM", "USDC");
-    await swapPage.enterAmount("0.01");
+    await swapPage.enterAmount("0.015");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
@@ -141,7 +141,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap USDC to TIA", async () => {
     await swapPage.goto();
     await swapPage.selectPair("USDC", "TIA");
-    await swapPage.enterAmount("0.2");
+    await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
@@ -206,7 +206,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap AKT to USDC", async () => {
     await swapPage.goto();
     await swapPage.selectPair("AKT", "USDC");
-    await swapPage.enterAmount("0.02");
+    await swapPage.enterAmount("0.025");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();

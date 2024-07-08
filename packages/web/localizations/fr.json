@@ -142,7 +142,6 @@
       "failed": "Échoué",
       "failedWithReason": "Échoué: {reason}",
       "pending": "En cours",
-      "pendingRefunded": "Échec: remboursement en cours",
       "refunded": "Rembourser",
       "success": "Succès",
       "title": "Historique des transferts",
@@ -151,7 +150,8 @@
       "successDeposit": "Déposé",
       "successWithdraw": "Retiré",
       "failDeposit": "Échec du dépôt",
-      "failWithdraw": "Échec du retrait"
+      "failWithdraw": "Échec du retrait",
+      "connectionError": "Erreur de connexion"
     },
     "ibcTransfer": {
       "buttonAdd": "Ajouter",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "Confirmez le retrait à {chain}",
     "reviewDepositP": "Vérifiez les détails de votre dépôt avant de confirmer. Une fois déposée, votre transaction est irréversible.",
     "reviewWithdrawP": "Vérifiez les détails de votre retrait avant de confirmer. Une fois retirée, votre transaction est irréversible.",
-    "lookingForBalances": "À la recherche de soldes"
+    "lookingForBalances": "À la recherche de soldes",
+    "dontForgetFees": "N'oubliez pas les frais !",
+    "feesReserved": "Un petit montant de votre solde total {assetName} a été réservé pour payer les frais sur {networkName} .",
+    "verifyAddressWarning": "Vérifiez l'adresse à laquelle vous retirez vos fonds. Fournir une adresse incorrecte entraînera une perte de fonds.",
+    "recipientAddress": "Adresse du destinataire sur {chain}",
+    "enterAddress": "Entrer une adresse",
+    "invalidAddress": "Adresse {chain} non valide",
+    "acknowledgement": "Je reconnais que je suis entièrement responsable de la fin du monde, etc.",
+    "done": "Fait"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

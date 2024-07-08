@@ -559,28 +559,41 @@ export class SkipBridgeProvider implements BridgeProvider {
         throw new Error(`Failed to find chain ${chainID}`);
       }
 
-      if (chain.chain_type === "evm" && fromChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "evm"
+      ) {
         addressList.push(fromAddress);
-        continue;
       }
 
-      if (chain.chain_type === "evm" && toChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "evm"
+      ) {
         addressList.push(toAddress);
-        continue;
       }
 
-      if (chain.chain_type === "cosmos" && fromChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
         );
         continue;
       }
 
-      if (chain.chain_type === "cosmos" && toChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
-        continue;
       }
     }
 

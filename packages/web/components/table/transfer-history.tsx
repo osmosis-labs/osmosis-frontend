@@ -1,13 +1,7 @@
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
-import { CoinPretty } from "@keplr-wallet/unit";
 import type {
-  GetTransferStatusParams,
   TransferFailureReason,
+  TransferStatus,
 } from "@osmosis-labs/bridge";
-import {
-  IBCTransferHistory,
-  IBCTransferHistoryStatus,
-} from "@osmosis-labs/stores";
 import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -20,90 +14,26 @@ import { CustomClasses } from "~/components/types";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
-type History = {
-  txHash: string;
-  createdAtMs: number;
-  explorerUrl: string;
-  amount: string;
-  reason?: TransferFailureReason;
-  status: IBCTransferHistoryStatus | "failed";
-  isWithdraw: boolean;
-};
+import {
+  RecentTransfer,
+  useRecentTransfers,
+} from "../transactions/use-recent-transfers";
 
 export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {
-    const {
-      chainStore,
-      transferHistoryStore,
-      ibcTransferHistoryStore,
-      accountStore,
-    } = useStore();
+    const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { chainId } = chainStore.osmosis;
-    const address = accountStore.getWallet(chainId)?.address ?? "";
+    const address =
+      accountStore.getWallet(accountStore.osmosisChainId)?.address ?? "";
 
-    const histories: History[] = transferHistoryStore
-      .getHistoriesByAccount(address)
-      .map(
-        ({
-          key,
-          explorerUrl,
-          createdAt,
-          amount,
-          status,
-          reason,
-          isWithdraw,
-        }) => ({
-          txHash: key.startsWith("{")
-            ? (JSON.parse(key) as GetTransferStatusParams).sendTxHash
-            : key,
-          createdAtMs: createdAt.getTime(),
-          explorerUrl,
-          amount,
-          reason,
-          status: (status === "success" ? "complete" : status) as
-            | IBCTransferHistoryStatus
-            | "failed",
-          isWithdraw,
-        })
-      )
-      .concat(
-        ibcTransferHistoryStore
-          .getHistoriesAndUncommitedHistoriesByAccount(address)
-          .map((history) => {
-            const { txHash, createdAt, amount, sourceChainId, destChainId } =
-              history;
-            const status =
-              typeof (history as IBCTransferHistory).status !== "undefined"
-                ? (history as IBCTransferHistory).status
-                : ("pending" as IBCTransferHistoryStatus);
-            return {
-              txHash,
-              createdAtMs: new Date(createdAt).getTime(),
-              explorerUrl: chainStore
-                .getChain(sourceChainId)
-                .raw.explorerUrlToTx.replace("{txHash}", txHash.toUpperCase()),
-              amount: new CoinPretty(amount.currency, amount.amount)
-                .moveDecimalPointRight(amount.currency.coinDecimals)
-                .maxDecimals(6)
-                .trim(true)
-                .toString(),
-              reason: undefined,
-              status,
-              isWithdraw:
-                ChainIdHelper.parse(chainId).identifier !==
-                ChainIdHelper.parse(destChainId).identifier,
-            };
-          })
-      )
-      .sort((a, b) => b.createdAtMs - a.createdAtMs); // descending by most recent
+    const histories = useRecentTransfers(address);
 
     return histories.length > 0 ? (
       <>
         <div className="mt-8 text-h5 font-h5 md:text-h6 md:font-h6">
           {t("assets.historyTable.title")}
         </div>
-        <Table<BaseCell & History>
+        <Table<BaseCell & RecentTransfer>
           className={classNames("w-full", className)}
           headerTrClassName="!h-12 body2 md:caption"
           tBodyClassName="body2 md:caption"
@@ -179,7 +109,7 @@ const reasonToTranslationKey: Record<TransferFailureReason, string> = {
 
 const StatusDisplayCell: FunctionComponent<
   BaseCell & {
-    status?: IBCTransferHistoryStatus | "failed";
+    status?: TransferStatus;
     reason?: TransferFailureReason;
   }
 > = ({ status, reason }) => {
@@ -203,7 +133,7 @@ const StatusDisplayCell: FunctionComponent<
   }
 
   switch (status) {
-    case "complete":
+    case "success":
       return (
         <div className="flex items-center gap-2">
           <Image
@@ -236,22 +166,6 @@ const StatusDisplayCell: FunctionComponent<
           <span className="md:hidden">{t("assets.historyTable.refunded")}</span>
         </div>
       );
-    case "timeout":
-      return (
-        <div className="flex items-center gap-2">
-          <div className="h-6 w-6 animate-spin">
-            <Image
-              alt="loading"
-              src="/icons/loading-blue.svg"
-              width={24}
-              height={24}
-            />
-          </div>
-          <span className="md:hidden">
-            {t("assets.historyTable.pendingRefunded")}
-          </span>
-        </div>
-      );
     case "failed":
       return (
         <div className="flex items-center gap-2">
@@ -262,6 +176,19 @@ const StatusDisplayCell: FunctionComponent<
                   reason: t(reasonToTranslationKey[reason]),
                 })
               : t("assets.historyTable.failed")}
+          </span>
+        </div>
+      );
+    case "connection-error":
+      return (
+        <div className="flex items-center gap-2">
+          <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
+          <span className="md:hidden">
+            {reason
+              ? t("assets.historyTable.failedWithReason", {
+                  reason: t(reasonToTranslationKey[reason]),
+                })
+              : t("assets.historyTable.connectionError")}
           </span>
         </div>
       );

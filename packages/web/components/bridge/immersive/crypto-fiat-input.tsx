@@ -12,7 +12,9 @@ import {
 
 import { Icon } from "~/components/assets";
 import { InputBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
@@ -25,6 +27,7 @@ export const CryptoFiatInput: FunctionComponent<{
   asset: SupportedAssetWithAmount;
   isInsufficientBal: boolean;
   isInsufficientFee: boolean;
+  fromChain: BridgeChainWithDisplayInfo;
   transferGasCost: CoinPretty | undefined;
   setFiatAmount: (amount: string) => void;
   setCryptoAmount: (amount: string) => void;
@@ -35,6 +38,7 @@ export const CryptoFiatInput: FunctionComponent<{
   fiatInputRaw,
   assetPrice,
   asset,
+  fromChain,
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
@@ -63,6 +67,10 @@ export const CryptoFiatInput: FunctionComponent<{
       ),
     [asset, cryptoInputRaw]
   );
+
+  const hasSubtractedAmount = useMemo(() => {
+    return isMax && inputCoin.toDec().lt(asset.amount.toDec());
+  }, [asset.amount, inputCoin, isMax]);
 
   const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
@@ -212,27 +220,45 @@ export const CryptoFiatInput: FunctionComponent<{
             />
           )}
         </div>
-        <button
-          onClick={() => {
-            if (isMax) {
-              onInput("crypto")("0");
-              setIsMax(false);
-            } else {
-              onInput("crypto")(
-                trimPlaceholderZeros(asset.amount.toDec().toString())
-              );
-              setIsMax(true);
-            }
-          }}
-          className={classNames(
-            "body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80",
-            {
-              "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
-            }
-          )}
+        <Tooltip
+          disabled={!hasSubtractedAmount}
+          content={
+            <div className="flex flex-col gap-1">
+              <p className="caption text-white-full">
+                {t("transfer.dontForgetFees")}
+              </p>
+              <p className="caption text-osmoverse-300">
+                {t("transfer.feesReserved", {
+                  assetName: asset.denom,
+                  networkName: fromChain.prettyName,
+                })}
+              </p>
+            </div>
+          }
         >
-          {t("transfer.max")}
-        </button>
+          <button
+            onClick={() => {
+              if (isMax) {
+                onInput("crypto")("0");
+                setIsMax(false);
+              } else {
+                onInput("crypto")(
+                  trimPlaceholderZeros(asset.amount.toDec().toString())
+                );
+                setIsMax(true);
+              }
+            }}
+            className={classNames(
+              "body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80",
+              {
+                "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+                "!border-ammelia-500": hasSubtractedAmount,
+              }
+            )}
+          >
+            {t("transfer.max")}
+          </button>
+        </Tooltip>
       </div>
 
       <button

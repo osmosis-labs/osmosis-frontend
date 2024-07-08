@@ -142,7 +142,6 @@
       "failed": "失败的",
       "failedWithReason": "失败的: {reason}",
       "pending": "处理中",
-      "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "已退出",
       "failDeposit": "存款失败",
-      "failWithdraw": "提现失败"
+      "failWithdraw": "提现失败",
+      "connectionError": "连接错误"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -983,7 +983,15 @@
     "confirmWithdrawTo": "确认提现至{chain}",
     "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
     "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
-    "lookingForBalances": "寻找平衡"
+    "lookingForBalances": "寻找平衡",
+    "dontForgetFees": "不要忘记费用！",
+    "feesReserved": "您的总{assetName}余额中的一小部分已被保留用于支付{networkName}费用。",
+    "verifyAddressWarning": "验证您要提取资金的地址。提供错误的地址将导致资金损失。",
+    "recipientAddress": "{chain}上的收件人地址",
+    "enterAddress": "输入地址",
+    "invalidAddress": "无效的{chain}地址",
+    "acknowledgement": "我承认我对世界末日等负有全部责任。",
+    "done": "完毕"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

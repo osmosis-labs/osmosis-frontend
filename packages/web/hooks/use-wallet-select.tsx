@@ -41,6 +41,7 @@ export interface WalletSelectParams {
    * @default "full"
    */
   layout?: "list" | "full";
+  onConnect?: () => void;
 }
 
 export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
@@ -141,6 +142,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
               walletOptions={walletSelectParams.walletOptions}
               onConnect={() => {
                 setUserAmplitudeProperties();
+                walletSelectParams.onConnect?.();
               }}
               isOpen={isWalletSelectOpen}
               onRequestClose={() => {

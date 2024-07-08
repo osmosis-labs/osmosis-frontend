@@ -480,7 +480,7 @@ describe("SkipBridgeProvider", () => {
       toChain
     );
 
-    expect(addressList).toEqual([fromAddress]);
+    expect(addressList).toEqual([fromAddress, toAddress]);
   });
 
   it("should return correct finality time for known chain IDs", () => {
