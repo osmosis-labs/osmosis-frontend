@@ -15,6 +15,7 @@ import { ChainLogo } from "~/components/assets/chain-logo";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import {
@@ -219,7 +220,7 @@ const AssetBox: FunctionComponent<{
               height={16}
             />
           )}
-          <div className="body1 text-wosmongton-200">
+          <div className="text-wosmongton-200">
             {getShortAddress(address, { prefixLength: 12 })}
           </div>
         </div>
@@ -271,7 +272,10 @@ const AssetBox: FunctionComponent<{
             {type === "to" && "~"} {value.toString()}
           </div>
           <div className="body1 md:caption text-osmoverse-300">
-            {type === "to" && "~"} {coin.trim(true).toString()}
+            {type === "to" && "~"}{" "}
+            {formatPretty(coin, {
+              maxDecimals: 10,
+            })}
           </div>
         </div>
       </div>
