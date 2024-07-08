@@ -10,6 +10,7 @@ import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
+import { owalletExtensionInfo } from "@cosmos-kit/owallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
@@ -38,6 +39,7 @@ const CosmosKitWalletList: Wallet[] = [
   cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
+  owalletExtensionInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {
