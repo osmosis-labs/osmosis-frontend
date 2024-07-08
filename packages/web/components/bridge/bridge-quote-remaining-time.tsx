@@ -32,7 +32,7 @@ export const BridgeQuoteRemainingTime: FunctionComponent<{
   }, [dataUpdatedAt, refetchInterval]);
 
   return (
-    <div className={classNames("relative h-7 w-7", className)}>
+    <div className={classNames("relative h-7 w-7 md:h-5 md:w-5", className)}>
       <div className="absolute top-0 left-0 h-full w-full">
         {progress <= 0 ? (
           <Spinner className="relative top-0 left-0 !h-full !w-full text-wosmongton-500" />

@@ -1,7 +1,7 @@
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { PropsWithChildren, Provider } from "react";
 
-import { ImmersiveBridgeFlow } from "~/components/bridge/immersive";
+import { ImmersiveBridgeFlow } from "~/components/bridge/immersive-bridge";
 import { LegacyBridgeFlow } from "~/components/bridge/legacy";
 import { FiatRampKey } from "~/integrations";
 import { createContext } from "~/utils/react-context";

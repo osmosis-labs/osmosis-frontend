@@ -971,7 +971,7 @@
     "provider": "Furnizor",
     "estimatedTime": "Timpul estimat",
     "providerFees": "Taxe de furnizor",
-    "networkFee": "{networkName} Taxă de rețea",
+    "networkFee": "Taxa de rețea {networkName}",
     "totalFees": "Taxele totale",
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
