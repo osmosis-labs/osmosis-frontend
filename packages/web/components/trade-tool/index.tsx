@@ -12,6 +12,7 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
+import { useOrderbookClaimableOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {}
@@ -30,13 +31,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
   )?.isWalletConnected;
 
   // Mock
-  const unclaimedOrders = useMemo(
-    () =>
-      Array(0)
-        .fill(null)
-        .map((i) => i + 1),
-    []
-  );
+  const { count } = useOrderbookClaimableOrders({
+    userAddress:
+      accountStore.getWallet(accountStore.osmosisChainId)?.address ?? "",
+  });
 
   return (
     <ClientOnly>
@@ -56,11 +54,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
                   height={24}
                   className="h-6 w-6 text-wosmongton-200"
                 />
-                {unclaimedOrders.length > 0 && (
+                {count > 0 && (
                   <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                    <span className="text-xs leading-[14px]">
-                      {unclaimedOrders.length}
-                    </span>
+                    <span className="text-xs leading-[14px]">{count}</span>
                   </div>
                 )}
               </Link>
