@@ -50,7 +50,6 @@ export const CryptoFiatInput: FunctionComponent<{
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isMax, setIsMax] = useState(false);
-  const [hasSubtractedAmount, setHasSubtractedAmount] = useState(false);
 
   const inputCoin = useMemo(
     () =>
@@ -68,6 +67,10 @@ export const CryptoFiatInput: FunctionComponent<{
       ),
     [asset, cryptoInputRaw]
   );
+
+  const hasSubtractedAmount = useMemo(() => {
+    return isMax && inputCoin.toDec().lt(asset.amount.toDec());
+  }, [asset.amount, inputCoin, isMax]);
 
   const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
@@ -128,7 +131,6 @@ export const CryptoFiatInput: FunctionComponent<{
         inputCoin.toDec().gt(maxTransferAmount)
       ) {
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
-        setHasSubtractedAmount(true);
       }
     }
   }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
@@ -181,7 +183,6 @@ export const CryptoFiatInput: FunctionComponent<{
               onInput={(value) => {
                 onInput("fiat")(value);
                 setIsMax(false);
-                setHasSubtractedAmount(false);
               }}
               isAutosize
             />
@@ -213,7 +214,6 @@ export const CryptoFiatInput: FunctionComponent<{
               onInput={(value) => {
                 onInput("crypto")(value);
                 setIsMax(false);
-                setHasSubtractedAmount(false);
               }}
               trailingSymbol={inputCoin.denom}
               isAutosize
@@ -241,7 +241,6 @@ export const CryptoFiatInput: FunctionComponent<{
               if (isMax) {
                 onInput("crypto")("0");
                 setIsMax(false);
-                setHasSubtractedAmount(false);
               } else {
                 onInput("crypto")(
                   trimPlaceholderZeros(asset.amount.toDec().toString())
@@ -253,7 +252,7 @@ export const CryptoFiatInput: FunctionComponent<{
               "body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80",
               {
                 "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
-                "!border-ammelia-500": isMax && hasSubtractedAmount,
+                "!border-ammelia-500": hasSubtractedAmount,
               }
             )}
           >
