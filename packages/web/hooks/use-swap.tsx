@@ -96,8 +96,7 @@ export function useSwap(
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
-  const { isOneClickTradingEnabled, oneClickTradingInfo } =
-    useOneClickTradingSession();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
