@@ -13,8 +13,9 @@ import { useMeasure } from "react-use";
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import {
@@ -100,16 +101,16 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
     ) ?? assetsInOsmosis?.[0];
 
   return (
-    <div className="mx-auto flex w-[512px] flex-col gap-1 py-12">
-      <h5 className="pb-6 text-center">
+    <div className="flex w-full flex-col gap-1 p-4 md:p-2">
+      <div className="pb-6 text-center text-h5 font-h5 1.5lg:pb-3 md:text-h6 md:font-h6">
         {t(
           direction === "withdraw"
             ? "transfer.confirmWithdrawTo"
             : "transfer.confirmDepositTo",
           { chain: toChain.prettyName }
         )}
-      </h5>
-      <p className="body1 pb-3 text-center text-osmoverse-400">
+      </div>
+      <p className="body1 1.5lg:caption pb-3 text-center text-osmoverse-400">
         {t(
           direction === "withdraw"
             ? "transfer.reviewWithdrawP"
@@ -127,7 +128,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           coin={quote.selectedQuote.quote.input.amount}
         />
       )}
-      <TransferDetails {...quote} />
+      <TransferDetails {...quote} fromDisplayChain={fromChain} />
       {quote.selectedQuote && (
         <AssetBox
           type="to"
@@ -142,20 +143,24 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
       )}
       <div className="flex w-full items-center gap-3 py-3">
         <Button
-          className="w-full"
+          className="w-full md:h-12"
           variant="secondary"
           onClick={onCancel}
           disabled={quote.isTxPending}
         >
-          <h6>{t("transfer.cancel")}</h6>
+          <div className="md:subtitle1 text-h6 font-h6">
+            {t("transfer.cancel")}
+          </div>
         </Button>
         <Button
           isLoading={quote.isTxPending}
-          className="w-full"
+          className="w-full md:h-12"
           onClick={onConfirm}
           disabled={!quote.userCanInteract}
         >
-          <h6>{t("transfer.confirm")}</h6>
+          <div className="md:subtitle1 text-h6 font-h6">
+            {t("transfer.confirm")}
+          </div>
         </Button>
       </div>
       <Link
@@ -189,34 +194,18 @@ const AssetBox: FunctionComponent<{
   isManualAddress,
 }) => {
   const { t } = useTranslation();
-  return (
-    <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
-      <div className="flex place-content-between items-center px-6 pt-4 pb-2">
-        <div className="flex items-center gap-3">
-          <Image alt="token image" src={assetImageUrl} width={48} height={48} />
-          <h6>
-            {t(type === "from" ? "transfer.transfer" : "transfer.receive", {
-              denom: coin.denom,
-            })}
-          </h6>
-        </div>
-        <div className="text-right">
-          <div className="subtitle1">
-            {type === "to" && "~"} {value.toString()}
-          </div>
-          <div className="body1 text-osmoverse-300">
-            {type === "to" && "~"} {coin.trim(true).toString()}
-          </div>
-        </div>
-      </div>
-      <div className="h-[1px] w-full self-center bg-osmoverse-700" />
-      <div className="flex place-content-between items-center px-6 pb-3 pt-1">
+  const { isMobile } = useWindowSize();
+
+  const ChainAndWallet = isMobile ? (
+    <div className="caption flex gap-2 px-3 pb-3 pt-1 text-osmoverse-300">
+      {t(type === "from" ? "transfer.from" : "transfer.to")}
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
           <ChainLogo
             prettyName={chain.prettyName}
             color={chain.color}
             logoUri={chain.logoUri}
+            size="xs"
           />{" "}
           <span>{chain.prettyName}</span>
         </div>
@@ -227,52 +216,114 @@ const AssetBox: FunctionComponent<{
             <Image
               alt="wallet image"
               src={walletImageUrl}
-              width={24}
-              height={24}
+              width={16}
+              height={16}
             />
           )}
-          <div className="body1 text-wosmongton-200">
-            {getShortAddress(address)}
+          <div className="text-wosmongton-200">
+            {getShortAddress(address, { prefixLength: 12 })}
           </div>
         </div>
       </div>
+    </div>
+  ) : (
+    <div className="flex place-content-between items-center px-6 pb-3 pt-1">
+      <div className="flex items-center gap-2">
+        {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
+        <ChainLogo
+          prettyName={chain.prettyName}
+          color={chain.color}
+          logoUri={chain.logoUri}
+        />{" "}
+        <span>{chain.prettyName}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
+        <div className="body1 text-wosmongton-200">
+          {getShortAddress(address)}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
+      <div className="flex place-content-between items-center px-6 pt-4 pb-2 md:px-3 md:pt-2 md:pb-1">
+        <div className="flex items-center gap-3">
+          <Image
+            alt="token image"
+            src={assetImageUrl}
+            width={isMobile ? 32 : 48}
+            height={isMobile ? 32 : 48}
+          />
+          <div className="md:flex md:flex-col md:gap-1">
+            <div className="md:body2 text-h6 font-h6">
+              {t(type === "from" ? "transfer.transfer" : "transfer.receive", {
+                denom: isMobile ? "" : coin.denom,
+              })}
+            </div>
+            {isMobile && (
+              <div className="caption text-osmoverse-300">{coin.denom}</div>
+            )}
+          </div>
+        </div>
+        <div className="text-right md:flex md:flex-col md:gap-1">
+          <div className="subtitle1 md:body2">
+            {type === "to" && "~"} {value.toString()}
+          </div>
+          <div className="body1 md:caption text-osmoverse-300">
+            {type === "to" && "~"}{" "}
+            {formatPretty(coin, {
+              maxDecimals: 10,
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="h-[1px] w-full self-center bg-osmoverse-700" />
+      {ChainAndWallet}
     </div>
   );
 };
 
 /** Assumes the first provider in the list is the selected provider. */
-const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
+const TransferDetails: FunctionComponent<
+  BridgeQuote & { fromDisplayChain: BridgeChainWithDisplayInfo }
+> = (quote) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
-
-  const { selectedQuote } = quote;
+  const { isMobile } = useWindowSize();
+  const { selectedQuote, fromDisplayChain } = quote;
 
   if (!selectedQuote) return null;
-  const { estimatedTime, fromChain } = selectedQuote;
 
+  const { estimatedTime } = selectedQuote;
   const estTime = estimatedTime.humanize();
+  const collapsedHeight = isMobile ? 46 : 74;
 
   return (
     <Disclosure>
       {({ open }) => (
         <div
-          className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
+          className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 85 // collapsed height
-              : 74,
+              ? (detailsHeight + detailsOffset ?? 288) + collapsedHeight + 20 // collapsed height
+              : collapsedHeight,
           }}
         >
-          <DisclosureButton className="flex place-content-between items-center py-3">
+          <DisclosureButton className="md:caption flex place-content-between items-center py-3 md:py-2">
             {open ? (
               <div className="subtitle1">{t("transfer.transferDetails")}</div>
             ) : (
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700">
-                  <Icon id="down-arrow" />
+              <div className="flex items-center gap-4 md:gap-1.5 md:text-osmoverse-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700 md:h-8 md:w-8">
+                  <Icon id="down-arrow" className="md:h-4 md:w-4" />
                 </div>
-                <div>{estTime} ETA</div>
+                <div className="flex items-center gap-1">
+                  <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
+                  <p>{estTime}</p>
+                </div>
               </div>
             )}
             <ExpandDetailsControlContent
@@ -284,7 +335,7 @@ const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
               open={open}
             />
           </DisclosureButton>
-          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-4">
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-3">
             <BridgeProviderDropdownRow
               successfulQuotes={quote.successfulQuotes}
               setSelectedBridgeProvider={quote.setSelectedBridgeProvider}
@@ -302,7 +353,7 @@ const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
             <NetworkFeeRow
               isRefetchingQuote={quote.isRefetchingQuote}
               selectedQuote={selectedQuote}
-              fromChainName={fromChain?.chainName}
+              fromChainName={fromDisplayChain.prettyName}
             />
             <TotalFeesRow
               isRefetchingQuote={quote.isRefetchingQuote}

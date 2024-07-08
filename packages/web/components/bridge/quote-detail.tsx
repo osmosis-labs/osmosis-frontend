@@ -184,16 +184,16 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 md:gap-1">
       {!isNil(selectedQuoteUpdatedAt) && (
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
         />
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 md:gap-1">
         {!open && totalFees && (
-          <span className="body1">
+          <span className="subtitle1 md:body2">
             ~{totalFees.toString()} {t("transfer.fees")}
           </span>
         )}
@@ -233,7 +233,7 @@ export const QuoteDetailRow: FunctionComponent<
     isLoading: boolean;
   }>
 > = ({ label, children, isLoading }) => (
-  <div className="body2 flex justify-between">
+  <div className="body2 md:caption flex justify-between">
     <p className="text-osmoverse-300">{label}</p>
     <span
       className={classNames({

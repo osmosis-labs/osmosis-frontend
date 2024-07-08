@@ -971,7 +971,7 @@
     "provider": "Fornecedor",
     "estimatedTime": "Tempo estimado",
     "providerFees": "Taxas do provedor",
-    "networkFee": "{networkName} Taxa de rede",
+    "networkFee": "{networkName} taxa de rede",
     "totalFees": "Taxas totais",
     "estimatedAmountReceived": "Valor estimado recebido",
     "slippageWarning": "O resultado esperado para esta transação é significativamente inferior ao valor do insumo, o que pode resultar no recebimento de um valor final diferente do esperado.",
