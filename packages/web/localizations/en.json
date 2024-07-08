@@ -529,7 +529,7 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Spend Limit",
+      "spendLimitTitle": "Loss protection limit",
       "networkFeeLimitTitle": "Network fee limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
@@ -537,11 +537,11 @@
       "endingSession": "Ending session",
       "feeToDisable": "Fee to disable 1-Click Trading:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
+        "spendLimitDescription": "Trade without limits on trusted assets (top 50 by market cap).",
+        "spendLimitSubDescription": "For all other assets, set a limit on the maximum tradable value before requiring manual wallet approval. Trading fees also count towards this limit.",
         "fixedAmount": "Fixed amount",
         "shareOfBalance": "Share of balance",
-        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
-        "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
+        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth"
       },
       "networkFeeLimitScreen": {
         "title": "Network fee limit",

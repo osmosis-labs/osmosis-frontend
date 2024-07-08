@@ -529,7 +529,7 @@
       "header": "Handel jednym kliknięciem",
       "description": "Handel 1-Click pozwala bezpiecznie handlować na tym urządzeniu bez konieczności podpisywania każdej transakcji w portfelu.",
       "enableTitle": "Włącz handel jednym kliknięciem",
-      "spendLimitTitle": "Limit wydatków",
+      "spendLimitTitle": "Limit ochrony przed stratą",
       "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
       "startButton": "Rozpocznij handel jednym kliknięciem",
@@ -537,11 +537,11 @@
       "endingSession": "Zakończenie sesji",
       "feeToDisable": "Opłata za wyłączenie handlu jednym kliknięciem:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Ustaw maksymalną kwotę, jaką możesz wydać w okresie sesji handlu jednym kliknięciem.",
+        "spendLimitDescription": "Handluj bez ograniczeń zaufanymi aktywami (50 najlepszych według kapitalizacji rynkowej).",
+        "spendLimitSubDescription": "W przypadku wszystkich pozostałych aktywów ustaw limit maksymalnej wartości zbywalnej przed zażądaniem ręcznego zatwierdzenia portfela. Opłaty transakcyjne również wliczają się do tego limitu.",
         "fixedAmount": "Stała kwota",
         "shareOfBalance": "Udział równowagi",
-        "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte",
-        "fluctuationNotice": "Pamiętaj, że wartość Twojego limitu wydatków w USD opiera się na wartości Twoich aktywów, która może się zmieniać."
+        "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte"
       },
       "networkFeeLimitScreen": {
         "title": "Limit opłat sieciowych",

@@ -529,7 +529,7 @@
       "header": "Comercio con 1 clic",
       "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
       "enableTitle": "Habilite el comercio con 1 clic",
-      "spendLimitTitle": "Límite de gasto",
+      "spendLimitTitle": "Límite de protección de pérdidas",
       "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
       "startButton": "Comience a operar con 1 clic",
@@ -537,11 +537,11 @@
       "endingSession": "Finalizando sesión",
       "feeToDisable": "Tarifa para desactivar el comercio con 1 clic:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Establezca la cantidad máxima que puede gastar dentro de un período de sesión de negociación con 1 clic.",
+        "spendLimitDescription": "Opere sin límites con activos confiables (50 principales por capitalización de mercado).",
+        "spendLimitSubDescription": "Para todos los demás activos, establezca un límite en el valor máximo negociable antes de requerir la aprobación manual de la billetera. Las tarifas comerciales también cuentan para este límite.",
         "fixedAmount": "Cantidad fija",
         "shareOfBalance": "Participación del saldo",
-        "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente",
-        "fluctuationNotice": "Tenga en cuenta que el valor en USD de su límite de gasto se basa en el valor de sus activos, que pueden fluctuar."
+        "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente"
       },
       "networkFeeLimitScreen": {
         "title": "Límite de tarifa de red",

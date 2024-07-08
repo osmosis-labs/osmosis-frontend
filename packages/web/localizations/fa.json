@@ -529,7 +529,7 @@
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
       "enableTitle": "تجارت 1 کلیکی را فعال کنید",
-      "spendLimitTitle": "محدودیت هزینه",
+      "spendLimitTitle": "حد حفاظت از دست دادن",
       "networkFeeLimitTitle": "محدودیت هزینه شبکه",
       "sessionPeriodTitle": "دوره جلسه",
       "startButton": "شروع تجارت با 1 کلیک",
@@ -537,11 +537,11 @@
       "endingSession": "پایان جلسه",
       "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
       "spendLimitScreen": {
-        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "spendLimitDescription": "تجارت بدون محدودیت در دارایی های مورد اعتماد (50 برتر از نظر ارزش بازار).",
+        "spendLimitSubDescription": "برای همه دارایی‌های دیگر، قبل از نیاز به تأیید کیف پول دستی، محدودیتی برای حداکثر ارزش قابل معامله تعیین کنید. کارمزد معاملات نیز در این حد محاسبه می شود.",
         "fixedAmount": "مقدار ثابت",
         "shareOfBalance": "سهم تعادل",
-        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
-        "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد"
       },
       "networkFeeLimitScreen": {
         "title": "محدودیت هزینه شبکه",

@@ -529,7 +529,7 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Ausgabenlimit",
+      "spendLimitTitle": "Verlustschutzgrenze",
       "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
@@ -537,11 +537,11 @@
       "endingSession": "Sitzung beenden",
       "feeToDisable": "Gebühr für die Deaktivierung des 1-Click-Handels:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
+        "spendLimitDescription": "Handeln Sie unbegrenzt mit vertrauenswürdigen Vermögenswerten (Top 50 nach Marktkapitalisierung).",
+        "spendLimitSubDescription": "Legen Sie für alle anderen Vermögenswerte ein Limit für den maximal handelbaren Wert fest, bevor Sie eine manuelle Wallet-Genehmigung verlangen. Handelsgebühren werden ebenfalls auf dieses Limit angerechnet.",
         "fixedAmount": "Fester Betrag",
         "shareOfBalance": "Anteil des Guthabens",
-        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
-        "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
+        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert"
       },
       "networkFeeLimitScreen": {
         "title": "Begrenzung der Netzwerkgebühr",

@@ -529,7 +529,7 @@
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "支出制限",
+      "spendLimitTitle": "損失保護限度額",
       "networkFeeLimitTitle": "ネットワーク料金の制限",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
@@ -537,11 +537,11 @@
       "endingSession": "セッションの終了",
       "feeToDisable": "1-Click 取引を無効にする料金:",
       "spendLimitScreen": {
-        "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
+        "spendLimitDescription": "信頼できる資産（時価総額上位 50 位）を制限なく取引します。",
+        "spendLimitSubDescription": "その他のすべての資産については、ウォレットの手動承認が必要になる前に、取引可能な最大額に制限を設定します。取引手数料もこの制限に含まれます。",
         "fixedAmount": "定額",
         "shareOfBalance": "残高のシェア",
-        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
-        "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
+        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります"
       },
       "networkFeeLimitScreen": {
         "title": "ネットワーク料金の制限",

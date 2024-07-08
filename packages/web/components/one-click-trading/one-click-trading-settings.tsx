@@ -215,22 +215,21 @@ export const OneClickTradingSettings = ({
         onCancel={closeCloseConfirmDialog}
         onDiscard={onClose!}
       />
+      {onClose && (
+        <ModalCloseButton
+          onClick={() => {
+            if (changes.length > 0) {
+              return openCloseConfirmDialog();
+            }
+
+            onClose();
+          }}
+        />
+      )}
       <ScreenManager defaultScreen={SettingsScreens.Main}>
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName="main">
-              {onClose && (
-                <ModalCloseButton
-                  onClick={() => {
-                    if (changes.length > 0) {
-                      return openCloseConfirmDialog();
-                    }
-
-                    onClose();
-                  }}
-                />
-              )}
-
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
                   <IconButton

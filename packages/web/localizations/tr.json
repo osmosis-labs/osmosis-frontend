@@ -529,7 +529,7 @@
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
       "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
-      "spendLimitTitle": "Harcama Limiti",
+      "spendLimitTitle": "Kayıp koruma limiti",
       "networkFeeLimitTitle": "Ağ ücreti limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
@@ -537,11 +537,11 @@
       "endingSession": "Oturumu sonlandır",
       "feeToDisable": "Tek Tıkla Ticareti devre dışı bırakma ücreti:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
+        "spendLimitDescription": "Güvenilir varlıklar üzerinde sınırsız ticaret yapın (piyasa değerine göre ilk 50).",
+        "spendLimitSubDescription": "Diğer tüm varlıklar için, manuel cüzdan onayı gerektirmeden önce, alınıp satılabilen maksimum değere bir sınır belirleyin. İşlem ücretleri de bu limite dahil edilir.",
         "fixedAmount": "Sabit miktar",
         "shareOfBalance": "Bakiye payı",
-        "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir",
-        "fluctuationNotice": "Harcama limitinizin ABD doları değerinin, varlıklarınızın dalgalanabilecek değerine bağlı olduğunu unutmayın."
+        "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir"
       },
       "networkFeeLimitScreen": {
         "title": "Ağ ücreti limiti",

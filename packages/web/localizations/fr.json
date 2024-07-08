@@ -529,7 +529,7 @@
       "header": "Trading en 1 clic",
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
       "enableTitle": "Activer le trading en 1 clic",
-      "spendLimitTitle": "Limite de dépenses",
+      "spendLimitTitle": "Limite de protection contre les pertes",
       "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic",
@@ -537,11 +537,11 @@
       "endingSession": "Fin de la séance",
       "feeToDisable": "Frais pour désactiver le trading en 1 clic :",
       "spendLimitScreen": {
-        "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
+        "spendLimitDescription": "Négociez sans limites sur les actifs de confiance (top 50 par capitalisation boursière).",
+        "spendLimitSubDescription": "Pour tous les autres actifs, fixez une limite à la valeur maximale négociable avant d’exiger l’approbation manuelle du portefeuille. Les frais de négociation sont également pris en compte dans cette limite.",
         "fixedAmount": "Montant fixé",
         "shareOfBalance": "Part du solde",
-        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement",
-        "fluctuationNotice": "Sachez que la valeur en USD de votre limite de dépenses est basée sur la valeur de vos actifs, qui peut fluctuer."
+        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement"
       },
       "networkFeeLimitScreen": {
         "title": "Limite des frais de réseau",
