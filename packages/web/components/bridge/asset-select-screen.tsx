@@ -29,7 +29,6 @@ const variantsNotToBeExcluded = [
 ] satisfies (MainnetVariantGroupKeys | TestnetVariantGroupKeys)[];
 const prioritizedDenoms = [
   "USDC",
-  "OSMO",
   "ETH",
   "SOL",
   "USDT",
@@ -37,6 +36,13 @@ const prioritizedDenoms = [
   "ATOM",
   "TIA",
 ] satisfies (MainnetAssetSymbols | TestnetAssetSymbols)[];
+
+// Deprioritize native assets. They can still be bridged, but we avoid
+// showing them at the top of the list
+const deprioritizedDenoms = ["OSMO", "ION"] satisfies (
+  | MainnetAssetSymbols
+  | TestnetAssetSymbols
+)[];
 
 interface AssetSelectScreenProps {
   type: "deposit" | "withdraw";
@@ -79,7 +85,8 @@ export const AssetSelectScreen = observer(
           includePreview: showPreviewAssets,
           variantsNotToBeExcluded,
           prioritizedDenoms,
-          limit: 50, // items per page
+          deprioritizedDenoms,
+          limit: 100, // items per page
         },
         {
           getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -209,7 +216,9 @@ export const AssetSelectScreen = observer(
               <Intersection
                 className="-mt-20"
                 onVisible={() => {
+                  console.log("on visible");
                   if (canLoadMore) {
+                    console.log("fetchNextPage");
                     fetchNextPage();
                   }
                 }}
