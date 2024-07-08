@@ -125,6 +125,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
+              setInputMax={swapState.inAmountInput.toggleMax}
+              quoteBalance={swapState.quoteTokenBalance?.toDec()}
+              baseBalance={swapState.baseTokenBalance?.toDec()}
             />
           </div>
           <>
@@ -176,14 +179,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       (swapState.marketState.inAmountInput.isEmpty ||
                         !Boolean(swapState.marketState.quote) ||
                         Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError))) ||
+                        Boolean(swapState.marketState.networkFeeError) ||
+                        swapState.marketState.isQuoteLoading)) ||
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    swapState.marketState.isQuoteLoading
+                    swapState.isMakerFeeLoading
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.isQuoteLoading ||
+                        swapState.marketState.isLoadingNetworkFee ||
+                        swapState.marketState.isLoadingSelectAssets)) ||
                     orderbookAssetsLoading
                   }
                   loadingText={t("assets.transfer.loading")}

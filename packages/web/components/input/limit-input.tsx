@@ -17,6 +17,9 @@ export interface LimitInputProps {
   insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
+  quoteBalance?: Dec;
+  baseBalance?: Dec;
+  setInputMax: () => void;
 }
 
 export enum FocusedInput {
@@ -49,9 +52,14 @@ export const LimitInput: FC<LimitInputProps> = ({
   insufficentFunds,
   disableSwitching,
   setMarketAmount,
+  setInputMax,
   quoteAssetPrice,
+  quoteBalance,
+  baseBalance,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
+  const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
+  const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
@@ -87,7 +95,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       if (tab === "buy" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? setFiatAmount(updatedValue)
         : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
@@ -102,12 +110,50 @@ export const LimitInput: FC<LimitInputProps> = ({
       if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
         return;
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? onChange(updatedValue)
         : onChange(formatPretty(new Dec(updatedValue)));
     },
     [onChange, focused]
   );
+
+  const toggleMax = useCallback(() => {
+    // Toggle the max flag and cache the current input
+    setNonMaxAmount(max ? "" : fiatAmount);
+    setMax((p) => !p);
+    // When selling we want to use the limit input max amount as it uses the base balance
+    if (tab === "sell") {
+      if (!baseBalance) return;
+      setInputMax();
+      // Update the fiat amount to correspend with the new token amount
+      const value = baseBalance;
+      const fiatValue = price.mul(value);
+      const newFiatAmount = !max ? fiatValue.toString() : nonMaxAmount;
+      setFiatAmountSafe(newFiatAmount);
+    } else {
+      if (!quoteBalance) return;
+      // Update the fiat amount, use the cached amount if disabling the max flag
+      const newFiatAmount = !max ? quoteBalance.toString() : nonMaxAmount;
+      setFiatAmountSafe(newFiatAmount);
+
+      // Update the token value to correspend with the new fiat amount
+      const value =
+        newFiatAmount && newFiatAmount.length > 0 ? newFiatAmount : "0";
+      const tokenValue = new Dec(value).quo(price);
+      setTokenAmountSafe(tokenValue.isZero() ? "" : formatPretty(tokenValue));
+    }
+  }, [
+    fiatAmount,
+    max,
+    nonMaxAmount,
+    setFiatAmountSafe,
+    quoteBalance,
+    price,
+    setTokenAmountSafe,
+    setInputMax,
+    tab,
+    baseBalance,
+  ]);
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
@@ -138,7 +184,10 @@ export const LimitInput: FC<LimitInputProps> = ({
           disableSwitching={disableSwitching}
         />
       ))}
-      <button className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
+      <button
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        onClick={toggleMax}
+      >
         <span className="body2 text-wosmongton-200">Max</span>
       </button>
     </div>
@@ -153,7 +202,12 @@ type AutoInputProps = {
   type: "fiat" | "token";
 } & Omit<
   LimitInputProps,
-  "onChange" | "price" | "tokenAmount" | "setMarketAmount" | "quoteAssetPrice"
+  | "onChange"
+  | "price"
+  | "tokenAmount"
+  | "setMarketAmount"
+  | "quoteAssetPrice"
+  | "setInputMax"
 >;
 
 function AutoInput({
