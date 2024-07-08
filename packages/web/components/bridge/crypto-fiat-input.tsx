@@ -92,7 +92,6 @@ export const CryptoFiatInput: FunctionComponent<{
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
       }
-
       if (nextValue === "") {
         nextValue = "0";
       }
@@ -149,10 +148,14 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${new IntPretty(fiatInputRaw)
-    .locale(false)
-    .trim(true)
-    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)}`;
+  const fiatCurrentValue = `${assetPrice.symbol}${
+    fiatInputRaw.endsWith(".")
+      ? fiatInputRaw
+      : new IntPretty(fiatInputRaw)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+  }`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile
