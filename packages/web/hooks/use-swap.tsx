@@ -222,35 +222,6 @@ export function useSwap(
   });
   const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
-  const hasExceededOneClickTradingGasLimit = useMemo(() => {
-    if (
-      !isOneClickTradingEnabled ||
-      !oneClickTradingInfo ||
-      inAmountInput.isEmpty
-    ) {
-      return false;
-    }
-
-    const networkFeeLimit = new CoinPretty(
-      oneClickTradingInfo.networkFeeLimit,
-      oneClickTradingInfo.networkFeeLimit.amount
-    );
-
-    if (
-      networkFee?.gasAmount.denom === networkFeeLimit.denom &&
-      networkFee?.gasAmount.toDec().gt(networkFeeLimit.toDec())
-    ) {
-      return true;
-    }
-
-    return false;
-  }, [
-    inAmountInput.isEmpty,
-    isOneClickTradingEnabled,
-    networkFee,
-    oneClickTradingInfo,
-  ]);
-
   const hasOverSpendLimitError = useMemo(() => {
     if (
       !networkFeeError?.message ||
@@ -314,13 +285,11 @@ export function useSwap(
           const shouldBeSignedWithOneClickTrading =
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
             !networkFeeError;
 
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
             networkFeeError
           ) {
             try {
@@ -427,7 +396,6 @@ export function useSwap(
       isOneClickTradingEnabled,
       accountStore,
       hasOverSpendLimitError,
-      hasExceededOneClickTradingGasLimit,
       networkFeeError,
       featureFlags.swapToolSimulateFee,
       networkFee,
@@ -530,7 +498,6 @@ export function useSwap(
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
-    hasExceededOneClickTradingGasLimit,
   };
 }
 

@@ -530,7 +530,6 @@
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
       "enableTitle": "Activer le trading en 1 clic",
       "spendLimitTitle": "Limite de protection contre les pertes",
-      "networkFeeLimitTitle": "Limite des frais de réseau",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
@@ -542,15 +541,6 @@
         "fixedAmount": "Montant fixé",
         "shareOfBalance": "Part du solde",
         "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement"
-      },
-      "networkFeeLimitScreen": {
-        "title": "Limite des frais de réseau",
-        "description": "Définissez le montant maximum que vous pouvez dépenser en frais de réseau pour toute transaction unique au cours de votre session de trading en 1 clic.",
-        "info": "Si les frais dépassent ce montant, vous pouvez procéder en signant manuellement les transactions dans votre portefeuille.",
-        "low": "Faible",
-        "average": "Moyenne",
-        "high": "Haut",
-        "recommended": "Recommandé"
       },
       "sessionPeriodScreen": {
         "title": "Période de séance",

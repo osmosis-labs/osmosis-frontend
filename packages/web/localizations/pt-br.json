@@ -530,7 +530,6 @@
       "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
       "enableTitle": "Habilite a negociação em 1 clique",
       "spendLimitTitle": "Limite de proteção contra perdas",
-      "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
@@ -542,15 +541,6 @@
         "fixedAmount": "Quantia fixa",
         "shareOfBalance": "Participação no saldo",
         "shareOfBalanceDescription": "{shareOfBalance} do seu saldo total no Osmosis vale atualmente"
-      },
-      "networkFeeLimitScreen": {
-        "title": "Limite de taxa de rede",
-        "description": "Defina o valor máximo que você pode gastar em taxas de rede para qualquer transação durante sua sessão de negociação com 1 clique.",
-        "info": "Se uma taxa exceder esse valor, você poderá assinar manualmente as transações em sua carteira.",
-        "low": "Baixo",
-        "average": "Média",
-        "high": "Alto",
-        "recommended": "Recomendado"
       },
       "sessionPeriodScreen": {
         "title": "Período da sessão",

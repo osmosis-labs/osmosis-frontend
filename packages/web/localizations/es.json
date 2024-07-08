@@ -530,7 +530,6 @@
       "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
       "enableTitle": "Habilite el comercio con 1 clic",
       "spendLimitTitle": "Límite de protección de pérdidas",
-      "networkFeeLimitTitle": "Límite de tarifa de red",
       "sessionPeriodTitle": "Período de sesión",
       "startButton": "Comience a operar con 1 clic",
       "editSessionButton": "Guardar cambios",
@@ -542,15 +541,6 @@
         "fixedAmount": "Cantidad fija",
         "shareOfBalance": "Participación del saldo",
         "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente"
-      },
-      "networkFeeLimitScreen": {
-        "title": "Límite de tarifa de red",
-        "description": "Establezca el monto máximo que puede gastar en tarifas de red para cualquier transacción durante su sesión de Trading con 1 clic.",
-        "info": "Si una tarifa excede este monto, puede proceder firmando manualmente las transacciones en su billetera.",
-        "low": "Bajo",
-        "average": "Promedio",
-        "high": "Alto",
-        "recommended": "Recomendado"
       },
       "sessionPeriodScreen": {
         "title": "Período de sesión",

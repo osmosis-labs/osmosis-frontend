@@ -15,7 +15,6 @@ import React, {
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getSessionPeriodTranslationKey,
   SessionPeriodScreen,
@@ -32,7 +31,6 @@ import {
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -41,7 +39,6 @@ type Classes = "root";
 enum SettingsScreens {
   Main = "main",
   SpendLimit = "spendLimit",
-  NetworkFeeLimit = "networkFeeLimit",
   SessionPeriod = "sessionPeriod",
 }
 
@@ -72,20 +69,11 @@ export function compare1CTTransactionParams({
 }: {
   prevParams: OneClickTradingTransactionParams;
   nextParams: OneClickTradingTransactionParams;
-}): Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"> {
-  let changes = new Set<
-    "spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"
-  >();
+}): Array<"spendLimit" | "resetPeriod" | "sessionPeriod"> {
+  let changes = new Set<"spendLimit" | "resetPeriod" | "sessionPeriod">();
 
   if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
     changes.add("spendLimit");
-  }
-
-  if (
-    prevParams?.networkFeeLimit.toString() !==
-    nextParams?.networkFeeLimit.toString()
-  ) {
-    changes.add("networkFeeLimit");
   }
 
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
@@ -117,7 +105,7 @@ export const OneClickTradingSettings = ({
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
-    Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
+    Array<"spendLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
@@ -341,39 +329,6 @@ export const OneClickTradingSettings = ({
                     isDisabled={isDisabled}
                   />
                   <SettingRow
-                    title={t("oneClickTrading.settings.networkFeeLimitTitle")}
-                    onClick={() =>
-                      setCurrentScreen(SettingsScreens.NetworkFeeLimit)
-                    }
-                    content={
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className={classNames(
-                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
-                          changes.includes("networkFeeLimit") &&
-                            "text-bullish-400"
-                        )}
-                        disabled={isDisabled}
-                      >
-                        <p>
-                          {transaction1CTParams
-                            ? formatPretty(
-                                transaction1CTParams?.networkFeeLimit
-                              )
-                            : ""}
-                        </p>
-                        <Icon
-                          id="chevron-right"
-                          width={18}
-                          height={18}
-                          className="text-osmoverse-500 group-hover:text-white-full"
-                        />
-                      </Button>
-                    }
-                    isDisabled={isDisabled}
-                  />
-                  <SettingRow
                     title={t("oneClickTrading.settings.sessionPeriodTitle")}
                     onClick={() =>
                       setCurrentScreen(SettingsScreens.SessionPeriod)
@@ -476,17 +431,6 @@ export const OneClickTradingSettings = ({
                       ? `${remainingSpendLimit} ${t("remaining")}`
                       : undefined
                   }
-                />
-              </div>
-            </Screen>
-
-            <Screen screenName={SettingsScreens.NetworkFeeLimit}>
-              <div
-                className={classNames("flex flex-col gap-12", classes?.root)}
-              >
-                <NetworkFeeLimitScreen
-                  transaction1CTParams={transaction1CTParams!}
-                  setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
             </Screen>
