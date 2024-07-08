@@ -535,8 +535,6 @@ export const AmountScreen = observer(
       setFiatAmount("0");
     };
 
-    console.log(manualToAddress);
-
     const dropdownActiveItemIcon = (
       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-ammelia-400">
         <Icon id="check-mark" className="text-osmoverse-700" width={14} />
