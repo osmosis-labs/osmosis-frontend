@@ -142,7 +142,6 @@
       "failed": "نا موفق",
       "failedWithReason": "دلیل: {reason}",
       "pending": "معلق",
-      "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",
@@ -151,7 +150,8 @@
       "successDeposit": "سپرده شد",
       "successWithdraw": "عقب نشینی کرد",
       "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود"
+      "failWithdraw": "برداشت ناموفق بود",
+      "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",

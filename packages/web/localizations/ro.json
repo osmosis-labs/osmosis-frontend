@@ -142,7 +142,6 @@
       "failed": "A eșuat",
       "failedWithReason": "A eșuat: {reason}",
       "pending": "In Asteptare",
-      "pendingRefunded": "Esuat: Ramburs in asteptare",
       "refunded": "Rambursat",
       "success": "Succes",
       "title": "Istoric Transferuri",
@@ -151,7 +150,8 @@
       "successDeposit": "Depunere reușită",
       "successWithdraw": "Retragere reușită",
       "failDeposit": "Depunere nereușită",
-      "failWithdraw": "Retragere nereușită"
+      "failWithdraw": "Retragere nereușită",
+      "connectionError": "Eroare de conexiune"
     },
     "ibcTransfer": {
       "buttonAdd": "Adăuga",

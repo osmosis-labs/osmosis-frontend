@@ -142,7 +142,6 @@
       "failed": "Przegrany",
       "failedWithReason": "Przegrany: {reason}",
       "pending": "Oczekujące",
-      "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
@@ -151,7 +150,8 @@
       "successDeposit": "Zdeponowane",
       "successWithdraw": "Wycofał się",
       "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się"
+      "failWithdraw": "Wypłata nie powiodła się",
+      "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",

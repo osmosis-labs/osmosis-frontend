@@ -142,7 +142,6 @@
       "failed": "失败的",
       "failedWithReason": "失败的: {reason}",
       "pending": "处理中",
-      "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "已退出",
       "failDeposit": "存款失败",
-      "failWithdraw": "提现失败"
+      "failWithdraw": "提现失败",
+      "connectionError": "连接错误"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",

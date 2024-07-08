@@ -142,7 +142,6 @@
       "failed": "Fallida",
       "failedWithReason": "Fallida: {reason}",
       "pending": "Pendiente",
-      "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
@@ -151,7 +150,8 @@
       "successDeposit": "Depositado",
       "successWithdraw": "se retiró",
       "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido"
+      "failWithdraw": "Retiro fallido",
+      "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",

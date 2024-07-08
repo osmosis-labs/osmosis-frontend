@@ -142,7 +142,6 @@
       "failed": "실패했습니다",
       "failedWithReason": "실패: {reason}",
       "pending": "보류중",
-      "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",
@@ -151,7 +150,8 @@
       "successDeposit": "입금됨",
       "successWithdraw": "철수",
       "failDeposit": "입금 실패",
-      "failWithdraw": "출금 실패"
+      "failWithdraw": "출금 실패",
+      "connectionError": "연결 오류"
     },
     "ibcTransfer": {
       "buttonAdd": "추가하다",

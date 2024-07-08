@@ -142,7 +142,6 @@
       "failed": "असफल",
       "failedWithReason": "विफल: {reason}",
       "pending": "लंबित",
-      "pendingRefunded": "विफल: धनवापसी लंबित है",
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
@@ -151,7 +150,8 @@
       "successDeposit": "जमा किया",
       "successWithdraw": "वापस ले लिया",
       "failDeposit": "जमा विफल",
-      "failWithdraw": "निकासी विफल"
+      "failWithdraw": "निकासी विफल",
+      "connectionError": "संपर्क त्रुटि"
     },
     "ibcTransfer": {
       "buttonAdd": "जोड़ना",
