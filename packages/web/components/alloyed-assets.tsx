@@ -68,7 +68,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
   }
 
   return (
-    <section>
+    <section className={className}>
       <h3 className="mb-8 text-h6 font-semibold">
         {t("tokenInfos.underlyingAssets.title")}
       </h3>
