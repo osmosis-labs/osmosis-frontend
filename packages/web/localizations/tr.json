@@ -836,9 +836,7 @@
     "continueAnyway": "Her halükarda devam et",
     "warning": {
       "exceedsSpendLimit": "Bu takas, Tek Tıklamayla Ticaret için kalan harcama limitinizi aşıyor.",
-      "exceedsNetworkFeeLimit": "Bu takas, Tek Tıklamayla Ticaret için ağ ücreti limitinizi aşıyor.",
-      "increaseSpendLimit": "Harcama sınırını artırın",
-      "increaseNetworkFeeLimit": "Ağ ücreti sınırını artırın"
+      "increaseSpendLimit": "Harcama sınırını artırın"
     },
     "settings": {
       "slippage": "Slipaj toleransı",

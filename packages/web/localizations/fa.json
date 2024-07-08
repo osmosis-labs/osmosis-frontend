@@ -836,9 +836,7 @@
     "continueAnyway": "ادامه دادن به هر طریق",
     "warning": {
       "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
-      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
-      "increaseSpendLimit": "افزایش سقف هزینه",
-      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+      "increaseSpendLimit": "افزایش سقف هزینه"
     },
     "settings": {
       "slippage": "تغیرات قابل قبول",

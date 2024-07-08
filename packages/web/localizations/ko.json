@@ -836,9 +836,7 @@
     "continueAnyway": "계속 진행",
     "warning": {
       "exceedsSpendLimit": "이 교환은 1-클릭 거래에 대한 남은 지출 한도를 초과합니다.",
-      "exceedsNetworkFeeLimit": "이 스왑은 1-클릭 거래에 대한 네트워크 수수료 한도를 초과합니다.",
-      "increaseSpendLimit": "지출 한도 늘리기",
-      "increaseNetworkFeeLimit": "네트워크 수수료 한도 인상"
+      "increaseSpendLimit": "지출 한도 늘리기"
     },
     "settings": {
       "slippage": "슬리피지 허용치",

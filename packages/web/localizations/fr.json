@@ -836,9 +836,7 @@
     "continueAnyway": "Continuer quand même",
     "warning": {
       "exceedsSpendLimit": "Cet échange dépasse votre limite de dépenses restantes pour le trading en 1 clic.",
-      "exceedsNetworkFeeLimit": "Ce swap dépasse votre limite de frais de réseau pour le trading en 1 clic.",
-      "increaseSpendLimit": "Augmenter la limite de dépenses",
-      "increaseNetworkFeeLimit": "Augmenter la limite des frais de réseau"
+      "increaseSpendLimit": "Augmenter la limite de dépenses"
     },
     "settings": {
       "slippage": "Tolérance de glissement",

@@ -836,9 +836,7 @@
     "continueAnyway": "Kontynuować mimo to",
     "warning": {
       "exceedsSpendLimit": "Ta zamiana przekracza pozostały limit wydatków w ramach handlu jednym kliknięciem.",
-      "exceedsNetworkFeeLimit": "Ta zamiana przekracza limit opłat sieciowych dla handlu jednym kliknięciem.",
-      "increaseSpendLimit": "Zwiększ limit wydatków",
-      "increaseNetworkFeeLimit": "Zwiększ limit opłat sieciowych"
+      "increaseSpendLimit": "Zwiększ limit wydatków"
     },
     "settings": {
       "slippage": "Tolerowane odchylenie",

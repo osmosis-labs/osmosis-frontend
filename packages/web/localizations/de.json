@@ -836,9 +836,7 @@
     "continueAnyway": "Mache trotzdem weiter",
     "warning": {
       "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
-      "exceedsNetworkFeeLimit": "Dieser Swap überschreitet Ihr Netzwerkgebührenlimit für 1-Click-Handel.",
-      "increaseSpendLimit": "Ausgabenlimit erhöhen",
-      "increaseNetworkFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit"
+      "increaseSpendLimit": "Ausgabenlimit erhöhen"
     },
     "settings": {
       "slippage": "Rutschtoleranz",

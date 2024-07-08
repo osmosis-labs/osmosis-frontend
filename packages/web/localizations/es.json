@@ -836,9 +836,7 @@
     "continueAnyway": "De todas maneras, continúe",
     "warning": {
       "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
-      "exceedsNetworkFeeLimit": "Este intercambio excede el límite de tarifa de su red para 1-Click Trading.",
-      "increaseSpendLimit": "Aumentar el límite de gasto",
-      "increaseNetworkFeeLimit": "Aumentar el límite de la tarifa de red"
+      "increaseSpendLimit": "Aumentar el límite de gasto"
     },
     "settings": {
       "slippage": "Tolerancia de deslizamiento",

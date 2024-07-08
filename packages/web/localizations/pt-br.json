@@ -836,9 +836,7 @@
     "continueAnyway": "Continue de qualquer maneira",
     "warning": {
       "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
-      "exceedsNetworkFeeLimit": "Esta troca excede o limite de taxa de rede para negociação com 1 clique.",
-      "increaseSpendLimit": "Aumentar o limite de gastos",
-      "increaseNetworkFeeLimit": "Aumentar o limite de taxa de rede"
+      "increaseSpendLimit": "Aumentar o limite de gastos"
     },
     "settings": {
       "slippage": "Tolerância de spread",

@@ -222,10 +222,6 @@ export const useCreateOneClickTradingSession = ({
         );
       }
 
-      const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
-      const isOneClickTradingEnabled =
-        await accountStore.isOneCLickTradingEnabled();
-
       let authenticators: ParsedAuthenticator[];
       try {
         ({ authenticators } =

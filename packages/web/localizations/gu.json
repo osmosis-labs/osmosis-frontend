@@ -836,9 +836,7 @@
     "continueAnyway": "કોઈપણ રીતે ચાલુ રાખો",
     "warning": {
       "exceedsSpendLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી બાકીની ખર્ચ મર્યાદાને ઓળંગે છે.",
-      "exceedsNetworkFeeLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી નેટવર્ક ફી મર્યાદાને ઓળંગે છે.",
-      "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો",
-      "increaseNetworkFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો"
+      "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો"
     },
     "settings": {
       "slippage": "સ્લિપેજ સહનશીલતા",

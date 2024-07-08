@@ -836,9 +836,7 @@
     "continueAnyway": "とにかく続けます",
     "warning": {
       "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
-      "exceedsNetworkFeeLimit": "このスワップは、1 クリック取引のネットワーク手数料制限を超えています。",
-      "increaseSpendLimit": "支出制限を増やす",
-      "increaseNetworkFeeLimit": "ネットワーク料金の上限を引き上げる"
+      "increaseSpendLimit": "支出制限を増やす"
     },
     "settings": {
       "slippage": "滑り許容差",

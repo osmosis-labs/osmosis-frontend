@@ -836,9 +836,7 @@
     "continueAnyway": "无论如何继续",
     "warning": {
       "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",
-      "exceedsNetworkFeeLimit": "此交换超出了一键交易的网络费用限制。",
-      "increaseSpendLimit": "提高支出限额",
-      "increaseNetworkFeeLimit": "提高网络费用限额"
+      "increaseSpendLimit": "提高支出限额"
     },
     "settings": {
       "slippage": "滑点上限",

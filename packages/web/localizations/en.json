@@ -836,9 +836,7 @@
     "continueAnyway": "Continue Anyway",
     "warning": {
       "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
-      "exceedsNetworkFeeLimit": "This swap exceeds your network fee limit for 1-Click Trading.",
-      "increaseSpendLimit": "Increase spend limit",
-      "increaseNetworkFeeLimit": "Increase network fee limit"
+      "increaseSpendLimit": "Increase spend limit"
     },
     "settings": {
       "slippage": "Slippage tolerance",

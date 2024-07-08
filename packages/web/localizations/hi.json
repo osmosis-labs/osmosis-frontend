@@ -836,9 +836,7 @@
     "continueAnyway": "फिर भी जारी रखें",
     "warning": {
       "exceedsSpendLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी शेष खर्च सीमा से अधिक है।",
-      "exceedsNetworkFeeLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी नेटवर्क शुल्क सीमा से अधिक है।",
-      "increaseSpendLimit": "खर्च सीमा बढ़ाएँ",
-      "increaseNetworkFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ"
+      "increaseSpendLimit": "खर्च सीमा बढ़ाएँ"
     },
     "settings": {
       "slippage": "फिसलन सहनशीलता",

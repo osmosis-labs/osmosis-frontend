@@ -836,9 +836,7 @@
     "continueAnyway": "Continua oricum",
     "warning": {
       "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
-      "exceedsNetworkFeeLimit": "Acest schimb depășește limita taxei de rețea pentru tranzacționarea cu 1 clic.",
-      "increaseSpendLimit": "Creșteți limita de cheltuieli",
-      "increaseNetworkFeeLimit": "Creșteți limita taxei de rețea"
+      "increaseSpendLimit": "Creșteți limita de cheltuieli"
     },
     "settings": {
       "slippage": "Toleranta modificare pret",

@@ -836,9 +836,7 @@
     "continueAnyway": "無論如何繼續",
     "warning": {
       "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
-      "exceedsNetworkFeeLimit": "此交換超出了一鍵交易的網路費用限制。",
-      "increaseSpendLimit": "提高支出限額",
-      "increaseNetworkFeeLimit": "提高網路費用限額"
+      "increaseSpendLimit": "提高支出限額"
     },
     "settings": {
       "slippage": "允許嘅滑價",

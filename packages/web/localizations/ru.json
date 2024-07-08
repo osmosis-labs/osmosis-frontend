@@ -836,9 +836,7 @@
     "continueAnyway": "Продолжай в любом случае",
     "warning": {
       "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",
-      "exceedsNetworkFeeLimit": "Этот своп превышает лимит комиссии вашей сети для торговли в один клик.",
-      "increaseSpendLimit": "Увеличить лимит расходов",
-      "increaseNetworkFeeLimit": "Увеличить лимит комиссии сети"
+      "increaseSpendLimit": "Увеличить лимит расходов"
     },
     "settings": {
       "slippage": "Допуск проскальзывания",
