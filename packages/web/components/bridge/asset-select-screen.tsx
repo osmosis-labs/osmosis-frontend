@@ -109,7 +109,7 @@ export const AssetSelectScreen = observer(
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
 
     return (
-      <div className="flex h-full flex-col">
+      <>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}
@@ -138,12 +138,12 @@ export const AssetSelectScreen = observer(
           onInput={debounce((nextValue) => {
             setSearch(nextValue);
           }, 300)}
-          className="my-4 flex-shrink-0 md:w-full"
+          className="sticky top-0 my-4 flex-shrink-0 md:w-full"
           placeholder={t("transfer.assetSelectScreen.searchAssets")}
           size={isMobile ? "small" : "full"}
         />
 
-        <div className="flex h-full flex-col gap-1 overflow-y-scroll">
+        <div className="flex flex-col gap-1">
           {isLoading ? (
             <div className="self-center pt-3">
               <Spinner />
@@ -217,9 +217,7 @@ export const AssetSelectScreen = observer(
               <Intersection
                 className="-mt-20"
                 onVisible={() => {
-                  console.log("on visible");
                   if (canLoadMore) {
-                    console.log("fetchNextPage");
                     fetchNextPage();
                   }
                 }}
@@ -232,7 +230,7 @@ export const AssetSelectScreen = observer(
             </>
           )}
         </div>
-      </div>
+      </>
     );
   }
 );
