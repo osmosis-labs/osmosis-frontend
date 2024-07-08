@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
       "increaseFeeLimit": "افزایش سقف هزینه شبکه",
       "approveManually": "تأیید دستی در {walletName}",
       "continueWithWallet": "با کیف پول ادامه دهید",
@@ -571,9 +570,7 @@
       "header": "برای ادامه یک کیف پول وصل کنید",
       "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
     },
-    "profile": {
-      "sessionExpired": "جلسه تمام شده"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",

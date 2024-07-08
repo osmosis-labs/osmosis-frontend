@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
       "currentlyUnavailable": "Trading en 1 clic actuellement indisponible",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
-      "enableOneClickTrading": "Activer le trading en 1 clic",
       "increaseFeeLimit": "Augmenter la limite des frais de réseau",
       "approveManually": "Approuver manuellement dans {walletName}",
       "continueWithWallet": "Continuer avec le portefeuille",
@@ -571,9 +570,7 @@
       "header": "Connectez un portefeuille pour continuer",
       "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
     },
-    "profile": {
-      "sessionExpired": "La session a expiré"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",

@@ -45,8 +45,10 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
   if (isOneClickTradingExpired) {
     return (
       <>
-        {expiredElement ?? (
-          <p className="body1 text-rust-200">
+        {typeof expiredElement !== "undefined" ? (
+          expiredElement
+        ) : (
+          <p className="body1 text-osmoverse-300">
             {t("oneClickTrading.profile.sessionExpired")}
           </p>
         )}

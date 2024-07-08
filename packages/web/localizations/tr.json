@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
       "increaseFeeLimit": "Ağ ücreti sınırını artırın",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
@@ -571,9 +570,7 @@
       "header": "Devam etmek için bir cüzdan bağlayın",
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     },
-    "profile": {
-      "sessionExpired": "Oturum süresi doldu"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",

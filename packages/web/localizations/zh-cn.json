@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "一键交易已禁用",
       "currentlyUnavailable": "一键交易目前不可用",
       "networkFeeTooHigh": "网络费太高",
-      "enableOneClickTrading": "启用一键交易",
       "increaseFeeLimit": "提高网络费用限额",
       "approveManually": "在{walletName}中手动批准",
       "continueWithWallet": "继续使用钱包",
@@ -571,9 +570,7 @@
       "header": "连接钱包以继续",
       "description": "当您在所选钱包中批准交易时，您的一键交易会话将开始。"
     },
-    "profile": {
-      "sessionExpired": "会话已过期"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",

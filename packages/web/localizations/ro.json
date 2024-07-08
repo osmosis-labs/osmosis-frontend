@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
-      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
       "increaseFeeLimit": "Creșteți limita taxei de rețea",
       "approveManually": "Aprobați manual în {walletName}",
       "continueWithWallet": "Continuați cu portofelul",
@@ -571,9 +570,7 @@
       "header": "Conectați un portofel pentru a continua",
       "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     },
-    "profile": {
-      "sessionExpired": "Sesiunea a expirat"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",

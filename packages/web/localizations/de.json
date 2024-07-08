@@ -498,7 +498,6 @@
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
       "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
@@ -571,9 +570,7 @@
       "header": "Schließen Sie eine Wallet an, um fortzufahren",
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
     },
-    "profile": {
-      "sessionExpired": "Sitzung abgelaufen"
-    }
+    "profile": {}
   },
   "pool": {
     "24hrTradingVolume": "24h Handelsvolumen",

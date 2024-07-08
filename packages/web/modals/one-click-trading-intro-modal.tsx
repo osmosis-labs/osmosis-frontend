@@ -55,7 +55,7 @@ export const OneClickTradingIntroModal = observer(() => {
               toast.dismiss(toastId);
             }}
           >
-            {t("oneClickTrading.toast.enableOneClickTrading")}
+            {t("oneClickTrading.toast.startANewSession")}
           </Button>
         ),
       },
