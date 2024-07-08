@@ -299,6 +299,8 @@ const TransferDetails: FunctionComponent<
     fromDisplayChain,
     selectedQuoteUpdatedAt,
     refetchInterval,
+    isRefetchingQuote,
+    isTxPending,
   } = quote;
 
   if (!selectedQuote) return null;
@@ -328,6 +330,7 @@ const TransferDetails: FunctionComponent<
                     className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
                     dataUpdatedAt={selectedQuoteUpdatedAt}
                     refetchInterval={refetchInterval}
+                    isPaused={isRefetchingQuote || isTxPending}
                     strokeWidth={2}
                   >
                     <Icon id="down-arrow" className="md:h-4 md:w-4" />

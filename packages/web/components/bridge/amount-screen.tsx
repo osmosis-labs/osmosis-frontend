@@ -1232,6 +1232,7 @@ const TransferDetails: FunctionComponent<{
     successfulQuotes,
     setSelectedBridgeProvider,
     isRefetchingQuote,
+    isTxPending,
   } = quote;
 
   return (
@@ -1264,6 +1265,7 @@ const TransferDetails: FunctionComponent<{
                 refetchInterval={refetchInterval}
                 selectedQuote={selectedQuote}
                 open={open}
+                isRemainingTimePaused={isRefetchingQuote || isTxPending}
                 showRemainingTime
               />
             </div>

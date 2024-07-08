@@ -13,16 +13,25 @@ export const BridgeQuoteRemainingTime: FunctionComponent<
     className?: string;
     refetchInterval: number;
     dataUpdatedAt: number;
+    isPaused?: boolean;
     strokeWidth?: number;
   }>
-> = ({ className, refetchInterval, dataUpdatedAt, children, strokeWidth }) => {
+> = ({
+  className,
+  refetchInterval,
+  dataUpdatedAt,
+  isPaused = false,
+  children,
+  strokeWidth,
+}) => {
   const [progress, setProgress] = useState(100);
 
   useEffect(() => {
     if (!dataUpdatedAt) return;
 
     const updateProgress = () => {
-      const elapsed = Date.now() - dataUpdatedAt;
+      const now = isPaused ? dataUpdatedAt : Date.now();
+      const elapsed = now - dataUpdatedAt;
       const percentage = Math.max((1 - elapsed / refetchInterval) * 100, 0);
       setProgress(percentage);
     };
@@ -37,7 +46,7 @@ export const BridgeQuoteRemainingTime: FunctionComponent<
     );
 
     return () => clearInterval(intervalId);
-  }, [dataUpdatedAt, refetchInterval]);
+  }, [dataUpdatedAt, refetchInterval, isPaused]);
 
   return (
     <div className={classNames("relative h-7 w-7 md:h-5 md:w-5", className)}>
