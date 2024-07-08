@@ -31,20 +31,20 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
   assetLists,
   chainList,
   asset,
-  userCosmosAddress,
+  userOsmoAddress,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
-  userCosmosAddress?: string;
+  userOsmoAddress?: string;
 }): Promise<TAsset & MaybeUserAssetCoin> {
-  if (!userCosmosAddress) return asset;
+  if (!userOsmoAddress) return asset;
 
   const userAssets = await mapGetAssetsWithUserBalances({
     assetLists,
     chainList,
     assets: [asset],
-    userCosmosAddress: userCosmosAddress,
+    userOsmoAddress: userOsmoAddress,
     includePreview: true,
   });
   return userAssets[0];
@@ -62,14 +62,14 @@ export async function mapGetAssetsWithUserBalances<
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
-  userCosmosAddress?: string;
+  userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
   /**
    * If poolId is provided, only include assets that are part of the pool.
    */
   poolId?: string;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
-  const { userCosmosAddress, search, sortFiatValueDirection } = params;
+  const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
 
@@ -87,11 +87,11 @@ export async function mapGetAssetsWithUserBalances<
     ) as TAsset[];
   }
 
-  if (!userCosmosAddress) return assets;
+  if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({
-    ...params,
-    bech32Address: userCosmosAddress,
+    chainList: params.chainList,
+    bech32Address: userOsmoAddress,
   });
 
   const eventualUserAssets = assets

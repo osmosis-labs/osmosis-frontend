@@ -56,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
       }
     ),
@@ -88,7 +88,7 @@ export const assetsRouter = createTRPCRouter({
             mapGetAssetsWithUserBalances({
               ...ctx,
               search,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -193,7 +193,7 @@ export const assetsRouter = createTRPCRouter({
         const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
           ...ctx,
@@ -316,7 +316,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset: bridgeAsset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
       }
     ),
@@ -352,7 +352,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               categories,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               includePreview,
             });
 
@@ -605,7 +605,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               // Only get balances for withdraw
-              userCosmosAddress:
+              userOsmoAddress:
                 type === "withdraw" ? userOsmoAddress : undefined,
               sortFiatValueDirection: "desc",
               includePreview,
