@@ -46,6 +46,8 @@ interface ConfirmationScreenProps {
 
   quote: BridgeQuote;
 
+  isManualAddress: boolean;
+
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -70,6 +72,8 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
 
   onCancel,
   onConfirm,
+
+  isManualAddress,
 }) => {
   const { t } = useTranslation();
 
@@ -133,6 +137,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           walletImageUrl={toWalletIcon}
           value={quote.selectedQuote.expectedOutputFiat}
           coin={quote.selectedQuote.expectedOutput}
+          isManualAddress={isManualAddress}
         />
       )}
       <div className="flex w-full items-center gap-3 py-3">
@@ -172,7 +177,17 @@ const AssetBox: FunctionComponent<{
   walletImageUrl: string;
   value: PricePretty;
   coin: CoinPretty;
-}> = ({ type, assetImageUrl, chain, address, walletImageUrl, value, coin }) => {
+  isManualAddress?: boolean;
+}> = ({
+  type,
+  assetImageUrl,
+  chain,
+  address,
+  walletImageUrl,
+  value,
+  coin,
+  isManualAddress,
+}) => {
   const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
@@ -206,12 +221,16 @@ const AssetBox: FunctionComponent<{
           <span>{chain.prettyName}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Image
-            alt="wallet image"
-            src={walletImageUrl}
-            width={24}
-            height={24}
-          />
+          {isManualAddress ? (
+            <Icon id="wallet" className="text-wosmongton-200" />
+          ) : (
+            <Image
+              alt="wallet image"
+              src={walletImageUrl}
+              width={24}
+              height={24}
+            />
+          )}
           <div className="body1 text-wosmongton-200">
             {getShortAddress(address)}
           </div>
@@ -238,7 +257,7 @@ const TransferDetails: FunctionComponent<BridgeQuote> = (quote) => {
     <Disclosure>
       {({ open }) => (
         <div
-          className="flex flex-col gap-4 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
+          className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack"
           style={{
             height: open
               ? (detailsHeight + detailsOffset ?? 288) + 85 // collapsed height
