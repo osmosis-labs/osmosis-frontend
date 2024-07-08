@@ -3,9 +3,9 @@ import { Asset } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
+import { ResizingInput } from "~/components/input/resizing-input";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
@@ -180,7 +180,6 @@ function AutoInput({
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
   );
-
   return (
     <div
       className={classNames(
@@ -199,32 +198,27 @@ function AutoInput({
           : undefined
       }
     >
-      {disableSwitching && !isFocused && <span>~</span>}
-      {type === "fiat" && (
-        <span className={classNames({ "font-normal": !isFocused })}>$</span>
-      )}
-      <AutosizeInput
+      <ResizingInput
         disabled={!isFocused}
+        disableResize={!isFocused}
         type="number"
         placeholder="0"
         value={amount}
-        inputClassName={classNames(
-          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
+        className={classNames(
+          "bg-transparent placeholder:text-white-disabled focus:outline-none",
           { "cursor-pointer font-normal": !isFocused }
         )}
-        onChange={(e) => setter(e.target.value)}
+        prefix={
+          type === "fiat"
+            ? "$"
+            : disableSwitching && !isFocused
+            ? "~"
+            : undefined
+        }
+        suffix={type === "token" ? baseAsset.coinDenom : undefined}
+        onChange={(e) => setter(e)}
         onClick={!isFocused ? swapFocus : undefined}
       />
-      {type === "token" && (
-        <span
-          className={classNames("text-wosmongton-200", {
-            "opacity-60": focused === currentTypeEnum,
-            "font-normal": !isFocused,
-          })}
-        >
-          {baseAsset ? baseAsset.coinDenom : ""}
-        </span>
-      )}
       {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
     </div>
   );
