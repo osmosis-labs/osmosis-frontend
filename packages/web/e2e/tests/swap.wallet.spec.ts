@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { BrowserContext, chromium, expect, test } from "@playwright/test";
-import path from "path";
 import process from "process";
+
+import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { SwapPage } from "../pages/swap-page";
 import { WalletPage } from "../pages/wallet-page";
@@ -25,9 +26,9 @@ test.describe("Test Swap feature", () => {
     "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
   test.beforeAll(async () => {
-    console.log("\nBefore test setup Wallet Extension.");
+    const pathToExtension = new UnzipExtension().getPathToExtension();
+    console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
