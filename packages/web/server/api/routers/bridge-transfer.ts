@@ -37,14 +37,14 @@ const lruCache = new LRUCache<string, CacheEntry>({
 
 // TODO: this should be in view layer
 const BridgeLogoUrls: Record<Bridge, string> = {
-  Skip: "/bridges/skip.svg",
+  Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
   Axelar: "/bridges/axelar.svg",
   IBC: "/bridges/ibc.svg",
 };
 
 const ExternalBridgeLogoUrls: Record<Bridge, string> = {
-  Skip: "/external-bridges/ibc-fun.svg",
+  Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
   Axelar: "/external-bridges/satellite.svg",
   IBC: "/external-bridges/tfm.svg",
