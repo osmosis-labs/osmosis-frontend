@@ -138,7 +138,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                 !isExpanded && isExpandable && "tokendetailshadow"
               } relative self-stretch`}
             >
-              <div className="breakspaces self-stretch text-body1 font-body1 text-osmoverse-200 transition-all">
+              <div className="breakspaces self-stretch break-words text-body1 font-body1 text-osmoverse-200 transition-all">
                 <Markdown>{expandedText ?? ""}</Markdown>
               </div>
               {isExpandable && (
