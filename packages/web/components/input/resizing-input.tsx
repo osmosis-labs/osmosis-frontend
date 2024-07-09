@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface ResizingInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
@@ -19,53 +19,58 @@ export const ResizingInput: React.FC<ResizingInputProps> = ({
   className,
   placeholder,
   disableResize,
+  disabled,
 }) => {
-  const ref = useRef<any>(null);
-  const prefixRef = useRef<any>(null);
-  const suffixRef = useRef<any>(null);
+  const ref = useRef<HTMLInputElement | null>(null);
+  const prefixRef = useRef<HTMLSpanElement | null>(null);
+  const suffixRef = useRef<HTMLSpanElement | null>(null);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     onChange(event.target.value);
   };
 
-  const [scale, inputMaxWidth] = useMemo(() => {
-    if (!ref.current || disableResize) return [1, 360];
-    const inputSizer = ref.current.parentNode;
-    const wrapperWidth = inputSizer.parentNode.parentNode.offsetWidth;
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const input = ref.current;
+    const inputSizer = ref.current.parentNode! as HTMLDivElement;
+    const wrapper = inputSizer.parentNode!.parentNode! as HTMLDivElement;
+    const wrapperWidth = wrapper.offsetWidth;
     const prefixWidth = prefixRef.current?.offsetWidth ?? 0;
     const suffixWidth = suffixRef.current?.offsetWidth ?? 0;
     const tickerWidth = prefixWidth + suffixWidth;
+    const minScale = (disableResize ? 32 : 16) / 96;
 
-    const minScale = 16 / 96;
-    const inputMaxWidth = (0.5 / minScale) * wrapperWidth - tickerWidth;
-    const contentWidth = inputSizer.offsetWidth + tickerWidth;
-    const scale = Math.min(1, Math.max(minScale, wrapperWidth / contentWidth));
+    const resize = () => {
+      inputSizer.dataset.value = input.value || "0";
+      const contentWidth = inputSizer.offsetWidth + tickerWidth;
+      const scale = Math.min(
+        1,
+        Math.max(minScale, wrapperWidth / contentWidth)
+      );
+      wrapper.style.transform = disableResize ? `scale(1)` : `scale(${scale})`;
+    };
 
-    return [scale, inputMaxWidth];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, value, disableResize]);
+    inputSizer.style.maxWidth = `650px`;
+    resize();
+    input.addEventListener("input", resize);
+
+    return () => {
+      input.removeEventListener("input", resize);
+    };
+  }, [ref, prefixRef, suffixRef, disableResize]);
+
   return (
-    <div className="block max-w-[375px]">
-      <div
-        className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center "
-        style={{ transform: `scale(${scale})` }}
-      >
-        <div
-          className={classNames("flex items-center justify-center", {
-            "max-w-[375px]": disableResize,
-          })}
-        >
+    <div className="block w-full max-w-[375px]">
+      <div className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center ">
+        <div className={classNames("flex items-center justify-center")}>
           {prefix && (
             <span className="self-center" ref={prefixRef}>
               {prefix}
             </span>
           )}
-          <div
-            style={{
-              maxWidth: disableResize ? undefined : `${inputMaxWidth}px`,
-            }}
-            className="relative flex items-center justify-center self-center overflow-hidden"
-          >
+          <div className="relative flex items-center justify-center self-center overflow-hidden">
             <span className="invisible">
               {value.length > 0 ? value : placeholder}
             </span>
@@ -76,6 +81,7 @@ export const ResizingInput: React.FC<ResizingInputProps> = ({
               onChange={handleInputChange}
               placeholder={placeholder}
               ref={ref}
+              disabled={disabled}
             />
           </div>
           {suffix && (
