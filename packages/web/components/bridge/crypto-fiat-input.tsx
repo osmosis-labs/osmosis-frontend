@@ -122,15 +122,12 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (
-      isMax &&
-      transferGasCost &&
-      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-    ) {
-      const maxTransferAmount = asset.amount
-        .toDec()
-        .sub(transferGasCost.toDec());
+    if (isMax && transferGasCost) {
+      const maxTransferAmount =
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
+          ? asset.amount.toDec().sub(transferGasCost.toDec())
+          : asset.amount.toDec();
 
       if (
         maxTransferAmount.isPositive() &&
