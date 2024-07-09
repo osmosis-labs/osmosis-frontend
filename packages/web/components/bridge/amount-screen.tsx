@@ -387,13 +387,19 @@ export const AmountScreen = observer(
                 nextData = filteredData;
               }
 
-              const highestBalance = nextData.reduce(
-                (acc, curr) =>
-                  curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
-                nextData[0]
-              );
+              if (
+                !fromAsset ||
+                (nextData[0].denom === fromAsset.denom &&
+                  nextData[0].amount.toDec().gt(fromAsset.amount.toDec()))
+              ) {
+                const highestBalance = nextData.reduce(
+                  (acc, curr) =>
+                    curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
+                  nextData[0]
+                );
 
-              setFromAsset(highestBalance);
+                setFromAsset(highestBalance);
+              }
             }
 
             return nextData;
