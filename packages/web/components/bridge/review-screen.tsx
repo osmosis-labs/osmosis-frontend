@@ -308,6 +308,7 @@ const TransferDetails: FunctionComponent<
   const { estimatedTime } = selectedQuote;
   const estTime = estimatedTime.humanize();
   const collapsedHeight = isMobile ? 46 : 74;
+  const expandedPadding = isMobile ? 10 : 0;
 
   return (
     <Disclosure>
@@ -316,7 +317,9 @@ const TransferDetails: FunctionComponent<
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + collapsedHeight + 20 // collapsed height
+              ? (detailsHeight + detailsOffset ?? 288) +
+                collapsedHeight +
+                expandedPadding // collapsed height
               : collapsedHeight,
           }}
         >

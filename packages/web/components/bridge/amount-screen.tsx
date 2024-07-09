@@ -58,6 +58,7 @@ import {
 import { BridgeQuote } from "./use-bridge-quotes";
 import {
   SupportedAsset,
+  SupportedChain,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
 
@@ -1025,6 +1026,7 @@ export const AmountScreen = observer(
                   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
                 }
               }
+              fromChain={fromChain}
             />
           )}
 
@@ -1103,7 +1105,7 @@ interface ChainSelectorButtonProps {
   children: ReactNode;
   chainLogo: string | undefined;
   chainColor: string | undefined;
-  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  chains: SupportedChain[];
   toChain: BridgeChainWithDisplayInfo;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   isNetworkSelectVisible: boolean;
@@ -1219,7 +1221,8 @@ const TransferDetails: FunctionComponent<{
   quote: BridgeQuote & {
     selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   };
-}> = ({ quote }) => {
+  fromChain: BridgeChainWithDisplayInfo;
+}> = ({ quote, fromChain }) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
@@ -1288,7 +1291,7 @@ const TransferDetails: FunctionComponent<{
             <NetworkFeeRow
               isRefetchingQuote={isRefetchingQuote}
               selectedQuote={selectedQuote}
-              fromChainName={selectedQuote.fromChain?.chainName}
+              fromChainName={fromChain.prettyName}
             />
             <TotalFeesRow
               isRefetchingQuote={isRefetchingQuote}

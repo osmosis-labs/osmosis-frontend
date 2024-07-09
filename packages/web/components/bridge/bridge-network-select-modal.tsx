@@ -18,7 +18,7 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
-import { useBridgesSupportedAssets } from "./use-bridges-supported-assets";
+import { SupportedChain } from "./use-bridges-supported-assets";
 
 enum NetworkSelectScreen {
   Main = "main",
@@ -28,7 +28,7 @@ enum NetworkSelectScreen {
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
   toChain: BridgeChainWithDisplayInfo;
-  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   onConfirmManualAddress: ((address: string) => void) | undefined;
   initialManualAddress: string | undefined;

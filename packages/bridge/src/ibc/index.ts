@@ -65,7 +65,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       bech32Address: params.fromAddress,
     });
     const gasFee = txSimulation.amount[0];
-    const gasAsset = this.getGasAsset(gasFee.denom);
+    const gasAsset = this.getGasAsset(fromChainId, gasFee.denom);
 
     return {
       input: {
@@ -176,14 +176,19 @@ export class IbcBridgeProvider implements BridgeProvider {
    * Gets gas asset from asset list, attempting to match the coinMinimalDenom or counterparty denom.
    * @returns gas bridge asset, or undefined if not found.
    */
-  getGasAsset(denom: string): BridgeAsset | undefined {
+  getGasAsset(fromChainId: string, denom: string): BridgeAsset | undefined {
     // check the asset list
     const assetListAsset = this.ctx.assetLists
       .flatMap((list) => list.assets)
       .find(
         (asset) =>
           asset.coinMinimalDenom === denom ||
-          asset.counterparty.some((c) => c.sourceDenom === denom)
+          asset.counterparty.some(
+            (c) =>
+              "chainId" in c &&
+              c.chainId === fromChainId &&
+              c.sourceDenom === denom
+          )
       );
 
     if (assetListAsset) {
