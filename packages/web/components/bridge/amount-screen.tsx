@@ -386,9 +386,7 @@ export const AmountScreen = observer(
               } else {
                 nextData = filteredData;
               }
-            }
 
-            if (!fromAsset && nextData) {
               const highestBalance = nextData.reduce(
                 (acc, curr) =>
                   curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
