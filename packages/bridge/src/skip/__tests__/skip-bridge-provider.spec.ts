@@ -672,7 +672,7 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip.Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
@@ -697,7 +697,7 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip.Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
@@ -721,7 +721,7 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip.Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 });
