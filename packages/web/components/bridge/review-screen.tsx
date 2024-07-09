@@ -111,7 +111,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           { chain: toChain.prettyName }
         )}
       </div>
-      <p className="body1 1.5lg:caption pb-3 text-center text-osmoverse-400">
+      <p className="body1 1.5lg:caption pb-6 text-center text-osmoverse-400 md:pb-3">
         {t(
           direction === "withdraw"
             ? "transfer.reviewWithdrawP"
@@ -198,7 +198,7 @@ const AssetBox: FunctionComponent<{
   const { isMobile } = useWindowSize();
 
   const ChainAndWallet = isMobile ? (
-    <div className="caption flex gap-2 px-3 pb-3 pt-1 text-osmoverse-300">
+    <div className="caption flex gap-2 p-3 text-osmoverse-300">
       {t(type === "from" ? "transfer.from" : "transfer.to")}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
@@ -228,7 +228,7 @@ const AssetBox: FunctionComponent<{
       </div>
     </div>
   ) : (
-    <div className="flex place-content-between items-center px-6 pb-3 pt-1 text-osmoverse-300">
+    <div className="flex place-content-between items-center px-6 py-3 text-osmoverse-300">
       <div className="flex items-center gap-2">
         {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
         <ChainLogo
@@ -248,9 +248,9 @@ const AssetBox: FunctionComponent<{
   );
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
-      <div className="flex place-content-between items-center px-6 pt-4 pb-2 md:px-3 md:pt-2 md:pb-1">
-        <div className="flex items-center gap-3">
+    <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
+      <div className="flex place-content-between items-center p-6 md:p-3">
+        <div className="flex items-center gap-4 md:gap-2">
           <Image
             alt="token image"
             src={assetImageUrl}
