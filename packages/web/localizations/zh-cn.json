@@ -999,7 +999,9 @@
     "invalidAddress": "无效的{chain}地址",
     "acknowledgement": "我承认我对世界末日等负有全部责任。",
     "done": "完毕",
-    "transferFrom": "从{noun}转移"
+    "transferFrom": "从{noun}转移",
+    "risks": "桥接伴随着风险。",
+    "learnMore": "了解更多"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

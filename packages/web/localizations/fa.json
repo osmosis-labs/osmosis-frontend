@@ -999,7 +999,9 @@
     "invalidAddress": "آدرس {chain} نامعتبر است",
     "acknowledgement": "من تصدیق می کنم که مسئولیت کامل پایان جهان و غیره را بر عهده دارم.",
     "done": "انجام شده",
-    "transferFrom": "انتقال از {noun}"
+    "transferFrom": "انتقال از {noun}",
+    "risks": "پل زدن با خطراتی همراه است.",
+    "learnMore": "بیشتر بدانید"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

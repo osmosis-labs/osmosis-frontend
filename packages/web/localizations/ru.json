@@ -999,7 +999,9 @@
     "invalidAddress": "Неверный адрес {chain}",
     "acknowledgement": "Я признаю, что несу полную ответственность за конец света и т. д.",
     "done": "Сделанный",
-    "transferFrom": "Перенос из {noun}"
+    "transferFrom": "Перенос из {noun}",
+    "risks": "Преодоление сопряжено с риском.",
+    "learnMore": "Узнать больше"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

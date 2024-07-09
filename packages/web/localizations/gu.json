@@ -999,7 +999,9 @@
     "invalidAddress": "અમાન્ય {chain} સરનામું",
     "acknowledgement": "હું સ્વીકારું છું કે વિશ્વના અંત વગેરે માટે હું સંપૂર્ણપણે જવાબદાર છું.",
     "done": "થઈ ગયું",
-    "transferFrom": "{noun} માંથી ટ્રાન્સફર કરો"
+    "transferFrom": "{noun} માંથી ટ્રાન્સફર કરો",
+    "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
+    "learnMore": "વધુ શીખો"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

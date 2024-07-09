@@ -999,7 +999,9 @@
     "invalidAddress": "Ungültige {chain} -Adresse",
     "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
     "done": "Erledigt",
-    "transferFrom": "Übertragung von {noun}"
+    "transferFrom": "Übertragung von {noun}",
+    "risks": "Das Überbrücken ist mit Risiken verbunden.",
+    "learnMore": "Erfahren Sie mehr"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

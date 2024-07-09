@@ -999,7 +999,9 @@
     "invalidAddress": "Endereço {chain} inválido",
     "acknowledgement": "Reconheço que sou totalmente responsável pelo fim do mundo, etc.",
     "done": "Feito",
-    "transferFrom": "Transferir de {noun}"
+    "transferFrom": "Transferir de {noun}",
+    "risks": "Fazer uma ponte traz riscos.",
+    "learnMore": "Saber mais"
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

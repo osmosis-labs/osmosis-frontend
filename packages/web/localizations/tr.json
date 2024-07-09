@@ -999,7 +999,9 @@
     "invalidAddress": "Geçersiz {chain} adresi",
     "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
     "done": "Tamamlamak",
-    "transferFrom": "{noun} kaynağından aktarım"
+    "transferFrom": "{noun} kaynağından aktarım",
+    "risks": "Köprü kurma riskleri de beraberinde getirir.",
+    "learnMore": "Daha fazla bilgi edin"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

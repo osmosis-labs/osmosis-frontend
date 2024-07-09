@@ -999,7 +999,9 @@
     "invalidAddress": "Adresă {chain} nevalidă",
     "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
     "done": "Terminat",
-    "transferFrom": "Transfer de la {noun}"
+    "transferFrom": "Transfer de la {noun}",
+    "risks": "Conducerea vine cu riscuri.",
+    "learnMore": "Află mai multe"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

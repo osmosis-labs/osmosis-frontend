@@ -999,7 +999,9 @@
     "invalidAddress": "Nieprawidłowy adres {chain}",
     "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
     "done": "Zrobione",
-    "transferFrom": "Przelew z {noun}"
+    "transferFrom": "Przelew z {noun}",
+    "risks": "Mostkowanie wiąże się z ryzykiem.",
+    "learnMore": "Ucz się więcej"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

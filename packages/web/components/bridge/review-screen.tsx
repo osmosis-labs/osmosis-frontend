@@ -142,7 +142,17 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           isManualAddress={isManualAddress}
         />
       )}
-      <div className="flex w-full items-center gap-3 py-3">
+      <div className="caption pt-6 text-center text-osmoverse-400 md:pt-4">
+        {t("transfer.risks")}{" "}
+        <Link
+          href="/disclaimer#providers-and-bridge-disclaimer"
+          target="_blank"
+          className="mx-auto text-xs font-semibold text-wosmongton-300 hover:text-rust-200"
+        >
+          {t("transfer.learnMore")}
+        </Link>
+      </div>
+      <div className="flex w-full items-center gap-3 py-3 md:py-2">
         <Button
           className="w-full md:h-12"
           variant="secondary"
@@ -164,13 +174,6 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </Button>
       </div>
-      <Link
-        href="/disclaimer#providers-and-bridge-disclaimer"
-        target="_blank"
-        className="mx-auto text-xs font-semibold text-wosmongton-100 hover:text-rust-200"
-      >
-        {t("disclaimer")}
-      </Link>
     </div>
   );
 };

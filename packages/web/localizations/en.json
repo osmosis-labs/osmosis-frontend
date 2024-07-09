@@ -999,7 +999,9 @@
     "invalidAddress": "Invalid {chain} address",
     "acknowledgement": "I acknowledge that I am fully responsible for the world ending etc.",
     "done": "Done",
-    "transferFrom": "Transfer from {noun}"
+    "transferFrom": "Transfer from {noun}",
+    "risks": "Bridging comes with risks.",
+    "learnMore": "Learn more"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

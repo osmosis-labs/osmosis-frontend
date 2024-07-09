@@ -999,7 +999,9 @@
     "invalidAddress": "Adresse {chain} non valide",
     "acknowledgement": "Je reconnais que je suis entièrement responsable de la fin du monde, etc.",
     "done": "Fait",
-    "transferFrom": "Transfert depuis {noun}"
+    "transferFrom": "Transfert depuis {noun}",
+    "risks": "Le rapprochement comporte des risques.",
+    "learnMore": "Apprendre encore plus"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

@@ -999,7 +999,9 @@
     "invalidAddress": "잘못된 {chain} 주소",
     "acknowledgement": "월드 엔딩 등에 대한 모든 책임은 본인에게 있음을 인정합니다.",
     "done": "완료",
-    "transferFrom": "{noun} 에서 전송"
+    "transferFrom": "{noun} 에서 전송",
+    "risks": "브리징에는 위험이 따릅니다.",
+    "learnMore": "더 알아보기"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
