@@ -146,7 +146,7 @@ export const CryptoFiatInput: FunctionComponent<{
   }, [asset, isMax, onInput]);
 
   const fiatCurrentValue = `${assetPrice.symbol}${
-    fiatInputRaw.endsWith(".")
+    fiatInputRaw.endsWith(".") || Number(fiatInputRaw) === 0
       ? fiatInputRaw
       : new IntPretty(fiatInputRaw)
           .locale(false)
