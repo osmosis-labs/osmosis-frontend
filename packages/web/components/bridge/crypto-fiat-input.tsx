@@ -131,8 +131,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
       if (
         maxTransferAmount.isPositive() &&
-        inputCoin.toDec().gt(maxTransferAmount) &&
-        !inputCoin.toDec().equals(maxTransferAmount)
+        inputCoin.toDec().gt(maxTransferAmount)
       ) {
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
