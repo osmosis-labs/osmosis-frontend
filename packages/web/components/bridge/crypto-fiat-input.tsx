@@ -25,6 +25,8 @@ import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 
+const subtractGasSlippage = new Dec("0.98");
+
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
   cryptoInputRaw: string;
@@ -126,7 +128,10 @@ export const CryptoFiatInput: FunctionComponent<{
       const maxTransferAmount =
         transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
         transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-          ? asset.amount.toDec().sub(transferGasCost.toDec())
+          ? asset.amount
+              .toDec()
+              .sub(transferGasCost.toDec())
+              .mul(subtractGasSlippage)
           : asset.amount.toDec();
 
       if (
