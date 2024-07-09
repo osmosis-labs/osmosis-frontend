@@ -450,7 +450,11 @@
     "more": "अधिक",
     "new": "नया",
     "settings": "समायोजन",
-    "notifications": "सूचनाएं"
+    "notifications": "सूचनाएं",
+    "helpCenter": "सहायता केंद्र",
+    "liveSupport": "लाइव सहायता",
+    "bugs": "बग रिपोर्ट सबमिट करें",
+    "docs": "डॉक्स"
   },
   "notifi": {
     "saveChanges": "परिवर्तनों को सुरक्षित करें",

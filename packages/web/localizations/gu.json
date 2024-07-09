@@ -450,7 +450,11 @@
     "more": "વધુ",
     "new": "નવું",
     "settings": "સેટિંગ્સ",
-    "notifications": "સૂચનાઓ"
+    "notifications": "સૂચનાઓ",
+    "helpCenter": "મદદ કેન્દ્ર",
+    "liveSupport": "લાઈવ સપોર્ટ",
+    "bugs": "બગ રિપોર્ટ સબમિટ કરો",
+    "docs": "દસ્તાવેજ"
   },
   "notifi": {
     "saveChanges": "ફેરફારો સંગ્રહ",

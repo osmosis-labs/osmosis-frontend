@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { AmplitudeEvent } from "~/config";
 import { useTranslation, useWindowSize } from "~/hooks";
@@ -38,6 +39,7 @@ export const MainMenu: FunctionComponent<{
   menus: MainLayoutMenu[];
   secondaryMenuItems: MainLayoutMenu[];
   className?: string;
+  tertiaryMenuItems?: MainLayoutMenu[];
 }> = ({ menus, className, secondaryMenuItems }) => {
   return (
     <ul
@@ -82,6 +84,43 @@ export const MainMenu: FunctionComponent<{
         );
       })}
     </ul>
+  );
+};
+
+export const HelpPopover: React.FunctionComponent<{
+  item?: MainLayoutMenu;
+  tertiaryMenuItems: MainLayoutMenu[];
+}> = ({ tertiaryMenuItems }) => {
+  return (
+    <Popover className="relative flex h-full w-full items-center px-1 py-3">
+      {({ open }) => (
+        <>
+          <Popover.Button className="button group flex h-10 w-full place-content-center items-center rounded-xl bg-osmoverse-700 py-2 px-3 text-center tracking-wide text-osmoverse-400 outline-none transition-colors hover:bg-osmoverse-600 hover:text-white-full focus:outline-none disabled:cursor-default disabled:border-osmoverse-500 disabled:bg-osmoverse-500">
+            <Icon id="questionMark" width={24} height={24} />
+          </Popover.Button>
+          <Popover.Panel
+            className={`absolute top-16 -left-40 left-full ml-2 flex flex-col gap-2 rounded-3xl bg-osmoverse-800 py-2 px-2 ${
+              open ? "block" : "hidden"
+            } z-10`}
+          >
+            {tertiaryMenuItems.map((menu: MainLayoutMenu) => {
+              const { link, selectionTest, secondaryLogo, showMore } = menu;
+              return (
+                <MenuLink
+                  href={link}
+                  secondaryLogo={secondaryLogo}
+                  selectionTest={selectionTest}
+                  showMore={showMore}
+                  key={menu.label}
+                >
+                  <MenuItemContent menu={menu} />
+                </MenuLink>
+              );
+            })}
+          </Popover.Panel>
+        </>
+      )}
+    </Popover>
   );
 };
 
@@ -135,7 +174,7 @@ const MenuLink: FunctionComponent<{
   );
 };
 
-const MorePopover: FunctionComponent<{
+export const MorePopover: FunctionComponent<{
   item: MainLayoutMenu;
   secondaryMenus: MainLayoutMenu[];
 }> = ({ item, secondaryMenus }) => {

@@ -450,7 +450,11 @@
     "more": "もっと",
     "new": "新しい",
     "settings": "設定",
-    "notifications": "通知"
+    "notifications": "通知",
+    "helpCenter": "ヘルプセンター",
+    "liveSupport": "ライブサポート",
+    "bugs": "バグレポートを送信",
+    "docs": "ドキュメント"
   },
   "notifi": {
     "saveChanges": "変更内容を保存",

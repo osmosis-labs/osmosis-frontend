@@ -15,9 +15,11 @@ export const MainLayout = observer(
     children,
     menus,
     secondaryMenuItems,
+    tertiaryMenuItems,
   }: PropsWithChildren<{
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
+    tertiaryMenuItems: MainLayoutMenu[];
   }>) => {
     const router = useRouter();
     useCurrentLanguage();
@@ -50,6 +52,7 @@ export const MainLayout = observer(
             className={classNames(showBlockLogo && "!mt-8")}
             menus={menus}
             secondaryMenuItems={secondaryMenuItems}
+            tertiaryMenuItems={tertiaryMenuItems}
           />
           <div className="flex flex-1 flex-col justify-end gap-5">
             <div className="px-2">
@@ -63,6 +66,7 @@ export const MainLayout = observer(
           title={selectedMenuItem?.label ?? ""}
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
+          tertiaryMenuItems={tertiaryMenuItems}
         />
         <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
           {children}

@@ -450,7 +450,11 @@
     "more": "更多的",
     "new": "新的",
     "settings": "设置",
-    "notifications": "通知"
+    "notifications": "通知",
+    "helpCenter": "帮助中心",
+    "liveSupport": "实时支持",
+    "bugs": "提交错误报告",
+    "docs": "文档"
   },
   "notifi": {
     "saveChanges": "保存更改",

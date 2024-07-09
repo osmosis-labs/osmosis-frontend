@@ -286,12 +286,6 @@ const MainLayoutWrapper: FunctionComponent<{
 
   const secondaryMenuItems: MainLayoutMenu[] = [
     {
-      label: t("menu.help"),
-      link: "https://support.osmosis.zone/",
-      icon: <Icon id="help-circle" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
-    },
-    {
       label: t("menu.vote"),
       link:
         osmosisWallet?.walletInfo?.governanceUrl ??
@@ -312,8 +306,41 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
+  const tertiaryMenuItems = [
+    {
+      label: t("menu.help"),
+      link: "https://support.osmosis.zone/library",
+      icon: <Icon id="questionMark" className="h-6 w-6" />,
+      amplitudeEvent: [
+        EventName.Sidebar.supportLibraryClicked,
+      ] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.liveSupport"),
+      link: "https://support.osmosis.zone",
+      icon: <Icon id="headset" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.bugs"),
+      link: "https://bugs.osmosis.zone",
+      icon: <Icon id="vector" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.bugsClicked] as AmplitudeEvent,
+    },
+    {
+      label: t("menu.docs"),
+      link: "https://docs.osmosis.zone",
+      icon: <Icon id="file" className="h-6 w-6" />,
+      amplitudeEvent: [EventName.Sidebar.docsClicked] as AmplitudeEvent,
+    },
+  ];
+
   return (
-    <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
+    <MainLayout
+      menus={menus}
+      secondaryMenuItems={secondaryMenuItems}
+      tertiaryMenuItems={tertiaryMenuItems}
+    >
       {children}
       <ExternalLinkModal
         url="https://osmosis.marsprotocol.io/"

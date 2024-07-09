@@ -450,7 +450,11 @@
     "more": "더",
     "new": "새로운",
     "settings": "설정",
-    "notifications": "알림"
+    "notifications": "알림",
+    "helpCenter": "지원 센터",
+    "liveSupport": "실시간 지원",
+    "bugs": "버그 보고서 제출",
+    "docs": "문서"
   },
   "notifi": {
     "saveChanges": "변경 사항 저장",

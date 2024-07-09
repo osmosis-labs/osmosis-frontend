@@ -450,7 +450,11 @@
     "more": "Daha",
     "new": "YENİ",
     "settings": "Ayarlar",
-    "notifications": "Bildirimler"
+    "notifications": "Bildirimler",
+    "helpCenter": "Yardım Merkezi",
+    "liveSupport": "Canlı destek",
+    "bugs": "Hata Raporu Gönder",
+    "docs": "Dokümanlar"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

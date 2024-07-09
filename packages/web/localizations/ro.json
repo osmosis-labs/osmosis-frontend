@@ -450,7 +450,11 @@
     "more": "Mai mult",
     "new": "NOU",
     "settings": "Setări",
-    "notifications": "Notificări"
+    "notifications": "Notificări",
+    "helpCenter": "Centru de ajutor",
+    "liveSupport": "Suport live",
+    "bugs": "Trimiteți raportul de eroare",
+    "docs": "Docs"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",

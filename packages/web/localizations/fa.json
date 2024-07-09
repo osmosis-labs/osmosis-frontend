@@ -450,7 +450,11 @@
     "more": "بیشتر",
     "new": "جدید",
     "settings": "تنظیمات",
-    "notifications": "اطلاعیه"
+    "notifications": "اطلاعیه",
+    "helpCenter": "مرکز کمک",
+    "liveSupport": "پشتیبانی زنده",
+    "bugs": "ارسال گزارش اشکال",
+    "docs": "اسناد"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",

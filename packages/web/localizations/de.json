@@ -450,7 +450,11 @@
     "more": "Mehr",
     "new": "NEU",
     "settings": "Einstellungen",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "helpCenter": "Hilfezentrum",
+    "liveSupport": "Live Support",
+    "bugs": "Fehlerbericht senden",
+    "docs": "Dokumentation"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",
