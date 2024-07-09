@@ -484,7 +484,7 @@ export const ProfileModal: FunctionComponent<
   );
 });
 
-const OneClickTradingProfileSection: React.FC<{
+const OneClickTradingProfileSection: FunctionComponent<{
   setShow1CTSettings: (value: boolean) => void;
   onRestartSession: () => void;
 }> = ({ setShow1CTSettings, onRestartSession }) => {

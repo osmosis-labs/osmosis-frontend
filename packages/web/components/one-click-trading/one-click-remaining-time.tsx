@@ -8,8 +8,7 @@ import { humanizeTime } from "~/utils/date";
 
 export const OneClickTradingRemainingTime: FunctionComponent<{
   className?: string;
-  expiredElement?: React.ReactNode;
-}> = ({ className, expiredElement }) => {
+}> = ({ className }) => {
   const { oneClickTradingInfo, isOneClickTradingExpired } =
     useOneClickTradingSession();
   const { t } = useTranslation();
@@ -44,17 +43,12 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
 
   if (isOneClickTradingExpired) {
     return (
-      <>
-        {typeof expiredElement !== "undefined" ? (
-          expiredElement
-        ) : (
-          <p className="body1 text-osmoverse-300">
-            {t("oneClickTrading.profile.sessionExpired")}
-          </p>
-        )}
-      </>
+      <p className="body1 text-osmoverse-300">
+        {t("oneClickTrading.profile.sessionExpired")}
+      </p>
     );
   }
+
   if (!humanizedTime) return null;
 
   return (
