@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { Fragment } from "react";
-import { useLocalStorage } from "react-use";
+import { createGlobalState, useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
@@ -12,6 +12,8 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
+
+export const useOneClickProfileTooltip = createGlobalState(false);
 
 export const OneClickFloatingBannerDoNotShowKey =
   "do-not-show-one-click-trading-floating-notification";
@@ -36,8 +38,12 @@ const OneClickFloatingBannerContent = () => {
     false
   );
   const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+  const [, setIsOneClickProfileTooltipOpen] = useOneClickProfileTooltip();
 
-  const onClose = () => setDoNotShowAgain(true);
+  const onClose = () => {
+    setIsOneClickProfileTooltipOpen(true);
+    setDoNotShowAgain(true);
+  };
 
   return (
     <Transition
