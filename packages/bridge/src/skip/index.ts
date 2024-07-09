@@ -779,7 +779,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     url.searchParams.set("dest_chain", String(toChain.chainId));
     url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
 
-    return { urlProviderName: "Skip.Go", url };
+    return { urlProviderName: "Skip:Go", url };
   }
 }
 
