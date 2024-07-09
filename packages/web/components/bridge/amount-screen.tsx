@@ -568,7 +568,7 @@ export const AmountScreen = observer(
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 md:gap-2">
             <ChainSelectorButton
               direction={direction}
               chainColor={fromChain.color}
