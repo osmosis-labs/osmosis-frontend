@@ -5,7 +5,7 @@ import {
   IntPretty,
   PricePretty,
 } from "@keplr-wallet/unit";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
   FunctionComponent,
@@ -87,7 +87,7 @@ export const CryptoFiatInput: FunctionComponent<{
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
       let nextValue = type === "fiat" ? value.replace("$", "") : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
+      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
