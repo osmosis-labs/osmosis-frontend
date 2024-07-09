@@ -308,7 +308,7 @@ const MainLayoutWrapper: FunctionComponent<{
 
   const tertiaryMenuItems = [
     {
-      label: t("menu.help"),
+      label: t("menu.helpCenter"),
       link: "https://support.osmosis.zone/library",
       icon: <Icon id="questionMark" className="h-6 w-6" />,
       amplitudeEvent: [
