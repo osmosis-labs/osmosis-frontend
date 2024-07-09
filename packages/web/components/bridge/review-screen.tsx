@@ -348,6 +348,7 @@ const TransferDetails: FunctionComponent<
               selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
               refetchInterval={quote.refetchInterval}
               selectedQuote={selectedQuote}
+              isRemainingTimePaused={isRefetchingQuote || isTxPending}
               open={open}
             />
           </DisclosureButton>
