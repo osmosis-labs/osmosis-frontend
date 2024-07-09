@@ -172,14 +172,19 @@ export const Transfer = observer(
       toAddressToDisplay = to.address;
     }
 
-    const toAddressIcnsName = formatICNSName(
-      queriesExternalStore.queryICNSNames.getQueryContract(toAddressToDisplay)
-        ?.primaryName
-    );
-    const fromAddressIcnsName = formatICNSName(
-      queriesExternalStore.queryICNSNames.getQueryContract(from.address)
-        ?.primaryName
-    );
+    const toAddressIcnsName = !toAddressToDisplay.startsWith("Ox")
+      ? formatICNSName(
+          queriesExternalStore.queryICNSNames.getQueryContract(
+            toAddressToDisplay
+          )?.primaryName
+        )
+      : undefined;
+    const fromAddressIcnsName = !from.address.startsWith("0x")
+      ? formatICNSName(
+          queriesExternalStore.queryICNSNames.getQueryContract(from.address)
+            ?.primaryName
+        )
+      : undefined;
 
     const isSwitchWalletVisibleForTo =
       to.address.length > 0 &&

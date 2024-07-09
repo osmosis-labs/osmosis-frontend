@@ -1,24 +1,15 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
+import {
+  Asset as AssetListAsset,
+  AssetList,
+  MinimalAsset,
+} from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
 import { isAssetInCategories } from "./categories";
-
-/** An asset with minimal data that conforms to `Currency` type. */
-export type Asset = {
-  coinDenom: string;
-  coinName: string;
-  coinMinimalDenom: string;
-  coinDecimals: number;
-  coinGeckoId: string | undefined;
-  coinImageUrl?: string;
-  isVerified: boolean;
-  isUnstable: boolean;
-  sourceDenom: string;
-};
 
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
@@ -37,7 +28,7 @@ export function getAsset({
 }: {
   assetLists: AssetList[];
   anyDenom: string;
-}): Asset {
+}): MinimalAsset {
   const assets = getAssets({
     assetLists,
     findMinDenomOrSymbol: anyDenom,
@@ -46,6 +37,38 @@ export function getAsset({
   const asset = assets[0];
   if (!asset) throw new Error(anyDenom + " not found in asset list");
   return asset;
+}
+
+/**
+ * Retrieves an asset along with its variants from the provided asset lists.
+ * Canonical asset is placed at the beginning of the array.
+ *
+ * @throws Will throw an error if the asset is not found in the asset lists.
+ */
+export function getAssetWithVariants({
+  assetLists,
+  anyDenom,
+}: {
+  assetLists: AssetList[];
+  anyDenom: string;
+}) {
+  const asset = getAsset({
+    assetLists,
+    anyDenom,
+  });
+
+  if (!asset) throw new Error(anyDenom + " not found in asset list");
+
+  const variants = getAssets({
+    assetLists,
+    includePreview: true,
+  }).filter((a) => a?.variantGroupKey === asset.variantGroupKey);
+
+  return (
+    variants
+      // place the canonical asset at the beginning
+      .sort((a) => (a.coinMinimalDenom === asset.variantGroupKey ? -1 : 1))
+  );
 }
 
 /** Returns minimal asset information for assets in asset list. Return values can double as the `Currency` type.
@@ -62,7 +85,7 @@ export function getAssets({
   assetLists: AssetList[];
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
-} & AssetFilter): Asset[] {
+} & AssetFilter): MinimalAsset[] {
   return filterAssetList(assetLists, params);
 }
 
@@ -99,7 +122,7 @@ function filterAssetList(
   params: {
     findMinDenomOrSymbol?: string;
   } & AssetFilter
-): Asset[] {
+): MinimalAsset[] {
   // Create new array with just assets
   const coinMinimalDenomSet = new Set<string>();
 
@@ -170,6 +193,7 @@ function filterAssetList(
 export * from "./bridge";
 export * from "./categories";
 export * from "./config";
+export * from "./ethereum";
 export * from "./gas";
 export * from "./market";
 export * from "./price";

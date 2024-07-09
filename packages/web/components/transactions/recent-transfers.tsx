@@ -37,10 +37,10 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
       <div className="flex w-full flex-col gap-2">
         {recentTransfers.map(({ txHash, status, amount, isWithdraw }) => {
           const simplifiedStatus =
-            status === "complete"
+            status === "success"
               ? "success"
               : status === "refunded" ||
-                status === "timeout" ||
+                status === "connection-error" ||
                 status === "failed"
               ? "failed"
               : "pending";

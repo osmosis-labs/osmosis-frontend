@@ -97,7 +97,7 @@ const OsmoPriceAndChart: FunctionComponent = () => {
 
   const { data: recentPrices = [], isLoading: isLoadingHistoricalPrices } =
     api.edge.assets.getAssetHistoricalPrice.useQuery({
-      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
       timeFrame: "1D",
     });
 
