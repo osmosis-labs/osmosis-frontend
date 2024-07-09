@@ -546,6 +546,7 @@
         "title": "Período de sesión",
         "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
         "periods": {
+          "5min": "5 minutos",
           "10min": "10 minutos",
           "30min": "30 minutos",
           "1hour": "1 hora",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Bienvenido de nuevo",
+      "subtitle": "Conecta tu billetera para continuar explorando Osmosis.",
       "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
       "toggleLabel": "Comercio con 1 clic",
       "editParamsAriaLabel": "Cambiar parámetros 1CT"

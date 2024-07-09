@@ -247,6 +247,11 @@ export const useCreateOneClickTradingSession = ({
 
       let sessionPeriod: OneClickTradingTimeLimit;
       switch (transaction1CTParams.sessionPeriod.end) {
+        case "5min":
+          sessionPeriod = {
+            end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
+          };
+          break;
         case "10min":
           sessionPeriod = {
             end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),

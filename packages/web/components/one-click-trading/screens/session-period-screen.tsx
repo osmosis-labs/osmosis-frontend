@@ -14,6 +14,7 @@ export function getSessionPeriodTranslationKey(
   input: OneClickTradingHumanizedSessionPeriod
 ) {
   const timeMappings = {
+    "5min": "oneClickTrading.settings.sessionPeriodScreen.periods.5min",
     "10min": "oneClickTrading.settings.sessionPeriodScreen.periods.10min",
     "30min": "oneClickTrading.settings.sessionPeriodScreen.periods.30min",
     "1hour": "oneClickTrading.settings.sessionPeriodScreen.periods.1hour",
@@ -26,6 +27,7 @@ export function getSessionPeriodTranslationKey(
 }
 
 const SessionPeriods: OneClickTradingHumanizedSessionPeriod[] = [
+  "5min",
   "10min",
   "30min",
   "1hour",

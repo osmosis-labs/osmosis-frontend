@@ -546,6 +546,7 @@
         "title": "会期",
         "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
         "periods": {
+          "5min": "5分",
           "10min": "10分",
           "30min": "30分",
           "1hour": "1時間",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "おかえり",
+      "subtitle": "ウォレットを接続して、Osmosis の探索を続けてください。",
       "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
       "toggleLabel": "1クリック取引",
       "editParamsAriaLabel": "1CTパラメータの変更"

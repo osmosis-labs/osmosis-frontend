@@ -370,12 +370,9 @@ export const OneClickTradingSettings = ({
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        loadingText={t(
-                          "oneClickTrading.settings.editSessionButton"
-                        )}
                       >
                         {t("oneClickTrading.settings.editSessionButton")}
                       </Button>
@@ -386,10 +383,9 @@ export const OneClickTradingSettings = ({
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        loadingText={t("oneClickTrading.settings.startButton")}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
