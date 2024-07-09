@@ -7,6 +7,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
+import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
@@ -83,7 +84,11 @@ export const LimitInput: FC<LimitInputProps> = ({
     (value: string) => {
       const updatedValue = transformAmount(value);
       const isFocused = focused === FocusedInput.FIAT;
-      if (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) {
+      if (
+        !isValidNumericalRawInput(updatedValue) ||
+        updatedValue.length > 26 ||
+        (updatedValue.length > 0 && updatedValue.startsWith("-"))
+      ) {
         return;
       }
 
@@ -105,8 +110,9 @@ export const LimitInput: FC<LimitInputProps> = ({
       const isFocused = focused === FocusedInput.TOKEN;
 
       if (
-        (updatedValue.length > 0 && new Dec(updatedValue).isNegative()) ||
-        (tab === "buy" && type === "market")
+        !isValidNumericalRawInput(updatedValue) ||
+        updatedValue.length > 26 ||
+        (updatedValue.length > 0 && updatedValue.startsWith("-"))
       ) {
         return;
       }
@@ -114,7 +120,7 @@ export const LimitInput: FC<LimitInputProps> = ({
         ? onChange(updatedValue)
         : onChange(formatPretty(new Dec(updatedValue)));
     },
-    [onChange, focused, tab, type]
+    [onChange, focused]
   );
 
   useEffect(() => {

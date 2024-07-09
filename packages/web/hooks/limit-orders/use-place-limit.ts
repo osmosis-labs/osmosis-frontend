@@ -232,19 +232,17 @@ export const usePlaceLimit = ({
       {
         enabled: !!account?.address,
         select: (balances) =>
-          balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
+          balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
             ?.coin,
       }
     );
 
   const insufficientFunds =
     (orderDirection === "bid"
-      ? quoteTokenBalance
-          ?.toDec()
-          ?.lt(inAmountInput.amount?.toDec() ?? new Dec(0))
+      ? quoteTokenBalance?.toDec()?.lt(paymentTokenValue.toDec() ?? new Dec(0))
       : baseTokenBalance
           ?.toDec()
-          ?.lt(inAmountInput.amount?.toDec() ?? new Dec(0))) ?? true;
+          ?.lt(paymentTokenValue.toDec() ?? new Dec(0))) ?? true;
 
   const expectedTokenAmountOut = useMemo(() => {
     const preFeeAmount =
