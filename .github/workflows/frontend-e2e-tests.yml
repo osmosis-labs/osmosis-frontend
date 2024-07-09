@@ -166,7 +166,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Portfolio tests
+      - name: Run Transactions tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

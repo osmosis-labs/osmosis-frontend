@@ -42,6 +42,9 @@ export class BasePage {
 
   async gotoPortfolio() {
     await this.portfolioLink.click();
+    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(2000);
+    await this.printUrl();
   }
 
   async gotoPools() {
