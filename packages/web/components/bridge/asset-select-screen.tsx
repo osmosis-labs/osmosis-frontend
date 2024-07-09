@@ -1,4 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -29,7 +30,6 @@ const variantsNotToBeExcluded = [
 ] satisfies (MainnetVariantGroupKeys | TestnetVariantGroupKeys)[];
 const prioritizedDenoms = [
   "USDC",
-  "OSMO",
   "ETH",
   "SOL",
   "USDT",
@@ -37,6 +37,13 @@ const prioritizedDenoms = [
   "ATOM",
   "TIA",
 ] satisfies (MainnetAssetSymbols | TestnetAssetSymbols)[];
+
+// Deprioritize native assets. They can still be bridged, but we avoid
+// showing them at the top of the list
+const deprioritizedDenoms = ["OSMO", "ION"] satisfies (
+  | MainnetAssetSymbols
+  | TestnetAssetSymbols
+)[];
 
 interface AssetSelectScreenProps {
   type: "deposit" | "withdraw";
@@ -79,7 +86,8 @@ export const AssetSelectScreen = observer(
           includePreview: showPreviewAssets,
           variantsNotToBeExcluded,
           prioritizedDenoms,
-          limit: 50, // items per page
+          deprioritizedDenoms,
+          limit: 100, // items per page
         },
         {
           getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -101,7 +109,7 @@ export const AssetSelectScreen = observer(
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
 
     return (
-      <div className="flex h-full flex-col">
+      <>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}
@@ -130,12 +138,12 @@ export const AssetSelectScreen = observer(
           onInput={debounce((nextValue) => {
             setSearch(nextValue);
           }, 300)}
-          className="my-4 flex-shrink-0 md:w-full"
+          className="sticky top-0 z-[1000] my-4 flex-shrink-0 md:w-full"
           placeholder={t("transfer.assetSelectScreen.searchAssets")}
           size={isMobile ? "small" : "full"}
         />
 
-        <div className="flex h-full flex-col gap-1 overflow-y-scroll">
+        <div className="flex flex-col gap-1">
           {isLoading ? (
             <div className="self-center pt-3">
               <Spinner />
@@ -167,7 +175,7 @@ export const AssetSelectScreen = observer(
                     />
                     <span className="flex flex-col text-left">
                       <span className="subtitle1 md:body2">
-                        {asset.coinName}
+                        {truncateString(asset.coinName, 22)}
                       </span>
                       <span className="body2 md:caption text-osmoverse-300">
                         {asset.coinDenom}
@@ -222,7 +230,7 @@ export const AssetSelectScreen = observer(
             </>
           )}
         </div>
-      </div>
+      </>
     );
   }
 );

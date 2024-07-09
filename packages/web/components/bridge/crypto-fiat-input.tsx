@@ -5,7 +5,7 @@ import {
   IntPretty,
   PricePretty,
 } from "@keplr-wallet/unit";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
   FunctionComponent,
@@ -87,12 +87,11 @@ export const CryptoFiatInput: FunctionComponent<{
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
       let nextValue = type === "fiat" ? value.replace("$", "") : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
+      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
       }
-
       if (nextValue === "") {
         nextValue = "0";
       }
@@ -123,15 +122,12 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (
-      isMax &&
-      transferGasCost &&
-      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-    ) {
-      const maxTransferAmount = asset.amount
-        .toDec()
-        .sub(transferGasCost.toDec());
+    if (isMax && transferGasCost) {
+      const maxTransferAmount =
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
+          ? asset.amount.toDec().sub(transferGasCost.toDec())
+          : asset.amount.toDec();
 
       if (
         maxTransferAmount.isPositive() &&
@@ -149,10 +145,14 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${new IntPretty(fiatInputRaw)
-    .locale(false)
-    .trim(true)
-    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)}`;
+  const fiatCurrentValue = `${assetPrice.symbol}${
+    fiatInputRaw.endsWith(".")
+      ? fiatInputRaw
+      : new IntPretty(fiatInputRaw)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+  }`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile
@@ -271,9 +271,11 @@ export const CryptoFiatInput: FunctionComponent<{
               }
             }}
             className={classNames(
-              "body2 md:caption w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80 md:w-13",
+              "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
-                "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+                "border-2 border-ammelia-500": isMax,
+                "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
+                  !isMax,
               }
             )}
             disabled={asset.amount.toDec().isZero()}

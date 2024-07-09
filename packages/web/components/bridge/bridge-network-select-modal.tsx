@@ -18,16 +18,17 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
-import { useBridgesSupportedAssets } from "./use-bridges-supported-assets";
+import { SupportedChain } from "./use-bridges-supported-assets";
 
 enum NetworkSelectScreen {
   Main = "main",
   SelectWallet = "select-wallet",
 }
+
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
   toChain: BridgeChainWithDisplayInfo;
-  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   onConfirmManualAddress: ((address: string) => void) | undefined;
   initialManualAddress: string | undefined;
@@ -52,7 +53,7 @@ export const BridgeNetworkSelectModal = ({
 
   const {
     isConnected: isEvmWalletConnected,
-    chainId: currentEvmChainId,
+    chainId: currentEvmWalletChainId,
     connector,
   } = useEvmWalletAccount();
   const { switchChainAsync } = useSwitchEvmChain();
@@ -146,7 +147,7 @@ export const BridgeNetworkSelectModal = ({
                       const shouldSwitchChain =
                         isEvmWalletConnected &&
                         chain.chainType === "evm" &&
-                        currentEvmChainId !== chain.chainId;
+                        currentEvmWalletChainId !== chain.chainId;
                       return (
                         <button
                           key={chain.chainId}
@@ -159,8 +160,9 @@ export const BridgeNetworkSelectModal = ({
                                   chainId: chain.chainId as EthereumChainIds,
                                 });
                               } catch {
-                                setIsSwitchingChain(false);
                                 return;
+                              } finally {
+                                setIsSwitchingChain(false);
                               }
                             }
 

@@ -58,6 +58,7 @@ import {
 import { BridgeQuote } from "./use-bridge-quotes";
 import {
   SupportedAsset,
+  SupportedChain,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
 
@@ -385,9 +386,7 @@ export const AmountScreen = observer(
               } else {
                 nextData = filteredData;
               }
-            }
 
-            if (!fromAsset && nextData) {
               const highestBalance = nextData.reduce(
                 (acc, curr) =>
                   curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
@@ -567,7 +566,7 @@ export const AmountScreen = observer(
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 md:gap-2">
             <ChainSelectorButton
               direction={direction}
               chainColor={fromChain.color}
@@ -1025,6 +1024,7 @@ export const AmountScreen = observer(
                   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
                 }
               }
+              fromChain={fromChain}
             />
           )}
 
@@ -1103,7 +1103,7 @@ interface ChainSelectorButtonProps {
   children: ReactNode;
   chainLogo: string | undefined;
   chainColor: string | undefined;
-  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  chains: SupportedChain[];
   toChain: BridgeChainWithDisplayInfo;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   isNetworkSelectVisible: boolean;
@@ -1219,7 +1219,8 @@ const TransferDetails: FunctionComponent<{
   quote: BridgeQuote & {
     selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   };
-}> = ({ quote }) => {
+  fromChain: BridgeChainWithDisplayInfo;
+}> = ({ quote, fromChain }) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
@@ -1232,6 +1233,7 @@ const TransferDetails: FunctionComponent<{
     successfulQuotes,
     setSelectedBridgeProvider,
     isRefetchingQuote,
+    isTxPending,
   } = quote;
 
   return (
@@ -1264,6 +1266,8 @@ const TransferDetails: FunctionComponent<{
                 refetchInterval={refetchInterval}
                 selectedQuote={selectedQuote}
                 open={open}
+                isRemainingTimePaused={isRefetchingQuote || isTxPending}
+                showRemainingTime
               />
             </div>
           </DisclosureButton>
@@ -1285,7 +1289,7 @@ const TransferDetails: FunctionComponent<{
             <NetworkFeeRow
               isRefetchingQuote={isRefetchingQuote}
               selectedQuote={selectedQuote}
-              fromChainName={selectedQuote.fromChain?.chainName}
+              fromChainName={fromChain.prettyName}
             />
             <TotalFeesRow
               isRefetchingQuote={isRefetchingQuote}

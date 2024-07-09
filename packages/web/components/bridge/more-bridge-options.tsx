@@ -55,7 +55,7 @@ export const MoreBridgeOptions = observer(
         className="!max-w-[30rem]"
         {...modalProps}
       >
-        <p className="body1 py-4 text-center text-osmoverse-300">
+        <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
           {t(
             direction === "deposit"
               ? "transfer.moreBridgeOptions.descriptionDeposit"
@@ -66,7 +66,7 @@ export const MoreBridgeOptions = observer(
             }
           )}
         </p>
-        <div className="flex flex-col gap-1 pt-4">
+        <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
           {isLoadingExternalUrls ? (
             <>
               {new Array(3).fill(undefined).map((_, i) => (
@@ -82,7 +82,7 @@ export const MoreBridgeOptions = observer(
                     href={url.toString()}
                     target="_blank"
                     rel="noreferrer"
-                    className="subtitle1 flex items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
+                    className="subtitle1 md:caption flex items-center justify-between rounded-2xl bg-osmoverse-700 px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:bg-transparent md:px-2 md:py-2"
                   >
                     <div className="flex items-center gap-3">
                       <Image

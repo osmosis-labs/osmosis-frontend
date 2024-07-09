@@ -893,6 +893,7 @@
     "mobileWallets": "移动钱包",
     "installedWallets": "已安装的钱包",
     "otherWallets": "其他钱包",
+    "searchWallets": "搜索钱包",
     "step1Title": "什么是钱包？",
     "step1Content": "钱包用于发送、接收和访问您的所有数字资产，如OSMO和ATOM。",
     "step2Title": "无需账户。无需密码。",
@@ -900,7 +901,12 @@
     "step3Title": "您的密钥，您的资金。",
     "step3Content": "在Osmosis上，只有您能移动您的资产。权力越大，责任越大。",
     "step4Title": "创建一个钱包以开始",
-    "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。"
+    "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。",
+    "yourConnectedWallets": "您的联网钱包",
+    "primaryWallet": "主钱包",
+    "done": "完毕",
+    "manage": "管理",
+    "disconnect": "断开"
   },
   "swapFailed": "兑换失败。流动性可能不够。尝试调整允许的滑点。",
   "transactionBroadcasting": "广播交易中",
@@ -989,9 +995,13 @@
     "verifyAddressWarning": "验证您要提取资金的地址。提供错误的地址将导致资金损失。",
     "recipientAddress": "{chain}上的收件人地址",
     "enterAddress": "输入地址",
+    "sendToAnotherAddress": "发送到另一个地址",
     "invalidAddress": "无效的{chain}地址",
     "acknowledgement": "我承认我对世界末日等负有全部责任。",
-    "done": "完毕"
+    "done": "完毕",
+    "transferFrom": "从{noun}转移",
+    "risks": "桥接伴随着风险。",
+    "learnMore": "了解更多"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

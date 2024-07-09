@@ -893,6 +893,7 @@
     "mobileWallets": "Portefeuilles Mobiles",
     "installedWallets": "Portefeuilles Installés",
     "otherWallets": "Autres Portefeuilles",
+    "searchWallets": "Rechercher des portefeuilles",
     "step1Title": "Qu'est-ce que les portefeuilles?",
     "step1Content": "Les portefeuilles sont utilisés pour envoyer, recevoir et accéder à tous vos actifs numériques comme OSMO et ATOM.",
     "step2Title": "Pas de comptes. Pas de mots de passe.",
@@ -900,7 +901,12 @@
     "step3Title": "Vos clés, vos fonds.",
     "step3Content": "Sur Osmosis, seul vous pouvez déplacer vos actifs. Un grand pouvoir implique de grandes responsabilités.",
     "step4Title": "Créez un portefeuille pour commencer",
-    "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs."
+    "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs.",
+    "yourConnectedWallets": "Vos portefeuilles connectés",
+    "primaryWallet": "Portefeuille principal",
+    "done": "Fait",
+    "manage": "Gérer",
+    "disconnect": "Déconnecter"
   },
   "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
@@ -989,9 +995,13 @@
     "verifyAddressWarning": "Vérifiez l'adresse à laquelle vous retirez vos fonds. Fournir une adresse incorrecte entraînera une perte de fonds.",
     "recipientAddress": "Adresse du destinataire sur {chain}",
     "enterAddress": "Entrer une adresse",
+    "sendToAnotherAddress": "Envoyer à une autre adresse",
     "invalidAddress": "Adresse {chain} non valide",
     "acknowledgement": "Je reconnais que je suis entièrement responsable de la fin du monde, etc.",
-    "done": "Fait"
+    "done": "Fait",
+    "transferFrom": "Transfert depuis {noun}",
+    "risks": "Le rapprochement comporte des risques.",
+    "learnMore": "Apprendre encore plus"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

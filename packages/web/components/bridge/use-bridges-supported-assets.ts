@@ -11,6 +11,10 @@ export type SupportedAsset = ReturnType<
   typeof useBridgesSupportedAssets
 >["supportedAssetsByChainId"][string][number];
 
+export type SupportedChain = ReturnType<
+  typeof useBridgesSupportedAssets
+>["supportedChains"][number];
+
 export const useBridgesSupportedAssets = ({
   assets,
   chain,
