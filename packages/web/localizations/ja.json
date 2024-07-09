@@ -498,6 +498,7 @@
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
+      "startANewSession": "新しいセッションを開始する",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
@@ -570,7 +571,10 @@
       "header": "続行するにはウォレットに接続してください",
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     },
-    "profile": {}
+    "profile": {
+      "sessionExpired": "設定",
+      "restart": "再起動"
+    }
   },
   "pool": {
     "24hrTradingVolume": "24時間取引高",

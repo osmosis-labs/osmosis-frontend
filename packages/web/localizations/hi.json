@@ -498,6 +498,7 @@
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
+      "startANewSession": "नया सत्र शुरू करें",
       "increaseFeeLimit": "नेटवर्क शुल्क सीमा बढ़ाएँ",
       "approveManually": "{walletName} में मैन्युअल रूप से स्वीकृत करें",
       "continueWithWallet": "बटुए के साथ जारी रखें",
@@ -570,7 +571,10 @@
       "header": "जारी रखने के लिए वॉलेट कनेक्ट करें",
       "description": "आपका 1-क्लिक ट्रेडिंग सत्र तब शुरू होगा जब आप अपने चुने हुए वॉलेट में लेनदेन को मंजूरी देंगे।"
     },
-    "profile": {}
+    "profile": {
+      "sessionExpired": "समायोजन",
+      "restart": "पुनः आरंभ करें"
+    }
   },
   "pool": {
     "24hrTradingVolume": "24 घंटे ट्रेडिंग वॉल्यूम",

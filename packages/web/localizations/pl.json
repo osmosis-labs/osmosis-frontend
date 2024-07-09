@@ -498,6 +498,7 @@
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
+      "startANewSession": "Rozpocznij nową sesję",
       "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
@@ -570,7 +571,10 @@
       "header": "Podłącz portfel, aby kontynuować",
       "description": "Twoja sesja handlu 1-Click rozpocznie się w momencie zatwierdzenia transakcji w wybranym portfelu."
     },
-    "profile": {}
+    "profile": {
+      "sessionExpired": "Ustawienia",
+      "restart": "Uruchom ponownie"
+    }
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
