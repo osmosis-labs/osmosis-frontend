@@ -893,6 +893,7 @@
     "mobileWallets": "Portofele Mobile",
     "installedWallets": "Portofele Instalate",
     "otherWallets": "Alte Portofele",
+    "searchWallets": "Căutați portofele",
     "step1Title": "Ce sunt portofelele?",
     "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
     "step2Title": "Fără conturi. Fără parole.",
@@ -900,7 +901,12 @@
     "step3Title": "Cheile dvs., fondurile dvs.",
     "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
     "step4Title": "Creați un portofel pentru a începe",
-    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
+    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active.",
+    "yourConnectedWallets": "Portofelele dvs. conectate",
+    "primaryWallet": "Portofelul principal",
+    "done": "Terminat",
+    "manage": "Administra",
+    "disconnect": "Deconectat"
   },
   "swapFailed": "Schimbarea a eșuat. Este posibil ca lichiditatea să nu fie suficientă. Încercați să reglați alunecarea permisă.",
   "transactionBroadcasting": "Transmitere tranzactie",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",
     "recipientAddress": "Adresa destinatarului pe {chain}",
     "enterAddress": "Introduceți o adresă",
+    "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
     "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
-    "done": "Terminat"
+    "done": "Terminat",
+    "transferFrom": "Transfer de la {noun}"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

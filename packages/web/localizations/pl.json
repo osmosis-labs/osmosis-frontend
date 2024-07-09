@@ -893,6 +893,7 @@
     "mobileWallets": "Portfele Mobilne",
     "installedWallets": "Zainstalowane Portfele",
     "otherWallets": "Inne Portfele",
+    "searchWallets": "Przeszukaj portfele",
     "step1Title": "Czym są portfele?",
     "step1Content": "Portfele służą do wysyłania, odbierania i dostępu do wszystkich Twoich cyfrowych aktywów, takich jak OSMO i ATOM.",
     "step2Title": "Bez kont. Bez haseł.",
@@ -900,7 +901,12 @@
     "step3Title": "Twoje klucze, Twoje fundusze.",
     "step3Content": "Na Osmosis, tylko Ty jesteś w stanie poruszać swoimi aktywami. Wielka moc niesie za sobą wielką odpowiedzialność.",
     "step4Title": "Stwórz portfel, aby zacząć",
-    "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa."
+    "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa.",
+    "yourConnectedWallets": "Twoje połączone portfele",
+    "primaryWallet": "Podstawowy portfel",
+    "done": "Zrobione",
+    "manage": "Zarządzać",
+    "disconnect": "Rozłączyć się"
   },
   "swapFailed": "Zamiana nie powiodła się. Płynność może nie być wystarczająca. Spróbuj wyregulować dozwolony poślizg.",
   "transactionBroadcasting": "Nadawanie Transakcji",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "Sprawdź adres, na który wypłacasz środki. Podanie błędnego adresu skutkować będzie utratą środków.",
     "recipientAddress": "Adres odbiorcy w {chain}",
     "enterAddress": "Podaj adres",
+    "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",
     "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
-    "done": "Zrobione"
+    "done": "Zrobione",
+    "transferFrom": "Przelew z {noun}"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

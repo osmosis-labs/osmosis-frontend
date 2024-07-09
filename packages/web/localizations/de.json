@@ -893,6 +893,7 @@
     "mobileWallets": "Mobile Geldbörsen",
     "installedWallets": "Installierte Wallets",
     "otherWallets": "Andere Geldbörsen",
+    "searchWallets": "Suche nach Geldbörsen",
     "step1Title": "Was sind Geldbörsen?",
     "step1Content": "Wallets werden zum Senden, Empfangen und Zugreifen auf alle Ihre digitalen Assets wie OSMO und ATOM verwendet.",
     "step2Title": "Keine Konten. Keine Passwörter.",
@@ -900,7 +901,12 @@
     "step3Title": "Ihre Schlüssel, Ihr Geld.",
     "step3Content": "Auf Osmosis können nur Sie Ihr Vermögen bewegen. Mit großer Macht kommt große Verantwortung.",
     "step4Title": "Erstellen Sie zunächst eine Wallet",
-    "step4Content": "Richten Sie Ihr erstes Wallet ein und melden Sie sich an! Senden, empfangen oder kaufen Sie Vermögenswerte."
+    "step4Content": "Richten Sie Ihr erstes Wallet ein und melden Sie sich an! Senden, empfangen oder kaufen Sie Vermögenswerte.",
+    "yourConnectedWallets": "Ihre verbundenen Geldbörsen",
+    "primaryWallet": "Primäre Geldbörse",
+    "done": "Erledigt",
+    "manage": "Verwalten",
+    "disconnect": "Trennen"
   },
   "swapFailed": "Der Tausch ist fehlgeschlagen. Möglicherweise reicht die Liquidität nicht aus. Versuchen Sie, den zulässigen Schlupf anzupassen.",
   "transactionBroadcasting": "Transaktionsübertragung",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "Überprüfen Sie die Adresse, an die Sie Ihr Geld abheben. Die Angabe einer falschen Adresse führt zum Verlust des Geldes.",
     "recipientAddress": "Empfängeradresse auf {chain}",
     "enterAddress": "Gib eine Adresse ein",
+    "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",
     "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
-    "done": "Erledigt"
+    "done": "Erledigt",
+    "transferFrom": "Übertragung von {noun}"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

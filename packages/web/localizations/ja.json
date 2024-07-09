@@ -893,6 +893,7 @@
     "mobileWallets": "モバイルウォレット",
     "installedWallets": "インストールされているウォレット",
     "otherWallets": "その他のウォレット",
+    "searchWallets": "ウォレットを検索",
     "step1Title": "ウォレットとは何ですか?",
     "step1Content": "ウォレットは、OSMO や ATOM などのすべてのデジタル資産の送受信、アクセスに使用されます。",
     "step2Title": "アカウントがありません。パスワードはありません。",
@@ -900,7 +901,12 @@
     "step3Title": "あなたの鍵、あなたの資金。",
     "step3Content": "Osmosis では、自分のアセットを移動できるのは自分だけです。大きな力には大きな責任が伴います。",
     "step4Title": "始めるにはウォレットを作成してください",
-    "step4Content": "最初のウォレットを設定してサインインしてください。アセットを送信、受信、または購入します。"
+    "step4Content": "最初のウォレットを設定してサインインしてください。アセットを送信、受信、または購入します。",
+    "yourConnectedWallets": "接続されたウォレット",
+    "primaryWallet": "プライマリウォレット",
+    "done": "終わり",
+    "manage": "管理",
+    "disconnect": "切断"
   },
   "swapFailed": "交換に失敗しました。流動性が十分ではない可能性があります。許容される滑り量を調整してみてください。",
   "transactionBroadcasting": "トランザクションブロードキャスト",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",
     "recipientAddress": "{chain}の受信者アドレス",
     "enterAddress": "住所を入力してください",
+    "sendToAnotherAddress": "別のアドレスに送信",
     "invalidAddress": "無効な{chain}アドレス",
     "acknowledgement": "私は世界の終焉などについて全責任を負っていることを認めます。",
-    "done": "終わり"
+    "done": "終わり",
+    "transferFrom": "{noun}からの転送"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

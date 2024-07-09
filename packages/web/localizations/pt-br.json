@@ -893,6 +893,7 @@
     "mobileWallets": "Carteiras Móveis",
     "installedWallets": "Carteiras Instaladas",
     "otherWallets": "Outras Carteiras",
+    "searchWallets": "Pesquisar carteiras",
     "step1Title": "O que são carteiras?",
     "step1Content": "Carteiras são usadas para enviar, receber e acessar todos os seus ativos digitais como OSMO e ATOM.",
     "step2Title": "Sem contas. Sem senhas.",
@@ -900,7 +901,12 @@
     "step3Title": "Suas chaves, seus fundos.",
     "step3Content": "No Osmosis, apenas você pode mover seus ativos. Com grande poder vem grande responsabilidade.",
     "step4Title": "Crie uma carteira para começar",
-    "step4Content": "Configure sua primeira carteira e faça login! Envie, receba ou compre ativos."
+    "step4Content": "Configure sua primeira carteira e faça login! Envie, receba ou compre ativos.",
+    "yourConnectedWallets": "Suas carteiras conectadas",
+    "primaryWallet": "Carteira primária",
+    "done": "Feito",
+    "manage": "Gerenciar",
+    "disconnect": "desconectar"
   },
   "swapFailed": "Falha na troca. A liquidez pode não ser suficiente. Tente ajustar o deslizamento permitido.",
   "transactionBroadcasting": "Transmitindo Transação",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "Verifique o endereço para o qual você está retirando seus fundos. Fornecer um endereço incorreto resultará em perda de fundos.",
     "recipientAddress": "Endereço do destinatário em {chain}",
     "enterAddress": "Insira um endereço",
+    "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
     "acknowledgement": "Reconheço que sou totalmente responsável pelo fim do mundo, etc.",
-    "done": "Feito"
+    "done": "Feito",
+    "transferFrom": "Transferir de {noun}"
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

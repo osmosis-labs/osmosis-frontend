@@ -24,6 +24,7 @@ enum NetworkSelectScreen {
   Main = "main",
   SelectWallet = "select-wallet",
 }
+
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
   toChain: BridgeChainWithDisplayInfo;
@@ -52,7 +53,7 @@ export const BridgeNetworkSelectModal = ({
 
   const {
     isConnected: isEvmWalletConnected,
-    chainId: currentEvmChainId,
+    chainId: currentEvmWalletChainId,
     connector,
   } = useEvmWalletAccount();
   const { switchChainAsync } = useSwitchEvmChain();
@@ -146,7 +147,7 @@ export const BridgeNetworkSelectModal = ({
                       const shouldSwitchChain =
                         isEvmWalletConnected &&
                         chain.chainType === "evm" &&
-                        currentEvmChainId !== chain.chainId;
+                        currentEvmWalletChainId !== chain.chainId;
                       return (
                         <button
                           key={chain.chainId}
@@ -159,8 +160,9 @@ export const BridgeNetworkSelectModal = ({
                                   chainId: chain.chainId as EthereumChainIds,
                                 });
                               } catch {
-                                setIsSwitchingChain(false);
                                 return;
+                              } finally {
+                                setIsSwitchingChain(false);
                               }
                             }
 

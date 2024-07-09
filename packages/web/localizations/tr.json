@@ -893,6 +893,7 @@
     "mobileWallets": "Mobil Cüzdanlar",
     "installedWallets": "Yüklü Cüzdanlar",
     "otherWallets": "Diğer Cüzdanlar",
+    "searchWallets": "Cüzdan ara",
     "step1Title": "Cüzdanlar nedir?",
     "step1Content": "Cüzdanlar, OSMO ve ATOM gibi tüm dijital varlıklarınıza gönderme, alma ve erişme işlemleri için kullanılır.",
     "step2Title": "Hesap yok. Şifre yok.",
@@ -900,7 +901,12 @@
     "step3Title": "Anahtarlarınız, fonlarınız.",
     "step3Content": "Osmosis'de, yalnızca siz varlıklarınızı hareket ettirebilirsiniz. Büyük güç, büyük sorumluluk getirir.",
     "step4Title": "Başlamak için bir cüzdan oluşturun",
-    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın."
+    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın.",
+    "yourConnectedWallets": "Bağlı cüzdanlarınız",
+    "primaryWallet": "Birincil cüzdan",
+    "done": "Tamamlamak",
+    "manage": "Üstesinden gelmek",
+    "disconnect": "Bağlantıyı kes"
   },
   "swapFailed": "Değiştirme başarısız oldu. Likidite yeterli olmayabilir. İzin verilen kaymayı ayarlamayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
@@ -989,9 +995,11 @@
     "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
     "recipientAddress": "{chain} üzerindeki alıcı adresi",
     "enterAddress": "Bir adres girin",
+    "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",
     "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
-    "done": "Tamamlamak"
+    "done": "Tamamlamak",
+    "transferFrom": "{noun} kaynağından aktarım"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
