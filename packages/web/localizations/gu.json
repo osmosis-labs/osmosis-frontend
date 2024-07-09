@@ -142,7 +142,6 @@
       "failed": "નિષ્ફળ",
       "failedWithReason": "નિષ્ફળ: {reason}",
       "pending": "બાકી છે",
-      "pendingRefunded": "નિષ્ફળ: બાકી રિફંડ",
       "refunded": "રિફંડ",
       "success": "સફળતા",
       "title": "ટ્રાન્સફર ઇતિહાસ",
@@ -151,7 +150,8 @@
       "successDeposit": "જમા કરાવ્યું",
       "successWithdraw": "પાછી ખેંચી લીધી",
       "failDeposit": "ડિપોઝિટ નિષ્ફળ",
-      "failWithdraw": "ઉપાડ નિષ્ફળ"
+      "failWithdraw": "ઉપાડ નિષ્ફળ",
+      "connectionError": "કનેક્શન ભૂલ"
     },
     "ibcTransfer": {
       "buttonAdd": "ઉમેરો",
@@ -406,7 +406,8 @@
     "swapSlippage": "સ્લિપેજને કારણે {coinDenom} માટે સ્વેપ નિષ્ફળ થયું. સ્લિપેજ સહિષ્ણુતા વધારવાનો પ્રયાસ કરો.",
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
-    "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો."
+    "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
+    "noData": "કોઈ ડેટા નથી"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" માટે કોઈ પરિણામ નથી",
-    "adjust": "તમારી શોધ ક્વેરી સમાયોજિત કરવાનો પ્રયાસ કરો"
+    "adjust": "તમારી શોધ ક્વેરી સમાયોજિત કરવાનો પ્રયાસ કરો",
+    "noPools": "કોઈ પૂલ નથી",
+    "poolsEmpty": "હાલમાં ઓસ્મોસિસ પર {denom} માટે કોઈ પૂલ નથી"
   },
   "stake": {
     "available": "ઉપલબ્ધ છે",
@@ -908,11 +911,15 @@
     "withdraw": "ઉપાડો",
     "fromNetwork": "નેટવર્કમાંથી",
     "toNetwork": "નેટવર્ક માટે",
+    "from": "માંથી",
+    "to": "માટે",
     "max": "મહત્તમ",
     "available": "ઉપલબ્ધ",
     "transferWith": "સાથે ટ્રાન્સફર કરો",
     "transferTo": "પર ટ્રાન્સફર કરો",
     "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
+    "transfer": "ટ્રાન્સફર {denom}",
+    "receive": "{denom} મેળવો",
     "receiveAssetDescription": "જ્યારે તમે અમુક સંપત્તિઓ જમા કરો છો, ત્યારે તમે ઓસ્મોસિસ પર સંપત્તિનું કયું સંસ્કરણ પ્રાપ્ત કરવા માંગો છો તે પસંદ કરી શકો છો.",
     "estimatingTime": "સમયનો અંદાજ",
     "calculatingFees": "ફીની ગણતરી",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "વધુ થાપણ વિકલ્પો",
     "moreWithdrawOptions": "વધુ ઉપાડ વિકલ્પો",
     "convertTo": "માં કન્વર્ટ કરો",
+    "depositAs": "તરીકે જમા",
+    "withdrawAs": "તરીકે પાછી ખેંચો",
     "recommended": "ભલામણ કરેલ",
+    "fee": "ફી",
+    "fees": "ફી",
+    "unknown": "અજ્ઞાત",
+    "unknownFeeTooltip": "હાલમાં {networkName} પરની નેટવર્ક ફીની ગણતરી કરી શકાતી નથી. ટ્રાન્ઝેક્શનની મંજૂરી પર નેટવર્ક ફી તમારા વૉલેટમાં પ્રદર્શિત થવી જોઈએ.",
+    "free": "મફત",
+    "cheapest": "સૌથી સસ્તું",
+    "fastest": "સૌથી ઝડપી",
+    "stepLabels": {
+      "asset": "એસેટ",
+      "amount": "રકમ",
+      "review": "સમીક્ષા"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "તમારા {asset} થી {chain} ઉપાડવા માટે નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી પસંદ કરો (ઉર્ફે \"બ્રિજ\"). .",
       "depositWith": "સાથે જમા",
       "withdrawWith": "સાથે પાછી ખેંચો"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "જમા કરવા માટે સંપત્તિ પસંદ કરો",
+      "titleWithdraw": "ઉપાડવા માટે સંપત્તિ પસંદ કરો",
+      "searchAssets": "સંપત્તિ શોધો"
+    },
+    "bridgeNetworkSelect": {
+      "title": "નેટવર્ક પસંદ કરો",
+      "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
+    },
+    "pendingWithdraw": "બાકી ઉપાડ",
+    "pendingDeposit": "બાકી થાપણ",
+    "completedWithdraw": "ઉપાડ પૂર્ણ",
+    "completedDeposit": "ડિપોઝિટ પૂર્ણ",
+    "failedWithdraw": "ઉપાડ નિષ્ફળ",
+    "failedDeposit": "ડિપોઝિટ નિષ્ફળ",
+    "connectionError": "કનેક્શન ભૂલ",
+    "transferDetails": "ટ્રાન્સફર વિગતો",
+    "provider": "પ્રદાતા",
+    "estimatedTime": "અંદાજિત સમય",
+    "providerFees": "પ્રદાતા ફી",
+    "networkFee": "{networkName} નેટવર્ક ફી",
+    "totalFees": "કુલ ફી",
+    "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
+    "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
+    "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે.",
+    "connect": "જોડાવા",
+    "confirm": "પુષ્ટિ કરો",
+    "cancel": "રદ કરો",
+    "confirmDepositTo": "{chain} માં જમા કરાવવાની પુષ્ટિ કરો",
+    "confirmWithdrawTo": "{chain} માં પાછી ખેંચવાની પુષ્ટિ કરો",
+    "reviewDepositP": "પુષ્ટિ કરતા પહેલા તમારી ડિપોઝિટ વિગતોની સમીક્ષા કરો. એકવાર જમા થઈ ગયા પછી, તમારો વ્યવહાર ઉલટાવી ન શકાય એવો છે.",
+    "reviewWithdrawP": "પુષ્ટિ કરતા પહેલા તમારી ઉપાડની વિગતોની સમીક્ષા કરો. એકવાર પાછી ખેંચી લીધા પછી, તમારો વ્યવહાર ઉલટાવી શકાતો નથી.",
+    "lookingForBalances": "બેલેન્સ શોધી રહ્યાં છીએ",
+    "dontForgetFees": "ફી વિશે ભૂલશો નહીં!",
+    "feesReserved": "તમારા કુલ {assetName} બેલેન્સની થોડી રકમ {networkName} પર ફી ચૂકવવા માટે આરક્ષિત કરવામાં આવી છે.",
+    "verifyAddressWarning": "તમે જે સરનામે તમારું ભંડોળ ઉપાડો છો તેની ચકાસણી કરો. ખોટું સરનામું આપવાથી ભંડોળની ખોટ થશે.",
+    "recipientAddress": "{chain} પર પ્રાપ્તકર્તાનું સરનામું",
+    "enterAddress": "સરનામું દાખલ કરો",
+    "invalidAddress": "અમાન્ય {chain} સરનામું",
+    "acknowledgement": "હું સ્વીકારું છું કે વિશ્વના અંત વગેરે માટે હું સંપૂર્ણપણે જવાબદાર છું.",
+    "done": "થઈ ગયું"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} વડે કમાઓ",
     "explorePools": "પૂલનું અન્વેષણ કરો",
-    "stakeYourDenomToEarn": "{denom} કમાવવા માટે તમારું {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "પુરસ્કારો મેળવવા માટે તમારા {denom} હિસ્સો લો",
-    "provideLiquidity": "તરલતા પ્રદાન કરો અને ફી અને સ્વેપ પર કમાણી કરો",
     "yourBalance": "તમારું બેલેન્સ",
+    "onOsmosis": "ઓસ્મોસિસ પર",
     "aboutDenom": "{name} વિશે",
     "ariaView": "જુઓ {name}",
     "ariaViewOn": "{name} પર જુઓ",
     "collapse": "સંકુચિત કરો",
+    "info": {
+      "title": "માહિતી",
+      "show": "બતાવો",
+      "collapse": "સંકુચિત કરો",
+      "moreStats": "વધુ આંકડા"
+    },
     "followTheConversation": "વાતચીત અનુસરો",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "બધા"
+      "all": "બધા",
+      "price": "કિંમત",
+      "volume": "વોલ્યુમ",
+      "advanced": "અદ્યતન",
+      "simple": "સરળ"
     },
     "watchlist": "વૉચલિસ્ટ",
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
+    "fullyDilutedValuation": "સંપૂર્ણપણે પાતળું મૂલ્યાંકન",
+    "volume24h": "24h કુલ વોલ્યુમ",
+    "volumeOnOsmosis": "ઓસ્મોસિસ પર 24 કલાક વોલ્યુમ",
+    "liquidityOnOsmosis": "ઓસ્મોસિસ પર તરલતા",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
-    "buyToken": "{coinDenom} ખરીદો",
-    "staking": "સ્ટેકિંગ",
-    "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા",
+    "supplyOnOsmosis": "ઓસ્મોસિસ પર પુરવઠો",
     "underlyingAssets": {
       "title": "અંતર્ગત અસ્કયામતો",
       "description": "ઓસ્મોસિસ પર {name} ( {denom} ) એ {count} વિવિધ પ્રકારના {name} .",

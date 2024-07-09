@@ -18,6 +18,7 @@ import type {
   ChainList,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 
 import { generateTsFile } from "~/utils/codegen";
 
@@ -248,6 +249,32 @@ async function generateAssetListFile({
         `"${symbol}" /** source denom: ${
           assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
         } */`
+    )
+    .join(" | ")};
+  `;
+
+  content += `    
+    export type ${
+      environment === "testnet"
+        ? "TestnetVariantGroupKeys"
+        : "MainnetVariantGroupKeys"
+    } = ${Array.from(
+    new Set(assetList.assets.map((asset) => asset.variantGroupKey))
+  )
+    .filter((groupKey, index, self) => {
+      if (isNil(groupKey)) {
+        return false;
+      }
+
+      // remove duplicates
+      return self.indexOf(groupKey) === index;
+    })
+    .map(
+      (groupKey) =>
+        `"${groupKey}" /** Symbols: ${assetList.assets
+          .filter((asset) => asset.variantGroupKey === groupKey)!
+          .map((asset) => asset.symbol)
+          .join(",")} */`
     )
     .join(" | ")};
   `;

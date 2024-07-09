@@ -18,7 +18,7 @@ export class SkipApiClient {
   ) {}
 
   async assets({ chainID }: { chainID?: string } = {}) {
-    const url = new URL("/v1/fungible/assets", this.baseUrl);
+    const url = new URL("/v2/fungible/assets", this.baseUrl);
 
     url.searchParams.append("include_evm_assets", "true");
     url.searchParams.append("include_cw20_assets", "true");
@@ -39,7 +39,7 @@ export class SkipApiClient {
   }
 
   async chains() {
-    const url = new URL("/v1/info/chains", this.baseUrl);
+    const url = new URL("/v2/info/chains", this.baseUrl);
 
     url.searchParams.append("include_evm", "true");
 
