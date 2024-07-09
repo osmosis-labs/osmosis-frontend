@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "설정",
-      "restart": "재시작"
+      "restart": "재시작",
+      "tooltipHeader": "1-클릭 거래 설정",
+      "resetSession": "프로필에서 1-클릭 거래 세션을 다시 시작하거나 편집하세요."
     }
   },
   "pool": {

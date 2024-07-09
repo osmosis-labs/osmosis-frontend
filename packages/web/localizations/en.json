@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "Settings",
-      "restart": "Restart"
+      "restart": "Restart",
+      "tooltipHeader": "1-Click Trading Settings",
+      "resetSession": "Restart or edit 1-Click Trading sessions from your profile."
     }
   },
   "pool": {

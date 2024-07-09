@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "Configurações",
-      "restart": "Reiniciar"
+      "restart": "Reiniciar",
+      "tooltipHeader": "Configurações de negociação em 1 clique",
+      "resetSession": "Reinicie ou edite sessões de negociação com 1 clique no seu perfil."
     }
   },
   "pool": {

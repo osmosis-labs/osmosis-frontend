@@ -439,10 +439,12 @@ const WalletInfo: FunctionComponent<
                   width={24}
                   height={24}
                 />
-                <div className="flex flex-col">
-                  <h1 className="caption">1-Click Trading Settings</h1>
+                <div className="flex flex-col gap-1">
+                  <h1 className="caption">
+                    {t("oneClickTrading.profile.tooltipHeader")}
+                  </h1>
                   <p className="caption text-osmoverse-300">
-                    Restart or edit 1-Click Trading sessions from your profile.
+                    {t("oneClickTrading.profile.resetSession")}
                   </p>
                 </div>
               </div>

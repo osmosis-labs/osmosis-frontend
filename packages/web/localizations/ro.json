@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "Setări",
-      "restart": "Repornire"
+      "restart": "Repornire",
+      "tooltipHeader": "1-Faceți clic pe Setări de tranzacționare",
+      "resetSession": "Reporniți sau editați sesiunile de tranzacționare cu 1 clic din profilul dvs."
     }
   },
   "pool": {

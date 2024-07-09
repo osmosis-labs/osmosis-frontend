@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "设置",
-      "restart": "重新开始"
+      "restart": "重新开始",
+      "tooltipHeader": "一键交易设置",
+      "resetSession": "从您的个人资料重新启动或编辑一键交易会话。"
     }
   },
   "pool": {

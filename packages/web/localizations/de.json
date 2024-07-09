@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "Einstellungen",
-      "restart": "Neu starten"
+      "restart": "Neu starten",
+      "tooltipHeader": "1-Klick-Handelseinstellungen",
+      "resetSession": "Starten Sie 1-Click-Trading-Sitzungen von Ihrem Profil aus neu oder bearbeiten Sie sie."
     }
   },
   "pool": {

@@ -1,5 +1,7 @@
 {
-  "404": { "title": "No encontrado" },
+  "404": {
+    "title": "No encontrado"
+  },
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
@@ -134,7 +136,9 @@
         "type": "Escribe",
         "withdraw": "Retirar"
       },
-      "errors": { "insufficientFee": "Tarifa insuficiente" },
+      "errors": {
+        "insufficientFee": "Tarifa insuficiente"
+      },
       "failed": "Fallida",
       "failedWithReason": "Fallida: {reason}",
       "pending": "Pendiente",
@@ -195,7 +199,11 @@
         "withdraw": "Retirar"
       },
       "search": "Buscar",
-      "sort": { "balance": "Balance", "network": "Red", "symbol": "Símbolo" },
+      "sort": {
+        "balance": "Balance",
+        "network": "Red",
+        "symbol": "Símbolo"
+      },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
       "activate": "Activar",
@@ -328,16 +336,23 @@
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
-    "incentive": { "title": "Tipos de incentivos" },
+    "incentive": {
+      "title": "Tipos de incentivos"
+    },
     "MAX": "Máximo",
-    "pool": { "title": "Tipos de piscinas" },
+    "pool": {
+      "title": "Tipos de piscinas"
+    },
     "searchTokens": "Buscar",
     "selectToken": {
       "title": "Seleccione un token",
       "unverifiedAsset": "Este activo no está verificado. Proceda con precaución.",
       "clickToActivate": "Haz clic para activar"
     },
-    "show": { "less": "Ver menos", "more": "Ver más" },
+    "show": {
+      "less": "Ver menos",
+      "more": "Ver más"
+    },
     "sort": {
       "mobileMenu": "Ordenar por",
       "SORT": "ORDENAR POR",
@@ -556,7 +571,12 @@
       "header": "Conecte una billetera para continuar",
       "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
     },
-    "profile": { "sessionExpired": "Ajustes", "restart": "Reanudar" }
+    "profile": {
+      "sessionExpired": "Ajustes",
+      "restart": "Reanudar",
+      "tooltipHeader": "Configuración comercial con 1 clic",
+      "resetSession": "Reinicie o edite sesiones de negociación con 1 clic desde su perfil."
+    }
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
@@ -643,7 +663,9 @@
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "weightedPool": "Grupo ponderado"
     },
-    "externalIncentivized": { "TVL": "VTB" },
+    "externalIncentivized": {
+      "TVL": "VTB"
+    },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",
     "myPools": "Mis Piscinas",
@@ -782,7 +804,10 @@
     "bondedAmount": "Monto abonado",
     "buttonBond": "Abonar y Generar Interés",
     "choose": "Elija su validador superfluido",
-    "columns": { "commission": "Comisión", "validator": "Validador" },
+    "columns": {
+      "commission": "Comisión",
+      "validator": "Validador"
+    },
     "estimation": "Delegación superfluida estimada",
     "estimationInfo": "El valor de esta delegación fluctúa y se estima en función de la cantidad de OSMO en la piscina.",
     "estimationMobile": "Est. Delegación",
@@ -792,7 +817,10 @@
   },
   "swap": {
     "autoRouter": "Ruta",
-    "autoRouterToggle": { "hide": "Ocultar", "show": "Mostrar" },
+    "autoRouterToggle": {
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    },
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
@@ -980,7 +1008,9 @@
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
     },
-    "pool": { "title": "Piscina #" },
+    "pool": {
+      "title": "Piscina #"
+    },
     "pools": {
       "title": "Piscinas de Osmosis",
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -1060,8 +1090,15 @@
     "availableToClaim": "disponible para reclamar",
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
-    "tokenFilterOptions": { "my": "Tus activos", "all": "Todos los activos" },
-    "rewardTypes": { "all": "Todo", "single": "Soltero", "multi": "Multi" },
+    "tokenFilterOptions": {
+      "my": "Tus activos",
+      "all": "Todos los activos"
+    },
+    "rewardTypes": {
+      "all": "Todo",
+      "single": "Soltero",
+      "multi": "Multi"
+    },
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
     "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
@@ -1143,7 +1180,13 @@
     "noPriceData": "Datos de precios no disponibles",
     "viewAll": "Ver todo"
   },
-  "date": { "earlierToday": "El día de hoy", "yesterday": "Ayer" },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer"
+  },
   "backToTop": "Volver arriba",
-  "pagination": { "older": "Más viejo", "newer": "Más nuevo" }
+  "pagination": {
+    "older": "Más viejo",
+    "newer": "Más nuevo"
+  }
 }

@@ -573,7 +573,9 @@
     },
     "profile": {
       "sessionExpired": "設定",
-      "restart": "再起動"
+      "restart": "再起動",
+      "tooltipHeader": "ワンクリック取引設定",
+      "resetSession": "プロフィールから 1 クリック取引セッションを再開または編集します。"
     }
   },
   "pool": {
