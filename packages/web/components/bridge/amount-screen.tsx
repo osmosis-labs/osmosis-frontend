@@ -46,7 +46,7 @@ import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
 import { CryptoFiatInput } from "./crypto-fiat-input";
 import { ImmersiveBridgeScreen } from "./immersive-bridge";
-import { MoreBridgeOptions } from "./more-bridge-options";
+import { MoreBridgeOptionsModal } from "./more-bridge-options-modal";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -1083,7 +1083,7 @@ export const AmountScreen = observer(
                       : t("transfer.moreWithdrawOptions")}
                   </div>
                 </Button>
-                <MoreBridgeOptions
+                <MoreBridgeOptionsModal
                   direction={direction}
                   isOpen={areMoreOptionsVisible}
                   fromAsset={fromAsset}

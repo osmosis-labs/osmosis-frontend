@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { api } from "~/utils/trpc";
 
-interface MoreBridgeOptionsProps extends ModalBaseProps {
+interface BridgeOptionsModalProps extends ModalBaseProps {
   direction: "deposit" | "withdraw";
   fromAsset: BridgeAsset | undefined;
   toAsset: BridgeAsset | undefined;
@@ -18,7 +18,7 @@ interface MoreBridgeOptionsProps extends ModalBaseProps {
   toAddress: string | undefined;
 }
 
-export const MoreBridgeOptions = observer(
+export const MoreBridgeOptionsModal = observer(
   ({
     direction,
     fromAsset,
@@ -27,7 +27,7 @@ export const MoreBridgeOptions = observer(
     toChain,
     toAddress,
     ...modalProps
-  }: MoreBridgeOptionsProps) => {
+  }: BridgeOptionsModalProps) => {
     const { t } = useTranslation();
 
     const { data: externalUrlsData, isLoading: isLoadingExternalUrls } =
@@ -47,11 +47,15 @@ export const MoreBridgeOptions = observer(
 
     return (
       <ModalBase
-        title={t(
-          direction === "deposit"
-            ? "transfer.moreBridgeOptions.titleDeposit"
-            : "transfer.moreBridgeOptions.titleWithdraw"
-        )}
+        title={
+          <div className="md:subtitle1 mx-auto text-h6 font-h6">
+            {t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.titleDeposit"
+                : "transfer.moreBridgeOptions.titleWithdraw"
+            )}
+          </div>
+        }
         className="!max-w-[30rem]"
         {...modalProps}
       >
