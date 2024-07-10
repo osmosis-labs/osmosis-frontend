@@ -82,6 +82,8 @@ const Home = () => {
 };
 
 const SwapAdsBanner = observer(() => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
 
   const flags = useFeatureFlags();
@@ -129,6 +131,12 @@ const SwapAdsBanner = observer(() => {
             arrowColor: theme.colors.ammelia["900"],
             onClick() {
               set1CTIntroModalScreen("settings-no-back-button");
+              logEvent([
+                EventName.OneClickTrading.accessed,
+                {
+                  source: "index-banner",
+                },
+              ]);
             },
           } satisfies Ad,
           ...data.banners,
