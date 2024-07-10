@@ -22,8 +22,9 @@ import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
+import { EventName, SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -183,8 +184,9 @@ export const useCreateOneClickTradingSession = ({
     unknown
   >;
 } = {}) => {
-  const { accountStore, chainStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { logEvent } = useAmplitudeAnalytics();
 
   const apiUtils = api.useUtils();
   const [, setDoNotShowFloatingBannerAgain] = useLocalStorage(
@@ -247,6 +249,11 @@ export const useCreateOneClickTradingSession = ({
 
       let sessionPeriod: OneClickTradingTimeLimit;
       switch (transaction1CTParams.sessionPeriod.end) {
+        case "5min":
+          sessionPeriod = {
+            end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
+          };
+          break;
         case "10min":
           sessionPeriod = {
             end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
@@ -387,6 +394,21 @@ export const useCreateOneClickTradingSession = ({
         ToastType.ONE_CLICK_TRADING
       );
     },
-    queryOptions
+    {
+      ...queryOptions,
+      onSuccess: (...params) => {
+        const [, { transaction1CTParams }] = params;
+        queryOptions?.onSuccess?.(...params);
+        logEvent([
+          EventName.OneClickTrading.startSession,
+          {
+            spendLimit: Number(
+              transaction1CTParams?.spendLimit.toDec().toString()
+            ),
+            sessionPeriod: transaction1CTParams?.sessionPeriod.end,
+          },
+        ]);
+      },
+    }
   );
 };

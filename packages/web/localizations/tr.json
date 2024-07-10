@@ -546,6 +546,7 @@
         "title": "Oturum dönemi",
         "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
         "periods": {
+          "5min": "5 dakika",
           "10min": "10 dakika",
           "30min": "30 dakika",
           "1hour": "1 saat",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "tekrar hoşgeldiniz",
+      "subtitle": "Osmosis'i keşfetmeye devam etmek için cüzdanınızı bağlayın.",
       "description": "Cüzdanınızı bağladığınızda, Tek Tıkla Ticaret oturumunuzu başlatmak için bir işlemi onaylamanız istenecektir.",
       "toggleLabel": "Tek Tıklamayla Ticaret",
       "editParamsAriaLabel": "1CT parametrelerini değiştirin"

@@ -546,6 +546,7 @@
         "title": "Período da sessão",
         "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
         "periods": {
+          "5min": "5 minutos",
           "10min": "10 minutos",
           "30min": "30 minutos",
           "1hour": "1 hora",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "bem vindo de volta",
+      "subtitle": "Conecte sua carteira para continuar explorando a Osmose.",
       "description": "Depois de conectar sua carteira, você será solicitado a aprovar uma transação para iniciar sua sessão de negociação com 1 clique.",
       "toggleLabel": "Negociação em 1 clique",
       "editParamsAriaLabel": "Alterar parâmetros 1CT"

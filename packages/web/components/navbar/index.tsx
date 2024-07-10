@@ -425,10 +425,10 @@ const WalletInfo: FunctionComponent<
                   size="unstyled"
                   aria-label="Close"
                   className={classNames(
-                    "absolute -right-2 -top-2 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100",
+                    "absolute -right-1 -top-1 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100",
                     className
                   )}
-                  icon={<Icon id="close" width={24} height={24} />}
+                  icon={<Icon id="close" width={18} height={18} />}
                   onClick={() => {
                     setIsOneClickProfileTooltipOpen(false);
                   }}

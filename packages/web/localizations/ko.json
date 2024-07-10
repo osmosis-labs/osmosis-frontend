@@ -546,6 +546,7 @@
         "title": "세션 기간",
         "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요.",
         "periods": {
+          "5min": "5 분",
           "10min": "10 분",
           "30min": "30 분",
           "1hour": "1 시간",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "돌아온 것을 환영합니다",
+      "subtitle": "Osmosis를 계속 탐색하려면 지갑을 연결하세요.",
       "description": "지갑을 연결하면 1-클릭 거래 세션을 시작하기 위해 거래를 승인하라는 메시지가 표시됩니다.",
       "toggleLabel": "1-클릭 거래",
       "editParamsAriaLabel": "1CT 매개변수 변경"
