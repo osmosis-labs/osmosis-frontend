@@ -12,7 +12,7 @@ export const storeContext = React.createContext<RootStore | null>(null);
 
 /** Once data is invalidated, React Query will automatically refetch data
  *  when the dependent component becomes visible. */
-function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
+export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAsset.invalidate();
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
@@ -26,6 +26,8 @@ function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.pools.getUserSharePool.invalidate();
   apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
   apiUtils.local.balances.getUserBalances.invalidate();
+  apiUtils.local.bridgeTransfer.getSupportedAssetsBalances.invalidate();
+  apiUtils.edge.assets.getImmersiveBridgeAssets.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
@@ -49,9 +51,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
           onExceeds1CTNetworkFeeLimit: ({ finish, continueTx }) => {
             displayToast(
               {
-                titleTranslationKey: t(
-                  "oneClickTrading.toast.networkFeeTooHigh"
-                ),
+                titleTranslationKey: "oneClickTrading.toast.networkFeeTooHigh",
                 captionElement: (
                   <div className="flex flex-col items-start gap-2">
                     <Button

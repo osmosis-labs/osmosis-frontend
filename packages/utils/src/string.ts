@@ -1,3 +1,6 @@
+import * as cosmjsEncoding from "@cosmjs/encoding";
+import * as viem from "viem";
+
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
 export function truncateString(str: string, num = 8) {
   if (str.length <= num) {
@@ -58,3 +61,25 @@ export const ellipsisText = (str: string, maxLength: number): string => {
 export const camelCaseToSnakeCase = (input: string) => {
   return input.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
 };
+
+export function isEvmAddressValid({ address }: { address: string }): boolean {
+  return viem.isAddress(address);
+}
+
+export function isCosmosAddressValid({
+  address,
+  bech32Prefix,
+}: {
+  address: string;
+  bech32Prefix: string;
+}): boolean {
+  try {
+    const { prefix, data } = cosmjsEncoding.fromBech32(address);
+    if (prefix !== bech32Prefix) {
+      return false;
+    }
+    return data.length === 20;
+  } catch {
+    return false;
+  }
+}

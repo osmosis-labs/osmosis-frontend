@@ -1,6 +1,8 @@
-import { Asset as AssetListAsset, AssetList } from "@osmosis-labs/types";
-
-import { Asset } from ".";
+import {
+  Asset as AssetListAsset,
+  AssetList,
+  MinimalAsset,
+} from "@osmosis-labs/types";
 
 /** A bridgeable asset. */
 export type BridgeAsset = {
@@ -11,7 +13,7 @@ export type BridgeAsset = {
 /** Appends bridge info to a given asset. If asset is not found in asset list, empty bridge info will be returned.
  *  @throws if a given asset is not found in asset list.
  */
-export function getBridgeAsset<TAsset extends Asset>(
+export function getBridgeAsset<TAsset extends MinimalAsset>(
   assetLists: AssetList[],
   asset: TAsset
 ): TAsset & BridgeAsset {
