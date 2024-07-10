@@ -30,6 +30,7 @@ export const AxelarChainIds_SourceChainMap: (env: BridgeEnvironment) => {
         Polygon: "Polygon",
         filecoin: "Filecoin",
         arbitrum: "Arbitrum",
+        base: "Base",
       };
 
 /** Any bridge that we want supported by Axelar provider needs to be added here. */
