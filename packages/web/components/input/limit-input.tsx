@@ -1,16 +1,16 @@
 import { Dec } from "@keplr-wallet/unit";
-import { Asset } from "@osmosis-labs/server";
+import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { ResizingInput } from "~/components/input/resizing-input";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
-  baseAsset: Asset;
+  baseAsset: MinimalAsset;
   onChange: (value: string) => void;
   setMarketAmount: (value: string) => void;
   tokenAmount: string;
@@ -19,6 +19,32 @@ export interface LimitInputProps {
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
 }
+
+const calcTextSizeClass = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "text-h3 font-h3",
+        10: "text-h4 font-h4",
+        12: "text-h5 font-h5",
+        18: "text-h6 font-h6",
+        100: "text-lg",
+      }
+    : {
+        8: "text-h2 font-h2",
+        10: "text-h3 font-h3",
+        12: "text-h4 font-h4",
+        18: "text-h5 font-h5",
+        100: "text-h6 font-h6",
+      };
+
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return isMobile ? "text-sm" : "text-md";
+};
 
 export enum FocusedInput {
   FIAT = "fiat",
@@ -189,6 +215,11 @@ function AutoInput({
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
   );
+
+  const fontSize = useMemo(
+    () => calcTextSizeClass(amount.length, false),
+    [amount]
+  );
   return (
     <div
       className={classNames(
@@ -207,25 +238,16 @@ function AutoInput({
           : undefined
       }
     >
-      <ResizingInput
+      <AutosizeInput
         disabled={!isFocused}
-        disableResize={!isFocused}
         type="number"
         placeholder="0"
         value={amount}
-        className={classNames(
-          "bg-transparent placeholder:text-white-disabled focus:outline-none",
-          { "cursor-pointer font-normal": !isFocused }
+        inputClassName={classNames(
+          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
+          { "cursor-pointer font-normal": !isFocused, [fontSize]: isFocused }
         )}
-        prefix={
-          type === "fiat"
-            ? "$"
-            : disableSwitching && !isFocused
-            ? "~"
-            : undefined
-        }
-        suffix={type === "token" ? baseAsset.coinDenom : undefined}
-        onChange={(e) => setter(e)}
+        onChange={(e) => setter(e.target.value)}
         onClick={!isFocused ? swapFocus : undefined}
       />
       {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
