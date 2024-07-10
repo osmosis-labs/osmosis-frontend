@@ -49,9 +49,7 @@ export type AxelarSourceChain =
   | "Filecoin"
   | "Filecoin Hyperspace"
   | "Arbitrum"
-  | "Arbitrum Sepolia Testnet"
-  | "Base"
-  | "Base Sepolia Testnet";
+  | "Base";
 
 // TODO: maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
