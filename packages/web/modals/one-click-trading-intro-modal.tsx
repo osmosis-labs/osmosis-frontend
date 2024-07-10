@@ -2,7 +2,7 @@ import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { createGlobalState, useMount } from "react-use";
 
@@ -37,6 +37,7 @@ export const OneClickTradingIntroModal = observer(() => {
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  const [isClosing, setIsClosing] = useState(false);
   const [currentScreen, setCurrentScreen] = useGlobalIs1CTIntroModalScreen();
 
   const { t } = useTranslation();
@@ -109,7 +110,7 @@ export const OneClickTradingIntroModal = observer(() => {
   });
 
   const onClose = () => {
-    setCurrentScreen(null);
+    setIsClosing(true);
   };
 
   const show1CTEditParams =
@@ -117,10 +118,14 @@ export const OneClickTradingIntroModal = observer(() => {
 
   return (
     <ModalBase
-      isOpen={!isNil(currentScreen)}
+      isOpen={!isNil(currentScreen) && !isClosing}
       onRequestClose={onClose}
       className={classNames(show1CTEditParams && "px-0 py-9")}
       hideCloseButton={show1CTEditParams}
+      onAfterClose={() => {
+        setCurrentScreen(null);
+        setIsClosing(false);
+      }}
     >
       <ScreenManager currentScreen={currentScreen ?? ""}>
         <div
@@ -130,7 +135,7 @@ export const OneClickTradingIntroModal = observer(() => {
           )}
         >
           {isLoadingInfo || !currentScreen ? (
-            <div className="flex h-[90vh] max-h-[420px] w-full flex-col items-center justify-center">
+            <div className="flex h-[90vh] max-h-[310px] w-full flex-col items-center justify-center">
               <Spinner />
             </div>
           ) : (
@@ -184,7 +189,9 @@ const IntroModal1CTScreens = observer(
     return (
       <>
         <Screen
-          screenName={["settings", "settings-no-back-button"] as Screens[]}
+          screenName={
+            ["settings", "settings-no-back-button"] satisfies Screens[]
+          }
         >
           <OneClickTradingSettings
             onGoBack={() => {
@@ -245,7 +252,7 @@ const IntroModal1CTScreens = observer(
           />
         </Screen>
 
-        <Screen screenName={"intro" as Screens}>
+        <Screen screenName={"intro" satisfies Screens}>
           <IntroducingOneClick
             isDisabled={isError1CTParams}
             isLoading={isLoading1CTParams || create1CTSession.isLoading}

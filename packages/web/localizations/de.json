@@ -546,6 +546,7 @@
         "title": "Sitzungszeitraum",
         "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
         "periods": {
+          "5min": "5 Minuten",
           "10min": "10 Minuten",
           "30min": "30 Minuten",
           "1hour": "1 Stunde",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Willkommen zurück",
+      "subtitle": "Verbinden Sie Ihr Portemonnaie, um Osmosis weiter zu erkunden.",
       "description": "Sobald Sie Ihr Wallet verbunden haben, werden Sie aufgefordert, eine Transaktion zu genehmigen, um Ihre 1-Click-Handelssitzung zu starten.",
       "toggleLabel": "1-Klick-Handel",
       "editParamsAriaLabel": "1CT-Parameter ändern"
@@ -573,7 +575,9 @@
     },
     "profile": {
       "sessionExpired": "Einstellungen",
-      "restart": "Neu starten"
+      "restart": "Neu starten",
+      "tooltipHeader": "1-Klick-Handelseinstellungen",
+      "resetSession": "Starten Sie 1-Click-Trading-Sitzungen von Ihrem Profil aus neu oder bearbeiten Sie sie."
     }
   },
   "pool": {

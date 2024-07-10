@@ -546,6 +546,7 @@
         "title": "Période de séance",
         "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
         "periods": {
+          "5min": "5 minutes",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 heure",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Content de te revoir",
+      "subtitle": "Connectez votre portefeuille pour continuer à explorer Osmosis.",
       "description": "Une fois que vous aurez connecté votre portefeuille, vous serez invité à approuver une transaction pour démarrer votre session de trading en 1 clic.",
       "toggleLabel": "Trading en 1 clic",
       "editParamsAriaLabel": "Modifier les paramètres 1CT"
@@ -573,7 +575,9 @@
     },
     "profile": {
       "sessionExpired": "Paramètres",
-      "restart": "Redémarrage"
+      "restart": "Redémarrage",
+      "tooltipHeader": "Paramètres de trading en 1 clic",
+      "resetSession": "Redémarrez ou modifiez les sessions de trading en 1 clic depuis votre profil."
     }
   },
   "pool": {

@@ -546,6 +546,7 @@
         "title": "会议期间",
         "description": "设置允许在此设备上进行一键交易的持续时间。",
         "periods": {
+          "5min": "5分钟",
           "10min": "10分钟",
           "30min": "30分钟",
           "1hour": "1小时",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "欢迎回来",
+      "subtitle": "连接你的钱包以继续探索 Osmosis。",
       "description": "连接钱包后，系统将提示您批准交易以开始一键交易会话。",
       "toggleLabel": "一键交易",
       "editParamsAriaLabel": "更改1CT参数"
@@ -573,7 +575,9 @@
     },
     "profile": {
       "sessionExpired": "设置",
-      "restart": "重新开始"
+      "restart": "重新开始",
+      "tooltipHeader": "一键交易设置",
+      "resetSession": "从您的个人资料重新启动或编辑一键交易会话。"
     }
   },
   "pool": {

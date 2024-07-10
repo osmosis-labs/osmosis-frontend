@@ -546,6 +546,7 @@
         "title": "Perioada de sesiune",
         "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
         "periods": {
+          "5min": "5 minute",
           "10min": "10 minute",
           "30min": "30 minute",
           "1hour": "1 oră",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Bine ai revenit",
+      "subtitle": "Conectați-vă portofelul pentru a continua explorarea Osmosis.",
       "description": "După ce vă conectați portofelul, vi se va solicita să aprobați o tranzacție pentru a începe sesiunea de tranzacționare cu 1 clic.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Modificați parametrii 1CT"
@@ -573,7 +575,9 @@
     },
     "profile": {
       "sessionExpired": "Setări",
-      "restart": "Repornire"
+      "restart": "Repornire",
+      "tooltipHeader": "1-Faceți clic pe Setări de tranzacționare",
+      "resetSession": "Reporniți sau editați sesiunile de tranzacționare cu 1 clic din profilul dvs."
     }
   },
   "pool": {

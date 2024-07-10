@@ -23,7 +23,9 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { EventName } from "~/config";
 import {
+  useAmplitudeAnalytics,
   useDisclosure,
   useOneClickTradingSession,
   useTranslation,
@@ -111,6 +113,7 @@ export const OneClickTradingSettings = ({
     useState<OneClickTradingTransactionParams>();
 
   const { chainStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -269,9 +272,17 @@ export const OneClickTradingSettings = ({
                       if (hasExistingSession) onEndSession?.();
                       setTransaction1CTParams((params) => {
                         if (!params) throw new Error("1CT Params is undefined");
+
+                        const nextValue = !params.isOneClickEnabled;
+                        if (nextValue) {
+                          logEvent([
+                            EventName.OneClickTrading.enableOneClickTrading,
+                          ]);
+                        }
+
                         return {
                           ...params,
-                          isOneClickEnabled: !params.isOneClickEnabled,
+                          isOneClickEnabled: nextValue,
                         };
                       });
                     }}
@@ -370,12 +381,9 @@ export const OneClickTradingSettings = ({
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        loadingText={t(
-                          "oneClickTrading.settings.editSessionButton"
-                        )}
                       >
                         {t("oneClickTrading.settings.editSessionButton")}
                       </Button>
@@ -386,10 +394,9 @@ export const OneClickTradingSettings = ({
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        loadingText={t("oneClickTrading.settings.startButton")}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
