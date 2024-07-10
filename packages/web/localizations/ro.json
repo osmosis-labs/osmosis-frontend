@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
-      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
+      "startANewSession": "Începeți o nouă sesiune",
       "increaseFeeLimit": "Creșteți limita taxei de rețea",
       "approveManually": "Aprobați manual în {walletName}",
       "continueWithWallet": "Continuați cu portofelul",
@@ -546,6 +546,7 @@
         "title": "Perioada de sesiune",
         "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
         "periods": {
+          "5min": "5 minute",
           "10min": "10 minute",
           "30min": "30 minute",
           "1hour": "1 oră",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Bine ai revenit",
+      "subtitle": "Conectați-vă portofelul pentru a continua explorarea Osmosis.",
       "description": "După ce vă conectați portofelul, vi se va solicita să aprobați o tranzacție pentru a începe sesiunea de tranzacționare cu 1 clic.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Modificați parametrii 1CT"
@@ -572,7 +574,10 @@
       "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     },
     "profile": {
-      "sessionExpired": "Sesiunea a expirat"
+      "sessionExpired": "Setări",
+      "restart": "Repornire",
+      "tooltipHeader": "1-Faceți clic pe Setări de tranzacționare",
+      "resetSession": "Reporniți sau editați sesiunile de tranzacționare cu 1 clic din profilul dvs."
     }
   },
   "pool": {

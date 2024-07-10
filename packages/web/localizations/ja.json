@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "enableOneClickTrading": "1-Click取引を有効にする",
+      "startANewSession": "新しいセッションを開始する",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
@@ -546,6 +546,7 @@
         "title": "会期",
         "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
         "periods": {
+          "5min": "5分",
           "10min": "10分",
           "30min": "30分",
           "1hour": "1時間",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "おかえり",
+      "subtitle": "ウォレットを接続して、Osmosis の探索を続けてください。",
       "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
       "toggleLabel": "1クリック取引",
       "editParamsAriaLabel": "1CTパラメータの変更"
@@ -572,7 +574,10 @@
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     },
     "profile": {
-      "sessionExpired": "セッションの有効期限が切れ"
+      "sessionExpired": "設定",
+      "restart": "再起動",
+      "tooltipHeader": "ワンクリック取引設定",
+      "resetSession": "プロフィールから 1 クリック取引セッションを再開または編集します。"
     }
   },
   "pool": {

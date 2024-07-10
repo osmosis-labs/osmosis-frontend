@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
       "networkFeeTooHigh": "Network fee too high",
-      "enableOneClickTrading": "Enable 1-Click Trading",
+      "startANewSession": "Start a new session",
       "increaseFeeLimit": "Increase network fee limit",
       "approveManually": "Approve manually in {walletName}",
       "continueWithWallet": "Continue with wallet",
@@ -546,6 +546,7 @@
         "title": "Session period",
         "description": "Set a duration to allow 1-Click Trading on this device.",
         "periods": {
+          "5min": "5 minutes",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 hour",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Welcome back",
+      "subtitle": "Connect your wallet to continue exploring Osmosis.",
       "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Change 1CT params"
@@ -572,7 +574,10 @@
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     },
     "profile": {
-      "sessionExpired": "Session expired"
+      "sessionExpired": "Settings",
+      "restart": "Restart",
+      "tooltipHeader": "1-Click Trading Settings",
+      "resetSession": "Restart or edit 1-Click Trading sessions from your profile."
     }
   },
   "pool": {

@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
+      "startANewSession": "Yeni bir oturum başlat",
       "increaseFeeLimit": "Ağ ücreti sınırını artırın",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
@@ -546,6 +546,7 @@
         "title": "Oturum dönemi",
         "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
         "periods": {
+          "5min": "5 dakika",
           "10min": "10 dakika",
           "30min": "30 dakika",
           "1hour": "1 saat",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "tekrar hoşgeldiniz",
+      "subtitle": "Osmosis'i keşfetmeye devam etmek için cüzdanınızı bağlayın.",
       "description": "Cüzdanınızı bağladığınızda, Tek Tıkla Ticaret oturumunuzu başlatmak için bir işlemi onaylamanız istenecektir.",
       "toggleLabel": "Tek Tıklamayla Ticaret",
       "editParamsAriaLabel": "1CT parametrelerini değiştirin"
@@ -572,7 +574,10 @@
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     },
     "profile": {
-      "sessionExpired": "Oturum süresi doldu"
+      "sessionExpired": "Ayarlar",
+      "restart": "Tekrar başlat",
+      "tooltipHeader": "1-Tıklamayla Ticaret Ayarları",
+      "resetSession": "Tek Tıkla Ticaret oturumlarını profilinizden yeniden başlatın veya düzenleyin."
     }
   },
   "pool": {

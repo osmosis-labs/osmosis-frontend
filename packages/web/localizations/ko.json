@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "enableOneClickTrading": "1-클릭 거래 활성화",
+      "startANewSession": "새 세션 시작",
       "increaseFeeLimit": "네트워크 수수료 한도 인상",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
       "continueWithWallet": "지갑으로 계속하기",
@@ -546,6 +546,7 @@
         "title": "세션 기간",
         "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요.",
         "periods": {
+          "5min": "5 분",
           "10min": "10 분",
           "30min": "30 분",
           "1hour": "1 시간",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "돌아온 것을 환영합니다",
+      "subtitle": "Osmosis를 계속 탐색하려면 지갑을 연결하세요.",
       "description": "지갑을 연결하면 1-클릭 거래 세션을 시작하기 위해 거래를 승인하라는 메시지가 표시됩니다.",
       "toggleLabel": "1-클릭 거래",
       "editParamsAriaLabel": "1CT 매개변수 변경"
@@ -572,7 +574,10 @@
       "description": "선택한 지갑에서 거래를 승인하면 1-클릭 거래 세션이 시작됩니다."
     },
     "profile": {
-      "sessionExpired": "세션이 만료되었습니다."
+      "sessionExpired": "설정",
+      "restart": "재시작",
+      "tooltipHeader": "1-클릭 거래 설정",
+      "resetSession": "프로필에서 1-클릭 거래 세션을 다시 시작하거나 편집하세요."
     }
   },
   "pool": {

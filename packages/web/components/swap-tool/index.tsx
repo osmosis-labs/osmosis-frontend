@@ -324,8 +324,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         icon={
                           <Icon
                             id="close"
-                            width={32}
-                            height={32}
+                            width={24}
+                            height={24}
                             className="text-osmoverse-400"
                           />
                         }

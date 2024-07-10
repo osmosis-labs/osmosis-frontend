@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
       "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
-      "enableOneClickTrading": "Habilite el comercio con 1 clic",
+      "startANewSession": "Iniciar una nueva sesión",
       "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
       "approveManually": "Aprobar manualmente en {walletName}",
       "continueWithWallet": "Continuar con la billetera",
@@ -546,6 +546,7 @@
         "title": "Período de sesión",
         "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
         "periods": {
+          "5min": "5 minutos",
           "10min": "10 minutos",
           "30min": "30 minutos",
           "1hour": "1 hora",
@@ -562,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Bienvenido de nuevo",
+      "subtitle": "Conecta tu billetera para continuar explorando Osmosis.",
       "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
       "toggleLabel": "Comercio con 1 clic",
       "editParamsAriaLabel": "Cambiar parámetros 1CT"
@@ -572,7 +574,10 @@
       "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
     },
     "profile": {
-      "sessionExpired": "Sesión expirada"
+      "sessionExpired": "Ajustes",
+      "restart": "Reanudar",
+      "tooltipHeader": "Configuración comercial con 1 clic",
+      "resetSession": "Reinicie o edite sesiones de negociación con 1 clic desde su perfil."
     }
   },
   "pool": {
