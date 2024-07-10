@@ -106,6 +106,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       parseAsBoolean.withDefault(false)
     );
 
+    const [buyOpen, setBuyOpen] = useQueryState(
+      "buyOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
     const [showToTokenSelectModal, setToTokenSelectDropdownLocal] =
       useState(false);
     const setOneTokenSelectOpen = useCallback((dropdown: "to" | "from") => {
@@ -121,7 +126,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
       setSellOpen(false);
-    }, [setSellOpen]);
+      setBuyOpen(false);
+    }, [setBuyOpen, setSellOpen]);
 
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
@@ -578,7 +584,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         />
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.buy")}
-          isOpen={showToTokenSelectModal}
+          isOpen={showToTokenSelectModal || buyOpen}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
           onSelect={useCallback(

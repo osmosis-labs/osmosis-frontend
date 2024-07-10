@@ -48,6 +48,11 @@ export const PriceSelector = memo(
       parseAsBoolean.withDefault(false)
     );
 
+    const [__, setBuyOpen] = useQueryState(
+      "buyOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
     const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
     const quoteAsset = useMemo(
@@ -343,8 +348,12 @@ export const PriceSelector = memo(
                   )}
                   <button
                     onClick={() => {
+                      if (tab === "buy") {
+                        setSellOpen(true);
+                      } else {
+                        setBuyOpen(true);
+                      }
                       setTab("swap");
-                      setSellOpen(true);
                     }}
                     className="flex w-full items-center justify-between py-3"
                   >
