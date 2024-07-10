@@ -7,6 +7,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
+import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
 
@@ -23,13 +24,39 @@ export interface LimitInputProps {
   expectedOutputLoading: boolean;
 }
 
+const calcScale = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      }
+    : {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      };
+
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "1";
+};
+
 export enum FocusedInput {
   FIAT = "fiat",
   TOKEN = "token",
 }
 
 const nonFocusedClasses =
-  "top-[45%] scale-[43%] text-wosmongton-200 hover:cursor-pointer select-none";
+  "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
 const transformAmount = (value: string) => {
@@ -200,6 +227,7 @@ function AutoInput({
   disableSwitching,
   loading,
 }: AutoInputProps) {
+  const { isMobile } = useWindowSize();
   const currentTypeEnum = useMemo(
     () => (type === "fiat" ? FocusedInput.FIAT : FocusedInput.TOKEN),
     [type]
@@ -214,10 +242,15 @@ function AutoInput({
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
   );
+
+  const scale = useMemo(
+    () => calcScale(amount.length, isMobile),
+    [amount, isMobile]
+  );
   return (
     <div
       className={classNames(
-        "absolute flex w-full items-center justify-center text-h3 transition-all",
+        "absolute flex w-full items-center justify-center text-h3 font-h3 transition-transform",
         {
           [nonFocusedClasses]: !isFocused,
           [focusedClasses]: isFocused,
@@ -226,6 +259,9 @@ function AutoInput({
           "text-white-full": isFocused && +amount > 0,
         }
       )}
+      style={{
+        transform: `scale(${isFocused ? scale : 0.45})`,
+      }}
       onClick={
         !disableSwitching && focused === oppositeTypeEnum
           ? swapFocus
@@ -237,7 +273,7 @@ function AutoInput({
           <Spinner className="mr-4" /> Estimating...{" "}
         </div>
       ) : (
-        <>
+        <label className="flex w-full shrink grow items-center justify-center">
           {disableSwitching && !isFocused && <span>~</span>}
           {type === "fiat" && (
             <span className={classNames({ "font-normal": !isFocused })}>$</span>
@@ -248,7 +284,7 @@ function AutoInput({
             placeholder="0"
             value={amount}
             inputClassName={classNames(
-              "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
+              "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
               { "cursor-pointer font-normal": !isFocused }
             )}
             onChange={(e) => setter(e.target.value)}
@@ -265,7 +301,7 @@ function AutoInput({
             </span>
           )}
           {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
-        </>
+        </label>
       )}
     </div>
   );
