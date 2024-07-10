@@ -281,6 +281,12 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
   ]);
 
+  const reset = useCallback(() => {
+    inAmountInput.reset();
+    priceState.reset();
+    marketState.inAmountInput.reset();
+  }, [inAmountInput, priceState, marketState]);
+
   return {
     baseAsset,
     quoteAsset,
@@ -300,6 +306,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    reset,
   };
 };
 

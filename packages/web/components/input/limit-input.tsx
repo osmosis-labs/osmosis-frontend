@@ -2,7 +2,14 @@ import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { useQueryState } from "nuqs";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FC,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
@@ -119,6 +126,8 @@ export const LimitInput: FC<LimitInputProps> = ({
   );
 
   useEffect(() => {
+    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT)
+      setFiatAmount("");
     if (focused !== FocusedInput.TOKEN || !price) return;
     const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
     const fiatValue = price.mul(value);
@@ -175,19 +184,33 @@ function AutoInput({
   type,
   disableSwitching,
 }: AutoInputProps) {
+  const [input, setInput] = useState<HTMLInputElement | null>(null);
   const currentTypeEnum = useMemo(
     () => (type === "fiat" ? FocusedInput.FIAT : FocusedInput.TOKEN),
-    [type]
-  );
-
-  const oppositeTypeEnum = useMemo(
-    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
     [type]
   );
 
   const isFocused = useMemo(
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
+  );
+
+  useLayoutEffect(() => {
+    if (input && isFocused) {
+      input.focus();
+
+      if (amount === "0") {
+        setter("");
+      }
+    }
+
+    // Only update on input/isFocused to allow for amount reset on "0" amount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input, isFocused]);
+
+  const oppositeTypeEnum = useMemo(
+    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
+    [type]
   );
 
   return (
@@ -213,6 +236,7 @@ function AutoInput({
         <span className={classNames({ "font-normal": !isFocused })}>$</span>
       )}
       <AutosizeInput
+        autoFocus={isFocused}
         disabled={!isFocused}
         type="number"
         placeholder="0"
@@ -223,6 +247,14 @@ function AutoInput({
         )}
         onChange={(e) => setter(e.target.value)}
         onClick={!isFocused ? swapFocus : undefined}
+        onBlur={() => {
+          if (amount === "0") {
+            setter("");
+          }
+        }}
+        inputRef={(input) => {
+          setInput(input);
+        }}
       />
       {type === "token" && (
         <span

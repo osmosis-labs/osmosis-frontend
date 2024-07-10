@@ -3,7 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
 import { useQueryState } from "nuqs";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -29,7 +29,6 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  //TODO: Retrieve maker fee from contract
   const fee = useMemo(() => {
     return (
       placeLimitState.paymentFiatValue?.mul(makerFee) ??
@@ -49,6 +48,12 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   }, [placeLimitState.paymentFiatValue, fee]);
 
   const [orderType] = useQueryState("type");
+
+  const onConfirm = useCallback(async () => {
+    await placeLimitState.placeLimit();
+    placeLimitState.reset();
+    onRequestClose();
+  }, [placeLimitState, onRequestClose]);
 
   return (
     <ModalBase
@@ -253,7 +258,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                 {t("unstableAssetsWarning.buttonCancel")}
               </h6>
             </Button>
-            <Button onClick={placeLimitState.placeLimit}>
+            <Button onClick={onConfirm}>
               <h6>{t("limitOrders.confirm")}</h6>
             </Button>
           </div>
