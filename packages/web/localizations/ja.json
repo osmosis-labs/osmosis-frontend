@@ -512,13 +512,8 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
-      "changeButton": "変化"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "取引をより迅速かつ簡単に",
-      "startOneClickTradingNow": "今すぐ1-Click取引を始めましょう",
-      "iconAlt": "1-Click 取引の小さなロゴ"
+      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "changeButton": "編集の設定"
     },
     "floatingBanner": {
       "newPill": "新しい",

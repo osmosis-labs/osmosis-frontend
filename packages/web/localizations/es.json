@@ -512,13 +512,8 @@
       "introducingSubtitle": "Realice transacciones más rápidas y sencillas sin la molestia de múltiples aprobaciones de billetera.",
       "learnMore": "Aprende más",
       "startTradingButton": "Comience a operar con 1 clic",
-      "defaultParameters": "El comercio con 1 clic estará activo durante 1 hora en este dispositivo con un límite de gasto de $5,000 USD",
-      "changeButton": "Cambiar"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Opere más rápido y más fácilmente",
-      "startOneClickTradingNow": "Comience a operar con 1 clic ahora",
-      "iconAlt": "Logotipo pequeño comercial con 1 clic"
+      "defaultParameters": "La configuración predeterminada está establecida en 1 hora con un límite de protección contra pérdidas de $5,000 USD.",
+      "changeButton": "Editar ajustes"
     },
     "floatingBanner": {
       "newPill": "Nuevo",

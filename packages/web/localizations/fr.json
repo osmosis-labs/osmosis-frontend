@@ -512,13 +512,8 @@
       "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
-      "defaultParameters": "Le trading en 1 clic sera actif pendant 1 heure sur cet appareil avec une limite de dépenses de 5 000 USD.",
-      "changeButton": "Changement"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Tradez plus rapidement et plus facilement",
-      "startOneClickTradingNow": "Commencez le trading en 1 clic maintenant",
-      "iconAlt": "Petit logo de trading en 1 clic"
+      "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
+      "changeButton": "Modifier les paramètres"
     },
     "floatingBanner": {
       "newPill": "Nouveau",

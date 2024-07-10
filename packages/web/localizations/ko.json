@@ -512,13 +512,8 @@
       "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
-      "defaultParameters": "1-클릭 거래는 $5,000 USD 지출 한도로 이 기기에서 1시간 동안 활성화됩니다.",
-      "changeButton": "변화"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "더 빠르고 쉽게 거래하세요",
-      "startOneClickTradingNow": "지금 1-클릭 거래를 시작하세요",
-      "iconAlt": "1-클릭 거래 작은 로고"
+      "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
+      "changeButton": "설정 수정"
     },
     "floatingBanner": {
       "newPill": "새로운",
