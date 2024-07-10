@@ -15,6 +15,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-new-account";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -23,14 +24,20 @@ export const useOneClickProfileTooltip = createGlobalState(false);
 export const OneClickFloatingBannerDoNotShowKey =
   "do-not-show-one-click-trading-floating-notification";
 
-export const OneClickFloatingBanner = observer(() => {
+export const OneClickToast = observer(() => {
   const { accountStore, chainStore } = useStore();
   const featureFlags = useFeatureFlags();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const isConnected = !!account?.address;
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
+  const { isNewAccount } = useIsCosmosNewAccount({ address: account?.address });
 
-  if (!isConnected || !featureFlags.oneClickTrading || isOneClickTradingEnabled)
+  if (
+    !isConnected ||
+    !featureFlags.oneClickTrading ||
+    isOneClickTradingEnabled ||
+    isNewAccount
+  )
     return null;
 
   return <OneClickFloatingBannerContent />;

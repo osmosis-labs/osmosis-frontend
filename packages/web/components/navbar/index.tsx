@@ -27,7 +27,7 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
-import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-floating-banner";
+import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-toast";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
