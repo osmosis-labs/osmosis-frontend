@@ -77,7 +77,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "WBTC.axl": {
+  "WBTC.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -469,7 +469,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
-  "WBTC.grv": {
+  "WBTC.eth.grv": {
     depositUrlOverride:
       "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
     withdrawUrlOverride:
