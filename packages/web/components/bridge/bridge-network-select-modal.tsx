@@ -78,7 +78,7 @@ export const BridgeNetworkSelectModal = ({
         <>
           <ModalBase
             title={
-              <div className="md:subtitle1 text-h6 font-h6">
+              <div className="md:subtitle1 mx-auto text-h6 font-h6">
                 {currentScreen === NetworkSelectScreen.SelectWallet
                   ? `Select ${
                       direction === "deposit" ? "deposit" : "withdraw"
