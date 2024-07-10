@@ -488,6 +488,7 @@ const OneClickTradingProfileSection: FunctionComponent<{
   setShow1CTSettings: (value: boolean) => void;
   onRestartSession: () => void;
 }> = ({ setShow1CTSettings, onRestartSession }) => {
+  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const { t } = useTranslation();
   const { isOneClickTradingExpired, oneClickTradingInfo } =
@@ -516,6 +517,12 @@ const OneClickTradingProfileSection: FunctionComponent<{
     <div
       onClick={() => {
         setShow1CTSettings(true);
+        logEvent([
+          EventName.OneClickTrading.accessed,
+          {
+            source: "profile-section",
+          },
+        ]);
       }}
       className="group flex w-full cursor-pointer items-center justify-between rounded-b-2xl border border-t-0 border-osmoverse-700 bg-osmoverse-800 px-5 py-3"
     >
