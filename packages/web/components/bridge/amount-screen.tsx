@@ -921,8 +921,7 @@ export const AmountScreen = observer(
                                 <button
                                   className={classNames(
                                     "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
-                                    isSelected && "bg-osmoverse-700",
-                                    !isSelected && "bg-osmoverse-800"
+                                    isSelected && "bg-osmoverse-700"
                                   )}
                                   onClick={onClick}
                                 >

@@ -59,9 +59,11 @@ export const BridgeWalletSelectModal = observer(
     return (
       <ModalBase
         title={
-          direction === "deposit"
-            ? "Select deposit wallet"
-            : "Select withdraw wallet"
+          <div className="md:subtitle1 text-h6 font-h6">
+            {direction === "deposit"
+              ? "Select deposit wallet"
+              : "Select withdraw wallet"}
+          </div>
         }
         className="!max-w-[450px]"
         {...modalProps}
