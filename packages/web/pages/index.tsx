@@ -13,6 +13,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
@@ -80,10 +81,17 @@ const Home = () => {
   );
 };
 
-const SwapAdsBanner = () => {
+const SwapAdsBanner = observer(() => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
+
   const flags = useFeatureFlags();
   const { t } = useTranslation();
+
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
   const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
     undefined,
     {
@@ -102,31 +110,38 @@ const SwapAdsBanner = () => {
 
   if (!data?.banners || isLoading) return null;
 
-  const banners: Ad[] = flags.oneClickTrading
-    ? [
-        // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
-        {
-          name: "one-click-trading",
-          headerOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.tradeQuickerAndEasier"
-          ),
-          subheaderOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.startOneClickTradingNow"
-          ),
-          iconImageAltOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.iconAlt"
-          ),
-          iconImageUrl: "/images/1ct-small-icon.svg",
-          gradient: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
-          fontColor: theme.colors.osmoverse["900"],
-          arrowColor: theme.colors.ammelia["900"],
-          onClick() {
-            set1CTIntroModalScreen("settings-no-back-button");
-          },
-        } satisfies Ad,
-        ...data.banners,
-      ]
-    : data.banners;
+  const banners: Ad[] =
+    flags.oneClickTrading && wallet?.isWalletConnected
+      ? [
+          // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
+          {
+            name: "one-click-trading",
+            headerOrTranslationKey: t(
+              "oneClickTrading.swapRotatingBanner.tradeQuickerAndEasier"
+            ),
+            subheaderOrTranslationKey: t(
+              "oneClickTrading.swapRotatingBanner.startOneClickTradingNow"
+            ),
+            iconImageAltOrTranslationKey: t(
+              "oneClickTrading.swapRotatingBanner.iconAlt"
+            ),
+            iconImageUrl: "/images/1ct-small-icon.svg",
+            gradient: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+            fontColor: theme.colors.osmoverse["900"],
+            arrowColor: theme.colors.ammelia["900"],
+            onClick() {
+              set1CTIntroModalScreen("settings-no-back-button");
+              logEvent([
+                EventName.OneClickTrading.accessed,
+                {
+                  source: "index-banner",
+                },
+              ]);
+            },
+          } satisfies Ad,
+          ...data.banners,
+        ]
+      : data.banners;
 
   return (
     // If there is an error, we don't want to show the banner
@@ -134,6 +149,6 @@ const SwapAdsBanner = () => {
       <AdBanners ads={banners} localization={data.localization} />
     </ErrorBoundary>
   );
-};
+});
 
 export default observer(Home);

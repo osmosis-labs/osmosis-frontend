@@ -2,16 +2,9 @@ import { WalletRepo } from "@cosmos-kit/core";
 import { WalletConnectionInProgressError } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
-import React, {
-  Dispatch,
-  FunctionComponent,
-  SetStateAction,
-  useEffect,
-} from "react";
-import { useLocalStorage } from "react-use";
+import React, { Dispatch, FunctionComponent, SetStateAction } from "react";
 
 import { IntroducingOneClick } from "~/components/one-click-trading/introducing-one-click-trading";
-import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
 import { OneClickTradingConnectToContinue } from "~/components/one-click-trading/one-click-trading-connect-to-continue";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { OneClickTradingWelcomeBack } from "~/components/one-click-trading/one-click-trading-welcome-back";
@@ -75,9 +68,6 @@ export const CosmosWalletState: FunctionComponent<
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
-    const [, setDoNotShow1CTFloatingBanner] = useLocalStorage(
-      OneClickFloatingBannerDoNotShowKey
-    );
 
     const show1CT =
       hasInstalledWallets &&
@@ -87,17 +77,6 @@ export const CosmosWalletState: FunctionComponent<
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
-
-    useEffect(() => {
-      /**
-       * If the user has already viewed the 1CT introduction during
-       * the wallet selection process, then don't display the 1CT
-       * banner when they connect to their wallet.
-       */
-      if (show1CT && modalView === "list") {
-        setDoNotShow1CTFloatingBanner(true);
-      }
-    }, [modalView, setDoNotShow1CTFloatingBanner, show1CT]);
 
     if (modalView === "connected") {
       onRequestClose();

@@ -1,5 +1,5 @@
 import { logEvent } from "@amplitude/analytics-browser";
-import { Popover } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
   formatICNSName,
@@ -27,6 +27,8 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
+import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-floating-banner";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -41,7 +43,12 @@ import {
   NotifiModal,
   NotifiPopover,
 } from "~/integrations/notifi";
-import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+import {
+  ModalBase,
+  ModalBaseProps,
+  SettingsModal,
+  useGlobalIs1CTIntroModalScreen,
+} from "~/modals";
 import {
   ExternalLinkModal,
   handleExternalLink,
@@ -213,7 +220,7 @@ export const NavBar: FunctionComponent<
 
                 return (
                   <>
-                    <Popover.Button as={Fragment}>
+                    <PopoverButton as={Fragment}>
                       <IconButton
                         mode="unstyled"
                         size="unstyled"
@@ -228,8 +235,8 @@ export const NavBar: FunctionComponent<
                           />
                         }
                       />
-                    </Popover.Button>
-                    <Popover.Panel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
+                    </PopoverButton>
+                    <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
                       <MainMenu
                         menus={mobileMenus}
                         secondaryMenuItems={secondaryMenuItems}
@@ -239,7 +246,7 @@ export const NavBar: FunctionComponent<
                           <WalletInfo onOpenProfile={onOpenProfile} />
                         </SkeletonLoader>
                       </ClientOnly>
-                    </Popover.Panel>
+                    </PopoverPanel>
                   </>
                 );
               }}
@@ -368,6 +375,10 @@ const WalletInfo: FunctionComponent<
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const flags = useFeatureFlags();
 
+  const [isOneClickIntroModalOpen] = useGlobalIs1CTIntroModalScreen();
+  const [isOneClickProfileTooltipOpen, setIsOneClickProfileTooltipOpen] =
+    useOneClickProfileTooltip();
+
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -403,68 +414,106 @@ const WalletInfo: FunctionComponent<
         </Button>
       ) : (
         <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenProfile();
-            }}
-            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-          >
-            <div className="relative">
-              {isOneClickTradingEnabled && flags.oneClickTrading && (
-                <>
-                  <OneClickTradingRadialProgress />
-                  <div className="absolute -bottom-0.5 -right-1">
-                    <Image
-                      src="/images/1ct-small-icon.svg"
-                      alt="1-Click Trading Small Icon"
-                      width={16}
-                      height={16}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div
-                className={classNames(
-                  " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
-                  isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
-                )}
-              >
-                {profileStore.currentAvatar === "ammelia" ? (
-                  <Image
-                    alt="Wosmongton profile"
-                    src="/images/profile-ammelia.png"
-                    height={32}
-                    width={32}
-                  />
-                ) : (
-                  <Image
-                    alt="Wosmongton profile"
-                    src="/images/profile-woz.png"
-                    height={32}
-                    width={32}
-                  />
-                )}
+          <Tooltip
+            visible={isOneClickProfileTooltipOpen && !isOneClickIntroModalOpen}
+            trigger="manual"
+            interactive
+            content={
+              <div className="relative flex max-w-[240px] items-center gap-2">
+                <IconButton
+                  mode="unstyled"
+                  size="unstyled"
+                  aria-label="Close"
+                  className={classNames(
+                    "absolute -right-1 -top-1 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100",
+                    className
+                  )}
+                  icon={<Icon id="close" width={18} height={18} />}
+                  onClick={() => {
+                    setIsOneClickProfileTooltipOpen(false);
+                  }}
+                />
+                <Image
+                  src="/images/1ct-small-icon.svg"
+                  alt="1-Click Trading icon"
+                  width={24}
+                  height={24}
+                />
+                <div className="flex flex-col gap-1">
+                  <h1 className="caption">
+                    {t("oneClickTrading.profile.tooltipHeader")}
+                  </h1>
+                  <p className="caption text-osmoverse-300">
+                    {t("oneClickTrading.profile.resetSession")}
+                  </p>
+                </div>
               </div>
-            </div>
+            }
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOneClickProfileTooltipOpen(false);
+                onOpenProfile();
+              }}
+              className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+            >
+              <div className="relative">
+                {isOneClickTradingEnabled && flags.oneClickTrading && (
+                  <>
+                    <OneClickTradingRadialProgress />
+                    <div className="absolute -bottom-0.5 -right-1">
+                      <Image
+                        src="/images/1ct-small-icon.svg"
+                        alt="1-Click Trading Small Icon"
+                        width={16}
+                        height={16}
+                      />
+                    </div>
+                  </>
+                )}
 
-            <div className="flex w-full  flex-col truncate text-right leading-tight">
-              <span className="body2 font-bold leading-4" title={icnsName}>
-                {Boolean(icnsName)
-                  ? formatICNSName(icnsName)
-                  : getShortAddress(wallet?.address!)}
-              </span>
-              <span className="caption font-medium tracking-wider text-osmoverse-200">
-                {userOsmoAsset?.amount
-                  ?.trim(true)
-                  .maxDecimals(2)
-                  .shrink(true)
-                  .upperCase(true)
-                  .toString()}
-              </span>
-            </div>
-          </button>
+                <div
+                  className={classNames(
+                    " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
+                    isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
+                  )}
+                >
+                  {profileStore.currentAvatar === "ammelia" ? (
+                    <Image
+                      alt="Wosmongton profile"
+                      src="/images/profile-ammelia.png"
+                      height={32}
+                      width={32}
+                    />
+                  ) : (
+                    <Image
+                      alt="Wosmongton profile"
+                      src="/images/profile-woz.png"
+                      height={32}
+                      width={32}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex w-full  flex-col truncate text-right leading-tight">
+                <span className="body2 font-bold leading-4" title={icnsName}>
+                  {Boolean(icnsName)
+                    ? formatICNSName(icnsName)
+                    : getShortAddress(wallet?.address!)}
+                </span>
+                <span className="caption font-medium tracking-wider text-osmoverse-200">
+                  {userOsmoAsset?.amount
+                    ?.trim(true)
+                    .maxDecimals(2)
+                    .shrink(true)
+                    .upperCase(true)
+                    .toString()}
+                </span>
+              </div>
+            </button>
+          </Tooltip>
         </SkeletonLoader>
       )}
     </div>

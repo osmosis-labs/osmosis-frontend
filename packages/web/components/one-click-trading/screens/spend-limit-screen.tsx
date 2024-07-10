@@ -16,7 +16,11 @@ import {
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
+import {
+  addCommasToNumber,
+  removeCommasFromNumber,
+  trimPlaceholderZeros,
+} from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 interface ShareOfBalanceOption {
@@ -87,19 +91,19 @@ export const SpendLimitScreen = ({
     );
 
   const parseFixedValue = (value: string) => {
-    return value.replace("$", "");
+    return removeCommasFromNumber(value).replace("$", "");
   };
 
   const formatFixedValue = (value: string) => {
-    return `$${value}`;
+    return `$${addCommasToNumber(value)}`;
   };
 
   const parseShareOfBalance = (value: string) => {
-    return value.replace("%", "");
+    return removeCommasFromNumber(value).replace("%", "");
   };
 
   const formatShareOfBalance = (value: string) => {
-    return `${value}%`;
+    return `${addCommasToNumber(value)}%`;
   };
 
   return (
@@ -143,8 +147,13 @@ export const SpendLimitScreen = ({
             </p>
           )}
         </div>
-        <p className="text-center text-body2 font-body2 text-osmoverse-200">
+        <p className="px-4 text-center text-body2 font-body2 text-osmoverse-200">
           {t("oneClickTrading.settings.spendLimitScreen.spendLimitDescription")}
+        </p>
+        <p className="px-4 text-center text-body2 font-body2 text-osmoverse-200">
+          {t(
+            "oneClickTrading.settings.spendLimitScreen.spendLimitSubDescription"
+          )}
         </p>
         {!!account?.address && (
           <MenuToggle
@@ -200,7 +209,7 @@ export const SpendLimitScreen = ({
             />
           </Screen>
           <Screen screenName="share-of-balance">
-            <ul className="mt-3 flex w-full gap-x-3">
+            <ul className="mt-3 flex w-full gap-x-2">
               {shareOfBalanceOptions.map(({ id, value }) => {
                 return (
                   <li
@@ -240,12 +249,14 @@ export const SpendLimitScreen = ({
                   <InputBox
                     type="number"
                     className="w-fit bg-transparent px-0"
-                    inputClassName={classNames(
-                      "bg-transparent text-center",
-                      !isManualShareOfBalance
-                        ? "text-osmoverse-500"
-                        : "text-white-high"
-                    )}
+                    classes={{
+                      input: classNames(
+                        "bg-transparent text-center",
+                        !isManualShareOfBalance
+                          ? "text-osmoverse-500"
+                          : "text-white-high"
+                      ),
+                    }}
                     style="no-border"
                     currentValue={
                       isManualShareOfBalance
@@ -285,7 +296,7 @@ export const SpendLimitScreen = ({
               </li>
             </ul>
 
-            <p className="subtitle2 rounded-xl border border-osmoverse-500 px-4 py-2 text-center text-osmoverse-300">
+            <p className="subtitle2 rounded-xl px-4 py-2 text-center text-osmoverse-300">
               {t(
                 "oneClickTrading.settings.spendLimitScreen.shareOfBalanceDescription",
                 {
@@ -296,7 +307,7 @@ export const SpendLimitScreen = ({
                 className="inline"
                 isLoaded={!isLoadingUserAssetsTotal}
               >
-                <span>
+                <span className="subtitle1 text-osmoverse-100">
                   ~
                   {userAssetsTotal?.value
                     .mul(
@@ -311,10 +322,6 @@ export const SpendLimitScreen = ({
             </p>
           </Screen>
         </ScreenManager>
-
-        <p className="text-center text-caption font-caption text-osmoverse-200">
-          {t("oneClickTrading.settings.spendLimitScreen.fluctuationNotice")}
-        </p>
       </div>
     </>
   );

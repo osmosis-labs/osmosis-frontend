@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
+      "startANewSession": "یک جلسه جدید را شروع کنید",
       "increaseFeeLimit": "افزایش سقف هزینه شبکه",
       "approveManually": "تأیید دستی در {walletName}",
       "continueWithWallet": "با کیف پول ادامه دهید",
@@ -529,33 +529,24 @@
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
       "enableTitle": "تجارت 1 کلیکی را فعال کنید",
-      "spendLimitTitle": "محدودیت هزینه",
-      "networkFeeLimitTitle": "محدودیت هزینه شبکه",
+      "spendLimitTitle": "حد حفاظت از دست دادن",
       "sessionPeriodTitle": "دوره جلسه",
       "startButton": "شروع تجارت با 1 کلیک",
       "editSessionButton": "ذخیره تغییرات",
       "endingSession": "پایان جلسه",
       "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
       "spendLimitScreen": {
-        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "spendLimitDescription": "تجارت بدون محدودیت در دارایی های مورد اعتماد (50 برتر از نظر ارزش بازار).",
+        "spendLimitSubDescription": "برای همه دارایی‌های دیگر، قبل از نیاز به تأیید کیف پول دستی، محدودیتی برای حداکثر ارزش قابل معامله تعیین کنید. کارمزد معاملات نیز در این حد محاسبه می شود.",
         "fixedAmount": "مقدار ثابت",
         "shareOfBalance": "سهم تعادل",
-        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
-        "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
-      },
-      "networkFeeLimitScreen": {
-        "title": "محدودیت هزینه شبکه",
-        "description": "حداکثر مبلغی را که می‌توانید برای کارمزد شبکه برای هر تراکنش منفرد در طول جلسه تجارت 1 کلیک خود خرج کنید، تنظیم کنید.",
-        "info": "اگر کارمزد بیش از این مقدار باشد، می‌توانید با امضای دستی تراکنش‌ها در کیف پول خود اقدام کنید.",
-        "low": "کم",
-        "average": "میانگین",
-        "high": "بالا",
-        "recommended": "توصیه شده"
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد"
       },
       "sessionPeriodScreen": {
         "title": "دوره جلسه",
         "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
         "periods": {
+          "5min": "5 دقیقه",
           "10min": "10 دقیقه",
           "30min": "30 دقیقه",
           "1hour": "1 ساعت",
@@ -572,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "خوش برگشتی",
+      "subtitle": "کیف پول خود را برای ادامه کاوش اسمز وصل کنید.",
       "description": "هنگامی که کیف پول خود را وصل کردید، از شما خواسته می شود تا یک تراکنش را تأیید کنید تا جلسه تجارت 1-Click خود را شروع کنید.",
       "toggleLabel": "1- روی تجارت کلیک کنید",
       "editParamsAriaLabel": "پارامترهای 1CT را تغییر دهید"
@@ -582,7 +574,10 @@
       "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
     },
     "profile": {
-      "sessionExpired": "جلسه تمام شده"
+      "sessionExpired": "تنظیمات",
+      "restart": "راه اندازی مجدد",
+      "tooltipHeader": "1- روی تنظیمات معاملاتی کلیک کنید",
+      "resetSession": "جلسات معاملاتی 1 کلیکی را از نمایه خود راه اندازی مجدد یا ویرایش کنید."
     }
   },
   "pool": {
@@ -846,9 +841,7 @@
     "continueAnyway": "ادامه دادن به هر طریق",
     "warning": {
       "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
-      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
-      "increaseSpendLimit": "افزایش سقف هزینه",
-      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+      "increaseSpendLimit": "افزایش سقف هزینه"
     },
     "settings": {
       "slippage": "تغیرات قابل قبول",
