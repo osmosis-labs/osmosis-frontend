@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+// cd into localizations directory, then run `node scripts/remove-key your.key.here`
+
 // Get all JSON files in the current directory
 const jsonFiles = fs
   .readdirSync(process.cwd())
