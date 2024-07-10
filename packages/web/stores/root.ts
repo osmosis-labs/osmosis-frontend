@@ -253,8 +253,14 @@ export class RootStore {
 
     const transferStatusProviders = [
       new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-      new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-      new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new SquidTransferStatusProvider(
+        IS_TESTNET ? "testnet" : "mainnet",
+        ChainList
+      ),
+      new SkipTransferStatusProvider(
+        IS_TESTNET ? "testnet" : "mainnet",
+        ChainList
+      ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
     ];
 

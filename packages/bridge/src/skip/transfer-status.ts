@@ -1,3 +1,4 @@
+import { Chain } from "@osmosis-labs/types";
 import { poll } from "@osmosis-labs/utils";
 
 import type {
@@ -21,7 +22,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   readonly skipClient: SkipApiClient;
   readonly axelarScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment) {
+  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
     this.skipClient = new SkipApiClient(env);
 
     this.axelarScanBaseUrl =
@@ -90,11 +91,27 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   }
 
   makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash } = JSON.parse(
+    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
-    return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    if (typeof fromChainId === "number" || typeof toChainId === "number") {
+      // EVM transfer
+      return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    } else {
+      const chain = this.chainList.find(
+        (chain) => chain.chain_id === fromChainId
+      );
+
+      if (!chain) throw new Error("Chain not found: " + fromChainId);
+
+      if (chain.explorers.length === 0) {
+        // attempt to link to mintscan since this is an IBC transfer
+        return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
+      }
+
+      return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+    }
   }
 
   receiveConclusiveStatus(
