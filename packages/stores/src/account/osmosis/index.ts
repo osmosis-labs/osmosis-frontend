@@ -8,6 +8,7 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import * as OsmosisMath from "@osmosis-labs/math";
+import { maxTick, minTick } from "@osmosis-labs/math";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import { BondStatus } from "@osmosis-labs/types";
 import deepmerge from "deepmerge";
@@ -741,6 +742,45 @@ export class OsmosisAccountImpl {
           }
         }
         onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
+    poolId: string,
+    memo: string = "",
+    // tokenMinAmount0,
+    // tokenMinAmount1,
+    baseCoin: Coin,
+    quoteCoin: Coin,
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sortedCoins = [baseCoin, quoteCoin]
+      .filter((coin): coin is Coin => coin !== undefined)
+      .sort((a, b) => a?.denom.localeCompare(b?.denom))
+      .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+    const msg = this.msgOpts.clCreatePosition.messageComposer({
+      poolId: BigInt(poolId),
+      lowerTick: BigInt(minTick.toString()),
+      upperTick: BigInt(maxTick.toString()),
+      sender: this.address,
+      tokenMinAmount0: baseCoin.amount.toString(),
+      tokenMinAmount1: quoteCoin.amount.toString(),
+      tokensProvided: sortedCoins,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clCreatePosition",
+      [msg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          onFulfill?.(tx);
+        }
       }
     );
   }
