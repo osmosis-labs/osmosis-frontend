@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
       "networkFeeTooHigh": "Taxa de rede muito alta",
-      "enableOneClickTrading": "Habilite a negociação em 1 clique",
+      "startANewSession": "Iniciar uma nova sessão",
       "increaseFeeLimit": "Aumentar o limite de taxa de rede",
       "approveManually": "Aprovar manualmente em {walletName}",
       "continueWithWallet": "Continuar com carteira",
@@ -530,7 +530,6 @@
       "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
       "enableTitle": "Habilite a negociação em 1 clique",
       "spendLimitTitle": "Limite de proteção contra perdas",
-      "networkFeeLimitTitle": "Limite de taxa de rede",
       "sessionPeriodTitle": "Período da sessão",
       "startButton": "Comece a negociação com 1 clique",
       "editSessionButton": "Salvar alterações",
@@ -543,19 +542,11 @@
         "shareOfBalance": "Participação no saldo",
         "shareOfBalanceDescription": "{shareOfBalance} do seu saldo total no Osmosis vale atualmente"
       },
-      "networkFeeLimitScreen": {
-        "title": "Limite de taxa de rede",
-        "description": "Defina o valor máximo que você pode gastar em taxas de rede para qualquer transação durante sua sessão de negociação com 1 clique.",
-        "info": "Se uma taxa exceder esse valor, você poderá assinar manualmente as transações em sua carteira.",
-        "low": "Baixo",
-        "average": "Média",
-        "high": "Alto",
-        "recommended": "Recomendado"
-      },
       "sessionPeriodScreen": {
         "title": "Período da sessão",
         "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
         "periods": {
+          "5min": "5 minutos",
           "10min": "10 minutos",
           "30min": "30 minutos",
           "1hour": "1 hora",
@@ -572,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "bem vindo de volta",
+      "subtitle": "Conecte sua carteira para continuar explorando a Osmose.",
       "description": "Depois de conectar sua carteira, você será solicitado a aprovar uma transação para iniciar sua sessão de negociação com 1 clique.",
       "toggleLabel": "Negociação em 1 clique",
       "editParamsAriaLabel": "Alterar parâmetros 1CT"
@@ -582,7 +574,10 @@
       "description": "Sua sessão de negociação em 1 clique começará quando você aprovar a transação na carteira escolhida."
     },
     "profile": {
-      "sessionExpired": "Sessão expirada"
+      "sessionExpired": "Configurações",
+      "restart": "Reiniciar",
+      "tooltipHeader": "Configurações de negociação em 1 clique",
+      "resetSession": "Reinicie ou edite sessões de negociação com 1 clique no seu perfil."
     }
   },
   "pool": {
@@ -846,9 +841,7 @@
     "continueAnyway": "Continue de qualquer maneira",
     "warning": {
       "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
-      "exceedsNetworkFeeLimit": "Esta troca excede o limite de taxa de rede para negociação com 1 clique.",
-      "increaseSpendLimit": "Aumentar o limite de gastos",
-      "increaseNetworkFeeLimit": "Aumentar o limite de taxa de rede"
+      "increaseSpendLimit": "Aumentar o limite de gastos"
     },
     "settings": {
       "slippage": "Tolerância de spread",

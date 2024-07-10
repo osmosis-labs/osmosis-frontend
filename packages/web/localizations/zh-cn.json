@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "一键交易已禁用",
       "currentlyUnavailable": "一键交易目前不可用",
       "networkFeeTooHigh": "网络费太高",
-      "enableOneClickTrading": "启用一键交易",
+      "startANewSession": "开始新会话",
       "increaseFeeLimit": "提高网络费用限额",
       "approveManually": "在{walletName}中手动批准",
       "continueWithWallet": "继续使用钱包",
@@ -530,7 +530,6 @@
       "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",
       "enableTitle": "启用一键交易",
       "spendLimitTitle": "损失保障限额",
-      "networkFeeLimitTitle": "网络费用限额",
       "sessionPeriodTitle": "会议期间",
       "startButton": "开始一键交易",
       "editSessionButton": "保存更改",
@@ -543,19 +542,11 @@
         "shareOfBalance": "余额份额",
         "shareOfBalanceDescription": "您在 Osmosis 上的总余额的{shareOfBalance}目前价值"
       },
-      "networkFeeLimitScreen": {
-        "title": "网络费用限额",
-        "description": "设置一键交易会话期间任何单笔交易的网络费用最高金额。",
-        "info": "如果费用超过此金额，您可以通过在钱包中手动签署交易来继续。",
-        "low": "低的",
-        "average": "平均的",
-        "high": "高的",
-        "recommended": "受到推崇的"
-      },
       "sessionPeriodScreen": {
         "title": "会议期间",
         "description": "设置允许在此设备上进行一键交易的持续时间。",
         "periods": {
+          "5min": "5分钟",
           "10min": "10分钟",
           "30min": "30分钟",
           "1hour": "1小时",
@@ -572,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "欢迎回来",
+      "subtitle": "连接你的钱包以继续探索 Osmosis。",
       "description": "连接钱包后，系统将提示您批准交易以开始一键交易会话。",
       "toggleLabel": "一键交易",
       "editParamsAriaLabel": "更改1CT参数"
@@ -582,7 +574,10 @@
       "description": "当您在所选钱包中批准交易时，您的一键交易会话将开始。"
     },
     "profile": {
-      "sessionExpired": "会话已过期"
+      "sessionExpired": "设置",
+      "restart": "重新开始",
+      "tooltipHeader": "一键交易设置",
+      "resetSession": "从您的个人资料重新启动或编辑一键交易会话。"
     }
   },
   "pool": {
@@ -846,9 +841,7 @@
     "continueAnyway": "无论如何继续",
     "warning": {
       "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",
-      "exceedsNetworkFeeLimit": "此交换超出了一键交易的网络费用限制。",
-      "increaseSpendLimit": "提高支出限额",
-      "increaseNetworkFeeLimit": "提高网络费用限额"
+      "increaseSpendLimit": "提高支出限额"
     },
     "settings": {
       "slippage": "滑点上限",

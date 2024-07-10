@@ -38,9 +38,14 @@ export const OneClickTradingWelcomeBack = ({
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <h1 className="text-h5 font-h5">
-        {t("oneClickTrading.welcomeBack.title")}
-      </h1>
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="text-h5 font-h5">
+          {t("oneClickTrading.welcomeBack.title")}
+        </h1>
+        <p className="body2 text-osmoverse-200">
+          {t("oneClickTrading.welcomeBack.subtitle")}
+        </p>
+      </div>
 
       <Image
         alt="1CT welcome back screen"

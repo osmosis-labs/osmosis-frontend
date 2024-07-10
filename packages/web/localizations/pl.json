@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "enableOneClickTrading": "Włącz handel jednym kliknięciem",
+      "startANewSession": "Rozpocznij nową sesję",
       "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
@@ -530,7 +530,6 @@
       "description": "Handel 1-Click pozwala bezpiecznie handlować na tym urządzeniu bez konieczności podpisywania każdej transakcji w portfelu.",
       "enableTitle": "Włącz handel jednym kliknięciem",
       "spendLimitTitle": "Limit ochrony przed stratą",
-      "networkFeeLimitTitle": "Limit opłat sieciowych",
       "sessionPeriodTitle": "Okres sesji",
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "editSessionButton": "Zapisz zmiany",
@@ -543,19 +542,11 @@
         "shareOfBalance": "Udział równowagi",
         "shareOfBalanceDescription": "{shareOfBalance} Twojego całkowitego salda w Osmozie jest obecnie warte"
       },
-      "networkFeeLimitScreen": {
-        "title": "Limit opłat sieciowych",
-        "description": "Ustaw maksymalną kwotę, jaką możesz wydać na opłaty sieciowe za pojedynczą transakcję podczas sesji handlu 1-Click.",
-        "info": "Jeśli opłata przekracza tę kwotę, możesz kontynuować, ręcznie podpisując transakcje w swoim portfelu.",
-        "low": "Niski",
-        "average": "Przeciętny",
-        "high": "Wysoki",
-        "recommended": "Zalecana"
-      },
       "sessionPeriodScreen": {
         "title": "Okres sesji",
         "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
         "periods": {
+          "5min": "5 minut",
           "10min": "10 minut",
           "30min": "30 minut",
           "1hour": "1 godzina",
@@ -572,6 +563,7 @@
     },
     "welcomeBack": {
       "title": "Witamy spowrotem",
+      "subtitle": "Podłącz swój portfel, aby kontynuować odkrywanie Osmozy.",
       "description": "Po podłączeniu portfela zostaniesz poproszony o zatwierdzenie transakcji w celu rozpoczęcia sesji handlu 1-Click.",
       "toggleLabel": "Handel jednym kliknięciem",
       "editParamsAriaLabel": "Zmień parametry 1CT"
@@ -582,7 +574,10 @@
       "description": "Twoja sesja handlu 1-Click rozpocznie się w momencie zatwierdzenia transakcji w wybranym portfelu."
     },
     "profile": {
-      "sessionExpired": "Sesja wygasła"
+      "sessionExpired": "Ustawienia",
+      "restart": "Uruchom ponownie",
+      "tooltipHeader": "Ustawienia handlowe jednym kliknięciem",
+      "resetSession": "Uruchom ponownie lub edytuj sesje handlu jednym kliknięciem w swoim profilu."
     }
   },
   "pool": {
@@ -846,9 +841,7 @@
     "continueAnyway": "Kontynuować mimo to",
     "warning": {
       "exceedsSpendLimit": "Ta zamiana przekracza pozostały limit wydatków w ramach handlu jednym kliknięciem.",
-      "exceedsNetworkFeeLimit": "Ta zamiana przekracza limit opłat sieciowych dla handlu jednym kliknięciem.",
-      "increaseSpendLimit": "Zwiększ limit wydatków",
-      "increaseNetworkFeeLimit": "Zwiększ limit opłat sieciowych"
+      "increaseSpendLimit": "Zwiększ limit wydatków"
     },
     "settings": {
       "slippage": "Tolerowane odchylenie",

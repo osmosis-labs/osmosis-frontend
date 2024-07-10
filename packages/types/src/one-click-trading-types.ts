@@ -14,6 +14,7 @@ export interface OneClickTradingTimeLimit {
 }
 
 export type OneClickTradingHumanizedSessionPeriod =
+  | "5min"
   | "10min"
   | "30min"
   | "1hour"
