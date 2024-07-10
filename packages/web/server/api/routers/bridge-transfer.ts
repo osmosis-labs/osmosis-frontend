@@ -24,6 +24,8 @@ import { IS_TESTNET } from "~/config/env";
 
 export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
+  | Extract<BridgeChain, { chainType: "bitcoin" }>
+  | Extract<BridgeChain, { chainType: "solana" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
 ) & {
   logoUri?: string;
@@ -41,6 +43,8 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   Squid: "/bridges/squid.svg",
   Axelar: "/bridges/axelar.svg",
   IBC: "/bridges/ibc.svg",
+  Nomic: "/bridges/nomic.svg",
+  Wormhole: "/bridges/wormhole.svg",
 };
 
 const ExternalBridgeLogoUrls: Record<Bridge, string> = {
@@ -48,6 +52,8 @@ const ExternalBridgeLogoUrls: Record<Bridge, string> = {
   Squid: "/bridges/squid.svg",
   Axelar: "/external-bridges/satellite.svg",
   IBC: "/external-bridges/tfm.svg",
+  Nomic: "/external-bridges/nomic.svg",
+  Wormhole: "/external-bridges/portalbridge.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -283,7 +289,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         return acc;
       }, {});
 
-      const eventualChains = Array.from(
+      const uniqueChains = Array.from(
         // Remove duplicate chains
         new Map(
           supportedAssets.map(({ chainId, chainType }) => [
@@ -293,7 +299,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         ).values()
       );
 
-      const availableChains = eventualChains
+      const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
             // TODO: Find a way to get eth chains from `getChain` function
@@ -335,6 +341,24 @@ export const bridgeTransferRouter = createTRPCRouter({
               color: cosmosChain.logoURIs?.theme?.primary_color_hex,
               bech32Prefix: cosmosChain.bech32_prefix,
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
+          } else if (chainType === "bitcoin") {
+            return {
+              prettyName: "Bitcoin",
+              chainId: "bitcoin",
+              chainName: "Bitcoin",
+              chainType,
+              logoUri: "/networks/bitcoin.svg",
+              color: "#F7931A",
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "bitcoin" }>;
+          } else if (chainType === "solana") {
+            return {
+              prettyName: "Solana",
+              chainId: "solana",
+              chainName: "Solana",
+              chainType,
+              logoUri: "/networks/solana.svg",
+              color: "#9945FF",
+            } as Extract<BridgeChainWithDisplayInfo, { chainType: "solana" }>;
           }
 
           return undefined;
@@ -392,7 +416,13 @@ export const bridgeTransferRouter = createTRPCRouter({
     }),
 
   getExternalUrls: publicProcedure
-    .input(getBridgeExternalUrlSchema)
+    .input(
+      getBridgeExternalUrlSchema.merge(
+        z.object({
+          bridges: z.array(z.string()).optional(),
+        })
+      )
+    )
     .query(async ({ input, ctx }) => {
       const bridgeProviders = new BridgeProviders(
         process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
@@ -406,36 +436,43 @@ export const bridgeTransferRouter = createTRPCRouter({
         }
       );
 
-      const eventualExternalUrls = await Promise.all(
-        Object.values(bridgeProviders.bridges).map((bridgeProvider) =>
-          timeout(
-            () =>
-              bridgeProvider
-                .getExternalUrl(input)
-                .then((externalUrl) =>
-                  !isNil(externalUrl)
-                    ? {
-                        ...externalUrl,
-                        logo: ExternalBridgeLogoUrls[
-                          bridgeProvider.providerName
-                        ],
-                      }
-                    : undefined
-                )
-                .catch(() => undefined),
-            5_000, // 5 seconds
-            `Failed to get external url for ${bridgeProvider.providerName}`
-          )().catch(() => undefined)
-        )
-      );
-
-      const externalUrls = eventualExternalUrls.filter(
-        (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
-          Boolean(externalUrl)
-      );
+      const bridgesToQuery = input.bridges
+        ? input.bridges.map(
+            (bridge) =>
+              bridgeProviders.bridges[
+                bridge as keyof typeof bridgeProviders.bridges
+              ]
+          )
+        : Object.values(bridgeProviders.bridges);
 
       return {
-        externalUrls,
+        externalUrls: (
+          await Promise.all(
+            bridgesToQuery.map((bridgeProvider) =>
+              timeout(
+                () =>
+                  bridgeProvider
+                    .getExternalUrl(input)
+                    .then((externalUrl) =>
+                      !isNil(externalUrl)
+                        ? {
+                            ...externalUrl,
+                            logo: ExternalBridgeLogoUrls[
+                              bridgeProvider.providerName
+                            ],
+                          }
+                        : undefined
+                    )
+                    .catch(() => undefined),
+                5_000, // 5 seconds
+                `Failed to get external url for ${bridgeProvider.providerName}`
+              )().catch(() => undefined)
+            )
+          )
+        ).filter(
+          (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
+            Boolean(externalUrl)
+        ),
       };
     }),
 });

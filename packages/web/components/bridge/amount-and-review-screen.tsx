@@ -1,7 +1,7 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen } from "~/components/screen-manager";
@@ -13,7 +13,7 @@ import { api } from "~/utils/trpc";
 import { AmountScreen } from "./amount-screen";
 import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
-import { useBridgeQuotes } from "./use-bridge-quotes";
+import { QuotableBridge, useBridgeQuotes } from "./use-bridge-quotes";
 import { SupportedAsset } from "./use-bridges-supported-assets";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
@@ -48,15 +48,17 @@ export const AmountAndReviewScreen = observer(
       useEvmWalletAccount();
 
     const fromChainCosmosAccount =
-      fromChain?.chainType === "evm" || isNil(fromChain)
-        ? undefined
-        : accountStore.getWallet(fromChain.chainId);
+      !isNil(fromChain) && fromChain.chainType === "cosmos"
+        ? accountStore.getWallet(fromChain.chainId)
+        : undefined;
 
     const toChainCosmosAccount =
-      toChain?.chainType === "evm" || isNil(toChain)
-        ? undefined
-        : accountStore.getWallet(toChain.chainId);
+      !isNil(toChain) && toChain.chainType === "cosmos"
+        ? accountStore.getWallet(toChain.chainId)
+        : undefined;
 
+    // Note on below: they are only used when chains are EVM or Cosmos
+    // Going to need to add support or Bitcoin or Solana wallets
     const fromAddress =
       fromChain?.chainType === "evm"
         ? evmAddress
@@ -75,6 +77,18 @@ export const AmountAndReviewScreen = observer(
       toChain?.chainType === "evm"
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
+
+    /** Filter for bridges that currently support quoting. */
+    const quoteBridges = useMemo(() => {
+      const assetSupportedBridges =
+        (direction === "deposit"
+          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
+          : toAsset?.supportedVariants[fromAsset?.address ?? ""]) ?? [];
+
+      return assetSupportedBridges.filter(
+        (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+      ) as QuotableBridge[];
+    }, [direction, fromAsset, toAsset]);
 
     const quote = useBridgeQuotes({
       toAddress,
@@ -105,10 +119,7 @@ export const AmountAndReviewScreen = observer(
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
-      bridges:
-        direction === "deposit"
-          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
-          : toAsset?.supportedVariants[fromAsset?.address ?? ""],
+      bridges: quoteBridges,
       onTransfer: () => {
         setToAsset(undefined);
         setFromAsset(undefined);
