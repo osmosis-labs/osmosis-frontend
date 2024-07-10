@@ -1,13 +1,37 @@
 name: Production frontend E2E tests
 
 on:
-  deployment_status:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
+  wait-for-deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      environment_url: ${{steps.vercel.outputs.environment_url}}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - id: vercel
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT: ${{ secrets.VERCEL_PROJECT }}
+          VERCEL_TARGET: "production"
+        run: |
+          echo "$BRANCH_NAME"
+          python -m pip install requests
+          cd .github && python await_deployment.py
+      - name: Echo GITHUB_OUTPUT environment_url
+        env:
+          environment_url: ${{ steps.vercel.outputs.environment_url }}
+        run: echo "$environment_url"
+
   prod-e2e-tests:
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production – osmosis-frontend'
     runs-on: macos-latest
+    needs: wait-for-deployment
     environment:
       name: prod_swap_test
     steps:
