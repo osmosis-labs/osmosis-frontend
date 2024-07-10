@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { Asset } from "@osmosis-labs/server";
+import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { useQueryState } from "nuqs";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
@@ -11,7 +11,7 @@ import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
 
 export interface LimitInputProps {
-  baseAsset: Asset;
+  baseAsset: MinimalAsset;
   onChange: (value: string) => void;
   setMarketAmount: (value: string) => void;
   tokenAmount: string;
