@@ -90,6 +90,7 @@ interface AmountScreenProps {
   quote: BridgeQuote;
 
   onConfirm: () => void;
+  onClose: () => void;
 }
 
 export const AmountScreen = observer(
@@ -118,6 +119,7 @@ export const AmountScreen = observer(
     quote,
 
     onConfirm,
+    onClose,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
@@ -1136,6 +1138,7 @@ export const AmountScreen = observer(
             bridges={Array.from(
               new Set(Object.values(fromAsset.supportedVariants).flat())
             )}
+            onDone={onClose}
           />
         )}
       </div>

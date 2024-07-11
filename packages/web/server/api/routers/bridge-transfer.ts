@@ -52,7 +52,7 @@ const ExternalBridgeLogoUrls: Record<Bridge, string> = {
   Squid: "/bridges/squid.svg",
   Axelar: "/external-bridges/satellite.svg",
   IBC: "/external-bridges/tfm.svg",
-  Nomic: "/external-bridges/nomic.svg",
+  Nomic: "/bridges/nomic.svg",
   Wormhole: "/external-bridges/portalbridge.svg",
 };
 

@@ -157,6 +157,7 @@ export const AmountAndReviewScreen = observer(
               setFiatAmount={setFiatAmount}
               quote={quote}
               onConfirm={() => setCurrentScreen(ImmersiveBridgeScreen.Review)}
+              onClose={onClose}
             />
           )}
         </Screen>

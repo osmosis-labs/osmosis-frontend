@@ -1003,7 +1003,9 @@
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
     "risks": "Bridging comes with risks.",
-    "learnMore": "Learn more"
+    "learnMore": "Learn more",
+    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
+    "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
