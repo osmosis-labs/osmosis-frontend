@@ -12,7 +12,6 @@ import { EthereumChainIds } from "~/config/wagmi";
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 import { CreateOneClickSessionError } from "~/hooks/mutations/one-click-trading";
-import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { WalletSelectOption } from "~/hooks/use-wallet-select";
 import { WagmiWalletConnectType } from "~/modals/wallet-select/use-selectable-wallets";
 import { useStore } from "~/stores";
@@ -50,8 +49,6 @@ export const useConnectWallet = ({
 
   const { connectAsync: connectEvmWallet, ...connectEvmWalletUtils } =
     useConnectEvmWallet();
-  const { setPreviousConnectedCosmosAccount: setPreviousConnectedAccount } =
-    usePreviousConnectedCosmosAccount();
 
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof CosmosWalletRegistry)[number]>();
@@ -182,7 +179,7 @@ export const useConnectWallet = ({
     await connectEvmWallet(
       { connector: wallet, chainId: chainId },
       {
-        onSuccess: ({ accounts }) => {
+        onSuccess: () => {
           onConnectProp?.({ walletType: "evm" });
         },
         onError: (e) => {
