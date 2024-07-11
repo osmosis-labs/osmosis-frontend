@@ -40,7 +40,7 @@ export const EstimatedTimeRow: FunctionComponent<{
   >
     <div className="flex items-center gap-1">
       <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />{" "}
-      <p className="text-osmoverse-100">
+      <p className="text-osmoverse-100 first-letter:capitalize">
         {selectedQuote.estimatedTime.humanize()}
       </p>
     </div>

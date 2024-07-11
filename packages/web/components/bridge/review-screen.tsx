@@ -344,7 +344,7 @@ const TransferDetails: FunctionComponent<
                 )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p>{estTime}</p>
+                  <p className="first-letter:capitalize">{estTime}</p>
                 </div>
               </div>
             )}

@@ -49,23 +49,6 @@ describe("compare1CTTransactionParams", () => {
     expect(changes).toContain("spendLimit");
   });
 
-  it("should detect changes in networkFeeLimit", () => {
-    const prevParams: OneClickTradingTransactionParams = {
-      isOneClickEnabled: true,
-      spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
-      sessionPeriod: { end: "1hour" },
-    };
-
-    const nextParams: OneClickTradingTransactionParams = {
-      ...prevParams,
-      networkFeeLimit: mockCoinPretty(15000),
-    };
-
-    const changes = compare1CTTransactionParams({ prevParams, nextParams });
-    expect(changes).toContain("networkFeeLimit");
-  });
-
   it("should detect multiple changes including sessionPeriod", () => {
     const prevParams: OneClickTradingTransactionParams = {
       isOneClickEnabled: true,
@@ -77,13 +60,11 @@ describe("compare1CTTransactionParams", () => {
     const nextParams: OneClickTradingTransactionParams = {
       ...prevParams,
       spendLimit: mockPricePretty(7000),
-      networkFeeLimit: mockCoinPretty(16000),
       sessionPeriod: { end: "3hours" },
     };
 
     const changes = compare1CTTransactionParams({ prevParams, nextParams });
     expect(changes).toContain("spendLimit");
-    expect(changes).toContain("networkFeeLimit");
     expect(changes).toContain("sessionPeriod");
   });
 });

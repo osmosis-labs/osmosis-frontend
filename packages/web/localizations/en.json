@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
       "networkFeeTooHigh": "Network fee too high",
-      "enableOneClickTrading": "Enable 1-Click Trading",
+      "startANewSession": "Start a new session",
       "increaseFeeLimit": "Increase network fee limit",
       "approveManually": "Approve manually in {walletName}",
       "continueWithWallet": "Continue with wallet",
@@ -512,13 +512,8 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "1-Click Trading will be active for 1 hour on this device with a $5,000 USD spend limit",
-      "changeButton": "Change"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Trade quicker and easier",
-      "startOneClickTradingNow": "Start 1-Click Trading now",
-      "iconAlt": "1-Click Trading Small Logo"
+      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
+      "changeButton": "Edit settings"
     },
     "floatingBanner": {
       "newPill": "New",
@@ -529,33 +524,24 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Spend Limit",
-      "networkFeeLimitTitle": "Network fee limit",
+      "spendLimitTitle": "Loss protection limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
       "endingSession": "Ending session",
       "feeToDisable": "Fee to disable 1-Click Trading:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
+        "spendLimitDescription": "Trade without limits on trusted assets (top 50 by market cap).",
+        "spendLimitSubDescription": "For all other assets, set a limit on the maximum tradable value before requiring manual wallet approval. Trading fees also count towards this limit.",
         "fixedAmount": "Fixed amount",
         "shareOfBalance": "Share of balance",
-        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
-        "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Network fee limit",
-        "description": "Set the maximum amount you can spend on network fees for any single transaction during your 1-Click Trading session.",
-        "info": "If a fee exceeds this amount, you may proceed by manually signing transactions in your wallet.",
-        "low": "Low",
-        "average": "Average",
-        "high": "High",
-        "recommended": "Recommended"
+        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth"
       },
       "sessionPeriodScreen": {
         "title": "Session period",
         "description": "Set a duration to allow 1-Click Trading on this device.",
         "periods": {
+          "5min": "5 minutes",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 hour",
@@ -572,6 +558,7 @@
     },
     "welcomeBack": {
       "title": "Welcome back",
+      "subtitle": "Connect your wallet to continue exploring Osmosis.",
       "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Change 1CT params"
@@ -582,7 +569,10 @@
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     },
     "profile": {
-      "sessionExpired": "Session expired"
+      "sessionExpired": "Settings",
+      "restart": "Restart",
+      "tooltipHeader": "1-Click Trading Settings",
+      "resetSession": "Restart or edit 1-Click Trading sessions from your profile."
     }
   },
   "pool": {
@@ -846,9 +836,7 @@
     "continueAnyway": "Continue Anyway",
     "warning": {
       "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
-      "exceedsNetworkFeeLimit": "This swap exceeds your network fee limit for 1-Click Trading.",
-      "increaseSpendLimit": "Increase spend limit",
-      "increaseNetworkFeeLimit": "Increase network fee limit"
+      "increaseSpendLimit": "Increase spend limit"
     },
     "settings": {
       "slippage": "Slippage tolerance",
@@ -926,6 +914,8 @@
     "receiveAsset": "Receive asset",
     "transfer": "Transfer {denom}",
     "receive": "Receive {denom}",
+    "selectDepositWallet": "Select deposit wallet",
+    "selectWithdrawWallet": "Select withdraw wallet",
     "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",
@@ -1001,7 +991,9 @@
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
     "risks": "Bridging comes with risks.",
-    "learnMore": "Learn more"
+    "learnMore": "Learn more",
+    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
+    "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

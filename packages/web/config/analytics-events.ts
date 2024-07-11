@@ -61,6 +61,9 @@ export type EventProperties = {
   feeValueUsd: number;
   assetCategory: string;
   highlight: string;
+  source: string;
+  spendLimit: number;
+  sessionPeriod: string;
 };
 
 export type UserProperties = {
@@ -239,5 +242,11 @@ export const EventName = {
   },
   Wormhole: {
     pageViewed: "Wormhole: Page viewed",
+  },
+  OneClickTrading: {
+    startSession: "1CT: Start session",
+    endSession: "1CT: End session",
+    enableOneClickTrading: "1CT: Enable 1-Click Trading",
+    accessed: "1CT: Accessed",
   },
 };

@@ -30,7 +30,7 @@ test.describe("Test Transactions feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1280 },
       slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
@@ -73,7 +73,6 @@ test.describe("Test Transactions feature", () => {
     const rndInt = Math.floor(Math.random() * 99) + 1;
     const swapAmount = `0.1${rndInt}`;
     await swapPage.enterAmount(swapAmount);
-    await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("sender: " + walletId);

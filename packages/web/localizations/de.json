@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
+      "startANewSession": "Neue Sitzung starten",
       "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
@@ -512,13 +512,8 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "defaultParameters": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
-      "changeButton": "Ändern"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Handeln Sie schneller und einfacher",
-      "startOneClickTradingNow": "Starten Sie jetzt mit dem 1-Click-Trading",
-      "iconAlt": "1-Click Trading Kleines Logo"
+      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
+      "changeButton": "Einstellungen bearbeiten"
     },
     "floatingBanner": {
       "newPill": "Neu",
@@ -529,33 +524,24 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Ausgabenlimit",
-      "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
+      "spendLimitTitle": "Verlustschutzgrenze",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
       "endingSession": "Sitzung beenden",
       "feeToDisable": "Gebühr für die Deaktivierung des 1-Click-Handels:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
+        "spendLimitDescription": "Handeln Sie unbegrenzt mit vertrauenswürdigen Vermögenswerten (Top 50 nach Marktkapitalisierung).",
+        "spendLimitSubDescription": "Legen Sie für alle anderen Vermögenswerte ein Limit für den maximal handelbaren Wert fest, bevor Sie eine manuelle Wallet-Genehmigung verlangen. Handelsgebühren werden ebenfalls auf dieses Limit angerechnet.",
         "fixedAmount": "Fester Betrag",
         "shareOfBalance": "Anteil des Guthabens",
-        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
-        "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Begrenzung der Netzwerkgebühr",
-        "description": "Legen Sie den Höchstbetrag fest, den Sie während Ihrer 1-Click-Handelssitzung für Netzwerkgebühren für jede einzelne Transaktion ausgeben können.",
-        "info": "Wenn die Gebühr diesen Betrag übersteigt, können Sie Transaktionen manuell in Ihrem Wallet signieren.",
-        "low": "Niedrig",
-        "average": "Durchschnitt",
-        "high": "Hoch",
-        "recommended": "Empfohlen"
+        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert"
       },
       "sessionPeriodScreen": {
         "title": "Sitzungszeitraum",
         "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
         "periods": {
+          "5min": "5 Minuten",
           "10min": "10 Minuten",
           "30min": "30 Minuten",
           "1hour": "1 Stunde",
@@ -572,6 +558,7 @@
     },
     "welcomeBack": {
       "title": "Willkommen zurück",
+      "subtitle": "Verbinden Sie Ihr Portemonnaie, um Osmosis weiter zu erkunden.",
       "description": "Sobald Sie Ihr Wallet verbunden haben, werden Sie aufgefordert, eine Transaktion zu genehmigen, um Ihre 1-Click-Handelssitzung zu starten.",
       "toggleLabel": "1-Klick-Handel",
       "editParamsAriaLabel": "1CT-Parameter ändern"
@@ -582,7 +569,10 @@
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
     },
     "profile": {
-      "sessionExpired": "Sitzung abgelaufen"
+      "sessionExpired": "Einstellungen",
+      "restart": "Neu starten",
+      "tooltipHeader": "1-Klick-Handelseinstellungen",
+      "resetSession": "Starten Sie 1-Click-Trading-Sitzungen von Ihrem Profil aus neu oder bearbeiten Sie sie."
     }
   },
   "pool": {
@@ -846,9 +836,7 @@
     "continueAnyway": "Mache trotzdem weiter",
     "warning": {
       "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
-      "exceedsNetworkFeeLimit": "Dieser Swap überschreitet Ihr Netzwerkgebührenlimit für 1-Click-Handel.",
-      "increaseSpendLimit": "Ausgabenlimit erhöhen",
-      "increaseNetworkFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit"
+      "increaseSpendLimit": "Ausgabenlimit erhöhen"
     },
     "settings": {
       "slippage": "Rutschtoleranz",
@@ -926,6 +914,8 @@
     "receiveAsset": "Anlagegut erhalten",
     "transfer": "Übertragen {denom}",
     "receive": "Empfangen Sie {denom}",
+    "selectDepositWallet": "Einzahlungs-Wallet auswählen",
+    "selectWithdrawWallet": "Wählen Sie eine Auszahlungs-Wallet aus",
     "receiveAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
     "estimatingTime": "Zeit schätzen",
     "calculatingFees": "Gebührenberechnung",
@@ -1001,7 +991,9 @@
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
-    "learnMore": "Erfahren Sie mehr"
+    "learnMore": "Erfahren Sie mehr",
+    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
+    "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

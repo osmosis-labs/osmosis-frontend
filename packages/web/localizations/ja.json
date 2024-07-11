@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "enableOneClickTrading": "1-Click取引を有効にする",
+      "startANewSession": "新しいセッションを開始する",
       "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
@@ -512,13 +512,8 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
-      "changeButton": "変化"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "取引をより迅速かつ簡単に",
-      "startOneClickTradingNow": "今すぐ1-Click取引を始めましょう",
-      "iconAlt": "1-Click 取引の小さなロゴ"
+      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "changeButton": "編集の設定"
     },
     "floatingBanner": {
       "newPill": "新しい",
@@ -529,33 +524,24 @@
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "支出制限",
-      "networkFeeLimitTitle": "ネットワーク料金の制限",
+      "spendLimitTitle": "損失保護限度額",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
       "feeToDisable": "1-Click 取引を無効にする料金:",
       "spendLimitScreen": {
-        "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
+        "spendLimitDescription": "信頼できる資産（時価総額上位 50 位）を制限なく取引します。",
+        "spendLimitSubDescription": "その他のすべての資産については、ウォレットの手動承認が必要になる前に、取引可能な最大額に制限を設定します。取引手数料もこの制限に含まれます。",
         "fixedAmount": "定額",
         "shareOfBalance": "残高のシェア",
-        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
-        "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
-      },
-      "networkFeeLimitScreen": {
-        "title": "ネットワーク料金の制限",
-        "description": "1-Click 取引セッション中の単一取引のネットワーク手数料に費やすことができる最大金額を設定します。",
-        "info": "手数料がこの金額を超える場合は、ウォレット内で手動でトランザクションに署名して続行できます。",
-        "low": "低い",
-        "average": "平均",
-        "high": "高い",
-        "recommended": "推奨"
+        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります"
       },
       "sessionPeriodScreen": {
         "title": "会期",
         "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
         "periods": {
+          "5min": "5分",
           "10min": "10分",
           "30min": "30分",
           "1hour": "1時間",
@@ -572,6 +558,7 @@
     },
     "welcomeBack": {
       "title": "おかえり",
+      "subtitle": "ウォレットを接続して、Osmosis の探索を続けてください。",
       "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
       "toggleLabel": "1クリック取引",
       "editParamsAriaLabel": "1CTパラメータの変更"
@@ -582,7 +569,10 @@
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     },
     "profile": {
-      "sessionExpired": "セッションの有効期限が切れ"
+      "sessionExpired": "設定",
+      "restart": "再起動",
+      "tooltipHeader": "ワンクリック取引設定",
+      "resetSession": "プロフィールから 1 クリック取引セッションを再開または編集します。"
     }
   },
   "pool": {
@@ -846,9 +836,7 @@
     "continueAnyway": "とにかく続けます",
     "warning": {
       "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
-      "exceedsNetworkFeeLimit": "このスワップは、1 クリック取引のネットワーク手数料制限を超えています。",
-      "increaseSpendLimit": "支出制限を増やす",
-      "increaseNetworkFeeLimit": "ネットワーク料金の上限を引き上げる"
+      "increaseSpendLimit": "支出制限を増やす"
     },
     "settings": {
       "slippage": "滑り許容差",
@@ -926,6 +914,8 @@
     "receiveAsset": "資産を受け取る",
     "transfer": "転送{denom}",
     "receive": "{denom}受け取る",
+    "selectDepositWallet": "入金ウォレットを選択",
+    "selectWithdrawWallet": "引き出しウォレットを選択",
     "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
     "estimatingTime": "時間の見積もり",
     "calculatingFees": "手数料の計算",
@@ -1001,7 +991,9 @@
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "risks": "ブリッジングにはリスクが伴います。",
-    "learnMore": "もっと詳しく知る"
+    "learnMore": "もっと詳しく知る",
+    "externalTransferSplash": "{denom} {networkA}から{networkB}に転送するには、 {service}を使用してください。",
+    "openNoun": "{noun}を開く"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

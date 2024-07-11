@@ -80,9 +80,9 @@ export const BridgeNetworkSelectModal = ({
             title={
               <div className="md:subtitle1 mx-auto text-h6 font-h6">
                 {currentScreen === NetworkSelectScreen.SelectWallet
-                  ? `Select ${
-                      direction === "deposit" ? "deposit" : "withdraw"
-                    } wallet`
+                  ? direction === "deposit"
+                    ? t("transfer.selectDepositWallet")
+                    : t("transfer.selectWithdrawWallet")
                   : t("transfer.bridgeNetworkSelect.title")}
               </div>
             }

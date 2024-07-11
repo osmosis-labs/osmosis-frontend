@@ -138,7 +138,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                 !isExpanded && isExpandable && "tokendetailshadow"
               } relative self-stretch`}
             >
-              <div className="breakspaces self-stretch text-body1 font-body1 text-osmoverse-200 transition-all">
+              <div className="breakspaces self-stretch break-words text-body1 font-body1 text-osmoverse-200 transition-all">
                 <Markdown>{expandedText ?? ""}</Markdown>
               </div>
               {isExpandable && (
@@ -340,7 +340,10 @@ const TokenStat = (props: TokenStatProps) => {
     <li className="flex items-center justify-between gap-4">
       <h5 className="text-body1 font-body1 text-osmoverse-300">{title}</h5>
 
-      <SkeletonLoader className="min-w-10" isLoaded={!isLoading}>
+      <SkeletonLoader
+        className="flex min-w-10 justify-end"
+        isLoaded={!isLoading}
+      >
         <div className="flex items-center gap-2">
           {slotLeft}
           <p className="text-body1 font-body1 text-osmoverse-100">{value}</p>

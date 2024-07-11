@@ -24,10 +24,40 @@ import { z } from "zod";
 export const localBridgeTransferRouter = createTRPCRouter({
   getSupportedAssetsBalances: publicProcedure
     .input(
-      z.discriminatedUnion("type", [
-        z
-          .object({
-            type: z.literal("evm"),
+      z.object({
+        source: z.discriminatedUnion("type", [
+          z
+            .object({
+              type: z.literal("evm"),
+              assets: z.array(
+                bridgeChainSchema.and(bridgeAssetSchema).and(
+                  z.object({
+                    supportedVariants: z.record(
+                      z.string(),
+                      z.array(z.string().transform((v) => v as Bridge))
+                    ),
+                  })
+                )
+              ),
+            })
+            .merge(UserEvmAddressSchema),
+          z
+            .object({
+              type: z.literal("cosmos"),
+              assets: z.array(
+                bridgeChainSchema.and(bridgeAssetSchema).and(
+                  z.object({
+                    supportedVariants: z.record(
+                      z.string(),
+                      z.array(z.string().transform((v) => v as Bridge))
+                    ),
+                  })
+                )
+              ),
+            })
+            .merge(UserCosmosAddressSchema),
+          z.object({
+            type: z.literal("bitcoin"),
             assets: z.array(
               bridgeChainSchema.and(bridgeAssetSchema).and(
                 z.object({
@@ -38,11 +68,9 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 })
               )
             ),
-          })
-          .merge(UserEvmAddressSchema),
-        z
-          .object({
-            type: z.literal("cosmos"),
+          }),
+          z.object({
+            type: z.literal("solana"),
             assets: z.array(
               bridgeChainSchema.and(bridgeAssetSchema).and(
                 z.object({
@@ -53,14 +81,15 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 })
               )
             ),
-          })
-          .merge(UserCosmosAddressSchema),
-      ])
+          }),
+        ]),
+      })
     )
     .query(async ({ input, ctx }) => {
-      if (input.type === "evm") {
+      if (input.source.type === "evm") {
+        const evmAddress = input.source.userEvmAddress;
         return Promise.all(
-          input.assets
+          input.source.assets
             .filter(
               (asset): asset is Extract<typeof asset, { chainType: "evm" }> =>
                 asset.chainType !== "cosmos"
@@ -74,16 +103,16 @@ export const localBridgeTransferRouter = createTRPCRouter({
                     coinDenom: asset.denom,
                     coinMinimalDenom: asset.address,
                   },
-                  new Dec(0)
+                  0
                 ),
-                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
               };
 
-              if (!input.userEvmAddress) return emptyBalance;
+              if (!evmAddress) return emptyBalance;
 
               const balance = await getEvmBalance({
                 address: getAddress(asset.address),
-                userAddress: input.userEvmAddress,
+                userAddress: evmAddress,
                 chainId: asset.chainId,
               }).catch(() => undefined);
 
@@ -120,11 +149,10 @@ export const localBridgeTransferRouter = createTRPCRouter({
               };
             })
         );
-      }
-
-      if (input.type === "cosmos") {
-        if (!input.userCosmosAddress) {
-          return input.assets.map((asset) => ({
+      } else if (input.source.type === "cosmos") {
+        const cosmosAddress = input.source.userCosmosAddress;
+        if (!cosmosAddress) {
+          return input.source.assets.map((asset) => ({
             ...asset,
             amount: new CoinPretty(
               {
@@ -132,14 +160,14 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 coinDenom: asset.denom,
                 coinMinimalDenom: asset.denom,
               },
-              new Dec(0)
+              0
             ),
-            usdValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+            usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           }));
         }
 
         const assetsWithBalance = await Promise.all(
-          input.assets
+          input.source.assets
             .filter(
               (
                 asset
@@ -150,7 +178,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
               const { balances } = await queryBalances({
                 ...ctx,
                 chainId: asset.chainId,
-                bech32Address: input.userCosmosAddress!,
+                bech32Address: cosmosAddress,
               });
 
               const balance = balances.find((a) => a.denom === asset.address);
@@ -210,6 +238,22 @@ export const localBridgeTransferRouter = createTRPCRouter({
         );
 
         return assetsWithBalance;
+      } else {
+        // For Bitcoin or Solana, return 0 assets as it's not supported for now
+        // TODO: add 2 more else statements and send balance queries to Bitcoin or Solana as needed
+
+        return input.source.assets.map((asset) => ({
+          ...asset,
+          amount: new CoinPretty(
+            {
+              coinDecimals: asset.decimals,
+              coinDenom: asset.denom,
+              coinMinimalDenom: asset.address,
+            },
+            0
+          ),
+          usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+        }));
       }
     }),
 });

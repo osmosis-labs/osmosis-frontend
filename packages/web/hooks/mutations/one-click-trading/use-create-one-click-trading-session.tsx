@@ -21,11 +21,10 @@ import dayjs from "dayjs";
 import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-floating-banner";
-import { compare1CTTransactionParams } from "~/components/one-click-trading/one-click-trading-settings";
-import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
+import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-toast";
+import { EventName, SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
-import { getParametersFromOneClickTradingInfo } from "~/hooks/one-click-trading";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -185,8 +184,9 @@ export const useCreateOneClickTradingSession = ({
     unknown
   >;
 } = {}) => {
-  const { accountStore, chainStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { logEvent } = useAmplitudeAnalytics();
 
   const apiUtils = api.useUtils();
   const [, setDoNotShowFloatingBannerAgain] = useLocalStorage(
@@ -224,37 +224,6 @@ export const useCreateOneClickTradingSession = ({
         );
       }
 
-      const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
-      const isOneClickTradingEnabled =
-        await accountStore.isOneCLickTradingEnabled();
-
-      /**
-       * If the only change is to the network fee limit, and because
-       * this fee limit is a local setting, just update it locally
-       * instead of sending a new transaction.
-       */
-      if (oneClickTradingInfo && isOneClickTradingEnabled) {
-        const session1CTParams = getParametersFromOneClickTradingInfo({
-          defaultIsOneClickEnabled: true,
-          oneClickTradingInfo,
-        });
-
-        const changes = compare1CTTransactionParams({
-          prevParams: session1CTParams,
-          nextParams: transaction1CTParams,
-        });
-
-        if (changes.length === 1 && changes.includes("networkFeeLimit")) {
-          return accountStore.setOneClickTradingInfo({
-            ...oneClickTradingInfo,
-            networkFeeLimit: {
-              ...transaction1CTParams.networkFeeLimit.currency,
-              amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
-            },
-          });
-        }
-      }
-
       let authenticators: ParsedAuthenticator[];
       try {
         ({ authenticators } =
@@ -280,6 +249,11 @@ export const useCreateOneClickTradingSession = ({
 
       let sessionPeriod: OneClickTradingTimeLimit;
       switch (transaction1CTParams.sessionPeriod.end) {
+        case "5min":
+          sessionPeriod = {
+            end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
+          };
+          break;
         case "10min":
           sessionPeriod = {
             end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
@@ -420,6 +394,21 @@ export const useCreateOneClickTradingSession = ({
         ToastType.ONE_CLICK_TRADING
       );
     },
-    queryOptions
+    {
+      ...queryOptions,
+      onSuccess: (...params) => {
+        const [, { transaction1CTParams }] = params;
+        queryOptions?.onSuccess?.(...params);
+        logEvent([
+          EventName.OneClickTrading.startSession,
+          {
+            spendLimit: Number(
+              transaction1CTParams?.spendLimit.toDec().toString()
+            ),
+            sessionPeriod: transaction1CTParams?.sessionPeriod.end,
+          },
+        ]);
+      },
+    }
   );
 };
