@@ -118,7 +118,7 @@ export const TokenSelectLimit: FunctionComponent<
               setIsSelectOpen(!isSelectOpen);
             }
           }}
-          className="flex items-center justify-between rounded-t-xl bg-osmoverse-850 py-3 px-5"
+          className="flex items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5"
         >
           {baseAsset && (
             <div

@@ -173,7 +173,7 @@ export const PriceSelector = memo(
       <Menu as="div" className="relative inline-block">
         {({ open }) => (
           <>
-            <Menu.Button className="flex w-full items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+            <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
               <div className="flex w-full items-center justify-between">
                 {quoteAsset && (
                   <div
