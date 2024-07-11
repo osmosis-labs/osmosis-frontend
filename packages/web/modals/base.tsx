@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import React, { PropsWithChildren } from "react";
-import { ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import { useUnmount } from "react-use";
 
@@ -59,7 +58,7 @@ export const ModalBase = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
+        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-800 p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
         className
       )}
       closeTimeoutMS={150}
