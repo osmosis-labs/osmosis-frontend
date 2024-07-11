@@ -192,8 +192,8 @@ export const tableColumns = [
       return (
         <div className="flex flex-col gap-1">
           {statusComponent}
-          <p
-            className={classNames({
+          <span
+            className={classNames("caption", {
               "text-bullish-400":
                 status === "filled" || status === "fullyClaimed",
               "text-osmoverse-300":
@@ -202,7 +202,7 @@ export const tableColumns = [
             })}
           >
             {statusString}
-          </p>
+          </span>
         </div>
       );
     },
