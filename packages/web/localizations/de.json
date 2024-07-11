@@ -926,6 +926,8 @@
     "receiveAsset": "Anlagegut erhalten",
     "transfer": "Übertragen {denom}",
     "receive": "Empfangen Sie {denom}",
+    "selectDepositWallet": "Einzahlungs-Wallet auswählen",
+    "selectWithdrawWallet": "Wählen Sie eine Auszahlungs-Wallet aus",
     "receiveAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
     "estimatingTime": "Zeit schätzen",
     "calculatingFees": "Gebührenberechnung",

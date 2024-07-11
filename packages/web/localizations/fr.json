@@ -926,6 +926,8 @@
     "receiveAsset": "Recevoir l'actif",
     "transfer": "Transférer {denom}",
     "receive": "Recevoir {denom}",
+    "selectDepositWallet": "Sélectionnez un portefeuille de dépôt",
+    "selectWithdrawWallet": "Sélectionnez retirer le portefeuille",
     "receiveAssetDescription": "Lorsque vous déposez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur Osmosis.",
     "estimatingTime": "Temps estimé",
     "calculatingFees": "Calcul des frais",

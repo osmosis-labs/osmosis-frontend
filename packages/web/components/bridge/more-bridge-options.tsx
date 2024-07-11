@@ -29,7 +29,7 @@ export const MoreBridgeOptionsModal: FunctionComponent<
   toAddress,
   bridges,
   ...modalProps
-}: MoreBridgeOptionsProps) => {
+}) => {
   const { t } = useTranslation();
 
   const { data: externalUrlsData, isLoading: isLoadingExternalUrls } =
@@ -50,11 +50,15 @@ export const MoreBridgeOptionsModal: FunctionComponent<
 
   return (
     <ModalBase
-      title={t(
-        direction === "deposit"
-          ? "transfer.moreBridgeOptions.titleDeposit"
-          : "transfer.moreBridgeOptions.titleWithdraw"
-      )}
+      title={
+        <div className="md:subtitle1 mx-auto text-h6 font-h6">
+          {t(
+            direction === "deposit"
+              ? "transfer.moreBridgeOptions.titleDeposit"
+              : "transfer.moreBridgeOptions.titleWithdraw"
+          )}
+        </div>
+      }
       className="!max-w-[30rem]"
       {...modalProps}
     >

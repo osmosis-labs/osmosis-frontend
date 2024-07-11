@@ -1300,7 +1300,7 @@ const TransferDetails: FunctionComponent<{
               ) : (
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="body1 md:body2 text-osmoverse-300">
+                  <p className="body1 md:body2 text-osmoverse-300 first-letter:capitalize">
                     {selectedQuote.estimatedTime.humanize()}
                   </p>
                 </div>

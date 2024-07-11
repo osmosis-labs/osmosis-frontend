@@ -926,6 +926,8 @@
     "receiveAsset": "Receive asset",
     "transfer": "Transfer {denom}",
     "receive": "Receive {denom}",
+    "selectDepositWallet": "Select deposit wallet",
+    "selectWithdrawWallet": "Select withdraw wallet",
     "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",

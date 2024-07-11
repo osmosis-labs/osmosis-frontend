@@ -926,6 +926,8 @@
     "receiveAsset": "Varlık al",
     "transfer": "{denom}",
     "receive": "{denom}",
+    "selectDepositWallet": "Para yatırma cüzdanını seçin",
+    "selectWithdrawWallet": "Cüzdan çekmeyi seçin",
     "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",

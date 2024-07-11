@@ -926,6 +926,8 @@
     "receiveAsset": "接收资产",
     "transfer": "转移{denom}",
     "receive": "接收{denom}",
+    "selectDepositWallet": "选择存款钱包",
+    "selectWithdrawWallet": "选择提现钱包",
     "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
     "calculatingFees": "计算费用",

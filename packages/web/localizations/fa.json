@@ -926,6 +926,8 @@
     "receiveAsset": "دریافت دارایی",
     "transfer": "انتقال {denom}",
     "receive": "دریافت {denom}",
+    "selectDepositWallet": "کیف پول سپرده را انتخاب کنید",
+    "selectWithdrawWallet": "برداشت کیف پول را انتخاب کنید",
     "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",

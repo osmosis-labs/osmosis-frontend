@@ -926,6 +926,8 @@
     "receiveAsset": "자산 수령",
     "transfer": "{denom} 전송",
     "receive": "{denom} 수신",
+    "selectDepositWallet": "예금 지갑 선택",
+    "selectWithdrawWallet": "지갑 출금 선택",
     "receiveAssetDescription": "특정 자산을 입금할 때 Osmosis에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
     "estimatingTime": "추정 시간",
     "calculatingFees": "수수료 계산",

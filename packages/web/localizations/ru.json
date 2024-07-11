@@ -926,6 +926,8 @@
     "receiveAsset": "Получить актив",
     "transfer": "Передача {denom}",
     "receive": "Получите {denom}",
+    "selectDepositWallet": "Выберите депозитный кошелек",
+    "selectWithdrawWallet": "Выберите кошелек для вывода",
     "receiveAssetDescription": "Когда вы вносите определенные активы, вы можете выбрать, какую версию актива вы хотите получить на Osmosis.",
     "estimatingTime": "Оценка времени",
     "calculatingFees": "Расчет комиссий",

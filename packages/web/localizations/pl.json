@@ -926,6 +926,8 @@
     "receiveAsset": "Odbierz zasób",
     "transfer": "Przelew {denom}",
     "receive": "Odbierz {denom}",
+    "selectDepositWallet": "Wybierz portfel depozytowy",
+    "selectWithdrawWallet": "Wybierz opcję wypłaty portfela",
     "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
     "estimatingTime": "Szacowanie czasu",
     "calculatingFees": "Obliczanie opłat",
