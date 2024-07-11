@@ -1277,7 +1277,8 @@
     "receiveEstimated": "Получить (оценка)",
     "swapRoute": "Обменять маршрут",
     "trade": "Торговля",
-    "swapToAnotherAsset": "Обмен на другой актив"
+    "swapToAnotherAsset": "Обмен на другой актив",
+    "openOrders": "Открытые ордера"
   },
   "orderHistory": {
     "orders": "Заказы",

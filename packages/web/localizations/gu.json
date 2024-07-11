@@ -1277,7 +1277,8 @@
     "receiveEstimated": "પ્રાપ્ત કરો (અંદાજિત)",
     "swapRoute": "સ્વેપ રૂટ",
     "trade": "વેપાર",
-    "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો"
+    "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
+    "openOrders": "ઓર્ડર ખોલો"
   },
   "orderHistory": {
     "orders": "ઓર્ડર",

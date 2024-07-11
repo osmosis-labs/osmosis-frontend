@@ -1277,7 +1277,8 @@
     "receiveEstimated": "Recevoir (estimé)",
     "swapRoute": "Changer d'itinéraire",
     "trade": "Commerce",
-    "swapToAnotherAsset": "Échanger vers un autre actif"
+    "swapToAnotherAsset": "Échanger vers un autre actif",
+    "openOrders": "Commandes ouvertes"
   },
   "orderHistory": {
     "orders": "Ordres",

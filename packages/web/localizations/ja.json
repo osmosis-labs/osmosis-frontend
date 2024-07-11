@@ -1277,7 +1277,8 @@
     "receiveEstimated": "受け取る（推定）",
     "swapRoute": "ルートの交換",
     "trade": "貿易",
-    "swapToAnotherAsset": "別の資産に交換する"
+    "swapToAnotherAsset": "別の資産に交換する",
+    "openOrders": "オープン注文"
   },
   "orderHistory": {
     "orders": "注文",

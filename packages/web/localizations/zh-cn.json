@@ -1277,7 +1277,8 @@
     "receiveEstimated": "收到（估计）",
     "swapRoute": "交换路线",
     "trade": "贸易",
-    "swapToAnotherAsset": "转换为其他资产"
+    "swapToAnotherAsset": "转换为其他资产",
+    "openOrders": "未结订单"
   },
   "orderHistory": {
     "orders": "命令",

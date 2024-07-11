@@ -1277,7 +1277,8 @@
     "receiveEstimated": "Receive (estimated)",
     "swapRoute": "Swap route",
     "trade": "Trade",
-    "swapToAnotherAsset": "Swap to another asset"
+    "swapToAnotherAsset": "Swap to another asset",
+    "openOrders": "Open orders"
   },
   "orderHistory": {
     "orders": "Orders",

@@ -1277,7 +1277,8 @@
     "receiveEstimated": "Primire (estimat)",
     "swapRoute": "Schimbați ruta",
     "trade": "Comerț",
-    "swapToAnotherAsset": "Schimbați cu un alt activ"
+    "swapToAnotherAsset": "Schimbați cu un alt activ",
+    "openOrders": "Comenzi deschise"
   },
   "orderHistory": {
     "orders": "Comenzi",
