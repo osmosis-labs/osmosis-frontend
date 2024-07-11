@@ -28,6 +28,9 @@ const refetchInterval = 30 * 1000; // 30 seconds
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
+/** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
+
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
  * the from and to chain & asset info. Defaults selection to the cheapest quote.
@@ -49,7 +52,7 @@ export const useBridgeQuotes = ({
   toAsset,
   toChain,
 
-  bridges = ["Axelar", "Skip", "Squid", "IBC"],
+  bridges,
 
   onRequestClose,
   onTransfer: onTransferProp,
@@ -66,7 +69,7 @@ export const useBridgeQuotes = ({
   toChain: BridgeChain | undefined;
   toAddress: string | undefined;
 
-  bridges?: Bridge[];
+  bridges: QuotableBridge[];
 
   onRequestClose: () => void;
   onTransfer?: () => void;
@@ -152,9 +155,14 @@ export const useBridgeQuotes = ({
 
   const isTxPending = (() => {
     if (!fromChain) return false;
-    return fromChain.chainType === "cosmos"
-      ? accountStore.getWallet(fromChain.chainId)?.txTypeInProgress !== ""
-      : isEthTxPending;
+    if (fromChain.chainType === "cosmos") {
+      return Boolean(
+        accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
+      );
+    } else if (fromChain.chainType === "evm") {
+      return isEthTxPending;
+    }
+    return false;
   })();
 
   const quoteResults = api.useQueries((t) =>
@@ -601,7 +609,7 @@ export const useBridgeQuotes = ({
   const isWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
-      : fromChain?.chainId
+      : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady =
@@ -639,6 +647,8 @@ export const useBridgeQuotes = ({
   }
 
   return {
+    enabled: Boolean(bridges.length),
+
     buttonText,
     buttonErrorMessage,
 

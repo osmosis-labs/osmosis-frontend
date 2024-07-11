@@ -914,6 +914,8 @@
     "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
     "transfer": "ટ્રાન્સફર {denom}",
     "receive": "{denom} મેળવો",
+    "selectDepositWallet": "ડિપોઝિટ વૉલેટ પસંદ કરો",
+    "selectWithdrawWallet": "પાકીટ ઉપાડવાનું પસંદ કરો",
     "receiveAssetDescription": "જ્યારે તમે અમુક સંપત્તિઓ જમા કરો છો, ત્યારે તમે ઓસ્મોસિસ પર સંપત્તિનું કયું સંસ્કરણ પ્રાપ્ત કરવા માંગો છો તે પસંદ કરી શકો છો.",
     "estimatingTime": "સમયનો અંદાજ",
     "calculatingFees": "ફીની ગણતરી",
@@ -989,7 +991,9 @@
     "done": "થઈ ગયું",
     "transferFrom": "{noun} માંથી ટ્રાન્સફર કરો",
     "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
-    "learnMore": "વધુ શીખો"
+    "learnMore": "વધુ શીખો",
+    "externalTransferSplash": "{denom} {networkA} માંથી {networkB} માં સ્થાનાંતરિત કરવા {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
+    "openNoun": "{noun} ખોલો"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

@@ -914,6 +914,8 @@
     "receiveAsset": "دریافت دارایی",
     "transfer": "انتقال {denom}",
     "receive": "دریافت {denom}",
+    "selectDepositWallet": "کیف پول سپرده را انتخاب کنید",
+    "selectWithdrawWallet": "برداشت کیف پول را انتخاب کنید",
     "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",
@@ -989,7 +991,9 @@
     "done": "انجام شده",
     "transferFrom": "انتقال از {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
-    "learnMore": "بیشتر بدانید"
+    "learnMore": "بیشتر بدانید",
+    "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+    "openNoun": "باز کردن {noun}"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

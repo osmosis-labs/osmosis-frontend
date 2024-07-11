@@ -914,6 +914,8 @@
     "receiveAsset": "자산 수령",
     "transfer": "{denom} 전송",
     "receive": "{denom} 수신",
+    "selectDepositWallet": "예금 지갑 선택",
+    "selectWithdrawWallet": "지갑 출금 선택",
     "receiveAssetDescription": "특정 자산을 입금할 때 Osmosis에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
     "estimatingTime": "추정 시간",
     "calculatingFees": "수수료 계산",
@@ -989,7 +991,9 @@
     "done": "완료",
     "transferFrom": "{noun} 에서 전송",
     "risks": "브리징에는 위험이 따릅니다.",
-    "learnMore": "더 알아보기"
+    "learnMore": "더 알아보기",
+    "externalTransferSplash": "{denom} {networkA} 에서 {networkB} , {service} 사용하세요.",
+    "openNoun": "{noun} 열기"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

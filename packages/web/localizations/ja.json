@@ -914,6 +914,8 @@
     "receiveAsset": "資産を受け取る",
     "transfer": "転送{denom}",
     "receive": "{denom}受け取る",
+    "selectDepositWallet": "入金ウォレットを選択",
+    "selectWithdrawWallet": "引き出しウォレットを選択",
     "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
     "estimatingTime": "時間の見積もり",
     "calculatingFees": "手数料の計算",
@@ -989,7 +991,9 @@
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "risks": "ブリッジングにはリスクが伴います。",
-    "learnMore": "もっと詳しく知る"
+    "learnMore": "もっと詳しく知る",
+    "externalTransferSplash": "{denom} {networkA}から{networkB}に転送するには、 {service}を使用してください。",
+    "openNoun": "{noun}を開く"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

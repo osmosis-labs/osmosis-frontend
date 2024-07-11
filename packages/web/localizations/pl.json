@@ -914,6 +914,8 @@
     "receiveAsset": "Odbierz zasób",
     "transfer": "Przelew {denom}",
     "receive": "Odbierz {denom}",
+    "selectDepositWallet": "Wybierz portfel depozytowy",
+    "selectWithdrawWallet": "Wybierz opcję wypłaty portfela",
     "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
     "estimatingTime": "Szacowanie czasu",
     "calculatingFees": "Obliczanie opłat",
@@ -989,7 +991,9 @@
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
-    "learnMore": "Ucz się więcej"
+    "learnMore": "Ucz się więcej",
+    "externalTransferSplash": "Aby przenieść {denom} z {networkA} {networkB} , użyj {service} .",
+    "openNoun": "Otwórz {noun}"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

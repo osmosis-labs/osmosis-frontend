@@ -914,6 +914,8 @@
     "receiveAsset": "Recevoir l'actif",
     "transfer": "Transférer {denom}",
     "receive": "Recevoir {denom}",
+    "selectDepositWallet": "Sélectionnez un portefeuille de dépôt",
+    "selectWithdrawWallet": "Sélectionnez retirer le portefeuille",
     "receiveAssetDescription": "Lorsque vous déposez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur Osmosis.",
     "estimatingTime": "Temps estimé",
     "calculatingFees": "Calcul des frais",
@@ -989,7 +991,9 @@
     "done": "Fait",
     "transferFrom": "Transfert depuis {noun}",
     "risks": "Le rapprochement comporte des risques.",
-    "learnMore": "Apprendre encore plus"
+    "learnMore": "Apprendre encore plus",
+    "externalTransferSplash": "Pour transférer {denom} de {networkA} vers {networkB} , veuillez utiliser {service} .",
+    "openNoun": "Ouvrir {noun}"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

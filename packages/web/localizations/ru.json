@@ -914,6 +914,8 @@
     "receiveAsset": "Получить актив",
     "transfer": "Передача {denom}",
     "receive": "Получите {denom}",
+    "selectDepositWallet": "Выберите депозитный кошелек",
+    "selectWithdrawWallet": "Выберите кошелек для вывода",
     "receiveAssetDescription": "Когда вы вносите определенные активы, вы можете выбрать, какую версию актива вы хотите получить на Osmosis.",
     "estimatingTime": "Оценка времени",
     "calculatingFees": "Расчет комиссий",
@@ -989,7 +991,9 @@
     "done": "Сделанный",
     "transferFrom": "Перенос из {noun}",
     "risks": "Преодоление сопряжено с риском.",
-    "learnMore": "Узнать больше"
+    "learnMore": "Узнать больше",
+    "externalTransferSplash": "Чтобы передать {denom} из {networkA} в {networkB} , используйте {service} .",
+    "openNoun": "Открыть {noun}"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

@@ -914,6 +914,8 @@
     "receiveAsset": "Primiți activ",
     "transfer": "Transferați {denom}",
     "receive": "Primiți {denom}",
+    "selectDepositWallet": "Selectați portofelul de depozit",
+    "selectWithdrawWallet": "Selectați Retrage portofel",
     "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
     "estimatingTime": "Estimarea timpului",
     "calculatingFees": "Calcularea taxelor",
@@ -989,7 +991,9 @@
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
     "risks": "Conducerea vine cu riscuri.",
-    "learnMore": "Află mai multe"
+    "learnMore": "Află mai multe",
+    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
+    "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

@@ -914,6 +914,8 @@
     "receiveAsset": "接收資產",
     "transfer": "傳輸{denom}",
     "receive": "接收{denom}",
+    "selectDepositWallet": "選擇存款錢包",
+    "selectWithdrawWallet": "選擇提款錢包",
     "receiveAssetDescription": "當您存入某些資產時，您可以選擇想要在 Osmosis 上接收的資產版本。",
     "estimatingTime": "預計時間",
     "calculatingFees": "計算費用",
@@ -989,7 +991,9 @@
     "done": "完畢",
     "transferFrom": "從{noun}轉移",
     "risks": "橋接伴隨著風險。",
-    "learnMore": "了解更多"
+    "learnMore": "了解更多",
+    "externalTransferSplash": "將{denom}從{networkA}傳送到{networkB} ，請使用{service} 。",
+    "openNoun": "打開{noun}"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

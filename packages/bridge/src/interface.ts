@@ -88,9 +88,9 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a BridgeExternalUrl object containing the URL and the provider name,
    *          or undefined if the URL could not be generated.
    */
-  getExternalUrl: (
+  getExternalUrl(
     params: GetBridgeExternalUrlParams
-  ) => Promise<BridgeExternalUrl | undefined>;
+  ): Promise<BridgeExternalUrl | undefined>;
 }
 
 const cosmosChainSchema = z.object({
@@ -139,9 +139,37 @@ const evmChainSchema = z.object({
   chainType: z.literal("evm"),
 });
 
+const solanaChainSchema = z.object({
+  /**
+   * `solana`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("solana"),
+});
+
+const bitcoinChainSchema = z.object({
+  /**
+   * `bitcoin`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("bitcoin"),
+});
+
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   cosmosChainSchema,
   evmChainSchema,
+  solanaChainSchema,
+  bitcoinChainSchema,
 ]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
