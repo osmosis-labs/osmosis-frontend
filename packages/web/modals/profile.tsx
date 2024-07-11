@@ -49,6 +49,7 @@ import {
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -63,13 +64,7 @@ export const ProfileModal: FunctionComponent<
 > = observer((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    profileStore,
-  } = useStore();
+  const { accountStore, profileStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const { fiatRampSelection } = useBridge();
@@ -86,7 +81,9 @@ export const ProfileModal: FunctionComponent<
     onOpen: onOpenQR,
   } = useDisclosure();
 
-  const wallet = accountStore.getWallet(chainId);
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const [show1CTSettings, setShow1CTSettings] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
@@ -144,7 +141,7 @@ export const ProfileModal: FunctionComponent<
         className="relative max-h-screen overflow-hidden"
       >
         <div className="flex flex-col items-center overflow-auto">
-          {featureFlags.oneClickTrading && show1CTSettings ? (
+          {show1CT && show1CTSettings ? (
             <ProfileOneClickTradingSettings
               onGoBack={() => setShow1CTSettings(false)}
               onClose={props.onRequestClose}
@@ -318,7 +315,7 @@ export const ProfileModal: FunctionComponent<
               <div
                 className={classNames(
                   "mt-5 flex w-full flex-col gap-[30px] border border-osmoverse-700 bg-osmoverse-800 p-5",
-                  featureFlags.oneClickTrading ? "rounded-t-2xl" : "rounded-2xl"
+                  show1CT ? "rounded-t-2xl" : "rounded-2xl"
                 )}
               >
                 <div className="flex items-center gap-1.5">
@@ -468,7 +465,7 @@ export const ProfileModal: FunctionComponent<
                   </div>
                 </div>
               </div>
-              {featureFlags.oneClickTrading && (
+              {show1CT && !isNewAccount && (
                 <OneClickTradingProfileSection
                   setShow1CTSettings={setShow1CTSettings}
                   onRestartSession={() => {
