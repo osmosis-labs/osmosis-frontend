@@ -1,4 +1,4 @@
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 
 import { t } from "~/hooks/language/context";
 
@@ -6,7 +6,7 @@ import { t } from "~/hooks/language/context";
  * @deprecated
  */
 export function waitByTransferFromSourceChain(
-  sourceChain: SourceChain | "Osmosis"
+  sourceChain: AxelarSourceChain | "Osmosis"
 ) {
   switch (sourceChain) {
     case "Ethereum":

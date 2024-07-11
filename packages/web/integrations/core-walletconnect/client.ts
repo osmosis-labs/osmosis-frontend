@@ -34,7 +34,6 @@ import {
 } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 import EventEmitter from "events";
-import Long from "long";
 
 import {
   WCAccount,
@@ -548,7 +547,6 @@ export class WCClient implements WalletClient {
       ) =>
         this.signDirect(chainId, signerAddress, {
           ...signDoc,
-          accountNumber: Long.fromString(signDoc.accountNumber.toString()),
         }),
     } as OfflineDirectSigner;
   }

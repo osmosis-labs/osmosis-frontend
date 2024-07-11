@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets/icon";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
@@ -62,19 +63,22 @@ export const PriceChange: FunctionComponent<
 
 /** Historical price sparkline. */
 export const HistoricalPriceSparkline: FunctionComponent<{
-  coinDenom: string;
+  coinMinimalDenom: string;
   timeFrame: CommonPriceChartTimeFrame;
   height?: number;
   width?: number;
-}> = ({ coinDenom, timeFrame, height, width }) => {
-  const { data: recentPrices } =
+}> = ({ coinMinimalDenom, timeFrame, height, width }) => {
+  const { t } = useTranslation();
+
+  const { data: recentPrices, isLoading } =
     api.edge.assets.getAssetHistoricalPrice.useQuery(
       {
-        coinDenom,
+        coinMinimalDenom,
         timeFrame,
       },
       {
         staleTime: 1000 * 30, // 30 secs
+        keepPreviousData: true,
       }
     );
 
@@ -111,7 +115,7 @@ export const HistoricalPriceSparkline: FunctionComponent<{
       data={recentPriceCloses}
       color={color}
     />
-  ) : (
+  ) : isLoading ? (
     // Placeholder div to take up space for missing data
     <div
       style={{
@@ -120,5 +124,18 @@ export const HistoricalPriceSparkline: FunctionComponent<{
       }}
       className={classNames({ "w-20": !width, "h-[3.125rem]": !height })}
     />
+  ) : (
+    <div
+      style={{
+        width,
+        height,
+      }}
+      className={classNames("body1 text-center text-osmoverse-500", {
+        "w-20": !width,
+        "h-[3.125rem]": !height,
+      })}
+    >
+      {t("errors.noData")}
+    </div>
   );
 };

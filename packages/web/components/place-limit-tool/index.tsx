@@ -125,6 +125,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
+              expectedOutput={swapState.marketState.quote?.amount.toDec()}
+              expectedOutputLoading={
+                swapState.marketState.inAmountInput.isTyping ||
+                swapState.marketState.isQuoteLoading ||
+                !!swapState.marketState.isLoadingNetworkFee
+              }
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
             />
@@ -170,8 +176,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   disabled={
                     (!swapState.isMarket &&
                       (swapState.insufficientFunds ||
-                        !swapState.inAmountInput.inputAmount ||
-                        swapState.inAmountInput.inputAmount === "0" ||
                         (!swapState.priceState.isValidPrice &&
                           swapState.priceState.orderPrice.length > 0))) ||
                     (swapState.isMarket &&
@@ -179,9 +183,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         !Boolean(swapState.marketState.quote) ||
                         Boolean(swapState.marketState.error) ||
                         Boolean(swapState.marketState.networkFeeError) ||
+                        swapState.marketState.isQuoteLoading ||
+                        swapState.marketState.inAmountInput.isTyping ||
                         swapState.marketState.isQuoteLoading)) ||
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading
+                    swapState.isMakerFeeLoading ||
+                    !swapState.inAmountInput.inputAmount ||
+                    swapState.inAmountInput.inputAmount === "0"
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
