@@ -5,7 +5,7 @@ import { api } from "~/utils/trpc";
 
 export const usePreviousConnectedCosmosAccount = () => {
   const [previousConnectedCosmosAccount, setPreviousConnectedCosmosAccount] =
-    useLocalStorage<string>("previous-connected-account");
+    useLocalStorage<string>("previous-connected-cosmos-account");
 
   const { data, isLoading: areLoadingBalances } =
     api.local.balances.getUserBalances.useQuery(

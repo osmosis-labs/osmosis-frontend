@@ -258,14 +258,20 @@ export const CosmosWalletState: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
+    const isReturningUser = previousConnectedCosmosAccount && hasFunds;
+
     let oneClickTradingScreen: WalletSelect1CTScreens;
     if (show1CTConnectAWallet) {
       oneClickTradingScreen = WalletSelect1CTScreens.ConnectAWallet;
     } else if (show1CTEditParams) {
       oneClickTradingScreen = WalletSelect1CTScreens.Settings;
-    } else if (!show1CTEditParams && accountStore.hasUsedOneClickTrading) {
+    } else if (
+      !show1CTEditParams &&
+      isReturningUser &&
+      accountStore.hasUsedOneClickTrading
+    ) {
       oneClickTradingScreen = WalletSelect1CTScreens.WelcomeBack;
-    } else if (previousConnectedCosmosAccount && hasFunds) {
+    } else if (isReturningUser) {
       oneClickTradingScreen = WalletSelect1CTScreens.Introduction;
     } else {
       oneClickTradingScreen = WalletSelect1CTScreens.Tutorial;
