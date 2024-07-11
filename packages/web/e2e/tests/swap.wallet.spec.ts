@@ -36,7 +36,7 @@ test.describe("Test Swap feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1440, height: 1080 },
+      viewport: { width: 1440, height: 1280 },
       slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
@@ -64,7 +64,6 @@ test.describe("Test Swap feature", () => {
     await swapPage.goto();
     await swapPage.selectPair("OSMO", "ATOM");
     await swapPage.enterAmount("0.01");
-    await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
