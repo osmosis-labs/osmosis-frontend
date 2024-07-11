@@ -328,7 +328,9 @@ export const AmountScreen = observer(
       // Use Osmosis Assets to get the source asset
       if (direction === "withdraw") {
         const selectedAsset = assetsInOsmosis?.find(
-          (asset) => asset.coinDenom === selectedDenom
+          (asset) =>
+            asset.coinDenom === selectedDenom ||
+            asset.coinMinimalDenom === selectedDenom
         );
         if (!selectedAsset) return undefined;
         return [
