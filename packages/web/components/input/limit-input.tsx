@@ -20,6 +20,8 @@ export interface LimitInputProps {
   insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
+  quoteBalance?: Dec;
+  baseBalance?: Dec;
   expectedOutput?: Dec;
   expectedOutputLoading: boolean;
 }
@@ -83,8 +85,12 @@ export const LimitInput: FC<LimitInputProps> = ({
   quoteAssetPrice,
   expectedOutput,
   expectedOutputLoading,
+  quoteBalance,
+  baseBalance,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
+  // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
+  // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
@@ -124,7 +130,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       if (tab === "buy" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? setFiatAmount(updatedValue)
         : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
@@ -143,12 +149,20 @@ export const LimitInput: FC<LimitInputProps> = ({
       ) {
         return;
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? onChange(updatedValue)
         : onChange(formatPretty(new Dec(updatedValue)));
     },
     [onChange, focused]
   );
+
+  const toggleMax = useCallback(() => {
+    if (tab === "buy") {
+      return setFiatAmountSafe(Number(quoteBalance)?.toString() ?? "");
+    }
+
+    return setTokenAmountSafe(Number(baseBalance)?.toString() ?? "");
+  }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
@@ -191,8 +205,17 @@ export const LimitInput: FC<LimitInputProps> = ({
           }
         />
       ))}
-      <button className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
-        <span className="body2 text-wosmongton-200">Max</span>
+      <button
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        onClick={toggleMax}
+      >
+        <span
+          className={classNames("body2 text-wosmongton-200", {
+            "text-rust-300": insufficentFunds,
+          })}
+        >
+          Max
+        </span>
       </button>
     </div>
   );
