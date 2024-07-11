@@ -323,7 +323,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden">
           <div className="flex flex-col gap-3">
-            <div className="relative flex flex-col gap-3">
+            <div className="relative flex flex-col">
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full flex-col">
                   <div className="flex items-center justify-between">
@@ -429,16 +429,17 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                 </div>
               </div>
-              {/* TODO - move this custom button to our own button component */}
-              <button
-                className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-[calc(50%-16px)] items-center justify-center rounded-full bg-osmoverse-825"
-                onClick={() => swapState.switchAssets()}
-              >
-                <Icon
-                  id="arrows-swap-16"
-                  className="h-4 w-4 text-wosmongton-200"
-                />
-              </button>
+              <div className="relative flex h-3 w-full">
+                <button
+                  className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
+                  onClick={() => swapState.switchAssets()}
+                >
+                  <Icon
+                    id="arrows-swap-16"
+                    className="h-4 w-4 text-wosmongton-200"
+                  />
+                </button>
+              </div>
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full items-center justify-between">
                   {swapState.toAsset && (
