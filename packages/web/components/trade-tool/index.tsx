@@ -38,7 +38,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
 
   return (
     <ClientOnly>
-      <div className="relative flex flex-col gap-6 md:gap-6 md:px-3 md:pb-4 md:pt-4">
+      <div className="relative flex flex-col gap-3 md:gap-3 md:px-3 md:pb-4 md:pt-4">
         <div className="flex w-full items-center justify-between">
           <SwapToolTabs activeTab={tab} setTab={setTab} />
           <div className="flex items-center gap-3">
