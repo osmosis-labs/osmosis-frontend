@@ -512,13 +512,8 @@
       "introducingSubtitle": "एकाधिक वॉलेट अनुमोदन की परेशानी के बिना त्वरित, आसान व्यापार करें।",
       "learnMore": "और अधिक जानें",
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
-      "defaultParameters": "1-क्लिक ट्रेडिंग इस डिवाइस पर $5,000 USD की खर्च सीमा के साथ 1 घंटे के लिए सक्रिय रहेगी",
-      "changeButton": "परिवर्तन"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "जल्दी और आसानी से व्यापार करें",
-      "startOneClickTradingNow": "अभी 1-क्लिक ट्रेडिंग शुरू करें",
-      "iconAlt": "1-क्लिक ट्रेडिंग छोटा लोगो"
+      "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
+      "changeButton": "विन्यास बदलें"
     },
     "floatingBanner": {
       "newPill": "नया",

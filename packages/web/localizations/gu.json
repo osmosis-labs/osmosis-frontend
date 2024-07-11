@@ -512,13 +512,8 @@
       "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
-      "defaultParameters": "1-ક્લિક ટ્રેડિંગ $5,000 USD ખર્ચ મર્યાદા સાથે આ ઉપકરણ પર 1 કલાક માટે સક્રિય રહેશે",
-      "changeButton": "બદલો"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "ઝડપી અને સરળ વેપાર કરો",
-      "startOneClickTradingNow": "હવે 1-ક્લિક ટ્રેડિંગ શરૂ કરો",
-      "iconAlt": "1- ટ્રેડિંગ સ્મોલ લોગો પર ક્લિક કરો"
+      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
+      "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "floatingBanner": {
       "newPill": "નવી",

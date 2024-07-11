@@ -512,13 +512,8 @@
       "introducingSubtitle": "Dokonuj szybszych i łatwiejszych transakcji bez konieczności zatwierdzania wielu portfeli.",
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
-      "defaultParameters": "Handel jednym kliknięciem będzie aktywny przez 1 godzinę na tym urządzeniu z limitem wydatków wynoszącym 5000 USD",
-      "changeButton": "Zmiana"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Handluj szybciej i łatwiej",
-      "startOneClickTradingNow": "Rozpocznij handel jednym kliknięciem już teraz",
-      "iconAlt": "Handel małym logo jednym kliknięciem"
+      "defaultParameters": "Ustawienia domyślne są ustawione na 1 godzinę z limitem ochrony przed stratą w wysokości 5000 USD.",
+      "changeButton": "Edytuj ustawienia"
     },
     "floatingBanner": {
       "newPill": "Nowy",

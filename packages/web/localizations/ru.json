@@ -512,13 +512,8 @@
       "introducingSubtitle": "Совершайте сделки быстрее и проще без хлопот, требующих одобрения нескольких кошельков.",
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
-      "defaultParameters": "На этом устройстве функция «1-Click Trading» будет активна в течение 1 часа с лимитом расходов в 5,000 долларов США.",
-      "changeButton": "Изменять"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Торгуйте быстрее и проще",
-      "startOneClickTradingNow": "Начните торговлю в 1 клик прямо сейчас",
-      "iconAlt": "Маленький логотип «1-Click Trading»"
+      "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
+      "changeButton": "Изменить настройки"
     },
     "floatingBanner": {
       "newPill": "Новый",
