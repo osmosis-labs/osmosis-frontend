@@ -27,7 +27,9 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find((a) => a.coinMinimalDenom === asset.address);
+      .find(
+        (a) => a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+      );
 
     if (assetListAsset) {
       const bitcoinCounterparty = assetListAsset.counterparty.some(

@@ -285,12 +285,15 @@ export const bridgeTransferRouter = createTRPCRouter({
           BridgeChain["chainId"],
           ((typeof supportedAssets)[number] & { providerName: string })[]
         >
-      >((acc, asset) => {
-        if (!acc[asset.chainId]) {
-          acc[asset.chainId] = [];
+      >((acc, chainAsset) => {
+        if (!acc[chainAsset.chainId]) {
+          acc[chainAsset.chainId] = [];
         }
 
-        acc[asset.chainId].push({ ...asset, providerName: input.bridge });
+        acc[chainAsset.chainId].push({
+          ...chainAsset,
+          providerName: input.bridge,
+        });
 
         return acc;
       }, {});
@@ -308,7 +311,6 @@ export const bridgeTransferRouter = createTRPCRouter({
       const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
-            // TODO: Find a way to get eth chains from `getChain` function
             const evmChain = Object.values(EthereumChainInfo).find(
               (chain) => chain.id === chainId
             );

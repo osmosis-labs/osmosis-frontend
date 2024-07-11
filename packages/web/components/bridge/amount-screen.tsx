@@ -371,13 +371,20 @@ export const AmountScreen = observer(
           ) as Extract<SupportedAsset, { chainType: "cosmos" }>[],
           userCosmosAddress: fromCosmosCounterpartyAccount?.address,
         };
-      } else {
-        // TODO: can input solana or btc assets
+      } else if (fromChain?.chainType === "bitcoin" && supportedSourceAssets) {
         return {
-          type: fromChain?.chainType ?? "bitcoin",
-          assets: (supportedSourceAssets?.filter(
+          type: "bitcoin" as const,
+          assets: supportedSourceAssets.filter(
             (asset) => asset.chainType === "bitcoin"
-          ) ?? []) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
+          ) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
+        };
+      } else {
+        // solana
+        return {
+          type: "solana" as const,
+          assets: (supportedSourceAssets ?? []).filter(
+            (asset) => asset.chainType === "solana"
+          ) as Extract<SupportedAsset, { chainType: "solana" }>[],
         };
       }
     })();
@@ -385,13 +392,16 @@ export const AmountScreen = observer(
       api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
         { source: balanceSource },
         {
-          enabled: !isNil(fromChain) && !isNil(supportedSourceAssets),
+          enabled:
+            !isNil(fromChain) &&
+            !isNil(supportedSourceAssets) &&
+            supportedSourceAssets.length > 0,
 
           select: (data) => {
             let nextData: typeof data = data;
 
             // Filter out assets with no balance
-            if (nextData) {
+            if (nextData && nextData.length) {
               const filteredData = nextData.filter((asset) =>
                 asset.amount.toDec().isPositive()
               );

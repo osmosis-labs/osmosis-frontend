@@ -27,10 +27,12 @@ export class WormholeBridgeProvider implements BridgeProvider {
 
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find((a) => a.coinMinimalDenom === asset.address);
+      .find(
+        (a) => a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+      );
 
     if (assetListAsset) {
-      const solanaCounterparty = assetListAsset.counterparty.some(
+      const solanaCounterparty = assetListAsset.counterparty.find(
         (c) => c.chainName === "solana"
       );
 
@@ -40,9 +42,9 @@ export class WormholeBridgeProvider implements BridgeProvider {
             chainId: "solana",
             chainName: "Solana",
             chainType: "solana",
-            denom: "SOL",
-            address: "Lamport",
-            decimals: 9,
+            denom: solanaCounterparty.symbol,
+            address: solanaCounterparty.sourceDenom,
+            decimals: solanaCounterparty.decimals,
           },
         ];
       }
