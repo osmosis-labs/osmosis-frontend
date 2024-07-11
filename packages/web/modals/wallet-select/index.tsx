@@ -22,6 +22,7 @@ import { FullWalletList } from "~/modals/wallet-select/full-wallet-list";
 import { SimpleWalletList } from "~/modals/wallet-select/simple-wallet-list";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { getModalView, ModalView } from "~/modals/wallet-select/utils";
+import { useStore } from "~/stores";
 
 export interface WalletSelectModalProps extends ModalBaseProps {
   /**
@@ -41,6 +42,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       onConnect: onConnectProp,
       layout = "full",
     } = props;
+    const { accountStore } = useStore();
     const { isMobile } = useWindowSize();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
@@ -78,7 +80,9 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       isLoading: isLoading1CTParams,
       spendLimitTokenDecimals,
       reset: reset1CTParams,
-    } = useOneClickTradingParams();
+    } = useOneClickTradingParams({
+      defaultIsOneClickEnabled: accountStore.hasUsedOneClickTrading,
+    });
 
     const {
       onConnect: onConnectWallet,

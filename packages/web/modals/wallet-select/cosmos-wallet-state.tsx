@@ -15,6 +15,7 @@ import { ErrorWalletState } from "~/components/wallet-states";
 import { CosmosWalletRegistry } from "~/config";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
+import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { ModalView } from "~/modals/wallet-select/utils";
@@ -28,6 +29,7 @@ enum WalletSelect1CTScreens {
   Settings = "Settings",
   WelcomeBack = "WelcomeBack",
   ConnectAWallet = "ConnectAWallet",
+  Tutorial = "Tutorial",
 }
 
 export const CosmosWalletState: FunctionComponent<
@@ -68,6 +70,8 @@ export const CosmosWalletState: FunctionComponent<
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
+    const { previousConnectedCosmosAccount, hasFunds } =
+      usePreviousConnectedCosmosAccount();
 
     const show1CT =
       hasInstalledWallets &&
@@ -261,8 +265,10 @@ export const CosmosWalletState: FunctionComponent<
       oneClickTradingScreen = WalletSelect1CTScreens.Settings;
     } else if (!show1CTEditParams && accountStore.hasUsedOneClickTrading) {
       oneClickTradingScreen = WalletSelect1CTScreens.WelcomeBack;
-    } else {
+    } else if (previousConnectedCosmosAccount && hasFunds) {
       oneClickTradingScreen = WalletSelect1CTScreens.Introduction;
+    } else {
+      oneClickTradingScreen = WalletSelect1CTScreens.Tutorial;
     }
 
     return (
@@ -321,6 +327,9 @@ export const CosmosWalletState: FunctionComponent<
                   isDisabled={!transaction1CTParams}
                 />
               </div>
+            </Screen>
+            <Screen screenName={WalletSelect1CTScreens.Tutorial}>
+              <WalletTutorial />
             </Screen>
           </ScreenManager>
         ) : (

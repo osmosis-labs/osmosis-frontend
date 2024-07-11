@@ -497,6 +497,8 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "couldNotStartSession": "Unable to initiate session",
+      "notEnoughFunds": "Insufficient funds to start session. Please deposit and try again.",
       "networkFeeTooHigh": "Network fee too high",
       "startANewSession": "Start a new session",
       "increaseFeeLimit": "Increase network fee limit",

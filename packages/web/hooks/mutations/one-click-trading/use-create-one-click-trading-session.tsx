@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-toast";
+import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
 import { EventName, SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";

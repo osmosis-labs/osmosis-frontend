@@ -13,9 +13,10 @@ import {
   useAmplitudeAnalytics,
   useFeatureFlags,
   useTranslation,
+  useWalletSelect,
 } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
-import { useIsCosmosNewAccount } from "~/hooks/use-is-new-account";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -31,12 +32,14 @@ export const OneClickToast = observer(() => {
   const isConnected = !!account?.address;
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { isNewAccount } = useIsCosmosNewAccount({ address: account?.address });
+  const { isOpen: isWalletSelectOpen } = useWalletSelect();
 
   if (
     !isConnected ||
     !featureFlags.oneClickTrading ||
     isOneClickTradingEnabled ||
-    isNewAccount
+    isNewAccount ||
+    isWalletSelectOpen
   )
     return null;
 

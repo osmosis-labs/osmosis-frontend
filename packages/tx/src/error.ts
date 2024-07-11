@@ -30,3 +30,9 @@ export function isSlippageErrorMessage(msg: string) {
     msg.includes("price impact protection")
   );
 }
+
+export function isInsufficientFeeError(message: string) {
+  const regexInsufficientFeeError =
+    /Insufficient balance for transaction fees. Please add funds to continue./;
+  return regexInsufficientFeeError.test(message);
+}

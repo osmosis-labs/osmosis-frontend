@@ -28,7 +28,7 @@ import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { OneClickToast } from "~/components/one-click-trading/one-click-toast";
+import { OneClickToast } from "~/components/one-click-trading/one-click-trading-toast";
 import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {

@@ -27,7 +27,7 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
-import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-toast";
+import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-trading-toast";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
@@ -37,6 +37,7 @@ import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import {
   NotifiContextProvider,
@@ -364,13 +365,7 @@ export const NavBar: FunctionComponent<
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
 > = observer(({ className, onOpenProfile, icnsName }) => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    profileStore,
-  } = useStore();
+  const { accountStore, profileStore } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const flags = useFeatureFlags();
@@ -378,12 +373,14 @@ const WalletInfo: FunctionComponent<
   const [isOneClickIntroModalOpen] = useGlobalIs1CTIntroModalScreen();
   const [isOneClickProfileTooltipOpen, setIsOneClickProfileTooltipOpen] =
     useOneClickProfileTooltip();
+  const { setPreviousConnectedCosmosAccount } =
+    usePreviousConnectedCosmosAccount();
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
-  const wallet = accountStore.getWallet(chainId);
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
   const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
@@ -398,6 +395,12 @@ const WalletInfo: FunctionComponent<
       }
     );
 
+  useEffect(() => {
+    if (walletConnected && wallet?.address) {
+      setPreviousConnectedCosmosAccount(wallet.address);
+    }
+  }, [setPreviousConnectedCosmosAccount, wallet?.address, walletConnected]);
+
   return (
     <div className={className}>
       {!walletConnected ? (
@@ -406,7 +409,9 @@ const WalletInfo: FunctionComponent<
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect({
-              walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+              walletOptions: [
+                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+              ],
             });
           }}
         >
