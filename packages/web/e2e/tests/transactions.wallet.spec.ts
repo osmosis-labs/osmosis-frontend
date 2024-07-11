@@ -30,7 +30,7 @@ test.describe("Test Transactions feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1080 },
       slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait

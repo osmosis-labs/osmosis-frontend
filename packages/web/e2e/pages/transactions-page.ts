@@ -12,7 +12,7 @@ export class TransactionsPage extends BasePage {
     super(page);
     this.transactionRow = page.locator('//div/p[.="Swapped"]');
     this.viewExplorerLink = page.locator('//a/span["View on explorer"]/..');
-    this.closeTransactionBtn = page.locator('//button[@aria-label="Close"]');
+    this.closeTransactionBtn = page.getByLabel("Close").nth(1);
   }
 
   async viewTransactionByNumber(number: number) {
@@ -21,8 +21,8 @@ export class TransactionsPage extends BasePage {
   }
 
   async viewBySwapAmount(amount: any) {
-    // Transactions need some time to get loaded.
-    await this.page.waitForTimeout(5000);
+    // Transactions need some time to get loaded, wait for 10 seconds.
+    await this.page.waitForTimeout(10000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
     await this.page.locator(loc).click();
