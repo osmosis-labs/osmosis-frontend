@@ -246,7 +246,7 @@ export const PriceSelector = memo(
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+              <Menu.Items className="absolute left-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
                 <div className="flex flex-col border-b border-osmoverse-700 p-2">
                   {selectableQuotes.map(({ symbol, name, logoURIs }) => {
                     const isSelected = quote === symbol;
