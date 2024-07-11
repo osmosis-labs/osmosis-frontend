@@ -1,3 +1,4 @@
+import { BridgeAsset, BridgeChain } from "@osmosis-labs/bridge";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React from "react";
@@ -6,79 +7,67 @@ import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 interface MoreBridgeOptionsProps extends ModalBaseProps {
-  type: "deposit" | "withdraw";
+  direction: "deposit" | "withdraw";
+  fromAsset: BridgeAsset | undefined;
+  toAsset: BridgeAsset | undefined;
+  fromChain: BridgeChain | undefined;
+  toChain: BridgeChain | undefined;
+  toAddress: string | undefined;
 }
 
 export const MoreBridgeOptions = observer(
-  ({ type, ...modalProps }: MoreBridgeOptionsProps) => {
-    const {
-      accountStore,
-      chainStore: {
-        osmosis: { prettyChainName },
-      },
-    } = useStore();
-    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  ({
+    direction,
+    fromAsset,
+    toAsset,
+    fromChain,
+    toChain,
+    toAddress,
+    ...modalProps
+  }: MoreBridgeOptionsProps) => {
     const { t } = useTranslation();
 
-    // TODO: Use context state to get the fromAsset, toAsset, fromChain, and toChain
-    const { data: asset, isLoading: isLoadingAsset } =
-      api.edge.assets.getAssetWithPrice.useQuery({
-        findMinDenomOrSymbol: "USDC",
-      });
     const { data: externalUrlsData, isLoading: isLoadingExternalUrls } =
       api.bridgeTransfer.getExternalUrls.useQuery(
         {
-          fromAsset: {
-            address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
-            decimals: asset!.coinDecimals,
-            denom: asset!.coinDenom,
-            sourceDenom: asset!.sourceDenom,
-          },
-          toAsset: {
-            address: asset!.coinMinimalDenom,
-            decimals: asset!.coinDecimals,
-            denom: asset!.coinDenom,
-            sourceDenom: asset!.sourceDenom,
-          },
-          fromChain: { chainId: 43114, chainType: "evm" },
-          toChain: {
-            chainId: accountStore.osmosisChainId,
-            chainType: "cosmos",
-          },
-          toAddress: wallet?.address ?? "",
+          fromAsset: fromAsset!,
+          toAsset: toAsset!,
+          fromChain: fromChain!,
+          toChain: toChain!,
+          toAddress: toAddress!,
         },
         {
-          enabled: !!asset,
+          enabled:
+            !!fromAsset && !!toAsset && !!fromChain && !!toChain && !!toAddress,
         }
       );
 
     return (
       <ModalBase
         title={t(
-          type === "deposit"
+          direction === "deposit"
             ? "transfer.moreBridgeOptions.titleDeposit"
             : "transfer.moreBridgeOptions.titleWithdraw"
         )}
         className="!max-w-[30rem]"
         {...modalProps}
       >
-        <h1 className="body1 py-4 text-center text-osmoverse-300">
+        <p className="body1 py-4 text-center text-osmoverse-300">
           {t(
-            type === "deposit"
+            direction === "deposit"
               ? "transfer.moreBridgeOptions.descriptionDeposit"
               : "transfer.moreBridgeOptions.descriptionWithdraw",
             {
-              asset: asset?.coinDenom ?? "",
-              chain: prettyChainName,
+              asset: fromAsset?.denom ?? "",
+              chain: toChain?.chainName ?? "",
             }
           )}
-        </h1>
+        </p>
         <div className="flex flex-col gap-1 pt-4">
-          {isLoadingExternalUrls || isLoadingAsset ? (
+          {isLoadingExternalUrls ? (
             <>
               {new Array(3).fill(undefined).map((_, i) => (
                 <SkeletonLoader key={i} className="h-[76px] w-full" />
@@ -104,7 +93,7 @@ export const MoreBridgeOptions = observer(
                       />
                       <span>
                         {t(
-                          type === "deposit"
+                          direction === "deposit"
                             ? "transfer.moreBridgeOptions.depositWith"
                             : "transfer.moreBridgeOptions.withdrawWith"
                         )}{" "}

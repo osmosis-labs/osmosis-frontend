@@ -142,7 +142,6 @@
       "failed": "Arızalı",
       "failedWithReason": "Arızalı: {reason}",
       "pending": "Beklemede",
-      "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
@@ -151,7 +150,8 @@
       "successDeposit": "Yatırıldı",
       "successWithdraw": "Geri çekildi",
       "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu"
+      "failWithdraw": "Para çekme işlemi başarısız oldu",
+      "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",
@@ -406,7 +406,8 @@
     "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
-    "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin."
+    "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
+    "noData": "Veri yok"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" için sonuç yok",
-    "adjust": "Arama sorgunuzu ayarlamayı deneyin"
+    "adjust": "Arama sorgunuzu ayarlamayı deneyin",
+    "noPools": "Havuz yok",
+    "poolsEmpty": "Şu anda Osmosis'te {denom} için havuz yok"
   },
   "stake": {
     "available": "Mevcut",
@@ -908,11 +911,15 @@
     "withdraw": "Geri çekilmek",
     "fromNetwork": "Ağdan",
     "toNetwork": "Ağa",
+    "from": "kaynağından",
+    "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",
+    "transfer": "{denom}",
+    "receive": "{denom}",
     "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "Daha fazla para yatırma seçeneği",
     "moreWithdrawOptions": "Daha fazla para çekme seçeneği",
     "convertTo": "E dönüşmek",
+    "depositAs": "Şu şekilde yatırın:",
+    "withdrawAs": "Olarak geri çekil",
     "recommended": "Tavsiye edilen",
+    "fee": "ücret",
+    "fees": "ücretler",
+    "unknown": "Bilinmeyen",
+    "unknownFeeTooltip": "Şu anda {networkName} ağ ücretleri hesaplanamıyor. İşlem onaylandıktan sonra ağ ücretleri cüzdanınızda görüntülenmelidir.",
+    "free": "Özgür",
+    "cheapest": "En ucuz",
+    "fastest": "En hızlı",
+    "stepLabels": {
+      "asset": "Varlık",
+      "amount": "Miktar",
+      "review": "Gözden geçirmek"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "{asset} {chain} .",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Yatırılacak bir varlık seçin",
+      "titleWithdraw": "Çekilecek bir varlık seçin",
+      "searchAssets": "Varlıkları arayın"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Ağ seçin",
+      "searchPlaceholder": "Desteklenen ağları arayın"
+    },
+    "pendingWithdraw": "Geri çekilme bekleniyor",
+    "pendingDeposit": "Bekleyen mevduat",
+    "completedWithdraw": "Para çekme işlemi tamamlandı",
+    "completedDeposit": "Para yatırma tamamlandı",
+    "failedWithdraw": "Para çekme işlemi başarısız oldu",
+    "failedDeposit": "Para yatırma işlemi başarısız oldu",
+    "connectionError": "Bağlantı hatası",
+    "transferDetails": "Aktarım ayrıntıları",
+    "provider": "Sağlayıcı",
+    "estimatedTime": "Tahmini süresi",
+    "providerFees": "Sağlayıcı ücretleri",
+    "networkFee": "{networkName} ağ ücreti",
+    "totalFees": "Toplam ücretler",
+    "estimatedAmountReceived": "Alınan tahmini miktar",
+    "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
+    "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
+    "connect": "Bağlamak",
+    "confirm": "Onaylamak",
+    "cancel": "İptal etmek",
+    "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",
+    "confirmWithdrawTo": "{chain} bağlantısına çekilmeyi onaylayın",
+    "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
+    "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
+    "lookingForBalances": "Bakiyeler arıyorum",
+    "dontForgetFees": "Ücretleri unutmayın!",
+    "feesReserved": "Toplam {assetName} bakiyenizin küçük bir kısmı {networkName} ücretlerini ödemek için ayrıldı.",
+    "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
+    "recipientAddress": "{chain} üzerindeki alıcı adresi",
+    "enterAddress": "Bir adres girin",
+    "invalidAddress": "Geçersiz {chain} adresi",
+    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "done": "Tamamlamak"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
-    "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
-    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
-    "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
+    "onOsmosis": "Osmoz üzerinde",
     "aboutDenom": "{name} hakkında",
     "ariaView": "{name} görüntüle",
     "ariaViewOn": "{name} üzerinde görüntüle",
     "collapse": "Yıkılmak",
+    "info": {
+      "title": "Bilgi",
+      "show": "Göstermek",
+      "collapse": "Yıkılmak",
+      "moreStats": "Daha fazla istatistik"
+    },
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}E",
-      "all": "TÜM"
+      "all": "TÜM",
+      "price": "Fiyat",
+      "volume": "Hacim",
+      "advanced": "Gelişmiş",
+      "simple": "Basit"
     },
     "watchlist": "İzlenecekler listesi",
     "marketCapRank": "Piyasa Değeri Sıralaması",
     "marketCap": "Piyasa değeri",
+    "fullyDilutedValuation": "Tamamen Seyreltilmiş Değerleme",
+    "volume24h": "24 saatlik toplam hacim",
+    "volumeOnOsmosis": "Osmosis'te 24 saatlik hacim",
+    "liquidityOnOsmosis": "Osmozda Likidite",
     "circulatingSupply": "Dolaşımdaki Tedarik",
-    "buyToken": "{coinDenom} satın alın",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "{number} {denom} havuzlarındaki likidite",
+    "supplyOnOsmosis": "Osmozda Tedarik",
     "underlyingAssets": {
       "title": "Dayanak varlıklar",
       "description": "Osmosis'te { {name} ( {denom} ) {count} farklı türde {name} .",
@@ -1140,22 +1211,28 @@
     "tradeDetails": "Ticaret Detayları",
     "marketOrder": {
       "title": "Market siparişi",
-      "description": "Mevcut en iyi fiyatla hemen satın alın"
+      "description": {
+        "buy": "Mevcut en iyi fiyatla hemen satın alın",
+        "sell": "Mümkün olan en iyi fiyatla hemen satış yapın"
+      }
     },
     "limitOrder": {
       "title": "Limit Emri",
-      "description": "{denom} fiyatı düştüğünde satın alın"
+      "description": {
+        "buy": "{denom} fiyatı düştüğünde satın alın",
+        "sell": "{denom} fiyatı arttığında sat"
+      }
     },
     "recurringOrder": {
       "title": "Yinelenen Sipariş",
-      "description": "Zaman içinde ortalama fiyattan satın alın"
+      "description": "Zaman içindeki ortalama fiyata {action}"
     },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
     "belowMarket": {
-      "title": "Piyasa fiyatının altındaki limit fiyat",
+      "title": "Limit fiyatı piyasa fiyatının altında",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
     "enterAnAmountTo": "Bir miktar girin",
@@ -1192,7 +1269,13 @@
     "confirm": "Onaylamak",
     "expectedRate": "Beklenen oran",
     "market": "Pazar",
-    "limit": "Sınır"
+    "limit": "Sınır",
+    "increases": "artışlar",
+    "decreases": "azalır",
+    "estimatingFees": "Ücretlerin tahmin edilmesi",
+    "fees": "ücretler",
+    "receiveEstimated": "Alma (tahmini)",
+    "swapRoute": "Rotayı değiştir"
   },
   "orderHistory": {
     "orders": "Emirler",

@@ -142,7 +142,6 @@
       "failed": "Неуспешный",
       "failedWithReason": "Ошибка: {reason}",
       "pending": "В ожидании",
-      "pendingRefunded": "Не удалось: ожидается возврат средств.",
       "refunded": "Возвращено",
       "success": "Успех",
       "title": "История трансферов",
@@ -151,7 +150,8 @@
       "successDeposit": "Депонированный",
       "successWithdraw": "Снял",
       "failDeposit": "Депозит не выполнен",
-      "failWithdraw": "Вывести не удалось"
+      "failWithdraw": "Вывести не удалось",
+      "connectionError": "Ошибка подключения"
     },
     "ibcTransfer": {
       "buttonAdd": "Добавлять",
@@ -406,7 +406,8 @@
     "swapSlippage": "Обмен на {coinDenom} не выполнен из-за проскальзывания. Попробуйте увеличить допуск на проскальзывание.",
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
-    "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить."
+    "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
+    "noData": "Нет данных"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "Нет результатов для \" {query} \"",
-    "adjust": "Попробуйте изменить поисковый запрос"
+    "adjust": "Попробуйте изменить поисковый запрос",
+    "noPools": "Нет бассейнов",
+    "poolsEmpty": "В настоящее время в Osmosis нет пулов для {denom}"
   },
   "stake": {
     "available": "Доступный",
@@ -908,11 +911,15 @@
     "withdraw": "Отзывать",
     "fromNetwork": "Из сети",
     "toNetwork": "В сеть",
+    "from": "Из",
+    "to": "Чтобы",
     "max": "Макс",
     "available": "доступный",
     "transferWith": "Трансфер с",
     "transferTo": "Перевести",
     "receiveAsset": "Получить актив",
+    "transfer": "Передача {denom}",
+    "receive": "Получите {denom}",
     "receiveAssetDescription": "Когда вы вносите определенные активы, вы можете выбрать, какую версию актива вы хотите получить на Osmosis.",
     "estimatingTime": "Оценка времени",
     "calculatingFees": "Расчет комиссий",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "Больше вариантов депозита",
     "moreWithdrawOptions": "Больше вариантов вывода",
     "convertTo": "Перевести в",
+    "depositAs": "Депозит как",
+    "withdrawAs": "Вывести как",
     "recommended": "рекомендуемые",
+    "fee": "платеж",
+    "fees": "сборы",
+    "unknown": "Неизвестный",
+    "unknownFeeTooltip": "В настоящее время сетевые сборы для {networkName} не могут быть рассчитаны. Сетевые комиссии должны отображаться в вашем кошельке после одобрения транзакции.",
+    "free": "Бесплатно",
+    "cheapest": "Самый дешевый",
+    "fastest": "Самый быстрый",
+    "stepLabels": {
+      "asset": "Объект",
+      "amount": "Количество",
+      "review": "Обзор"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Выберите актив для депозита",
+      "titleWithdraw": "Выберите актив для вывода",
+      "searchAssets": "Поиск активов"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Выберите сеть",
+      "searchPlaceholder": "Поиск поддерживаемых сетей"
+    },
+    "pendingWithdraw": "Ожидание вывода",
+    "pendingDeposit": "Ожидается депозит",
+    "completedWithdraw": "Вывод завершен",
+    "completedDeposit": "Депозит завершен",
+    "failedWithdraw": "Вывести не удалось",
+    "failedDeposit": "Депозит не выполнен",
+    "connectionError": "Ошибка подключения",
+    "transferDetails": "Детали трансфера",
+    "provider": "Поставщик",
+    "estimatedTime": "Расчетное время",
+    "providerFees": "Комиссия поставщика",
+    "networkFee": "{networkName} плата за сеть",
+    "totalFees": "Общая сумма сборов",
+    "estimatedAmountReceived": "Ориентировочная полученная сумма",
+    "slippageWarning": "Ожидаемый результат этой транзакции значительно ниже входной суммы, что может привести к получению другой конечной суммы, чем ожидалось.",
+    "priceImpactWarning": "Влияние этой транзакции на цену составляет {priceImpact} , что может повлиять на конечную полученную сумму.",
+    "connect": "Соединять",
+    "confirm": "Подтверждать",
+    "cancel": "Отмена",
+    "confirmDepositTo": "Подтвердите депозит на {chain}",
+    "confirmWithdrawTo": "Подтвердите вывод на {chain}",
+    "reviewDepositP": "Перед подтверждением проверьте данные своего депозита. После внесения депозита ваша транзакция становится необратимой.",
+    "reviewWithdrawP": "Перед подтверждением проверьте данные вывода средств. После вывода ваша транзакция становится необратимой.",
+    "lookingForBalances": "Ищем баланс",
+    "dontForgetFees": "Не забывайте о комиссиях!",
+    "feesReserved": "Небольшая сумма вашего общего баланса {assetName} зарезервирована для оплаты комиссий по {networkName} .",
+    "verifyAddressWarning": "Подтвердите адрес, на который вы выводите свои средства. Указание неверного адреса приведет к потере средств.",
+    "recipientAddress": "Адрес получателя в {chain}",
+    "enterAddress": "Введите адрес",
+    "invalidAddress": "Неверный адрес {chain}",
+    "acknowledgement": "Я признаю, что несу полную ответственность за конец света и т. д.",
+    "done": "Сделанный"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Зарабатывайте с помощью {denom}",
     "explorePools": "Исследуйте бассейны",
-    "stakeYourDenomToEarn": "Сделайте ставку на свой {denom} чтобы заработать {apr} % годовых",
-    "stakeYourDenomToEarnNoAPR": "Сделайте ставку на свой {denom} чтобы получить вознаграждение",
-    "provideLiquidity": "Обеспечьте ликвидность и зарабатывайте на комиссиях и свопах",
     "yourBalance": "Ваш баланс",
+    "onOsmosis": "по осмосу",
     "aboutDenom": "О {name}",
     "ariaView": "Просмотр {name}",
     "ariaViewOn": "Просмотр {name}",
     "collapse": "Крах",
+    "info": {
+      "title": "Информация",
+      "show": "Показывать",
+      "collapse": "Крах",
+      "moreStats": "Больше статистики"
+    },
     "followTheConversation": "Следите за разговором",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ВСЕ"
+      "all": "ВСЕ",
+      "price": "Цена",
+      "volume": "Объем",
+      "advanced": "Передовой",
+      "simple": "Простой"
     },
     "watchlist": "Список наблюдения",
     "marketCapRank": "Рейтинг рыночной капитализации",
     "marketCap": "Рыночная капитализация",
+    "fullyDilutedValuation": "Полностью разводненная оценка",
+    "volume24h": "общий объем за 24 часа",
+    "volumeOnOsmosis": "24-часовой объем по осмосу",
+    "liquidityOnOsmosis": "Ликвидность по осмосу",
     "circulatingSupply": "Оборотное снабжение",
-    "buyToken": "Купить {coinDenom}",
-    "staking": "Стейкинг",
-    "liquidityInOSMOPools": "Ликвидность в пулах {number} {denom}",
+    "supplyOnOsmosis": "Поставка по осмосу",
     "underlyingAssets": {
       "title": "Базовые активы",
       "description": "{name} ( {denom} ) в Osmosis состоит из {count} различные типы {name} .",
@@ -1140,15 +1211,21 @@
     "tradeDetails": "Детали торговли",
     "marketOrder": {
       "title": "Рыночный ордер",
-      "description": "Купите немедленно по лучшей доступной цене"
+      "description": {
+        "buy": "Купите немедленно по лучшей доступной цене",
+        "sell": "Продать немедленно по лучшей доступной цене"
+      }
     },
     "limitOrder": {
       "title": "Лимитный ордер",
-      "description": "Покупайте, когда цена {denom} снижается."
+      "description": {
+        "buy": "Покупайте, когда цена {denom} снижается",
+        "sell": "Продавайте, когда цена {denom} возрастает"
+      }
     },
     "recurringOrder": {
       "title": "Повторяющийся заказ",
-      "description": "Покупайте по средней цене с течением времени"
+      "description": "{action} по средней цене с течением времени"
     },
     "aboveMarket": {
       "title": "Лимитная цена выше рыночной цены",
@@ -1192,7 +1269,13 @@
     "confirm": "Подтверждать",
     "expectedRate": "Ожидаемая ставка",
     "market": "Рынок",
-    "limit": "Лимит"
+    "limit": "Лимит",
+    "increases": "увеличивается",
+    "decreases": "уменьшается",
+    "estimatingFees": "Оценка сборов",
+    "fees": "сборы",
+    "receiveEstimated": "Получить (оценка)",
+    "swapRoute": "Обменять маршрут"
   },
   "orderHistory": {
     "orders": "Заказы",

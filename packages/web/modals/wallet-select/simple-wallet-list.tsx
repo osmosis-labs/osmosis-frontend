@@ -4,8 +4,8 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { SearchBox } from "~/components/input";
 import { useTranslation, WalletSelectOption } from "~/hooks";
+import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
-import { OnConnectWallet } from "~/modals/wallet-select/utils";
 
 export const SimpleWalletList: FunctionComponent<{
   onConnect: OnConnectWallet;

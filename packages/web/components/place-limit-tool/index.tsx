@@ -14,13 +14,13 @@ import { LimitInput } from "~/components/input/limit-input";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
@@ -112,28 +112,48 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </p>
             <LimitInput
               onChange={swapState.inAmountInput.setAmount}
-              baseAsset={swapState.inAmountInput.balance!}
+              baseAsset={swapState.baseAsset!}
               tokenAmount={swapState.inAmountInput.inputAmount}
-              price={swapState.priceState.price}
+              price={
+                type === "market"
+                  ? orderDirection === "bid"
+                    ? swapState.priceState.askSpotPrice!
+                    : swapState.priceState.bidSpotPrice!
+                  : swapState.priceState.price
+              }
               insufficentFunds={swapState.insufficientFunds}
               disableSwitching={type === "market"}
+              setMarketAmount={swapState.marketState.inAmountInput.setAmount}
+              quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
+              expectedOutput={swapState.marketState.quote?.amount.toDec()}
+              expectedOutputLoading={
+                swapState.marketState.inAmountInput.isTyping ||
+                swapState.marketState.isQuoteLoading ||
+                !!swapState.marketState.isLoadingNetworkFee
+              }
+              quoteBalance={swapState.quoteTokenBalance?.toDec()}
+              baseBalance={swapState.baseTokenBalance?.toDec()}
             />
           </div>
-          {type === "limit" ? (
-            <LimitPriceSelector
-              swapState={swapState}
-              orderDirection={orderDirection}
-            />
-          ) : (
-            <div className="inline-flex items-center gap-1 py-3.5">
-              <span className="body2 text-osmoverse-300">
-                {swapState.baseDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                {formatPretty(swapState.priceState.spotPrice ?? new Dec(0))}{" "}
-                {swapState.quoteAsset?.coinDenom}
-              </span>
-            </div>
-          )}
-          <LimitTradeDetails swapState={swapState} />
+          <>
+            {type === "limit" && (
+              <LimitPriceSelector
+                swapState={swapState}
+                orderDirection={orderDirection}
+              />
+            )}
+            {!swapState.isMarket && <LimitTradeDetails swapState={swapState} />}
+            {swapState.isMarket && (
+              <TradeDetails
+                swapState={swapState.marketState}
+                baseSpotPrice={
+                  orderDirection === "bid"
+                    ? swapState.priceState.askSpotPrice!
+                    : swapState.priceState.bidSpotPrice!
+                }
+              />
+            )}
+          </>
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>
@@ -154,20 +174,31 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {hasFunds ? (
                 <Button
                   disabled={
-                    swapState.insufficientFunds ||
-                    !swapState.inAmountInput.inputAmount ||
-                    swapState.inAmountInput.inputAmount === "0" ||
-                    (!swapState.priceState.isValidPrice &&
-                      swapState.priceState.orderPrice.length > 0) ||
+                    (!swapState.isMarket &&
+                      (swapState.insufficientFunds ||
+                        (!swapState.priceState.isValidPrice &&
+                          swapState.priceState.orderPrice.length > 0))) ||
                     (swapState.isMarket &&
                       (swapState.marketState.inAmountInput.isEmpty ||
                         !Boolean(swapState.marketState.quote) ||
                         Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError)))
+                        Boolean(swapState.marketState.networkFeeError) ||
+                        swapState.marketState.isQuoteLoading ||
+                        swapState.marketState.inAmountInput.isTyping ||
+                        swapState.marketState.isQuoteLoading)) ||
+                        swapState.marketState.inAmountInput.isTyping)) ||
+                    !swapState.isBalancesFetched ||
+                    swapState.isMakerFeeLoading ||
+                    !swapState.inAmountInput.inputAmount ||
+                    swapState.inAmountInput.inputAmount === "0"
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.isQuoteLoading ||
+                        swapState.marketState.isLoadingNetworkFee ||
+                        swapState.marketState.isLoadingSelectAssets)) ||
                     orderbookAssetsLoading
                   }
                   loadingText={t("assets.transfer.loading")}

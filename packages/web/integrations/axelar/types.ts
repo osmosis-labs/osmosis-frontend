@@ -1,4 +1,5 @@
-import type { SourceChain, SourceChainTokenConfig } from "@osmosis-labs/bridge";
+import type { SourceChainTokenConfig } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 
 import { IS_TESTNET } from "~/config";
 
@@ -12,7 +13,7 @@ export interface AxelarBridgeConfig {
    */
   sourceChainTokens: SourceChainTokenConfig[];
   /** Default source chain to be selected. Defaults to first in `sourceChains` if left `undefined`. */
-  defaultSourceChainId?: SourceChain;
+  defaultSourceChainId?: AxelarSourceChain;
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
    *  See: https://docs.axelar.dev/resources/mainnet#assets
    */
@@ -34,7 +35,7 @@ export interface AxelarBridgeConfig {
  *  Testnet API: https://axelartest-lcd.quickapi.com/axelar/nexus/v1beta1/chains?status=1
  */
 export const AxelarChainIds_SourceChainMap: {
-  [axelarChainIds: string]: SourceChain;
+  [axelarChainIds: string]: AxelarSourceChain;
 } = IS_TESTNET
   ? {
       aurora: "Aurora Testnet",
@@ -64,7 +65,7 @@ export const AxelarChainIds_SourceChainMap: {
  *  EVM-compatible wallets, like Metamask.
  */
 export const EthClientChainIds_SourceChainMap: {
-  [ethClientChainIds: string]: SourceChain;
+  [ethClientChainIds: string]: AxelarSourceChain;
 } = {
   "Aurora Testnet": "Aurora Testnet",
   "Avalanche Fuji Testnet": "Avalanche Fuji Testnet",

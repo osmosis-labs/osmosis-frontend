@@ -1,6 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { Fragment, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -25,19 +25,27 @@ export const OrderTypeSelector = () => {
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
+  const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
+  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
       {
         id: "market",
         title: t("limitOrders.marketOrder.title"),
-        description: t("limitOrders.marketOrder.description"),
+        description:
+          tab === "buy"
+            ? t("limitOrders.marketOrder.description.buy")
+            : t("limitOrders.marketOrder.description.sell"),
         icon: "exchange",
       },
       {
         id: "limit",
         title: t("limitOrders.limitOrder.title"),
-        description: t("limitOrders.limitOrder.description", { denom: "BTC" }),
+        description:
+          tab === "buy"
+            ? t("limitOrders.limitOrder.description.buy", { denom: base })
+            : t("limitOrders.limitOrder.description.sell", { denom: base }),
         icon: "trade",
       },
       // {
@@ -47,7 +55,7 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [t]
+    [base, t, tab]
   );
 
   return (

@@ -142,7 +142,6 @@
       "failed": "失败的",
       "failedWithReason": "失败的: {reason}",
       "pending": "处理中",
-      "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "已退出",
       "failDeposit": "存款失败",
-      "failWithdraw": "提现失败"
+      "failWithdraw": "提现失败",
+      "connectionError": "连接错误"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -406,7 +406,8 @@
     "swapSlippage": "由于滑点，兑换{coinDenom}失败。尝试增加滑动容差。",
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
-    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。"
+    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "noData": "没有数据"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "没有找到“ {query} ”的结果",
-    "adjust": "尝试调整您的搜索查询"
+    "adjust": "尝试调整您的搜索查询",
+    "noPools": "没有泳池",
+    "poolsEmpty": "目前 Osmosis 上没有适用于{denom}池"
   },
   "stake": {
     "available": "可用的",
@@ -908,11 +911,15 @@
     "withdraw": "提取",
     "fromNetwork": "摘自网络",
     "toNetwork": "建立网络",
+    "from": "从",
+    "to": "到",
     "max": "最大限度",
     "available": "可用的",
     "transferWith": "转让",
     "transferTo": "传送到",
     "receiveAsset": "接收资产",
+    "transfer": "转移{denom}",
+    "receive": "接收{denom}",
     "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
     "calculatingFees": "计算费用",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "更多存款选择",
     "moreWithdrawOptions": "更多提款选项",
     "convertTo": "转换成",
+    "depositAs": "存款为",
+    "withdrawAs": "提款方式",
     "recommended": "受到推崇的",
+    "fee": "费用",
+    "fees": "费用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前无法计算{networkName}上的网络费用。交易批准后，网络费用应显示在您的钱包中。",
+    "free": "自由的",
+    "cheapest": "最便宜的",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "资产",
+      "amount": "数量",
+      "review": "审查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
       "depositWith": "存款",
       "withdrawWith": "提款"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "选择要存入的资产",
+      "titleWithdraw": "选择要提取的资产",
+      "searchAssets": "搜索资产"
+    },
+    "bridgeNetworkSelect": {
+      "title": "选择网络",
+      "searchPlaceholder": "搜索支持的网络"
+    },
+    "pendingWithdraw": "等待提款",
+    "pendingDeposit": "待存款",
+    "completedWithdraw": "提现完成",
+    "completedDeposit": "存款已完成",
+    "failedWithdraw": "提现失败",
+    "failedDeposit": "存款失败",
+    "connectionError": "连接错误",
+    "transferDetails": "转账详情",
+    "provider": "提供者",
+    "estimatedTime": "预计时间",
+    "providerFees": "供应商费用",
+    "networkFee": "{networkName}网络费",
+    "totalFees": "总费用",
+    "estimatedAmountReceived": "预计收到金额",
+    "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
+    "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
+    "connect": "连接",
+    "confirm": "确认",
+    "cancel": "取消",
+    "confirmDepositTo": "确认存款至{chain}",
+    "confirmWithdrawTo": "确认提现至{chain}",
+    "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
+    "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
+    "lookingForBalances": "寻找平衡",
+    "dontForgetFees": "不要忘记费用！",
+    "feesReserved": "您的总{assetName}余额中的一小部分已被保留用于支付{networkName}费用。",
+    "verifyAddressWarning": "验证您要提取资金的地址。提供错误的地址将导致资金损失。",
+    "recipientAddress": "{chain}上的收件人地址",
+    "enterAddress": "输入地址",
+    "invalidAddress": "无效的{chain}地址",
+    "acknowledgement": "我承认我对世界末日等负有全部责任。",
+    "done": "完毕"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
-    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
+    "onOsmosis": "论渗透",
     "aboutDenom": "关于{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "信息",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多统计数据"
+    },
     "followTheConversation": "关注对话",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "价格",
+      "volume": "体积",
+      "advanced": "先进的",
+      "simple": "简单的"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全稀释估值",
+    "volume24h": "24小时总成交量",
+    "volumeOnOsmosis": "24 小时渗透量",
+    "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",
-    "buyToken": "购买{coinDenom}",
-    "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性",
+    "supplyOnOsmosis": "渗透供给",
     "underlyingAssets": {
       "title": "基础资产",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",
@@ -1140,15 +1211,21 @@
     "tradeDetails": "交易详情",
     "marketOrder": {
       "title": "市价订单",
-      "description": "立即以最佳价格购买"
+      "description": {
+        "buy": "立即以最佳价格购买",
+        "sell": "立即以最佳价格出售"
+      }
     },
     "limitOrder": {
       "title": "限价订单",
-      "description": "当{denom}价格下降时买入"
+      "description": {
+        "buy": "当{denom}价格下降时买入",
+        "sell": "当{denom}价格上涨时卖出"
+      }
     },
     "recurringOrder": {
       "title": "重复订单",
-      "description": "按一段时间内的平均价格购买"
+      "description": "{action}随时间的平均价格"
     },
     "aboveMarket": {
       "title": "限制价格高于市场价格",
@@ -1192,7 +1269,13 @@
     "confirm": "确认",
     "expectedRate": "预期利率",
     "market": "市场",
-    "limit": "限制"
+    "limit": "限制",
+    "increases": "增加",
+    "decreases": "减少",
+    "estimatingFees": "估算费用",
+    "fees": "费用",
+    "receiveEstimated": "收到（估计）",
+    "swapRoute": "交换路线"
   },
   "orderHistory": {
     "orders": "命令",

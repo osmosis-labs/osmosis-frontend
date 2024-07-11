@@ -142,7 +142,6 @@
       "failed": "Fallida",
       "failedWithReason": "Fallida: {reason}",
       "pending": "Pendiente",
-      "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
@@ -151,7 +150,8 @@
       "successDeposit": "Depositado",
       "successWithdraw": "se retiró",
       "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido"
+      "failWithdraw": "Retiro fallido",
+      "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -406,7 +406,8 @@
     "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
     "invalidAmounts": "Montos no válidos",
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
-    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar."
+    "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
+    "noData": "Sin datos"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "No hay resultados para \" {query} \"",
-    "adjust": "Intente ajustar su consulta de búsqueda"
+    "adjust": "Intente ajustar su consulta de búsqueda",
+    "noPools": "Sin piscinas",
+    "poolsEmpty": "Actualmente no hay grupos para {denom} en Osmosis"
   },
   "stake": {
     "available": "Disponible",
@@ -908,11 +911,15 @@
     "withdraw": "Retirar",
     "fromNetwork": "De la red",
     "toNetwork": "A la red",
+    "from": "De",
+    "to": "A",
     "max": "máx.",
     "available": "disponible",
     "transferWith": "Transferir con",
     "transferTo": "Transferir a",
     "receiveAsset": "Recibir activo",
+    "transfer": "Transferir {denom}",
+    "receive": "Recibir {denom}",
     "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
     "estimatingTime": "tiempo estimado",
     "calculatingFees": "Calcular tarifas",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "Más opciones de depósito",
     "moreWithdrawOptions": "Más opciones de retiro",
     "convertTo": "Convertir a",
+    "depositAs": "Depositar como",
+    "withdrawAs": "Retirarse como",
     "recommended": "Recomendado",
+    "fee": "tarifa",
+    "fees": "honorarios",
+    "unknown": "Desconocido",
+    "unknownFeeTooltip": "Actualmente, las tarifas de red de {networkName} no se pueden calcular. Las tarifas de la red deben aparecer en su billetera al momento de la aprobación de la transacción.",
+    "free": "Gratis",
+    "cheapest": "Lo mas barato",
+    "fastest": "Lo más rápido",
+    "stepLabels": {
+      "asset": "Activo",
+      "amount": "Cantidad",
+      "review": "Revisar"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Seleccione un activo para depositar",
+      "titleWithdraw": "Seleccione un activo para retirar",
+      "searchAssets": "Buscar activos"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Seleccione la red",
+      "searchPlaceholder": "Buscar redes compatibles"
+    },
+    "pendingWithdraw": "A la espera de Retiro",
+    "pendingDeposit": "Deposito pendiente",
+    "completedWithdraw": "Retiro completado",
+    "completedDeposit": "Depósito completado",
+    "failedWithdraw": "Retiro fallido",
+    "failedDeposit": "El depósito falló",
+    "connectionError": "Error de conexión",
+    "transferDetails": "Detalles de la transferencia",
+    "provider": "Proveedor",
+    "estimatedTime": "Hora prevista",
+    "providerFees": "Tarifas del proveedor",
+    "networkFee": "{networkName} tarifa de red",
+    "totalFees": "Tarifas totales",
+    "estimatedAmountReceived": "Cantidad estimada recibida",
+    "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
+    "priceImpactWarning": "El impacto en el precio de esta transacción es {priceImpact} , lo que puede influir en el importe final recibido.",
+    "connect": "Conectar",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "confirmDepositTo": "Confirmar depósito a {chain}",
+    "confirmWithdrawTo": "Confirmar retiro a {chain}",
+    "reviewDepositP": "Revise los detalles de su depósito antes de confirmar. Una vez depositada, su transacción es irreversible.",
+    "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible.",
+    "lookingForBalances": "buscando saldos",
+    "dontForgetFees": "¡No te olvides de las tarifas!",
+    "feesReserved": "Se ha reservado una pequeña cantidad de su saldo total de {assetName} para pagar tarifas en {networkName} .",
+    "verifyAddressWarning": "Verifique la dirección a la que está retirando sus fondos. Proporcionar una dirección incorrecta resultará en la pérdida de fondos.",
+    "recipientAddress": "Dirección del destinatario en {chain}",
+    "enterAddress": "Introduce una direccion",
+    "invalidAddress": "Dirección {chain} no válida",
+    "acknowledgement": "Reconozco que soy totalmente responsable del fin del mundo, etc.",
+    "done": "Hecho"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Gana con {denom}",
     "explorePools": "Explorar piscinas",
-    "stakeYourDenomToEarn": "Apuesta tu {denom} para ganar un {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "Apuesta tu {denom} para ganar recompensas",
-    "provideLiquidity": "Proporcione liquidez y gane con comisiones y swaps",
     "yourBalance": "Tu balance",
+    "onOsmosis": "en ósmosis",
     "aboutDenom": "Acerca de {name}",
     "ariaView": "Ver {name}",
     "ariaViewOn": "Ver en {name}",
     "collapse": "Colapsar",
+    "info": {
+      "title": "Información",
+      "show": "Espectáculo",
+      "collapse": "Colapsar",
+      "moreStats": "Más estadísticas"
+    },
     "followTheConversation": "Sigue la conversación",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "TODO"
+      "all": "TODO",
+      "price": "Precio",
+      "volume": "Volumen",
+      "advanced": "Avanzado",
+      "simple": "Simple"
     },
     "watchlist": "Lista de seguimiento",
     "marketCapRank": "Rango de capitalización de mercado",
     "marketCap": "Tapa del mercado",
+    "fullyDilutedValuation": "Valoración totalmente diluida",
+    "volume24h": "Volumen total 24h",
+    "volumeOnOsmosis": "Volumen 24h en Osmosis",
+    "liquidityOnOsmosis": "Liquidez por ósmosis",
     "circulatingSupply": "Suministro circulante",
-    "buyToken": "Comprar {coinDenom}",
-    "staking": "Replanteo",
-    "liquidityInOSMOPools": "Liquidez en pools {number} {denom}",
+    "supplyOnOsmosis": "Suministro por Ósmosis",
     "underlyingAssets": {
       "title": "Activos subyacentes",
       "description": "{name} ( {denom} ) en Osmosis se compone de {count} diferentes tipos de {name} .",
@@ -1140,15 +1211,21 @@
     "tradeDetails": "Detalles comerciales",
     "marketOrder": {
       "title": "Orden de mercado",
-      "description": "Compre inmediatamente al mejor precio disponible"
+      "description": {
+        "buy": "Compre inmediatamente al mejor precio disponible",
+        "sell": "Vender inmediatamente al mejor precio disponible."
+      }
     },
     "limitOrder": {
       "title": "Orden límite",
-      "description": "Compre cuando el precio {denom} baje"
+      "description": {
+        "buy": "Compre cuando el precio {denom} baje",
+        "sell": "Vender cuando el precio {denom} aumente"
+      }
     },
     "recurringOrder": {
       "title": "Orden recurrente",
-      "description": "Compre a precio promedio a lo largo del tiempo"
+      "description": "{action} al precio promedio a lo largo del tiempo"
     },
     "aboveMarket": {
       "title": "Precio límite por encima del precio de mercado",
@@ -1192,7 +1269,13 @@
     "confirm": "Confirmar",
     "expectedRate": "Expectativa salarial",
     "market": "Mercado",
-    "limit": "Límite"
+    "limit": "Límite",
+    "increases": "aumenta",
+    "decreases": "disminuye",
+    "estimatingFees": "Estimación de tarifas",
+    "fees": "honorarios",
+    "receiveEstimated": "Recibir (estimado)",
+    "swapRoute": "Intercambiar ruta"
   },
   "orderHistory": {
     "orders": "Pedidos",

@@ -142,7 +142,6 @@
       "failed": "失敗した",
       "failedWithReason": "失敗: {reason}",
       "pending": "保留中",
-      "pendingRefunded": "失敗: 返金保留中",
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",
@@ -151,7 +150,8 @@
       "successDeposit": "寄託",
       "successWithdraw": "撤退",
       "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました"
+      "failWithdraw": "引き出しに失敗しました",
+      "connectionError": "接続エラー"
     },
     "ibcTransfer": {
       "buttonAdd": "追加",
@@ -406,7 +406,8 @@
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
-    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。"
+    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "noData": "データなし"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "「 {query}に該当する結果はありません",
-    "adjust": "検索クエリを調整してみてください"
+    "adjust": "検索クエリを調整してみてください",
+    "noPools": "プールなし",
+    "poolsEmpty": "現在、Osmosis には{denom}のプールはありません"
   },
   "stake": {
     "available": "利用可能",
@@ -908,11 +911,15 @@
     "withdraw": "撤回する",
     "fromNetwork": "ネットワークから",
     "toNetwork": "ネットワークに",
+    "from": "{network}から",
+    "to": "{network}へ",
     "max": "マックス",
     "available": "利用可能",
     "transferWith": "転送",
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",
+    "transfer": "転送{denom}",
+    "receive": "{denom}受け取る",
     "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
     "estimatingTime": "時間の見積もり",
     "calculatingFees": "手数料の計算",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "その他の入金オプション",
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
+    "depositAs": "入金",
+    "withdrawAs": "撤退する",
     "recommended": "推奨",
+    "fee": "手数料",
+    "fees": "手数料",
+    "unknown": "未知",
+    "unknownFeeTooltip": "現在、 {networkName}のネットワーク手数料を計算できません。ネットワーク手数料は、トランザクションが承認されるとウォレットに表示されます。",
+    "free": "無料",
+    "cheapest": "最も安い",
+    "fastest": "最速",
+    "stepLabels": {
+      "asset": "資産",
+      "amount": "額",
+      "review": "レビュー"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "預ける資産を選択してください",
+      "titleWithdraw": "引き出す資産を選択してください",
+      "searchAssets": "アセットを検索"
+    },
+    "bridgeNetworkSelect": {
+      "title": "ネットワークを選択",
+      "searchPlaceholder": "サポートされているネットワークを検索"
+    },
+    "pendingWithdraw": "保留中の撤回",
+    "pendingDeposit": "保留中の入金",
+    "completedWithdraw": "引き出しが完了しました",
+    "completedDeposit": "入金完了",
+    "failedWithdraw": "引き出しに失敗しました",
+    "failedDeposit": "入金に失敗しました",
+    "connectionError": "接続エラー",
+    "transferDetails": "振込詳細",
+    "provider": "プロバイダー",
+    "estimatedTime": "予定時刻",
+    "providerFees": "プロバイダー料金",
+    "networkFee": "{networkName}ネットワーク料金",
+    "totalFees": "合計料金",
+    "estimatedAmountReceived": "受け取る推定金額",
+    "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
+    "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
+    "connect": "接続する",
+    "confirm": "確認する",
+    "cancel": "キャンセル",
+    "confirmDepositTo": "{chain}への入金を確認します",
+    "confirmWithdrawTo": "{chain}への撤退を確認します",
+    "reviewDepositP": "確認する前に入金の詳細を確認してください。入金後は取引を取り消すことはできません。",
+    "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。",
+    "lookingForBalances": "バランスを探す",
+    "dontForgetFees": "手数料を忘れないでください！",
+    "feesReserved": "合計{assetName}残高の少額{networkName}の手数料の支払い用に確保されています。",
+    "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",
+    "recipientAddress": "{chain}の受信者アドレス",
+    "enterAddress": "住所を入力してください",
+    "invalidAddress": "無効な{chain}アドレス",
+    "acknowledgement": "私は世界の終焉などについて全責任を負っていることを認めます。",
+    "done": "終わり"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
-    "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
-    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
-    "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
     "yourBalance": "あなたのバランス",
+    "onOsmosis": "浸透について",
     "aboutDenom": "{name}について",
     "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
+    "info": {
+      "title": "情報",
+      "show": "見せる",
+      "collapse": "崩壊",
+      "moreStats": "詳しい統計"
+    },
     "followTheConversation": "会話に従ってください",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全て"
+      "all": "全て",
+      "price": "価格",
+      "volume": "音量",
+      "advanced": "高度な",
+      "simple": "単純"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
+    "fullyDilutedValuation": "完全希薄化後評価額",
+    "volume24h": "24時間総量",
+    "volumeOnOsmosis": "Osmosisの24時間ボリューム",
+    "liquidityOnOsmosis": "浸透による流動性",
     "circulatingSupply": "循環供給",
-    "buyToken": "{coinDenom}を購入する",
-    "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
+    "supplyOnOsmosis": "浸透圧供給",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
@@ -1140,15 +1211,21 @@
     "tradeDetails": "取引の詳細",
     "marketOrder": {
       "title": "成行注文",
-      "description": "最安価格で今すぐご購入ください"
+      "description": {
+        "buy": "最安価格で今すぐご購入ください",
+        "sell": "最高価格ですぐに販売"
+      }
     },
     "limitOrder": {
       "title": "指値注文",
-      "description": "{denom}価格が下がったら購入する"
+      "description": {
+        "buy": "{denom}価格が下がったら購入する",
+        "sell": "{denom}価格が上昇したら売る"
+      }
     },
     "recurringOrder": {
       "title": "定期注文",
-      "description": "時間の経過とともに平均価格で購入する"
+      "description": "{action}時間の経過に伴う平均価格"
     },
     "aboveMarket": {
       "title": "市場価格を上回る制限価格",
@@ -1165,7 +1242,7 @@
     "watchOut": "気をつけろ！クジラが来る",
     "selectAnAssetTo": {
       "buy": "購入する資産を選択",
-      "sell": "売却する資産を選択"
+      "sell": "売却する資産を選択する"
     },
     "payWith": "お支払い方法",
     "receive": "受け取る",
@@ -1192,7 +1269,13 @@
     "confirm": "確認する",
     "expectedRate": "予想レート",
     "market": "市場",
-    "limit": "制限"
+    "limit": "制限",
+    "increases": "増加する",
+    "decreases": "減少する",
+    "estimatingFees": "料金の見積り",
+    "fees": "手数料",
+    "receiveEstimated": "受け取る（推定）",
+    "swapRoute": "ルートの交換"
   },
   "orderHistory": {
     "orders": "注文",

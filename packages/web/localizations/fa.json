@@ -142,7 +142,6 @@
       "failed": "نا موفق",
       "failedWithReason": "دلیل: {reason}",
       "pending": "معلق",
-      "pendingRefunded": "دلیل: بازگشت وجه معلق",
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",
@@ -151,7 +150,8 @@
       "successDeposit": "سپرده شد",
       "successWithdraw": "عقب نشینی کرد",
       "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود"
+      "failWithdraw": "برداشت ناموفق بود",
+      "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {
       "buttonAdd": "اضافه کردن",
@@ -406,7 +406,8 @@
     "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
-    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید."
+    "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
+    "noData": "اطلاعاتی وجود ندارد"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "هیچ نتیجه ای برای \" {query} \"",
-    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید"
+    "adjust": "سعی کنید عبارت جستجوی خود را تنظیم کنید",
+    "noPools": "بدون استخر",
+    "poolsEmpty": "در حال حاضر هیچ استخری برای {denom} در اسمز وجود ندارد"
   },
   "stake": {
     "available": "دسترس",
@@ -908,11 +911,15 @@
     "withdraw": "کنار کشیدن",
     "fromNetwork": "از شبکه",
     "toNetwork": "به شبکه",
+    "from": "از",
+    "to": "برای",
     "max": "حداکثر",
     "available": "در دسترس",
     "transferWith": "انتقال با",
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",
+    "transfer": "انتقال {denom}",
+    "receive": "دریافت {denom}",
     "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "گزینه های سپرده بیشتر",
     "moreWithdrawOptions": "گزینه های برداشت بیشتر",
     "convertTo": "تبدیل به",
+    "depositAs": "سپرده گذاری به عنوان",
+    "withdrawAs": "برداشت به عنوان",
     "recommended": "توصیه شده",
+    "fee": "هزینه",
+    "fees": "هزینه ها",
+    "unknown": "ناشناخته",
+    "unknownFeeTooltip": "در حال حاضر هزینه‌های شبکه برای {networkName} قابل محاسبه نیست. پس از تایید تراکنش، هزینه های شبکه باید در کیف پول شما نمایش داده شود.",
+    "free": "رایگان",
+    "cheapest": "ارزان ترین",
+    "fastest": "سریع ترین",
+    "stepLabels": {
+      "asset": "دارایی",
+      "amount": "میزان",
+      "review": "مرور"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "دارایی را برای سپرده گذاری انتخاب کنید",
+      "titleWithdraw": "دارایی را برای برداشت انتخاب کنید",
+      "searchAssets": "جستجوی دارایی ها"
+    },
+    "bridgeNetworkSelect": {
+      "title": "شبکه را انتخاب کنید",
+      "searchPlaceholder": "جستجوی شبکه های پشتیبانی شده"
+    },
+    "pendingWithdraw": "در انتظار برداشت",
+    "pendingDeposit": "سپرده معلق",
+    "completedWithdraw": "برداشت کامل شد",
+    "completedDeposit": "واریز تکمیل شد",
+    "failedWithdraw": "برداشت ناموفق بود",
+    "failedDeposit": "سپرده گذاری انجام نشد",
+    "connectionError": "خطای اتصال",
+    "transferDetails": "جزئیات انتقال",
+    "provider": "ارائه دهنده",
+    "estimatedTime": "زمان تخمین زده شده",
+    "providerFees": "هزینه های ارائه دهنده",
+    "networkFee": "هزینه شبکه {networkName}",
+    "totalFees": "مجموع هزینه ها",
+    "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
+    "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
+    "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد.",
+    "connect": "اتصال",
+    "confirm": "تایید",
+    "cancel": "لغو کنید",
+    "confirmDepositTo": "تایید سپرده به {chain}",
+    "confirmWithdrawTo": "تأیید خروج به {chain}",
+    "reviewDepositP": "قبل از تایید، جزئیات سپرده خود را بررسی کنید. پس از واریز، تراکنش شما برگشت ناپذیر است.",
+    "reviewWithdrawP": "قبل از تایید، جزئیات برداشت خود را بررسی کنید. پس از برداشت، تراکنش شما برگشت ناپذیر است.",
+    "lookingForBalances": "به دنبال تعادل",
+    "dontForgetFees": "هزینه ها را فراموش نکنید!",
+    "feesReserved": "مقدار کمی از موجودی کل {assetName} برای پرداخت هزینه های مربوط به {networkName} رزرو شده است.",
+    "verifyAddressWarning": "آدرسی را که وجوه خود را به آن برداشت می کنید تأیید کنید. ارائه آدرس نادرست منجر به از دست دادن وجوه می شود.",
+    "recipientAddress": "آدرس گیرنده در {chain}",
+    "enterAddress": "آدرسی را وارد کنید",
+    "invalidAddress": "آدرس {chain} نامعتبر است",
+    "acknowledgement": "من تصدیق می کنم که مسئولیت کامل پایان جهان و غیره را بر عهده دارم.",
+    "done": "انجام شده"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
-    "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
-    "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
-    "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
+    "onOsmosis": "در اسمز",
     "aboutDenom": "درباره {name}",
     "ariaView": "مشاهده {name}",
     "ariaViewOn": "مشاهده در {name}",
     "collapse": "سقوط - فروپاشی",
+    "info": {
+      "title": "اطلاعات",
+      "show": "نمایش دهید",
+      "collapse": "سقوط - فروپاشی",
+      "moreStats": "آمار بیشتر"
+    },
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "همه"
+      "all": "همه",
+      "price": "قیمت",
+      "volume": "جلد",
+      "advanced": "پیشرفته",
+      "simple": "ساده"
     },
     "watchlist": "فهرست تماشا",
     "marketCapRank": "رتبه بازار",
     "marketCap": "ارزش بازار",
+    "fullyDilutedValuation": "ارزش گذاری کاملا رقیق شده",
+    "volume24h": "حجم کل 24 ساعت",
+    "volumeOnOsmosis": "جلد 24 ساعته اسمز",
+    "liquidityOnOsmosis": "نقدینگی در اسمز",
     "circulatingSupply": "عرضه در گردش",
-    "buyToken": "خرید {coinDenom}",
-    "staking": "شرط بندی",
-    "liquidityInOSMOPools": "نقدینگی در استخرهای {number} {denom}",
+    "supplyOnOsmosis": "عرضه بر روی اسمز",
     "underlyingAssets": {
       "title": "دارایی های اساسی",
       "description": "{name} ( {denom} ) در اسموز از {count} انواع مختلف {name} .",
@@ -1140,15 +1211,21 @@
     "tradeDetails": "جزئیات تجارت",
     "marketOrder": {
       "title": "سفارش بازار",
-      "description": "بلافاصله با بهترین قیمت موجود خرید کنید"
+      "description": {
+        "buy": "بلافاصله با بهترین قیمت موجود خرید کنید",
+        "sell": "فروش فوری با بهترین قیمت موجود"
+      }
     },
     "limitOrder": {
       "title": "سفارش محدود",
-      "description": "زمانی که قیمت {denom} کاهش یابد، خرید کنید"
+      "description": {
+        "buy": "زمانی که قیمت {denom} کاهش یابد، خرید کنید",
+        "sell": "فروش زمانی که قیمت {denom} افزایش می یابد"
+      }
     },
     "recurringOrder": {
       "title": "سفارش تکراری",
-      "description": "در طول زمان با قیمت متوسط خرید کنید"
+      "description": "{action} با قیمت متوسط در طول زمان"
     },
     "aboveMarket": {
       "title": "محدودیت قیمت بالاتر از قیمت بازار",
@@ -1177,7 +1254,7 @@
     "below": "زیر",
     "above": "در بالا",
     "currentPrice": "قیمت فعلی",
-    "whenDenomPriceIs": "هنگامی که قیمت {denom} است",
+    "whenDenomPriceIs": "وقتی قیمت {denom} است",
     "estimating": "تخمین زدن",
     "totalFeesWhenFilled": "مجموع هزینه ها هنگام پر شدن",
     "at": "در",
@@ -1192,7 +1269,13 @@
     "confirm": "تایید",
     "expectedRate": "نرخ مورد انتظار",
     "market": "بازار",
-    "limit": "حد"
+    "limit": "حد",
+    "increases": "افزایش",
+    "decreases": "کاهش می دهد",
+    "estimatingFees": "برآورد هزینه ها",
+    "fees": "هزینه ها",
+    "receiveEstimated": "دریافت (تخمینی)",
+    "swapRoute": "تعویض مسیر"
   },
   "orderHistory": {
     "orders": "سفارشات",

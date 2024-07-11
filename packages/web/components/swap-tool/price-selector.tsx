@@ -4,13 +4,14 @@ import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import React, { Fragment, memo, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -18,6 +19,7 @@ import { api } from "~/utils/trpc";
 interface PriceSelectorProps {
   tokenSelectionAvailable: boolean;
   showQuoteBalance: boolean;
+  baseDenom: string;
 }
 
 type AssetWithBalance = Asset & {
@@ -32,14 +34,21 @@ export const PriceSelector = memo(
     tokenSelectionAvailable,
     disabled,
     showQuoteBalance,
+    baseDenom,
   }: PriceSelectorProps & Disableable) => {
     const { t } = useTranslation();
 
-    const [tab] = useQueryState("tab");
+    const [tab, setTab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault("USDC")
     );
+    const [_, setSellOpen] = useQueryState(
+      "sellOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
+    const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
     const quoteAsset = useMemo(
       () =>
@@ -69,6 +78,11 @@ export const PriceSelector = memo(
         enabled: Boolean(wallet?.address),
         select: (data) =>
           data.items
+            .filter((walletAsset) =>
+              (selectableQuoteDenoms[baseDenom] ?? []).includes(
+                walletAsset.coinMinimalDenom
+              )
+            )
             .map((walletAsset) => {
               const asset = getAssetFromAssetList({
                 assetLists: AssetLists,
@@ -297,7 +311,7 @@ export const PriceSelector = memo(
                 <div className="flex flex-col px-5 py-2">
                   {tab === "buy" && (
                     <button className="flex w-full items-center justify-between py-3">
-                      <span className="subtitle1 font-semibold text-wosmongton-200">
+                      <span className="subtitle1 text-left font-semibold text-wosmongton-200">
                         {t("limitOrders.addFunds")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -327,8 +341,14 @@ export const PriceSelector = memo(
                       </div>
                     </button>
                   )}
-                  <button className="flex w-full items-center justify-between py-3">
-                    <span className="subtitle1 font-semibold text-wosmongton-200">
+                  <button
+                    onClick={() => {
+                      setTab("swap");
+                      setSellOpen(true);
+                    }}
+                    className="flex w-full items-center justify-between py-3"
+                  >
+                    <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
                       {t("limitOrders.swapFromAnotherAsset")}
                     </span>
                     <div className="flex items-center gap-1">

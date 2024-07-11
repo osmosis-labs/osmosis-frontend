@@ -5,13 +5,13 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { Asset, RouterKey } from "@osmosis-labs/server";
+import type { RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
   SignOptions,
 } from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
+import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -19,7 +19,7 @@ import {
 } from "@osmosis-labs/utils";
 import { sum } from "@osmosis-labs/utils";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
-import { useRouter } from "next/router";
+import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useCallback } from "react";
@@ -48,7 +48,6 @@ import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
-import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
 export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
@@ -662,7 +661,7 @@ export function useSwapAssets({
     Boolean(fromAssetDenom) &&
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
-  // use a separate query for search to maintain pagination in other infinite query
+
   const {
     data: selectableAssetPages,
     isLoading: isLoadingSelectAssets,
@@ -828,6 +827,8 @@ export function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
@@ -840,6 +841,9 @@ export function useSwapAmountInput({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
     enabled: networkFeeQueryEnabled,
+    signOptions: {
+      useOneClickTrading: isOneClickTradingEnabled,
+    },
   });
   const isLoadingCurrentBalanceNetworkFee =
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
@@ -897,21 +901,19 @@ export function useToFromDenoms({
   initialFromDenom?: string;
   initialToDenom?: string;
 }) {
-  const router = useRouter();
-
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
    */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
+  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    useQueryParams ? initialFromDenom : undefined
+    parseAsString.withDefault(initialFromDenom ?? "ATOM")
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryParamState(
+  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    useQueryParams ? initialToDenom : undefined
+    parseAsString.withDefault(initialToDenom ?? "OSMO")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
@@ -933,14 +935,17 @@ export function useToFromDenoms({
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {
     if (useQueryParams) {
-      const existingParams = router.query;
-      router.replace({
-        query: {
-          ...existingParams,
-          from: toDenomQueryParamStr,
-          to: fromDenomQueryParamStr,
-        },
-      });
+      // const existingParams = router.query;
+      // router.replace({
+      //   query: {
+      //     ...existingParams,
+      //     from: toDenomQueryParamStr,
+      //     to: fromDenomQueryParamStr,
+      //   },
+      // });
+      const temp = fromDenomQueryParam;
+      setFromDenomQueryParam(toAssetQueryParam);
+      setToAssetQueryParam(temp);
       return;
     }
 
@@ -962,7 +967,7 @@ export function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-export function useSwapAsset<TAsset extends Asset>({
+export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -1009,12 +1014,12 @@ function getSwapTxParameters({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1096,12 +1101,12 @@ function getSwapMessages({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1157,12 +1162,12 @@ function useQueryRouterBestQuote(
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
   > & {
-    tokenIn: Asset &
+    tokenIn: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;
       }>;
-    tokenOut: Asset &
+    tokenOut: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;

@@ -18,6 +18,7 @@ import type {
   ChainList,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 
 import { generateTsFile } from "~/utils/codegen";
 
@@ -97,9 +98,10 @@ async function generateChainListFile({
     environment === "mainnet" ? "MainnetChainIds" : "TestnetChainIds";
 
   if (!onlyTypes) {
+    // TODO: remove logoURIs type after merging with stage !IMPORTANT
     content += `
       import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
-      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
+      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer;})[] = ${JSON.stringify(
       getChainList({ assetLists, environment, chains: chainList.chains }),
       null,
       2
@@ -247,6 +249,32 @@ async function generateAssetListFile({
         `"${symbol}" /** source denom: ${
           assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
         } */`
+    )
+    .join(" | ")};
+  `;
+
+  content += `    
+    export type ${
+      environment === "testnet"
+        ? "TestnetVariantGroupKeys"
+        : "MainnetVariantGroupKeys"
+    } = ${Array.from(
+    new Set(assetList.assets.map((asset) => asset.variantGroupKey))
+  )
+    .filter((groupKey, index, self) => {
+      if (isNil(groupKey)) {
+        return false;
+      }
+
+      // remove duplicates
+      return self.indexOf(groupKey) === index;
+    })
+    .map(
+      (groupKey) =>
+        `"${groupKey}" /** Symbols: ${assetList.assets
+          .filter((asset) => asset.variantGroupKey === groupKey)!
+          .map((asset) => asset.symbol)
+          .join(",")} */`
     )
     .join(" | ")};
   `;

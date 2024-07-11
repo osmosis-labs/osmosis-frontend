@@ -208,6 +208,7 @@ export interface HistoricalLimitOrder {
   price: string;
   status: string;
   contract: string;
+  claimed_quantity: string;
 }
 
 export function queryHistoricalOrders(
