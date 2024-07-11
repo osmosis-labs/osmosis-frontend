@@ -169,7 +169,6 @@ function mapHistoricalToMapped(
   return historicalOrders.map((o) => {
     const quantityMin = parseInt(o.quantity);
     const placedQuantityMin = parseInt(o.quantity);
-
     const price = tickToPrice(new Int(o.tick_id));
     const percentClaimed = new Dec(1);
     const output =
