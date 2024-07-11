@@ -25,6 +25,13 @@ export class TransactionsPage extends BasePage {
     await this.page.waitForTimeout(10000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
+    let isTransactionVisible = await this.page
+      .locator(loc)
+      .isVisible({ timeout: 3000 });
+    if (!isTransactionVisible) {
+      await this.page.waitForTimeout(20000);
+      await this.page.reload();
+    }
     await this.page.locator(loc).click();
   }
 
