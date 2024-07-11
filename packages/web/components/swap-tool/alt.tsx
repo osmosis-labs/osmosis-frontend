@@ -432,7 +432,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               <div className="relative flex h-3 w-full">
                 <button
                   className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
-                  onClick={() => swapState.switchAssets()}
+                  onClick={() => {
+                    const out = formatPretty(
+                      swapState.quote?.amount
+                        ? swapState.quote.amount.toDec()
+                        : new Dec(0)
+                    );
+                    swapState.inAmountInput.setAmount(out);
+                    swapState.switchAssets();
+                  }}
                 >
                   <Icon
                     id="arrows-swap-16"
