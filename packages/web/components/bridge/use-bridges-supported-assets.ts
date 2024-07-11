@@ -56,14 +56,6 @@ export const useBridgesSupportedAssets = ({
             // This causes slow UX even though there's a
             // query that the user can use.
             retry: false,
-
-            // prevent batching so that fast routers can
-            // return requests faster than the slowest router
-            trpc: {
-              context: {
-                skipBatch: true,
-              },
-            },
           }
         )
       )
