@@ -125,7 +125,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
-              setInputMax={swapState.inAmountInput.toggleMax}
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
             />

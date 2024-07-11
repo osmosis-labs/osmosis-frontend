@@ -19,7 +19,6 @@ export interface LimitInputProps {
   quoteAssetPrice: Dec;
   quoteBalance?: Dec;
   baseBalance?: Dec;
-  setInputMax: () => void;
 }
 
 export enum FocusedInput {
@@ -52,14 +51,13 @@ export const LimitInput: FC<LimitInputProps> = ({
   insufficentFunds,
   disableSwitching,
   setMarketAmount,
-  setInputMax,
   quoteAssetPrice,
   quoteBalance,
   baseBalance,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
-  const [max, setMax] = useState<boolean>(false);
+  // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
+  // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
@@ -118,42 +116,12 @@ export const LimitInput: FC<LimitInputProps> = ({
   );
 
   const toggleMax = useCallback(() => {
-    // Toggle the max flag and cache the current input
-    setNonMaxAmount(max ? "" : fiatAmount);
-    setMax((p) => !p);
-    // When selling we want to use the limit input max amount as it uses the base balance
-    if (tab === "sell") {
-      if (!baseBalance) return;
-      setInputMax();
-      // Update the fiat amount to correspend with the new token amount
-      const value = baseBalance;
-      const fiatValue = price.mul(value);
-      const newFiatAmount = !max ? fiatValue.toString() : nonMaxAmount;
-      setFiatAmountSafe(newFiatAmount);
-    } else {
-      if (!quoteBalance) return;
-      // Update the fiat amount, use the cached amount if disabling the max flag
-      const newFiatAmount = !max ? quoteBalance.toString() : nonMaxAmount;
-      setFiatAmountSafe(newFiatAmount);
-
-      // Update the token value to correspend with the new fiat amount
-      const value =
-        newFiatAmount && newFiatAmount.length > 0 ? newFiatAmount : "0";
-      const tokenValue = new Dec(value).quo(price);
-      setTokenAmountSafe(tokenValue.isZero() ? "" : formatPretty(tokenValue));
+    if (tab === "buy") {
+      return setFiatAmountSafe(Number(quoteBalance)?.toString() ?? "");
     }
-  }, [
-    fiatAmount,
-    max,
-    nonMaxAmount,
-    setFiatAmountSafe,
-    quoteBalance,
-    price,
-    setTokenAmountSafe,
-    setInputMax,
-    tab,
-    baseBalance,
-  ]);
+
+    return setTokenAmountSafe(Number(baseBalance)?.toString() ?? "");
+  }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
@@ -185,10 +153,16 @@ export const LimitInput: FC<LimitInputProps> = ({
         />
       ))}
       <button
-        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
         onClick={toggleMax}
       >
-        <span className="body2 text-wosmongton-200">Max</span>
+        <span
+          className={classNames("body2 text-wosmongton-200", {
+            "text-rust-300": insufficentFunds,
+          })}
+        >
+          Max
+        </span>
       </button>
     </div>
   );
