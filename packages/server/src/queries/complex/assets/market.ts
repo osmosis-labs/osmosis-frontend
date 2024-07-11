@@ -1,48 +1,68 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
-import { queryCoingeckoCoinIds, queryCoingeckoCoins } from "../../coingecko";
+import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
+import {
+  CoingeckoVsCurrencies,
+  queryCoingeckoCoin,
+  queryCoingeckoCoinIds,
+  queryCoingeckoCoins,
+} from "../../coingecko";
+import { querySupplyTotal } from "../../cosmos";
 import {
   queryAllTokenData,
   queryTokenMarketCaps,
   TokenData,
 } from "../../data-services";
-import { Asset, AssetFilter, getAssets } from ".";
+import { AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
+  totalSupply: CoinPretty;
   currentPrice: PricePretty;
   priceChange1h: RatePretty;
   priceChange24h: RatePretty;
   priceChange7d: RatePretty;
   volume24h: PricePretty;
+  liquidity: PricePretty;
 }>;
 
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
-export async function getMarketAsset<TAsset extends Asset>({
+export async function getMarketAsset<TAsset extends MinimalAsset>({
   asset,
+  extended = false,
+  ...params
 }: {
+  assetLists: AssetList[];
+  chainList: Chain[];
   asset: TAsset;
+  extended?: boolean;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const [marketCap, assetMarketActivity] = await Promise.all([
+      const [marketCap, assetMarketActivity, totalSupply] = await Promise.all([
         getAssetMarketCap(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
         ),
         getAssetMarketActivity(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
         ),
+        extended
+          ? querySupplyTotal({
+              ...params,
+              denom: asset.coinMinimalDenom,
+            }).catch((e) => captureErrorAndReturn(e, undefined))
+          : undefined,
       ]);
 
       return {
@@ -50,6 +70,10 @@ export async function getMarketAsset<TAsset extends Asset>({
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        totalSupply: totalSupply
+          ? new CoinPretty(asset, totalSupply.amount.amount)
+          : undefined,
+        liquidity: assetMarketActivity?.liquidity,
         priceChange1h: assetMarketActivity?.price1hChange,
         priceChange24h: assetMarketActivity?.price24hChange,
         priceChange7d: assetMarketActivity?.price7dChange,
@@ -63,7 +87,7 @@ export async function getMarketAsset<TAsset extends Asset>({
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
  *  If no assets provided, they will be fetched and passed the given search params. */
-export async function mapGetMarketAssets<TAsset extends Asset>({
+export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   ...params
 }: {
@@ -73,7 +97,9 @@ export async function mapGetMarketAssets<TAsset extends Asset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(assets.map((asset) => getMarketAsset({ asset })));
+  return await Promise.all(
+    assets.map((asset) => getMarketAsset({ asset, ...params }))
+  );
 }
 
 const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -103,6 +129,68 @@ async function getAssetMarketCap({
     marketCapsMap.get(coinDenom.toUpperCase()) ??
     (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
   );
+}
+
+const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Fetches coingecko coin data. */
+export async function getAssetCoingeckoCoin({
+  coinGeckoId,
+  currency = "usd",
+}: {
+  coinGeckoId: string;
+  currency?: CoingeckoVsCurrencies;
+}) {
+  return cachified({
+    cache: assetCoingeckoCoinCache,
+    key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
+    ttl: 1000 * 60 * 30, // 15 minutes
+    getFreshValue: async () => {
+      const [coingeckoCoin, volumes] = await Promise.all([
+        captureIfError(() => queryCoingeckoCoin(coinGeckoId)),
+        captureIfError(() =>
+          getCoinGeckoPricesBatchLoader({
+            currency,
+          })
+        ),
+      ]);
+
+      const volume24h = volumes
+        ? (await volumes.load(coinGeckoId)).volume24h
+        : undefined;
+
+      return {
+        links: coingeckoCoin?.links,
+        marketCapRank: coingeckoCoin?.market_cap_rank,
+        totalValueLocked: coingeckoCoin?.market_data.total_value_locked?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.total_value_locked.usd)
+            )
+          : undefined,
+        fullyDilutedValuation: coingeckoCoin?.market_data
+          .fully_diluted_valuation?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.fully_diluted_valuation.usd)
+            )
+          : undefined,
+        circulatingSupply: coingeckoCoin?.market_data.circulating_supply,
+        marketCap: coingeckoCoin?.market_data.market_cap?.usd
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              new Dec(coingeckoCoin?.market_data.market_cap.usd)
+            )
+          : undefined,
+        volume24h:
+          volume24h !== undefined
+            ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(volume24h))
+            : undefined,
+      };
+    },
+  });
 }
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name

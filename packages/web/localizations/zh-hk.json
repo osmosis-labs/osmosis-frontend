@@ -142,7 +142,6 @@
       "failed": "失敗的",
       "failedWithReason": "失敗的: {reason}",
       "pending": "待處理中",
-      "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "退出",
       "failDeposit": "存款失敗",
-      "failWithdraw": "提現失敗"
+      "failWithdraw": "提現失敗",
+      "connectionError": "連線錯誤"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -406,7 +406,8 @@
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
-    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。"
+    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
+    "noData": "沒有數據"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "沒有“ {query} ”的結果",
-    "adjust": "嘗試調整您的搜尋查詢"
+    "adjust": "嘗試調整您的搜尋查詢",
+    "noPools": "沒有泳池",
+    "poolsEmpty": "目前 Osmosis 上沒有{denom}"
   },
   "stake": {
     "available": "可用的",
@@ -908,11 +911,15 @@
     "withdraw": "提取",
     "fromNetwork": "來自網路",
     "toNetwork": "至網路",
+    "from": "從",
+    "to": "到",
     "max": "最大限度",
     "available": "可用的",
     "transferWith": "轉移與",
     "transferTo": "傳送到",
     "receiveAsset": "接收資產",
+    "transfer": "傳輸{denom}",
+    "receive": "接收{denom}",
     "receiveAssetDescription": "當您存入某些資產時，您可以選擇想要在 Osmosis 上接收的資產版本。",
     "estimatingTime": "預計時間",
     "calculatingFees": "計算費用",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "更多存款選擇",
     "moreWithdrawOptions": "更多提款選項",
     "convertTo": "轉換成",
+    "depositAs": "存款為",
+    "withdrawAs": "提款為",
     "recommended": "受到推崇的",
+    "fee": "費用",
+    "fees": "費用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前無法計算{networkName}上的網路費用。交易批准後，網路費用應顯示在您的錢包中。",
+    "free": "自由的",
+    "cheapest": "最便宜",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "資產",
+      "amount": "數量",
+      "review": "審查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "選擇要存入的資產",
+      "titleWithdraw": "選擇要提取的資產",
+      "searchAssets": "搜尋資產"
+    },
+    "bridgeNetworkSelect": {
+      "title": "選擇網路",
+      "searchPlaceholder": "搜尋支援的網絡"
+    },
+    "pendingWithdraw": "待提款",
+    "pendingDeposit": "待定存款",
+    "completedWithdraw": "提現完成",
+    "completedDeposit": "存款完成",
+    "failedWithdraw": "提現失敗",
+    "failedDeposit": "存款失敗",
+    "connectionError": "連線錯誤",
+    "transferDetails": "轉帳詳情",
+    "provider": "提供者",
+    "estimatedTime": "預計時間",
+    "providerFees": "提供者費用",
+    "networkFee": "{networkName}網路費用",
+    "totalFees": "總費用",
+    "estimatedAmountReceived": "預計收到金額",
+    "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
+    "priceImpactWarning": "此交易的價格影響為{priceImpact} ，這可能會影響最終收到的金額。",
+    "connect": "連接",
+    "confirm": "確認",
+    "cancel": "取消",
+    "confirmDepositTo": "確認充值至{chain}",
+    "confirmWithdrawTo": "確認提現至{chain}",
+    "reviewDepositP": "確認前請檢查您的存款詳細資料。一旦存入，您的交易就不可逆轉。",
+    "reviewWithdrawP": "確認前請檢查您的提款詳細資料。一旦撤回，您的交易將不可逆轉。",
+    "lookingForBalances": "尋找餘額",
+    "dontForgetFees": "不要忘記費用！",
+    "feesReserved": "您的{assetName}總餘額中的一小部分已被保留用於支付{networkName}費用。",
+    "verifyAddressWarning": "驗證您要提取資金的地址。提供不正確的地址將導致資金損失。",
+    "recipientAddress": "{chain}上的收件者地址",
+    "enterAddress": "輸入地址",
+    "invalidAddress": "無效的{chain}地址",
+    "acknowledgement": "我承認我對世界末日等負全部責任。",
+    "done": "完畢"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
-    "provideLiquidity": "提供流動性並賺取費用和掉期費用",
     "yourBalance": "您的餘額",
+    "onOsmosis": "關於滲透",
     "aboutDenom": "關於{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "資訊",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多統計數據"
+    },
     "followTheConversation": "關注對話",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "價格",
+      "volume": "體積",
+      "advanced": "先進的",
+      "simple": "簡單的"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全攤薄估值",
+    "volume24h": "24小時總量",
+    "volumeOnOsmosis": "24 小時滲透體積",
+    "liquidityOnOsmosis": "滲透流動性",
     "circulatingSupply": "循環供應",
-    "buyToken": "購買{coinDenom}",
-    "staking": "質押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流動性",
+    "supplyOnOsmosis": "滲透供應",
     "underlyingAssets": {
       "title": "基礎資產",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同類型的{name} 。",

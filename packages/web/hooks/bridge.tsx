@@ -1,6 +1,7 @@
-import { PropsWithChildren } from "react";
+import { BridgeTransactionDirection } from "@osmosis-labs/types";
+import { PropsWithChildren, Provider } from "react";
 
-import { ImmersiveBridgeFlow } from "~/components/bridge/immersive";
+import { ImmersiveBridgeFlow } from "~/components/bridge/immersive-bridge";
 import { LegacyBridgeFlow } from "~/components/bridge/legacy";
 import { FiatRampKey } from "~/integrations";
 import { createContext } from "~/utils/react-context";
@@ -9,14 +10,21 @@ import { useFeatureFlags } from "./use-feature-flags";
 
 export type BridgeContext = {
   /** Start bridging without knowing the asset to bridge yet. */
-  startBridge: (direction: "deposit" | "withdraw") => void;
+  startBridge: (params: { direction: BridgeTransactionDirection }) => void;
   /** Start bridging a specified asset of coinMinimalDenom or symbol/denom. */
-  bridgeAsset: (anyDenom: string, direction: "deposit" | "withdraw") => void;
+  bridgeAsset: (params: {
+    anyDenom: string;
+    direction: BridgeTransactionDirection;
+  }) => void;
   /** Open a specified fiat on ramp given a specific fiat ramp key and asset key. */
-  fiatRamp: (fiatRampKey: FiatRampKey, assetKey: string) => void;
+  fiatRamp: (params: { fiatRampKey: FiatRampKey; assetKey: string }) => void;
   /** Open fiat ramp selection. */
   fiatRampSelection: () => void;
 };
+/** A bridge flow for UI for deposit/withdraw or fiat on ramping capable of handling the bridge context provider. */
+export interface BridgeFlowProvider {
+  Provider: Provider<BridgeContext>;
+}
 
 const [BridgeInnerProvider, useBridge] = createContext<BridgeContext>();
 

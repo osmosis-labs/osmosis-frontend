@@ -53,6 +53,7 @@ function Earn() {
   useNavBar({ title: t("earnPage.title") });
 
   const {
+    cmsData,
     strategies,
     myStrategies,
     totalBalance,
@@ -78,18 +79,18 @@ function Earn() {
         { label: "Perps LP", value: "Perps LP" },
         { label: "Lending", value: "Lending" },
       ],
-      platform: [
-        { label: "Osmosis", value: "Osmosis" },
-        { label: "Quasar", value: "Quasar" },
-        { label: "Levana", value: "Levana" },
-        { label: "Mars", value: "Mars" },
-      ],
+      platform: cmsData?.platforms
+        ? cmsData.platforms.map((platform) => ({
+            label: platform.name,
+            value: platform.name,
+          }))
+        : [],
       lockDurationType: "all",
       search: "",
       specialTokens: [],
       rewardType: "all",
     }),
-    [holdenDenoms?.length, isWalletConnected]
+    [holdenDenoms?.length, cmsData, isWalletConnected]
   );
 
   useEffect(() => {

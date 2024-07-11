@@ -1,7 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { Asset, Orderbook } from "@osmosis-labs/server";
+import { Orderbook } from "@osmosis-labs/server";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
@@ -42,7 +43,7 @@ export const useOrderbooks = (): {
  * Fetch is asynchronous so a loading state is returned.
  * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
  */
-export const useOrderbookSelectableDenoms = <TAsset extends Asset>() => {
+export const useOrderbookSelectableDenoms = <TAsset extends MinimalAsset>() => {
   const { orderbooks, isLoading } = useOrderbooks();
 
   const { data: selectableAssetPages } =
@@ -243,8 +244,10 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 
 export const useOrderbookAllActiveOrders = ({
   userAddress,
+  pageSize = 10,
 }: {
   userAddress: string;
+  pageSize?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
@@ -253,14 +256,18 @@ export const useOrderbookAllActiveOrders = ({
     isLoading,
     fetchNextPage,
     isFetching,
+    isFetchingNextPage,
+    hasNextPage,
   } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
     {
       contractAddresses: addresses,
       userOsmoAddress: userAddress,
+      limit: pageSize,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      keepPreviousData: true,
     }
   );
 
@@ -272,6 +279,8 @@ export const useOrderbookAllActiveOrders = ({
     isLoading,
     fetchNextPage,
     isFetching,
+    isFetchingNextPage,
+    hasNextPage,
   };
 };
 

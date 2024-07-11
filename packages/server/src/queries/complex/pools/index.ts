@@ -43,6 +43,8 @@ export const PoolFilterSchema = z.object({
   minLiquidityUsd: z.number().optional(),
   /** Only include pools of given type. */
   types: z.array(z.enum(allPooltypes)).optional(),
+  /** Search using exact match with pools denoms */
+  denoms: z.array(z.string()).optional(),
 });
 
 /** Params for filtering pools. */
@@ -103,24 +105,36 @@ export async function getPools(
       coin.currency.coinMinimalDenom,
     ]),
     poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
+    coinNames: pool.reserveCoins.map((coin) => [
+      // @ts-ignore
+      coin.currency.coinName,
+    ]),
   }));
+
+  if (params.denoms) {
+    const denoms = params.denoms;
+
+    denomPools = denomPools.filter((denomPool) =>
+      denomPool.coinDenoms.some((denom) => denoms.includes(denom))
+    );
+  }
 
   if (params?.search) {
     // search for an exact match of coinMinimalDenom or pool ID
-    const coinMinimalDemonMatches = search(
+    const coinDenomsOrIdMatches = search(
       denomPools,
       ["coinDenoms", "id"],
       params.search,
       0.0 // Exact match
     );
 
-    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC)
-    if (coinMinimalDemonMatches.length > 0) {
-      denomPools = coinMinimalDemonMatches;
+    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
+    if (coinDenomsOrIdMatches.length > 0) {
+      denomPools = coinDenomsOrIdMatches;
     } else {
       const poolNameByDenomMatches = search(
         denomPools,
-        ["poolNameByDenom"],
+        ["poolNameByDenom", "coinNames"],
         params.search
       );
 

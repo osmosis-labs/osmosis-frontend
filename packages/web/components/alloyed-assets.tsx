@@ -7,13 +7,14 @@ import { useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 interface AlloyedAssetsSectionProps {
+  className?: string;
   contractAddress: string;
   title: string;
   denom: string;
 }
 
 export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
-  const { contractAddress, title, denom } = props;
+  const { contractAddress, title, denom, className } = props;
   const { t } = useTranslation();
 
   const { data: alloyedAssets, isLoading } =
@@ -28,7 +29,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
 
   if (isLoading) {
     return (
-      <section>
+      <section className={className}>
         <h3 className="mb-8 text-h6 font-semibold">
           {t("tokenInfos.underlyingAssets.title")}
         </h3>
@@ -67,7 +68,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
   }
 
   return (
-    <section>
+    <section className={className}>
       <h3 className="mb-8 text-h6 font-semibold">
         {t("tokenInfos.underlyingAssets.title")}
       </h3>

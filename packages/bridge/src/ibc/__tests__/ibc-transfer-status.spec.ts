@@ -4,7 +4,7 @@ import { TxTracer } from "@osmosis-labs/tx";
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
 import { TransferStatusReceiver } from "../../interface";
-import { IBCTransferStatusProvider } from "../transfer-status";
+import { IbcTransferStatusProvider } from "../transfer-status";
 
 const makeRpcStatusResponse = (
   timeoutHeight: string,
@@ -67,8 +67,8 @@ jest.mock("@osmosis-labs/tx", () => ({
   })),
 }));
 
-describe("IBCTransferStatusProvider", () => {
-  let provider: IBCTransferStatusProvider;
+describe("IbcTransferStatusProvider", () => {
+  let provider: IbcTransferStatusProvider;
   let mockReceiver: jest.Mocked<TransferStatusReceiver>;
   let consoleSpy: jest.SpyInstance;
 
@@ -76,7 +76,7 @@ describe("IBCTransferStatusProvider", () => {
     mockReceiver = {
       receiveNewTxStatus: jest.fn(),
     };
-    provider = new IBCTransferStatusProvider(MockChains, MockAssetLists);
+    provider = new IbcTransferStatusProvider(MockChains, MockAssetLists);
     provider.statusReceiverDelegate = mockReceiver;
     // silences console errors and serves as a spy to test for calls
     consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -136,6 +136,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -184,7 +185,7 @@ describe("IBCTransferStatusProvider", () => {
 
   it("should handle missing events", async () => {
     (queryTx as jest.Mock).mockResolvedValue({
-      tx_response: { code: 0, events: [] },
+      tx_response: { code: 0, raw_log: "", events: [] },
     });
 
     const params = JSON.stringify({
@@ -205,6 +206,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -241,6 +243,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -277,6 +280,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",

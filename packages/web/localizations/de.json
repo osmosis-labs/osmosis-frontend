@@ -142,7 +142,6 @@
       "failed": "Fehlgeschlagen",
       "failedWithReason": "Fehlgeschlagen: {reason}",
       "pending": "Ausstehend",
-      "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
@@ -151,7 +150,8 @@
       "successDeposit": "Hinterlegt",
       "successWithdraw": "Zurückgezogen",
       "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen"
+      "failWithdraw": "Auszahlung fehlgeschlagen",
+      "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",
@@ -406,7 +406,8 @@
     "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
-    "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren."
+    "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
+    "noData": "Keine Daten"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "Keine Ergebnisse für \" {query} \"",
-    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen",
+    "noPools": "Keine Pools",
+    "poolsEmpty": "Derzeit gibt es keine Pools für {denom} auf Osmosis"
   },
   "stake": {
     "available": "Verfügbar",
@@ -908,11 +911,15 @@
     "withdraw": "Zurückziehen",
     "fromNetwork": "Aus dem Netzwerk",
     "toNetwork": "Netzwerken",
+    "from": "Von {network}",
+    "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",
+    "transfer": "Übertragen {denom}",
+    "receive": "Empfangen Sie {denom}",
     "receiveAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
     "estimatingTime": "Zeit schätzen",
     "calculatingFees": "Gebührenberechnung",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "Mehr Einzahlungsmöglichkeiten",
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
     "convertTo": "Konvertieren zu",
+    "depositAs": "Einzahlung als",
+    "withdrawAs": "Abheben als",
     "recommended": "Empfohlen",
+    "fee": "Gebühr",
+    "fees": "Gebühren",
+    "unknown": "Unbekannt",
+    "unknownFeeTooltip": "Derzeit können Netzwerkgebühren für {networkName} nicht berechnet werden. Netzwerkgebühren sollten nach der Transaktionsgenehmigung in Ihrem Wallet angezeigt werden.",
+    "free": "Frei",
+    "cheapest": "Am billigsten",
+    "fastest": "Am schnellsten",
+    "stepLabels": {
+      "asset": "Vermögenswert",
+      "amount": "Menge",
+      "review": "Rezension"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
+      "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",
+      "searchAssets": "Assets suchen"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Netzwerk auswählen",
+      "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
+    },
+    "pendingWithdraw": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehende Einzahlung",
+    "completedWithdraw": "Auszahlung abgeschlossen",
+    "completedDeposit": "Einzahlung abgeschlossen",
+    "failedWithdraw": "Auszahlung fehlgeschlagen",
+    "failedDeposit": "Einzahlung fehlgeschlagen",
+    "connectionError": "Verbindungsfehler",
+    "transferDetails": "Überweisungsdetails",
+    "provider": "Anbieter",
+    "estimatedTime": "Geschätzte Zeit",
+    "providerFees": "Anbietergebühren",
+    "networkFee": "{networkName} Netzwerkgebühr",
+    "totalFees": "Gesamtkosten",
+    "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
+    "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
+    "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken.",
+    "connect": "Verbinden",
+    "confirm": "Bestätigen",
+    "cancel": "Stornieren",
+    "confirmDepositTo": "Einzahlung an {chain} bestätigen",
+    "confirmWithdrawTo": "Auszahlung an {chain} bestätigen",
+    "reviewDepositP": "Überprüfen Sie vor der Bestätigung Ihre Einzahlungsdetails. Nach der Einzahlung ist Ihre Transaktion unumkehrbar.",
+    "reviewWithdrawP": "Überprüfen Sie vor der Bestätigung Ihre Auszahlungsdetails. Nach der Auszahlung ist Ihre Transaktion unumkehrbar.",
+    "lookingForBalances": "Auf der Suche nach Gleichgewichten",
+    "dontForgetFees": "Gebühren nicht vergessen!",
+    "feesReserved": "Ein kleiner Betrag Ihres gesamten {assetName} Guthabens wurde für die Zahlung von Gebühren für {networkName} reserviert.",
+    "verifyAddressWarning": "Überprüfen Sie die Adresse, an die Sie Ihr Geld abheben. Die Angabe einer falschen Adresse führt zum Verlust des Geldes.",
+    "recipientAddress": "Empfängeradresse auf {chain}",
+    "enterAddress": "Gib eine Adresse ein",
+    "invalidAddress": "Ungültige {chain} -Adresse",
+    "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
+    "done": "Erledigt"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
-    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
-    "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
-    "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
     "yourBalance": "Dein Kontostand",
+    "onOsmosis": "auf Osmosis",
     "aboutDenom": "Über {name}",
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
     "collapse": "Zusammenbruch",
+    "info": {
+      "title": "Die Info",
+      "show": "Zeigen",
+      "collapse": "Zusammenbruch",
+      "moreStats": "Weitere Statistiken"
+    },
     "followTheConversation": "Verfolgen Sie das Gespräch",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ALLE"
+      "all": "ALLE",
+      "price": "Preis",
+      "volume": "Volumen",
+      "advanced": "Fortschrittlich",
+      "simple": "Einfach"
     },
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
+    "fullyDilutedValuation": "Vollständig verwässerte Bewertung",
+    "volume24h": "24h Gesamtvolumen",
+    "volumeOnOsmosis": "24h Volumen auf Osmose",
+    "liquidityOnOsmosis": "Liquidität durch Osmose",
     "circulatingSupply": "Umlaufversorgung",
-    "buyToken": "Kaufen Sie {coinDenom}",
-    "staking": "Abstecken",
-    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools",
+    "supplyOnOsmosis": "Versorgung durch Osmose",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",

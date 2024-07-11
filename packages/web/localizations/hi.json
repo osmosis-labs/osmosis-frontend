@@ -142,7 +142,6 @@
       "failed": "असफल",
       "failedWithReason": "विफल: {reason}",
       "pending": "लंबित",
-      "pendingRefunded": "विफल: धनवापसी लंबित है",
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
@@ -151,7 +150,8 @@
       "successDeposit": "जमा किया",
       "successWithdraw": "वापस ले लिया",
       "failDeposit": "जमा विफल",
-      "failWithdraw": "निकासी विफल"
+      "failWithdraw": "निकासी विफल",
+      "connectionError": "संपर्क त्रुटि"
     },
     "ibcTransfer": {
       "buttonAdd": "जोड़ना",
@@ -406,7 +406,8 @@
     "swapSlippage": "फिसलन के कारण {coinDenom} के लिए स्वैप विफल रहा। फिसलन सहनशीलता बढ़ाने का प्रयास करें।",
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
-    "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।"
+    "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
+    "noData": "कोई डेटा नहीं"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" के लिए कोई परिणाम नहीं मिला",
-    "adjust": "अपनी खोज क्वेरी समायोजित करने का प्रयास करें"
+    "adjust": "अपनी खोज क्वेरी समायोजित करने का प्रयास करें",
+    "noPools": "कोई पूल नहीं",
+    "poolsEmpty": "वर्तमान में Osmosis पर {denom} के लिए कोई पूल नहीं है"
   },
   "stake": {
     "available": "उपलब्ध",
@@ -908,11 +911,15 @@
     "withdraw": "निकालना",
     "fromNetwork": "नेटवर्क से",
     "toNetwork": "नेटवर्क के लिए",
+    "from": "से",
+    "to": "को",
     "max": "अधिकतम",
     "available": "उपलब्ध",
     "transferWith": "साथ स्थानांतरित करें",
     "transferTo": "के लिए स्थानांतरण",
     "receiveAsset": "संपत्ति प्राप्त करें",
+    "transfer": "स्थानांतरण {denom}",
+    "receive": "{denom} प्राप्त करें",
     "receiveAssetDescription": "जब आप कुछ परिसंपत्तियां जमा करते हैं, तो आप चुन सकते हैं कि आप ओस्मोसिस पर परिसंपत्ति का कौन सा संस्करण प्राप्त करना चाहते हैं।",
     "estimatingTime": "समय का अनुमान लगाना",
     "calculatingFees": "शुल्क की गणना",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "अधिक जमा विकल्प",
     "moreWithdrawOptions": "अधिक निकासी विकल्प",
     "convertTo": "में बदलो",
+    "depositAs": "इस प्रकार जमा करें",
+    "withdrawAs": "इस प्रकार वापस लें",
     "recommended": "अनुशंसित",
+    "fee": "शुल्क",
+    "fees": "फीस",
+    "unknown": "अज्ञात",
+    "unknownFeeTooltip": "वर्तमान में {networkName} पर नेटवर्क शुल्क की गणना नहीं की जा सकती। लेन-देन स्वीकृति पर नेटवर्क शुल्क आपके वॉलेट में प्रदर्शित होना चाहिए।",
+    "free": "मुक्त",
+    "cheapest": "सबसे सस्ता",
+    "fastest": "सबसे तेजी से",
+    "stepLabels": {
+      "asset": "संपत्ति",
+      "amount": "मात्रा",
+      "review": "समीक्षा"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "अपने {asset} को {chain} वापस लेने (उर्फ “ब्रिज”) के लिए निम्नलिखित वैकल्पिक प्रदाताओं में से चुनें।",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "जमा करने के लिए एक परिसंपत्ति का चयन करें",
+      "titleWithdraw": "निकासी के लिए एक परिसंपत्ति का चयन करें",
+      "searchAssets": "संपत्ति खोजें"
+    },
+    "bridgeNetworkSelect": {
+      "title": "नेटवर्क चुनें",
+      "searchPlaceholder": "समर्थित नेटवर्क खोजें"
+    },
+    "pendingWithdraw": "लंबित निकासी",
+    "pendingDeposit": "लंबित जमा",
+    "completedWithdraw": "निकासी पूर्ण हुई",
+    "completedDeposit": "जमा पूर्ण हुआ",
+    "failedWithdraw": "निकासी विफल",
+    "failedDeposit": "जमा विफल",
+    "connectionError": "संपर्क त्रुटि",
+    "transferDetails": "स्थानांतरण विवरण",
+    "provider": "प्रदाता",
+    "estimatedTime": "अनुमानित समय",
+    "providerFees": "प्रदाता शुल्क",
+    "networkFee": "{networkName} नेटवर्क शुल्क",
+    "totalFees": "कुल शुल्क",
+    "estimatedAmountReceived": "अनुमानित प्राप्त राशि",
+    "slippageWarning": "इस लेनदेन के लिए अपेक्षित आउटपुट इनपुट राशि से काफी कम है, जिसके परिणामस्वरूप अपेक्षित राशि से भिन्न अंतिम राशि प्राप्त हो सकती है।",
+    "priceImpactWarning": "इस लेनदेन का मूल्य प्रभाव {priceImpact} है, जो प्राप्त अंतिम राशि को प्रभावित कर सकता है।",
+    "connect": "जोड़ना",
+    "confirm": "पुष्टि करना",
+    "cancel": "रद्द करना",
+    "confirmDepositTo": "{chain} में जमा की पुष्टि करें",
+    "confirmWithdrawTo": "{chain} से निकासी की पुष्टि करें",
+    "reviewDepositP": "पुष्टि करने से पहले अपनी जमा राशि का विवरण देखें। एक बार जमा हो जाने के बाद, आपका लेनदेन अपरिवर्तनीय हो जाता है।",
+    "reviewWithdrawP": "पुष्टि करने से पहले अपने निकासी विवरण की समीक्षा करें। एक बार निकासी हो जाने के बाद, आपका लेनदेन अपरिवर्तनीय हो जाता है।",
+    "lookingForBalances": "संतुलन की तलाश",
+    "dontForgetFees": "फीस के बारे में मत भूलना!",
+    "feesReserved": "आपके कुल {assetName} शेष राशि की एक छोटी राशि {networkName} पर शुल्क का भुगतान करने के लिए आरक्षित कर दी गई है।",
+    "verifyAddressWarning": "जिस पते पर आप अपनी धनराशि निकाल रहे हैं, उसे सत्यापित करें। गलत पता देने पर धनराशि खो जाएगी।",
+    "recipientAddress": "{chain} पर प्राप्तकर्ता का पता",
+    "enterAddress": "पता दर्ज करें",
+    "invalidAddress": "अमान्य {chain} पता",
+    "acknowledgement": "मैं स्वीकार करता हूं कि विश्व के अंत आदि के लिए मैं पूरी तरह से जिम्मेदार हूं।",
+    "done": "हो गया"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom} से कमाएं",
     "explorePools": "तालों का अन्वेषण करें",
-    "stakeYourDenomToEarn": "{denom} % APR अर्जित करने के लिए अपना {apr} } दांव पर लगाएं",
-    "stakeYourDenomToEarnNoAPR": "पुरस्कार अर्जित करने के लिए अपना {denom} दांव पर लगाएं",
-    "provideLiquidity": "तरलता प्रदान करें और फीस और स्वैप पर कमाई करें",
     "yourBalance": "आपका बैलेंस",
+    "onOsmosis": "परासरण पर",
     "aboutDenom": "{name} के बारे में",
     "ariaView": "देखें {name}",
     "ariaViewOn": "{name} पर देखें",
     "collapse": "गिर जाना",
+    "info": {
+      "title": "जानकारी",
+      "show": "दिखाओ",
+      "collapse": "गिर जाना",
+      "moreStats": "अधिक आँकड़े"
+    },
     "followTheConversation": "बातचीत का पालन करें",
     "chart": {
       "xHour": "{h} एच",
       "xDay": "{d} डी",
       "xYear": "{y} Y",
-      "all": "सभी"
+      "all": "सभी",
+      "price": "कीमत",
+      "volume": "आयतन",
+      "advanced": "विकसित",
+      "simple": "सरल"
     },
     "watchlist": "ध्यानसूची",
     "marketCapRank": "मार्केट कैप रैंक",
     "marketCap": "बाज़ार आकार",
+    "fullyDilutedValuation": "पूर्णतया तनुकृत मूल्यांकन",
+    "volume24h": "24 घंटे का कुल वॉल्यूम",
+    "volumeOnOsmosis": "ओस्मोसिस पर 24 घंटे का वॉल्यूम",
+    "liquidityOnOsmosis": "ऑस्मोसिस पर तरलता",
     "circulatingSupply": "परिसंचारी आपूर्ति",
-    "buyToken": "खरीदें {coinDenom}",
-    "staking": "जताया",
-    "liquidityInOSMOPools": "{number} {denom} पूल में तरलता",
+    "supplyOnOsmosis": "ऑस्मोसिस पर आपूर्ति",
     "underlyingAssets": {
       "title": "अंतर्निहित परिसंपत्तियां",
       "description": "{name} ( {denom} ) ओस्मोसिस पर {count} विभिन्न प्रकार के {name}",

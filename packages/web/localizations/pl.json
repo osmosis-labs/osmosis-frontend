@@ -142,7 +142,6 @@
       "failed": "Przegrany",
       "failedWithReason": "Przegrany: {reason}",
       "pending": "Oczekujące",
-      "pendingRefunded": "Błąd: Oczekiwanie na zwrot",
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
@@ -151,7 +150,8 @@
       "successDeposit": "Zdeponowane",
       "successWithdraw": "Wycofał się",
       "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się"
+      "failWithdraw": "Wypłata nie powiodła się",
+      "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
       "buttonAdd": "Dodać",
@@ -406,7 +406,8 @@
     "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
-    "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować."
+    "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
+    "noData": "Brak danych"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "Brak wyników dla „ {query} „",
-    "adjust": "Spróbuj dostosować zapytanie"
+    "adjust": "Spróbuj dostosować zapytanie",
+    "noPools": "Żadnych basenów",
+    "poolsEmpty": "Obecnie w serwisie Osmosis nie ma puli dla {denom}"
   },
   "stake": {
     "available": "Dostępny",
@@ -908,11 +911,15 @@
     "withdraw": "Wycofać",
     "fromNetwork": "Z sieci",
     "toNetwork": "Do sieci",
+    "from": "Z",
+    "to": "Do",
     "max": "Maks",
     "available": "dostępny",
     "transferWith": "Przenieś z",
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",
+    "transfer": "Przelew {denom}",
+    "receive": "Odbierz {denom}",
     "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
     "estimatingTime": "Szacowanie czasu",
     "calculatingFees": "Obliczanie opłat",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "Więcej opcji depozytu",
     "moreWithdrawOptions": "Więcej opcji wypłat",
     "convertTo": "Konwertuj na",
+    "depositAs": "Wpłać jako",
+    "withdrawAs": "Wycofaj jako",
     "recommended": "Zalecana",
+    "fee": "opłata",
+    "fees": "opłaty",
+    "unknown": "Nieznany",
+    "unknownFeeTooltip": "Obecnie nie można obliczyć opłat sieciowych dla {networkName} . Opłaty sieciowe powinny zostać wyświetlone w Twoim portfelu po zatwierdzeniu transakcji.",
+    "free": "Bezpłatny",
+    "cheapest": "Najtańszy",
+    "fastest": "Najszybszy",
+    "stepLabels": {
+      "asset": "Zaleta",
+      "amount": "Kwota",
+      "review": "Recenzja"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wybierz zasób do zdeponowania",
+      "titleWithdraw": "Wybierz zasób do wypłaty",
+      "searchAssets": "Wyszukaj zasoby"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Wybierz sieć",
+      "searchPlaceholder": "Wyszukaj obsługiwane sieci"
+    },
+    "pendingWithdraw": "Oczekuje na wycofanie",
+    "pendingDeposit": "Oczekujący depozyt",
+    "completedWithdraw": "Wypłata zakończona",
+    "completedDeposit": "Depozyt zrealizowany",
+    "failedWithdraw": "Wypłata nie powiodła się",
+    "failedDeposit": "Wpłata nie powiodła się",
+    "connectionError": "Błąd połączenia",
+    "transferDetails": "Szczegóły przelewu",
+    "provider": "Dostawca",
+    "estimatedTime": "Szacowany czas",
+    "providerFees": "Opłaty dostawcy",
+    "networkFee": "{networkName} opłata sieciowa",
+    "totalFees": "Wszystkie koszty",
+    "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
+    "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
+    "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
+    "connect": "Łączyć",
+    "confirm": "Potwierdzać",
+    "cancel": "Anulować",
+    "confirmDepositTo": "Potwierdź wpłatę do {chain}",
+    "confirmWithdrawTo": "Potwierdź wypłatę do {chain}",
+    "reviewDepositP": "Przed potwierdzeniem sprawdź szczegóły swojej wpłaty. Po złożeniu depozytu Twoja transakcja jest nieodwracalna.",
+    "reviewWithdrawP": "Przed potwierdzeniem przejrzyj szczegóły wypłaty. Po wycofaniu transakcja jest nieodwracalna.",
+    "lookingForBalances": "Szukasz sald",
+    "dontForgetFees": "Nie zapomnij o opłatach!",
+    "feesReserved": "Niewielka część Twojego całkowitego salda {assetName} została zarezerwowana na pokrycie opłat za usługę {networkName} .",
+    "verifyAddressWarning": "Sprawdź adres, na który wypłacasz środki. Podanie błędnego adresu skutkować będzie utratą środków.",
+    "recipientAddress": "Adres odbiorcy w {chain}",
+    "enterAddress": "Podaj adres",
+    "invalidAddress": "Nieprawidłowy adres {chain}",
+    "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
+    "done": "Zrobione"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Zarabiaj dzięki {denom}",
     "explorePools": "Przeglądaj baseny",
-    "stakeYourDenomToEarn": "Postaw swój {denom} aby zarobić {apr} % RRSO",
-    "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",
-    "provideLiquidity": "Zapewnij płynność i zarabiaj na opłatach i swapach",
     "yourBalance": "Twój balans",
+    "onOsmosis": "na Osmozie",
     "aboutDenom": "Informacje o {name}",
     "ariaView": "Wyświetl {name}",
     "ariaViewOn": "Wyświetl na {name}",
     "collapse": "Zawalić się",
+    "info": {
+      "title": "Informacje",
+      "show": "Pokazywać",
+      "collapse": "Zawalić się",
+      "moreStats": "Więcej statystyk"
+    },
     "followTheConversation": "Śledź rozmowę",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y}T",
-      "all": "WSZYSTKO"
+      "all": "WSZYSTKO",
+      "price": "Cena",
+      "volume": "Tom",
+      "advanced": "Zaawansowany",
+      "simple": "Prosty"
     },
     "watchlist": "Lista obserwowanych",
     "marketCapRank": "Ranking kapitalizacji rynkowej",
     "marketCap": "Kapitalizacja rynkowa",
+    "fullyDilutedValuation": "W pełni rozwodniona wycena",
+    "volume24h": "Całkowita objętość 24h",
+    "volumeOnOsmosis": "24-godzinny tom na Osmozie",
+    "liquidityOnOsmosis": "Płynność na osmozie",
     "circulatingSupply": "Krążące zaopatrzenie",
-    "buyToken": "Kup {coinDenom}",
-    "staking": "Stawianie",
-    "liquidityInOSMOPools": "Płynność w pulach {number} {denom}",
+    "supplyOnOsmosis": "Zaopatrzenie w osmozę",
     "underlyingAssets": {
       "title": "Aktywa bazowe",
       "description": "{name} ( {denom} ) na osmozie składa się z {count} różne typy {name} .",

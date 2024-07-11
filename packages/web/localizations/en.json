@@ -142,7 +142,6 @@
       "failed": "Failed",
       "failedWithReason": "Failed: {reason}",
       "pending": "Pending",
-      "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
@@ -151,7 +150,8 @@
       "successDeposit": "Deposited",
       "successWithdraw": "Withdrew",
       "failDeposit": "Deposit failed",
-      "failWithdraw": "Withdraw failed"
+      "failWithdraw": "Withdraw failed",
+      "connectionError": "Connection error"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",
@@ -401,12 +401,13 @@
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
     "fallbackSupport": "support",
-    "chartUnavailable": "Chart unavailable",
+    "chartUnavailable": "No data available",
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
-    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue."
+    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "noData": "No data"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -718,7 +719,9 @@
   },
   "search": {
     "noResultsFor": "No results for \"{query}\"",
-    "adjust": "Try adjusting your search query"
+    "adjust": "Try adjusting your search query",
+    "noPools": "No pools",
+    "poolsEmpty": "Currently there are no pools for {denom} on Osmosis"
   },
   "stake": {
     "available": "Available",
@@ -908,11 +911,15 @@
     "withdraw": "Withdraw",
     "fromNetwork": "From network",
     "toNetwork": "To network",
+    "from": "From",
+    "to": "To",
     "max": "Max",
     "available": "available",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",
+    "transfer": "Transfer {denom}",
+    "receive": "Receive {denom}",
     "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",
@@ -921,7 +928,21 @@
     "moreDepositOptions": "More deposit options",
     "moreWithdrawOptions": "More withdraw options",
     "convertTo": "Convert to",
+    "depositAs": "Deposit as",
+    "withdrawAs": "Withdraw as",
     "recommended": "Recommended",
+    "fee": "fee",
+    "fees": "fees",
+    "unknown": "Unknown",
+    "unknownFeeTooltip": "Currently network fees on {networkName} can’t be calculated. Network fees should be displayed in your wallet upon transaction approval.",
+    "free": "Free",
+    "cheapest": "Cheapest",
+    "fastest": "Fastest",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
@@ -929,7 +950,48 @@
       "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Select an asset to deposit",
+      "titleWithdraw": "Select an asset to withdraw",
+      "searchAssets": "Search assets"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Select network",
+      "searchPlaceholder": "Search supported networks"
+    },
+    "pendingWithdraw": "Pending withdraw",
+    "pendingDeposit": "Pending deposit",
+    "completedWithdraw": "Withdraw completed",
+    "completedDeposit": "Deposit completed",
+    "failedWithdraw": "Withdraw failed",
+    "failedDeposit": "Deposit failed",
+    "connectionError": "Connection error",
+    "transferDetails": "Transfer details",
+    "provider": "Provider",
+    "estimatedTime": "Estimated time",
+    "providerFees": "Provider fees",
+    "networkFee": "{networkName} network fee",
+    "totalFees": "Total fees",
+    "estimatedAmountReceived": "Estimated amount received",
+    "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
+    "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received.",
+    "connect": "Connect",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmDepositTo": "Confirm deposit to {chain}",
+    "confirmWithdrawTo": "Confirm withdraw to {chain}",
+    "reviewDepositP": "Review your deposit details before confirming. Once deposited, your transaction is irreversible.",
+    "reviewWithdrawP": "Review your withdraw details before confirming. Once withdrawn, your transaction is irreversible.",
+    "lookingForBalances": "Looking for balances",
+    "dontForgetFees": "Don't forget about fees!",
+    "feesReserved": "A small amount of your total {assetName} balance has been reserved to pay fees on {networkName}.",
+    "verifyAddressWarning": "Verify the address you are withdrawing your funds to. Providing an incorrect address will result in loss of funds.",
+    "recipientAddress": "Recipient address on {chain}",
+    "enterAddress": "Enter an address",
+    "invalidAddress": "Invalid {chain} address",
+    "acknowledgement": "I acknowledge that I am fully responsible for the world ending etc.",
+    "done": "Done"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
@@ -972,30 +1034,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
+    "onOsmosis": "on Osmosis",
     "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
     "collapse": "Collapse",
+    "info": {
+      "title": "Info",
+      "show": "Show",
+      "collapse": "Collapse",
+      "moreStats": "More stats"
+    },
     "followTheConversation": "Follow the conversation",
     "chart": {
       "xHour": "{h}H",
       "xDay": "{d}D",
       "xYear": "{y}Y",
-      "all": "ALL"
+      "all": "ALL",
+      "price": "Price",
+      "volume": "Volume",
+      "advanced": "Advanced",
+      "simple": "Simple"
     },
     "watchlist": "Watchlist",
-    "marketCapRank": "Market Cap Rank",
-    "marketCap": "Market Cap",
-    "circulatingSupply": "Circulating Supply",
-    "buyToken": "Buy {coinDenom}",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools",
+    "marketCapRank": "Market cap rank",
+    "marketCap": "Market cap",
+    "fullyDilutedValuation": "Fully diluted valuation",
+    "volume24h": "Total volume (24h)",
+    "volumeOnOsmosis": "Osmosis volume (24h)",
+    "liquidityOnOsmosis": "Liquidity on Osmosis",
+    "circulatingSupply": "Circulating supply",
+    "supplyOnOsmosis": "Supply on Osmosis",
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",
