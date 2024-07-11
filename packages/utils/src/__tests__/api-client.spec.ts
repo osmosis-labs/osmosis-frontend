@@ -116,9 +116,12 @@ describe("apiClient", () => {
 
   it("should handle messages starting with 'Fetch error.' correctly", async () => {
     (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
-      new Response(JSON.stringify({ message: "Fetch error. Something went wrong" }), {
-        status: 500,
-      })
+      new Response(
+        JSON.stringify({ message: "Fetch error. Something went wrong" }),
+        {
+          status: 500,
+        }
+      )
     );
 
     await apiClient("http://example.com").catch((error) => {
