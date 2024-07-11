@@ -30,7 +30,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(() => {
     accountStore.osmosisChainId
   )?.isWalletConnected;
 
-  // Mock
   const { count } = useOrderbookClaimableOrders({
     userAddress:
       accountStore.getWallet(accountStore.osmosisChainId)?.address ?? "",
