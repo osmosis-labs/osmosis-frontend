@@ -1003,7 +1003,9 @@
     "done": "완료",
     "transferFrom": "{noun} 에서 전송",
     "risks": "브리징에는 위험이 따릅니다.",
-    "learnMore": "더 알아보기"
+    "learnMore": "더 알아보기",
+    "externalTransferSplash": "{denom} {networkA} 에서 {networkB} , {service} 사용하세요.",
+    "openNoun": "{noun} 열기"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

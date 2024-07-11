@@ -1003,7 +1003,9 @@
     "done": "Сделанный",
     "transferFrom": "Перенос из {noun}",
     "risks": "Преодоление сопряжено с риском.",
-    "learnMore": "Узнать больше"
+    "learnMore": "Узнать больше",
+    "externalTransferSplash": "Чтобы передать {denom} из {networkA} в {networkB} , используйте {service} .",
+    "openNoun": "Открыть {noun}"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

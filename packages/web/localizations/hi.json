@@ -1003,7 +1003,9 @@
     "done": "हो गया",
     "transferFrom": "{noun} से स्थानांतरण करें",
     "risks": "पुल बनाने में जोखिम भी शामिल है।",
-    "learnMore": "और अधिक जानें"
+    "learnMore": "और अधिक जानें",
+    "externalTransferSplash": "{denom} {networkA} से {networkB} में स्थानांतरित करने के लिए, कृपया {service} उपयोग करें।",
+    "openNoun": "{noun} खोलें"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

@@ -1003,7 +1003,9 @@
     "done": "Feito",
     "transferFrom": "Transferir de {noun}",
     "risks": "Fazer uma ponte traz riscos.",
-    "learnMore": "Saber mais"
+    "learnMore": "Saber mais",
+    "externalTransferSplash": "Para transferir {denom} de {networkA} para {networkB} , use {service} .",
+    "openNoun": "Abra {noun}"
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

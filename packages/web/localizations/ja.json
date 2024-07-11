@@ -1003,7 +1003,9 @@
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "risks": "ブリッジングにはリスクが伴います。",
-    "learnMore": "もっと詳しく知る"
+    "learnMore": "もっと詳しく知る",
+    "externalTransferSplash": "{denom} {networkA}から{networkB}に転送するには、 {service}を使用してください。",
+    "openNoun": "{noun}を開く"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

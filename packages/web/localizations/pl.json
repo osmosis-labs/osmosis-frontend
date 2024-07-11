@@ -1003,7 +1003,9 @@
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
-    "learnMore": "Ucz się więcej"
+    "learnMore": "Ucz się więcej",
+    "externalTransferSplash": "Aby przenieść {denom} z {networkA} {networkB} , użyj {service} .",
+    "openNoun": "Otwórz {noun}"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

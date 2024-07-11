@@ -1003,7 +1003,9 @@
     "done": "Fait",
     "transferFrom": "Transfert depuis {noun}",
     "risks": "Le rapprochement comporte des risques.",
-    "learnMore": "Apprendre encore plus"
+    "learnMore": "Apprendre encore plus",
+    "externalTransferSplash": "Pour transférer {denom} de {networkA} vers {networkB} , veuillez utiliser {service} .",
+    "openNoun": "Ouvrir {noun}"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

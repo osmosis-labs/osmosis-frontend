@@ -1003,7 +1003,9 @@
     "done": "Hecho",
     "transferFrom": "Transferir desde {noun}",
     "risks": "La unión conlleva riesgos.",
-    "learnMore": "Aprende más"
+    "learnMore": "Aprende más",
+    "externalTransferSplash": "Para transferir {denom} de {networkA} a {networkB} , utilice {service} .",
+    "openNoun": "Abrir {noun}"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

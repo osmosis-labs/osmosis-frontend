@@ -1003,7 +1003,9 @@
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
-    "learnMore": "Daha fazla bilgi edin"
+    "learnMore": "Daha fazla bilgi edin",
+    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+    "openNoun": "{noun} açın"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

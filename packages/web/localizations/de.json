@@ -1003,7 +1003,9 @@
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
-    "learnMore": "Erfahren Sie mehr"
+    "learnMore": "Erfahren Sie mehr",
+    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
+    "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
