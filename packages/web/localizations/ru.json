@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Одобрить торговлю в один клик в {walletName} .",
     "errorInitializingOneClickTradingSession": "Невозможно включить торговлю в 1 клик.",
     "retryInWalletOrContinue": "Повторите попытку через {walletName} или продолжите без торговли в один клик.",
+    "retryInWalletOrContinueNoFunds": "Недостаточно средств для начала сессии. Пожалуйста, внесите больше средств и повторите попытку в {walletName} или продолжайте без торговли в один клик.",
     "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
     "retry": "Повторить попытку",
     "openExtension": "Откройте расширение браузера {walletName} , чтобы подключить свой кошелек.",

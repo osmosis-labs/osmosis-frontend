@@ -15,6 +15,7 @@ import { ErrorWalletState } from "~/components/wallet-states";
 import { CosmosWalletRegistry } from "~/config";
 import { useFeatureFlags, useTranslation, WalletSelectOption } from "~/hooks";
 import { useHasInstalledCosmosWallets } from "~/hooks/use-has-installed-wallets";
+import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
 import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { ModalView } from "~/modals/wallet-select/utils";
@@ -28,6 +29,7 @@ enum WalletSelect1CTScreens {
   Settings = "Settings",
   WelcomeBack = "WelcomeBack",
   ConnectAWallet = "ConnectAWallet",
+  Tutorial = "Tutorial",
 }
 
 export const CosmosWalletState: FunctionComponent<
@@ -68,6 +70,8 @@ export const CosmosWalletState: FunctionComponent<
     const { accountStore, chainStore } = useStore();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
+    const { previousConnectedCosmosAccount, hasFunds } =
+      usePreviousConnectedCosmosAccount();
 
     const show1CT =
       hasInstalledWallets &&
@@ -169,11 +173,19 @@ export const CosmosWalletState: FunctionComponent<
       );
     }
 
-    if (modalView === "initializeOneClickTradingError") {
+    if (
+      modalView === "initializeOneClickTradingError" ||
+      modalView === "initializeOneClickTradingErrorInsufficientFee"
+    ) {
       const title = t("walletSelect.errorInitializingOneClickTradingSession");
-      const desc = t("walletSelect.retryInWalletOrContinue", {
-        walletName: walletInfo?.prettyName ?? "",
-      });
+      const desc =
+        modalView === "initializeOneClickTradingErrorInsufficientFee"
+          ? t("walletSelect.retryInWalletOrContinueNoFunds", {
+              walletName: walletInfo?.prettyName ?? "",
+            })
+          : t("walletSelect.retryInWalletOrContinue", {
+              walletName: walletInfo?.prettyName ?? "",
+            });
 
       return (
         <ErrorWalletState
@@ -254,15 +266,23 @@ export const CosmosWalletState: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
+    const isReturningUser = previousConnectedCosmosAccount && hasFunds;
+
     let oneClickTradingScreen: WalletSelect1CTScreens;
     if (show1CTConnectAWallet) {
       oneClickTradingScreen = WalletSelect1CTScreens.ConnectAWallet;
     } else if (show1CTEditParams) {
       oneClickTradingScreen = WalletSelect1CTScreens.Settings;
-    } else if (!show1CTEditParams && accountStore.hasUsedOneClickTrading) {
+    } else if (
+      !show1CTEditParams &&
+      isReturningUser &&
+      accountStore.hasUsedOneClickTrading
+    ) {
       oneClickTradingScreen = WalletSelect1CTScreens.WelcomeBack;
-    } else {
+    } else if (isReturningUser) {
       oneClickTradingScreen = WalletSelect1CTScreens.Introduction;
+    } else {
+      oneClickTradingScreen = WalletSelect1CTScreens.Tutorial;
     }
 
     return (
@@ -321,6 +341,9 @@ export const CosmosWalletState: FunctionComponent<
                   isDisabled={!transaction1CTParams}
                 />
               </div>
+            </Screen>
+            <Screen screenName={WalletSelect1CTScreens.Tutorial}>
+              <WalletTutorial />
             </Screen>
           </ScreenManager>
         ) : (

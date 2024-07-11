@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Aprobați tranzacționarea cu 1 clic în {walletName} .",
     "errorInitializingOneClickTradingSession": "Tranzacționarea cu 1 clic nu a putut fi activată.",
     "retryInWalletOrContinue": "Încercați din nou în {walletName} sau continuați fără tranzacționarea cu un singur clic.",
+    "retryInWalletOrContinueNoFunds": "Nu sunt suficiente fonduri pentru a începe sesiunea. Depuneți mai mult și încercați din nou în {walletName} sau continuați fără tranzacționarea cu un singur clic.",
     "continueWithoutOneClickTrading": "Continuați fără tranzacționare cu 1 clic",
     "retry": "Reîncercați",
     "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",

@@ -49,7 +49,7 @@ import {
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
-import { useIsCosmosNewAccount } from "~/hooks/use-is-new-account";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";

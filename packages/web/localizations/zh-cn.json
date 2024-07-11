@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "批准{walletName}中的一键交易。",
     "errorInitializingOneClickTradingSession": "无法启用一键交易。",
     "retryInWalletOrContinue": "在{walletName}中重试，或继续而不进行一键交易。",
+    "retryInWalletOrContinueNoFunds": "资金不足，无法启动会话。请存入更多资金并在{walletName}中重试，或不进行一键交易继续操作。",
     "continueWithoutOneClickTrading": "无需一键交易即可继续",
     "retry": "重试",
     "openExtension": "打开 {walletName} 浏览器扩展程序以连接您的钱包。",

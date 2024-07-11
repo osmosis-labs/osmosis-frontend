@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Zatwierdź handel jednym kliknięciem w {walletName} .",
     "errorInitializingOneClickTradingSession": "Nie można włączyć handlu jednym kliknięciem.",
     "retryInWalletOrContinue": "Spróbuj ponownie w {walletName} lub kontynuuj bez handlu 1-Click.",
+    "retryInWalletOrContinueNoFunds": "Za mało środków na rozpoczęcie sesji. Wpłać więcej i spróbuj ponownie w {walletName} lub kontynuuj bez handlu jednym kliknięciem.",
     "continueWithoutOneClickTrading": "Kontynuuj bez handlu jednym kliknięciem",
     "retry": "Spróbować ponownie",
     "openExtension": "Otwórz rozszerzenie przeglądarkowe {walletName}, aby połączyć swój portfel.",

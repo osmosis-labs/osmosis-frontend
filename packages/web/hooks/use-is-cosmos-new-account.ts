@@ -5,7 +5,7 @@ export const useIsCosmosNewAccount = ({
 }: {
   address: string | undefined;
 }) => {
-  const { data, isLoading: isLoadingBalances } =
+  const { data, isLoading: areLoadingBalances } =
     api.local.balances.getUserBalances.useQuery(
       {
         bech32Address: address!,
@@ -16,10 +16,10 @@ export const useIsCosmosNewAccount = ({
     );
 
   return {
-    isNewAccount: isLoadingBalances
+    isNewAccount: areLoadingBalances
       ? true
       : !data ||
-        data.length === 0 || // If there are no balances, don't show the floating toast
+        data.length === 0 ||
         !data.some(({ amount }) => amount !== "0"),
   };
 };

@@ -1,4 +1,8 @@
 import { State, WalletStatus } from "@cosmos-kit/core";
+import {
+  isAccountNotFoundError,
+  isInsufficientFeeError,
+} from "@osmosis-labs/tx";
 
 export type ModalView =
   | "list"
@@ -10,18 +14,19 @@ export type ModalView =
   | "rejected"
   | "initializingOneClickTrading"
   | "broadcastedOneClickTrading"
-  | "initializeOneClickTradingError";
+  | "initializeOneClickTradingError"
+  | "initializeOneClickTradingErrorInsufficientFee";
 
 export function getModalView({
   qrState,
   isInitializingOneClickTrading,
-  hasOneClickTradingError,
+  oneClickTradingError,
   hasBroadcastedTx,
   walletStatus,
 }: {
   qrState: State;
   isInitializingOneClickTrading: boolean;
-  hasOneClickTradingError: boolean;
+  oneClickTradingError: Error | null;
   hasBroadcastedTx: boolean;
   walletStatus?: WalletStatus;
 }): ModalView {
@@ -30,7 +35,15 @@ export function getModalView({
   }
 
   if (walletStatus === WalletStatus.Connected) {
-    if (hasOneClickTradingError) return "initializeOneClickTradingError";
+    if (!!oneClickTradingError) {
+      if (
+        isAccountNotFoundError(oneClickTradingError.message) ||
+        isInsufficientFeeError(oneClickTradingError.message)
+      ) {
+        return "initializeOneClickTradingErrorInsufficientFee";
+      }
+      return "initializeOneClickTradingError";
+    }
     if (isInitializingOneClickTrading) {
       return hasBroadcastedTx
         ? "broadcastedOneClickTrading"

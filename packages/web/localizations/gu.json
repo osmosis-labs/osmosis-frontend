@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "{walletName} માં 1-ક્લિક ટ્રેડિંગને મંજૂરી આપો.",
     "errorInitializingOneClickTradingSession": "1-ક્લિક ટ્રેડિંગ સક્ષમ કરી શકાયું નથી.",
     "retryInWalletOrContinue": "{walletName} માં ફરી પ્રયાસ કરો, અથવા 1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો.",
+    "retryInWalletOrContinueNoFunds": "સત્ર શરૂ કરવા માટે પૂરતું ભંડોળ નથી. કૃપા કરીને વધુ જમા કરો અને {walletName} માં ફરી પ્રયાસ કરો અથવા 1-ક્લિક ટ્રેડિંગ વિના આગળ વધો.",
     "continueWithoutOneClickTrading": "1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો",
     "retry": "ફરી પ્રયાસ કરો",
     "openExtension": "તમારા વૉલેટને કનેક્ટ કરવા માટે {walletName} બ્રાઉઝર એક્સ્ટેંશન ખોલો.",

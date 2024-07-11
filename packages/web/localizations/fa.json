@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "تأیید معامله 1-کلیک در {walletName} .",
     "errorInitializingOneClickTradingSession": "1-Click Trading را نمی توان فعال کرد.",
     "retryInWalletOrContinue": "در {walletName} دوباره امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
+    "retryInWalletOrContinueNoFunds": "بودجه کافی برای شروع جلسه وجود ندارد. لطفاً مقدار بیشتری را واریز کنید و دوباره در {walletName} امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
     "continueWithoutOneClickTrading": "بدون 1-Click Trading ادامه دهید",
     "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
