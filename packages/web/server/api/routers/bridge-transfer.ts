@@ -15,7 +15,13 @@ import {
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
-import { EthereumChainInfo, isNil, timeout } from "@osmosis-labs/utils";
+import {
+  BitcoinChainInfo,
+  EthereumChainInfo,
+  isNil,
+  SolanaChainInfo,
+  timeout,
+} from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
@@ -343,21 +349,15 @@ export const bridgeTransferRouter = createTRPCRouter({
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           } else if (chainType === "bitcoin") {
             return {
-              prettyName: "Bitcoin",
-              chainId: "bitcoin",
-              chainName: "Bitcoin",
+              ...BitcoinChainInfo,
               chainType,
               logoUri: "/networks/bitcoin.svg",
-              color: "#F7931A",
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "bitcoin" }>;
           } else if (chainType === "solana") {
             return {
-              prettyName: "Solana",
-              chainId: "solana",
-              chainName: "Solana",
+              ...SolanaChainInfo,
               chainType,
               logoUri: "/networks/solana.svg",
-              color: "#9945FF",
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "solana" }>;
           }
 

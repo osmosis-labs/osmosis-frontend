@@ -354,38 +354,36 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
+    const balanceSource = (() => {
+      if (fromChain?.chainType === "evm" && supportedSourceAssets) {
+        return {
+          type: "evm" as const,
+          assets: supportedSourceAssets.filter(
+            (asset) => asset.chainType === "evm"
+          ) as Extract<SupportedAsset, { chainType: "evm" }>[],
+          userEvmAddress: evmAddress,
+        };
+      } else if (fromChain?.chainType === "cosmos" && supportedSourceAssets) {
+        return {
+          type: "cosmos" as const,
+          assets: supportedSourceAssets.filter(
+            (asset) => asset.chainType === "cosmos"
+          ) as Extract<SupportedAsset, { chainType: "cosmos" }>[],
+          userCosmosAddress: fromCosmosCounterpartyAccount?.address,
+        };
+      } else {
+        // TODO: can input solana or btc assets
+        return {
+          type: fromChain?.chainType ?? "bitcoin",
+          assets: (supportedSourceAssets?.filter(
+            (asset) => asset.chainType === "bitcoin"
+          ) ?? []) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
+        };
+      }
+    })();
     const { data: assetsBalances, isLoading: isLoadingAssetsBalance } =
       api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
-        {
-          source:
-            fromChain?.chainType === "evm"
-              ? {
-                  type: "evm",
-                  assets: supportedSourceAssets as Extract<
-                    SupportedAsset,
-                    { chainType: "evm" }
-                  >[],
-                  userEvmAddress: evmAddress,
-                }
-              : fromChain?.chainType === "cosmos"
-              ? {
-                  type: "cosmos",
-                  assets: supportedSourceAssets as Extract<
-                    SupportedAsset,
-                    { chainType: "cosmos" }
-                  >[],
-                  userCosmosAddress: fromCosmosCounterpartyAccount?.address,
-                }
-              : {
-                  // Note: for now, these will always return 0 balances since bitcoin and solana are not supported
-                  type: fromChain?.chainType ?? "bitcoin",
-                  assets:
-                    (supportedSourceAssets as Extract<
-                      SupportedAsset,
-                      { chainType: "bitcoin" }
-                    >) ?? [],
-                },
-        },
+        { source: balanceSource },
         {
           enabled: !isNil(fromChain) && !isNil(supportedSourceAssets),
 
