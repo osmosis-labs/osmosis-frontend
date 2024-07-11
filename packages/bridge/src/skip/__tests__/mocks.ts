@@ -284,6 +284,39 @@ export const SkipChains = {
       },
       is_testnet: false,
     },
+    {
+      chain_name: "dydx",
+      chain_id: "dydx-mainnet-1",
+      pfm_enabled: false,
+      cosmos_module_support: { authz: true, feegrant: true },
+      supports_memo: true,
+      logo_uri:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dydx-mainnet/adydx.png",
+      bech32_prefix: "dydx",
+      fee_assets: [
+        {
+          denom: "adydx",
+          gas_price: {
+            low: "12500000000",
+            average: "12500000000",
+            high: "20000000000",
+          },
+        },
+        {
+          denom:
+            "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+          gas_price: { low: "0.025", average: "0.025", high: "0.03" },
+        },
+      ],
+      chain_type: "cosmos",
+      ibc_capabilities: {
+        cosmos_pfm: false,
+        cosmos_ibc_hooks: false,
+        cosmos_memo: true,
+        cosmos_autopilot: false,
+      },
+      is_testnet: false,
+    },
   ],
 };
 

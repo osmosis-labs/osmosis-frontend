@@ -599,6 +599,22 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
+        continue;
+      }
+
+      // This is likely a multi hop IBC, which means either
+      // to or from chain & respective addresses can include a cosmos
+      // bech32 address that can be used to derive the middle hop cosmos
+      // chain address.
+      if (chain.chain_type === "cosmos") {
+        let bech32Address: string | null = null;
+        if (fromChain.chainType === "cosmos") bech32Address = fromAddress;
+        if (toChain.chainType === "cosmos") bech32Address = toAddress;
+        if (!bech32Address) continue;
+
+        addressList.push(
+          toBech32(chain.bech32_prefix, fromBech32(bech32Address).data)
+        );
       }
     }
 
