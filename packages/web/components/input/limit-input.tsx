@@ -14,7 +14,6 @@ export interface LimitInputProps {
   setMarketAmount: (value: string) => void;
   tokenAmount: string;
   price: Dec;
-  insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
 }
@@ -46,7 +45,6 @@ export const LimitInput: FC<LimitInputProps> = ({
   onChange,
   tokenAmount,
   price,
-  insufficentFunds,
   disableSwitching,
   setMarketAmount,
   quoteAssetPrice,
@@ -144,7 +142,6 @@ export const LimitInput: FC<LimitInputProps> = ({
           baseAsset={baseAsset}
           focused={focused}
           swapFocus={swapFocus}
-          insufficentFunds={insufficentFunds}
           amount={type === "fiat" ? fiatAmount : tokenAmount}
           setter={type === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
           disableSwitching={disableSwitching}
@@ -171,7 +168,6 @@ type AutoInputProps = {
 function AutoInput({
   focused,
   baseAsset,
-  insufficentFunds,
   swapFocus,
   amount,
   setter,
@@ -200,7 +196,6 @@ function AutoInput({
         {
           [nonFocusedClasses]: !isFocused,
           [focusedClasses]: isFocused,
-          "text-rust-300": isFocused && insufficentFunds,
           "text-wosmongton-400": isFocused && (amount === "0" || amount === ""),
           "text-white-full": isFocused && +amount > 0,
         }

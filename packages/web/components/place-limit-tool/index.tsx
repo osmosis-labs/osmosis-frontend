@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
@@ -107,7 +108,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             orderDirection={orderDirection}
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
-            <p className="body2 p-4 text-center font-light text-osmoverse-400">
+            <p
+              className={classNames(
+                "body2 p-4 text-center text-osmoverse-400",
+                { "text-rust-300": swapState.insufficientFunds }
+              )}
+            >
               {getInputWidgetLabel()}
             </p>
             <LimitInput
@@ -121,7 +127,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     : swapState.priceState.bidSpotPrice!
                   : swapState.priceState.price
               }
-              insufficentFunds={swapState.insufficientFunds}
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
