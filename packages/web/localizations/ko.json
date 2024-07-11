@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "{walletName} 에서 1-클릭 거래를 승인합니다.",
     "errorInitializingOneClickTradingSession": "1-클릭 거래를 활성화할 수 없습니다.",
     "retryInWalletOrContinue": "{walletName} 에서 다시 시도하거나 1-클릭 거래 없이 계속하세요.",
+    "retryInWalletOrContinueNoFunds": "세션을 시작하는 데 필요한 자금이 부족합니다. 더 입금하고 {walletName} 에 다시 시도하거나 1-클릭 거래 없이 진행하세요.",
     "continueWithoutOneClickTrading": "원클릭 거래 없이 계속하기",
     "retry": "다시 해 보다",
     "openExtension": "{walletName} 브라우저 확장 프로그램을 열어서 지갑을 연결하세요.",

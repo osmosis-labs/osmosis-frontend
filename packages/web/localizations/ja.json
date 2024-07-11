@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "{walletName}での 1-Click 取引を承認します。",
     "errorInitializingOneClickTradingSession": "1-Click 取引を有効にできませんでした。",
     "retryInWalletOrContinue": "{walletName}で再試行するか、1-Click 取引を行わずに続行してください。",
+    "retryInWalletOrContinueNoFunds": "セッションを開始するには資金が足りません。さらに入金して{walletName}で再試行するか、1 クリック取引をせずに続行してください。",
     "continueWithoutOneClickTrading": "1-Click 取引を行わずに続行する",
     "retry": "リトライ",
     "openExtension": "{walletName}ブラウザ拡張機能を開いてウォレットに接続します。",

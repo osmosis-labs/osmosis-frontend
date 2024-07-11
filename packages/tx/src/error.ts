@@ -36,3 +36,8 @@ export function isInsufficientFeeError(message: string) {
     /Insufficient balance for transaction fees. Please add funds to continue./;
   return regexInsufficientFeeError.test(message);
 }
+
+export function isAccountNotFoundError(message: string) {
+  const regexAccountNotFoundError = /account [a-zA-Z0-9]{39,} not found/;
+  return regexAccountNotFoundError.test(message);
+}

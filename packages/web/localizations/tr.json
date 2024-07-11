@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "{walletName} öğesinde Tek Tıklamayla Ticareti onaylayın.",
     "errorInitializingOneClickTradingSession": "Tek Tıklamayla Ticaret etkinleştirilemedi.",
     "retryInWalletOrContinue": "{walletName} yeniden deneyin veya Tek Tıklamayla Ticaret yapmadan devam edin.",
+    "retryInWalletOrContinueNoFunds": "Oturumu başlatmak için yeterli para yok. Lütfen daha fazla para yatırın ve {walletName} ile yeniden deneyin veya Tek Tıklamayla Ticaret yapmadan devam edin.",
     "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
     "retry": "Yeniden dene",
     "openExtension": "{walletName} tarayıcı eklentisini açarak cüzdanınızı bağlayın.",

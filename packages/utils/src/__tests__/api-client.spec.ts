@@ -96,4 +96,38 @@ describe("apiClient", () => {
       );
     });
   });
+
+  it("should handle messages ending with a dot correctly", async () => {
+    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: "Bad Request." }), {
+        status: 400,
+      })
+    );
+
+    await apiClient("http://example.com").catch((error) => {
+      expect(error).toBeInstanceOf(ApiClientError);
+      expect(error.message).toEqual("Fetch error. Bad Request.");
+      expect(error.status).toEqual(400);
+      expect(error.data).toEqual({
+        message: "Bad Request.",
+      });
+    });
+  });
+
+  it("should handle messages starting with 'Fetch error.' correctly", async () => {
+    (fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: "Fetch error. Something went wrong" }), {
+        status: 500,
+      })
+    );
+
+    await apiClient("http://example.com").catch((error) => {
+      expect(error).toBeInstanceOf(ApiClientError);
+      expect(error.message).toEqual("Fetch error. Something went wrong.");
+      expect(error.status).toEqual(500);
+      expect(error.data).toEqual({
+        message: "Fetch error. Something went wrong",
+      });
+    });
+  });
 });

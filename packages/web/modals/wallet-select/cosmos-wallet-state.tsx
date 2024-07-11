@@ -173,11 +173,19 @@ export const CosmosWalletState: FunctionComponent<
       );
     }
 
-    if (modalView === "initializeOneClickTradingError") {
+    if (
+      modalView === "initializeOneClickTradingError" ||
+      modalView === "initializeOneClickTradingErrorInsufficientFee"
+    ) {
       const title = t("walletSelect.errorInitializingOneClickTradingSession");
-      const desc = t("walletSelect.retryInWalletOrContinue", {
-        walletName: walletInfo?.prettyName ?? "",
-      });
+      const desc =
+        modalView === "initializeOneClickTradingErrorInsufficientFee"
+          ? t("walletSelect.retryInWalletOrContinueNoFunds", {
+              walletName: walletInfo?.prettyName ?? "",
+            })
+          : t("walletSelect.retryInWalletOrContinue", {
+              walletName: walletInfo?.prettyName ?? "",
+            });
 
       return (
         <ErrorWalletState

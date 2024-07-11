@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Genehmigen Sie den 1-Klick-Handel in {walletName} .",
     "errorInitializingOneClickTradingSession": "1-Click-Handel konnte nicht aktiviert werden.",
     "retryInWalletOrContinue": "Versuchen Sie es erneut in {walletName} oder fahren Sie ohne 1-Click-Handel fort.",
+    "retryInWalletOrContinueNoFunds": "Nicht genügend Guthaben, um die Sitzung zu starten. Bitte zahlen Sie mehr ein und versuchen Sie es erneut in {walletName} oder fahren Sie ohne 1-Click Trading fort.",
     "continueWithoutOneClickTrading": "Ohne 1-Click-Handel fortfahren",
     "retry": "Wiederholen",
     "openExtension": "Öffnen Sie die Browsererweiterung {walletName} um Ihre Wallet zu verbinden.",

@@ -72,8 +72,6 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
 
     const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
 
-    const hasOneClickTradingError = !!create1CTSession.error;
-
     const {
       transaction1CTParams,
       setTransaction1CTParams,
@@ -109,7 +107,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
             qrState,
             walletStatus: cosmosWalletStatus,
             isInitializingOneClickTrading,
-            hasOneClickTradingError,
+            oneClickTradingError: create1CTSession.error as Error | null,
             hasBroadcastedTx,
           })
         );
@@ -120,8 +118,8 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       isOpen,
       qrMessage,
       isInitializingOneClickTrading,
-      hasOneClickTradingError,
       hasBroadcastedTx,
+      create1CTSession.error,
     ]);
 
     useUpdateEffect(() => {

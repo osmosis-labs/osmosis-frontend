@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Approuvez le trading en 1 clic dans {walletName} .",
     "errorInitializingOneClickTradingSession": "Le trading en 1 clic n'a pas pu être activé.",
     "retryInWalletOrContinue": "Réessayez dans {walletName} ou continuez sans trading en 1 clic.",
+    "retryInWalletOrContinueNoFunds": "Pas assez de fonds pour démarrer la session. Veuillez déposer davantage et réessayer dans {walletName} , ou procéder sans trading en 1 clic.",
     "continueWithoutOneClickTrading": "Continuer sans trading en 1 clic",
     "retry": "Recommencez",
     "openExtension": "Ouvrez l'extension de navigateur {walletName} pour connecter votre portefeuille.",

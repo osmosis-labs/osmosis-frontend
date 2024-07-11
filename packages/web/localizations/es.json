@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Aprobar operaciones con 1 clic en {walletName}",
     "errorInitializingOneClickTradingSession": "No se pudo habilitar el comercio con 1 clic.",
     "retryInWalletOrContinue": "Vuelva a intentarlo en {walletName} o continúe sin 1-Click Trading.",
+    "retryInWalletOrContinueNoFunds": "No hay fondos suficientes para iniciar la sesión. Deposite más y vuelva a intentarlo en {walletName} o continúe sin operar con 1 clic.",
     "continueWithoutOneClickTrading": "Continuar sin operar con 1 clic",
     "retry": "Rever",
     "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",

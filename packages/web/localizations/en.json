@@ -863,6 +863,7 @@
     "approveOneClickTradingSession": "Approve 1-Click Trading in {walletName}.",
     "errorInitializingOneClickTradingSession": "1-Click Trading could not be enabled.",
     "retryInWalletOrContinue": "Retry in {walletName}, or continue without 1-Click Trading.",
+    "retryInWalletOrContinueNoFunds": "Not enough funds to start the session. Please deposit more and retry in {walletName}, or proceed without 1-Click Trading.",
     "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
     "retry": "Retry",
     "openExtension": "Open the {walletName} browser extension to connect your wallet.",
