@@ -32,11 +32,11 @@ export class BasePage {
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
-    const wallet = this.page.locator(
-      '//button//span[contains(text(), "osmo")]'
-    );
+    const wallet = this.page.locator("//button/div/span[@title]");
     await this.page.waitForTimeout(2000);
-    expect(wallet).toBeTruthy();
+    // Verify that wallet modal loaded correctly
+    const isWalletVisible = await wallet.isVisible();
+    expect(isWalletVisible).toBeTruthy();
     console.log("Wallet is connected.");
   }
 
