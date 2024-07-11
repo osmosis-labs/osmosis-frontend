@@ -480,7 +480,7 @@ describe("SkipBridgeProvider", () => {
       toChain
     );
 
-    expect(addressList).toEqual([fromAddress]);
+    expect(addressList).toEqual([fromAddress, toAddress]);
   });
 
   it("should return correct finality time for known chain IDs", () => {
@@ -655,7 +655,7 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
 
   it("should generate the correct URL for given parameters", async () => {
     const expectedUrl =
-      "https://ibc.fun/?src_chain=cosmoshub-4&src_asset=uatom&dest_chain=agoric-3&dest_asset=ubld";
+      "https://go.skip.build/?src_chain=cosmoshub-4&src_asset=uatom&dest_chain=agoric-3&dest_asset=ubld";
     const result = await provider.getExternalUrl({
       fromChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
       toChain: { chainId: "agoric-3", chainType: "cosmos" },
@@ -672,13 +672,13 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip:Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
   it("should encode asset addresses correctly", async () => {
     const expectedUrl =
-      "https://ibc.fun/?src_chain=akashnet-2&src_asset=ibc%2F2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
+      "https://go.skip.build/?src_chain=akashnet-2&src_asset=ibc%2F2e5d0ac026ac1afa65a23023ba4f24bb8ddf94f118edc0bad6f625bfc557cded&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
     const result = await provider.getExternalUrl({
       fromChain: { chainId: "akashnet-2", chainType: "cosmos" },
       toChain: { chainId: "andromeda-1", chainType: "cosmos" },
@@ -697,13 +697,13 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip:Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 
   it("should handle numeric chain IDs correctly", async () => {
     const expectedUrl =
-      "https://ibc.fun/?src_chain=42161&src_asset=0xff970a61a04b1ca14834a43f5de4533ebddb5cc8&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
+      "https://go.skip.build/?src_chain=42161&src_asset=0xff970a61a04b1ca14834a43f5de4533ebddb5cc8&dest_chain=andromeda-1&dest_asset=ibc%2F976c73350f6f48a69de740784c8a92931c696581a5c720d96ddf4afa860fff97";
     const result = await provider.getExternalUrl({
       fromChain: { chainId: 42161, chainType: "evm" },
       toChain: { chainId: "andromeda-1", chainType: "cosmos" },
@@ -721,7 +721,7 @@ describe("SkipBridgeProvider.getExternalUrl", () => {
       toAddress: "cosmos1...",
     });
 
-    expect(result?.urlProviderName).toBe("IBC.fun");
+    expect(result?.urlProviderName).toBe("Skip:Go");
     expect(result?.url.toString()).toBe(expectedUrl);
   });
 });

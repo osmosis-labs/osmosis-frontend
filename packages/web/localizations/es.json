@@ -142,7 +142,6 @@
       "failed": "Fallida",
       "failedWithReason": "Fallida: {reason}",
       "pending": "Pendiente",
-      "pendingRefunded": "Fallido: reembolso pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
@@ -151,7 +150,8 @@
       "successDeposit": "Depositado",
       "successWithdraw": "se retiró",
       "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido"
+      "failWithdraw": "Retiro fallido",
+      "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
       "buttonAdd": "Agregar",
@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
       "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
-      "enableOneClickTrading": "Habilite el comercio con 1 clic",
+      "startANewSession": "Iniciar una nueva sesión",
       "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
       "approveManually": "Aprobar manualmente en {walletName}",
       "continueWithWallet": "Continuar con la billetera",
@@ -512,13 +512,8 @@
       "introducingSubtitle": "Realice transacciones más rápidas y sencillas sin la molestia de múltiples aprobaciones de billetera.",
       "learnMore": "Aprende más",
       "startTradingButton": "Comience a operar con 1 clic",
-      "defaultParameters": "El comercio con 1 clic estará activo durante 1 hora en este dispositivo con un límite de gasto de $5,000 USD",
-      "changeButton": "Cambiar"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Opere más rápido y más fácilmente",
-      "startOneClickTradingNow": "Comience a operar con 1 clic ahora",
-      "iconAlt": "Logotipo pequeño comercial con 1 clic"
+      "defaultParameters": "La configuración predeterminada está establecida en 1 hora con un límite de protección contra pérdidas de $5,000 USD.",
+      "changeButton": "Editar ajustes"
     },
     "floatingBanner": {
       "newPill": "Nuevo",
@@ -529,33 +524,24 @@
       "header": "Comercio con 1 clic",
       "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
       "enableTitle": "Habilite el comercio con 1 clic",
-      "spendLimitTitle": "Límite de gasto",
-      "networkFeeLimitTitle": "Límite de tarifa de red",
+      "spendLimitTitle": "Límite de protección de pérdidas",
       "sessionPeriodTitle": "Período de sesión",
       "startButton": "Comience a operar con 1 clic",
       "editSessionButton": "Guardar cambios",
       "endingSession": "Finalizando sesión",
       "feeToDisable": "Tarifa para desactivar el comercio con 1 clic:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Establezca la cantidad máxima que puede gastar dentro de un período de sesión de negociación con 1 clic.",
+        "spendLimitDescription": "Opere sin límites con activos confiables (50 principales por capitalización de mercado).",
+        "spendLimitSubDescription": "Para todos los demás activos, establezca un límite en el valor máximo negociable antes de requerir la aprobación manual de la billetera. Las tarifas comerciales también cuentan para este límite.",
         "fixedAmount": "Cantidad fija",
         "shareOfBalance": "Participación del saldo",
-        "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente",
-        "fluctuationNotice": "Tenga en cuenta que el valor en USD de su límite de gasto se basa en el valor de sus activos, que pueden fluctuar."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Límite de tarifa de red",
-        "description": "Establezca el monto máximo que puede gastar en tarifas de red para cualquier transacción durante su sesión de Trading con 1 clic.",
-        "info": "Si una tarifa excede este monto, puede proceder firmando manualmente las transacciones en su billetera.",
-        "low": "Bajo",
-        "average": "Promedio",
-        "high": "Alto",
-        "recommended": "Recomendado"
+        "shareOfBalanceDescription": "{shareOfBalance} de su saldo total en Osmosis vale actualmente"
       },
       "sessionPeriodScreen": {
         "title": "Período de sesión",
         "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
         "periods": {
+          "5min": "5 minutos",
           "10min": "10 minutos",
           "30min": "30 minutos",
           "1hour": "1 hora",
@@ -572,6 +558,7 @@
     },
     "welcomeBack": {
       "title": "Bienvenido de nuevo",
+      "subtitle": "Conecta tu billetera para continuar explorando Osmosis.",
       "description": "Una vez que conecte su billetera, se le pedirá que apruebe una transacción para iniciar su sesión de negociación con 1 clic.",
       "toggleLabel": "Comercio con 1 clic",
       "editParamsAriaLabel": "Cambiar parámetros 1CT"
@@ -582,7 +569,10 @@
       "description": "Su sesión de negociación con 1 clic comenzará cuando apruebe la transacción en la billetera elegida."
     },
     "profile": {
-      "sessionExpired": "Sesión expirada"
+      "sessionExpired": "Ajustes",
+      "restart": "Reanudar",
+      "tooltipHeader": "Configuración comercial con 1 clic",
+      "resetSession": "Reinicie o edite sesiones de negociación con 1 clic desde su perfil."
     }
   },
   "pool": {
@@ -846,9 +836,7 @@
     "continueAnyway": "De todas maneras, continúe",
     "warning": {
       "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
-      "exceedsNetworkFeeLimit": "Este intercambio excede el límite de tarifa de su red para 1-Click Trading.",
-      "increaseSpendLimit": "Aumentar el límite de gasto",
-      "increaseNetworkFeeLimit": "Aumentar el límite de la tarifa de red"
+      "increaseSpendLimit": "Aumentar el límite de gasto"
     },
     "settings": {
       "slippage": "Tolerancia de deslizamiento",
@@ -875,6 +863,7 @@
     "approveOneClickTradingSession": "Aprobar operaciones con 1 clic en {walletName}",
     "errorInitializingOneClickTradingSession": "No se pudo habilitar el comercio con 1 clic.",
     "retryInWalletOrContinue": "Vuelva a intentarlo en {walletName} o continúe sin 1-Click Trading.",
+    "retryInWalletOrContinueNoFunds": "No hay fondos suficientes para iniciar la sesión. Deposite más y vuelva a intentarlo en {walletName} o continúe sin operar con 1 clic.",
     "continueWithoutOneClickTrading": "Continuar sin operar con 1 clic",
     "retry": "Rever",
     "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",
@@ -893,6 +882,7 @@
     "mobileWallets": "Billeteras Móviles",
     "installedWallets": "Billeteras Instaladas",
     "otherWallets": "Otras Billeteras",
+    "searchWallets": "Buscar carteras",
     "step1Title": "¿Qué son las carteras?",
     "step1Content": "Las carteras se utilizan para enviar, recibir y acceder a todos tus activos digitales como OSMO y ATOM.",
     "step2Title": "Sin cuentas. Sin contraseñas.",
@@ -900,7 +890,12 @@
     "step3Title": "Tus llaves, tus fondos.",
     "step3Content": "En Osmosis, solo tú puedes mover tus activos. Con gran poder viene una gran responsabilidad.",
     "step4Title": "Crea una cartera para comenzar",
-    "step4Content": "¡Configura tu primera cartera y comienza sesión! Enviar, recibir o comprar activos."
+    "step4Content": "¡Configura tu primera cartera y comienza sesión! Enviar, recibir o comprar activos.",
+    "yourConnectedWallets": "Tus billeteras conectadas",
+    "primaryWallet": "billetera primaria",
+    "done": "Hecho",
+    "manage": "Administrar",
+    "disconnect": "Desconectar"
   },
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "transactionBroadcasting": "Ejecutando transacción",
@@ -920,6 +915,8 @@
     "receiveAsset": "Recibir activo",
     "transfer": "Transferir {denom}",
     "receive": "Recibir {denom}",
+    "selectDepositWallet": "Seleccionar billetera de depósito",
+    "selectWithdrawWallet": "Seleccione retirar billetera",
     "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
     "estimatingTime": "tiempo estimado",
     "calculatingFees": "Calcular tarifas",
@@ -971,7 +968,7 @@
     "provider": "Proveedor",
     "estimatedTime": "Hora prevista",
     "providerFees": "Tarifas del proveedor",
-    "networkFee": "{networkName} Tarifa de red",
+    "networkFee": "{networkName} tarifa de red",
     "totalFees": "Tarifas totales",
     "estimatedAmountReceived": "Cantidad estimada recibida",
     "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
@@ -983,7 +980,21 @@
     "confirmWithdrawTo": "Confirmar retiro a {chain}",
     "reviewDepositP": "Revise los detalles de su depósito antes de confirmar. Una vez depositada, su transacción es irreversible.",
     "reviewWithdrawP": "Revise los detalles de su retiro antes de confirmar. Una vez retirada, su transacción es irreversible.",
-    "lookingForBalances": "buscando saldos"
+    "lookingForBalances": "buscando saldos",
+    "dontForgetFees": "¡No te olvides de las tarifas!",
+    "feesReserved": "Se ha reservado una pequeña cantidad de su saldo total de {assetName} para pagar tarifas en {networkName} .",
+    "verifyAddressWarning": "Verifique la dirección a la que está retirando sus fondos. Proporcionar una dirección incorrecta resultará en la pérdida de fondos.",
+    "recipientAddress": "Dirección del destinatario en {chain}",
+    "enterAddress": "Introduce una direccion",
+    "sendToAnotherAddress": "Enviar a otra dirección",
+    "invalidAddress": "Dirección {chain} no válida",
+    "acknowledgement": "Reconozco que soy totalmente responsable del fin del mundo, etc.",
+    "done": "Hecho",
+    "transferFrom": "Transferir desde {noun}",
+    "risks": "La unión conlleva riesgos.",
+    "learnMore": "Aprende más",
+    "externalTransferSplash": "Para transferir {denom} de {networkA} a {networkB} , utilice {service} .",
+    "openNoun": "Abrir {noun}"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

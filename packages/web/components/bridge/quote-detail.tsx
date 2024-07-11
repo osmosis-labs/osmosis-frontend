@@ -40,7 +40,7 @@ export const EstimatedTimeRow: FunctionComponent<{
   >
     <div className="flex items-center gap-1">
       <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />{" "}
-      <p className="text-osmoverse-100">
+      <p className="text-osmoverse-100 first-letter:capitalize">
         {selectedQuote.estimatedTime.humanize()}
       </p>
     </div>
@@ -173,6 +173,8 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt: number | undefined;
   refetchInterval: number;
   open: boolean;
+  isRemainingTimePaused: boolean;
+  showRemainingTime?: boolean;
 }> = ({
   selectedQuote,
   warnUserOfPriceImpact,
@@ -180,20 +182,23 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt,
   refetchInterval,
   open,
+  isRemainingTimePaused,
+  showRemainingTime = false,
 }) => {
   const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
 
   return (
-    <div className="flex items-center gap-2">
-      {!isNil(selectedQuoteUpdatedAt) && (
+    <div className="flex items-center gap-2 md:gap-1">
+      {!isNil(selectedQuoteUpdatedAt) && showRemainingTime && (
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
+          isPaused={isRemainingTimePaused}
         />
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 md:gap-1">
         {!open && totalFees && (
-          <span className="body1">
+          <span className="subtitle1 md:body2">
             ~{totalFees.toString()} {t("transfer.fees")}
           </span>
         )}
@@ -233,7 +238,7 @@ export const QuoteDetailRow: FunctionComponent<
     isLoading: boolean;
   }>
 > = ({ label, children, isLoading }) => (
-  <div className="body2 flex justify-between">
+  <div className="body2 md:caption flex justify-between">
     <p className="text-osmoverse-300">{label}</p>
     <span
       className={classNames({

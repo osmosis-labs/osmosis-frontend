@@ -142,7 +142,6 @@
       "failed": "Arızalı",
       "failedWithReason": "Arızalı: {reason}",
       "pending": "Beklemede",
-      "pendingRefunded": "Başarısız: İade sürecinde",
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
@@ -151,7 +150,8 @@
       "successDeposit": "Yatırıldı",
       "successWithdraw": "Geri çekildi",
       "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu"
+      "failWithdraw": "Para çekme işlemi başarısız oldu",
+      "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
       "buttonAdd": "Eklemek",
@@ -498,7 +498,7 @@
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "enableOneClickTrading": "Tek Tıklamayla Ticareti Etkinleştir",
+      "startANewSession": "Yeni bir oturum başlat",
       "increaseFeeLimit": "Ağ ücreti sınırını artırın",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
@@ -512,13 +512,8 @@
       "introducingSubtitle": "Birden fazla cüzdan onayıyla uğraşmadan daha hızlı ve daha kolay işlemler yapın.",
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
-      "defaultParameters": "Tek Tıklamayla Ticaret bu cihazda 1 saat boyunca 5.000 ABD Doları harcama sınırıyla etkin olacak",
-      "changeButton": "Değiştirmek"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Daha hızlı ve daha kolay ticaret yapın",
-      "startOneClickTradingNow": "Şimdi Tek Tıkla Ticarete Başlayın",
-      "iconAlt": "Tek Tıklamayla Ticaret Küçük Logosu"
+      "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
+      "changeButton": "Ayarları düzenle"
     },
     "floatingBanner": {
       "newPill": "Yeni",
@@ -529,33 +524,24 @@
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
       "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
-      "spendLimitTitle": "Harcama Limiti",
-      "networkFeeLimitTitle": "Ağ ücreti limiti",
+      "spendLimitTitle": "Kayıp koruma limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",
       "endingSession": "Oturumu sonlandır",
       "feeToDisable": "Tek Tıkla Ticareti devre dışı bırakma ücreti:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Tek Tıklamayla Ticaret oturumu süresi içinde harcayabileceğiniz maksimum tutarı ayarlayın.",
+        "spendLimitDescription": "Güvenilir varlıklar üzerinde sınırsız ticaret yapın (piyasa değerine göre ilk 50).",
+        "spendLimitSubDescription": "Diğer tüm varlıklar için, manuel cüzdan onayı gerektirmeden önce, alınıp satılabilen maksimum değere bir sınır belirleyin. İşlem ücretleri de bu limite dahil edilir.",
         "fixedAmount": "Sabit miktar",
         "shareOfBalance": "Bakiye payı",
-        "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir",
-        "fluctuationNotice": "Harcama limitinizin ABD doları değerinin, varlıklarınızın dalgalanabilecek değerine bağlı olduğunu unutmayın."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Ağ ücreti limiti",
-        "description": "Tek Tıkla Ticaret oturumunuz sırasında herhangi bir tek işlem için ağ ücretlerine harcayabileceğiniz maksimum tutarı belirleyin.",
-        "info": "Eğer ücret bu tutarı aşarsa cüzdanınızdaki işlemleri manuel olarak imzalayarak devam edebilirsiniz.",
-        "low": "Düşük",
-        "average": "Ortalama",
-        "high": "Yüksek",
-        "recommended": "Tavsiye edilen"
+        "shareOfBalanceDescription": "Osmosis'teki toplam bakiyenizin {shareOfBalance} değeri şu anda değerindedir"
       },
       "sessionPeriodScreen": {
         "title": "Oturum dönemi",
         "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
         "periods": {
+          "5min": "5 dakika",
           "10min": "10 dakika",
           "30min": "30 dakika",
           "1hour": "1 saat",
@@ -572,6 +558,7 @@
     },
     "welcomeBack": {
       "title": "tekrar hoşgeldiniz",
+      "subtitle": "Osmosis'i keşfetmeye devam etmek için cüzdanınızı bağlayın.",
       "description": "Cüzdanınızı bağladığınızda, Tek Tıkla Ticaret oturumunuzu başlatmak için bir işlemi onaylamanız istenecektir.",
       "toggleLabel": "Tek Tıklamayla Ticaret",
       "editParamsAriaLabel": "1CT parametrelerini değiştirin"
@@ -582,7 +569,10 @@
       "description": "Tek Tıkla Ticaret oturumunuz, seçtiğiniz cüzdandaki işlemi onayladığınızda başlayacaktır."
     },
     "profile": {
-      "sessionExpired": "Oturum süresi doldu"
+      "sessionExpired": "Ayarlar",
+      "restart": "Tekrar başlat",
+      "tooltipHeader": "1-Tıklamayla Ticaret Ayarları",
+      "resetSession": "Tek Tıkla Ticaret oturumlarını profilinizden yeniden başlatın veya düzenleyin."
     }
   },
   "pool": {
@@ -846,9 +836,7 @@
     "continueAnyway": "Her halükarda devam et",
     "warning": {
       "exceedsSpendLimit": "Bu takas, Tek Tıklamayla Ticaret için kalan harcama limitinizi aşıyor.",
-      "exceedsNetworkFeeLimit": "Bu takas, Tek Tıklamayla Ticaret için ağ ücreti limitinizi aşıyor.",
-      "increaseSpendLimit": "Harcama sınırını artırın",
-      "increaseNetworkFeeLimit": "Ağ ücreti sınırını artırın"
+      "increaseSpendLimit": "Harcama sınırını artırın"
     },
     "settings": {
       "slippage": "Slipaj toleransı",
@@ -875,6 +863,7 @@
     "approveOneClickTradingSession": "{walletName} öğesinde Tek Tıklamayla Ticareti onaylayın.",
     "errorInitializingOneClickTradingSession": "Tek Tıklamayla Ticaret etkinleştirilemedi.",
     "retryInWalletOrContinue": "{walletName} yeniden deneyin veya Tek Tıklamayla Ticaret yapmadan devam edin.",
+    "retryInWalletOrContinueNoFunds": "Oturumu başlatmak için yeterli para yok. Lütfen daha fazla para yatırın ve {walletName} ile yeniden deneyin veya Tek Tıklamayla Ticaret yapmadan devam edin.",
     "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
     "retry": "Yeniden dene",
     "openExtension": "{walletName} tarayıcı eklentisini açarak cüzdanınızı bağlayın.",
@@ -893,6 +882,7 @@
     "mobileWallets": "Mobil Cüzdanlar",
     "installedWallets": "Yüklü Cüzdanlar",
     "otherWallets": "Diğer Cüzdanlar",
+    "searchWallets": "Cüzdan ara",
     "step1Title": "Cüzdanlar nedir?",
     "step1Content": "Cüzdanlar, OSMO ve ATOM gibi tüm dijital varlıklarınıza gönderme, alma ve erişme işlemleri için kullanılır.",
     "step2Title": "Hesap yok. Şifre yok.",
@@ -900,7 +890,12 @@
     "step3Title": "Anahtarlarınız, fonlarınız.",
     "step3Content": "Osmosis'de, yalnızca siz varlıklarınızı hareket ettirebilirsiniz. Büyük güç, büyük sorumluluk getirir.",
     "step4Title": "Başlamak için bir cüzdan oluşturun",
-    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın."
+    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın.",
+    "yourConnectedWallets": "Bağlı cüzdanlarınız",
+    "primaryWallet": "Birincil cüzdan",
+    "done": "Tamamlamak",
+    "manage": "Üstesinden gelmek",
+    "disconnect": "Bağlantıyı kes"
   },
   "swapFailed": "Değiştirme başarısız oldu. Likidite yeterli olmayabilir. İzin verilen kaymayı ayarlamayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
@@ -920,6 +915,8 @@
     "receiveAsset": "Varlık al",
     "transfer": "{denom}",
     "receive": "{denom}",
+    "selectDepositWallet": "Para yatırma cüzdanını seçin",
+    "selectWithdrawWallet": "Cüzdan çekmeyi seçin",
     "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",
@@ -971,7 +968,7 @@
     "provider": "Sağlayıcı",
     "estimatedTime": "Tahmini süresi",
     "providerFees": "Sağlayıcı ücretleri",
-    "networkFee": "{networkName} Ağ ücreti",
+    "networkFee": "{networkName} ağ ücreti",
     "totalFees": "Toplam ücretler",
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
@@ -983,7 +980,21 @@
     "confirmWithdrawTo": "{chain} bağlantısına çekilmeyi onaylayın",
     "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
     "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
-    "lookingForBalances": "Bakiyeler arıyorum"
+    "lookingForBalances": "Bakiyeler arıyorum",
+    "dontForgetFees": "Ücretleri unutmayın!",
+    "feesReserved": "Toplam {assetName} bakiyenizin küçük bir kısmı {networkName} ücretlerini ödemek için ayrıldı.",
+    "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
+    "recipientAddress": "{chain} üzerindeki alıcı adresi",
+    "enterAddress": "Bir adres girin",
+    "sendToAnotherAddress": "Başka bir adrese gönder",
+    "invalidAddress": "Geçersiz {chain} adresi",
+    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "done": "Tamamlamak",
+    "transferFrom": "{noun} kaynağından aktarım",
+    "risks": "Köprü kurma riskleri de beraberinde getirir.",
+    "learnMore": "Daha fazla bilgi edin",
+    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+    "openNoun": "{noun} açın"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

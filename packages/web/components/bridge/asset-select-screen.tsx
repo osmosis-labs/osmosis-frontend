@@ -1,4 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
+import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -16,7 +17,7 @@ import {
   TestnetAssetSymbols,
   TestnetVariantGroupKeys,
 } from "~/config/generated/asset-lists";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverified-token-confirmation";
 import { useStore } from "~/stores";
@@ -29,7 +30,6 @@ const variantsNotToBeExcluded = [
 ] satisfies (MainnetVariantGroupKeys | TestnetVariantGroupKeys)[];
 const prioritizedDenoms = [
   "USDC",
-  "OSMO",
   "ETH",
   "SOL",
   "USDT",
@@ -37,6 +37,13 @@ const prioritizedDenoms = [
   "ATOM",
   "TIA",
 ] satisfies (MainnetAssetSymbols | TestnetAssetSymbols)[];
+
+// Deprioritize native assets. They can still be bridged, but we avoid
+// showing them at the top of the list
+const deprioritizedDenoms = ["OSMO", "ION"] satisfies (
+  | MainnetAssetSymbols
+  | TestnetAssetSymbols
+)[];
 
 interface AssetSelectScreenProps {
   type: "deposit" | "withdraw";
@@ -50,6 +57,7 @@ export const AssetSelectScreen = observer(
     const { accountStore, userSettings } = useStore();
     const { showPreviewAssets } = useShowPreviewAssets();
     const { t } = useTranslation();
+    const { isMobile } = useWindowSize();
 
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -78,7 +86,8 @@ export const AssetSelectScreen = observer(
           includePreview: showPreviewAssets,
           variantsNotToBeExcluded,
           prioritizedDenoms,
-          limit: 50, // items per page
+          deprioritizedDenoms,
+          limit: 100, // items per page
         },
         {
           getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -100,7 +109,7 @@ export const AssetSelectScreen = observer(
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
 
     return (
-      <div>
+      <>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}
@@ -117,21 +126,21 @@ export const AssetSelectScreen = observer(
           }}
         />
 
-        <h1 className="text-center text-h5 font-h5">
+        <div className="text-center text-h5 font-h5 md:text-h6 md:font-h6">
           {t(
             type === "deposit"
               ? "transfer.assetSelectScreen.titleDeposit"
               : "transfer.assetSelectScreen.titleWithdraw"
           )}
-        </h1>
+        </div>
 
         <SearchBox
           onInput={debounce((nextValue) => {
             setSearch(nextValue);
           }, 300)}
-          className="my-4 flex-shrink-0"
+          className="sticky top-0 z-[1000] my-4 flex-shrink-0 md:w-full"
           placeholder={t("transfer.assetSelectScreen.searchAssets")}
-          size="full"
+          size={isMobile ? "small" : "full"}
         />
 
         <div className="flex flex-col gap-1">
@@ -144,7 +153,7 @@ export const AssetSelectScreen = observer(
               {assets.map((asset) => (
                 <button
                   key={asset.coinMinimalDenom}
-                  className="subtitle1 flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50"
+                  className="flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0"
                   onClick={() => {
                     if (!shouldShowUnverifiedAssets && !asset.isVerified) {
                       return setAssetToActivate(asset);
@@ -160,13 +169,15 @@ export const AssetSelectScreen = observer(
                   >
                     <Image
                       src={asset.coinImageUrl ?? "/"}
-                      width={48}
-                      height={48}
+                      width={isMobile ? 32 : 48}
+                      height={isMobile ? 32 : 48}
                       alt={`${asset.coinDenom} asset image`}
                     />
                     <span className="flex flex-col text-left">
-                      <span className="subtitle1">{asset.coinName}</span>
-                      <span className="body2 text-osmoverse-300">
+                      <span className="subtitle1 md:body2">
+                        {truncateString(asset.coinName, 22)}
+                      </span>
+                      <span className="body2 md:caption text-osmoverse-300">
                         {asset.coinDenom}
                       </span>
                     </span>
@@ -219,7 +230,7 @@ export const AssetSelectScreen = observer(
             </>
           )}
         </div>
-      </div>
+      </>
     );
   }
 );

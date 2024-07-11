@@ -1,20 +1,20 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
-import { AmountScreen } from "~/components/bridge/immersive/amount-screen";
-import { ImmersiveBridgeScreens } from "~/components/bridge/immersive/immersive-bridge";
-import { useBridgeQuotes } from "~/components/bridge/immersive/use-bridge-quotes";
-import { SupportedAsset } from "~/components/bridge/immersive/use-bridges-supported-assets";
 import { Screen } from "~/components/screen-manager";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { AmountScreen } from "./amount-screen";
+import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
+import { QuotableBridge, useBridgeQuotes } from "./use-bridge-quotes";
+import { SupportedAsset } from "./use-bridges-supported-assets";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
 
@@ -41,26 +41,33 @@ export const AmountAndReviewScreen = observer(
     const [cryptoAmount, setCryptoAmount] = useState<string>("0");
     const [fiatAmount, setFiatAmount] = useState<string>("0");
 
+    const [manualToAddress, setManualToAddress] = useState<string>();
+
     // Wallets
     const { address: evmAddress, connector: evmConnector } =
       useEvmWalletAccount();
 
     const fromChainCosmosAccount =
-      fromChain?.chainType === "evm" || isNil(fromChain)
-        ? undefined
-        : accountStore.getWallet(fromChain.chainId);
+      !isNil(fromChain) && fromChain.chainType === "cosmos"
+        ? accountStore.getWallet(fromChain.chainId)
+        : undefined;
 
     const toChainCosmosAccount =
-      toChain?.chainType === "evm" || isNil(toChain)
-        ? undefined
-        : accountStore.getWallet(toChain.chainId);
+      !isNil(toChain) && toChain.chainType === "cosmos"
+        ? accountStore.getWallet(toChain.chainId)
+        : undefined;
 
+    // Note on below: they are only used when chains are EVM or Cosmos
+    // Going to need to add support or Bitcoin or Solana wallets
     const fromAddress =
       fromChain?.chainType === "evm"
         ? evmAddress
         : fromChainCosmosAccount?.address;
-    const toAddress =
-      toChain?.chainType === "evm" ? evmAddress : toChainCosmosAccount?.address;
+    const toAddress = !isNil(manualToAddress)
+      ? manualToAddress
+      : toChain?.chainType === "evm"
+      ? evmAddress
+      : toChainCosmosAccount?.address;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
@@ -70,6 +77,18 @@ export const AmountAndReviewScreen = observer(
       toChain?.chainType === "evm"
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
+
+    /** Filter for bridges that currently support quoting. */
+    const quoteBridges = useMemo(() => {
+      const assetSupportedBridges =
+        (direction === "deposit"
+          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
+          : toAsset?.supportedVariants[fromAsset?.address ?? ""]) ?? [];
+
+      return assetSupportedBridges.filter(
+        (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+      ) as QuotableBridge[];
+    }, [direction, fromAsset, toAsset]);
 
     const quote = useBridgeQuotes({
       toAddress,
@@ -100,10 +119,7 @@ export const AmountAndReviewScreen = observer(
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
-      bridges:
-        direction === "deposit"
-          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
-          : toAsset?.supportedVariants[fromAsset?.address ?? ""],
+      bridges: quoteBridges,
       onTransfer: () => {
         setToAsset(undefined);
         setFromAsset(undefined);
@@ -120,7 +136,7 @@ export const AmountAndReviewScreen = observer(
 
     return (
       <>
-        <Screen screenName={ImmersiveBridgeScreens.Amount}>
+        <Screen screenName={ImmersiveBridgeScreen.Amount}>
           {({ setCurrentScreen }) => (
             <AmountScreen
               direction={direction}
@@ -129,6 +145,8 @@ export const AmountAndReviewScreen = observer(
               setFromChain={setFromChain}
               toChain={toChain}
               setToChain={setToChain}
+              manualToAddress={manualToAddress}
+              setManualToAddress={setManualToAddress}
               fromAsset={fromAsset}
               setFromAsset={setFromAsset}
               toAsset={toAsset}
@@ -138,11 +156,12 @@ export const AmountAndReviewScreen = observer(
               fiatAmount={fiatAmount}
               setFiatAmount={setFiatAmount}
               quote={quote}
-              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreens.Review)}
+              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreen.Review)}
+              onClose={onClose}
             />
           )}
         </Screen>
-        <Screen screenName={ImmersiveBridgeScreens.Review}>
+        <Screen screenName={ImmersiveBridgeScreen.Review}>
           {({ goBack }) => (
             <>
               {fromChain &&
@@ -169,6 +188,7 @@ export const AmountAndReviewScreen = observer(
                     onConfirm={() => {
                       quote.onTransfer().catch(noop);
                     }}
+                    isManualAddress={!isNil(manualToAddress)}
                   />
                 )}
             </>

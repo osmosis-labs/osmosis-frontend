@@ -1,5 +1,11 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { isNumeric } from "@osmosis-labs/utils";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
   FunctionComponent,
@@ -12,10 +18,14 @@ import {
 
 import { Icon } from "~/components/assets";
 import { InputBox } from "~/components/input";
-import { useTranslation } from "~/hooks";
+import { Tooltip } from "~/components/tooltip";
+import { useTranslation, useWindowSize } from "~/hooks";
+import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
+
+const subtractGasSlippage = new Dec("0.98");
 
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
@@ -25,6 +35,7 @@ export const CryptoFiatInput: FunctionComponent<{
   asset: SupportedAssetWithAmount;
   isInsufficientBal: boolean;
   isInsufficientFee: boolean;
+  fromChain: BridgeChainWithDisplayInfo;
   transferGasCost: CoinPretty | undefined;
   setFiatAmount: (amount: string) => void;
   setCryptoAmount: (amount: string) => void;
@@ -35,6 +46,7 @@ export const CryptoFiatInput: FunctionComponent<{
   fiatInputRaw,
   assetPrice,
   asset,
+  fromChain,
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
@@ -44,6 +56,7 @@ export const CryptoFiatInput: FunctionComponent<{
 }) => {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isMobile } = useWindowSize();
 
   const [isMax, setIsMax] = useState(false);
 
@@ -64,6 +77,10 @@ export const CryptoFiatInput: FunctionComponent<{
     [asset, cryptoInputRaw]
   );
 
+  const hasSubtractedAmount = useMemo(() => {
+    return isMax && inputCoin.toDec().lt(asset.amount.toDec());
+  }, [asset.amount, inputCoin, isMax]);
+
   const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
     new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
@@ -72,12 +89,11 @@ export const CryptoFiatInput: FunctionComponent<{
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
       let nextValue = type === "fiat" ? value.replace("$", "") : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
+      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
       }
-
       if (nextValue === "") {
         nextValue = "0";
       }
@@ -108,15 +124,15 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (
-      isMax &&
-      transferGasCost &&
-      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-    ) {
-      const maxTransferAmount = asset.amount
-        .toDec()
-        .sub(transferGasCost.toDec());
+    if (isMax && transferGasCost) {
+      const maxTransferAmount =
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
+          ? asset.amount
+              .toDec()
+              .sub(transferGasCost.toDec())
+              .mul(subtractGasSlippage)
+          : asset.amount.toDec();
 
       if (
         maxTransferAmount.isPositive() &&
@@ -127,10 +143,28 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
 
-  const fiatCurrentValue = `${assetPrice?.symbol ?? ""}${fiatInputRaw}`;
-  const fiatInputFontSize = calcTextSizeClass(fiatCurrentValue.length);
+  // Apply max amount if asset changes
+  useEffect(() => {
+    if (isMax) {
+      onInput("crypto")(trimPlaceholderZeros(asset.amount.toDec().toString()));
+    }
+  }, [asset, isMax, onInput]);
+
+  const fiatCurrentValue = `${assetPrice.symbol}${
+    fiatInputRaw.endsWith(".") || Number(fiatInputRaw) === 0
+      ? fiatInputRaw
+      : new IntPretty(fiatInputRaw)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+  }`;
+  const fiatInputFontSize = calcTextSizeClass(
+    fiatCurrentValue.length,
+    isMobile
+  );
   const cryptoInputFontSize = calcTextSizeClass(
-    cryptoInputRaw.length + inputCoin.denom.length
+    cryptoInputRaw.length + inputCoin.denom.length,
+    isMobile
   );
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -146,7 +180,7 @@ export const CryptoFiatInput: FunctionComponent<{
   return (
     <div className="flex flex-col items-center">
       <div className="flex h-24 w-full place-content-between items-center">
-        <div className="w-14" />
+        <div className="w-14 md:w-13" />
         <div
           className="max-w-full overflow-clip whitespace-nowrap text-center"
           onClick={() => {
@@ -212,31 +246,52 @@ export const CryptoFiatInput: FunctionComponent<{
             />
           )}
         </div>
-        <button
-          onClick={() => {
-            if (isMax) {
-              onInput("crypto")("0");
-              setIsMax(false);
-            } else {
-              onInput("crypto")(
-                trimPlaceholderZeros(asset.amount.toDec().toString())
-              );
-              setIsMax(true);
-            }
-          }}
-          className={classNames(
-            "body2 w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80",
-            {
-              "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
-            }
-          )}
+
+        <Tooltip
+          disabled={!hasSubtractedAmount}
+          content={
+            <div className="flex flex-col gap-1">
+              <p className="caption text-white-full">
+                {t("transfer.dontForgetFees")}
+              </p>
+              <p className="caption text-osmoverse-300">
+                {t("transfer.feesReserved", {
+                  assetName: asset.denom,
+                  networkName: fromChain.prettyName,
+                })}
+              </p>
+            </div>
+          }
         >
-          {t("transfer.max")}
-        </button>
+          <button
+            onClick={() => {
+              if (isMax) {
+                onInput("crypto")("0");
+                setIsMax(false);
+              } else {
+                onInput("crypto")(
+                  trimPlaceholderZeros(asset.amount.toDec().toString())
+                );
+                setIsMax(true);
+              }
+            }}
+            className={classNames(
+              "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
+              {
+                "border-2 border-ammelia-500": isMax,
+                "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
+                  !isMax,
+              }
+            )}
+            disabled={asset.amount.toDec().isZero()}
+          >
+            {t("transfer.max")}
+          </button>
+        </Tooltip>
       </div>
 
       <button
-        className="body1 flex items-center gap-2 text-center text-wosmongton-200"
+        className="body1 md:body2 flex items-center gap-2 text-center text-wosmongton-200"
         onClick={() => {
           setInputUnit(currentUnit === "fiat" ? "crypto" : "fiat");
         }}
@@ -251,27 +306,28 @@ export const CryptoFiatInput: FunctionComponent<{
             inputValue.maxDecimals(2).toString()
           )}
         </span>
-        <span>
-          <Icon
-            id="switch"
-            className="text-wosmongton-200"
-            width={16}
-            height={16}
-          />
-        </span>
+        <Icon id="switch" className="h-4 w-4 text-wosmongton-200" />
       </button>
     </div>
   );
 };
 
-const calcTextSizeClass = (numChars: number): string => {
-  const sizeMapping: { [key: number]: string } = {
-    8: "text-4xl",
-    10: "text-3xl",
-    12: "text-2xl",
-    18: "text-xl",
-    24: "text-lg",
-  };
+const calcTextSizeClass = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "text-h3 font-h3",
+        10: "text-h4 font-h4",
+        12: "text-h5 font-h5",
+        18: "text-h6 font-h6",
+        24: "text-lg",
+      }
+    : {
+        8: "text-h2 font-h2",
+        10: "text-h3 font-h3",
+        12: "text-h4 font-h4",
+        18: "text-h5 font-h5",
+        24: "text-h6 font-h6",
+      };
 
   for (const [key, value] of Object.entries(sizeMapping)) {
     if (numChars <= Number(key)) {
@@ -279,5 +335,5 @@ const calcTextSizeClass = (numChars: number): string => {
     }
   }
 
-  return "text-md";
+  return isMobile ? "text-sm" : "text-md";
 };

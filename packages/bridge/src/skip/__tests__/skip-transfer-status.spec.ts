@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
 import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
 import { SkipTransferStatusProvider } from "../transfer-status";
@@ -28,7 +29,10 @@ describe("SkipTransferStatusProvider", () => {
   };
 
   beforeEach(() => {
-    provider = new SkipTransferStatusProvider("mainnet" as BridgeEnvironment);
+    provider = new SkipTransferStatusProvider(
+      "mainnet" as BridgeEnvironment,
+      MockChains
+    );
     provider.statusReceiverDelegate = mockReceiver;
   });
 
@@ -38,13 +42,6 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should initialize with correct URLs", () => {
     expect(provider.axelarScanBaseUrl).toBe("https://axelarscan.io");
-  });
-
-  it("should generate correct explorer URL", () => {
-    const url = provider.makeExplorerUrl(
-      JSON.stringify({ sendTxHash: "testTxHash" })
-    );
-    expect(url).toBe("https://axelarscan.io/gmp/testTxHash");
   });
 
   it("should handle successful transfer status", async () => {
@@ -97,13 +94,44 @@ describe("SkipTransferStatusProvider", () => {
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
+  it("should generate correct explorer URL", () => {
+    const url = provider.makeExplorerUrl(
+      JSON.stringify({
+        sendTxHash: "testTxHash",
+        fromChainId: 2,
+        toChainId: "osmosis-1",
+      })
+    );
+    expect(url).toBe("https://axelarscan.io/gmp/testTxHash");
+  });
+
   it("should generate correct explorer URL for testnet", () => {
     const testnetProvider = new SkipTransferStatusProvider(
-      "testnet" as BridgeEnvironment
+      "testnet" as BridgeEnvironment,
+      MockChains
     );
     const url = testnetProvider.makeExplorerUrl(
-      JSON.stringify({ sendTxHash: "testTxHash" })
+      JSON.stringify({
+        sendTxHash: "testTxHash",
+        fromChainId: 2,
+        toChainId: "osmosis-1",
+      })
     );
     expect(url).toBe("https://testnet.axelarscan.io/gmp/testTxHash");
+  });
+
+  it("should generate correct explorer URL for a cosmos chain", () => {
+    const cosmosProvider = new SkipTransferStatusProvider(
+      "mainnet" as BridgeEnvironment,
+      MockChains
+    );
+    const url = cosmosProvider.makeExplorerUrl(
+      JSON.stringify({
+        sendTxHash: "cosmosTxHash",
+        fromChainId: "cosmoshub-4",
+        toChainId: "osmosis-1",
+      })
+    );
+    expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
   });
 });

@@ -27,3 +27,5 @@ yarn.lock
 
 public/tradingview/**/*
 public/datafeeds/**/*
+
+*.zip

@@ -22,6 +22,7 @@ import { FullWalletList } from "~/modals/wallet-select/full-wallet-list";
 import { SimpleWalletList } from "~/modals/wallet-select/simple-wallet-list";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { getModalView, ModalView } from "~/modals/wallet-select/utils";
+import { useStore } from "~/stores";
 
 export interface WalletSelectModalProps extends ModalBaseProps {
   /**
@@ -41,6 +42,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       onConnect: onConnectProp,
       layout = "full",
     } = props;
+    const { accountStore } = useStore();
     const { isMobile } = useWindowSize();
     const featureFlags = useFeatureFlags();
     const hasInstalledWallets = useHasInstalledCosmosWallets();
@@ -70,15 +72,15 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
 
     const [show1CTConnectAWallet, setShow1CTConnectAWallet] = useState(false);
 
-    const hasOneClickTradingError = !!create1CTSession.error;
-
     const {
       transaction1CTParams,
       setTransaction1CTParams,
       isLoading: isLoading1CTParams,
       spendLimitTokenDecimals,
       reset: reset1CTParams,
-    } = useOneClickTradingParams();
+    } = useOneClickTradingParams({
+      defaultIsOneClickEnabled: accountStore.hasUsedOneClickTrading,
+    });
 
     const {
       onConnect: onConnectWallet,
@@ -105,7 +107,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
             qrState,
             walletStatus: cosmosWalletStatus,
             isInitializingOneClickTrading,
-            hasOneClickTradingError,
+            oneClickTradingError: create1CTSession.error as Error | null,
             hasBroadcastedTx,
           })
         );
@@ -116,8 +118,8 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       isOpen,
       qrMessage,
       isInitializingOneClickTrading,
-      hasOneClickTradingError,
       hasBroadcastedTx,
+      create1CTSession.error,
     ]);
 
     useUpdateEffect(() => {

@@ -26,6 +26,7 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
+  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -36,6 +37,7 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
+  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -52,6 +54,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
   }
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
@@ -559,28 +564,41 @@ export class SkipBridgeProvider implements BridgeProvider {
         throw new Error(`Failed to find chain ${chainID}`);
       }
 
-      if (chain.chain_type === "evm" && fromChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "evm"
+      ) {
         addressList.push(fromAddress);
-        continue;
       }
 
-      if (chain.chain_type === "evm" && toChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "evm"
+      ) {
         addressList.push(toAddress);
-        continue;
       }
 
-      if (chain.chain_type === "cosmos" && fromChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
         );
         continue;
       }
 
-      if (chain.chain_type === "cosmos" && toChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
-        continue;
       }
     }
 
@@ -760,13 +778,13 @@ export class SkipBridgeProvider implements BridgeProvider {
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     if (this.ctx.env === "testnet") return undefined;
 
-    const url = new URL("https://ibc.fun/");
+    const url = new URL("https://go.skip.build/");
     url.searchParams.set("src_chain", String(fromChain.chainId));
     url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
     url.searchParams.set("dest_chain", String(toChain.chainId));
     url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
 
-    return { urlProviderName: "IBC.fun", url };
+    return { urlProviderName: "Skip:Go", url };
   }
 }
 

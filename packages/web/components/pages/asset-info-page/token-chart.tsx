@@ -187,18 +187,27 @@ export const TokenChartHeader = observer(() => {
       data = decHoverPrice;
     } else {
       if (assetInfoConfig.dataType === "price") {
-        data = marketAsset?.currentPrice?.toDec() ?? new Dec(0);
+        data =
+          marketAsset?.currentPrice?.toDec() ??
+          new Dec(assetInfoConfig.lastChartData?.close ?? 0);
       } else {
         data = marketAsset?.volume24h?.toDec() ?? new Dec(0);
       }
     }
 
     return data;
-  }, [assetInfoConfig.hoverData, assetInfoConfig.dataType, marketAsset]);
+  }, [
+    assetInfoConfig.hoverData,
+    assetInfoConfig.dataType,
+    assetInfoConfig.lastChartData?.close,
+    marketAsset?.currentPrice,
+    marketAsset?.volume24h,
+  ]);
 
   const fiatSymbol =
     assetInfoConfig.hoverData?.fiatCurrency?.symbol ??
-    marketAsset?.currentPrice?.symbol;
+    marketAsset?.currentPrice?.symbol ??
+    "$";
 
   return (
     <header className="absolute left-0 top-0 z-10">

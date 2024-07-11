@@ -86,7 +86,9 @@ export const useConnectWallet = ({
       wallet
         .connect(false)
         .then(() => {
-          onConnectProp?.({ walletType: "cosmos" });
+          onConnectProp?.({
+            walletType: "cosmos",
+          });
         })
         .catch(handleConnectError);
       return;
@@ -136,7 +138,9 @@ export const useConnectWallet = ({
     return walletRepo
       .connect(wallet.name, false)
       .then(async () => {
-        onConnectProp?.({ walletType: "cosmos" });
+        onConnectProp?.({
+          walletType: "cosmos",
+        });
 
         if (isOneClickEnabled && onCreate1CTSession) {
           try {
