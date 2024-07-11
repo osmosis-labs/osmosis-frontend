@@ -305,6 +305,12 @@ export const useBridgeQuotes = ({
       .filter((quoteResult) => Boolean(quoteResult.isFetched))
       // Sort by response time. The fastest and highest quality quote will be first.
       .sort((a, b) => {
+        // This means the quote is for a basic IBC transfer:
+        // Prefer IBC provider over others since its status source provider
+        // offers a more real time UX compared to other bridge route provider's
+        // status endpoints, which rely on indexing chains and come with a delay.
+        if (a.data?.provider.id === "IBC") return -1;
+
         if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
           return 1;
         }
