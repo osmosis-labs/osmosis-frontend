@@ -178,24 +178,39 @@ export class IbcBridgeProvider implements BridgeProvider {
    */
   getGasAsset(fromChainId: string, denom: string): BridgeAsset | undefined {
     // check the asset list
-    const assetListAsset = this.ctx.assetLists
+    const ibcAsset = this.ctx.assetLists
       .flatMap((list) => list.assets)
-      .find(
-        (asset) =>
-          asset.coinMinimalDenom === denom ||
-          asset.counterparty.some(
-            (c) =>
-              "chainId" in c &&
-              c.chainId === fromChainId &&
-              c.sourceDenom === denom
-          )
+      .find((asset) => asset.coinMinimalDenom === denom);
+
+    if (ibcAsset) {
+      return {
+        address: ibcAsset.coinMinimalDenom,
+        denom: ibcAsset.symbol,
+        decimals: ibcAsset.decimals,
+      };
+    }
+
+    const counterpartyAsset = this.ctx.assetLists
+      .flatMap((list) => list.assets)
+      .find((asset) =>
+        asset.counterparty.some(
+          (c) =>
+            "chainId" in c &&
+            c.chainId === fromChainId &&
+            c.sourceDenom === denom
+        )
       );
 
-    if (assetListAsset) {
+    const counterparty = counterpartyAsset?.counterparty.find(
+      (c) =>
+        "chainId" in c && c.chainId === fromChainId && c.sourceDenom === denom
+    );
+
+    if (counterparty) {
       return {
-        address: assetListAsset.coinMinimalDenom,
-        denom: assetListAsset.symbol,
-        decimals: assetListAsset.decimals,
+        address: counterparty.sourceDenom,
+        denom: counterparty.symbol,
+        decimals: counterparty.decimals,
       };
     }
   }
