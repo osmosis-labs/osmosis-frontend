@@ -220,7 +220,6 @@
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
-      "givePermission": "Erteilen Sie Berechtigungen zur Verwendung von Token",
       "enterAddress": "{network} Adresse",
       "errors": {
         "insufficientBal": "Mangelhaftes Gleichgewicht",

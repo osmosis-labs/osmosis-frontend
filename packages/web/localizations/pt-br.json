@@ -220,7 +220,6 @@
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
-      "givePermission": "Dê permissões para usar tokens",
       "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",

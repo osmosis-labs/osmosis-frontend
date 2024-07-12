@@ -220,7 +220,6 @@
       "availableMobile": "उपलब्ध",
       "availableOn": "{network} पर उपलब्ध है",
       "approving": "अनुमोदन...",
-      "givePermission": "टोकन का उपयोग करने की अनुमति दें",
       "enterAddress": "{network} पता",
       "errors": {
         "insufficientBal": "अपर्याप्त शेषराशि",

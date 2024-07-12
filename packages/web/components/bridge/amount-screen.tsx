@@ -29,12 +29,13 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EthereumChainIds } from "~/config/wagmi";
 import {
   useConnectWalletModalRedirect,
   useDisclosure,
   useTranslation,
 } from "~/hooks";
-import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
@@ -153,8 +154,10 @@ export const AmountScreen = observer(
       address: evmAddress,
       connector: evmConnector,
       isConnected: isEvmWalletConnected,
+      chainId: evmWalletCurrentChainId,
       isConnecting,
     } = useEvmWalletAccount();
+    const { switchChain: switchEvmChain } = useSwitchEvmChain();
 
     const fromCosmosCounterpartyAccount =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
@@ -271,11 +274,24 @@ export const AmountScreen = observer(
 
         if (!chain || !isNil(manualToAddress)) return;
         if (chain.chainType === "evm") {
-          if (isEvmWalletConnected || isConnecting) {
+          if (
+            (isEvmWalletConnected &&
+              evmWalletCurrentChainId === chain.chainId) ||
+            isConnecting
+          ) {
             return;
           }
 
-          onOpenBridgeWalletSelect();
+          if (
+            isEvmWalletConnected &&
+            evmWalletCurrentChainId !== chain.chainId
+          ) {
+            switchEvmChain({
+              chainId: chain.chainId as EthereumChainIds,
+            });
+          } else {
+            onOpenBridgeWalletSelect();
+          }
         } else if (chain.chainType === "cosmos") {
           const account = accountStore.getWallet(chain.chainId);
           const accountRepo = accountStore.getWalletRepo(chain.chainId);
@@ -297,6 +313,7 @@ export const AmountScreen = observer(
       [
         accountStore,
         direction,
+        evmWalletCurrentChainId,
         fromChain,
         isConnecting,
         isEvmWalletConnected,
@@ -304,6 +321,7 @@ export const AmountScreen = observer(
         onOpenBridgeWalletSelect,
         osmosisAccount?.walletName,
         supportedChains.length,
+        switchEvmChain,
         toChain,
       ]
     );
@@ -1070,7 +1088,7 @@ export const AmountScreen = observer(
             <div className="flex flex-col items-center gap-4">
               {!osmosisWalletConnected ? (
                 connectWalletButton
-              ) : !isWalletNeededConnected ? (
+              ) : !isWalletNeededConnected || quote.isWrongEvmChainSelected ? (
                 <Button
                   onClick={() => {
                     checkChainAndConnectWallet();

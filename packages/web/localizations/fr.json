@@ -220,7 +220,6 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
-      "givePermission": "Accorder les autorisations pour utiliser des jetons",
       "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",

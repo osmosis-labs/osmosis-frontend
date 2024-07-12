@@ -278,7 +278,8 @@ export const CryptoFiatInput: FunctionComponent<{
             className={classNames(
               "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
-                "border-2 border-ammelia-500": isMax,
+                "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+                "!border-ammelia-500": hasSubtractedAmount,
                 "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
                   !isMax,
               }
