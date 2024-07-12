@@ -1,21 +1,33 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
+import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { PoolsPage } from "../pages/pools-page";
 
 test.describe("Test Select Pool feature", () => {
   let context: BrowserContext;
   let poolsPage: PoolsPage;
+  let page: Page;
 
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext("", {
       headless: true,
       viewport: { width: 1280, height: 1024 },
     });
-    poolsPage = new PoolsPage(context.pages()[0]);
+    page = context.pages()[0];
+    await page.coverage.startJSCoverage({
+      resetOnNavigation: false,
+    });
+    poolsPage = new PoolsPage(page);
   });
 
   test.afterAll(async () => {
+    const coverage = await page.coverage.stopJSCoverage();
+    // coverage report
+    const report = await attachCoverageReport(coverage, test.info());
+    console.log(report.summary);
+
+    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 
