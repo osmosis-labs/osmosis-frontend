@@ -234,7 +234,10 @@ export class SquidBridgeProvider implements BridgeProvider {
                 estimateFromAmount,
                 transactionRequest,
               })
-            : await this.createCosmosTransaction(transactionRequest.data),
+            : await this.createCosmosTransaction(
+                transactionRequest.data,
+                fromAddress
+              ),
         };
       },
     });
@@ -439,9 +442,9 @@ export class SquidBridgeProvider implements BridgeProvider {
     };
   }
 
-  /** TODO: Handle WASM transactions */
   async createCosmosTransaction(
-    data: string
+    data: string,
+    fromAddress: string
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
       const parsedData = JSON.parse(data) as {
@@ -508,7 +511,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         const { typeUrl, value: msg } =
           cosmwasmMsgOpts.executeWasm.messageComposer({
-            sender: "test",
+            sender: fromAddress,
             contract: cosmwasmData.msg.wasm.contract,
             msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
             funds: [],
