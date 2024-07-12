@@ -514,15 +514,15 @@ describe("SkipBridgeProvider", () => {
   });
 
   it("should return correct finality time for known chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForChain("1");
+    const finalityTime = provider.getFinalityTimeForEvmChain("1");
 
     expect(finalityTime).toBe(960);
   });
 
   it("should return default finality time for unknown chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForChain("999");
+    const finalityTime = provider.getFinalityTimeForEvmChain("999");
 
-    expect(finalityTime).toBe(1);
+    expect(finalityTime).toBe(960);
   });
 
   it("should generate approval transaction request if needed", async () => {
