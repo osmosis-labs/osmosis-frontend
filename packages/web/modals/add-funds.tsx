@@ -107,7 +107,7 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
               setTab("swap");
               setTo("USDC");
             }}
-            className="flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-osmoverse-900"
+            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
           >
             <div className="flex h-12 w-12 items-center justify-center">
               <Icon
