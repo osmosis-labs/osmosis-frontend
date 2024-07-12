@@ -11,12 +11,12 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -57,9 +57,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
   const { price: baseAssetPrice, isLoading: isLoadingBaseAssetPrice } =
-    useCoinPrice(baseAsset);
+    usePrice(baseAsset?.currency);
   const { price: quoteAssetPrice, isLoading: isLoadingQuoteAssetPrice } =
-    useCoinPrice(quoteAsset);
+    usePrice(quoteAsset?.currency);
 
   const baseAssetValue =
     baseAssetPrice && baseAsset
@@ -110,7 +110,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </div>
             <MyPositionStatus className="xs:px-0" status={status} negative />
           </div>
-          <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+          <div className="mb-8 flex justify-between rounded-xl bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
             <AssetAmount amount={positionBaseAsset} />
             <AssetAmount amount={positionQuoteAsset} />
           </div>

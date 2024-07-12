@@ -1,9 +1,10 @@
+import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { CustomClasses } from "../types";
 
-export type Step = { displayLabel?: string };
+export type Step = { displayLabel?: string; onClick?: () => void };
 
 export const StepProgress: FunctionComponent<
   {
@@ -30,23 +31,29 @@ export const StepProgress: FunctionComponent<
         <div className="absolute inset-y-0 -right-1 m-auto h-2 w-2 rounded-full bg-ammelia-300" />
       </div>
       {showLabels &&
-        steps.map(({ displayLabel }, index) => {
+        steps.map(({ displayLabel, onClick }, index) => {
           const stepPercentage = (index / (steps.length - 1)) * 100;
           const selected = index === currentStep;
+
+          const isClickable = !isNil(onClick);
 
           return (
             <div
               key={displayLabel}
+              role={isClickable ? "button" : undefined}
               className={classNames(
                 "body2 transition-color absolute top-2 -translate-x-1/2 duration-150",
                 {
                   "text-white-full": selected,
                   "text-osmoverse-300": !selected,
+                  "cursor-pointer": isClickable,
+                  "cursor-default": !isClickable,
                 }
               )}
               style={{
                 left: stepPercentage + "%",
               }}
+              onClick={onClick}
             >
               {displayLabel}
             </div>

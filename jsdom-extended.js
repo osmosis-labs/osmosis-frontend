@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const JSDOMEnvironment = require("jest-environment-jsdom").default;
 const { Blob, File } = require("node:buffer");

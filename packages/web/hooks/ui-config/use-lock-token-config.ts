@@ -1,50 +1,45 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
-import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
-import { useAmountConfig } from "~/hooks/ui-config/use-amount-config";
 import { useStore } from "~/stores";
+
+import { useAmountInput } from "../input/use-amount-input";
 
 /** UI config for setting valid GAMM token amounts and un/locking them in a lock. */
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
-  config: AmountConfig;
+  config: ReturnType<typeof useAmountInput>;
   lockToken: (gaugeDuration: Duration) => Promise<void>;
   unlockTokens: (
     locks: { lockId: string; isSynthetic: boolean }[]
   ) => Promise<"synthetic" | "normal">;
 } {
-  const { chainStore, queriesStore, accountStore } = useStore();
+  const { chainStore, accountStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
 
   const account = accountStore.getWallet(chainId);
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const address = account?.address ?? "";
 
-  const config = useAmountConfig(
-    chainStore,
-    queriesStore,
-    chainId,
-    address,
-    undefined,
-    sendCurrency
-  );
+  const config = useAmountInput({
+    currency: sendCurrency,
+  });
 
   const lockToken = useCallback(
-    (lockDuration) => {
+    (lockDuration: Duration) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
-          if (!config.sendCurrency.coinMinimalDenom.startsWith("gamm")) {
-            throw new Error("Tried to lock non-gamm token");
+          if (!sendCurrency || !config.amount)
+            return reject("Invalid send currency or input amount");
+          if (!sendCurrency.coinMinimalDenom.startsWith("gamm")) {
+            return reject("Tried to lock non-gamm token");
           }
+
           await account?.osmosis.sendLockTokensMsg(
             lockDuration.asSeconds(),
             [
               {
-                currency: config.sendCurrency,
-                amount: config.amount,
+                currency: sendCurrency,
+                amount: config.amount.toCoin().amount,
               },
             ],
             undefined,
@@ -56,7 +51,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [account, config.sendCurrency, config.amount]
+    [account, sendCurrency, config.amount]
   );
 
   const unlockTokens = useCallback(
@@ -99,42 +94,6 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     },
     [account]
   );
-
-  // refresh query stores when an unbonding token happens to unbond with window open
-  useEffect(() => {
-    if (
-      queryOsmosis.queryAccountLocked.get(address).isFetching ||
-      address === ""
-    )
-      return;
-
-    const unlockingTokens =
-      queryOsmosis.queryAccountLocked.get(address).unlockingCoins;
-    const now = dayjs().utc();
-    let timeoutIds: NodeJS.Timeout[] = [];
-
-    // set a timeout for each unlocking token to trigger a refresh at unbond time
-    unlockingTokens.forEach(({ endTime }) => {
-      const diffMs = dayjs(endTime).diff(now, "ms");
-      const blockTime = 6_000; // allow one block to process unbond before querying
-
-      timeoutIds.push(
-        setTimeout(() => {
-          queryOsmosis.queryGammPoolShare.fetch(address);
-        }, diffMs + blockTime)
-      );
-    });
-
-    return () => {
-      timeoutIds.forEach((timeout) => clearTimeout(timeout));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    queryOsmosis.queryAccountLocked.get(address).response,
-    address,
-    queryOsmosis.queryAccountLocked,
-  ]);
 
   return { config, lockToken, unlockTokens };
 }

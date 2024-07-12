@@ -11,7 +11,7 @@ import React, {
 import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -58,7 +58,7 @@ const NotifiIconButton: FunctionComponent<
               fill="#FA825D"
             />
           </svg>
-          <div className="absolute top-0 bottom-0 left-[0.1rem] right-0 flex items-center justify-center text-caption">
+          <div className="absolute bottom-0 left-[0.1rem] right-0 top-0 flex items-center justify-center text-caption">
             <div>
               {unreadNotificationCount > 99 ? "99" : unreadNotificationCount}
             </div>

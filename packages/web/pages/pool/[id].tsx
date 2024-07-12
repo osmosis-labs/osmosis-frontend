@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import {
   BasePoolDetails,
   ConcentratedLiquidityPool,
@@ -81,7 +81,7 @@ const Pool: FunctionComponent<Props> = ({
         />
       )}
       {!pool ? (
-        <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
+        <div className="mx-auto flex max-w-container flex-col gap-10 px-6 py-6">
           <SkeletonLoader className="h-[30rem] !rounded-3xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
           <SkeletonLoader className="h-8 !rounded-xl" />

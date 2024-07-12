@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { LevanaGeoBlockedResponse } from "~/pages/_app";
 import { api } from "~/utils/trpc";
 
-const useGetEarnStrategies = (
+export const useGetEarnStrategies = (
   userOsmoAddress: string,
   isWalletConnected: boolean
 ) => {
@@ -214,6 +214,7 @@ const useGetEarnStrategies = (
 
   return {
     strategies,
+    cmsData,
     ...additionalBalanceData,
     holdenDenoms,
     areBalancesLoading,
@@ -224,5 +225,3 @@ const useGetEarnStrategies = (
     refetch,
   };
 };
-
-export default useGetEarnStrategies;

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { PropsWithChildren, ReactElement, useState } from "react";
 
 import { DynamicLottieAnimation } from "~/components/animation";
 import { Tooltip } from "~/components/tooltip";
@@ -20,10 +20,10 @@ export const RewardsCard: React.FC<{
   globalLottieFileKey,
   position,
 }) => {
-  const ConditionalTooltip: React.FC = ({ children }) =>
+  const ConditionalTooltip = ({ children }: PropsWithChildren) =>
     disabled ? (
       <Tooltip content={disabledTooltipContent} className="h-full w-full">
-        {children as any}
+        {children as ReactElement}
       </Tooltip>
     ) : (
       <>{children}</>
@@ -46,7 +46,7 @@ export const RewardsCard: React.FC<{
       <ConditionalTooltip>
         <div
           className={classNames(
-            "relative h-full w-full bg-cover [mask-size:contain] [mask-repeat:no-repeat]",
+            "relative h-full w-full bg-cover [mask-repeat:no-repeat] [mask-size:contain]",
             positionClasses
           )}
         ></div>
@@ -65,7 +65,7 @@ export const RewardsCard: React.FC<{
         <div
           className={classNames(
             `${position}-0`,
-            "absolute top-0 flex items-center gap-2 py-3 px-2"
+            "absolute top-0 flex items-center gap-2 px-2 py-3"
           )}
         >
           <span className="text-osmoverse-white z-30 text-sm">{title}</span>

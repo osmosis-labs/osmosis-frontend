@@ -1,6 +1,8 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
-const ClientOnly: FunctionComponent<{ className?: string }> = (props) => {
+export const ClientOnly = (
+  props: PropsWithChildren<{ className?: string }>
+) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -13,5 +15,3 @@ const ClientOnly: FunctionComponent<{ className?: string }> = (props) => {
 
   return <div {...props} />;
 };
-
-export default ClientOnly;

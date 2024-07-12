@@ -3,17 +3,20 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useMemo } from "react";
 
-import { useCoinPrice } from "~/hooks/queries/assets/use-coin-price";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 
 export function useCoinFiatValue(
   coin?: CoinPretty,
   vsCurrency = DEFAULT_VS_CURRENCY
-): PricePretty | undefined {
-  const { price } = useCoinPrice(coin);
-  return useMemo(
-    () => mulPrice(coin, price, vsCurrency),
-    [coin, price, vsCurrency]
-  );
+): { fiatValue: PricePretty | undefined; isLoading: boolean } {
+  const { price, isLoading } = usePrice(coin?.currency);
+  return {
+    fiatValue: useMemo(
+      () => mulPrice(coin, price, vsCurrency),
+      [coin, price, vsCurrency]
+    ),
+    isLoading,
+  };
 }
 
 // mulPrice multiplies the amount of a coin by its price to get the final value.

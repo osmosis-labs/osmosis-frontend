@@ -9,7 +9,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useNotifiLocalStorage } from "~/integrations/notifi/hooks";
@@ -206,7 +206,7 @@ export const HistoryView: FunctionComponent = () => {
       ) : (
         <>
           {!isMobile && (
-            <div className="mt-[2rem] mb-[1rem] flex place-content-between items-center py-[0.625rem]">
+            <div className="mb-[1rem] mt-[2rem] flex place-content-between items-center py-[0.625rem]">
               {onRequestBack && (
                 <IconButton
                   aria-label="Back"

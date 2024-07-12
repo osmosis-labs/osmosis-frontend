@@ -1,17 +1,20 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import {
-  type Bridge,
+import type {
+  Bridge,
   BridgeError,
-  type CosmosBridgeTransactionRequest,
-  type EvmBridgeTransactionRequest,
-  type GetTransferStatusParams,
-  type SourceChain,
-  type SourceChainTokenConfig,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
+  SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import {
+  AxelarSourceChain,
+  getKeyByValue,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { noop } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -45,7 +48,6 @@ import {
 import {
   ChainNames,
   EthWallet,
-  NativeEVMTokenConstantAddress,
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
@@ -63,7 +65,7 @@ interface BridgeTransferContext {
   useNativeToken: boolean;
   setUseWrappedToken: (nextValue: boolean) => void;
   sourceChainConfig?: SourceChainTokenConfig;
-  sourceChainKeyMapped: SourceChain;
+  sourceChainKeyMapped: AxelarSourceChain;
   originCurrency: Currency;
 }
 
@@ -76,7 +78,7 @@ const [BridgeTransferModalProvider, useBridgeTransfer] =
 interface BridgeTransferModalProps extends ModalBaseProps {
   isWithdraw: boolean;
   balance: IBCBalance;
-  sourceChainKey: SourceChain;
+  sourceChainKey: AxelarSourceChain;
   walletClient?: ObservableWallet;
   onRequestSwitchWallet: () => void;
 }
@@ -321,7 +323,7 @@ export const TransferContent: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChain;
+    sourceChainKey: AxelarSourceChain;
     onRequestSwitchWallet: () => void;
     counterpartyAddress: string;
     isCounterpartyAddressValid?: boolean;
@@ -371,7 +373,7 @@ export const TransferContent: FunctionComponent<
     chainStore,
     accountStore,
     queriesStore,
-    nonIbcBridgeHistoryStore,
+    transferHistoryStore,
   } = useStore();
   const {
     showModalBase,
@@ -491,9 +493,6 @@ export const TransferContent: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      sourceDenom:
-        originCurrency?.coinMinimalDenom ??
-        assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
@@ -511,11 +510,6 @@ export const TransferContent: FunctionComponent<
     source: "counterpartyAccount" as const,
     asset: {
       denom: assetToBridge.balance.denom,
-      sourceDenom:
-        useNativeToken && isDeposit
-          ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
-          : originCurrency?.coinMinimalDenom ??
-            assetToBridge.balance.currency?.coinMinimalDenom!,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
         : sourceChainConfig?.erc20ContractAddress!,
@@ -600,35 +594,9 @@ export const TransferContent: FunctionComponent<
             }
 
             return {
-              gasCost: estimatedGasFee
-                ? new CoinPretty(
-                    {
-                      coinDecimals: estimatedGasFee.decimals,
-                      coinDenom: estimatedGasFee.denom,
-                      coinMinimalDenom: estimatedGasFee.sourceDenom,
-                    },
-                    new Dec(estimatedGasFee.amount)
-                  ).maxDecimals(8)
-                : undefined,
-
-              transferFee: new CoinPretty(
-                {
-                  coinDecimals: transferFee.decimals,
-                  coinDenom: transferFee.denom,
-                  coinMinimalDenom: transferFee.sourceDenom,
-                },
-                new Dec(transferFee.amount)
-              ).maxDecimals(8),
-
-              expectedOutput: new CoinPretty(
-                {
-                  coinDecimals: expectedOutput.decimals,
-                  coinDenom: expectedOutput.denom,
-                  coinMinimalDenom: expectedOutput.sourceDenom,
-                },
-                new Dec(expectedOutput.amount)
-              ),
-
+              gasCost: estimatedGasFee?.amount.maxDecimals(8),
+              transferFee: transferFee.amount.maxDecimals(8),
+              expectedOutput: expectedOutput.amount,
               expectedOutputFiat: expectedOutput.fiatValue,
               transferFeeFiat: transferFee.fiatValue,
               gasCostFiat: estimatedGasFee?.fiatValue,
@@ -735,8 +703,11 @@ export const TransferContent: FunctionComponent<
   const isInsufficientFee =
     inputAmountRaw !== "" &&
     selectedQuote?.transferFee !== undefined &&
+    selectedQuote?.transferFee.denom === assetToBridge.balance.denom && // make sure the fee is in the same denom as the asset
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
+      .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
+      .abs()
       .lt(selectedQuote?.transferFee.toDec());
 
   const isInsufficientBal =
@@ -777,7 +748,7 @@ export const TransferContent: FunctionComponent<
   const trackTransferStatus = useCallback(
     (providerId: Bridge, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
-        nonIbcBridgeHistoryStore.pushTxNow(
+        transferHistoryStore.pushTxNow(
           `${providerId}${JSON.stringify(params)}`,
           new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
@@ -787,7 +758,7 @@ export const TransferContent: FunctionComponent<
     },
     [
       inputAmountRaw,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
       originCurrency,
       inputAmount,
       isWithdraw,
@@ -933,8 +904,8 @@ export const TransferContent: FunctionComponent<
       if (typeof msg === "string") {
         displayToast(
           {
-            message: "transactionFailed",
-            caption: msg,
+            titleTranslationKey: "transactionFailed",
+            captionTranslationKey: msg,
           },
           ToastType.ERROR
         );
@@ -1018,8 +989,9 @@ export const TransferContent: FunctionComponent<
     } catch (e) {}
   };
 
-  const errors = someError?.data?.errors ?? [];
-  const hasNoQuotes = errors?.[0]?.errorType === BridgeError.NoQuotesError;
+  const hasNoQuotes = someError?.message.includes(
+    "NoQuotesError" as BridgeError
+  );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
 

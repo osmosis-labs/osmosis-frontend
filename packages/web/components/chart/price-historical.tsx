@@ -20,8 +20,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
 
-import { Icon } from "~/components/assets";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
 import { type PriceRange, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
@@ -33,7 +32,7 @@ import {
 } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
-const HistoricalPriceChart: FunctionComponent<{
+export const HistoricalPriceChart: FunctionComponent<{
   data: { close: number; time: number }[];
   margin?: Partial<Margin>;
   annotations: Dec[];
@@ -246,12 +245,11 @@ const HistoricalPriceChart: FunctionComponent<{
   )
 );
 
-export default HistoricalPriceChart;
-
 export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
   setHistoricalRange: (pr: PriceRange) => void;
   hoverPrice: number;
+  hoverDate?: string | null;
   decimal: number;
   formatOpts?: FormatOptions;
   fiatSymbol?: string;
@@ -274,6 +272,7 @@ export const PriceChartHeader: FunctionComponent<{
     setHistoricalRange,
     baseDenom,
     quoteDenom,
+    hoverDate,
     hoverPrice,
     formatOpts,
     decimal,
@@ -320,29 +319,45 @@ export const PriceChartHeader: FunctionComponent<{
             classes?.pricesHeaderContainerClass
           )}
         >
-          <SkeletonLoader isLoaded={!isLoading}>
-            <h4
-              className={classNames(
-                "row-span-2 pr-1 font-caption sm:text-h5",
-                classes?.priceHeaderClass
-              )}
-            >
-              {fiatSymbol}
-              {compactZeros ? (
-                <>
-                  {significantDigits}.
-                  {Boolean(zeros) && (
-                    <>
-                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
-                    </>
-                  )}
-                  {decimalDigits}
-                </>
-              ) : (
-                getFormattedPrice()
-              )}
-            </h4>
-          </SkeletonLoader>
+          <div>
+            <SkeletonLoader isLoaded={!isLoading}>
+              <h4
+                className={classNames(
+                  "row-span-2 pr-1 font-caption sm:text-h5",
+                  classes?.priceHeaderClass
+                )}
+              >
+                {fiatSymbol}
+                {compactZeros ? (
+                  <>
+                    {significantDigits}.
+                    {Boolean(zeros) && (
+                      <>
+                        0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                      </>
+                    )}
+                    {decimalDigits}
+                  </>
+                ) : (
+                  getFormattedPrice()
+                )}
+              </h4>
+            </SkeletonLoader>
+            {hoverDate !== undefined ? (
+              <p
+                className={classNames(
+                  "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
+                  {
+                    "invisible h-6": hoverDate === null,
+                  }
+                )}
+              >
+                {hoverDate}
+              </p>
+            ) : (
+              false
+            )}
+          </div>
           {baseDenom && quoteDenom ? (
             <div
               className={classNames(
@@ -414,9 +429,8 @@ export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="gap m-auto flex items-center gap-2 px-8 md:px-6">
-      <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
-      <span className="subtitle1 text-osmoverse-400">
+    <div className="flex h-full flex-1 items-center justify-center">
+      <span className="spacing text-center text-[32px] font-h4 text-osmoverse-500">
         {t("errors.chartUnavailable")}
       </span>
     </div>

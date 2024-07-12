@@ -23,7 +23,9 @@ import { WalletDisplay, WalletKey } from "~/integrations/wallets";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-
+/**
+ * @deprecated
+ */
 export class ObservableMetamask implements EthWallet {
   readonly key: WalletKey = "metamask";
   readonly mobileEnabled = false;
@@ -253,19 +255,19 @@ export class ObservableMetamask implements EthWallet {
     if (e.code === 4001) {
       // User denied
       return {
-        message: "transactionFailed",
-        caption: "requestRejected",
+        titleTranslationKey: "transactionFailed",
+        captionTranslationKey: "requestRejected",
       };
     } else if (e.code === 4100) {
       // wallet is not logged in (but is connected)
       return {
-        message: "Action Unavailable",
-        caption: "Please log into MetaMask",
+        titleTranslationKey: "Action Unavailable",
+        captionTranslationKey: "Please log into MetaMask",
       };
     } else if (e.code === -32002) {
       // request is there already
       return {
-        message: t("assets.transfer.errors.seeRequest", {
+        titleTranslationKey: t("assets.transfer.errors.seeRequest", {
           walletName: this.displayInfo.displayName,
         }),
       };

@@ -16,7 +16,7 @@ import {
   IbcTransfer,
 } from "~/hooks/use-ibc-transfer";
 import { useCustomBech32Address } from "~/hooks/use-ibc-transfer/use-custom-bech32address";
-import { useWalletSelect } from "~/hooks/wallet-select";
+import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { useStore } from "~/stores";
 
 /**
@@ -106,12 +106,16 @@ export function useIbcTransfer({
      * feedback is given by the extension itself.
      **/
     if (account?.walletInfo.mode === "wallet-connect") {
-      onOpenWalletSelect(counterpartyChainId);
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: counterpartyChainId }],
+      });
     }
 
-    counterpartyAccountRepo
-      ?.connect(account?.walletName)
-      .catch(() => onOpenWalletSelect(counterpartyChainId));
+    counterpartyAccountRepo?.connect(account?.walletName, false).catch(() =>
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId: counterpartyChainId }],
+      })
+    );
   });
 
   /**
@@ -125,9 +129,13 @@ export function useIbcTransfer({
       prevAccountStatus !== account?.walletStatus &&
       account?.walletStatus === WalletStatus.Connected
     ) {
-      counterpartyAccountRepo
-        ?.connect(account?.walletName)
-        .catch(() => onOpenWalletSelect(counterpartyChainId));
+      counterpartyAccountRepo?.connect(account?.walletName, false).catch(() =>
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: counterpartyChainId },
+          ],
+        })
+      );
     }
   }, [
     account?.walletName,

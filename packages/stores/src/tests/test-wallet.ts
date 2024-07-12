@@ -13,6 +13,7 @@ import {
   WalletClient,
 } from "@cosmos-kit/core";
 import Axios from "axios";
+import Long from "long";
 
 import { MockChainList } from "./mock-data";
 import { MockKeplrWithFee } from "./mock-keplr-with-fee";
@@ -173,13 +174,25 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
-  ): ReturnType<MockKeplrWithFee["signDirect"]> {
-    return await this.client.signDirect(
+  ): ReturnType<Required<WalletClient>["signDirect"]> {
+    const response = await this.client.signDirect(
       chainId,
       signer,
-      signDoc as any,
+      {
+        ...signDoc,
+        accountNumber: Long.fromString(signDoc.accountNumber!.toString()),
+      },
       signOptions
     );
+
+    // Convert Long to bigint
+    return {
+      signed: {
+        ...response.signed,
+        accountNumber: BigInt(response.signed.accountNumber.toString()),
+      },
+      signature: response.signature,
+    };
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {

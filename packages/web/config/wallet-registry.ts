@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  RegistryWallet,
+  CosmosRegistryWallet,
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
-export const WalletRegistry: RegistryWallet[] = [
+export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
@@ -155,66 +155,6 @@ export const WalletRegistry: RegistryWallet[] = [
     features: [],
   },
   {
-    ...CosmosKitWalletList["cosmostation-extension"],
-    logo: "/wallets/cosmostation.png",
-    lazyInstall: () =>
-      import("@cosmos-kit/cosmostation-extension").then(
-        (m) => m.CosmostationExtensionWallet
-      ),
-    windowPropertyName: "cosmostation",
-    stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
-    governanceUrl: "https://cosmos.leapwallet.io/gov",
-    features: ["notifications"],
-  },
-  {
-    ...CosmosKitWalletList["xdefi-extension"],
-    logo: "/wallets/xdefi.png",
-    lazyInstall: () =>
-      import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
-    windowPropertyName: "xfi",
-    async supportsChain(chainId) {
-      if (typeof window === "undefined") return true;
-
-      const xfiWallet = (window as any)?.xfi?.keplr as {
-        getKey: (chainId: string) => Promise<boolean>;
-      };
-
-      if (!xfiWallet) return true;
-
-      return xfiWallet
-        .getKey(chainId)
-        .then(() => true)
-        .catch(() => false);
-    },
-    features: [],
-  },
-  {
-    ...CosmosKitWalletList["station-extension"],
-    mobileDisabled: true,
-    logo: "/wallets/station.svg",
-    lazyInstall: () =>
-      import("@cosmos-kit/station-extension").then(
-        (m) => m.StationExtensionWallet
-      ),
-    windowPropertyName: "station",
-    supportsChain: async (chainId) => {
-      if (typeof window === "undefined") return true;
-
-      const stationWallet = (window as any)?.station?.keplr as {
-        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
-      };
-
-      if (!stationWallet) return true;
-
-      const chainInfos = await stationWallet.getChainInfosWithoutEndpoints();
-      return chainInfos.some((info) => info.chainId === chainId);
-    },
-    signOptions: {
-      preferNoSetFee: true,
-    },
-    features: [],
-  },
-  {
     ...CosmosKitWalletList["okxwallet-extension"],
     logo: "/wallets/okx.png",
     lazyInstall: () =>
@@ -279,6 +219,116 @@ export const WalletRegistry: RegistryWallet[] = [
       }
 
       return error;
+    },
+    signOptions: {
+      preferNoSetFee: true,
+    },
+    features: [],
+  },
+  // {
+  //   ...CosmosKitWalletList["trust-extension"],
+  //   logo: "/wallets/trust.png",
+  //   lazyInstall: () =>
+  //     import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+  //   windowPropertyName: "trustwallet",
+  //   async supportsChain(chainId) {
+  //     const trustAvailableChains: MainnetChainIds[] = [
+  //       "cosmoshub-4",
+  //       "osmosis-1",
+  //       "stride-1",
+  //       "neutron-1",
+  //       "axelar-dojo-1",
+  //       "laozi-mainnet",
+  //       "columbus-5",
+  //       "phoenix-1",
+  //       "evmos_9001-2",
+  //       "injective-1",
+  //       "stargaze-1",
+  //       "crypto-org-chain-mainnet-1",
+  //       "kava_2222-10",
+  //     ];
+  //     return trustAvailableChains.includes(chainId as MainnetChainIds);
+  //   },
+  //   stakeUrl: "https://trustwallet.com/staking",
+  //   governanceUrl: "https://governance.trustwallet.com/",
+  //   features: [],
+  //   mode: "extension", // Add mode property with correct value
+  // },
+  {
+    ...CosmosKitWalletList["cdcwallet-extension"],
+    logo: "/wallets/crypto-com.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cdcwallet-extension").then(
+        (m) => m.CdcwalletExtensionWallet
+      ),
+    mobileDisabled: false,
+    async supportsChain(chainId) {
+      const cdcAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "crypto-org-chain-mainnet-1",
+      ];
+      return cdcAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    windowPropertyName: "cdc_wallet",
+    stakeUrl: "https://crypto.com/staking",
+    features: [],
+    mode: "extension",
+  },
+  {
+    ...CosmosKitWalletList["xdefi-extension"],
+    logo: "/wallets/xdefi.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
+    windowPropertyName: "xfi",
+    async supportsChain(chainId) {
+      if (typeof window === "undefined") return true;
+
+      const xfiWallet = (window as any)?.xfi?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
+
+      if (!xfiWallet) return true;
+
+      return xfiWallet
+        .getKey(chainId)
+        .then(() => true)
+        .catch(() => false);
+    },
+    features: [],
+  },
+  {
+    ...CosmosKitWalletList["cosmostation-extension"],
+    logo: "/wallets/cosmostation.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/cosmostation-extension").then(
+        (m) => m.CosmostationExtensionWallet
+      ),
+    windowPropertyName: "cosmostation",
+    stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
+    governanceUrl: "https://cosmos.leapwallet.io/gov",
+    features: ["notifications"],
+  },
+  {
+    ...CosmosKitWalletList["station-extension"],
+    mobileDisabled: true,
+    logo: "/wallets/station.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/station-extension").then(
+        (m) => m.StationExtensionWallet
+      ),
+    windowPropertyName: "station",
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const stationWallet = (window as any)?.station?.keplr as {
+        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
+      };
+
+      if (!stationWallet) return true;
+
+      const chainInfos = await stationWallet.getChainInfosWithoutEndpoints();
+      return chainInfos.some((info) => info.chainId === chainId);
     },
     signOptions: {
       preferNoSetFee: true,

@@ -5,7 +5,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
@@ -18,10 +18,10 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
@@ -37,6 +37,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
+import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
@@ -77,10 +78,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
-
+    const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const account = accountStore.getWallet(chainId);
 
+    const [isSendingTx_, setIsSendingTx] = useState(false);
+    const isSendingTx = isSendingTx_ || Boolean(account?.txTypeInProgress);
+
     const slippageConfig = useSlippageConfig();
+
     const swapState = useSwap({
       initialFromDenom: initialSendTokenDenom,
       initialToDenom: initialOutTokenDenom,
@@ -103,10 +108,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
-        swapState.tokenOutAmountMinusSwapFee && swapState.toAsset
-          ? new IntPretty(
-              swapState.tokenOutAmountMinusSwapFee.toDec().mul(oneMinusSlippage)
-            )
+        swapState.quote && swapState.toAsset
+          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
           : undefined;
 
       // Compute out fiat amount less slippage
@@ -119,9 +122,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       return { outAmountLessSlippage, outFiatAmountLessSlippage };
     }, [
-      slippageConfig.slippage,
-      swapState.tokenOutAmountMinusSwapFee,
+      swapState.quote,
       swapState.toAsset,
+      slippageConfig.slippage,
       swapState.tokenOutFiatValue,
     ]);
 
@@ -174,14 +177,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const sendSwapTx = () => {
       // prompt to select wallet insteaad of swapping
       if (account?.walletStatus !== WalletStatus.Connected) {
-        return onOpenWalletSelect(chainId);
+        return onOpenWalletSelect({
+          walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+        });
       }
 
       if (!swapState.inAmountInput.amount) return;
 
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
-        tokenAmount: Number(swapState.inAmountInput.amount),
+        tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
         toToken: swapState.toAsset?.coinDenom,
         isOnHome: page === "Swap Page",
         isMultiHop: swapState.quote?.split.some(
@@ -189,18 +194,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
         valueUsd: Number(
-          swapState.tokenOutFiatValue?.toDec().toString() ?? "0"
+          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
         ),
+        feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
+        quoteTimeMilliseconds: swapState.quote?.timeMs,
+        router: swapState.quote?.name,
       };
-      logEvent([
-        EventName.Swap.swapStarted,
-        {
-          ...baseEvent,
-          quoteTimeMilliseconds: swapState.quote?.timeMs,
-          router: swapState.quote?.name,
-        },
-      ]);
+      logEvent([EventName.Swap.swapStarted, baseEvent]);
+      setIsSendingTx(true);
       swapState
         .sendTradeTokenInTx()
         .then((result) => {
@@ -210,8 +212,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             {
               ...baseEvent,
               isMultiHop: result === "multihop",
-              quoteTimeMilliseconds: swapState.quote?.timeMs,
-              router: swapState.quote?.name,
             },
           ]);
 
@@ -222,42 +222,63 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
         })
-        .catch((error) => {
-          // failed broadcast txs are handled elsewhere
-          // this is likely a signature rejection
-          console.error("swap error", error);
+        .catch((e) => {
+          if (e instanceof Error && e.message.includes("Failed to send")) {
+            logEvent([EventName.Swap.swapFailed, baseEvent]);
+          }
         })
         .finally(() => {
+          setIsSendingTx(false);
           onRequestModalClose?.();
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    /** Indicates any of the dependent queries in swap tool are loading. */
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
-    const buttonText = swapState.error
-      ? t(...tError(swapState.error))
-      : showPriceImpactWarning
-      ? t("swap.buttonError")
-      : t("swap.button");
+    let buttonText: string;
+    if (swapState.error) {
+      buttonText = t(...tError(swapState.error));
+    } else if (showPriceImpactWarning) {
+      buttonText = t("swap.buttonError");
+    } else if (swapState.hasOverSpendLimitError) {
+      buttonText = t("swap.continueAnyway");
+    } else {
+      buttonText = t("swap.button");
+    }
+
+    let warningText: string | ReactNode;
+    if (swapState.hasOverSpendLimitError) {
+      warningText = (
+        <span>
+          {t("swap.warning.exceedsSpendLimit")}{" "}
+          <Button
+            variant="link"
+            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
+            onClick={() => {
+              setIs1CTIntroModalScreen("settings-no-back-button");
+            }}
+          >
+            {t("swap.warning.increaseSpendLimit")}
+          </Button>
+        </span>
+      );
+    }
 
     // Only display network fee if it's greater than 0.01 USD
     const isNetworkFeeApplicable = swapState.networkFee?.gasUsdValueToPay
       .toDec()
       .gte(new Dec(0.01));
 
-    const isLoadingMaxButton =
-      featureFlags.swapToolSimulateFee &&
-      !isNil(account?.address) &&
-      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-      !swapState.inAmountInput?.balance?.toDec().isZero() &&
-      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
-
     const showTokenSelectSearchBox = isNil(forceSwapInPoolId);
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
     return (
       <>
-        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pb-4 md:pt-4">
           <Popover>
             {({ open, close }) => (
               <>
@@ -267,7 +288,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <Popover.Button as={Fragment}>
                     <IconButton
                       aria-label="Open swap settings"
-                      className="absolute top-0 right-3 z-40 w-fit py-0"
+                      className="absolute right-3 top-0 z-40 w-fit py-0"
                       size="unstyled"
                       mode="unstyled"
                       onClick={(e) => {
@@ -303,8 +324,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         icon={
                           <Icon
                             id="close"
-                            width={32}
-                            height={32}
+                            width={24}
+                            height={24}
                             className="text-osmoverse-400"
                           />
                         }
@@ -417,7 +438,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           </Popover>
 
           <div className="flex flex-col gap-3">
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
                   <span className="caption text-xs text-white-full">
@@ -475,7 +496,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.balance.toDec().isZero() ||
                         swapState.inAmountInput.notEnoughBalanceForMax
                       }
-                      isLoading={isLoadingMaxButton}
                       loadingText={t("swap.MAX")}
                       classes={{
                         spinner: "!h-3 !w-3",
@@ -494,7 +514,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   dropdownOpen={showFromTokenSelectDropdown}
                   swapState={swapState}
                   setDropdownState={useCallback(
-                    (isOpen) => {
+                    (isOpen: boolean) => {
                       if (isOpen) {
                         setOneTokenSelectOpen("from");
                       } else {
@@ -505,7 +525,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setFromAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "to" token, switch the assets
+                      if (tokenDenom === swapState.toAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setFromAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                       fromAmountInputEl.current?.focus();
                     },
@@ -614,7 +640,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               </div>
             </button>
-            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+            <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:py-2.5 md:px-3">
               <div className="flex place-content-between items-center transition-transform">
                 <TokenSelectWithDrawer
                   isFromSelect={false}
@@ -622,13 +648,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   swapState={swapState}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      swapState.setToAssetDenom(tokenDenom);
+                      // If the selected token is the same as the current "from" token, switch the assets
+                      if (tokenDenom === swapState.fromAsset?.coinDenom) {
+                        swapState.switchAssets();
+                      } else {
+                        swapState.setToAssetDenom(tokenDenom);
+                      }
+
                       closeTokenSelectDropdowns();
                     },
                     [swapState, closeTokenSelectDropdowns]
                   )}
                   setDropdownState={useCallback(
-                    (isOpen) => {
+                    (isOpen: boolean) => {
                       if (isOpen) {
                         setOneTokenSelectOpen("to");
                       } else {
@@ -643,12 +675,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex w-full flex-col items-end">
                   <h5
                     className={classNames(
-                      "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.tokenOutAmountMinusSwapFee
-                        ?.toDec()
-                        .isPositive() &&
-                        !swapState.inAmountInput.isTyping &&
-                        !swapState.isQuoteLoading
+                      "md:subtitle1 whitespace-nowrap text-right transition-all",
+                      swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
@@ -660,8 +688,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {`≈ ${formatPretty(
-                      swapState.tokenOutAmountMinusSwapFee
-                        ? swapState.tokenOutAmountMinusSwapFee.toDec()
+                      swapState.quote?.amount
+                        ? swapState.quote.amount.toDec()
                         : new Dec(0),
                       {
                         maxDecimals: 8,
@@ -673,21 +701,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                       {
                         "opacity-0":
-                          !swapState.tokenOutFiatValue ||
                           swapState.tokenOutFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          (!swapState.tokenOutFiatValue?.toDec().isZero() &&
+                          (!swapState.tokenOutFiatValue.toDec().isZero() &&
                             isSwapToolLoading) ||
                           swapState.inAmountInput.isTyping,
                       }
                     )}
                   >
                     {`≈ ${
-                      swapState.tokenOutFiatValue &&
                       swapState.tokenOutFiatValue.toString().length > 15
                         ? formatPretty(swapState.tokenOutFiatValue)
-                        : swapState.tokenOutFiatValue?.toString() ?? "0"
+                        : swapState.tokenOutFiatValue.toString()
                     }`}
                   </span>
                 </div>
@@ -709,10 +735,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               isLoaded={
                 Boolean(swapState.toAsset) &&
                 Boolean(swapState.fromAsset) &&
-                !swapState.isSpotPriceQuoteLoading
+                !isSwapToolLoading
               }
             >
-              {/* TODO - move this custom button to our own button component */}
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
@@ -865,8 +890,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   >
                     <span className="caption whitespace-nowrap text-osmoverse-200">
                       {`≈ ${
-                        swapState.tokenOutAmountMinusSwapFee
-                          ? formatPretty(swapState.tokenOutAmountMinusSwapFee, {
+                        swapState.quote?.amount
+                          ? formatPretty(swapState.quote.amount, {
                               maxDecimals: 8,
                             })
                           : ""
@@ -914,20 +939,31 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </div>
             </SkeletonLoader>
           </div>
+          {!isNil(warningText) && (
+            <div
+              className={classNames(
+                "body2 flex animate-[fadeIn_0.3s_ease-in-out_0s] items-center justify-center rounded-xl border border-rust-600 px-3 py-2 text-center text-rust-500",
+                swapState.isLoadingNetworkFee && "animate-pulse"
+              )}
+            >
+              {warningText}
+            </div>
+          )}
           {swapButton ?? (
             <Button
               disabled={
+                isSendingTx ||
                 isWalletLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
                   (swapState.inAmountInput.isEmpty ||
                     !Boolean(swapState.quote) ||
+                    isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
+                    Boolean(swapState.networkFeeError)))
               }
               onClick={sendSwapTx}
             >
-              {account?.walletStatus === WalletStatus.Connected ||
-              isSwapToolLoading ? (
+              {account?.walletStatus === WalletStatus.Connected ? (
                 buttonText
               ) : (
                 <h6 className="flex items-center gap-3">

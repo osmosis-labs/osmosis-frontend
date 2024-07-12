@@ -55,10 +55,10 @@ export const FiatOnrampSelectionModal: FunctionComponent<
           ({ rampKey, displayName, initialAsset, logoId, subtitle }) => (
             <Button
               key={rampKey}
-              className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 py-5 px-5 transition-colors hover:!bg-osmoverse-700"
+              className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 px-5 py-5 transition-colors hover:!bg-osmoverse-700"
               onClick={() => {
                 onSelectRamp?.(rampKey);
-                fiatRamp(rampKey, initialAsset);
+                fiatRamp({ fiatRampKey: rampKey, assetKey: initialAsset });
                 modalProps.onRequestClose();
               }}
             >

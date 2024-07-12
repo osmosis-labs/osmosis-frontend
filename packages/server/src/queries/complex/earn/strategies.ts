@@ -1,5 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -17,9 +17,9 @@ import {
 } from "../../../queries/data-services/earn";
 import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import dayjs from "../../../utils/dayjs";
+import { dayjs } from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
-import { type Asset, getAsset } from "../assets";
+import { getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { convertToPricePretty } from "../price";
 
@@ -114,12 +114,14 @@ export async function getStrategies({
     getFreshValue: async (): Promise<{
       riskReportUrl?: string;
       categories: StategyCMSCategory[];
+      platforms: StategyCMSCategory[];
       strategies: StrategyCMSData[];
     }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
           categories: StategyCMSCategory[];
+          platforms: StategyCMSCategory[];
           riskReportUrl: string;
         }>({ filePath: `cms/earn/strategies.json` });
 
@@ -157,11 +159,13 @@ export async function getStrategies({
             ...rawStrategy,
             depositAssets: depositAssets.filter(
               (deposit) => !!deposit
-            ) as Asset[],
+            ) as MinimalAsset[],
             positionAssets: positionAssets.filter(
               (position) => !!position
-            ) as Asset[],
-            rewardAssets: rewardAssets.filter((reward) => !!reward) as Asset[],
+            ) as MinimalAsset[],
+            rewardAssets: rewardAssets.filter(
+              (reward) => !!reward
+            ) as MinimalAsset[],
             hasLockingDuration:
               dayjs.duration(lockDuration).asMilliseconds() > 0,
           });
@@ -170,6 +174,7 @@ export async function getStrategies({
         return {
           riskReportUrl: cmsData.riskReportUrl,
           categories: cmsData.categories,
+          platforms: cmsData.platforms,
           strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {

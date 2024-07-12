@@ -43,12 +43,14 @@ export const PoolFilterSchema = z.object({
   minLiquidityUsd: z.number().optional(),
   /** Only include pools of given type. */
   types: z.array(z.enum(allPooltypes)).optional(),
+  /** Search using exact match with pools denoms */
+  denoms: z.array(z.string()).optional(),
 });
 
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-const searchablePoolKeys = ["id", "coinDenoms"];
+// const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
 
 /** Get's an individual pool by ID.
  *  @throws If pool not found. */
@@ -96,28 +98,60 @@ export async function getPools(
   }
 
   // add denoms so user can search them
-  let denomPools = pools.map((pool) => {
-    return {
-      ...pool,
-      coinDenoms: pool.reserveCoins.flatMap((coin) => [
-        coin.denom,
-        coin.currency.coinMinimalDenom,
-      ]),
-    };
-  });
+  let denomPools = pools.map((pool) => ({
+    ...pool,
+    coinDenoms: pool.reserveCoins.flatMap((coin) => [
+      coin.denom,
+      coin.currency.coinMinimalDenom,
+    ]),
+    poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
+    coinNames: pool.reserveCoins.map((coin) => [
+      // @ts-ignore
+      coin.currency.coinName,
+    ]),
+  }));
+
+  if (params.denoms) {
+    const denoms = params.denoms;
+
+    denomPools = denomPools.filter((denomPool) =>
+      denomPool.coinDenoms.some((denom) => denoms.includes(denom))
+    );
+  }
 
   if (params?.search) {
-    denomPools = search(denomPools, searchablePoolKeys, params.search);
+    // search for an exact match of coinMinimalDenom or pool ID
+    const coinDenomsOrIdMatches = search(
+      denomPools,
+      ["coinDenoms", "id"],
+      params.search,
+      0.0 // Exact match
+    );
+
+    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
+    if (coinDenomsOrIdMatches.length > 0) {
+      denomPools = coinDenomsOrIdMatches;
+    } else {
+      const poolNameByDenomMatches = search(
+        denomPools,
+        ["poolNameByDenom", "coinNames"],
+        params.search
+      );
+
+      denomPools = poolNameByDenomMatches;
+    }
   }
 
   return denomPools;
 }
 
 export * from "./bonding";
+export * from "./env";
 export * from "./incentives";
 export * from "./market";
 export * from "./providers";
 export * from "./route-token-out-given-in";
 export * from "./share";
 export * from "./superfluid";
+export * from "./transmuter";
 export * from "./user";

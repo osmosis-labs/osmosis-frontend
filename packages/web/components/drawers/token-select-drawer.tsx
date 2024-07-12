@@ -12,7 +12,7 @@ import {
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
@@ -23,13 +23,13 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
 import { useConst } from "../../hooks/use-const";
-import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 
 const dataAttributeName = "data-token-id";
 
@@ -253,7 +253,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16">
             <div
               onClick={() => onClose()}
-              className="relative flex items-center justify-center pt-8 pb-4"
+              className="relative flex items-center justify-center pb-4 pt-8"
             >
               <IconButton
                 className="absolute left-4 w-fit py-0 text-osmoverse-400"
@@ -349,7 +349,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                       <button
                         key={coinMinimalDenom}
                         className={classNames(
-                          "flex cursor-pointer items-center justify-between py-2 px-5",
+                          "flex cursor-pointer items-center justify-between px-5 py-2",
                           "transition-colors duration-150 ease-out",
                           {
                             "bg-osmoverse-900": keyboardSelectedIndex === index,

@@ -13,6 +13,16 @@ import HomePage, { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 
 jest.mock("next/router", () => jest.requireActual("next-router-mock"));
 
+// Mock the ResizeObserver
+const ResizeObserverMock = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+// Stub the global ResizeObserver
+global.ResizeObserver = ResizeObserverMock;
+
 const atomAsset = getAssetFromAssetList({
   assetLists: AssetLists,
   sourceDenom: "uatom",
@@ -38,7 +48,10 @@ afterEach(() => {
 beforeEach(() => {
   server.use(
     trpcMsw.edge.assets.getUserAssets.query((_req, res, ctx) => {
-      return res(ctx.status(200), ctx.data({ items: [], nextCursor: null }));
+      return res(
+        ctx.status(200),
+        ctx.data({ items: [], nextCursor: undefined })
+      );
     }),
     trpcMsw.edge.assets.getAssetPrice.query((_req, res, ctx) => {
       return res(
@@ -91,10 +104,10 @@ it("If there's a previous trade and no query params, swap tool should select tho
   });
 
   screen.getByRole("heading", { name: usdtAsset.symbol });
-  screen.getByText(usdtAsset.rawAsset.name);
+  screen.getAllByText(usdtAsset.rawAsset.name);
 
   screen.getByRole("heading", { name: usdcAsset.symbol });
-  screen.getByText(usdcAsset.rawAsset.name);
+  screen.getAllByText(usdcAsset.rawAsset.name);
 });
 
 it("If the previous trade is not available, swap tool should select default tokens", async () => {

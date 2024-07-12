@@ -1,3 +1,4 @@
+import { Chain } from "@osmosis-labs/types";
 import { poll } from "@osmosis-labs/utils";
 
 import type {
@@ -8,21 +9,21 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
+import { SkipBridgeProvider } from ".";
 import { SkipApiClient } from "./queries";
-import { providerName } from "./types";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = providerName;
+  readonly keyPrefix = SkipBridgeProvider.ID;
   readonly sourceDisplayName = "Skip Bridge";
 
-  statusReceiverDelegate?: TransferStatusReceiver;
+  statusReceiverDelegate?: TransferStatusReceiver | undefined;
 
   readonly skipClient: SkipApiClient;
   readonly axelarScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment) {
-    this.skipClient = new SkipApiClient();
+  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
+    this.skipClient = new SkipApiClient(env);
 
     this.axelarScanBaseUrl =
       env === "mainnet"
@@ -30,14 +31,14 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
         : "https://testnet.axelarscan.io";
   }
 
-  trackTxStatus(serializedParams: string): void {
+  async trackTxStatus(serializedParams: string): Promise<void> {
     const { sendTxHash, fromChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
     const snapshotKey = `${this.keyPrefix}${serializedParams}`;
 
-    poll({
+    await poll({
       fn: async () => {
         try {
           const txStatus = await this.skipClient.transactionStatus({
@@ -90,11 +91,27 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   }
 
   makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash } = JSON.parse(
+    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
 
-    return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    if (typeof fromChainId === "number" || typeof toChainId === "number") {
+      // EVM transfer
+      return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    } else {
+      const chain = this.chainList.find(
+        (chain) => chain.chain_id === fromChainId
+      );
+
+      if (!chain) throw new Error("Chain not found: " + fromChainId);
+
+      if (chain.explorers.length === 0) {
+        // attempt to link to mintscan since this is an IBC transfer
+        return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
+      }
+
+      return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+    }
   }
 
   receiveConclusiveStatus(

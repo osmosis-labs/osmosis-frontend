@@ -1,6 +1,6 @@
 import { BondStatus } from "@osmosis-labs/types";
 
-import { createNodeQuery } from "../../../queries/base-utils";
+import { createNodeQuery } from "../../create-node-query";
 
 type Validator = {
   operator_address: string;

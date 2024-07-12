@@ -2,7 +2,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import dayjs from "../../../../utils/dayjs";
+import { dayjs } from "../../../../utils/dayjs";
 import { queryMarketChart } from "../../../coingecko";
 import {
   queryTokenHistoricalChart,
@@ -29,7 +29,7 @@ export type CommonPriceChartTimeFrame = "1H" | "1D" | "1W" | "1M";
  *  - "1W": 12-hour bars, last week of prices (14 recent frames)
  *  - "1M": 1-day bars, last month of prices (30 recent frames */
 export function getAssetHistoricalPrice({
-  coinDenom,
+  coinMinimalDenom,
   timeFrame,
   numRecentFrames,
 }: {
@@ -38,7 +38,7 @@ export function getAssetHistoricalPrice({
    *
    * Note: this can be both a symbol or a denom (coinMinimalDenom)
    * */
-  coinDenom: string;
+  coinMinimalDenom: string;
   /** Number of minutes per bar. So 60 refers to price every hour. */
   timeFrame: TimeFrame | CommonPriceChartTimeFrame;
   /** How many recent price values to splice with.
@@ -65,13 +65,13 @@ export function getAssetHistoricalPrice({
 
   return cachified({
     cache: tokenHistoricalPriceCache,
-    key: `token-historical-price-${coinDenom}-${timeFrame}-${
+    key: `token-historical-price-${coinMinimalDenom}-${timeFrame}-${
       numRecentFrames ?? "all"
     }`,
     ttl: 1000 * 60 * 3, // 3 minutes
     getFreshValue: () =>
       queryTokenHistoricalChart({
-        coinDenom,
+        coinMinimalDenom,
         timeFrameMinutes: timeFrame as TimeFrame,
       }).then((prices) =>
         numRecentFrames ? prices.slice(-numRecentFrames) : prices

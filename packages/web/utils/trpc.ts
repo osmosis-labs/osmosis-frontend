@@ -1,4 +1,6 @@
-import { localLink, makeSkipBatchLink, superjson } from "@osmosis-labs/server";
+import { superjson } from "@osmosis-labs/server";
+import { makeIndexedKVStore } from "@osmosis-labs/stores";
+import { localLink, makeSkipBatchLink } from "@osmosis-labs/trpc";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
@@ -14,7 +16,6 @@ import type {
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { type AppRouter, appRouter } from "~/server/api/root-router";
-import { makeIndexedKVStore } from "~/stores/kv-store";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,

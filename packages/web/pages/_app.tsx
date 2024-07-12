@@ -20,14 +20,17 @@ import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
+import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
-import ErrorBoundary from "~/components/error/error-boundary";
-import ErrorFallback from "~/components/error/error-fallback";
+import { ErrorBoundary } from "~/components/error/error-boundary";
+import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
+import { OneClickToast } from "~/components/one-click-trading/one-click-trading-toast";
 import { AmplitudeEvent, EventName } from "~/config";
+import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
   useDisclosure,
@@ -38,9 +41,10 @@ import { BridgeProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import DefaultSeo from "~/next-seo.config";
+import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
+import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
@@ -66,30 +70,33 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <MultiLanguageProvider
-      defaultLanguage={DEFAULT_LANGUAGE}
-      defaultTranslations={{ en }}
-    >
-      <StoreProvider>
-        <WalletSelectProvider>
-          <BridgeProvider>
-            <DefaultSeo />
-            <IbcNotifier />
-            <ToastContainer
-              toastStyle={{
-                backgroundColor: "#2d2755",
-              }}
-              transition={Bounce}
-            />
-            <MainLayoutWrapper>
-              <ErrorBoundary fallback={ErrorFallback}>
-                {Component && <Component {...pageProps} />}
-              </ErrorBoundary>
-            </MainLayoutWrapper>
-          </BridgeProvider>
-        </WalletSelectProvider>
-      </StoreProvider>
-    </MultiLanguageProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <MultiLanguageProvider
+        defaultLanguage={DEFAULT_LANGUAGE}
+        defaultTranslations={{ en }}
+      >
+        <StoreProvider>
+          <WalletSelectProvider>
+            <BridgeProvider>
+              <SEO />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                <ErrorBoundary fallback={<ErrorFallback />}>
+                  {Component && <Component {...pageProps} />}
+                </ErrorBoundary>
+              </MainLayoutWrapper>
+            </BridgeProvider>
+          </WalletSelectProvider>
+        </StoreProvider>
+      </MultiLanguageProvider>
+    </WagmiProvider>
   );
 }
 
@@ -322,6 +329,12 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
+      {flags.oneClickTrading && (
+        <>
+          <OneClickTradingIntroModal />
+          <OneClickToast />
+        </>
+      )}
     </MainLayout>
   );
 });

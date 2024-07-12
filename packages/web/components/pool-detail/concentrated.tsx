@@ -14,7 +14,7 @@ import {
 } from "~/components/chart/price-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
-import Spinner from "~/components/loaders/spinner";
+import { Spinner } from "~/components/loaders/spinner";
 import { ChartButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -32,14 +32,20 @@ import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
 import { AprBreakdownLegacy } from "../cards/apr-breakdown";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const ConcentratedLiquidityDepthChart = dynamic(
-  () => import("~/components/chart/concentrated-liquidity-depth"),
+  () =>
+    import("~/components/chart/concentrated-liquidity-depth").then(
+      (module) => module.ConcentratedLiquidityDepthChart
+    ),
   { ssr: false }
 );
 const HistoricalPriceChart = dynamic(
-  () => import("~/components/chart/price-historical"),
+  () =>
+    import("~/components/chart/price-historical").then(
+      (module) => module.HistoricalPriceChart
+    ),
   { ssr: false }
 );
 
@@ -288,7 +294,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {currentPrice && (
                   <h6
                     className={classNames(
-                      "absolute top-[51%] right-0 max-w-[2rem] text-right",
+                      "absolute right-0 top-[51%] max-w-[2rem] text-right",
                       {
                         caption: currentPrice.lt(new Dec(0.01)),
                       }
@@ -422,7 +428,13 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+  const {
+    historicalChartData,
+    yRange,
+    setHoverPrice,
+    lastChartData,
+    currentPrice,
+  } = config;
 
   return (
     <HistoricalPriceChart
@@ -432,7 +444,7 @@ const Chart: FunctionComponent<{
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
         if (lastChartData) {
-          setHoverPrice(Number(lastChartData.close));
+          setHoverPrice(Number(currentPrice.toString()));
         }
       }}
     />

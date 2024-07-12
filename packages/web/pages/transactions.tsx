@@ -3,12 +3,10 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
-import LinkButton from "~/components/buttons/link-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
-import {
-  TransactionDetailsModal,
-  TransactionDetailsSlideover,
-} from "~/components/transactions/transaction-details";
+import { TransactionDetailsModal } from "~/components/transactions/transaction-details/transaction-details-modal";
+import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details/transaction-details-slideover";
 import { EventName } from "~/config";
 import { useFeatureFlags, useNavBar } from "~/hooks";
 import {

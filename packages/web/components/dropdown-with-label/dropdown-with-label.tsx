@@ -2,13 +2,13 @@ import { Listbox, Transition } from "@headlessui/react";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 import classNames from "classnames";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { ListOption } from "~/components/earn/table/types/filters";
 
 interface DropdownWithLabelProps<T> {
-  label: string;
+  label: ReactNode;
   options: ListOption<T>[];
   value: ListOption<T>[];
   onChange: (v: ListOption<T>) => void;
@@ -33,7 +33,7 @@ export const DropdownWithLabel = <T,>({
         <div className="relative flex w-full">
           <Listbox.Button
             className={classNames(
-              "inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5 xl:min-w-0",
+              "inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 px-5 py-3 xl:min-w-0",
               buttonClassName
             )}
           >

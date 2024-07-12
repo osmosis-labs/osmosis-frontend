@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import {
   ChainGetter,
   CoinPrimitive,
@@ -12,7 +13,6 @@ import {
   CosmosAccount,
   DeliverTxResponse,
   OsmosisAccount,
-  TxFee,
 } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { cosmwasmMsgOpts } from "./types";
@@ -84,7 +84,7 @@ export class CosmwasmAccountImpl {
     contractAddress: string,
     obj: object,
     funds: CoinPrimitive[],
-    backupFee?: Optional<TxFee, "amount">,
+    backupFee?: Optional<StdFee, "amount">,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {

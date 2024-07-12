@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
   ComponentProps,
-  FunctionComponent,
+  PropsWithChildren,
   useCallback,
   useEffect,
   useState,
@@ -17,6 +17,7 @@ import {
   useTransferConfig,
   useWindowSize,
 } from "~/hooks";
+import { BridgeFlowProvider } from "~/hooks/bridge";
 import { FiatRampKey } from "~/integrations";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -33,14 +34,12 @@ import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { removeQueryParam } from "~/utils/url";
 
-import { BridgeFlowProvider } from "./flow";
-
 const TransactionTypeQueryParamKey = "transaction_type";
 const DenomQueryParamKey = "denom";
 
 /** Legacy deposit/withdraw flow to be replaced by immersive flow. */
-export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
-  ({ Provider, children }) => {
+export const LegacyBridgeFlow = observer(
+  ({ Provider, children }: PropsWithChildren<BridgeFlowProvider>) => {
     const { assetsStore, userSettings } = useStore();
     const router = useRouter();
     const transferConfig = useTransferConfig();
@@ -111,14 +110,20 @@ export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
     );
 
     const startBridge = useCallback(
-      (direction: "deposit" | "withdraw") => {
+      ({ direction }: { direction: "deposit" | "withdraw" }) => {
         transferConfig.startTransfer(direction);
       },
       [transferConfig]
     );
 
     const bridgeAsset = useCallback(
-      (anyDenom: string, direction: "deposit" | "withdraw") => {
+      ({
+        anyDenom,
+        direction,
+      }: {
+        anyDenom: string;
+        direction: "deposit" | "withdraw";
+      }) => {
         const balance = assetsStore.unverifiedIbcBalances.find(
           ({ balance }) =>
             balance.denom === anyDenom ||
@@ -160,7 +165,13 @@ export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
     );
 
     const fiatRamp = useCallback(
-      (fiatRampKey: FiatRampKey, assetKey: string) => {
+      ({
+        fiatRampKey,
+        assetKey,
+      }: {
+        fiatRampKey: FiatRampKey;
+        assetKey: string;
+      }) => {
         transferConfig.launchFiatRampsModal(fiatRampKey, assetKey);
       },
       [transferConfig]
@@ -194,7 +205,7 @@ export const LegacyBridgeFlow: FunctionComponent<BridgeFlowProvider> = observer(
         return;
       }
 
-      bridgeAsset(asset.balance.denom, direction);
+      bridgeAsset({ anyDenom: asset.balance.denom, direction });
       removeQueryParam(TransactionTypeQueryParamKey);
       removeQueryParam(DenomQueryParamKey);
     }, [router.query, assetsStore.unverifiedIbcBalances, bridgeAsset]);

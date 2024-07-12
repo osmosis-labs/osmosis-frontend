@@ -1,15 +1,14 @@
-import { queryOsmosisCMS } from "@osmosis-labs/server";
-import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useLocalStorage } from "react-use";
 
-import { AdBanner } from "~/components/ad-banner";
-import ErrorBoundary from "~/components/error/error-boundary";
+import { AdBanners } from "~/components/ad-banner";
+import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
 export type PreviousTrade = {
@@ -46,10 +45,10 @@ const Home = () => {
               height="725.6817"
             />
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
+              lowResXlinkHref={"/images/bitcoin-props-low.png"}
+              xlinkHref={"/images/bitcoin-props.png"}
               x={"61"}
-              y={"682"}
+              y={"600"}
               width={"448.8865"}
               height={"285.1699"}
             />
@@ -75,55 +74,31 @@ const Home = () => {
   );
 };
 
-export interface SwapAdBannerResponse {
-  banners: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    headerOrTranslationKey: string;
-    subheaderOrTranslationKey: string;
-    externalUrl: string;
-    iconImageUrl: string;
-    iconImageAltOrTranslationKey: string;
-    gradient: string;
-    fontColor: string;
-    arrowColor: string;
-    featured: true;
-  }[];
-  localization: Record<string, Record<string, any>>;
-}
-
-const SwapAdsBanner = () => {
-  /**
-   * Fetches the latest update from the osmosis-labs/fe-content repo
-   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/swap-rotating-banner.json
-   */
-  const { data, isLoading } = useQuery({
-    queryKey: ["swap-ads-banner"],
-    queryFn: () =>
-      queryOsmosisCMS<SwapAdBannerResponse>({
-        filePath: "cms/swap-rotating-banner.json",
+const SwapAdsBanner = observer(() => {
+  const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
+    undefined,
+    {
+      staleTime: 1000 * 60 * 30, // 30 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      select: (data) => ({
+        ...data,
+        banners: data.banners.filter((banner) =>
+          banner.startDate || banner.endDate
+            ? dayjs().isBetween(banner.startDate, banner.endDate)
+            : true
+        ),
       }),
-    staleTime: 1000 * 60 * 30, // 30 minutes
-    cacheTime: 1000 * 60 * 30, // 30 minutes
-    select: (data) => ({
-      ...data,
-      banners: data.banners.filter((banner) =>
-        banner.startDate || banner.endDate
-          ? dayjs().isBetween(banner.startDate, banner.endDate)
-          : true
-      ),
-    }),
-  });
+    }
+  );
 
   if (!data?.banners || isLoading) return null;
 
   return (
     // If there is an error, we don't want to show the banner
     <ErrorBoundary fallback={null}>
-      <AdBanner ads={data.banners} localization={data.localization} />
+      <AdBanners ads={data.banners} localization={data.localization} />
     </ErrorBoundary>
   );
-};
+});
 
 export default observer(Home);

@@ -5,7 +5,6 @@ import { useWindowSize } from "~/hooks";
 
 // NOTE: Please add a default value to any new flag you add to this list
 export type AvailableFlags =
-  | "concentratedLiquidity"
   | "staking"
   | "swapsAdBanner"
   | "notifications"
@@ -27,7 +26,9 @@ export type AvailableFlags =
   | "portfolioPageAndNewAssetsPage"
   | "displayDailyEarn"
   | "newAssetsPage"
-  | "newDepositWithdrawFlow";
+  | "newDepositWithdrawFlow"
+  | "oneClickTrading"
+  | "advancedChart";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -35,7 +36,6 @@ type ModifiedFlags =
   | "_isClientIDPresent";
 
 const defaultFlags: Record<ModifiedFlags, boolean> = {
-  concentratedLiquidity: true,
   staking: true,
   swapsAdBanner: true,
   notifications: true,
@@ -57,6 +57,8 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   newAssetsPage: false,
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
+  oneClickTrading: false,
+  advancedChart: false,
   _isInitialized: false,
   _isClientIDPresent: false,
 };
@@ -91,6 +93,10 @@ export const useFeatureFlags = () => {
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
+    oneClickTrading:
+      !isMobile &&
+      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+      launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;

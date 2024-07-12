@@ -1,5 +1,7 @@
 // Osmosis node
 export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+export const SPEND_LIMIT_CONTRACT_ADDRESS =
+  process.env.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS;
 
 // twitter
 export const TWITTER_API_URL = process.env.TWITTER_API_URL;
@@ -20,10 +22,15 @@ export const TIMESERIES_DATA_URL =
 export const INDEXER_DATA_URL =
   process.env.NEXT_PUBLIC_INDEXER_DATA_URL ??
   "https://stage-proxy-data-indexer.osmosis-labs.workers.dev";
+export const NUMIA_BASE_URL =
+  process.env.NEXT_PUBLIC_NUMIA_BASE_URL ??
+  "https://public-osmosis-api.numia.xyz";
+
+// sqs
 export const SIDECAR_BASE_URL =
   process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "https://sqs.osmosis.zone/";
 export const TFM_BASE_URL = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
-export const NUMIA_BASE_URL = "https://public-osmosis-api.numia.xyz";
+
 export const KEYBASE_BASE_URL = "https://keybase.io/";
 export const KV_STORE_REST_API_URL = process.env.KV_STORE_REST_API_URL;
 export const KV_STORE_REST_API_TOKEN = process.env.KV_STORE_REST_API_TOKEN;

@@ -12,7 +12,7 @@ import {
 import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
-import StrategiesTable from "~/components/earn/table";
+import { StrategiesTable } from "~/components/earn/table";
 import {
   TabButton,
   TabButtons,
@@ -21,7 +21,7 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -30,7 +30,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import useGetEarnStrategies from "~/hooks/use-get-earn-strategies";
+import { useGetEarnStrategies } from "~/hooks/use-get-earn-strategies";
 import { useStore } from "~/stores";
 
 function Earn() {
@@ -53,6 +53,7 @@ function Earn() {
   useNavBar({ title: t("earnPage.title") });
 
   const {
+    cmsData,
     strategies,
     myStrategies,
     totalBalance,
@@ -78,18 +79,18 @@ function Earn() {
         { label: "Perps LP", value: "Perps LP" },
         { label: "Lending", value: "Lending" },
       ],
-      platform: [
-        { label: "Osmosis", value: "Osmosis" },
-        { label: "Quasar", value: "Quasar" },
-        { label: "Levana", value: "Levana" },
-        { label: "Mars", value: "Mars" },
-      ],
+      platform: cmsData?.platforms
+        ? cmsData.platforms.map((platform) => ({
+            label: platform.name,
+            value: platform.name,
+          }))
+        : [],
       lockDurationType: "all",
       search: "",
       specialTokens: [],
       rewardType: "all",
     }),
-    [holdenDenoms?.length, isWalletConnected]
+    [holdenDenoms?.length, cmsData, isWalletConnected]
   );
 
   useEffect(() => {
@@ -113,15 +114,14 @@ function Earn() {
 
       {isWalletConnected ? (
         <div className="grid grid-cols-earnpage gap-6 lg:flex lg:flex-col">
-          <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pt-7 pb-4 2xl:justify-between 1.5md:bg-none">
+          <div className="flex max-h-[192px] items-end justify-start overflow-hidden rounded-3x4pxlinset bg-osmoverse-850 bg-gradient-earnpage-position-bg px-8 pb-4 pt-7 2xl:justify-between 1.5md:bg-none">
             <EarnPosition
               setTabIdx={setTabIdx}
               totalBalance={totalBalance.toString()}
               numberOfPositions={myStrategies.length}
               isLoading={areBalancesLoading}
             />
-            {/* <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
-          <EarnAllocation /> */}
+
             <p className="ml-auto max-w-[160px] text-right text-body2 font-medium text-osmoverse-200 2xl:hidden">
               {t("earnPage.lookBelow")}
             </p>
@@ -147,12 +147,18 @@ function Earn() {
                 <p className="body2 text-osmoverse-200 opacity-50">
                   {t("earnPage.startEarningDescription")}
                 </p>
-
                 <Button
                   mode={"primary"}
                   className="max-h-11 max-w-[260px] xl:max-w-none"
                   onClick={() =>
-                    onOpenWalletSelect(accountStore.osmosisChainId)
+                    onOpenWalletSelect({
+                      walletOptions: [
+                        {
+                          walletType: "cosmos",
+                          chainId: accountStore.osmosisChainId,
+                        },
+                      ],
+                    })
                   }
                 >
                   {t("connectWallet")}
@@ -163,32 +169,6 @@ function Earn() {
           </div>
         </SkeletonLoader>
       )}
-
-      {/* <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
-          <Tabs>
-            <TabButtons>
-              <TabButton withTextOpacity textClassName="!text-lg !leading-8">
-                {t("earnPage.position")}
-              </TabButton>
-              <TabButton
-                withTextOpacity
-                textClassName="!text-lg !leading-8"
-                className="ml-4"
-              >
-                {t("earnPage.allocation")}
-              </TabButton>
-            </TabButtons>
-            <TabPanels>
-              <TabPanel displayMode="block">
-                <EarnPosition />
-              </TabPanel>
-              <TabPanel displayMode="block">
-                <EarnAllocation />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div> */}
-
       <FilterProvider
         defaultFilters={defaultFilters}
         key={`filters-${isWalletConnected}-${holdenDenoms?.length}`}
@@ -234,7 +214,7 @@ function Earn() {
           </TabHeader>
           <TabPanels>
             <TabPanel
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              className="flex-col rounded-bl-5xl rounded-br-5xl"
               displayMode="flex"
             >
               <StrategiesTable
@@ -247,7 +227,7 @@ function Earn() {
               />
             </TabPanel>
             <TabPanel
-              className="flex-col rounded-br-5xl rounded-bl-5xl"
+              className="flex-col rounded-bl-5xl rounded-br-5xl"
               displayMode="flex"
             >
               <StrategiesTable

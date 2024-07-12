@@ -58,8 +58,12 @@ export type EventProperties = {
   router: string;
   errorMessage: string | undefined;
   valueUsd: number;
+  feeValueUsd: number;
   assetCategory: string;
   highlight: string;
+  source: string;
+  spendLimit: number;
+  sessionPeriod: string;
 };
 
 export type UserProperties = {
@@ -84,6 +88,7 @@ export const EventName = {
     slippageToleranceSet: "Swap: Slippage tolerance set",
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
+    swapFailed: "Swap: Swap failed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",
   },
   // Events in Sidebar UI
@@ -235,5 +240,13 @@ export const EventName = {
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
   },
-  QueryError: "Query error",
+  Wormhole: {
+    pageViewed: "Wormhole: Page viewed",
+  },
+  OneClickTrading: {
+    startSession: "1CT: Start session",
+    endSession: "1CT: End session",
+    enableOneClickTrading: "1CT: Enable 1-Click Trading",
+    accessed: "1CT: Accessed",
+  },
 };

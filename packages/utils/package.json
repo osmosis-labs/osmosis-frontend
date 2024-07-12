@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "sideEffects": false,
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -16,7 +16,9 @@
   "dependencies": {
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
-    "sha.js": "^2.4.11"
+    "sha.js": "^2.4.11",
+    "viem": "2.16.4",
+    "@cosmjs/encoding": "0.32.3"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",

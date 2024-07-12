@@ -22,9 +22,9 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GradientView } from "~/components/assets/gradient-view";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
-import ClipboardButton from "~/components/buttons/clipboard-button";
-import IconButton from "~/components/buttons/icon-button";
-import LinkButton from "~/components/buttons/link-button";
+import { ClipboardButton } from "~/components/buttons/clipboard-button";
+import { IconButton } from "~/components/buttons/icon-button";
+import { LinkButton } from "~/components/buttons/link-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import {
   CheckboxSelect,
@@ -36,12 +36,11 @@ import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
-import Spinner from "~/components/loaders/spinner";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { Spinner } from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
-import { LinkIconButton } from "~/components/ui/button";
 import { ArrowButton } from "~/components/ui/button";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button, ChartButton } from "~/components/ui/button";
@@ -472,13 +471,11 @@ const CustomButtons = () => {
         />
       </Component>
       <Component title="Link Icon">
-        <LinkIconButton
-          href=""
-          target="_blank"
-          rel="external"
-          aria-label="X"
-          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
-        />
+        <Button size="icon" variant="secondary" aria-label="X" asChild>
+          <Link href="" target="_blank" rel="external">
+            <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
+          </Link>
+        </Button>
       </Component>
       <Component title="Show More">
         <ShowMoreButton
@@ -1011,7 +1008,9 @@ const InputsShadcn = () => {
   );
 };
 
-import QRCode from "~/components/qrcode";
+import Link from "next/link";
+
+import { QRCode } from "~/components/qrcode";
 
 const QRCodes = () => (
   <Card title="QR Codes">

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetCell as Cell } from "~/components/table/cells/types";
-import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 
 export const BalanceCell: FunctionComponent<Partial<Cell>> = ({
   amount,

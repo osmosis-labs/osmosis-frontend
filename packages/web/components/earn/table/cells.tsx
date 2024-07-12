@@ -9,7 +9,7 @@ import { ReactNode, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ColumnCellCell } from "~/components/earn/table/columns";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -224,7 +224,7 @@ export const RiskCell = (item: CellContext<EarnStrategy, number>) => {
             alt="Risk indicator tick"
             width={44}
             height={8}
-            className="absolute left-3.5 -top-1 h-11 w-2"
+            className="absolute -top-1 left-3.5 h-11 w-2"
             style={{ rotate: `${item.getValue() * 180 - 90}deg` }}
           />
         </RiskLink>

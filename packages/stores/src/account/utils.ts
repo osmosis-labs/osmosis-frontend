@@ -11,13 +11,6 @@ import {
 
 import { StdSignDoc } from "./types";
 
-export interface TxFee extends StdFee {
-  /**
-   * If set to true, the fee will be used as it is and will not undergo any estimation process.
-   */
-  force?: boolean;
-}
-
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
   /**
@@ -115,5 +108,26 @@ export class InsufficientFeeError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "InsufficientFeeError";
+  }
+}
+export const OneClickTradingLocalStorageKey = "one-click-trading";
+export const UseOneClickTradingLocalStorageKey = "use-one-click-enabled";
+export const HasUsedOneClickTradingLocalStorageKey = "has-used-one-click";
+
+// The number of heights from current before transaction times out.
+// 30 heights * 5 second block time = 150 seconds before transaction
+// timeout and mempool eviction.
+const defaultTimeoutHeightOffset = 30;
+
+export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
+  process.env.TIMEOUT_HEIGHT_OFFSET
+    ? process.env.TIMEOUT_HEIGHT_OFFSET
+    : defaultTimeoutHeightOffset
+);
+
+export class AccountStoreNoBroadcastErrorEvent extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AccountStoreNoBroadcastErrorEvent";
   }
 }

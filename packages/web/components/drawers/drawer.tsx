@@ -1,4 +1,4 @@
-import { Disclosure, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import FocusTrap from "focus-trap-react";
@@ -6,6 +6,7 @@ import {
   Fragment,
   FunctionComponent,
   HTMLProps,
+  PropsWithChildren,
   useEffect,
   useMemo,
   useState,
@@ -67,8 +68,8 @@ export const Drawer: FunctionComponent<{
   );
 };
 
-export const DrawerButton: FunctionComponent<{ className?: string }> = (
-  props
+export const DrawerButton = (
+  props: PropsWithChildren<{ className?: string }>
 ) => {
   const { onOpen, isOpen } = useDrawerProps();
   const Component = typeof props.children === "string" ? "button" : "div";
@@ -84,8 +85,8 @@ export const DrawerButton: FunctionComponent<{ className?: string }> = (
 /**
  * Container for the content of the drawer. It's necessary to lock focus in the content.
  */
-export const DrawerContent: FunctionComponent<{ className?: string }> = (
-  props
+export const DrawerContent = (
+  props: PropsWithChildren<{ className?: string }>
 ) => {
   const { isAnimationComplete, isOpen } = useDrawerProps();
 
@@ -99,9 +100,7 @@ export const DrawerContent: FunctionComponent<{ className?: string }> = (
   );
 };
 
-export const DrawerOverlay: FunctionComponent<
-  HTMLProps<HTMLDivElement>
-> = () => {
+export const DrawerOverlay: FunctionComponent = () => {
   const { isOpen, onClose } = useDrawerProps();
   return (
     <Transition
@@ -122,9 +121,9 @@ export const DrawerOverlay: FunctionComponent<
   );
 };
 
-export const DrawerPanel: FunctionComponent<
-  Parameters<typeof Disclosure.Panel>[0]
-> = (props) => {
+export const DrawerPanel = (
+  props: PropsWithChildren<HTMLProps<HTMLDivElement>>
+) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
   return (
     <Transition
@@ -141,7 +140,7 @@ export const DrawerPanel: FunctionComponent<
       <div
         {...props}
         className={classNames(
-          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16",
+          "absolute bottom-0 left-0 right-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16",
           props.className
         )}
       />

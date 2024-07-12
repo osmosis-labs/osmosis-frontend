@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { useTranslation } from "~/hooks";
 
-const ErrorFallback = () => {
+export const ErrorFallback = () => {
   const { t } = useTranslation();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-8 pt-4 text-center">
@@ -38,5 +38,3 @@ const ErrorFallback = () => {
     </div>
   );
 };
-
-export default ErrorFallback;

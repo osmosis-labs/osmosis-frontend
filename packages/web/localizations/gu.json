@@ -142,7 +142,6 @@
       "failed": "નિષ્ફળ",
       "failedWithReason": "નિષ્ફળ: {reason}",
       "pending": "બાકી છે",
-      "pendingRefunded": "નિષ્ફળ: બાકી રિફંડ",
       "refunded": "રિફંડ",
       "success": "સફળતા",
       "title": "ટ્રાન્સફર ઇતિહાસ",
@@ -151,7 +150,8 @@
       "successDeposit": "જમા કરાવ્યું",
       "successWithdraw": "પાછી ખેંચી લીધી",
       "failDeposit": "ડિપોઝિટ નિષ્ફળ",
-      "failWithdraw": "ઉપાડ નિષ્ફળ"
+      "failWithdraw": "ઉપાડ નિષ્ફળ",
+      "connectionError": "કનેક્શન ભૂલ"
     },
     "ibcTransfer": {
       "buttonAdd": "ઉમેરો",
@@ -391,7 +391,7 @@
     "noAvailableShares": "કોઈ {denom} શેર ઉપલબ્ધ નથી",
     "noRoute": "આ વેપાર માટે કોઈ માર્ગ નથી",
     "noSendCurrency": "મોકલવાનું ચલણ સેટ નથી",
-    "notInitialized": "આરંભ કરેલ નથી",
+    "notInitialized": "લોડ કરી રહ્યું છે...",
     "percentageSum": "ટકાવારીનો સરવાળો 100 નથી",
     "scalingFactorTooLow": "સ્કેલિંગ પરિબળ ખૂબ ઓછું છે",
     "zeroAmount": "રકમ શૂન્ય છે",
@@ -406,7 +406,8 @@
     "swapSlippage": "સ્લિપેજને કારણે {coinDenom} માટે સ્વેપ નિષ્ફળ થયું. સ્લિપેજ સહિષ્ણુતા વધારવાનો પ્રયાસ કરો.",
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
-    "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો."
+    "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
+    "noData": "કોઈ ડેટા નથી"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
@@ -490,6 +491,90 @@
     "discardButton": "ફેરફારોને અવગણો",
     "clearAllHistory": "બધું સાફ કરો"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
+      "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
+      "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
+      "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
+      "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
+      "startANewSession": "નવું સત્ર શરૂ કરો",
+      "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
+      "approveManually": "{walletName} માં મેન્યુઅલી મંજૂર કરો",
+      "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
+      "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
+      "errorEndingSession": "સત્ર સમાપ્ત કરવામાં ભૂલ",
+      "pleaseTryAgain": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો."
+    },
+    "introduction": {
+      "newFeature": "નવી સુવિધા",
+      "introducingTitle": "1-ક્લિક ટ્રેડિંગનો પરિચય",
+      "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
+      "learnMore": "વધુ શીખો",
+      "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
+      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
+      "changeButton": "સેટિંગ્સ સંપાદિત કરો"
+    },
+    "floatingBanner": {
+      "newPill": "નવી",
+      "title": "1-ક્લિક કરો ટ્રેડિંગ",
+      "tradeFasterButton": "ઝડપી વેપાર"
+    },
+    "settings": {
+      "header": "1-ક્લિક કરો ટ્રેડિંગ",
+      "description": "1-ક્લિક ટ્રેડિંગ તમને તમારા વૉલેટમાં દરેક ટ્રાન્ઝેક્શન પર સહી કરવાની ઝંઝટ વિના આ ઉપકરણ પર સુરક્ષિત રીતે વેપાર કરવા દે છે.",
+      "enableTitle": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
+      "spendLimitTitle": "નુકશાન રક્ષણ મર્યાદા",
+      "sessionPeriodTitle": "સત્રનો સમયગાળો",
+      "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
+      "editSessionButton": "ફેરફારો સંગ્રહ",
+      "endingSession": "સત્ર સમાપ્ત",
+      "feeToDisable": "1-ક્લિક ટ્રેડિંગને અક્ષમ કરવા માટે ફી:",
+      "spendLimitScreen": {
+        "spendLimitDescription": "વિશ્વસનીય અસ્કયામતો પર મર્યાદા વિના વેપાર કરો (માર્કેટ કેપ દ્વારા ટોચના 50).",
+        "spendLimitSubDescription": "અન્ય તમામ અસ્કયામતો માટે, મેન્યુઅલ વૉલેટ મંજૂરીની જરૂર હોય તે પહેલાં મહત્તમ ટ્રેડેબલ મૂલ્યની મર્યાદા સેટ કરો. ટ્રેડિંગ ફી પણ આ મર્યાદામાં ગણાય છે.",
+        "fixedAmount": "નિશ્ચિત રકમ",
+        "shareOfBalance": "સંતુલનનો હિસ્સો",
+        "shareOfBalanceDescription": "ઓસ્મોસિસ પરના તમારા કુલ બેલેન્સના {shareOfBalance} હાલમાં મૂલ્યના છે"
+      },
+      "sessionPeriodScreen": {
+        "title": "સત્રનો સમયગાળો",
+        "description": "આ ઉપકરણ પર 1-ક્લિક ટ્રેડિંગને મંજૂરી આપવા માટે સમયગાળો સેટ કરો.",
+        "periods": {
+          "5min": "5 મિનિટ",
+          "10min": "10 મિનીટ",
+          "30min": "30 મિનિટ",
+          "1hour": "1 કલાક",
+          "3hours": "3 કલાક",
+          "12hours": "12 કલાક"
+        }
+      },
+      "discardChanges": {
+        "title": "ફેરફારોને અવગણો?",
+        "message": "શું તમે તમારી હાલની 1-ક્લિક ટ્રેડિંગ સેટિંગ્સ રાખવા માંગો છો?",
+        "cancelButton": "રદ કરો",
+        "discardButton": "કાઢી નાખો"
+      }
+    },
+    "welcomeBack": {
+      "title": "ફરી સ્વાગત છે",
+      "subtitle": "ઓસ્મોસિસની શોધખોળ ચાલુ રાખવા માટે તમારા વૉલેટને કનેક્ટ કરો.",
+      "description": "એકવાર તમે તમારા વૉલેટને કનેક્ટ કરી લો, પછી તમને તમારું 1-ક્લિક ટ્રેડિંગ સત્ર શરૂ કરવા માટે ટ્રાન્ઝેક્શન મંજૂર કરવા માટે સંકેત આપવામાં આવશે.",
+      "toggleLabel": "1-ક્લિક કરો ટ્રેડિંગ",
+      "editParamsAriaLabel": "1CT પરિમાણો બદલો"
+    },
+    "connectToContinue": {
+      "altText": "એક ક્લિક ટ્રેડિંગ ગ્રાફિક",
+      "header": "ચાલુ રાખવા માટે વૉલેટ કનેક્ટ કરો",
+      "description": "જ્યારે તમે તમારા પસંદ કરેલા વૉલેટમાં ટ્રાન્ઝેક્શન મંજૂર કરશો ત્યારે તમારું 1-ક્લિક ટ્રેડિંગ સત્ર શરૂ થશે."
+    },
+    "profile": {
+      "sessionExpired": "સેટિંગ્સ",
+      "restart": "પુનઃપ્રારંભ",
+      "tooltipHeader": "1- ટ્રેડિંગ સેટિંગ્સ પર ક્લિક કરો",
+      "resetSession": "તમારી પ્રોફાઇલમાંથી 1-ક્લિક ટ્રેડિંગ સત્રો પુનઃપ્રારંભ કરો અથવા સંપાદિત કરો."
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24h ટ્રેડિંગ વોલ્યુમ",
     "amountDaysUnbonding": "{numDays} દિવસ અનબોન્ડિંગ",
@@ -505,12 +590,9 @@
     "checkBackForBondingRewards": "બોન્ડિંગ પુરસ્કારો માટે પાછા તપાસો",
     "collapseDetails": "પૂલ રચના છુપાવો",
     "commission": "કમિશન",
-    "currentDailyEarn": "તમે હાલમાં કમાણી કરી રહ્યાં છો",
     "dailyEarnAmount": "{amount} / દિવસ",
-    "day": "દિવસ",
     "delegated": "સોંપેલ",
     "details": "વિગતો",
-    "earnMore": "બોન્ડિંગ દ્વારા વધુ {amount} કમાઓ",
     "earnSwapFees": "સ્વેપ ફી કમાઓ",
     "earnSwapFeesCaption": "તમારા ટોકન્સને શેરમાં કન્વર્ટ કરો અને દરેક સ્વેપ પર કમાણી કરો.",
     "from": "થી",
@@ -606,7 +688,8 @@
     "modalTitle": "પ્રોફાઇલ",
     "viewAllAssets": "બધી સંપત્તિઓ જુઓ",
     "wallet": "વૉલેટ",
-    "transactions": "વ્યવહારો"
+    "transactions": "વ્યવહારો",
+    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",
@@ -626,7 +709,9 @@
   },
   "search": {
     "noResultsFor": "\" {query} \" માટે કોઈ પરિણામ નથી",
-    "adjust": "તમારી શોધ ક્વેરી સમાયોજિત કરવાનો પ્રયાસ કરો"
+    "adjust": "તમારી શોધ ક્વેરી સમાયોજિત કરવાનો પ્રયાસ કરો",
+    "noPools": "કોઈ પૂલ નથી",
+    "poolsEmpty": "હાલમાં ઓસ્મોસિસ પર {denom} માટે કોઈ પૂલ નથી"
   },
   "stake": {
     "available": "ઉપલબ્ધ છે",
@@ -748,16 +833,17 @@
     "priceImpact": "ભાવની અસર",
     "routerTooltipFee": "ફી",
     "routerTooltipSpreadFactor": "સ્પ્રેડ ફેક્ટર",
+    "continueAnyway": "કોઈપણ રીતે ચાલુ રાખો",
+    "warning": {
+      "exceedsSpendLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી બાકીની ખર્ચ મર્યાદાને ઓળંગે છે.",
+      "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો"
+    },
     "settings": {
       "slippage": "સ્લિપેજ સહનશીલતા",
       "slippageInfo": "જો કિંમત આ ટકાવારી કરતાં વધુ પ્રતિકૂળ રીતે બદલાશે તો તમારો વ્યવહાર પાછો આવશે.",
       "title": "વ્યવહાર સેટિંગ્સ"
     },
     "title": "સ્વેપ",
-    "promo": {
-      "newOpportunity": "{denom} વડે કમાવાની નવી તક",
-      "discoverSuperchargedPools": "સુપરચાર્જ્ડ પૂલ શોધો"
-    },
     "dynamicSpreadFactor": "ગતિશીલ"
   },
   "walletSelect": {
@@ -773,6 +859,13 @@
     "reconnect": "ફરીથી કનેક્ટ કરો",
     "connectingWallet": "વૉલેટ કનેક્ટ કરી રહ્યું છે",
     "approveWalletConnect": "તમારા મોબાઇલ પર {walletName} કનેક્શન વિનંતીને મંજૂર કરો.",
+    "enablingOneClickTrading": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરવું.",
+    "approveOneClickTradingSession": "{walletName} માં 1-ક્લિક ટ્રેડિંગને મંજૂરી આપો.",
+    "errorInitializingOneClickTradingSession": "1-ક્લિક ટ્રેડિંગ સક્ષમ કરી શકાયું નથી.",
+    "retryInWalletOrContinue": "{walletName} માં ફરી પ્રયાસ કરો, અથવા 1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો.",
+    "retryInWalletOrContinueNoFunds": "સત્ર શરૂ કરવા માટે પૂરતું ભંડોળ નથી. કૃપા કરીને વધુ જમા કરો અને {walletName} માં ફરી પ્રયાસ કરો અથવા 1-ક્લિક ટ્રેડિંગ વિના આગળ વધો.",
+    "continueWithoutOneClickTrading": "1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો",
+    "retry": "ફરી પ્રયાસ કરો",
     "openExtension": "તમારા વૉલેટને કનેક્ટ કરવા માટે {walletName} બ્રાઉઝર એક્સ્ટેંશન ખોલો.",
     "initializingWallet": "વૉલેટ ક્લાયંટ શરૂ કરી રહ્યાં છીએ",
     "clickToRefresh": "તાજું કરવા માટે ક્લિક કરો.",
@@ -789,6 +882,7 @@
     "mobileWallets": "મોબાઇલ વોલેટ્સ",
     "installedWallets": "ઇન્સ્ટોલ કરેલ વૉલેટ",
     "otherWallets": "અન્ય પાકીટ",
+    "searchWallets": "વોલેટ્સ શોધો",
     "step1Title": "પાકીટ શું છે?",
     "step1Content": "OSMO અને ATOM જેવી તમારી તમામ ડિજિટલ સંપત્તિઓ મોકલવા, પ્રાપ્ત કરવા અને ઍક્સેસ કરવા માટે વૉલેટનો ઉપયોગ થાય છે.",
     "step2Title": "કોઈ હિસાબ નથી. કોઈ પાસવર્ડ નથી.",
@@ -796,12 +890,112 @@
     "step3Title": "તમારી ચાવીઓ, તમારા ભંડોળ.",
     "step3Content": "ઓસ્મોસિસ પર, ફક્ત તમે જ તમારી સંપત્તિઓ ખસેડી શકો છો. મહાન શક્તિ સાથે મોટી જવાબદારી આવે છે.",
     "step4Title": "પ્રારંભ કરવા માટે વૉલેટ બનાવો",
-    "step4Content": "તમારું પ્રથમ વૉલેટ સેટ કરો અને સાઇન ઇન થાઓ! સંપત્તિ મોકલો, પ્રાપ્ત કરો અથવા ખરીદો."
+    "step4Content": "તમારું પ્રથમ વૉલેટ સેટ કરો અને સાઇન ઇન થાઓ! સંપત્તિ મોકલો, પ્રાપ્ત કરો અથવા ખરીદો.",
+    "yourConnectedWallets": "તમારા કનેક્ટેડ પાકીટ",
+    "primaryWallet": "પ્રાથમિક વૉલેટ",
+    "done": "થઈ ગયું",
+    "manage": "વ્યવસ્થા કરો",
+    "disconnect": "ડિસ્કનેક્ટ કરો"
   },
   "swapFailed": "સ્વેપ નિષ્ફળ. લિક્વિડિટી પૂરતી ન હોઈ શકે. મંજૂર સ્લિપેજને સમાયોજિત કરવાનો પ્રયાસ કરો.",
   "transactionBroadcasting": "ટ્રાન્ઝેક્શન બ્રોડકાસ્ટિંગ",
   "transactionFailed": "વ્યવહાર નિષ્ફળ થયો",
   "transactionSuccessful": "વ્યવહાર સફળ",
+  "transfer": {
+    "deposit": "જમા",
+    "withdraw": "ઉપાડો",
+    "fromNetwork": "નેટવર્કમાંથી",
+    "toNetwork": "નેટવર્ક માટે",
+    "from": "માંથી",
+    "to": "માટે",
+    "max": "મહત્તમ",
+    "available": "ઉપલબ્ધ",
+    "transferWith": "સાથે ટ્રાન્સફર કરો",
+    "transferTo": "પર ટ્રાન્સફર કરો",
+    "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
+    "transfer": "ટ્રાન્સફર {denom}",
+    "receive": "{denom} મેળવો",
+    "selectDepositWallet": "ડિપોઝિટ વૉલેટ પસંદ કરો",
+    "selectWithdrawWallet": "પાકીટ ઉપાડવાનું પસંદ કરો",
+    "receiveAssetDescription": "જ્યારે તમે અમુક સંપત્તિઓ જમા કરો છો, ત્યારે તમે ઓસ્મોસિસ પર સંપત્તિનું કયું સંસ્કરણ પ્રાપ્ત કરવા માંગો છો તે પસંદ કરી શકો છો.",
+    "estimatingTime": "સમયનો અંદાજ",
+    "calculatingFees": "ફીની ગણતરી",
+    "reviewDeposit": "ડિપોઝિટની સમીક્ષા કરો",
+    "reviewWithdraw": "સમીક્ષા પાછી ખેંચી",
+    "moreDepositOptions": "વધુ થાપણ વિકલ્પો",
+    "moreWithdrawOptions": "વધુ ઉપાડ વિકલ્પો",
+    "convertTo": "માં કન્વર્ટ કરો",
+    "depositAs": "તરીકે જમા",
+    "withdrawAs": "તરીકે પાછી ખેંચો",
+    "recommended": "ભલામણ કરેલ",
+    "fee": "ફી",
+    "fees": "ફી",
+    "unknown": "અજ્ઞાત",
+    "unknownFeeTooltip": "હાલમાં {networkName} પરની નેટવર્ક ફીની ગણતરી કરી શકાતી નથી. ટ્રાન્ઝેક્શનની મંજૂરી પર નેટવર્ક ફી તમારા વૉલેટમાં પ્રદર્શિત થવી જોઈએ.",
+    "free": "મફત",
+    "cheapest": "સૌથી સસ્તું",
+    "fastest": "સૌથી ઝડપી",
+    "stepLabels": {
+      "asset": "એસેટ",
+      "amount": "રકમ",
+      "review": "સમીક્ષા"
+    },
+    "moreBridgeOptions": {
+      "titleDeposit": "વધુ થાપણ વિકલ્પો",
+      "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
+      "descriptionDeposit": "તમારા {asset} થી {chain} જમા કરાવવા માટે નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી પસંદ કરો (ઉર્ફ \"બ્રિજ\") .",
+      "descriptionWithdraw": "તમારા {asset} થી {chain} ઉપાડવા માટે નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી પસંદ કરો (ઉર્ફે \"બ્રિજ\"). .",
+      "depositWith": "સાથે જમા",
+      "withdrawWith": "સાથે પાછી ખેંચો"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "જમા કરવા માટે સંપત્તિ પસંદ કરો",
+      "titleWithdraw": "ઉપાડવા માટે સંપત્તિ પસંદ કરો",
+      "searchAssets": "સંપત્તિ શોધો"
+    },
+    "bridgeNetworkSelect": {
+      "title": "નેટવર્ક પસંદ કરો",
+      "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
+    },
+    "pendingWithdraw": "બાકી ઉપાડ",
+    "pendingDeposit": "બાકી થાપણ",
+    "completedWithdraw": "ઉપાડ પૂર્ણ",
+    "completedDeposit": "ડિપોઝિટ પૂર્ણ",
+    "failedWithdraw": "ઉપાડ નિષ્ફળ",
+    "failedDeposit": "ડિપોઝિટ નિષ્ફળ",
+    "connectionError": "કનેક્શન ભૂલ",
+    "transferDetails": "ટ્રાન્સફર વિગતો",
+    "provider": "પ્રદાતા",
+    "estimatedTime": "અંદાજિત સમય",
+    "providerFees": "પ્રદાતા ફી",
+    "networkFee": "{networkName} નેટવર્ક ફી",
+    "totalFees": "કુલ ફી",
+    "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
+    "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
+    "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે.",
+    "connect": "જોડાવા",
+    "confirm": "પુષ્ટિ કરો",
+    "cancel": "રદ કરો",
+    "confirmDepositTo": "{chain} માં જમા કરાવવાની પુષ્ટિ કરો",
+    "confirmWithdrawTo": "{chain} માં પાછી ખેંચવાની પુષ્ટિ કરો",
+    "reviewDepositP": "પુષ્ટિ કરતા પહેલા તમારી ડિપોઝિટ વિગતોની સમીક્ષા કરો. એકવાર જમા થઈ ગયા પછી, તમારો વ્યવહાર ઉલટાવી ન શકાય એવો છે.",
+    "reviewWithdrawP": "પુષ્ટિ કરતા પહેલા તમારી ઉપાડની વિગતોની સમીક્ષા કરો. એકવાર પાછી ખેંચી લીધા પછી, તમારો વ્યવહાર ઉલટાવી શકાતો નથી.",
+    "lookingForBalances": "બેલેન્સ શોધી રહ્યાં છીએ",
+    "dontForgetFees": "ફી વિશે ભૂલશો નહીં!",
+    "feesReserved": "તમારા કુલ {assetName} બેલેન્સની થોડી રકમ {networkName} પર ફી ચૂકવવા માટે આરક્ષિત કરવામાં આવી છે.",
+    "verifyAddressWarning": "તમે જે સરનામે તમારું ભંડોળ ઉપાડો છો તેની ચકાસણી કરો. ખોટું સરનામું આપવાથી ભંડોળની ખોટ થશે.",
+    "recipientAddress": "{chain} પર પ્રાપ્તકર્તાનું સરનામું",
+    "enterAddress": "સરનામું દાખલ કરો",
+    "sendToAnotherAddress": "બીજા સરનામે મોકલો",
+    "invalidAddress": "અમાન્ય {chain} સરનામું",
+    "acknowledgement": "હું સ્વીકારું છું કે વિશ્વના અંત વગેરે માટે હું સંપૂર્ણપણે જવાબદાર છું.",
+    "done": "થઈ ગયું",
+    "transferFrom": "{noun} માંથી ટ્રાન્સફર કરો",
+    "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
+    "learnMore": "વધુ શીખો",
+    "externalTransferSplash": "{denom} {networkA} માંથી {networkB} માં સ્થાનાંતરિત કરવા {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
+    "openNoun": "{noun} ખોલો"
+  },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
   "waitingForTransaction": "ટ્રાન્ઝેક્શનને બ્લોકમાં સામેલ કરવાની રાહ જોઈ રહ્યાં છીએ",
@@ -843,32 +1037,44 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "સંબંધિત અસ્કયામતો",
-    "earnWith": "{denom} વડે કમાઓ",
     "explorePools": "પૂલનું અન્વેષણ કરો",
-    "stakeYourDenomToEarn": "{denom} કમાવવા માટે તમારું {apr} % APR",
-    "stakeYourDenomToEarnNoAPR": "પુરસ્કારો મેળવવા માટે તમારા {denom} હિસ્સો લો",
-    "provideLiquidity": "તરલતા પ્રદાન કરો અને ફી અને સ્વેપ પર કમાણી કરો",
     "yourBalance": "તમારું બેલેન્સ",
+    "onOsmosis": "ઓસ્મોસિસ પર",
     "aboutDenom": "{name} વિશે",
     "ariaView": "જુઓ {name}",
     "ariaViewOn": "{name} પર જુઓ",
     "collapse": "સંકુચિત કરો",
+    "info": {
+      "title": "માહિતી",
+      "show": "બતાવો",
+      "collapse": "સંકુચિત કરો",
+      "moreStats": "વધુ આંકડા"
+    },
     "followTheConversation": "વાતચીત અનુસરો",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "બધા"
+      "all": "બધા",
+      "price": "કિંમત",
+      "volume": "વોલ્યુમ",
+      "advanced": "અદ્યતન",
+      "simple": "સરળ"
     },
     "watchlist": "વૉચલિસ્ટ",
     "marketCapRank": "માર્કેટ કેપ રેન્ક",
     "marketCap": "માર્કેટ કેપ",
+    "fullyDilutedValuation": "સંપૂર્ણપણે પાતળું મૂલ્યાંકન",
+    "volume24h": "24h કુલ વોલ્યુમ",
+    "volumeOnOsmosis": "ઓસ્મોસિસ પર 24 કલાક વોલ્યુમ",
+    "liquidityOnOsmosis": "ઓસ્મોસિસ પર તરલતા",
     "circulatingSupply": "પરિભ્રમણ પુરવઠો",
-    "tvl": "ટીવીએલ",
-    "buyToken": "{coinDenom} ખરીદો",
-    "staking": "સ્ટેકિંગ",
-    "liquidityInOSMOPools": "{number} {denom} પુલમાં પ્રવાહિતા"
+    "supplyOnOsmosis": "ઓસ્મોસિસ પર પુરવઠો",
+    "underlyingAssets": {
+      "title": "અંતર્ગત અસ્કયામતો",
+      "description": "ઓસ્મોસિસ પર {name} ( {denom} ) એ {count} વિવિધ પ્રકારના {name} .",
+      "of": "{denom} માંથી"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "ઓસ્મોસિસ અપડેટ્સ!",
@@ -879,16 +1085,9 @@
   "previewAssetsEnabledForSession": "આ સત્ર માટે પૂર્વાવલોકન સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો, અથવા `show_preview_assets=false` ઉમેરો.",
   "earnPage": {
     "title": "કમાઓ",
-    "position": "પદ",
     "positions": "હોદ્દાઓ",
-    "allocation": "ફાળવણી",
-    "tokensCount": "{number} ટોકન્સ",
     "strategiesCount": "{number} વ્યૂહરચના",
     "oneStrategy": "1 વ્યૂહરચના",
-    "value": "મૂલ્ય",
-    "method": "પ્રકાર",
-    "platform": "પ્લેટફોર્મ",
-    "scrollToSeeMore": "વધુ જોવા માટે સ્ક્રોલ કરો",
     "discoverStrategies": "વ્યૂહરચના શોધો",
     "myStrategies": "તમારી વ્યૂહરચનાઓ",
     "strategyPlatform": "વ્યૂહરચના",
@@ -962,6 +1161,15 @@
     }
   },
   "disclaimer": "અસ્વીકરણ",
+  "remaining": "બાકી",
+  "timeUnits": {
+    "second": "બીજું",
+    "seconds": "સેકન્ડ",
+    "minute": "મિનિટ",
+    "minutes": "મિનિટ",
+    "hour": "કલાક",
+    "hours": "કલાક"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} થાપણો અસ્થિર",
     "titleWithdraw": "{coinDenom} ઉપાડ અસ્થિર",

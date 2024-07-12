@@ -1,7 +1,5 @@
 import { BridgeEnvironment } from "../interface";
 
-export const providerName = "Axelar" as const;
-
 /** Maps Axelar chain id agruments => source chain ids.
  *  SourceChain (IDs) are used in ./source-chain-configs.ts::SourceChainConfigs{} as <asset>::<network>::id values.
  *  Axelar Chain IDs are accepted as arguments in Axelar's APIs.
@@ -34,10 +32,12 @@ export const AxelarChainIds_SourceChainMap: (env: BridgeEnvironment) => {
         arbitrum: "Arbitrum",
       };
 
+/** Any bridge that we want supported by Axelar provider needs to be added here. */
 const TestnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmo-test-5": "osmosis-7",
 };
 
+/** Any bridge that we want supported by Axelar provider needs to be added here. */
 const MainnetCosmosChainIds_AxelarChainIds: Partial<Record<string, string>> = {
   "osmosis-1": "osmosis",
 };

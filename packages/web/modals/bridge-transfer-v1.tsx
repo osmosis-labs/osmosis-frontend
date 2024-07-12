@@ -1,4 +1,4 @@
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
@@ -10,12 +10,24 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { IBCBalance } from "~/stores/assets";
 
-const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
-  ssr: false,
-});
-const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
-  ssr: false,
-});
+const AxelarTransfer = dynamic(
+  () =>
+    import("~/integrations/axelar/transfer").then(
+      (module) => module.AxelarTransfer
+    ),
+  {
+    ssr: false,
+  }
+);
+const NomicTransfer = dynamic(
+  () =>
+    import("~/integrations/nomic/transfer").then(
+      (module) => module.NomicTransfer
+    ),
+  {
+    ssr: false,
+  }
+);
 
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;
@@ -27,7 +39,7 @@ export const BridgeTransferV1Modal: FunctionComponent<
     isWithdraw: boolean;
     balance: IBCBalance;
     /** Selected network key. */
-    sourceChainKey: SourceChain;
+    sourceChainKey: AxelarSourceChain;
     walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }

@@ -1,11 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
-  createCallerFactory,
   DEFAULT_VS_CURRENCY,
   FilteredPoolsResponse,
   NumPoolsResponse,
 } from "@osmosis-labs/server";
+import { createCallerFactory } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -20,6 +20,16 @@ import { ChainList } from "~/config/generated/chain-list";
 import { appRouter } from "~/server/api/root-router";
 
 jest.mock("next/router", () => jest.requireActual("next-router-mock"));
+
+// Mock the ResizeObserver
+const ResizeObserverMock = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+// Stub the global ResizeObserver
+global.ResizeObserver = ResizeObserverMock;
 
 const createCaller = createCallerFactory(appRouter);
 const caller = createCaller({
@@ -193,8 +203,8 @@ it("should return only pool assets when sending a pool id and useOtherCurrencies
   // Search box should not be visible
   expect(screen.queryByPlaceholderText("Search")).toBeNull();
 
-  // Only the pool assets should be visible
-  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(1);
+  // Only the pool assets should be visible, including the to and from tokens
+  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(3);
 
   // Close drawer
   userEvent.click(screen.getByRole("button", { name: "Close" }));
@@ -226,6 +236,6 @@ it("should return only pool assets when sending a pool id and useOtherCurrencies
   // Search box should not be visible
   expect(screen.queryByPlaceholderText("Search")).toBeNull();
 
-  // Only the pool assets should be visible
-  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(1);
+  // Only the pool assets should be visible, including the to and from tokens
+  expect(screen.getAllByTestId("token-select-asset")).toHaveLength(3);
 });

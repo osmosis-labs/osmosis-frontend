@@ -1,5 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -26,7 +26,7 @@ export const TransferAssetSelectModal: FunctionComponent<
     onSelectAsset: (
       denom: string,
       /** `undefined` if IBC asset. */
-      sourceChainKey?: SourceChain
+      sourceChainKey?: AxelarSourceChain
     ) => void;
   }
 > = observer((props) => {
@@ -52,7 +52,7 @@ export const TransferAssetSelectModal: FunctionComponent<
           )?.token.denom) || tokens[0].token.denom
   );
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
-    useState<SourceChain | null>(null);
+    useState<AxelarSourceChain | null>(null);
 
   // set network-select to selected token's default
   useEffect(() => {
@@ -147,7 +147,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               {isSourceChainDropdownOpen && (
                 <div
                   style={{ borderTopStyle: "dashed" }}
-                  className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+                  className="absolute -right-[1px] top-[100%] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
                 >
                   {selectedToken.originBridgeInfo.sourceChainTokens
                     .filter(({ id }) => id !== selectedNetwork.id)

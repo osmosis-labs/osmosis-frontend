@@ -7,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
-import FiltersModal from "~/components/earn/filters/filters-modal";
+import { FiltersModal } from "~/components/earn/filters/filters-modal";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { getListOptions } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
@@ -123,14 +123,18 @@ export const TopFilters = ({
   return (
     <div className="flex flex-col gap-5 px-10 py-8 1.5xs:px-7 1.5xs:py-7">
       <div className="flex flex-wrap items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-4 lg:hidden">
-        <RadioWithOptions
-          disabled={tokenHolderSwitchDisabled}
-          mode="primary"
-          variant="large"
-          value={tokenHolder}
-          onChange={(value) => setFilter("tokenHolder", value)}
-          options={tokenFilterOptions}
-        />
+        {!tokenHolderSwitchDisabled ? (
+          <RadioWithOptions
+            disabled={tokenHolderSwitchDisabled}
+            mode="primary"
+            variant="large"
+            value={tokenHolder}
+            onChange={(value) => setFilter("tokenHolder", value)}
+            options={tokenFilterOptions}
+          />
+        ) : (
+          false
+        )}
         <DropdownWithLabel<string>
           label={t("earnPage.strategyMethod")}
           allLabel={t("earnPage.allMethods")}
@@ -215,19 +219,24 @@ export const TopFilters = ({
       </div>
       {/** 512 - 1024 */}
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5xs:hidden">
-        <RadioWithOptions
-          disabled={tokenHolderSwitchDisabled}
-          mode="primary"
-          variant="large"
-          value={tokenHolder}
-          onChange={(value) => setFilter("tokenHolder", value)}
-          options={tokenFilterOptions}
-        />
+        {!tokenHolderSwitchDisabled ? (
+          <RadioWithOptions
+            disabled={tokenHolderSwitchDisabled}
+            mode="primary"
+            variant="large"
+            value={tokenHolder}
+            onChange={(value) => setFilter("tokenHolder", value)}
+            options={tokenFilterOptions}
+          />
+        ) : (
+          false
+        )}
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
           placeholder={t("store.searchPlaceholder")}
-          size={"full"}
+          size="full"
+          variant="outline"
         />
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
@@ -284,7 +293,8 @@ export const TopFilters = ({
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
           placeholder={t("store.searchPlaceholder")}
-          size={"full"}
+          size="full"
+          variant="outline"
         />
         <Button onClick={() => setIsModalOpen(true)} className="max-w-[110px]">
           {t("earnPage.filters")}

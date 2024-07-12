@@ -12,3 +12,7 @@ src/styles/index.scss
 .turbo
 
 lerna-debug.log
+coverage
+
+tsconfig.tsbuildinfo
+packages/web/e2e/keplr-extension-manifest

@@ -1,34 +1,33 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { expect, Locator, Page } from "@playwright/test";
+import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
-export class SwapPage {
+import { BasePage } from "~/e2e/pages/base-page";
+
+export class SwapPage extends BasePage {
   readonly page: Page;
-  readonly connectWalletBtn: Locator;
   readonly swapBtn: Locator;
   readonly swapHalfBtn: Locator;
   readonly swapMaxBtn: Locator;
   readonly swapInput: Locator;
-  readonly kepltWalletBtn: Locator;
   readonly flipAssetsBtn: Locator;
   readonly exchangeRate: Locator;
   readonly trxSuccessful: Locator;
   readonly trxBroadcasting: Locator;
+  readonly trxLink: Locator;
 
   constructor(page: Page) {
+    super(page);
     this.page = page;
-    this.connectWalletBtn = page
-      .getByRole("button", { name: "Connect wallet", exact: true })
-      .first();
     this.swapBtn = page.getByRole("button", { name: "Swap", exact: true });
     this.swapHalfBtn = page.getByRole("button", { name: "HALF", exact: true });
     this.swapMaxBtn = page.getByRole("button", { name: "MAX", exact: true });
     this.swapInput = page.locator('input[type="number"]');
-    this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
     this.exchangeRate = page.locator('//span[contains(@class, "subtitle2")]');
     this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
+    this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
   }
 
@@ -43,37 +42,32 @@ export class SwapPage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async connectWallet() {
-    await this.connectWalletBtn.click();
-    // This is needed to handle a wallet popup
-    const pagePromise = this.page.context().waitForEvent("page");
-    await this.kepltWalletBtn.click();
-    await this.page.waitForTimeout(1000);
-    // Handle Pop-up page ->
-    const newPage = await pagePromise;
-    await newPage.waitForLoadState();
-    const pageTitle = await newPage.title();
-    console.log("Title of the new page: " + pageTitle);
-    await newPage.getByRole("button", { name: "Approve" }).click();
-    // PopUp page is auto-closed
-    // Handle Pop-up page <-
-    const wallet = this.page.getByRole("button", {
-      name: "Wosmongton profile osmo1k...",
-    });
-    await this.page.waitForTimeout(2000);
-    expect(wallet).toBeTruthy();
-    console.log("Wallet is connected.");
-  }
-
   async flipTokenPair() {
     await this.flipAssetsBtn.click();
     await this.page.waitForTimeout(2000);
     console.log("Fliped token pair.");
   }
 
-  async getWalletMsg(promise: Promise<Page>) {
+  async enterAmount(amount: string) {
+    // Just enter an amount for the swap and wait for a quote
+    await this.swapInput.fill(amount, { timeout: 2000 });
+    await this.page.waitForTimeout(2000);
+    await expect(this.swapInput).toHaveValue(amount, { timeout: 3000 });
+    const exchangeRate = await this.getExchangeRate();
+    console.log("Swap " + amount + " with rate: " + exchangeRate);
+  }
+
+  async swapAndGetWalletMsg(context: BrowserContext) {
+    // Make sure to have sufficient balance and swap button is enabled
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
     // Handle Pop-up page ->
-    const approvePage = await promise;
+    const pageApprove = context.waitForEvent("page");
+    await this.swapBtn.click();
+    const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
     const approvePageTitle = approvePage.url();
     console.log("Approve page is opened at: " + approvePageTitle);
@@ -94,16 +88,6 @@ export class SwapPage {
     return { msgContentAmount };
   }
 
-  async swap(amount: string) {
-    await this.swapInput.fill(amount, { timeout: 4000 });
-    await this.page.waitForTimeout(2000);
-    await expect(this.swapInput).toHaveValue(amount);
-    await expect(this.swapBtn).toBeEnabled();
-    const exchangeRate = await this.getExchangeRate();
-    console.log("Swap " + amount + " with rate: " + exchangeRate);
-    await this.swapBtn.click();
-  }
-
   async selectPair(from: string, to: string) {
     // Filter does not show already selected tokens
     console.log("Select pair " + from + " to " + to);
@@ -118,7 +102,7 @@ export class SwapPage {
 
     if (fromTokenText == from && toTokenText == to) {
       console.log(
-        "Current pair:" + fromTokenText + toTokenText + " is already matching."
+        "Current pair: " + fromTokenText + toTokenText + " is already matching."
       );
       return;
     }
@@ -126,7 +110,7 @@ export class SwapPage {
     if (fromTokenText == to && toTokenText == from) {
       await this.flipTokenPair();
       console.log(
-        "Current pair:" + fromTokenText + toTokenText + " is fliped."
+        "Current pair: " + fromTokenText + toTokenText + " is fliped."
       );
       return;
     }
@@ -168,7 +152,15 @@ export class SwapPage {
 
   async isTransactionSuccesful(delay: number = 7) {
     console.log("Wait for a transaction success for 7 seconds.");
-    return await this.trxSuccessful.isVisible({ timeout: delay * 1000 });
+    return await this.trxSuccessful.isVisible({
+      timeout: delay * 1000,
+    });
+  }
+
+  async getTransactionUrl() {
+    const trxUrl = await this.trxLink.getAttribute("href");
+    console.log("Trx url: " + trxUrl);
+    return trxUrl;
   }
 
   async isTransactionBroadcasted(delay: number = 5) {
@@ -176,10 +168,49 @@ export class SwapPage {
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
   }
 
+  async isInsufficientBalance() {
+    const issufBalanceBtn = this.page.locator(
+      '//button[.="Insufficient balance"]'
+    );
+    return await issufBalanceBtn.isVisible({ timeout: 2000 });
+  }
+
+  async isError() {
+    const errorBtn = this.page.locator('//button[.="Error"]');
+    return await errorBtn.isVisible({ timeout: 2000 });
+  }
+
+  async showSwapInfo() {
+    const swapInfo = this.page.locator(
+      '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
+    );
+    await swapInfo.click();
+    console.log("Price Impact: " + (await this.getPriceInpact()));
+  }
+
+  async getPriceInpact() {
+    const priceInpactSpan = this.page.locator(
+      '//span[.="Price Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+    );
+    return await priceInpactSpan.textContent();
+  }
+
   async takeScreenshot(name: string) {
     await this.page.screenshot({
       path: `screenshot-swap-${name}.png`,
       fullPage: true,
     });
+  }
+
+  async getSelectedPair() {
+    const tokenLocator =
+      '//img[@alt="token icon"]/../..//h5 | //img[@alt="token icon"]/../..//span[@class="subtitle1"]';
+    const fromToken = this.page.locator(tokenLocator).nth(0);
+    const toToken = this.page.locator(tokenLocator).nth(1);
+
+    let fromTokenText = await fromToken.innerText();
+    let toTokenText = await toToken.innerText();
+    console.log("Current pair: " + `${fromTokenText}/${toTokenText}`);
+    return `${fromTokenText}/${toTokenText}`;
   }
 }

@@ -1,9 +1,8 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import type { SourceChain } from "@osmosis-labs/bridge";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import { getKeyByValue } from "@osmosis-labs/utils";
+import { AxelarSourceChain, getKeyByValue } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -52,12 +51,12 @@ import {
 /**
  * @deprecated
  */
-const AxelarTransfer: FunctionComponent<
+export const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     ethWalletClient: EthWallet;
     balanceOnOsmosis: IBCBalance;
-    selectedSourceChainKey: SourceChain;
+    selectedSourceChainKey: AxelarSourceChain;
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
@@ -81,7 +80,7 @@ const AxelarTransfer: FunctionComponent<
       accountStore,
       queriesStore,
       queriesExternalStore,
-      nonIbcBridgeHistoryStore,
+      transferHistoryStore,
     } = useStore();
     const { t } = useTranslation();
 
@@ -263,7 +262,7 @@ const AxelarTransfer: FunctionComponent<
     const trackTransferStatus = useCallback(
       (txHash: string) => {
         if (inputAmountRaw !== "") {
-          nonIbcBridgeHistoryStore.pushTxNow(
+          transferHistoryStore.pushTxNow(
             `axelar${txHash}`,
             new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
             isWithdraw,
@@ -272,7 +271,7 @@ const AxelarTransfer: FunctionComponent<
         }
       },
       [
-        nonIbcBridgeHistoryStore,
+        transferHistoryStore,
         originCurrency,
         inputAmountRaw,
         inputAmount,
@@ -405,8 +404,8 @@ const AxelarTransfer: FunctionComponent<
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );
@@ -433,8 +432,8 @@ const AxelarTransfer: FunctionComponent<
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "transactionFailed",
-                    caption: msg,
+                    titleTranslationKey: "transactionFailed",
+                    captionTranslationKey: msg,
                   },
                   ToastType.ERROR
                 );
@@ -620,6 +619,3 @@ const AxelarTransfer: FunctionComponent<
     );
   }
 );
-
-// accommodate next/dynamic
-export default AxelarTransfer;

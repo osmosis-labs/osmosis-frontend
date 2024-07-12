@@ -1,4 +1,4 @@
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -16,7 +16,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { GradientView } from "~/components/assets/gradient-view";
 import { BridgeFromToNetwork } from "~/components/complex/bridge-from-to-network";
 import { InputBox } from "~/components/input";
-import SkeletonLoader from "~/components/loaders/skeleton-loader";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
@@ -39,11 +39,11 @@ type BridgeInfo = Omit<DepositSuccess, "code" | "reason"> & {
 };
 
 /** Nomic-specific bridge transfer integration UI. */
-const NomicTransfer: FunctionComponent<
+export const NomicTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     balanceOnOsmosis: IBCBalance;
-    selectedSourceChainKey: SourceChain;
+    selectedSourceChainKey: AxelarSourceChain;
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
@@ -135,8 +135,8 @@ const NomicTransfer: FunctionComponent<
 
             displayToast(
               {
-                message: "Unknown Error",
-                caption: res.reason,
+                titleTranslationKey: "Unknown Error",
+                captionTranslationKey: res.reason,
               },
               ToastType.ERROR
             );
@@ -173,8 +173,8 @@ const NomicTransfer: FunctionComponent<
       if (!osmosisAccount || !osmosisAccount.address) {
         displayToast(
           {
-            message: "Osmosis Account Error",
-            caption: "Osmosis account not found",
+            titleTranslationKey: "Osmosis Account Error",
+            captionTranslationKey: "Osmosis account not found",
           },
           ToastType.ERROR
         );
@@ -189,8 +189,8 @@ const NomicTransfer: FunctionComponent<
       ) {
         displayToast(
           {
-            message: "Invalid Withdraw Address",
-            caption: "Please enter a valid Bitcoin address",
+            titleTranslationKey: "Invalid Withdraw Address",
+            captionTranslationKey: "Please enter a valid Bitcoin address",
           },
           ToastType.ERROR
         );
@@ -200,8 +200,8 @@ const NomicTransfer: FunctionComponent<
       if (Number(withdrawAmount) < MIN_WITHDRAW_AMOUNT / 1e8) {
         displayToast(
           {
-            message: "Invalid Withdraw Amount",
-            caption: "Minimum withdraw amount is 0.00001 nBTC",
+            titleTranslationKey: "Invalid Withdraw Amount",
+            captionTranslationKey: "Minimum withdraw amount is 0.00001 nBTC",
           },
           ToastType.ERROR
         );
@@ -547,7 +547,7 @@ const NomicTransfer: FunctionComponent<
                         marginLeft: 8,
                       }}
                       className="inline"
-                      src="/logos/nomic.svg"
+                      src="/external-bridges/nomic.svg"
                     />
                   </a>
                 </div>
@@ -559,5 +559,3 @@ const NomicTransfer: FunctionComponent<
     );
   }
 );
-
-export default NomicTransfer;

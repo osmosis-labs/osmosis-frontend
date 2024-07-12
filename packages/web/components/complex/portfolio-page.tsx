@@ -20,7 +20,7 @@ import { api } from "~/utils/trpc";
 
 import { CreditCardIcon } from "../assets/credit-card-icon";
 import { Spinner } from "../loaders";
-import SkeletonLoader from "../loaders/skeleton-loader";
+import { SkeletonLoader } from "../loaders/skeleton-loader";
 import { RecentTransfers } from "../transactions/recent-transfers";
 import { CustomClasses } from "../types";
 import { Button } from "../ui/button";
@@ -58,14 +58,14 @@ export const PortfolioPage: FunctionComponent = () => {
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
   const onDeposit = useCallback(
-    (coinMinimalDenom) => {
-      bridgeAsset(coinMinimalDenom, "deposit");
+    (coinMinimalDenom: string) => {
+      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "deposit" });
     },
     [bridgeAsset]
   );
   const onWithdraw = useCallback(
-    (coinMinimalDenom) => {
-      bridgeAsset(coinMinimalDenom, "withdraw");
+    (coinMinimalDenom: string) => {
+      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "withdraw" });
     },
     [bridgeAsset]
   );
@@ -173,9 +173,9 @@ const AssetsOverview: FunctionComponent<
           <div className="flex items-center gap-3 py-3">
             <Button
               className="flex items-center gap-2 !rounded-full"
-              onClick={() => startBridge("deposit")}
+              onClick={() => startBridge({ direction: "deposit" })}
             >
-              <Icon id="deposit" height={16} width={16} />
+              <Icon id="deposit" className=" h-4 w-4" height={16} width={16} />
               <div className="subtitle1">{t("assets.table.depositButton")}</div>
             </Button>
             <Button
@@ -194,7 +194,7 @@ const AssetsOverview: FunctionComponent<
             </Button>
             <Button
               className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
-              onClick={() => startBridge("withdraw")}
+              onClick={() => startBridge({ direction: "withdraw" })}
               disabled={totalValue && totalValue.toDec().isZero()}
             >
               <Icon id="withdraw" height={16} width={16} />
@@ -294,7 +294,7 @@ const UserZeroBalanceTableSplash: FunctionComponent = () => {
       <div className="flex items-center justify-center gap-2">
         <Button
           className="flex !w-fit items-center gap-2 !rounded-full"
-          onClick={() => startBridge("deposit")}
+          onClick={() => startBridge({ direction: "deposit" })}
         >
           <Icon id="deposit" height={16} width={16} />
           <span className="subtitle1">{t("assets.table.depositButton")}</span>
@@ -329,7 +329,11 @@ const GetStartedWithOsmosis: FunctionComponent = () => {
       <Button
         className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
         onClick={() => {
-          onOpenWalletSelect(chainStore.osmosis.chainId);
+          onOpenWalletSelect({
+            walletOptions: [
+              { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
+            ],
+          });
         }}
       >
         {t("connectWallet")}

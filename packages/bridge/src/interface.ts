@@ -1,6 +1,7 @@
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
+import { Address, Hex } from "viem";
 import { z } from "zod";
 
 export type BridgeEnvironment = "mainnet" | "testnet";
@@ -20,8 +21,8 @@ export interface BridgeProviderContext {
 }
 
 export interface BridgeProvider {
-  providerName: string;
-  logoUrl: string;
+  readonly providerName: string;
+
   /**
    * Requests a quote for a cross-chain transfer.
    *
@@ -29,27 +30,78 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a GetBridgeQuoteResponse object.
    */
   getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote>;
+
+  /**
+   * Requests one or more transactions to initiate a cross-chain transfer.
+   *
+   * @param params The parameters from a prior quote request.
+   * @returns A promise that resolves to a sign document ready to be signed.
+   */
   getTransactionData: (
     params: GetBridgeQuoteParams
   ) => Promise<BridgeTransactionRequest>;
+
+  /**
+   * Requests the available source assets for a given chain and coin.
+   * Restricted to assets that don't change the user's underlying asset exposure, in other words, is the same variant of the asset.
+   * In practice, this can be used to offer a list of selectable assets for the user to choose from.
+   *
+   * In general should avoid throwing errors, but return an empty array if no source assets are available with the given input.
+   * If an unexpected error occurs, perhaps if the provider is down, then no assets will be returned to prevent the user from selecting an asset that cannot be transferred.
+   *
+   * @param params The parameters for the supported assets request.
+   * @param params.chain The chain the asset is on.
+   * @param asset.asset The asset to derive sources from.
+   * @returns A promise that resolves to an array of assets combined with each assets' chain info.
+   */
+  getSupportedAssets(
+    params: GetBridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeAsset)[]>;
+
+  /**
+   * If the provider supports deposit address transfers:
+   * Requests for a deposit address generated from the given params.
+   * Sending to the deposit address automatically triggers the transfer.
+   *
+   * @param params The parameters from a prior quote request.
+   * @returns A promise that resolves to a deposit address ready for signing.
+   */
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
+
+  /**
+   * Retrieves an external bridge URL for the given assets.
+   *
+   * This method generates a URL that can be used to perform a cross-chain transfer
+   * using an external bridge service. The URL is constructed based on the provided
+   * parameters, which include details about the source and destination chains, as well
+   * as the assets involved in the transfer.
+   *
+   * @param params - The parameters required to generate the external bridge URL.
+   * @param params.fromChain - The source chain from which the asset is being transferred.
+   * @param params.toChain - The destination chain to which the asset is being transferred.
+   * @param params.fromAsset - The asset being transferred from the source chain.
+   * @param params.toAsset - The asset being received on the destination chain.
+   * @param params.toAddress - The address on the destination chain to which the asset is being sent.
+   *
+   * @returns A promise that resolves to a BridgeExternalUrl object containing the URL and the provider name,
+   *          or undefined if the URL could not be generated.
+   */
+  getExternalUrl(
+    params: GetBridgeExternalUrlParams
+  ): Promise<BridgeExternalUrl | undefined>;
 }
 
-const bridgeChainSchema = z.object({
+const cosmosChainSchema = z.object({
   /**
-   * EVM chainId or Cosmos chainId
+   * Cosmos chainId
    *
-   * Cosmos examples:
+   * Examples:
    * - osmosis-1
    * - cosmoshub-4
-   *
-   * EVM Examples:
-   * - 1 (Ethereum)
-   * - 10 (Optimism)
    */
-  chainId: z.union([z.string(), z.number()]),
+  chainId: z.string(),
   /**
    * Optional: The human-readable name of the chain.
    */
@@ -59,10 +111,66 @@ const bridgeChainSchema = z.object({
    */
   networkName: z.string().optional(),
   /**
-   * The type of blockchain, either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains.
+   * The type of blockchain, which is 'cosmos' for Cosmos-based chains.
    */
-  chainType: z.union([z.literal("evm"), z.literal("cosmos")]),
+  chainType: z.literal("cosmos"),
 });
+
+const evmChainSchema = z.object({
+  /**
+   * EVM chainId
+   *
+   * Examples:
+   * - 1 (Ethereum)
+   * - 10 (Optimism)
+   */
+  chainId: z.number(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+  /**
+   * Optional: The name of the network to which the chain belongs.
+   */
+  networkName: z.string().optional(),
+  /**
+   * The type of blockchain, which is 'evm' for EVM-based chains.
+   */
+  chainType: z.literal("evm"),
+});
+
+const solanaChainSchema = z.object({
+  /**
+   * `solana`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("solana"),
+});
+
+const bitcoinChainSchema = z.object({
+  /**
+   * `bitcoin`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("bitcoin"),
+});
+
+export const bridgeChainSchema = z.discriminatedUnion("chainType", [
+  cosmosChainSchema,
+  evmChainSchema,
+  solanaChainSchema,
+  bitcoinChainSchema,
+]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
@@ -77,27 +185,37 @@ export interface BridgeStatus {
   maintenanceMessage?: string;
 }
 
-const bridgeAssetSchema = z.object({
+export const bridgeAssetSchema = z.object({
   /**
-   * The denomination of the asset.
+   * The displayable denomination of the asset.
    */
   denom: z.string(),
   /**
-   * The address of the asset, represented as an IBC denom or EVM contract address.
+   * The address of the asset, represented as an IBC denom, origin denom, or EVM contract address.
    */
   address: z.string(),
   /**
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
-
-  /**
-   * Global identifier for denom on origin chain.
-   */
-  sourceDenom: z.string(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
+
+export const getBridgeSupportedAssetsParams = z.object({
+  /**
+   * The originating chain information.
+   */
+  chain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  asset: bridgeAssetSchema,
+});
+
+export type GetBridgeSupportedAssetsParams = z.infer<
+  typeof getBridgeSupportedAssetsParams
+>;
 
 export interface BridgeDepositAddress {
   depositAddress: string;
@@ -107,27 +225,51 @@ export interface GetDepositAddressParams {
   /**
    * The originating chain information.
    */
-  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  fromChain: BridgeChain;
   /**
    * The destination chain information.
    */
-  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  toChain: BridgeChain;
   /**
    * The asset on the originating chain.
    */
   fromAsset: BridgeAsset;
   /**
+   * The asset on the destination chain.
+   */
+  toAsset: BridgeAsset;
+  /**
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: string;
-  autoUnwrapIntoNative?: boolean;
 }
 
-export interface GetTransferStatusParams {
-  sendTxHash: string;
-  fromChainId: BridgeChain["chainId"];
-  toChainId: BridgeChain["chainId"];
-}
+export const getBridgeExternalUrlSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  fromChain: bridgeChainSchema,
+  /**
+   * The destination chain information.
+   */
+  toChain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: bridgeAssetSchema,
+  /**
+   * The asset on the destination chain.
+   */
+  toAsset: bridgeAssetSchema,
+  /**
+   * The address on the destination chain where the assets are to be received.
+   */
+  toAddress: z.string(),
+});
+
+export type GetBridgeExternalUrlParams = z.infer<
+  typeof getBridgeExternalUrlSchema
+>;
 
 export const getBridgeQuoteSchema = z.object({
   /**
@@ -147,7 +289,7 @@ export const getBridgeQuoteSchema = z.object({
    */
   toAsset: bridgeAssetSchema,
   /**
-   * The amount to be transferred from the originating chain, represented as a string.
+   * The amount to be transferred from the originating chain, represented as a string integer.
    */
   fromAmount: z.string(),
   /**
@@ -168,8 +310,8 @@ export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 
 export interface EvmBridgeTransactionRequest {
   type: "evm";
-  to: string;
-  data?: string;
+  to: Address;
+  data?: Hex;
   value?: string;
   gasPrice?: string;
   maxPriorityFeePerGas?: string;
@@ -204,8 +346,8 @@ export type BridgeTransactionRequest =
 export type BridgeCoin = {
   amount: string;
   denom: string;
-  /** Global identifier for denom on origin chain. */
-  sourceDenom: string;
+  /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
+  address: string;
   decimals: number;
 };
 
@@ -220,7 +362,7 @@ export interface BridgeQuote {
   /**
    * The fee for the transfer.
    */
-  transferFee: BridgeCoin;
+  transferFee: BridgeCoin & { chainId: number | string };
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */
@@ -234,7 +376,18 @@ export interface BridgeQuote {
   transactionRequest?: BridgeTransactionRequest;
 }
 
+export interface BridgeExternalUrl {
+  urlProviderName: string;
+  url: URL;
+}
+
 // Transfer status
+
+export interface GetTransferStatusParams {
+  sendTxHash: string;
+  fromChainId: BridgeChain["chainId"];
+  toChainId: BridgeChain["chainId"];
+}
 
 export interface BridgeTransferStatus {
   id: string;
@@ -253,7 +406,12 @@ export interface TransferStatusReceiver {
 }
 
 /** A simplified transfer status. */
-export type TransferStatus = "success" | "pending" | "failed";
+export type TransferStatus =
+  | "success"
+  | "pending"
+  | "failed"
+  | "refunded"
+  | "connection-error";
 
 /** A simplified reason for transfer failure. */
 export type TransferFailureReason = "insufficientFee";

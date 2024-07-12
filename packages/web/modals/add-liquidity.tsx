@@ -1,4 +1,7 @@
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
+import {
+  NotInitializedError,
+  ObservableAddLiquidityConfig,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent } from "react";
@@ -74,6 +77,7 @@ export const AddLiquidityModal: FunctionComponent<
           props.onAddLiquidity(addLiquidityResult);
         }
       },
+      isLoading: config.error && config.error instanceof NotInitializedError,
       children: config.error
         ? t(...tError(config.error))
         : pool?.type === "concentrated" &&

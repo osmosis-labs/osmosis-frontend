@@ -1,7 +1,7 @@
 import { StatusResponse } from "@0xsquid/sdk";
-import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
+import { Chain } from "@osmosis-labs/types";
+import { apiClient, poll } from "@osmosis-labs/utils";
 
-import { BridgeError, BridgeTransferStatusError } from "../errors";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
@@ -9,21 +9,18 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
-
-// TODO: move to types file
-const providerName = "Squid" as const;
+import { SquidBridgeProvider } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = providerName;
+  readonly keyPrefix = SquidBridgeProvider.ID;
   readonly sourceDisplayName = "Squid Bridge";
-
   public statusReceiverDelegate?: TransferStatusReceiver;
 
   readonly apiUrl: string;
   readonly squidScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment) {
+  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
     this.apiUrl =
       env === "mainnet"
         ? "https://api.0xsquid.com"
@@ -35,72 +32,51 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(serializedParams: string): void {
+  async trackTxStatus(serializedParams: string): Promise<void> {
     const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
     const snapshotKey = `${this.keyPrefix}${serializedParams}`;
-    poll({
+    await poll({
       fn: async () => {
-        try {
-          const url = new URL(`${this.apiUrl}/v1/status`);
-          url.searchParams.append("transactionId", sendTxHash);
-          if (fromChainId) {
-            url.searchParams.append("fromChainId", fromChainId.toString());
-          }
-          if (toChainId) {
-            url.searchParams.append("toChainId", toChainId.toString());
-          }
-
-          const data = await apiClient<StatusResponse>(url.toString());
-
-          if (!data || !data.id || !data.squidTransactionStatus) {
-            return;
-          }
-
-          const squidTransactionStatus = data.squidTransactionStatus as
-            | "success"
-            | "needs_gas"
-            | "ongoing"
-            | "partial_success"
-            | "not_found";
-
-          if (
-            squidTransactionStatus === "not_found" ||
-            squidTransactionStatus === "ongoing" ||
-            squidTransactionStatus === "partial_success"
-          ) {
-            return;
-          }
-
-          return {
-            id: sendTxHash,
-            status: squidTransactionStatus === "success" ? "success" : "failed",
-            reason:
-              squidTransactionStatus === "needs_gas"
-                ? "insufficientFee"
-                : undefined,
-          } as BridgeTransferStatus;
-        } catch (e) {
-          const error = e as ApiClientError<{
-            errors: { errorType?: string; message?: string }[];
-          }>;
-
-          throw new BridgeTransferStatusError(
-            error.data?.errors?.map(
-              ({ errorType, message }) =>
-                ({
-                  errorType: errorType ?? BridgeError.UnexpectedError,
-                  message: message ?? "",
-                } ?? [
-                  {
-                    errorType: BridgeError.UnexpectedError,
-                    message: "Failed to fetch transfer status",
-                  },
-                ])
-            )
-          );
+        const url = new URL(`${this.apiUrl}/v1/status`);
+        url.searchParams.append("transactionId", sendTxHash);
+        if (fromChainId) {
+          url.searchParams.append("fromChainId", fromChainId.toString());
         }
+        if (toChainId) {
+          url.searchParams.append("toChainId", toChainId.toString());
+        }
+
+        const data = await apiClient<StatusResponse>(url.toString());
+
+        if (!data || !data.id || !data.squidTransactionStatus) {
+          return;
+        }
+
+        const squidTransactionStatus = data.squidTransactionStatus as
+          | "success"
+          | "needs_gas"
+          | "ongoing"
+          | "partial_success"
+          | "not_found";
+
+        if (
+          squidTransactionStatus === "not_found" ||
+          squidTransactionStatus === "ongoing" ||
+          squidTransactionStatus === "partial_success"
+        ) {
+          return;
+        }
+
+        return {
+          id: sendTxHash,
+          status: squidTransactionStatus === "success" ? "success" : "failed",
+          reason:
+            squidTransactionStatus === "needs_gas"
+              ? "insufficientFee"
+              : undefined,
+        } as BridgeTransferStatus;
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
@@ -127,9 +103,26 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   }
 
   makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash } = JSON.parse(
+    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
-    return `${this.squidScanBaseUrl}/gmp/${sendTxHash}`;
+
+    if (typeof fromChainId === "number" || typeof toChainId === "number") {
+      // EVM transfer
+      return `${this.squidScanBaseUrl}/gmp/${sendTxHash}`;
+    } else {
+      const chain = this.chainList.find(
+        (chain) => chain.chain_id === fromChainId
+      );
+
+      if (!chain) throw new Error("Chain not found: " + fromChainId);
+
+      if (chain.explorers.length === 0) {
+        // attempt to link to mintscan since this is an IBC transfer
+        return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
+      }
+
+      return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+    }
   }
 }

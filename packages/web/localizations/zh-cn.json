@@ -142,7 +142,6 @@
       "failed": "失败的",
       "failedWithReason": "失败的: {reason}",
       "pending": "处理中",
-      "pendingRefunded": "失败：等待退款",
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "已退出",
       "failDeposit": "存款失败",
-      "failWithdraw": "提现失败"
+      "failWithdraw": "提现失败",
+      "connectionError": "连接错误"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -391,7 +391,7 @@
     "noAvailableShares": "没有可用 {denom} 份额",
     "noRoute": "此交易没有路线",
     "noSendCurrency": "未设置发送货币",
-    "notInitialized": "未初始化",
+    "notInitialized": "加载中...",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
     "zeroAmount": "数量为零",
@@ -406,7 +406,8 @@
     "swapSlippage": "由于滑点，兑换{coinDenom}失败。尝试增加滑动容差。",
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
-    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。"
+    "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "noData": "没有数据"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -490,6 +491,90 @@
     "discardButton": "放弃更改",
     "clearAllHistory": "全部清除"
   },
+  "oneClickTrading": {
+    "toast": {
+      "oneClickTradingActive": "一键交易活跃",
+      "oneClickTradingExpired": "一键交易已过期",
+      "oneClickTradingDisabled": "一键交易已禁用",
+      "currentlyUnavailable": "一键交易目前不可用",
+      "networkFeeTooHigh": "网络费太高",
+      "startANewSession": "开始新会话",
+      "increaseFeeLimit": "提高网络费用限额",
+      "approveManually": "在{walletName}中手动批准",
+      "continueWithWallet": "继续使用钱包",
+      "sessionEnded": "会话在此设备上结束",
+      "errorEndingSession": "结束会话时出错",
+      "pleaseTryAgain": "意外的错误。请再试一次。"
+    },
+    "introduction": {
+      "newFeature": "新功能",
+      "introducingTitle": "一键交易简介",
+      "introducingSubtitle": "进行更快、更轻松的交易，无需多个钱包批准的麻烦。",
+      "learnMore": "了解更多",
+      "startTradingButton": "开始一键交易",
+      "defaultParameters": "默认设置为 1 小时，损失保护限额为 5,000 美元。",
+      "changeButton": "编辑设置"
+    },
+    "floatingBanner": {
+      "newPill": "新的",
+      "title": "一键交易",
+      "tradeFasterButton": "交易更快"
+    },
+    "settings": {
+      "header": "一键交易",
+      "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",
+      "enableTitle": "启用一键交易",
+      "spendLimitTitle": "损失保障限额",
+      "sessionPeriodTitle": "会议期间",
+      "startButton": "开始一键交易",
+      "editSessionButton": "保存更改",
+      "endingSession": "结束会议",
+      "feeToDisable": "禁用一键交易的费用：",
+      "spendLimitScreen": {
+        "spendLimitDescription": "对可信资产（按市值排名前 50 位）进行无限制交易。",
+        "spendLimitSubDescription": "对于所有其他资产，在要求手动钱包批准之前，请设置最大可交易价值限制。交易费也计入此限制。",
+        "fixedAmount": "固定值",
+        "shareOfBalance": "余额份额",
+        "shareOfBalanceDescription": "您在 Osmosis 上的总余额的{shareOfBalance}目前价值"
+      },
+      "sessionPeriodScreen": {
+        "title": "会议期间",
+        "description": "设置允许在此设备上进行一键交易的持续时间。",
+        "periods": {
+          "5min": "5分钟",
+          "10min": "10分钟",
+          "30min": "30分钟",
+          "1hour": "1小时",
+          "3hours": "3小时",
+          "12hours": "12小时"
+        }
+      },
+      "discardChanges": {
+        "title": "放弃更改？",
+        "message": "您希望保留现有的一键交易设置吗？",
+        "cancelButton": "取消",
+        "discardButton": "丢弃"
+      }
+    },
+    "welcomeBack": {
+      "title": "欢迎回来",
+      "subtitle": "连接你的钱包以继续探索 Osmosis。",
+      "description": "连接钱包后，系统将提示您批准交易以开始一键交易会话。",
+      "toggleLabel": "一键交易",
+      "editParamsAriaLabel": "更改1CT参数"
+    },
+    "connectToContinue": {
+      "altText": "一键交易图形",
+      "header": "连接钱包以继续",
+      "description": "当您在所选钱包中批准交易时，您的一键交易会话将开始。"
+    },
+    "profile": {
+      "sessionExpired": "设置",
+      "restart": "重新开始",
+      "tooltipHeader": "一键交易设置",
+      "resetSession": "从您的个人资料重新启动或编辑一键交易会话。"
+    }
+  },
   "pool": {
     "24hrTradingVolume": "24时成交额",
     "amountDaysUnbonding": "{numDays} 天解绑",
@@ -505,12 +590,9 @@
     "checkBackForBondingRewards": "查看绑定奖励",
     "collapseDetails": "收起详情",
     "commission": "佣金",
-    "currentDailyEarn": "您当前正在赚取",
     "dailyEarnAmount": "{amount} /天",
-    "day": "天",
     "delegated": "委托",
     "details": "详情",
-    "earnMore": "通过结合赚取 {amount}",
     "earnSwapFees": "赚取交易费",
     "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
     "from": "来自",
@@ -606,7 +688,8 @@
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有资产",
     "wallet": "钱包",
-    "transactions": "交易"
+    "transactions": "交易",
+    "oneClickTrading": "一键交易"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份额",
@@ -626,7 +709,9 @@
   },
   "search": {
     "noResultsFor": "没有找到“ {query} ”的结果",
-    "adjust": "尝试调整您的搜索查询"
+    "adjust": "尝试调整您的搜索查询",
+    "noPools": "没有泳池",
+    "poolsEmpty": "目前 Osmosis 上没有适用于{denom}池"
   },
   "stake": {
     "available": "可用的",
@@ -748,16 +833,17 @@
     "priceImpact": "价格影响",
     "routerTooltipFee": "费用",
     "routerTooltipSpreadFactor": "扩频因子",
+    "continueAnyway": "无论如何继续",
+    "warning": {
+      "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",
+      "increaseSpendLimit": "提高支出限额"
+    },
     "settings": {
       "slippage": "滑点上限",
       "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
       "title": "交易设置"
     },
     "title": "兑换",
-    "promo": {
-      "newOpportunity": "新的赚钱机会",
-      "discoverSuperchargedPools": "探索增压泳池"
-    },
     "dynamicSpreadFactor": "动态的"
   },
   "walletSelect": {
@@ -773,6 +859,13 @@
     "reconnect": "重新连接",
     "connectingWallet": "连接钱包中",
     "approveWalletConnect": "在您的移动设备上批准 {walletName} 连接请求。",
+    "enablingOneClickTrading": "启用一键交易。",
+    "approveOneClickTradingSession": "批准{walletName}中的一键交易。",
+    "errorInitializingOneClickTradingSession": "无法启用一键交易。",
+    "retryInWalletOrContinue": "在{walletName}中重试，或继续而不进行一键交易。",
+    "retryInWalletOrContinueNoFunds": "资金不足，无法启动会话。请存入更多资金并在{walletName}中重试，或不进行一键交易继续操作。",
+    "continueWithoutOneClickTrading": "无需一键交易即可继续",
+    "retry": "重试",
     "openExtension": "打开 {walletName} 浏览器扩展程序以连接您的钱包。",
     "initializingWallet": "初始化钱包客户端",
     "clickToRefresh": "点击刷新。",
@@ -789,6 +882,7 @@
     "mobileWallets": "移动钱包",
     "installedWallets": "已安装的钱包",
     "otherWallets": "其他钱包",
+    "searchWallets": "搜索钱包",
     "step1Title": "什么是钱包？",
     "step1Content": "钱包用于发送、接收和访问您的所有数字资产，如OSMO和ATOM。",
     "step2Title": "无需账户。无需密码。",
@@ -796,12 +890,112 @@
     "step3Title": "您的密钥，您的资金。",
     "step3Content": "在Osmosis上，只有您能移动您的资产。权力越大，责任越大。",
     "step4Title": "创建一个钱包以开始",
-    "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。"
+    "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。",
+    "yourConnectedWallets": "您的联网钱包",
+    "primaryWallet": "主钱包",
+    "done": "完毕",
+    "manage": "管理",
+    "disconnect": "断开"
   },
   "swapFailed": "兑换失败。流动性可能不够。尝试调整允许的滑点。",
   "transactionBroadcasting": "广播交易中",
   "transactionFailed": "交易失败",
   "transactionSuccessful": "交易成功",
+  "transfer": {
+    "deposit": "订金",
+    "withdraw": "提取",
+    "fromNetwork": "摘自网络",
+    "toNetwork": "建立网络",
+    "from": "从",
+    "to": "到",
+    "max": "最大限度",
+    "available": "可用的",
+    "transferWith": "转让",
+    "transferTo": "传送到",
+    "receiveAsset": "接收资产",
+    "transfer": "转移{denom}",
+    "receive": "接收{denom}",
+    "selectDepositWallet": "选择存款钱包",
+    "selectWithdrawWallet": "选择提现钱包",
+    "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
+    "estimatingTime": "估计时间",
+    "calculatingFees": "计算费用",
+    "reviewDeposit": "审核存款",
+    "reviewWithdraw": "审查撤回",
+    "moreDepositOptions": "更多存款选择",
+    "moreWithdrawOptions": "更多提款选项",
+    "convertTo": "转换成",
+    "depositAs": "存款为",
+    "withdrawAs": "提款方式",
+    "recommended": "受到推崇的",
+    "fee": "费用",
+    "fees": "费用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前无法计算{networkName}上的网络费用。交易批准后，网络费用应显示在您的钱包中。",
+    "free": "自由的",
+    "cheapest": "最便宜的",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "资产",
+      "amount": "数量",
+      "review": "审查"
+    },
+    "moreBridgeOptions": {
+      "titleDeposit": "更多存款选择",
+      "titleWithdraw": "更多提款选项",
+      "descriptionDeposit": "从以下备选提供商中进行选择，将您的{asset}存入（又称“桥接”）到{chain} 。",
+      "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
+      "depositWith": "存款",
+      "withdrawWith": "提款"
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "选择要存入的资产",
+      "titleWithdraw": "选择要提取的资产",
+      "searchAssets": "搜索资产"
+    },
+    "bridgeNetworkSelect": {
+      "title": "选择网络",
+      "searchPlaceholder": "搜索支持的网络"
+    },
+    "pendingWithdraw": "等待提款",
+    "pendingDeposit": "待存款",
+    "completedWithdraw": "提现完成",
+    "completedDeposit": "存款已完成",
+    "failedWithdraw": "提现失败",
+    "failedDeposit": "存款失败",
+    "connectionError": "连接错误",
+    "transferDetails": "转账详情",
+    "provider": "提供者",
+    "estimatedTime": "预计时间",
+    "providerFees": "供应商费用",
+    "networkFee": "{networkName}网络费",
+    "totalFees": "总费用",
+    "estimatedAmountReceived": "预计收到金额",
+    "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
+    "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
+    "connect": "连接",
+    "confirm": "确认",
+    "cancel": "取消",
+    "confirmDepositTo": "确认存款至{chain}",
+    "confirmWithdrawTo": "确认提现至{chain}",
+    "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
+    "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
+    "lookingForBalances": "寻找平衡",
+    "dontForgetFees": "不要忘记费用！",
+    "feesReserved": "您的总{assetName}余额中的一小部分已被保留用于支付{networkName}费用。",
+    "verifyAddressWarning": "验证您要提取资金的地址。提供错误的地址将导致资金损失。",
+    "recipientAddress": "{chain}上的收件人地址",
+    "enterAddress": "输入地址",
+    "sendToAnotherAddress": "发送到另一个地址",
+    "invalidAddress": "无效的{chain}地址",
+    "acknowledgement": "我承认我对世界末日等负有全部责任。",
+    "done": "完毕",
+    "transferFrom": "从{noun}转移",
+    "risks": "桥接伴随着风险。",
+    "learnMore": "了解更多",
+    "externalTransferSplash": "要将{denom}从{networkA}转移到{networkB} ，请使用{service} 。",
+    "openNoun": "打开{noun}"
+  },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
@@ -843,32 +1037,44 @@
     }
   },
   "tokenInfos": {
-    "relatedAssets": "相关资产",
-    "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
-    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
+    "onOsmosis": "论渗透",
     "aboutDenom": "关于{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "信息",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多统计数据"
+    },
     "followTheConversation": "关注对话",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "价格",
+      "volume": "体积",
+      "advanced": "先进的",
+      "simple": "简单的"
     },
     "watchlist": "关注列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全稀释估值",
+    "volume24h": "24小时总成交量",
+    "volumeOnOsmosis": "24 小时渗透量",
+    "liquidityOnOsmosis": "渗透式流动性",
     "circulatingSupply": "循环供应",
-    "tvl": "TVL",
-    "buyToken": "购买{coinDenom}",
-    "staking": "质押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流动性"
+    "supplyOnOsmosis": "渗透供给",
+    "underlyingAssets": {
+      "title": "基础资产",
+      "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同类型的{name} 。",
+      "of": "{denom}"
+    }
   },
   "osmosisUpdates": {
     "osmosisUpdates": "渗透更新！",
@@ -879,16 +1085,9 @@
   "previewAssetsEnabledForSession": "预览为此会话启用的资产。要禁用打开新选项卡，或附加“show_preview_assets=false”。",
   "earnPage": {
     "title": "赚",
-    "position": "位置",
     "positions": "职位",
-    "allocation": "分配",
-    "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
     "oneStrategy": "1 个策略",
-    "value": "价值",
-    "method": "类型",
-    "platform": "平台",
-    "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
     "myStrategies": "你的策略",
     "strategyPlatform": "战略",
@@ -962,6 +1161,15 @@
     }
   },
   "disclaimer": "免责声明",
+  "remaining": "其余的",
+  "timeUnits": {
+    "second": "第二",
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "hour": "小时",
+    "hours": "小时"
+  },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom}存款不稳定",
     "titleWithdraw": "{coinDenom}提款不稳定",

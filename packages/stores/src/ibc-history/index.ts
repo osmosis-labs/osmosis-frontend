@@ -1,13 +1,13 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { TxTracer } from "@osmosis-labs/tx";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import { action, computed, flow, makeObservable, observable, toJS } from "mobx";
 import { keepAlive } from "mobx-utils";
 import { computedFn } from "mobx-utils";
 
-import { TxTracer } from "../tx/tracer";
 import { PollingStatusSubscription } from "./polling-status-subscription";
 import {
   IBCTransferHistory,
@@ -32,9 +32,9 @@ export class IBCTransferHistoryStore {
   @observable
   protected _histories: IBCTransferHistory[] = [];
 
-  protected onHistoryChangedHandlers: ((
-    history: IBCTransferHistory
-  ) => void)[] = [];
+  protected onHistoryChangedHandler:
+    | ((history: IBCTransferHistory) => void)
+    | null = null;
 
   // Key is chain id.
   // No need to be observable
@@ -54,7 +54,7 @@ export class IBCTransferHistoryStore {
   }
 
   addHistoryChangedHandler(handler: (history: IBCTransferHistory) => void) {
-    this.onHistoryChangedHandlers.push(handler);
+    this.onHistoryChangedHandler = handler;
   }
 
   get histories(): IBCTransferHistory[] {
@@ -460,9 +460,7 @@ export class IBCTransferHistoryStore {
     if (history.status !== status) {
       history.status = status;
 
-      for (const handler of this.onHistoryChangedHandlers) {
-        handler(history);
-      }
+      this.onHistoryChangedHandler?.(history);
 
       yield this.save();
 

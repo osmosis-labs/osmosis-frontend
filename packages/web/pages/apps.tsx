@@ -55,6 +55,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   useEffect(() => {
     const options = {
       keys: ["title"],
+      threshold: 0.3,
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
@@ -108,6 +109,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             onInput={handleSearchInput}
             className="self-end"
             size={searchBoxSize || "long"}
+            debounce={100}
           />
         </div>
       </div>
@@ -125,7 +127,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         mediumUrl={featuredApp.medium_URL}
       />
 
-      <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
+      <div className="body2 mb-2 pl-6 pt-7 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
       </div>
 

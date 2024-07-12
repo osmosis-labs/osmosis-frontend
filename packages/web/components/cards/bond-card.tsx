@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import type { BondDuration } from "@osmosis-labs/server";
 import classNames from "classnames";
 import moment from "dayjs";
@@ -42,10 +42,10 @@ export const BondCard: FunctionComponent<
 
   const showGoSuperfluid =
     superfluid &&
-    userShares.toDec().gt(new Dec(0)) &&
+    userShares.toDec().isPositive() &&
     !superfluid.delegated &&
     !superfluid.undelegating;
-  const showUnbond = userShares.toDec().gt(new Dec(0));
+  const showUnbond = userShares.toDec().isPositive();
 
   // useful for calculating the height of the card
   const hasThreeButtons = showUnbond && showGoSuperfluid && userUnlockingShares;
@@ -142,7 +142,7 @@ export const BondCard: FunctionComponent<
       </div>
       <div
         className={classNames(
-          "absolute top-0 left-1/2 h-full w-full -translate-x-1/2 bg-osmoverse-1000 transition-opacity duration-300",
+          "absolute left-1/2 top-0 h-full w-full -translate-x-1/2 bg-osmoverse-1000 transition-opacity duration-300",
           drawerUp ? "z-20 opacity-70" : "-z-10 opacity-0"
         )}
         onClick={() => setDrawerUp(false)}
@@ -201,7 +201,7 @@ const Drawer: FunctionComponent<{
     >
       <div
         className={classNames(
-          "flex place-content-between items-end py-4 px-7 transition-all md:px-[10px]",
+          "flex place-content-between items-end px-7 py-4 transition-all md:px-[10px]",
           {
             "border-b border-osmoverse-600": drawerUp,
           }
@@ -250,7 +250,7 @@ const Drawer: FunctionComponent<{
           "bg-osmoverse-700": drawerUp,
         })}
       >
-        <div className="flex h-[180px] flex-col gap-5 overflow-y-auto py-6 px-8 md:px-[10px]">
+        <div className="flex h-[180px] flex-col gap-5 overflow-y-auto px-8 py-6 md:px-[10px]">
           {superfluid &&
             superfluid.duration.asMilliseconds() ===
               duration.asMilliseconds() && (
@@ -269,15 +269,16 @@ const Drawer: FunctionComponent<{
   );
 };
 
-const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
+const SuperfluidBreakdownRow = ({
   apr,
   commission,
   delegated,
   undelegating,
   validatorMoniker,
   validatorLogoUrl,
-}) => {
+}: NonNullable<BondDuration["superfluid"]>) => {
   const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">
@@ -302,7 +303,7 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
       </div>
       {(delegated || undelegating) && (
         <div className="ml-auto flex flex-col text-right">
-          <div className="flex flex-col gap-[2px] rounded-md bg-osmoverse-800 py-2 px-4">
+          <div className="flex flex-col gap-[2px] rounded-md bg-osmoverse-800 px-4 py-2">
             <span className="caption">
               {delegated
                 ? `~${delegated.trim(true).maxDecimals(7).toString()}`

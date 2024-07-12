@@ -7,10 +7,10 @@ import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { Button, ShowMoreButton } from "~/components/ui/button";
-import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -60,13 +60,13 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
       {
         label: t("assets.table.depositButton"),
         onClick: () => {
-          startBridge("deposit");
+          startBridge({ direction: "deposit" });
         },
       },
       {
         label: t("assets.table.withdrawButton"),
         onClick: () => {
-          startBridge("withdraw");
+          startBridge({ direction: "withdraw" });
         },
       },
     ],
@@ -75,7 +75,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableDeposit = useCallback(
     (_chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
-        bridgeAsset(coinDenom, "deposit");
+        bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
       }
     },
     [bridgeAsset]
@@ -83,7 +83,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableWithdraw = useCallback(
     (_chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
-        bridgeAsset(coinDenom, "withdraw");
+        bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
       }
     },
     [bridgeAsset]
@@ -258,8 +258,6 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const flags = useFeatureFlags();
-
     const pools = poolIds
       .map((poolId) => {
         const sharePoolDetail = derivedDataStore.sharePoolDetails.get(poolId);
@@ -269,10 +267,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
 
-        if (
-          !pool ||
-          (pool.type === "concentrated" && !flags.concentratedLiquidity)
-        ) {
+        if (!pool || pool.type === "concentrated") {
           return undefined;
         }
 

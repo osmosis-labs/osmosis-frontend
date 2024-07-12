@@ -1,6 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { IBCCurrency } from "@keplr-wallet/types";
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { makeLocalStorageKVStore } from "@osmosis-labs/stores";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import {
   action,
   computed,
@@ -21,7 +22,6 @@ import {
   TransferAssetSelectModal,
 } from "~/modals";
 import { IBCBalance, ObservableAssets } from "~/stores/assets";
-import { makeLocalStorageKVStore } from "~/stores/kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 
@@ -174,7 +174,7 @@ export class ObservableTransferUIConfig {
     }
 
     if (balance.originBridgeInfo) {
-      const sourceChainKey: SourceChain =
+      const sourceChainKey: AxelarSourceChain =
         (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
         balance.originBridgeInfo?.defaultSourceChainId ||
         balance.originBridgeInfo.sourceChainTokens[0].id;
@@ -271,7 +271,7 @@ export class ObservableTransferUIConfig {
     onSelectAsset: (
       denom: string,
       /** Is ibc transfer if `undefined`. */
-      sourceChainKey?: SourceChain
+      sourceChainKey?: AxelarSourceChain
     ) => void
   ) {
     const availableAssets = this.assetsStore.ibcBalances.filter(
@@ -289,7 +289,7 @@ export class ObservableTransferUIConfig {
         // override default source chain if prev selected by
         if (originBridgeInfo && defaultSourceChainId)
           originBridgeInfo.defaultSourceChainId =
-            (defaultSourceChainId as SourceChain) ?? undefined;
+            (defaultSourceChainId as AxelarSourceChain) ?? undefined;
 
         return {
           token: balance,
@@ -322,7 +322,7 @@ export class ObservableTransferUIConfig {
   protected launchSelectAssetSourceModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    sourceChainKey: SourceChain
+    sourceChainKey: AxelarSourceChain
   ) {
     const wallets = this._ethClientWallets as ObservableWallet[];
     const applicableWallets = wallets.filter(({ key }) =>
@@ -402,7 +402,7 @@ export class ObservableTransferUIConfig {
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
     connectedWalletClient: ObservableWallet | undefined,
-    sourceChainKey: SourceChain,
+    sourceChainKey: AxelarSourceChain,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
   ) {
@@ -450,8 +450,8 @@ export class ObservableTransferUIConfig {
       // unknown
       displayToast(
         {
-          message: "errors.generic",
-          caption: "unknownError",
+          titleTranslationKey: "errors.generic",
+          captionTranslationKey: "unknownError",
         },
         ToastType.ERROR
       );

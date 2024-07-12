@@ -16,7 +16,7 @@ interface StrategiesFilter extends ListOption<string> {
   icon: ReactNode;
 }
 
-const FiltersModal = (
+export const FiltersModal = (
   props: ModalBaseProps & {
     rewardTypes: ListOption<string>[];
     lockDurationTypes: ListOption<string>[];
@@ -111,14 +111,18 @@ const FiltersModal = (
             containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
           />
         </div>
-        <RadioWithOptions
-          disabled={props.isMyAllSwitchDisabled}
-          mode="primary"
-          variant="large"
-          value={tokenHolder}
-          onChange={(value) => setFilter("tokenHolder", value)}
-          options={props.tokenFilterOptions}
-        />
+        {!props.isMyAllSwitchDisabled ? (
+          <RadioWithOptions
+            disabled={props.isMyAllSwitchDisabled}
+            mode="primary"
+            variant="large"
+            value={tokenHolder}
+            onChange={(value) => setFilter("tokenHolder", value)}
+            options={props.tokenFilterOptions}
+          />
+        ) : (
+          false
+        )}
       </div>
       <Button onClick={props.onRequestClose} className="mt-16 max-h-11">
         {t("earnPage.saveFilters")}
@@ -126,5 +130,3 @@ const FiltersModal = (
     </ModalBase>
   );
 };
-
-export default FiltersModal;

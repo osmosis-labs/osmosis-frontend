@@ -22,11 +22,11 @@ const MarkdownParagraph: NormalMarkdownComponent<"p"> = ({
   ...props
 }) => {
   return (
-    <p {...props} className="text-body2 font-medium text-osmoverse-300"></p>
+    <p {...props} className="text-body1 font-body1 text-osmoverse-300"></p>
   );
 };
 
-const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
+export const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
   return (
     <ReactMarkdown
       components={{
@@ -38,5 +38,3 @@ const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
     </ReactMarkdown>
   );
 };
-
-export default Markdown;

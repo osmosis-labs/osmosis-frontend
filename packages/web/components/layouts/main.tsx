@@ -1,70 +1,76 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, { FunctionComponent } from "react";
+import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
-import IconButton from "~/components/buttons/icon-button";
+import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
-import NavbarOsmoPrice from "~/components/navbar-osmo-price";
-import NavbarOsmosisUpdates from "~/components/navbar-osmosis-update";
+import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
+import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
 
-export const MainLayout: FunctionComponent<{
-  menus: MainLayoutMenu[];
-  secondaryMenuItems: MainLayoutMenu[];
-}> = observer(({ children, menus, secondaryMenuItems }) => {
-  const router = useRouter();
-  useCurrentLanguage();
+export const MainLayout = observer(
+  ({
+    children,
+    menus,
+    secondaryMenuItems,
+  }: PropsWithChildren<{
+    menus: MainLayoutMenu[];
+    secondaryMenuItems: MainLayoutMenu[];
+  }>) => {
+    const router = useRouter();
+    useCurrentLanguage();
 
-  const { height, isMobile } = useWindowSize();
+    const { height, isMobile } = useWindowSize();
 
-  const smallVerticalScreen = height < 850;
+    const smallVerticalScreen = height < 850;
 
-  const showFixedLogo = !smallVerticalScreen && !isMobile;
-  const showBlockLogo = smallVerticalScreen && !isMobile;
+    const showFixedLogo = !smallVerticalScreen && !isMobile;
+    const showBlockLogo = smallVerticalScreen && !isMobile;
 
-  const selectedMenuItem = menus.find(
-    ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
-  );
+    const selectedMenuItem = menus.find(
+      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    );
 
-  return (
-    <React.Fragment>
-      {showFixedLogo && (
-        <div className="fixed z-50 w-sidebar px-5 pt-6">
-          <OsmosisFullLogo onClick={() => router.push("/")} />
-        </div>
-      )}
-      <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-900 px-2 py-6 md:hidden">
-        {showBlockLogo && (
-          <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
+    return (
+      <React.Fragment>
+        {showFixedLogo && (
+          <div className="fixed z-50 w-sidebar px-5 pt-6">
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <MainMenu
-          className={classNames(showBlockLogo && "!mt-8")}
+        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-900 px-2 py-6 md:hidden">
+          {showBlockLogo && (
+            <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
+              <OsmosisFullLogo onClick={() => router.push("/")} />
+            </div>
+          )}
+          <MainMenu
+            className={classNames(showBlockLogo && "!mt-8")}
+            menus={menus}
+            secondaryMenuItems={secondaryMenuItems}
+          />
+          <div className="flex flex-1 flex-col justify-end gap-5">
+            <div className="px-2">
+              <NavbarOsmosisUpdate />
+            </div>
+            <NavbarOsmoPrice />
+          </div>
+        </div>
+        <NavBar
+          className="ml-sidebar md:ml-0"
+          title={selectedMenuItem?.label ?? ""}
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="flex flex-1 flex-col justify-end gap-5">
-          <div className="px-2">
-            <NavbarOsmosisUpdates />
-          </div>
-          <NavbarOsmoPrice />
+        <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
+          {children}
         </div>
-      </div>
-      <NavBar
-        className="ml-sidebar md:ml-0"
-        title={selectedMenuItem?.label ?? ""}
-        menus={menus}
-        secondaryMenuItems={secondaryMenuItems}
-      />
-      <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
-        {children}
-      </div>
-    </React.Fragment>
-  );
-});
+      </React.Fragment>
+    );
+  }
+);
 
 const OsmosisFullLogo: FunctionComponent<{
   width?: number;

@@ -1,4 +1,5 @@
-import { type Search, type SortDirection } from "@osmosis-labs/server";
+import { type Search } from "@osmosis-labs/server";
+import { type SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
   createColumnHelper,
@@ -44,7 +45,7 @@ import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
 import { SubscriptDecimal } from "../chart";
 import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
-import Spinner from "../loaders/spinner";
+import { Spinner } from "../loaders/spinner";
 import { Button } from "../ui/button";
 import { SortHeader } from "./headers/sort";
 
@@ -466,7 +467,6 @@ export const AssetsInfoTable: FunctionComponent<{
         <HighlightsCategories
           className="lg:-mx-4 lg:px-4"
           isCategorySelected={!!selectedCategory}
-          onSelectCategory={selectCategory}
           onSelectAllTopGainers={onSelectTopGainers}
         />
       </section>
@@ -623,6 +623,7 @@ export const AssetActionsCell: AssetCellComponent<{
   }) => void;
 }> = ({
   coinDenom,
+  coinMinimalDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
@@ -647,7 +648,10 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       ) : (
-        <HistoricalPriceSparkline coinDenom={coinDenom} timeFrame="1W" />
+        <HistoricalPriceSparkline
+          coinMinimalDenom={coinMinimalDenom}
+          timeFrame="1W"
+        />
       )}
     </div>
   );

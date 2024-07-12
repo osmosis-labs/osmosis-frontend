@@ -4,9 +4,11 @@ import {
   type TokenHistoricalPrice,
 } from "@osmosis-labs/server";
 import dayjs from "dayjs";
+import { Time } from "lightweight-charts";
 import { action, computed, makeObservable, observable } from "mobx";
 import { useEffect, useMemo } from "react";
 
+import { timepointToString } from "~/components/chart/light-weight-charts/utils";
 import { api } from "~/utils/trpc";
 
 export const useAssetInfoConfig = (
@@ -35,26 +37,26 @@ export const useAssetInfoConfig = (
     switch (config.historicalRange) {
       case "1h":
         frame = 5;
-        numRecentFrames = 12;
+        numRecentFrames = 14;
         break;
       case "1d":
-        frame = 5;
-        numRecentFrames = 288;
+        frame = 15;
+        numRecentFrames = 97;
         break;
       case "7d":
-        frame = 120;
-        numRecentFrames = 168;
+        frame = config.dataType === "price" ? 60 : 720;
+        numRecentFrames = config.dataType === "price" ? 168 : 15;
         break;
       case "1mo":
-        frame = 1440;
-        numRecentFrames = 30;
+        frame = config.dataType === "price" ? 240 : 1440;
+        numRecentFrames = config.dataType === "price" ? 180 : 30;
         break;
       case "1y":
-        frame = 1440;
-        numRecentFrames = 365;
+        frame = config.dataType === "price" ? 1440 : 10080;
+        numRecentFrames = config.dataType === "price" ? 365 : 54;
         break;
       case "all":
-        frame = 43800;
+        frame = config.dataType === "price" ? 10080 : 43800;
         break;
     }
 
@@ -62,7 +64,7 @@ export const useAssetInfoConfig = (
       timeFrame: frame,
       numRecentFrames,
     };
-  }, [config.historicalRange]);
+  }, [config.historicalRange, config.dataType]);
 
   const {
     data: historicalPriceData,
@@ -70,7 +72,7 @@ export const useAssetInfoConfig = (
     isError,
   } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
-      coinDenom: coinMinimalDenom ?? denom,
+      coinMinimalDenom: coinMinimalDenom ?? denom,
       timeFrame: {
         custom: customTimeFrame,
       },
@@ -176,16 +178,29 @@ export const useAssetInfoConfig = (
   return config;
 };
 
-export const AvailablePriceRanges = [
-  "1h",
-  "1d",
-  "7d",
-  "1mo",
-  "1y",
-  "all",
-] as const;
+export const AvailablePriceRanges = {
+  "1h": "1h",
+  "1d": "1d",
+  "7d": "7d",
+  "1mo": "1mo",
+  "1y": "1y",
+  all: "all",
+} as const;
 
-export type PriceRange = (typeof AvailablePriceRanges)[number];
+export type PriceRange =
+  (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
+
+export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
+
+export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
+
+export const AssetChartModes = {
+  advanced: "advanced",
+  simple: "simple",
+} as const;
+
+export type AssetChartMode =
+  (typeof AssetChartModes)[keyof typeof AssetChartModes];
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
@@ -200,10 +215,19 @@ export class ObservableAssetInfoConfig {
   protected _historicalRange: PriceRange = "7d";
 
   @observable
+  protected _dataType: AssetChartDataType = "price";
+
+  @observable
+  protected _mode: AssetChartMode = "simple";
+
+  @observable
   protected _zoom: number = INITIAL_ZOOM;
 
   @observable
-  protected _hoverPrice: number = 0;
+  protected _hoverData?: number = undefined;
+
+  @observable
+  protected _hoverDate?: Time = undefined;
 
   @observable
   protected _historicalData: TokenHistoricalPrice[] = [];
@@ -227,33 +251,11 @@ export class ObservableAssetInfoConfig {
 
   @computed
   get historicalChartData() {
-    return this._historicalData.map((data) => ({
-      ...data,
-      time: data.time * 1000,
-    }));
-  }
+    const currentTime = new Date().getTime();
 
-  @computed
-  get yRange(): [number, number] {
-    const prices = this.historicalChartData?.map(({ close }) => close) || [];
-    const zoom = this._zoom;
-    const padding = 0.1;
-
-    const chartMin = Math.max(0, Math.min(...prices));
-    const chartMax = Math.max(...prices);
-
-    const delta = Math.abs(chartMax - chartMin);
-
-    const minWithPadding = Math.max(0, chartMin - delta * padding);
-    const maxWithPadding = chartMax + delta * padding;
-
-    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
-    const zoomAdjustedMax = chartMax * zoom;
-
-    const finalMin = Math.min(minWithPadding, zoomAdjustedMin);
-    const finalMax = Math.max(maxWithPadding, zoomAdjustedMax);
-
-    return [finalMin, finalMax];
+    return this._historicalData.filter(
+      (data) => data.time * 1000 <= currentTime
+    );
   }
 
   @computed
@@ -270,23 +272,53 @@ export class ObservableAssetInfoConfig {
   }
 
   @computed
-  get hoverPrice(): PricePretty | undefined {
+  get hoverData(): PricePretty | undefined {
     const fiat = DEFAULT_VS_CURRENCY;
-    if (!fiat) {
+
+    if (!fiat || this._hoverData === undefined) {
       return undefined;
     }
-    return new PricePretty(fiat, this._hoverPrice);
+
+    return new PricePretty(fiat, this._hoverData);
   }
 
   @computed
-  get lastChartPrice(): ChartTick | undefined {
-    const prices: ChartTick[] = [...this.historicalChartData];
+  get hoverDate(): string | null {
+    if (!this._hoverDate) {
+      return null;
+    }
 
-    return prices.pop();
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+
+    return timepointToString(this._hoverDate, formatOptions, "en-US");
   }
 
+  @computed
+  get lastChartData(): ChartTick | undefined {
+    const data: ChartTick[] = [...this.historicalChartData];
+
+    return data.pop();
+  }
+
+  @computed
   get historicalRange(): PriceRange {
     return this._historicalRange;
+  }
+
+  @computed
+  get dataType(): AssetChartDataType {
+    return this._dataType;
+  }
+
+  @computed
+  get mode(): AssetChartMode {
+    return this._mode;
   }
 
   constructor(denom: string, coinMinimalDenom?: string) {
@@ -307,8 +339,9 @@ export class ObservableAssetInfoConfig {
   };
 
   @action
-  readonly setHoverPrice = (price: number) => {
-    this._hoverPrice = price;
+  readonly setHoverData = (data?: number, time?: Time) => {
+    this._hoverData = data;
+    this._hoverDate = time;
   };
 
   @action
@@ -334,6 +367,16 @@ export class ObservableAssetInfoConfig {
   @action
   setHistoricalRange = (range: PriceRange) => {
     this._historicalRange = range;
+  };
+
+  @action
+  setDataType = (data: AssetChartDataType) => {
+    this._dataType = data;
+  };
+
+  @action
+  setMode = (mode: AssetChartMode) => {
+    this._mode = mode;
   };
 
   dispose() {

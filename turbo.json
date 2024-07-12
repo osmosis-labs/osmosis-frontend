@@ -9,7 +9,8 @@
         "src/codegen/**",
         "scripts/generated/**",
         "config/generated/**",
-        "public/tokens/generated/**"
+        "public/tokens/generated/**",
+        "tsconfig.tsbuildinfo"
       ],
       "dependsOn": ["^build"]
     },
