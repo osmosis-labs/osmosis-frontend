@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { ModalBase } from "~/modals/base";
 
 interface AddFundsModalProps {
@@ -13,6 +14,7 @@ interface AddFundsModalProps {
 
 export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
   const { t } = useTranslation();
+  const { bridgeAsset } = useBridge();
 
   return (
     <ModalBase
@@ -39,9 +41,13 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
           </span>
         </div>
         <div className="flex flex-col py-3 px-4">
-          <Link
-            href={""}
-            className="flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-osmoverse-900"
+          <button
+            type="button"
+            onClick={() => {
+              bridgeAsset({ anyDenom: "USDC", direction: "deposit" });
+              onRequestClose();
+            }}
+            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
           >
             <Image
               src="/tokens/generated/usdc.svg"
@@ -63,16 +69,20 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
                 className="text-wosmongton-200"
               />
             </div>
-          </Link>
-          <Link
-            href={""}
-            className="flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-osmoverse-900"
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              bridgeAsset({ anyDenom: "USDT", direction: "deposit" });
+              onRequestClose();
+            }}
+            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
           >
             <Image
               src="https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg"
               width={48}
               height={48}
-              alt="USDC logo"
+              alt="USDT logo"
             />
             <div className="flex w-full flex-col gap-1">
               <span className="subtitle1">Deposit USDT</span>
@@ -88,7 +98,7 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
                 className="text-wosmongton-200"
               />
             </div>
-          </Link>
+          </button>
           <Link
             href={""}
             className="flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-osmoverse-900"
