@@ -43,8 +43,7 @@ export const TradeDetails = ({
 
   const routesVisDisclosure = useDisclosure();
 
-  const [swapRouteRef, { height: swapRouteHeight }] =
-    useMeasure<HTMLDivElement>();
+  const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
   const isInAmountEmpty = useMemo(
     () => swapState?.inAmountInput.error instanceof EmptyAmountError,
@@ -86,249 +85,253 @@ export const TradeDetails = ({
           <div
             className="flex w-full flex-col transition-all"
             style={{
-              height: open ? 301 + swapRouteHeight : 48,
+              height: open ? detailsHeight : 48,
             }}
           >
-            <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-            <Disclosure.Button
-              className={classNames(
-                "relative flex w-full items-center justify-between py-3.5 transition-opacity"
-              )}
-              disabled={isInAmountEmpty}
-            >
-              <span
+            <div ref={details} className="flex w-full flex-col">
+              <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
+              <Disclosure.Button
                 className={classNames(
-                  "body2 text-osmoverse-300 transition-opacity",
-                  {
-                    "opacity-0": open,
-                  }
+                  "relative flex w-full items-center justify-between py-3.5 transition-opacity"
                 )}
+                disabled={isInAmountEmpty}
               >
-                {swapState?.fromAsset?.coinDenom}{" "}
-                {t("assets.table.price").toLowerCase()} ≈{" "}
-                {swapState?.toAsset &&
-                  formatPretty(
-                    baseSpotPrice ??
-                      swapState.inBaseOutQuoteSpotPrice ??
-                      new Dec(0),
-                    {
-                      maxDecimals: baseSpotPrice
-                        ? 2
-                        : Math.min(swapState.toAsset.coinDecimals, 8),
-                    }
-                  )}
-              </span>
-              <span
-                className={classNames("absolute transition-opacity", {
-                  "opacity-100": open,
-                  "opacity-0": !open,
-                })}
-              >
-                {t("limitOrders.tradeDetails")}
-              </span>
-              <div
-                className={classNames(
-                  "absolute right-0 flex items-center gap-2 transition-opacity",
-                  { "opacity-0": !isLoading }
-                )}
-              >
-                <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                <span className="body2 text-osmoverse-400">
-                  {t("limitOrders.estimatingFees")}
-                </span>
-              </div>
-              <div
-                className={classNames(
-                  "flex items-center gap-2 transition-all",
-                  {
-                    "opacity-0": isInAmountEmpty || isLoading,
-                  }
-                )}
-              >
-                <span className="body2 text-osmoverse-300">
-                  ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
-                  {t("limitOrders.fees")}
-                </span>
-                <Icon
-                  id="chevron-down"
-                  width={16}
-                  height={16}
+                <span
                   className={classNames(
-                    "text-osmoverse-300 transition-transform",
+                    "body2 text-osmoverse-300 transition-opacity",
                     {
-                      "rotate-180": open,
+                      "opacity-0": open,
                     }
                   )}
-                />
-              </div>
-            </Disclosure.Button>
-            <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
-              <RecapRow
-                left={t("limitOrders.expectedRate")}
-                right={
-                  <span>
-                    1 {swapState?.fromAsset?.coinDenom} ≈{" "}
-                    {swapState?.toAsset
-                      ? formatPretty(
-                          swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
-                          {
-                            maxDecimals: Math.min(
-                              swapState.toAsset.coinDecimals,
-                              8
-                            ),
-                          }
-                        )
-                      : "0"}
-                  </span>
-                }
-              />
-              <RecapRow
-                left={t("swap.priceImpact")}
-                right={
-                  <span
-                    className={classNames({
-                      "text-rust-400": priceImpact
-                        ?.toDec()
-                        .abs()
-                        .gt(new Dec(0.1)),
-                    })}
-                  >
-                    -{formatPretty(priceImpact ?? new Dec(0))}
-                  </span>
-                }
-              />
-              <RecapRow
-                left={`${t("pools.aprBreakdown.swapFees")} ${
-                  swapState?.quote?.swapFee
-                    ? `(${swapState?.quote?.swapFee})`
-                    : ""
-                }`}
-                right={
-                  <>
-                    {swapState?.tokenInFeeAmountFiatValue && (
-                      <span>
-                        <span className="text-osmoverse-100">
-                          ~
-                          {formatPretty(
-                            swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
-                          )}
-                        </span>{" "}
-                        (
-                        {formatPretty(
-                          swapState?.tokenInFeeAmountFiatValue.toDec()
-                        )}{" "}
-                        USDC)
-                      </span>
+                >
+                  {swapState?.fromAsset?.coinDenom}{" "}
+                  {t("assets.table.price").toLowerCase()} ≈{" "}
+                  {swapState?.toAsset &&
+                    formatPretty(
+                      baseSpotPrice ??
+                        swapState.inBaseOutQuoteSpotPrice ??
+                        new Dec(0),
+                      {
+                        maxDecimals: baseSpotPrice
+                          ? 2
+                          : Math.min(swapState.toAsset.coinDecimals, 8),
+                      }
                     )}
-                  </>
-                }
-              />
-              <hr className="my-2 w-full text-osmoverse-700" />
-              {outAmountLessSlippage &&
-                outFiatAmountLessSlippage &&
-                swapState?.toAsset && (
+                </span>
+                <span
+                  className={classNames("absolute transition-opacity", {
+                    "opacity-100": open,
+                    "opacity-0": !open,
+                  })}
+                >
+                  {t("limitOrders.tradeDetails")}
+                </span>
+                <div
+                  className={classNames(
+                    "absolute right-0 flex items-center gap-2 transition-opacity",
+                    { "opacity-0": !isLoading }
+                  )}
+                >
+                  <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                  <span className="body2 text-osmoverse-400">
+                    {t("limitOrders.estimatingFees")}
+                  </span>
+                </div>
+                <div
+                  className={classNames(
+                    "flex items-center gap-2 transition-all",
+                    {
+                      "opacity-0": isInAmountEmpty || isLoading,
+                    }
+                  )}
+                >
+                  <span className="body2 text-osmoverse-300">
+                    ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
+                    {t("limitOrders.fees")}
+                  </span>
+                  <Icon
+                    id="chevron-down"
+                    width={16}
+                    height={16}
+                    className={classNames(
+                      "text-osmoverse-300 transition-transform",
+                      {
+                        "rotate-180": open,
+                      }
+                    )}
+                  />
+                </div>
+              </Disclosure.Button>
+              <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
+                <RecapRow
+                  left={t("limitOrders.expectedRate")}
+                  right={
+                    <span>
+                      1 {swapState?.fromAsset?.coinDenom} ≈{" "}
+                      {swapState?.toAsset
+                        ? formatPretty(
+                            swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
+                            {
+                              maxDecimals: Math.min(
+                                swapState.toAsset.coinDecimals,
+                                8
+                              ),
+                            }
+                          )
+                        : "0"}
+                    </span>
+                  }
+                />
+                <RecapRow
+                  left={t("swap.priceImpact")}
+                  right={
+                    <span
+                      className={classNames({
+                        "text-rust-400": priceImpact
+                          ?.toDec()
+                          .abs()
+                          .gt(new Dec(0.1)),
+                      })}
+                    >
+                      -{formatPretty(priceImpact ?? new Dec(0))}
+                    </span>
+                  }
+                />
+                <RecapRow
+                  left={`${t("pools.aprBreakdown.swapFees")} ${
+                    swapState?.quote?.swapFee
+                      ? `(${swapState?.quote?.swapFee})`
+                      : ""
+                  }`}
+                  right={
+                    <>
+                      {swapState?.tokenInFeeAmountFiatValue && (
+                        <span>
+                          <span className="text-osmoverse-100">
+                            ~
+                            {formatPretty(
+                              swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
+                            )}
+                          </span>{" "}
+                          (
+                          {formatPretty(
+                            swapState?.tokenInFeeAmountFiatValue.toDec()
+                          )}{" "}
+                          USDC)
+                        </span>
+                      )}
+                    </>
+                  }
+                />
+                <hr className="my-2 w-full text-osmoverse-700" />
+                {outAmountLessSlippage &&
+                  outFiatAmountLessSlippage &&
+                  swapState?.toAsset && (
+                    <RecapRow
+                      left={t("limitOrders.receiveEstimated")}
+                      right={
+                        <span>
+                          <span className="text-osmoverse-100">
+                            {formatPretty(outAmountLessSlippage, {
+                              maxDecimals: 8,
+                            })}{" "}
+                            {swapState?.toAsset.coinDenom}
+                          </span>{" "}
+                          {outFiatAmountLessSlippage && (
+                            <span className="text-osmoverse-300">
+                              (~{formatPretty(outFiatAmountLessSlippage)})
+                            </span>
+                          )}
+                        </span>
+                      }
+                    />
+                  )}
+                <span className="subtitle1 py-3 text-white-full">
+                  {t("limitOrders.moreDetails")}
+                </span>
+                {slippageConfig && (
                   <RecapRow
-                    left={t("limitOrders.receiveEstimated")}
+                    left={t("swap.settings.slippage")}
                     right={
-                      <span>
-                        <span className="text-osmoverse-100">
-                          {formatPretty(outAmountLessSlippage, {
-                            maxDecimals: 8,
-                          })}{" "}
-                          {swapState?.toAsset.coinDenom}
-                        </span>{" "}
-                        {outFiatAmountLessSlippage && (
-                          <span className="text-osmoverse-300">
-                            (~{formatPretty(outFiatAmountLessSlippage)})
-                          </span>
-                        )}
-                      </span>
+                      <div className="flex items-center justify-end">
+                        {slippageConfig?.selectableSlippages.map((props) => (
+                          <SlippageButton
+                            key={`slippage-${props.index}`}
+                            {...props}
+                            onSelect={() => {
+                              slippageConfig.select(props.index);
+
+                              logEvent([
+                                EventName.Swap.slippageToleranceSet,
+                                {
+                                  percentage:
+                                    slippageConfig.slippage.toString(),
+                                  page: "Swap Page",
+                                },
+                              ]);
+                            }}
+                          />
+                        ))}
+                        <div
+                          className={classNames(
+                            "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
+                            {
+                              "bg-osmoverse-825":
+                                slippageConfig?.isManualSlippage,
+                            }
+                          )}
+                        >
+                          <AutosizeInput
+                            type="number"
+                            minWidth={30}
+                            placeholder={t("pool.custom")}
+                            className="w-fit bg-transparent px-0"
+                            inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
+                            value={manualSlippage}
+                            onFocus={() =>
+                              slippageConfig?.setIsManualSlippage(true)
+                            }
+                            autoFocus={slippageConfig?.isManualSlippage}
+                            onChange={(e) => {
+                              handleManualSlippageChange(e.target.value);
+
+                              logEvent([
+                                EventName.Swap.slippageToleranceSet,
+                                {
+                                  fromToken: swapState?.fromAsset?.coinDenom,
+                                  toToken: swapState?.toAsset?.coinDenom,
+                                  // isOnHome: page === "Swap Page",
+                                  isOnHome: true,
+                                  percentage:
+                                    slippageConfig?.slippage.toString(),
+                                  page: "Swap Page",
+                                },
+                              ]);
+                            }}
+                          />
+                          {manualSlippage !== "" && <span>%</span>}
+                        </div>
+                      </div>
                     }
                   />
                 )}
-              <span className="subtitle1 py-3 text-white-full">
-                {t("limitOrders.moreDetails")}
-              </span>
-              {slippageConfig && (
-                <RecapRow
-                  left={t("swap.settings.slippage")}
-                  right={
-                    <div className="flex items-center justify-end">
-                      {slippageConfig?.selectableSlippages.map((props) => (
-                        <SlippageButton
-                          key={`slippage-${props.index}`}
-                          {...props}
-                          onSelect={() => {
-                            slippageConfig.select(props.index);
-
-                            logEvent([
-                              EventName.Swap.slippageToleranceSet,
-                              {
-                                percentage: slippageConfig.slippage.toString(),
-                                page: "Swap Page",
-                              },
-                            ]);
-                          }}
+                <div className="flex w-full">
+                  <RecapRow
+                    left={t("limitOrders.swapRoute")}
+                    className="!h-auto flex-col !items-start gap-2.5"
+                    right={
+                      <div className="flex w-full flex-col gap-2">
+                        <RoutesTaken
+                          {...routesVisDisclosure}
+                          split={swapState?.quote?.split ?? []}
+                          isLoading={swapState?.isQuoteLoading}
                         />
-                      ))}
-                      <div
-                        className={classNames(
-                          "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
-                          {
-                            "bg-osmoverse-825":
-                              slippageConfig?.isManualSlippage,
-                          }
-                        )}
-                      >
-                        <AutosizeInput
-                          type="number"
-                          minWidth={30}
-                          placeholder={t("pool.custom")}
-                          className="w-fit bg-transparent px-0"
-                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
-                          value={manualSlippage}
-                          onFocus={() =>
-                            slippageConfig?.setIsManualSlippage(true)
-                          }
-                          autoFocus={slippageConfig?.isManualSlippage}
-                          onChange={(e) => {
-                            handleManualSlippageChange(e.target.value);
-
-                            logEvent([
-                              EventName.Swap.slippageToleranceSet,
-                              {
-                                fromToken: swapState?.fromAsset?.coinDenom,
-                                toToken: swapState?.toAsset?.coinDenom,
-                                // isOnHome: page === "Swap Page",
-                                isOnHome: true,
-                                percentage: slippageConfig?.slippage.toString(),
-                                page: "Swap Page",
-                              },
-                            ]);
-                          }}
-                        />
-                        {manualSlippage !== "" && <span>%</span>}
                       </div>
-                    </div>
-                  }
-                />
-              )}
-              <div ref={swapRouteRef} className="flex w-full">
-                <RecapRow
-                  left={t("limitOrders.swapRoute")}
-                  className="!h-auto flex-col !items-start gap-2.5"
-                  right={
-                    <div className="flex w-full flex-col gap-2">
-                      <RoutesTaken
-                        {...routesVisDisclosure}
-                        split={swapState?.quote?.split ?? []}
-                        isLoading={swapState?.isQuoteLoading}
-                      />
-                    </div>
-                  }
-                />
-              </div>
-            </Disclosure.Panel>
+                    }
+                  />
+                </div>
+              </Disclosure.Panel>
+            </div>
           </div>
         )}
       </Disclosure>
