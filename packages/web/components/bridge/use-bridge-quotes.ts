@@ -511,7 +511,6 @@ export const useBridgeQuotes = ({
       setTransferInitiated(true);
     } catch (e) {
       const error = e as BaseError;
-      console.dir(e);
       const toastContent = getWagmiToastErrorMessage({
         error,
         t,
