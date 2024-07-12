@@ -499,7 +499,6 @@
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
       "startANewSession": "Începeți o nouă sesiune",
-      "increaseFeeLimit": "Creșteți limita taxei de rețea",
       "approveManually": "Aprobați manual în {walletName}",
       "continueWithWallet": "Continuați cu portofelul",
       "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv",

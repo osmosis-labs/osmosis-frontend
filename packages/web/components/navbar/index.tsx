@@ -421,8 +421,8 @@ const WalletInfo: FunctionComponent<
         <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
           <Tooltip
             visible={isOneClickProfileTooltipOpen && !isOneClickIntroModalOpen}
-            trigger="manual"
             interactive
+            skipTrigger
             content={
               <div className="relative flex max-w-[240px] items-center gap-2">
                 <IconButton

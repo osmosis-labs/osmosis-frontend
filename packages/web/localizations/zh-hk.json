@@ -499,7 +499,6 @@
       "currentlyUnavailable": "一鍵交易目前無法使用",
       "networkFeeTooHigh": "網路費太高",
       "startANewSession": "開始新會話",
-      "increaseFeeLimit": "提高網路費用限額",
       "approveManually": "在{walletName}中手動核准",
       "continueWithWallet": "繼續使用錢包",
       "sessionEnded": "會話在此裝置上結束",

@@ -499,7 +499,6 @@
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "startANewSession": "Neue Sitzung starten",
-      "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
       "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",

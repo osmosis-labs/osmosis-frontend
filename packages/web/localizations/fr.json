@@ -499,7 +499,6 @@
       "currentlyUnavailable": "Trading en 1 clic actuellement indisponible",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
       "startANewSession": "Démarrer une nouvelle session",
-      "increaseFeeLimit": "Augmenter la limite des frais de réseau",
       "approveManually": "Approuver manuellement dans {walletName}",
       "continueWithWallet": "Continuer avec le portefeuille",
       "sessionEnded": "Session terminée sur cet appareil",

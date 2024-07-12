@@ -1,4 +1,4 @@
-import type { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import type { PricePretty } from "@keplr-wallet/unit";
 
 export type AvailableOneClickTradingMessages =
   | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn"
@@ -24,7 +24,11 @@ export type OneClickTradingHumanizedSessionPeriod =
 export interface OneClickTradingTransactionParams {
   isOneClickEnabled: boolean;
   spendLimit: PricePretty;
-  networkFeeLimit: CoinPretty;
+
+  /**
+   * Max gas limit allowed for the transaction.
+   */
+  networkFeeLimit: string;
 
   // Time limit for the session to be considered valid.
   sessionPeriod: {

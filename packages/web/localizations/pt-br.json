@@ -499,7 +499,6 @@
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
       "networkFeeTooHigh": "Taxa de rede muito alta",
       "startANewSession": "Iniciar uma nova sessão",
-      "increaseFeeLimit": "Aumentar o limite de taxa de rede",
       "approveManually": "Aprovar manualmente em {walletName}",
       "continueWithWallet": "Continuar com carteira",
       "sessionEnded": "A sessão terminou neste dispositivo",

@@ -12,6 +12,7 @@ export const Tooltip = ({
   className,
   rootClassNames,
   enablePropagation,
+  skipTrigger,
   ...props
 }: PropsWithChildren<
   TooltipProps &
@@ -19,6 +20,7 @@ export const Tooltip = ({
     Omit<TippyProps, "content"> & {
       rootClassNames?: string;
       enablePropagation?: boolean;
+      skipTrigger?: boolean;
     }
 >) => {
   return (
@@ -29,7 +31,7 @@ export const Tooltip = ({
           rootClassNames
         )}
         content={content}
-        trigger={trigger ?? "mouseenter focus"}
+        trigger={skipTrigger ? undefined : trigger ?? "mouseenter focus"}
         {...props}
       >
         <div
