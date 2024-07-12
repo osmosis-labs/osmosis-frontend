@@ -701,6 +701,7 @@ export const AmountScreen = observer(
               isInsufficientBal={Boolean(isInsufficientBal)}
               isInsufficientFee={Boolean(isInsufficientFee)}
               transferGasCost={selectedQuote?.gasCost}
+              transferFeeCost={selectedQuote?.transferFee}
               setFiatAmount={setFiatAmount}
               setCryptoAmount={setCryptoAmount}
               setInputUnit={setInputUnit}

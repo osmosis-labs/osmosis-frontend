@@ -37,6 +37,7 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientFee: boolean;
   fromChain: BridgeChainWithDisplayInfo;
   transferGasCost: CoinPretty | undefined;
+  transferFeeCost: CoinPretty | undefined;
   setFiatAmount: (amount: string) => void;
   setCryptoAmount: (amount: string) => void;
   setInputUnit: (unit: "fiat" | "crypto") => void;
@@ -50,6 +51,7 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
+  transferFeeCost,
   setFiatAmount,
   setCryptoAmount,
   setInputUnit,
@@ -124,15 +126,30 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax && transferGasCost) {
-      const maxTransferAmount =
-        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-          ? asset.amount
-              .toDec()
-              .sub(transferGasCost.toDec())
-              .mul(subtractGasSlippage)
-          : asset.amount.toDec();
+    if (isMax && (transferGasCost || transferFeeCost)) {
+      let maxTransferAmount = asset.amount.toDec();
+
+      const gasFeeMatchesInputDenom =
+        transferGasCost &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom &&
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+
+      const transferFeeMatchesInputDenom =
+        transferFeeCost &&
+        transferFeeCost.toCoin().denom === inputCoin.toCoin().denom &&
+        transferFeeCost.toCoin().denom === asset.amount.toCoin().denom;
+
+      if (gasFeeMatchesInputDenom) {
+        maxTransferAmount = maxTransferAmount.sub(transferGasCost.toDec());
+      }
+      if (transferFeeMatchesInputDenom) {
+        maxTransferAmount = maxTransferAmount.sub(transferFeeCost.toDec());
+      }
+
+      // add slippage if there's any fee subtraction
+      if (gasFeeMatchesInputDenom || transferFeeMatchesInputDenom) {
+        maxTransferAmount = maxTransferAmount.mul(subtractGasSlippage);
+      }
 
       if (
         maxTransferAmount.isPositive() &&
@@ -141,7 +158,14 @@ export const CryptoFiatInput: FunctionComponent<{
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
     }
-  }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
+  }, [
+    isMax,
+    transferFeeCost,
+    transferGasCost,
+    asset.amount,
+    inputCoin,
+    onInput,
+  ]);
 
   // Apply max amount if asset changes
   useEffect(() => {
