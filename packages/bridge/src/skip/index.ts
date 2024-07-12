@@ -780,7 +780,11 @@ export class SkipBridgeProvider implements BridgeProvider {
             },
           ],
         })
-        .then((gas) => BigInt(gas));
+        .catch((e) => {
+          console.error(e);
+          // if there's an error, return a common ER20 transfer gas amount
+          return BigInt(80_000);
+        });
     } catch (err) {
       console.error("failed to estimate gas:", err);
       return BigInt(0);
