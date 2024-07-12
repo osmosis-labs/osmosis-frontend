@@ -66,7 +66,6 @@ export class WormholeBridgeProvider implements BridgeProvider {
     // For now we use in-osmosis
     const url = new URL("https://app.osmosis.zone/wormhole");
 
-
     url.searchParams.set(
       "from",
       fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
