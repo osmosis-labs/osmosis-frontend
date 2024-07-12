@@ -363,13 +363,19 @@ export const PriceSelector = memo(
                         : t("limitOrders.swapToAnotherAsset")}
                     </span>
                     <div className="flex items-center gap-1">
-                      <Image
-                        src={"/images/quote-swap-from-another-asset.png"}
-                        alt=""
-                        width={176}
-                        height={48}
-                        className="h-6 w-[88px]"
-                      />
+                      {wallet?.address ? (
+                        <HighestBalanceAssetsIcons
+                          userOsmoAddress={wallet.address}
+                        />
+                      ) : (
+                        <Image
+                          src={"/images/quote-swap-from-another-asset.png"}
+                          alt=""
+                          width={176}
+                          height={48}
+                          className="h-6 w-[88px]"
+                        />
+                      )}
                       <div className="flex h-6 w-6 items-center justify-center">
                         <Icon
                           id="chevron-right"
@@ -387,3 +393,49 @@ export const PriceSelector = memo(
     );
   }
 );
+
+function HighestBalanceAssetsIcons({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}) {
+  const { data: userSortedAssets } = api.edge.assets.getUserAssets.useQuery(
+    { userOsmoAddress },
+    {
+      select: ({ items }) => {
+        return items
+          .map(({ usdValue, coinImageUrl }) => ({
+            coinImageUrl,
+            usdValue,
+          }))
+          .sort((a, b) => {
+            return a.usdValue?.toDec().gt(b.usdValue?.toDec() ?? new Dec(0))
+              ? -1
+              : 1;
+          })
+          .slice(0, 5)
+          .reverse();
+      },
+    }
+  );
+
+  return (
+    <div className="relative flex h-6 w-[88px] items-center">
+      {userSortedAssets?.map(({ coinImageUrl }, i) =>
+        coinImageUrl ? (
+          <Image
+            key={coinImageUrl}
+            src={coinImageUrl}
+            alt={coinImageUrl}
+            width={24}
+            height={24}
+            className="absolute rounded-full"
+            style={{
+              right: i * 16,
+            }}
+          />
+        ) : null
+      )}
+    </div>
+  );
+}
