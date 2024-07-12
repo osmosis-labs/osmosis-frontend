@@ -547,7 +547,7 @@ export const NomicTransfer: FunctionComponent<
                         marginLeft: 8,
                       }}
                       className="inline"
-                      src="/logos/nomic.svg"
+                      src="/external-bridges/nomic.svg"
                     />
                   </a>
                 </div>

@@ -8,4 +8,4 @@ export const DefaultGasPriceStep: {
   high: 0.04,
 };
 
-export const OsmosisAverageGasLimit = 900_000;
+export const OneClickTradingMaxGasLimit = "400000000";

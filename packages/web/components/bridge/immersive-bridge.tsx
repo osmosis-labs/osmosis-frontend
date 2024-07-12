@@ -126,7 +126,7 @@ export const ImmersiveBridgeFlow = ({
               setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
-            <ModalCloseButton onClick={() => onClose()} />
+            <ModalCloseButton onClick={onClose} />
             {step !== ImmersiveBridgeScreen.Asset && (
               <IconButton
                 onClick={() => {
@@ -135,9 +135,9 @@ export const ImmersiveBridgeFlow = ({
                   );
                 }}
                 className={
-                  "absolute left-8 top-[28px] z-50 w-fit text-osmoverse-400 hover:text-osmoverse-100"
+                  "absolute left-8 top-[28px] z-50 !h-12 !w-12 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
                 }
-                icon={<Icon id="chevron-left" width={16} height={16} />}
+                icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
                 aria-label="Go Back"
               />
             )}

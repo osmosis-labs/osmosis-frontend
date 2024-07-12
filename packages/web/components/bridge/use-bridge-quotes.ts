@@ -13,7 +13,8 @@ import { isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
-import { Address } from "viem";
+import { Address, createPublicClient, http } from "viem";
+import { waitForTransactionReceipt } from "viem/actions";
 import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
@@ -27,6 +28,9 @@ import { api, RouterInputs } from "~/utils/trpc";
 const refetchInterval = 30 * 1000; // 30 seconds
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
+
+/** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
@@ -49,7 +53,7 @@ export const useBridgeQuotes = ({
   toAsset,
   toChain,
 
-  bridges = ["Axelar", "Skip", "Squid", "IBC"],
+  bridges,
 
   onRequestClose,
   onTransfer: onTransferProp,
@@ -66,7 +70,7 @@ export const useBridgeQuotes = ({
   toChain: BridgeChain | undefined;
   toAddress: string | undefined;
 
-  bridges?: Bridge[];
+  bridges: QuotableBridge[];
 
   onRequestClose: () => void;
   onTransfer?: () => void;
@@ -77,6 +81,7 @@ export const useBridgeQuotes = ({
     address: evmAddress,
     isConnected: isEvmWalletConnected,
     chainId: currentEvmChainId,
+    chain: currentEvmChain,
   } = useEvmWalletAccount();
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
@@ -152,9 +157,14 @@ export const useBridgeQuotes = ({
 
   const isTxPending = (() => {
     if (!fromChain) return false;
-    return fromChain.chainType === "cosmos"
-      ? accountStore.getWallet(fromChain.chainId)?.txTypeInProgress !== ""
-      : isEthTxPending;
+    if (fromChain.chainType === "cosmos") {
+      return Boolean(
+        accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
+      );
+    } else if (fromChain.chainType === "evm") {
+      return isEthTxPending;
+    }
+    return false;
   })();
 
   const quoteResults = api.useQueries((t) =>
@@ -297,6 +307,12 @@ export const useBridgeQuotes = ({
       .filter((quoteResult) => Boolean(quoteResult.isFetched))
       // Sort by response time. The fastest and highest quality quote will be first.
       .sort((a, b) => {
+        // This means the quote is for a basic IBC transfer:
+        // Prefer IBC provider over others since its status source provider
+        // offers a more real time UX compared to other bridge route provider's
+        // status endpoints, which rely on indexing chains and come with a delay.
+        if (a.data?.provider.id === "IBC") return -1;
+
         if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
           return 1;
         }
@@ -340,15 +356,19 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee =
-    inputAmountRaw !== "" &&
-    availableBalance &&
-    selectedQuote?.transferFee !== undefined &&
-    selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-    inputCoin
-      ?.toDec()
-      .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
-      .abs()
-      .lt(selectedQuote?.transferFee.toDec());
+    // Cosmos not fee tokens error
+    someError?.message.includes(
+      "No fee tokens found with sufficient balance on account"
+    ) ||
+    (inputAmountRaw !== "" &&
+      availableBalance &&
+      selectedQuote?.transferFee !== undefined &&
+      selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
+      inputCoin
+        ?.toDec()
+        .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
+        .abs()
+        .lt(selectedQuote?.transferFee.toDec()));
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
@@ -418,16 +438,32 @@ export const useBridgeQuotes = ({
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
+      const publicClient = createPublicClient({
+        transport: http(),
+        chain: currentEvmChain,
+      });
+
       /**
        * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
        */
       if (transactionRequest.approvalTransactionRequest) {
         setIsApprovingToken(true);
 
-        await sendTransactionAsync({
-          to: transactionRequest.approvalTransactionRequest.to as Address,
-          account: evmAddress,
-          data: transactionRequest.approvalTransactionRequest.data as Address,
+        const approveTxHash = await sendTransactionAsync(
+          {
+            to: transactionRequest.approvalTransactionRequest.to as Address,
+            account: evmAddress,
+            data: transactionRequest.approvalTransactionRequest.data as Address,
+          },
+          {
+            onError: () => {
+              setIsApprovingToken(false);
+            },
+          }
+        );
+
+        await waitForTransactionReceipt(publicClient, {
+          hash: approveTxHash,
         });
 
         setIsApprovingToken(false);
@@ -435,11 +471,9 @@ export const useBridgeQuotes = ({
         for (const quoteResult of quoteResults) {
           await quoteResult.refetch();
         }
-
-        return;
       }
 
-      const txHash = await sendTransactionAsync({
+      const sendTxHash = await sendTransactionAsync({
         to: transactionRequest.to,
         account: evmAddress,
         value: transactionRequest?.value
@@ -460,8 +494,12 @@ export const useBridgeQuotes = ({
           : undefined,
       });
 
+      await waitForTransactionReceipt(publicClient, {
+        hash: sendTxHash,
+      });
+
       trackTransferStatus(quote.provider.id, {
-        sendTxHash: txHash as string,
+        sendTxHash: sendTxHash as string,
         fromChainId: quote.fromChain.chainId,
         toChainId: quote.toChain.chainId,
       });
@@ -563,6 +601,9 @@ export const useBridgeQuotes = ({
       ? currentEvmChainId === fromChain?.chainId
       : true;
 
+  const isWrongEvmChainSelected =
+    isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
+
   let buttonErrorMessage: string | undefined;
   if (!fromAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
@@ -572,22 +613,18 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (
-    isDeposit &&
-    !isCorrectEvmChainSelected &&
-    fromChain?.chainType === "evm"
-  ) {
+  } else if (isWrongEvmChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (Boolean(someError)) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+  } else if (Boolean(someError)) {
+    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   }
 
   /** User can interact with any of the controls on the modal. */
@@ -601,15 +638,11 @@ export const useBridgeQuotes = ({
   const isWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
-      : fromChain?.chainId
+      : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady =
-    isDeposit &&
-    isWalletConnected &&
-    isCorrectEvmChainSelected &&
-    !isLoadingBridgeQuote &&
-    !isTxPending;
+    isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
   const userCanInteract = isDepositReady || isWithdrawReady;
 
   let buttonText: string;
@@ -617,16 +650,6 @@ export const useBridgeQuotes = ({
     buttonText = buttonErrorMessage;
   } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
-  } else if (isApprovingToken) {
-    buttonText = t("assets.transfer.approving");
-  } else if (isTxPending) {
-    buttonText = t("assets.transfer.sending");
-  } else if (
-    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
-    selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
-    !isEthTxPending
-  ) {
-    buttonText = t("assets.transfer.givePermission");
   } else {
     buttonText =
       direction === "deposit"
@@ -634,11 +657,21 @@ export const useBridgeQuotes = ({
         : t("transfer.reviewWithdraw");
   }
 
+  let txButtonText: string | undefined;
+  if (isApprovingToken) {
+    txButtonText = t("assets.transfer.approving");
+  } else if (isTxPending) {
+    txButtonText = t("assets.transfer.sending");
+  }
+
   if (selectedQuote && !selectedQuote.expectedOutput) {
     throw new Error("Expected output is not defined.");
   }
 
   return {
+    enabled: Boolean(bridges.length),
+
+    txButtonText,
     buttonText,
     buttonErrorMessage,
 
@@ -646,6 +679,7 @@ export const useBridgeQuotes = ({
     isTxPending,
     isApprovingToken,
     onTransfer,
+    isWrongEvmChainSelected,
 
     isInsufficientFee,
     isInsufficientBal,
