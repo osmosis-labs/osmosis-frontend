@@ -677,7 +677,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     ]);
 
     // IBC transfer, since there were 2 rpcs in chain list
-    if (fromCosmosRpc && toCosmosRpc) {
+    if (fromCosmosChain && toCosmosChain) {
       // convert to seconds
       return Math.floor(
         // initiating tx
