@@ -1,7 +1,8 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { queryRPCStatus } from "@osmosis-labs/server";
+import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -167,16 +168,8 @@ export class SkipBridgeProvider implements BridgeProvider {
           throw new Error("Failed to create transaction");
         }
 
-        const sourceChainFinalityTime = this.getFinalityTimeForChain(
-          sourceAsset.chain_id
-        );
-        const destinationChainFinalityTime = this.getFinalityTimeForChain(
-          destinationAsset.chain_id
-        );
-
-        const estimatedTime = Math.max(
-          sourceChainFinalityTime,
-          destinationChainFinalityTime
+        const estimatedTime = await this.estimateTotalTransferTime(
+          route.chain_ids
         );
 
         const estimatedGasFee = await this.estimateGasCost(
@@ -621,7 +614,77 @@ export class SkipBridgeProvider implements BridgeProvider {
     return addressList;
   }
 
-  getFinalityTimeForChain(chainID: string) {
+  /**
+   * Sums the total transfer time of each hop between chains
+   * @returns total transfer time in seconds
+   */
+  async estimateTotalTransferTime(chainIds: string[]): Promise<number> {
+    if (chainIds.length < 2) {
+      throw new Error(
+        "At least two chain IDs are required to estimate transfer time."
+      );
+    }
+
+    let totalTransferTime = 0;
+
+    for (let i = 0; i < chainIds.length - 1; i++) {
+      const fromChainId = chainIds[i];
+      const toChainId = chainIds[i + 1];
+      const transferTime = await this.estimateTransferTime(
+        fromChainId,
+        toChainId
+      );
+      totalTransferTime += transferTime;
+    }
+
+    return totalTransferTime;
+  }
+
+  /**
+   * Estimates the transfer time for IBC transfers in seconds.
+   * Looks at the average block time of the two chains.
+   * @returns transfer time in seconds
+   */
+  async estimateTransferTime(
+    fromChainId: string,
+    toChainId: string
+  ): Promise<number> {
+    const fromChain = this.ctx.chainList.find(
+      (c) => c.chain_id === fromChainId
+    );
+    const toChain = this.ctx.chainList.find((c) => c.chain_id === toChainId);
+
+    const fromRpc = fromChain?.apis.rpc[0]?.address;
+    const toRpc = toChain?.apis.rpc[0]?.address;
+
+    const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
+      fromRpc
+        ? queryRPCStatus({ restUrl: fromRpc }).then(calcAverageBlockTimeMs)
+        : this.getFinalityTimeForEvmChain(fromChainId) * 1000,
+      toRpc
+        ? queryRPCStatus({ restUrl: toRpc }).then(calcAverageBlockTimeMs)
+        : this.getFinalityTimeForEvmChain(toChainId) * 1000,
+    ]);
+
+    // IBC transfer, since there were 2 rpcs in chain list
+    if (fromRpc && toRpc) {
+      // convert to seconds
+      return Math.floor(
+        // initiating tx
+        (fromBlockTimeMs +
+          // lockup tx
+          toBlockTimeMs +
+          // timeout ack tx
+          fromBlockTimeMs) /
+          1000
+      );
+    } else {
+      return Math.floor(Math.max(fromBlockTimeMs, toBlockTimeMs) / 1000);
+    }
+  }
+
+  /** @returns finality time in seconds */
+  getFinalityTimeForEvmChain(chainID: string) {
     switch (chainID) {
       case "1":
         return 960;
@@ -648,7 +711,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       case "8453":
         return 1440;
       default:
-        return 1;
+        return 960;
     }
   }
 
