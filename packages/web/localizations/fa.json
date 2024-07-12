@@ -499,7 +499,6 @@
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
       "startANewSession": "یک جلسه جدید را شروع کنید",
-      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
       "approveManually": "تأیید دستی در {walletName}",
       "continueWithWallet": "با کیف پول ادامه دهید",
       "sessionEnded": "جلسه در این دستگاه به پایان رسید",

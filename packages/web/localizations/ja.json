@@ -499,7 +499,6 @@
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
       "startANewSession": "新しいセッションを開始する",
-      "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
       "sessionEnded": "このデバイスでセッションが終了しました",

@@ -499,7 +499,6 @@
       "currentlyUnavailable": "1-Click Trading currently unavailable",
       "networkFeeTooHigh": "Network fee too high",
       "startANewSession": "Start a new session",
-      "increaseFeeLimit": "Increase network fee limit",
       "approveManually": "Approve manually in {walletName}",
       "continueWithWallet": "Continue with wallet",
       "sessionEnded": "Session ended on this device",

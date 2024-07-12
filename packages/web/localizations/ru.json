@@ -499,7 +499,6 @@
       "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "startANewSession": "Начать новый сеанс",
-      "increaseFeeLimit": "Увеличить лимит комиссии сети",
       "approveManually": "Утвердить вручную в {walletName}",
       "continueWithWallet": "Продолжить с кошельком",
       "sessionEnded": "Сеанс завершен на этом устройстве",

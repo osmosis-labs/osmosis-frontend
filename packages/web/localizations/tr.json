@@ -499,7 +499,6 @@
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
       "startANewSession": "Yeni bir oturum başlat",
-      "increaseFeeLimit": "Ağ ücreti sınırını artırın",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
       "sessionEnded": "Bu cihazda oturum sona erdi",
