@@ -195,7 +195,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       ]);
 
       if (!assetPrice) {
-        throw new Error("Invalid quote: Missing toAsset price");
+        throw new Error("Invalid quote: Missing toAsset or fromAsset price");
       }
 
       /** Include decimals with decimal-included price. */
