@@ -31,7 +31,6 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -79,7 +78,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
-    const { fiatRampSelection } = useBridge();
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig();
