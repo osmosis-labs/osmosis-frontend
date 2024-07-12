@@ -354,15 +354,19 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee =
-    inputAmountRaw !== "" &&
-    availableBalance &&
-    selectedQuote?.transferFee !== undefined &&
-    selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-    inputCoin
-      ?.toDec()
-      .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
-      .abs()
-      .lt(selectedQuote?.transferFee.toDec());
+    // Cosmos not fee tokens error
+    someError?.message.includes(
+      "No fee tokens found with sufficient balance on account"
+    ) ||
+    (inputAmountRaw !== "" &&
+      availableBalance &&
+      selectedQuote?.transferFee !== undefined &&
+      selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
+      inputCoin
+        ?.toDec()
+        .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
+        .abs()
+        .lt(selectedQuote?.transferFee.toDec()));
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
@@ -594,14 +598,14 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (Boolean(someError)) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+  } else if (Boolean(someError)) {
+    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   }
 
   /** User can interact with any of the controls on the modal. */
