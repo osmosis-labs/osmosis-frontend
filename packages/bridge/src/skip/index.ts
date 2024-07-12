@@ -649,25 +649,35 @@ export class SkipBridgeProvider implements BridgeProvider {
     fromChainId: string,
     toChainId: string
   ): Promise<number> {
-    const fromChain = this.ctx.chainList.find(
+    const fromCosmosChain = this.ctx.chainList.find(
       (c) => c.chain_id === fromChainId
     );
-    const toChain = this.ctx.chainList.find((c) => c.chain_id === toChainId);
+    const toCosmosChain = this.ctx.chainList.find(
+      (c) => c.chain_id === toChainId
+    );
 
-    const fromRpc = fromChain?.apis.rpc[0]?.address;
-    const toRpc = toChain?.apis.rpc[0]?.address;
+    const fromCosmosRpc = fromCosmosChain?.apis.rpc[0]?.address;
+    const toCosmosRpc = toCosmosChain?.apis.rpc[0]?.address;
 
     const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
-      fromRpc
-        ? queryRPCStatus({ restUrl: fromRpc }).then(calcAverageBlockTimeMs)
+      fromCosmosChain
+        ? fromCosmosRpc
+          ? queryRPCStatus({ restUrl: fromCosmosRpc }).then(
+              calcAverageBlockTimeMs
+            )
+          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
         : this.getFinalityTimeForEvmChain(fromChainId) * 1000,
-      toRpc
-        ? queryRPCStatus({ restUrl: toRpc }).then(calcAverageBlockTimeMs)
+      toCosmosChain
+        ? toCosmosRpc
+          ? queryRPCStatus({ restUrl: toCosmosRpc }).then(
+              calcAverageBlockTimeMs
+            )
+          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
         : this.getFinalityTimeForEvmChain(toChainId) * 1000,
     ]);
 
     // IBC transfer, since there were 2 rpcs in chain list
-    if (fromRpc && toRpc) {
+    if (fromCosmosRpc && toCosmosRpc) {
       // convert to seconds
       return Math.floor(
         // initiating tx
