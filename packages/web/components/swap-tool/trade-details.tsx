@@ -2,7 +2,7 @@ import { Disclosure } from "@headlessui/react";
 import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
 
@@ -66,6 +66,17 @@ export const TradeDetails = ({
   const priceImpact = useMemo(
     () => swapState?.quote?.priceImpactTokenOut,
     [swapState?.quote?.priceImpactTokenOut]
+  );
+
+  const [manualSlippage, setManualSlippage] = useState("");
+  const handleManualSlippageChange = useCallback(
+    (value: string) => {
+      if (value.length > 3) return;
+
+      setManualSlippage(value);
+      slippageConfig?.setManualSlippage(new Dec(+value).toString());
+    },
+    [slippageConfig]
   );
 
   return (
@@ -274,18 +285,14 @@ export const TradeDetails = ({
                           minWidth={30}
                           placeholder={t("pool.custom")}
                           className="w-fit bg-transparent px-0"
-                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px]"
-                          value={slippageConfig?.manualSlippageStr}
+                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
+                          value={manualSlippage}
                           onFocus={() =>
                             slippageConfig?.setIsManualSlippage(true)
                           }
                           autoFocus={slippageConfig?.isManualSlippage}
                           onChange={(e) => {
-                            if (e.target.value.trim() === "") {
-                              slippageConfig?.setManualSlippage("0");
-                            } else {
-                              slippageConfig?.setManualSlippage(e.target.value);
-                            }
+                            handleManualSlippageChange(e.target.value);
 
                             logEvent([
                               EventName.Swap.slippageToleranceSet,
@@ -300,7 +307,7 @@ export const TradeDetails = ({
                             ]);
                           }}
                         />
-                        <span>%</span>
+                        {manualSlippage !== "" && <span>%</span>}
                       </div>
                     </div>
                   }
