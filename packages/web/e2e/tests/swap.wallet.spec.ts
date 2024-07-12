@@ -99,7 +99,9 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    expect(swapPage.isTransactionSuccesful()).toBeTruthy();
+    expect(swapPage.isTransactionBroadcasted(10));
+    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to swap USDC to OSMO", async () => {
