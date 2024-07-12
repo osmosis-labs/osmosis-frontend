@@ -77,7 +77,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "WBTC.axl": {
+  "WBTC.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -110,7 +110,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "wstETH.axl": {
+  "wstETH.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -344,7 +344,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://bridge.terra.money",
     withdrawUrlOverride: "https://bridge.terra.money",
   },
-  "USDT.axl": {
+  "USDT.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -355,7 +355,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "USDC.axl": {
+  "USDC.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -372,7 +372,7 @@ const MainnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  "polygon.USDC.axl": {
+  "USDC.matic.axl": {
     sourceChainNameOverride: "Polygon",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -383,7 +383,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "avalanche.USDC.axl": {
+  "USDC.avax.axl": {
     sourceChainNameOverride: "Avalanche",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -394,7 +394,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "moonbeam.DOT.axl": {
+  "DOT.glmr.axl": {
     sourceChainNameOverride: "Moonbeam",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -469,19 +469,19 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=PicassoKusama",
   },
-  "WBTC.grv": {
+  "WBTC.eth.grv": {
     depositUrlOverride:
       "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
     withdrawUrlOverride:
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
-  "WETH.grv": {
+  "ETH.grv": {
     depositUrlOverride:
       "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
     withdrawUrlOverride:
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
-  "USDC.grv": {
+  "USDC.eth.grv": {
     depositUrlOverride:
       "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
     withdrawUrlOverride:
@@ -493,7 +493,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
-  "USDT.grv": {
+  "USDT.eth.grv": {
     depositUrlOverride:
       "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
     withdrawUrlOverride:
@@ -551,15 +551,15 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=empowerchain-1&chainTo=osmosis-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
   },
-  "USDT.wh": {
+  "USDT.eth.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
-  "USDC.wh": {
+  "USDC.eth.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
-  "wETH.wh": {
+  "ETH.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
@@ -605,7 +605,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride:
       "https://portal.dymension.xyz/ibc/transfer?sourceId=dymension_1100-1&destinationId=osmosis-1",
   },
-  "injective.GLTO": {
+  GLTO: {
     depositUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=injective-1&chainTo=osmosis-1&token0=peggy0xd73175f9eb15eee81745d367ae59309Ca2ceb5e2&token1=ibc%2F072E5B3D6F278B3E6A9C51D7EAD1A737148609512C5EBE8CBCB5663264A0DDB7",
     withdrawUrlOverride:
@@ -617,7 +617,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://pro.osmosis.zone/ibc?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FC25A2303FE24B922DAFFDCE377AC5A42E5EF746806D32E2ED4B610DE85C203F7&token1=terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
   },
-  "solana.USDC.wh": {
+  "USDC.sol.wh": {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
@@ -697,7 +697,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
-  "USDT.pica": {
+  "USDT.eth.pica": {
     depositUrlOverride: "https://app.picasso.network/?from=ETHEREUM&to=OSMOSIS",
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
@@ -717,7 +717,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=ETHEREUM",
   },
-  "solana.USDT.pica": {
+  "USDT.sol.pica": {
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
@@ -733,7 +733,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
-  "wSOL.pica": {
+  "SOL.pica": {
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
