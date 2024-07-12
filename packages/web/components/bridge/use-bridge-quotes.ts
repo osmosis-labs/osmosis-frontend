@@ -360,6 +360,9 @@ export const useBridgeQuotes = ({
     someError?.message.includes(
       "No fee tokens found with sufficient balance on account"
     ) ||
+    someError?.message.includes(
+      "Input amount is too low to cover CCTP bridge relay fee"
+    ) ||
     (inputAmountRaw !== "" &&
       availableBalance &&
       selectedQuote?.transferFee !== undefined &&
