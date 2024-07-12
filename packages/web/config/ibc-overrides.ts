@@ -110,7 +110,7 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "wstETH.axl": {
+  "wstETH.eth.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
