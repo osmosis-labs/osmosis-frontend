@@ -405,6 +405,7 @@ export const PriceSelector = memo(
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
           onRequestClose={closeAddFundsModal}
+          from="buy"
         />
       </>
     );

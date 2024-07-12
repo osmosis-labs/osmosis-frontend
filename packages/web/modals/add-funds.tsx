@@ -1,5 +1,8 @@
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { MinimalAsset } from "@osmosis-labs/types";
+import classNames from "classnames";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
+import { parseAsString, useQueryStates } from "nuqs";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
@@ -10,13 +13,30 @@ import { ModalBase } from "~/modals/base";
 interface AddFundsModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
+  from?: "buy" | "swap";
+  fromAsset?:
+    | (MinimalAsset &
+        Partial<{
+          amount: CoinPretty;
+          usdValue: PricePretty;
+        }>)
+    | undefined;
 }
 
-export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
+export function AddFundsModal({
+  isOpen,
+  onRequestClose,
+  from,
+  fromAsset,
+}: AddFundsModalProps) {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
-  const [_, setTab] = useQueryState("tab");
-  const [__, setTo] = useQueryState("to");
+
+  const [, set] = useQueryStates({
+    tab: parseAsString,
+    to: parseAsString,
+    from: parseAsString,
+  });
 
   return (
     <ModalBase
@@ -36,105 +56,222 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
           </button>
         </div>
         <div className="flex flex-col items-center justify-center pb-3 text-center">
-          <span className="flex w-[448px] flex-wrap justify-center gap-1 text-osmoverse-300">
-            <span>You need</span> <StableCoinsInfoTooltip />{" "}
-            <span>funds on Osmosis to buy assets.</span>
-            <span>Choose an option to continue.</span>
-          </span>
+          {from === "buy" ? (
+            <span className="flex w-[448px] flex-wrap justify-center gap-1 text-osmoverse-300">
+              <span>You need</span> <StableCoinsInfoTooltip />{" "}
+              <span>funds on Osmosis to buy assets.</span>
+              <span>Choose an option to continue.</span>
+            </span>
+          ) : (
+            <span className="flex w-[448px] flex-wrap justify-center gap-1 text-osmoverse-300">
+              You don’t have any {fromAsset?.coinName} funds on Osmosis to trade
+              with. Choose an option to continue.
+            </span>
+          )}
         </div>
         <div className="flex flex-col py-3 px-4">
-          <button
-            type="button"
-            onClick={() => {
-              bridgeAsset({ anyDenom: "USDC", direction: "deposit" });
-              onRequestClose();
-            }}
-            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
-          >
-            <Image
-              src="/tokens/generated/usdc.svg"
-              width={48}
-              height={48}
-              alt="USDC logo"
-            />
-            <div className="flex w-full flex-col gap-1">
-              <span className="subtitle1">Deposit USDC</span>
-              <span className="body2 text-osmoverse-300">
-                Transfer from another network or wallet
-              </span>
-            </div>
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-right"
-                width={10}
-                height={17}
-                className="text-wosmongton-200"
+          {from === "buy" ? (
+            <button
+              type="button"
+              onClick={() => {
+                bridgeAsset({ anyDenom: "USDC", direction: "deposit" });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <Image
+                src="/tokens/generated/usdc.svg"
+                width={48}
+                height={48}
+                alt="USDC logo"
               />
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              bridgeAsset({ anyDenom: "USDT", direction: "deposit" });
-              onRequestClose();
-            }}
-            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
-          >
-            <Image
-              src="https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg"
-              width={48}
-              height={48}
-              alt="USDT logo"
-            />
-            <div className="flex w-full flex-col gap-1">
-              <span className="subtitle1">Deposit USDT</span>
-              <span className="body2 text-osmoverse-300">
-                Transfer from another network or wallet
-              </span>
-            </div>
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-right"
-                width={10}
-                height={17}
-                className="text-wosmongton-200"
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Deposit USDC</span>
+                <span className="body2 text-osmoverse-300">
+                  Transfer from another network or wallet
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                bridgeAsset({
+                  anyDenom: fromAsset?.coinDenom ?? "ATOM",
+                  direction: "deposit",
+                });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <div className="flex h-12 w-12 items-center justify-center">
+                <Icon
+                  id="deposit"
+                  width={32}
+                  height={32}
+                  className="text-wosmongton-200"
+                />
+              </div>
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Deposit {fromAsset?.coinName}</span>
+                <span className="body2 text-osmoverse-300">
+                  Transfer from another network or wallet
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          )}
+          {from === "buy" ? (
+            <button
+              type="button"
+              onClick={() => {
+                bridgeAsset({ anyDenom: "USDT", direction: "deposit" });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <Image
+                src="https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg"
+                width={48}
+                height={48}
+                alt="USDT logo"
               />
-            </div>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setTab("swap");
-              setTo("USDC");
-            }}
-            className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
-          >
-            <div className="flex h-12 w-12 items-center justify-center">
-              <Icon
-                id="exchange"
-                width={32}
-                height={32}
-                className="h-8 w-8 text-wosmongton-400"
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Deposit USDT</span>
+                <span className="body2 text-osmoverse-300">
+                  Transfer from another network or wallet
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                set({ from: "USDC" });
+                set({ to: fromAsset?.coinDenom ?? "ATOM" });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <Image
+                src={fromAsset?.coinImageUrl ?? ""}
+                width={48}
+                height={48}
+                alt={classNames(`${fromAsset?.coinDenom} logo`)}
               />
-            </div>
-            <div className="flex w-full flex-col gap-1">
-              <span className="subtitle1">Sell an asset</span>
-              <span className="body2 text-osmoverse-300">
-                Trade another asset for USDC or USDT
-              </span>
-            </div>
-            <div className="flex h-6 w-6 items-center justify-center">
-              <Icon
-                id="chevron-right"
-                width={10}
-                height={17}
-                className="text-wosmongton-200"
-              />
-            </div>
-          </button>
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Buy {fromAsset?.coinDenom}</span>
+                <span className="body2 text-osmoverse-300">
+                  Buy with USDC or USDT
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          )}
+          {from === "buy" ? (
+            <button
+              type="button"
+              onClick={() => {
+                set({ tab: "swap" });
+                set({ to: "USDC" });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <div className="flex h-12 w-12 items-center justify-center">
+                <Icon
+                  id="exchange"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 text-wosmongton-400"
+                />
+              </div>
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Sell an asset</span>
+                <span className="body2 text-osmoverse-300">
+                  Trade another asset for USDC or USDT
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                set({ from: "" });
+                set({ to: fromAsset?.coinDenom ?? "" });
+                onRequestClose();
+              }}
+              className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
+            >
+              <div className="flex h-12 w-12 items-center justify-center">
+                <Icon
+                  id="exchange"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 text-wosmongton-400"
+                />
+              </div>
+              <div className="flex w-full flex-col gap-1">
+                <span className="subtitle1">Swap an asset</span>
+                <span className="body2 text-osmoverse-300">
+                  Trade another asset for {fromAsset?.coinDenom}
+                </span>
+              </div>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
+              </div>
+            </button>
+          )}
         </div>
         <div className="flex w-full px-8 pt-3">
-          <button className="flex h-14 w-full items-center justify-center rounded-2xl py-4 transition-colors hover:bg-osmoverse-900">
+          <button
+            type="button"
+            onClick={onRequestClose}
+            className="flex h-14 w-full items-center justify-center rounded-2xl py-4 transition-colors hover:bg-osmoverse-900"
+          >
             <h6 className="text-wosmongton-200">Cancel</h6>
           </button>
         </div>

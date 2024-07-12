@@ -23,6 +23,7 @@ import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
+  useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
   useSlippageConfig,
@@ -33,6 +34,7 @@ import {
 import { useBridge } from "~/hooks/bridge";
 import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewSwapModal } from "~/modals/review-swap";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
@@ -319,6 +321,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [swapState.error?.message]
     );
 
+    const {
+      isOpen: isAddFundsModalOpen,
+      onClose: closeAddFundsModal,
+      onOpen: openAddFundsModal,
+    } = useDisclosure();
+
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden">
@@ -419,7 +427,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         </button>
                       ) : (
                         <button
-                          onClick={fiatRampSelection}
+                          type="button"
+                          onClick={openAddFundsModal}
                           className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
                         >
                           {t("limitOrders.addFunds")}
@@ -619,6 +628,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isConfirmationDisabled={isConfirmationDisabled}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+        />
+        <AddFundsModal
+          isOpen={isAddFundsModalOpen}
+          onRequestClose={closeAddFundsModal}
+          from="swap"
+          fromAsset={swapState.fromAsset}
         />
       </>
     );
