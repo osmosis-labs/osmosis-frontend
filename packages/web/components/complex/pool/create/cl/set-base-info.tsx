@@ -190,7 +190,7 @@ export const SetBaseInfos = observer(
               </svg>
             </Checkbox>
             <Label className="body2">
-              I understand that creating a new pool will cost 100 OSMO
+              I understand that creating a new pool will cost 20 USDC
             </Label>
           </Field>
           <button
