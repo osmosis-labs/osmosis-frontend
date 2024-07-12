@@ -599,6 +599,22 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
+        continue;
+      }
+
+      // This is likely a multi hop IBC, which means either
+      // to or from chain & respective addresses can include a cosmos
+      // bech32 address that can be used to derive the middle hop cosmos
+      // chain address.
+      if (chain.chain_type === "cosmos") {
+        let bech32Address: string | null = null;
+        if (fromChain.chainType === "cosmos") bech32Address = fromAddress;
+        if (toChain.chainType === "cosmos") bech32Address = toAddress;
+        if (!bech32Address) continue;
+
+        addressList.push(
+          toBech32(chain.bech32_prefix, fromBech32(bech32Address).data)
+        );
       }
     }
 
@@ -696,15 +712,16 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
 
       const gasFee = txSimulation.amount[0];
-      const gasAsset = this.ctx.assetLists
-        .flatMap((list) => list.assets)
-        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+      const chainAssets = await this.getAssets();
+      const { assets } = chainAssets[params.fromChain.chainId.toString()];
+
+      const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
         amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? params.fromAsset.denom,
-        decimals: gasAsset?.decimals ?? params.fromAsset.decimals,
-        address: gasAsset?.coinMinimalDenom ?? params.fromAsset.address,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        address: gasAsset?.denom ?? gasFee.denom,
       };
     }
   }

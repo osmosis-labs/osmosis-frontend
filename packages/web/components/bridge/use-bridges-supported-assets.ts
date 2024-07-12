@@ -56,14 +56,6 @@ export const useBridgesSupportedAssets = ({
             // This causes slow UX even though there's a
             // query that the user can use.
             retry: false,
-
-            // prevent batching so that fast routers can
-            // return requests faster than the slowest router
-            trpc: {
-              context: {
-                skipBatch: true,
-              },
-            },
           }
         )
       )
@@ -118,6 +110,7 @@ export const useBridgesSupportedAssets = ({
     type AssetsByChainId =
       RouterOutputs["bridgeTransfer"]["getSupportedAssetsByBridge"]["supportedAssets"]["assetsByChainId"];
 
+    /** Assets aggregated by chain across all provider returned chain assets. */
     const allAssetsByChainId = successfulQueries.reduce((acc, { data }) => {
       if (!data) return acc;
 
@@ -201,6 +194,11 @@ export const useBridgesSupportedAssets = ({
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
+          .sort((a, b) => {
+            // focus on evm chains to be picked first
+            if (a.chainType === "evm" && b.chainType !== "evm") return -1;
+            return 0;
+          })
           .map((chain) => [chain.chainId, chain])
       ).values()
     );

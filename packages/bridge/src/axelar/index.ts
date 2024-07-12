@@ -403,7 +403,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
       const gasFee = txSimulation.amount[0];
       const gasAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
-        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+        .find(
+          (asset) =>
+            asset.coinMinimalDenom === gasFee.denom ||
+            asset.counterparty.some(
+              (c) =>
+                "chainId" in c &&
+                c.chainId === params.fromChain.chainId &&
+                c.sourceDenom === gasFee.denom
+            )
+        );
 
       return {
         amount: gasFee.amount,
