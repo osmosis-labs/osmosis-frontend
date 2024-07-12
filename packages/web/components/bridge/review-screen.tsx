@@ -164,13 +164,13 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </Button>
         <Button
-          isLoading={quote.isTxPending}
+          isLoading={quote.isTxPending || quote.isApprovingToken}
           className="w-full md:h-12"
           onClick={onConfirm}
           disabled={!quote.userCanInteract}
         >
           <div className="md:subtitle1 text-h6 font-h6">
-            {t("transfer.confirm")}
+            {quote?.txButtonText ?? t("transfer.confirm")}
           </div>
         </Button>
       </div>

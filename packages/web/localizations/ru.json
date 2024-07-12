@@ -220,7 +220,6 @@
       "availableMobile": "Доступный",
       "availableOn": "Доступно в {network}",
       "approving": "Одобрение...",
-      "givePermission": "Дайте разрешения на использование токенов",
       "enterAddress": "{network} адрес",
       "errors": {
         "insufficientBal": "Недостаточный баланс",

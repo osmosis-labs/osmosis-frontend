@@ -220,7 +220,6 @@
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
-      "givePermission": "Belirteçleri kullanma izinleri verin",
       "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",

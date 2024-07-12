@@ -13,7 +13,8 @@ import { isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
-import { Address } from "viem";
+import { Address, createPublicClient, http } from "viem";
+import { waitForTransactionReceipt } from "viem/actions";
 import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
@@ -80,6 +81,7 @@ export const useBridgeQuotes = ({
     address: evmAddress,
     isConnected: isEvmWalletConnected,
     chainId: currentEvmChainId,
+    chain: currentEvmChain,
   } = useEvmWalletAccount();
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
@@ -436,16 +438,32 @@ export const useBridgeQuotes = ({
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
+      const publicClient = createPublicClient({
+        transport: http(),
+        chain: currentEvmChain,
+      });
+
       /**
        * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
        */
       if (transactionRequest.approvalTransactionRequest) {
         setIsApprovingToken(true);
 
-        await sendTransactionAsync({
-          to: transactionRequest.approvalTransactionRequest.to as Address,
-          account: evmAddress,
-          data: transactionRequest.approvalTransactionRequest.data as Address,
+        const approveTxHash = await sendTransactionAsync(
+          {
+            to: transactionRequest.approvalTransactionRequest.to as Address,
+            account: evmAddress,
+            data: transactionRequest.approvalTransactionRequest.data as Address,
+          },
+          {
+            onError: () => {
+              setIsApprovingToken(false);
+            },
+          }
+        );
+
+        await waitForTransactionReceipt(publicClient, {
+          hash: approveTxHash,
         });
 
         setIsApprovingToken(false);
@@ -453,11 +471,9 @@ export const useBridgeQuotes = ({
         for (const quoteResult of quoteResults) {
           await quoteResult.refetch();
         }
-
-        return;
       }
 
-      const txHash = await sendTransactionAsync({
+      const sendTxHash = await sendTransactionAsync({
         to: transactionRequest.to,
         account: evmAddress,
         value: transactionRequest?.value
@@ -478,8 +494,12 @@ export const useBridgeQuotes = ({
           : undefined,
       });
 
+      await waitForTransactionReceipt(publicClient, {
+        hash: sendTxHash,
+      });
+
       trackTransferStatus(quote.provider.id, {
-        sendTxHash: txHash as string,
+        sendTxHash: sendTxHash as string,
         fromChainId: quote.fromChain.chainId,
         toChainId: quote.toChain.chainId,
       });
@@ -491,6 +511,7 @@ export const useBridgeQuotes = ({
       setTransferInitiated(true);
     } catch (e) {
       const error = e as BaseError;
+      console.dir(e);
       const toastContent = getWagmiToastErrorMessage({
         error,
         t,
@@ -581,6 +602,9 @@ export const useBridgeQuotes = ({
       ? currentEvmChainId === fromChain?.chainId
       : true;
 
+  const isWrongEvmChainSelected =
+    isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
+
   let buttonErrorMessage: string | undefined;
   if (!fromAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
@@ -590,11 +614,7 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (
-    isDeposit &&
-    !isCorrectEvmChainSelected &&
-    fromChain?.chainType === "evm"
-  ) {
+  } else if (isWrongEvmChainSelected) {
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
@@ -623,11 +643,7 @@ export const useBridgeQuotes = ({
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady =
-    isDeposit &&
-    isWalletConnected &&
-    isCorrectEvmChainSelected &&
-    !isLoadingBridgeQuote &&
-    !isTxPending;
+    isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
   const userCanInteract = isDepositReady || isWithdrawReady;
 
   let buttonText: string;
@@ -635,21 +651,18 @@ export const useBridgeQuotes = ({
     buttonText = buttonErrorMessage;
   } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
-  } else if (isApprovingToken) {
-    buttonText = t("assets.transfer.approving");
-  } else if (isTxPending) {
-    buttonText = t("assets.transfer.sending");
-  } else if (
-    selectedQuote?.quote?.transactionRequest?.type === "evm" &&
-    selectedQuote?.quote?.transactionRequest.approvalTransactionRequest &&
-    !isEthTxPending
-  ) {
-    buttonText = t("assets.transfer.givePermission");
   } else {
     buttonText =
       direction === "deposit"
         ? t("transfer.reviewDeposit")
         : t("transfer.reviewWithdraw");
+  }
+
+  let txButtonText: string | undefined;
+  if (isApprovingToken) {
+    txButtonText = t("assets.transfer.approving");
+  } else if (isTxPending) {
+    txButtonText = t("assets.transfer.sending");
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
@@ -659,6 +672,7 @@ export const useBridgeQuotes = ({
   return {
     enabled: Boolean(bridges.length),
 
+    txButtonText,
     buttonText,
     buttonErrorMessage,
 
@@ -666,6 +680,7 @@ export const useBridgeQuotes = ({
     isTxPending,
     isApprovingToken,
     onTransfer,
+    isWrongEvmChainSelected,
 
     isInsufficientFee,
     isInsufficientBal,
