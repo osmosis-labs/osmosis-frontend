@@ -619,6 +619,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
+          hideBalances
         />
         <ReviewSwapModal
           isOpen={showSwapReviewModal}

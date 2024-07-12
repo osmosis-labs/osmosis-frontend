@@ -54,6 +54,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
   hasNextPageAssets?: boolean;
   fetchNextPageAssets?: () => void;
   headerTitle: string;
+  hideBalances?: boolean;
 }> = observer(
   ({
     isOpen,
@@ -67,6 +68,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     hasNextPageAssets = false,
     fetchNextPageAssets = () => {},
     headerTitle,
+    hideBalances,
   }) => {
     const { t } = useTranslation();
 
@@ -194,7 +196,6 @@ export const TokenSelectModalLimit: FunctionComponent<{
     //   },
     // });
 
-    // TODO: Wire up search
     const [, setQuery, results] = useFilteredData(selectableAssets, [
       "coinDenom",
       "coinName",
@@ -371,13 +372,14 @@ export const TokenSelectModalLimit: FunctionComponent<{
                                   alt={`${coinDenom} icon`}
                                   width={48}
                                   height={48}
+                                  className="rounded-full"
                                 />
                               </div>
                             )}
                             <div className="flex flex-col">
                               <span className="subtitle1">{coinName}</span>
                               <span className="subtitle2 text-osmoverse-400">
-                                {amount ? formatPretty(amount) : coinDenom}
+                                {coinDenom}
                               </span>
                             </div>
                             {/* {!isVerified && shouldShowUnverifiedAssets && (
@@ -394,7 +396,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                             )} */}
                           </div>
 
-                          {isWalletConnected && (
+                          {isWalletConnected && !hideBalances && (
                             <div className="flex flex-col items-end gap-1">
                               <p
                                 className={classNames("text-osmoverse-400", {
@@ -406,6 +408,11 @@ export const TokenSelectModalLimit: FunctionComponent<{
                                     new PricePretty(DEFAULT_VS_CURRENCY, 0)
                                 )}
                               </p>
+                              {amount && (
+                                <span className="body2 text-osmoverse-300">
+                                  {formatPretty(amount).split(" ")[0]}
+                                </span>
+                              )}
                               {/* <Link
                                 href={"#"}
                                 className="subtitle2 inline-flex items-center text-wosmongton-300"
