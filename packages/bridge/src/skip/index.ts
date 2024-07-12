@@ -712,24 +712,16 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
 
       const gasFee = txSimulation.amount[0];
-      const gasAsset = this.ctx.assetLists
-        .flatMap((list) => list.assets)
-        .find(
-          (asset) =>
-            asset.coinMinimalDenom === gasFee.denom ||
-            asset.counterparty.some(
-              (c) =>
-                "chainId" in c &&
-                c.chainId === params.fromChain.chainId &&
-                c.sourceDenom === gasFee.denom
-            )
-        );
+      const chainAssets = await this.getAssets();
+      const { assets } = chainAssets[params.fromChain.chainId.toString()];
+
+      const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
         amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? params.fromAsset.denom,
-        decimals: gasAsset?.decimals ?? params.fromAsset.decimals,
-        address: gasAsset?.coinMinimalDenom ?? params.fromAsset.address,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        address: gasAsset?.denom ?? gasFee.denom,
       };
     }
   }

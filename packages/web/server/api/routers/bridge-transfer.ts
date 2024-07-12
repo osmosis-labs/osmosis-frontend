@@ -105,27 +105,51 @@ export const bridgeTransferRouter = createTRPCRouter({
       // Prices are on Osmosis, so a counterparty asset should match either the source denom in the asset list
       // or the coinMinimalDenom on Osmosis. If not on Osmosis & no match, no price is provided.
       // TODO: add coingeckoId to bridge provider assets to get price from coingecko in those cases.
-      const [toAssetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all(
-        [
-          getAssetPrice({
+      const [assetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all([
+        // since we're "bridging" the same variant, the to or from
+        // asset could be used for pricing
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: input.toAsset.address,
+            sourceDenom: input.toAsset.address,
+            chainId: input.toChain.chainId,
+            address: input.toAsset.address,
+          },
+        }).catch(() => {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
+              {
+                bridge: input.bridge,
+                coinMinimalDenom: input.toAsset.address,
+                sourceDenom: input.toAsset.address,
+                chainId: input.toChain.chainId,
+                address: input.toAsset.address,
+              }
+            );
+          }
+          return getAssetPrice({
             ...ctx,
             asset: {
-              coinMinimalDenom: input.toAsset.address,
-              sourceDenom: input.toAsset.address,
-              chainId: input.toChain.chainId,
-              address: input.toAsset.address,
+              coinMinimalDenom: input.fromAsset.address,
+              sourceDenom: input.fromAsset.address,
+              chainId: input.fromChain.chainId,
+              address: input.fromAsset.address,
             },
-          }),
-          getAssetPrice({
-            ...ctx,
-            asset: {
-              coinMinimalDenom: quote.transferFee.address,
-              sourceDenom: quote.transferFee.address,
-              chainId: quote.transferFee.chainId,
-              address: quote.transferFee.address,
-            },
-          }).catch(() => {
-            // it's common for bridge providers to not provide correct denoms
+          });
+        }),
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: quote.transferFee.address,
+            sourceDenom: quote.transferFee.address,
+            chainId: quote.transferFee.chainId,
+            address: quote.transferFee.address,
+          },
+        }).catch(() => {
+          // it's common for bridge providers to not provide correct denoms
+          if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
               {
@@ -136,37 +160,41 @@ export const bridgeTransferRouter = createTRPCRouter({
                 address: quote.transferFee.address,
               }
             );
-            return undefined;
-          }),
-          quote.estimatedGasFee
-            ? getAssetPrice({
-                ...ctx,
-                asset: {
-                  coinMinimalDenom: quote.estimatedGasFee.address,
-                  sourceDenom: quote.estimatedGasFee.address,
-                  chainId: quote.fromChain.chainId,
-                  address: quote.estimatedGasFee.address,
-                },
-              }).catch(() => {
-                // it's common for bridge providers to not provide correct denoms
-                if (quote.estimatedGasFee)
-                  console.warn(
-                    "getQuoteByBridge: Failed to get asset price for gas fee",
-                    {
-                      bridge: input.bridge,
-                      coinMinimalDenom: quote.estimatedGasFee.address,
-                      sourceDenom: quote.estimatedGasFee.address,
-                      chainId: quote.fromChain.chainId,
-                      address: quote.estimatedGasFee.address,
-                    }
-                  );
-                return undefined;
-              })
-            : Promise.resolve(undefined),
-        ]
-      );
+          }
+          return undefined;
+        }),
+        quote.estimatedGasFee
+          ? getAssetPrice({
+              ...ctx,
+              asset: {
+                coinMinimalDenom: quote.estimatedGasFee.address,
+                sourceDenom: quote.estimatedGasFee.address,
+                chainId: quote.fromChain.chainId,
+                address: quote.estimatedGasFee.address,
+              },
+            }).catch(() => {
+              // it's common for bridge providers to not provide correct denoms
+              if (
+                quote.estimatedGasFee &&
+                process.env.NODE_ENV === "development"
+              ) {
+                console.warn(
+                  "getQuoteByBridge: Failed to get asset price for gas fee",
+                  {
+                    bridge: input.bridge,
+                    coinMinimalDenom: quote.estimatedGasFee.address,
+                    sourceDenom: quote.estimatedGasFee.address,
+                    chainId: quote.fromChain.chainId,
+                    address: quote.estimatedGasFee.address,
+                  }
+                );
+              }
+              return undefined;
+            })
+          : Promise.resolve(undefined),
+      ]);
 
-      if (!toAssetPrice) {
+      if (!assetPrice) {
         throw new Error("Invalid quote: Missing toAsset price");
       }
 
@@ -198,7 +226,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.input.amount
             ),
-            fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
+            fiatValue: priceFromBridgeCoin(quote.input, assetPrice),
           },
           expectedOutput: {
             ...quote.expectedOutput,
@@ -213,7 +241,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             fiatValue: priceFromBridgeCoin(
               quote.expectedOutput,
               // output is same token as input
-              toAssetPrice
+              assetPrice
             ),
           },
           transferFee: {

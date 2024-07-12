@@ -866,7 +866,7 @@ export const AmountScreen = observer(
               ? !isNil(fromAsset) &&
                 Object.keys(fromAsset.supportedVariants).length > 1
               : !isNil(toAsset) &&
-                counterpartySupportedAssetsByChainId[toAsset.chainId].length >
+                counterpartySupportedAssetsByChainId[toAsset.chainId]?.length >
                   1) && (
               <Menu>
                 {({ open }) => (
