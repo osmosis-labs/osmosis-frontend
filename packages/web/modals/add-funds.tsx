@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { useQueryState } from "nuqs";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
@@ -15,6 +15,8 @@ interface AddFundsModalProps {
 export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
+  const [_, setTab] = useQueryState("tab");
+  const [__, setTo] = useQueryState("to");
 
   return (
     <ModalBase
@@ -99,8 +101,12 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
               />
             </div>
           </button>
-          <Link
-            href={""}
+          <button
+            type="button"
+            onClick={() => {
+              setTab("swap");
+              setTo("USDC");
+            }}
             className="flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-osmoverse-900"
           >
             <div className="flex h-12 w-12 items-center justify-center">
@@ -125,7 +131,7 @@ export function AddFundsModal({ isOpen, onRequestClose }: AddFundsModalProps) {
                 className="text-wosmongton-200"
               />
             </div>
-          </Link>
+          </button>
         </div>
         <div className="flex w-full px-8 pt-3">
           <button className="flex h-14 w-full items-center justify-center rounded-2xl py-4 transition-colors hover:bg-osmoverse-900">
