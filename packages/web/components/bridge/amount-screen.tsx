@@ -55,6 +55,7 @@ import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
   ExpandDetailsControlContent,
+  ExpectedOutputRow,
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
@@ -701,7 +702,6 @@ export const AmountScreen = observer(
               isInsufficientBal={Boolean(isInsufficientBal)}
               isInsufficientFee={Boolean(isInsufficientFee)}
               transferGasCost={selectedQuote?.gasCost}
-              transferFeeCost={selectedQuote?.transferFee}
               setFiatAmount={setFiatAmount}
               setCryptoAmount={setCryptoAmount}
               setInputUnit={setInputUnit}
@@ -1372,6 +1372,11 @@ const TransferDetails: FunctionComponent<{
             <TotalFeesRow
               isRefetchingQuote={isRefetchingQuote}
               selectedQuote={selectedQuote}
+            />
+            <ExpectedOutputRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              warnUserOfSlippage={Boolean(warnUserOfSlippage)}
             />
           </DisclosurePanel>
         </div>
