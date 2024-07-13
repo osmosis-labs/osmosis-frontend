@@ -335,4 +335,17 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["owallet-extension"],
+    mobileDisabled: false,
+    logo: "/wallets/owallet.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/owallet-extension").then(
+        (m) => m.OwalletExtensionWallet
+      ),
+    windowPropertyName: "owallet",
+    stakeUrl: "https://scan.orai.io/validators",
+    governanceUrl: "https://scan.orai.io/proposals",
+    features: ["notifications"],
+  },
 ];
