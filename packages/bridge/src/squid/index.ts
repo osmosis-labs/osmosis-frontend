@@ -446,7 +446,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   async createCosmosTransaction(
     data: string,
     fromAddress: string,
-    fromAmount: {
+    fromCoin: {
       denom: string;
       amount: string;
     }
@@ -519,7 +519,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             sender: fromAddress,
             contract: cosmwasmData.msg.wasm.contract,
             msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
-            funds: [fromAmount],
+            funds: [fromCoin],
           });
 
         return {
