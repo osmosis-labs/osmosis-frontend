@@ -68,8 +68,8 @@ test.describe("Test Select Swap Pair feature", () => {
     await swapPage.selectPair("ATOM", "USDC");
   });
 
-  test("User should be able to select USDC.axl/USDC", async () => {
-    await swapPage.selectPair("USDC.axl", "USDC");
+  test("User should be able to select USDT/USDC", async () => {
+    await swapPage.selectPair("USDT", "USDC");
   });
 
   test("User should be able to select TIA/OSMO", async () => {
@@ -84,8 +84,8 @@ test.describe("Test Select Swap Pair feature", () => {
     await swapPage.selectPair("PICA", "OSMO");
   });
 
-  test("User should be able to select USDC.axl/OSMO", async () => {
-    await swapPage.selectPair("USDC.axl", "OSMO");
+  test("User should be able to select USDT/OSMO", async () => {
+    await swapPage.selectPair("USDT", "OSMO");
   });
 
   test("User should be able to select TIA/BOOT", async () => {
