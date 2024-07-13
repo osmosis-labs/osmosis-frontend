@@ -682,7 +682,10 @@ export const useBridgeQuotes = ({
       : false;
   const isDepositReady =
     isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
-  const userCanInteract = isDepositReady || isWithdrawReady;
+  const userCanAdvance =
+    (isDepositReady || isWithdrawReady) &&
+    !isInsufficientFee &&
+    !isInsufficientBal;
 
   let buttonText: string;
   if (buttonErrorMessage) {
@@ -714,7 +717,7 @@ export const useBridgeQuotes = ({
     buttonText,
     buttonErrorMessage,
 
-    userCanInteract,
+    userCanAdvance,
     isTxPending,
     isApprovingToken,
     onTransfer,

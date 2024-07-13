@@ -50,8 +50,8 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
-  setFiatAmount,
-  setCryptoAmount,
+  setFiatAmount: setFiatAmountProp,
+  setCryptoAmount: setCryptoAmountProp,
   setInputUnit,
 }) => {
   const { t } = useTranslation();
@@ -84,6 +84,30 @@ export const CryptoFiatInput: FunctionComponent<{
   const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
     new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
+  );
+
+  const setCryptoAmount = useCallback(
+    (amount: string) =>
+      setCryptoAmountProp(
+        new IntPretty(amount)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(asset.decimals)
+          .toString()
+      ),
+    [setCryptoAmountProp, asset]
+  );
+
+  const setFiatAmount = useCallback(
+    (amount: string) =>
+      setFiatAmountProp(
+        new IntPretty(amount)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+          .toString()
+      ),
+    [setFiatAmountProp, assetPrice]
   );
 
   const onInput = useCallback(
@@ -140,11 +164,6 @@ export const CryptoFiatInput: FunctionComponent<{
         maxTransferAmount = asset.amount.toDec();
       }
 
-      // add slippage if there's any fee subtraction
-      if (gasFeeMatchesInputDenom || transferFeeMatchesInputDenom) {
-        maxTransferAmount = maxTransferAmount.mul(subtractGasSlippage);
-      }
-
       if (
         maxTransferAmount.isPositive() &&
         !inputCoin.toDec().equals(maxTransferAmount)
@@ -161,14 +180,7 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${
-    fiatInputRaw.endsWith(".") || Number(fiatInputRaw) === 0
-      ? fiatInputRaw
-      : new IntPretty(fiatInputRaw)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
-  }`;
+  const fiatCurrentValue = `${assetPrice.symbol}${fiatInputRaw}`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile

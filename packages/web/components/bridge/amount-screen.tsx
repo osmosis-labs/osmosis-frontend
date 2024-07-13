@@ -1113,7 +1113,8 @@ export const AmountScreen = observer(
                       isLoadingBridgeTransaction ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
-                      isNil(selectedQuote)
+                      isNil(selectedQuote) ||
+                      !quote.userCanAdvance
                     }
                     className="w-full md:h-12"
                     variant={
