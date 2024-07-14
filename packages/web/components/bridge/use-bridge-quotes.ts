@@ -181,7 +181,9 @@ export const useBridgeQuotes = ({
             !isTxPending &&
             inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&
-            !isInsufficientBal,
+            !isInsufficientBal &&
+            // must have balance amount loaded, even if 0
+            Boolean(availableBalance),
           staleTime: 5_000,
           cacheTime: 5_000,
           // Disable retries, as useQueries
