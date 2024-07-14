@@ -1149,7 +1149,12 @@ export const AmountScreen = observer(
                     toChain={toChain}
                     toAddress={toAddress}
                     bridges={Array.from(
-                      new Set(Object.values(fromAsset.supportedVariants).flat())
+                      new Set(
+                        Object.values(
+                          (direction === "withdraw" ? toAsset : fromAsset)
+                            .supportedVariants
+                        ).flat()
+                      )
                     )}
                     onRequestClose={() => setAreMoreOptionsVisible(false)}
                   />
@@ -1166,7 +1171,12 @@ export const AmountScreen = observer(
             fromAsset={fromAsset}
             toAddress={toAddress}
             bridges={Array.from(
-              new Set(Object.values(fromAsset.supportedVariants).flat())
+              new Set(
+                Object.values(
+                  (direction === "withdraw" ? toAsset : fromAsset)
+                    .supportedVariants
+                ).flat()
+              )
             )}
             onDone={onClose}
           />

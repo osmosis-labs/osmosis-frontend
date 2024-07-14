@@ -364,6 +364,9 @@ export const useBridgeQuotes = ({
       ) ||
       someError?.message.includes(
         "Input amount is too low to cover CCTP bridge relay fee"
+      ) ||
+      someError?.message.includes(
+        "cannot transfer across cctp after route demands swap"
       )
     )
       return true;
