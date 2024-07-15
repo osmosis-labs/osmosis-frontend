@@ -361,7 +361,7 @@ describe("SkipBridgeProvider", () => {
       value: "0x3e8",
     };
 
-    const gasCost = await provider.estimateGasCost(params, txData);
+    const gasCost = await provider.estimateGasFee(params, txData);
 
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBeDefined();
@@ -416,7 +416,7 @@ describe("SkipBridgeProvider", () => {
       ],
     });
 
-    const gasCost = await provider.estimateGasCost(params, txData);
+    const gasCost = await provider.estimateGasFee(params, txData);
 
     expect(gasCost).toBeDefined();
     expect(gasCost?.amount).toBe("1000");

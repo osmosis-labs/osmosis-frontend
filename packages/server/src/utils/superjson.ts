@@ -119,4 +119,13 @@ superjson.registerCustom<Duration, string>(
   "dayjs.Duration"
 );
 
+superjson.registerCustom<Buffer, string>(
+  {
+    isApplicable: (v): v is Buffer => Buffer.isBuffer(v),
+    serialize: (v) => v.toString("base64"),
+    deserialize: (v) => Buffer.from(v, "base64"),
+  },
+  "Buffer"
+);
+
 export { superjson };

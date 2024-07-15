@@ -19,6 +19,7 @@ import {
   BitcoinChainInfo,
   EthereumChainInfo,
   isNil,
+  isSameVariant,
   SolanaChainInfo,
   timeout,
 } from "@osmosis-labs/utils";
@@ -94,6 +95,25 @@ export const bridgeTransferRouter = createTRPCRouter({
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
 
+      /**
+       * Since transfer fee is deducted from input amount,
+       * we overwrite the transfer fee asset to be the input
+       * asset if it's the same variant.
+       * This allows us to easily deduct fees from input amount
+       * and find prices on Osmosis.
+       */
+      const feeCoin = isSameVariant(
+        ctx.assetLists,
+        input.fromAsset.address,
+        quote.transferFee.address
+      )
+        ? {
+            ...quote.transferFee,
+            ...input.fromAsset,
+            chainId: input.fromChain.chainId,
+          }
+        : quote.transferFee;
+
       // Get fiat value of:
       // 1. Expected output
       // 2. Transfer fee
@@ -142,8 +162,8 @@ export const bridgeTransferRouter = createTRPCRouter({
         getAssetPrice({
           ...ctx,
           asset: {
-            coinMinimalDenom: quote.transferFee.address,
-            sourceDenom: quote.transferFee.address,
+            coinMinimalDenom: feeCoin.address,
+            sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
           },
@@ -154,8 +174,8 @@ export const bridgeTransferRouter = createTRPCRouter({
               "getQuoteByBridge: Failed to get asset price for transfer fee",
               {
                 bridge: input.bridge,
-                coinMinimalDenom: quote.transferFee.address,
-                sourceDenom: quote.transferFee.address,
+                coinMinimalDenom: feeCoin.address,
+                sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
               }
@@ -209,6 +229,44 @@ export const bridgeTransferRouter = createTRPCRouter({
         );
       };
 
+      const transferFee = {
+        amount: new CoinPretty(
+          {
+            coinDecimals: feeCoin.decimals,
+            coinDenom: feeCoin.denom,
+            coinMinimalDenom: feeCoin.address,
+          },
+          feeCoin.amount
+        ),
+        fiatValue: feeAssetPrice
+          ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
+          : undefined,
+      };
+
+      const estimatedGasFee = quote.estimatedGasFee
+        ? {
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.estimatedGasFee.decimals,
+                coinDenom: quote.estimatedGasFee.denom,
+                coinMinimalDenom: quote.estimatedGasFee.address,
+              },
+              quote.estimatedGasFee.amount
+            ),
+            fiatValue:
+              gasFeeAssetPrice && quote.estimatedGasFee
+                ? priceFromBridgeCoin(quote.estimatedGasFee, gasFeeAssetPrice)
+                : undefined,
+          }
+        : undefined;
+
+      let totalFeeFiatValue = estimatedGasFee?.fiatValue;
+      if (transferFee?.fiatValue) {
+        totalFeeFiatValue =
+          totalFeeFiatValue?.add(transferFee.fiatValue) ??
+          transferFee.fiatValue;
+      }
+
       return {
         quote: {
           provider: {
@@ -244,38 +302,9 @@ export const bridgeTransferRouter = createTRPCRouter({
               assetPrice
             ),
           },
-          transferFee: {
-            amount: new CoinPretty(
-              {
-                coinDecimals: quote.transferFee.decimals,
-                coinDenom: quote.transferFee.denom,
-                coinMinimalDenom: quote.transferFee.address,
-              },
-              quote.transferFee.amount
-            ),
-            fiatValue: feeAssetPrice
-              ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
-              : undefined,
-          },
-          estimatedGasFee: quote.estimatedGasFee
-            ? {
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: quote.estimatedGasFee.decimals,
-                    coinDenom: quote.estimatedGasFee.denom,
-                    coinMinimalDenom: quote.estimatedGasFee.address,
-                  },
-                  quote.estimatedGasFee.amount
-                ),
-                fiatValue:
-                  gasFeeAssetPrice && quote.estimatedGasFee
-                    ? priceFromBridgeCoin(
-                        quote.estimatedGasFee,
-                        gasFeeAssetPrice
-                      )
-                    : undefined,
-              }
-            : undefined,
+          transferFee,
+          estimatedGasFee,
+          totalFeeFiatValue,
         },
       };
     }),
