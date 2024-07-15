@@ -360,17 +360,7 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee = useMemo(() => {
-    if (
-      someError?.message.includes(
-        "No fee tokens found with sufficient balance on account"
-      ) ||
-      someError?.message.includes(
-        "Input amount is too low to cover CCTP bridge relay fee"
-      ) ||
-      someError?.message.includes(
-        "cannot transfer across cctp after route demands swap"
-      )
-    )
+    if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
 
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
