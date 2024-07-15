@@ -1,23 +1,26 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
-import path from "path";
+import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
+
+import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
 import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
-  const privateKey =
-    process.env.PRIVATE_KEY ??
-    "0x9866a7f11faf50d5ccc36b0ce57e6fa72c5032367c44279b9ca829713c78bab8";
+  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
+  let dollarBalanceRegEx = /\$\d+/;
+  let digitBalanceRegEx = /\d+\.\d+/;
+  let page: Page;
 
   test.beforeAll(async () => {
-    console.log("\nBefore test setup Wallet Extension.");
+    const pathToExtension = new UnzipExtension().getPathToExtension();
+    console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    const pathToExtension = path.join(__dirname, "../keplr-extension");
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
@@ -25,13 +28,13 @@ test.describe("Test Portfolio feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1280 },
       slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
-    const page = context.pages()[1];
+    page = context.pages()[1];
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
@@ -39,7 +42,11 @@ test.describe("Test Portfolio feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    portfolioPage = new PortfolioPage(context.pages()[0]);
+    page = context.pages()[0];
+    await page.coverage.startJSCoverage({
+      resetOnNavigation: false,
+    });
+    portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
     await portfolioPage.hideZeroBalances();
@@ -47,32 +54,39 @@ test.describe("Test Portfolio feature", () => {
   });
 
   test.afterAll(async () => {
+    const coverage = await page.coverage.stopJSCoverage();
+    // coverage report
+    const report = await attachCoverageReport(coverage, test.info());
+    console.log(report.summary);
+
+    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 
   test("User should be able to see native balances", async () => {
     const osmoBalance = await portfolioPage.getBalanceFor("OSMO");
-    expect(osmoBalance).toMatch(/\$\d+\.\d+/);
+    expect(osmoBalance).toMatch(dollarBalanceRegEx);
     const atomBalance = await portfolioPage.getBalanceFor("ATOM");
-    expect(atomBalance).toMatch(/\$\d+\.\d+/);
+    expect(atomBalance).toMatch(dollarBalanceRegEx);
     const usdtBalance = await portfolioPage.getBalanceFor("USDT");
-    expect(usdtBalance).toMatch(/\$\d+\.\d+/);
+    expect(usdtBalance).toMatch(dollarBalanceRegEx);
     const usdcBalance = await portfolioPage.getBalanceFor("USDC");
-    expect(usdcBalance).toMatch(/\$\d+\.\d+/);
+    expect(usdcBalance).toMatch(dollarBalanceRegEx);
     const tiaBalance = await portfolioPage.getBalanceFor("TIA");
-    expect(tiaBalance).toMatch(/\$\d+\.\d+/);
+    expect(tiaBalance).toMatch(dollarBalanceRegEx);
     const daiBalance = await portfolioPage.getBalanceFor("DAI");
-    expect(daiBalance).toMatch(/\$\d+\.\d/);
+    expect(daiBalance).toMatch(dollarBalanceRegEx);
   });
 
   test("User should be able to see bridged balances", async () => {
     const injBalance = await portfolioPage.getBalanceFor("INJ");
-    expect(injBalance).toMatch(/\$\d+\.\d+/);
+    expect(injBalance).toMatch(dollarBalanceRegEx);
     const ethBalance = await portfolioPage.getBalanceFor("ETH");
-    expect(ethBalance).toMatch(/\$\d+\.\d+/);
+    expect(ethBalance).toMatch(dollarBalanceRegEx);
     const kujiBalance = await portfolioPage.getBalanceFor("KUJI");
-    expect(kujiBalance).toMatch(/\$\d+\.\d/);
+    expect(kujiBalance).toMatch(dollarBalanceRegEx);
     const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
-    expect(abtcBalance).toMatch(/\d+\.\d+/);
+    // allBTC has not $ price atm
+    expect(abtcBalance).toMatch(digitBalanceRegEx);
   });
 });

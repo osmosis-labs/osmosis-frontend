@@ -3,11 +3,15 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { Registry } from "@cosmjs/proto-signing";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  getAssetFromAssetList,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import {
   Address,
@@ -19,7 +23,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -160,6 +163,21 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const expectedOutputAmount = new Dec(fromAmount).sub(
             new Dec(transferFeeRes.fee.amount)
           );
+
+          if (
+            expectedOutputAmount.isZero() ||
+            expectedOutputAmount.isNegative()
+          ) {
+            throw new BridgeQuoteError({
+              bridgeId: AxelarBridgeProvider.ID,
+              errorType: "UnsupportedQuoteError",
+              message: `Negative output amount ${new IntPretty(
+                expectedOutputAmount
+              ).trim(true)} for asset in: ${new IntPretty(fromAmount).trim(
+                true
+              )} ${fromAsset.denom}`,
+            });
+          }
 
           return {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
@@ -327,11 +345,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        AxelarBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          AxelarBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
@@ -398,7 +418,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
       const gasFee = txSimulation.amount[0];
       const gasAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
-        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+        .find(
+          (asset) =>
+            asset.coinMinimalDenom === gasFee.denom ||
+            asset.counterparty.some(
+              (c) =>
+                "chainId" in c &&
+                c.chainId === params.fromChain.chainId &&
+                c.sourceDenom === gasFee.denom
+            )
+        );
 
       return {
         amount: gasFee.amount,

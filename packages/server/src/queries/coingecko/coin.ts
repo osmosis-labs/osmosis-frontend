@@ -77,6 +77,19 @@ export interface CoingeckoCoin {
   sentiment_votes_up_percentage: number;
   sentiment_votes_down_percentage: number;
   watchlist_portfolio_users: number;
+  market_data: {
+    market_cap_rank: number;
+    circulating_supply: number;
+    fully_diluted_valuation: {
+      usd: number;
+    };
+    total_value_locked: {
+      usd: number;
+    };
+    market_cap: {
+      usd: number;
+    };
+  };
   market_cap: number;
   market_cap_rank: number;
   coingecko_rank: number;
@@ -105,7 +118,7 @@ export async function queryCoingeckoCoin(
   options: QueryCoinOptions = {
     tickers: false,
     sparkline: false,
-    marketData: false,
+    marketData: true,
     communityData: true,
     developerData: true,
   }
