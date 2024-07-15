@@ -1,6 +1,7 @@
 import { apiClient, HTTPMethod } from "@osmosis-labs/utils";
 
-import { BASE_URL, blockaidAuthHeaders } from ".";
+import { BLOCKAID_BASE_URL } from "../../env";
+import { blockaidAuthHeaders } from ".";
 
 export interface TransactionScanRequest {
   /**
@@ -58,7 +59,7 @@ export interface Params {
 }
 
 export async function transactionScan(payload: TransactionScanRequest) {
-  const url = new URL("/v0/osmosis/transaction/scan", BASE_URL);
+  const url = new URL("/v0/osmosis/transaction/scan", BLOCKAID_BASE_URL);
 
   return apiClient<TransactionScanResponse>(url.toString(), {
     headers: blockaidAuthHeaders,
