@@ -391,21 +391,6 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote]);
 
-  // const isInsufficientFee =
-  //   // Cosmos not fee tokens error
-  //   someError?.message.includes(
-  //     "No fee tokens found with sufficient balance on account"
-  //   ) ||
-  //   (inputAmountRaw !== "" &&
-  //     availableBalance &&
-  //     selectedQuote?.gasCost !== undefined &&
-  //     selectedQuote.gasCost.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-  //     inputCoin
-  //       ?.toDec()
-  //       .sub(availableBalance.toDec()) // subtract by available balance to get the maximum transfer amount
-  //       .abs()
-  //       .lt(selectedQuote.gasCost.toDec()));
-
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
       {
