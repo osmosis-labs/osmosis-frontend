@@ -231,7 +231,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       "icns",
       this.options.walletConnectOptions,
       {
-        signingStargate: (_) => ({
+        signingStargate: () => ({
           aminoTypes: this.aminoTypes,
           registry: this
             .registry as unknown as SigningStargateClient["registry"],
