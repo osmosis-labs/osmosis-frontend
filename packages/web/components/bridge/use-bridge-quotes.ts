@@ -151,9 +151,9 @@ export const useBridgeQuotes = ({
   );
 
   const isInsufficientBal =
-    inputAmountRaw !== "" &&
     availableBalance &&
-    inputCoin?.toDec().gt(availableBalance.toDec());
+    inputCoin &&
+    inputCoin.toDec().gt(availableBalance.toDec());
 
   const isTxPending = (() => {
     if (!fromChain) return false;
@@ -181,7 +181,9 @@ export const useBridgeQuotes = ({
             !isTxPending &&
             inputAmount.isPositive() &&
             Object.values(quoteParams).every((param) => !isNil(param)) &&
-            !isInsufficientBal,
+            !isInsufficientBal &&
+            // must have balance amount loaded, even if 0
+            Boolean(availableBalance),
           staleTime: 5_000,
           cacheTime: 5_000,
           // Disable retries, as useQueries
@@ -355,20 +357,62 @@ export const useBridgeQuotes = ({
     isBridgeProviderControlledMode,
   ]);
 
-  const isInsufficientFee =
-    // Cosmos not fee tokens error
-    someError?.message.includes(
-      "No fee tokens found with sufficient balance on account"
-    ) ||
-    (inputAmountRaw !== "" &&
-      availableBalance &&
-      selectedQuote?.transferFee !== undefined &&
-      selectedQuote?.transferFee.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-      inputCoin
-        ?.toDec()
-        .sub(availableBalance?.toDec() ?? new Dec(0)) // subtract by available balance to get the maximum transfer amount
-        .abs()
-        .lt(selectedQuote?.transferFee.toDec()));
+  const isInsufficientFee = useMemo(() => {
+    if (
+      someError?.message.includes(
+        "No fee tokens found with sufficient balance on account"
+      ) ||
+      someError?.message.includes(
+        "Input amount is too low to cover CCTP bridge relay fee"
+      ) ||
+      someError?.message.includes(
+        "cannot transfer across cctp after route demands swap"
+      )
+    )
+      return true;
+
+    if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
+
+    const inputDenom = inputCoin.toCoin().denom;
+    const gasDenom = selectedQuote.gasCost.toCoin().denom;
+    const feeDenom = selectedQuote.transferFee.toCoin().denom;
+    const inputAmount = inputCoin.toDec();
+
+    let totalFeeCoinAmount = new Dec(0);
+    if (inputDenom === gasDenom) {
+      totalFeeCoinAmount = totalFeeCoinAmount.add(
+        selectedQuote.gasCost.toDec()
+      );
+    }
+    if (inputDenom === feeDenom) {
+      totalFeeCoinAmount = totalFeeCoinAmount.add(
+        selectedQuote.transferFee.toDec()
+      );
+    }
+
+    if (inputDenom === gasDenom || inputDenom === feeDenom) {
+      const maxAmount = inputAmount.sub(totalFeeCoinAmount);
+
+      if (maxAmount.isNegative() || maxAmount.isZero()) return true;
+    }
+
+    return false;
+  }, [someError, inputCoin, selectedQuote]);
+
+  // const isInsufficientFee =
+  //   // Cosmos not fee tokens error
+  //   someError?.message.includes(
+  //     "No fee tokens found with sufficient balance on account"
+  //   ) ||
+  //   (inputAmountRaw !== "" &&
+  //     availableBalance &&
+  //     selectedQuote?.gasCost !== undefined &&
+  //     selectedQuote.gasCost.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
+  //     inputCoin
+  //       ?.toDec()
+  //       .sub(availableBalance.toDec()) // subtract by available balance to get the maximum transfer amount
+  //       .abs()
+  //       .lt(selectedQuote.gasCost.toDec()));
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
@@ -643,7 +687,10 @@ export const useBridgeQuotes = ({
       : false;
   const isDepositReady =
     isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
-  const userCanInteract = isDepositReady || isWithdrawReady;
+  const userCanAdvance =
+    (isDepositReady || isWithdrawReady) &&
+    !isInsufficientFee &&
+    !isInsufficientBal;
 
   let buttonText: string;
   if (buttonErrorMessage) {
@@ -675,7 +722,7 @@ export const useBridgeQuotes = ({
     buttonText,
     buttonErrorMessage,
 
-    userCanInteract,
+    userCanAdvance,
     isTxPending,
     isApprovingToken,
     onTransfer,

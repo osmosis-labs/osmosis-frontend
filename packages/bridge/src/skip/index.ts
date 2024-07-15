@@ -1,6 +1,9 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import {
+  cosmwasmProtoRegistry,
+  ibcProtoRegistry,
+} from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
@@ -40,7 +43,7 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
@@ -50,7 +53,10 @@ export class SkipBridgeProvider implements BridgeProvider {
   readonly providerName = SkipBridgeProvider.ID;
 
   readonly skipClient: SkipApiClient;
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry = new Registry([
+    ...ibcProtoRegistry,
+    ...cosmwasmProtoRegistry,
+  ]);
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
@@ -172,7 +178,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           route.chain_ids
         );
 
-        const estimatedGasFee = await this.estimateGasCost(
+        const estimatedGasFee = await this.estimateGasFee(
           params,
           transactionRequest
         );
@@ -371,30 +377,60 @@ export class SkipBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     const messageData = JSON.parse(message.msg);
 
-    const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: messageData.receiver,
-    });
+    if ("contract" in messageData) {
+      // is a cosmwasm contract call
 
-    const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
-      sourcePort: messageData.source_port,
-      sourceChannel: messageData.source_channel,
-      token: {
-        denom: messageData.token.denom,
-        amount: messageData.token.amount,
-      },
-      sender: messageData.sender,
-      receiver: messageData.receiver,
-      // @ts-ignore
-      timeoutHeight,
-      timeoutTimestamp: "0" as any,
-      memo: messageData.memo,
-    });
+      const cosmwasmData = messageData as {
+        sender: string;
+        contract: string;
+        msg: object;
+        funds: {
+          denom: string;
+          amount: string;
+        }[];
+      };
 
-    return {
-      type: "cosmos",
-      msgTypeUrl: typeUrl,
-      msg: value,
-    };
+      const { typeUrl, value: msg } =
+        cosmwasmMsgOpts.executeWasm.messageComposer({
+          sender: cosmwasmData.sender,
+          contract: cosmwasmData.contract,
+          msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
+          funds: cosmwasmData.funds,
+        });
+
+      return {
+        type: "cosmos",
+        msgTypeUrl: typeUrl,
+        msg,
+      };
+    } else {
+      // is an ibc transfer
+
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
+        destinationAddress: messageData.receiver,
+      });
+
+      const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
+        sourcePort: messageData.source_port,
+        sourceChannel: messageData.source_channel,
+        token: {
+          denom: messageData.token.denom,
+          amount: messageData.token.amount,
+        },
+        sender: messageData.sender,
+        receiver: messageData.receiver,
+        // @ts-ignore
+        timeoutHeight,
+        timeoutTimestamp: "0" as any,
+        memo: messageData.memo,
+      });
+
+      return {
+        type: "cosmos",
+        msgTypeUrl: typeUrl,
+        msg: value,
+      };
+    }
   }
 
   async createEvmTransaction(
@@ -725,7 +761,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
-  async estimateGasCost(
+  async estimateGasFee(
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest
   ) {

@@ -24,8 +24,9 @@ export interface Chain {
     layout?: "logomark";
     theme?: {
       primary_color_hex?: string;
+      background_color_hex?: string;
       dark_mode?: false;
-      circle?: true;
+      circle?: boolean;
     };
     image_sync?: {
       chain_name: string;

@@ -55,6 +55,7 @@ import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
   ExpandDetailsControlContent,
+  ExpectedOutputRow,
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
@@ -1112,7 +1113,8 @@ export const AmountScreen = observer(
                       isLoadingBridgeTransaction ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
-                      isNil(selectedQuote)
+                      isNil(selectedQuote) ||
+                      !quote.userCanAdvance
                     }
                     className="w-full md:h-12"
                     variant={
@@ -1147,7 +1149,12 @@ export const AmountScreen = observer(
                     toChain={toChain}
                     toAddress={toAddress}
                     bridges={Array.from(
-                      new Set(Object.values(fromAsset.supportedVariants).flat())
+                      new Set(
+                        Object.values(
+                          (direction === "withdraw" ? toAsset : fromAsset)
+                            .supportedVariants
+                        ).flat()
+                      )
                     )}
                     onRequestClose={() => setAreMoreOptionsVisible(false)}
                   />
@@ -1164,7 +1171,12 @@ export const AmountScreen = observer(
             fromAsset={fromAsset}
             toAddress={toAddress}
             bridges={Array.from(
-              new Set(Object.values(fromAsset.supportedVariants).flat())
+              new Set(
+                Object.values(
+                  (direction === "withdraw" ? toAsset : fromAsset)
+                    .supportedVariants
+                ).flat()
+              )
             )}
             onDone={onClose}
           />
@@ -1371,6 +1383,11 @@ const TransferDetails: FunctionComponent<{
             <TotalFeesRow
               isRefetchingQuote={isRefetchingQuote}
               selectedQuote={selectedQuote}
+            />
+            <ExpectedOutputRow
+              isRefetchingQuote={isRefetchingQuote}
+              selectedQuote={selectedQuote}
+              warnUserOfSlippage={Boolean(warnUserOfSlippage)}
             />
           </DisclosurePanel>
         </div>
