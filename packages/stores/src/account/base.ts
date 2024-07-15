@@ -60,6 +60,7 @@ import {
   apiClient,
   ApiClientError,
   isNil,
+  OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
 import axios from "axios";
@@ -778,11 +779,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     const isWithinNetworkFeeLimit =
-      oneClickTradingInfo &&
-      fee?.amount.length === 1 &&
-      fee?.amount[0].denom === "uosmo" &&
-      new Dec(fee.amount[0].amount).lte(
-        new Dec(oneClickTradingInfo.networkFeeLimit.amount)
+      !!oneClickTradingInfo &&
+      new Dec(fee.gas).lte(
+        new Dec(
+          typeof oneClickTradingInfo.networkFeeLimit !== "string"
+            ? OneClickTradingMaxGasLimit
+            : oneClickTradingInfo.networkFeeLimit
+        )
       );
 
     if (
@@ -1281,7 +1284,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           nonCriticalExtensionOptions:
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
-          onlyDefaultFeeDenom: signOptions.useOneClickTrading,
           gasMultiplier: GasMultiplier,
         },
       });

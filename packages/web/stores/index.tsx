@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { RootStore } from "~/stores/root";
 import { api } from "~/utils/trpc";
 
@@ -34,8 +33,6 @@ const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const apiUtils = api.useUtils();
-  const [_, setOneClickTradingIntroModalScreen] =
-    useGlobalIs1CTIntroModalScreen();
   const { t } = useTranslation();
   const [rootStore] = useState(
     () =>
@@ -53,20 +50,7 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
               {
                 titleTranslationKey: "oneClickTrading.toast.networkFeeTooHigh",
                 captionElement: (
-                  <div className="flex flex-col items-start gap-2">
-                    <Button
-                      variant="link"
-                      className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
-                      onClick={() => {
-                        toast.dismiss(EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID);
-                        setOneClickTradingIntroModalScreen(
-                          "settings-no-back-button"
-                        );
-                        finish();
-                      }}
-                    >
-                      {t("oneClickTrading.toast.increaseFeeLimit")}
-                    </Button>
+                  <div className="flex flex-col items-start">
                     <Button
                       variant="link"
                       className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"

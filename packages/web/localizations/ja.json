@@ -220,7 +220,6 @@
       "availableMobile": "利用可能",
       "availableOn": "{network}で利用可能",
       "approving": "承認中...",
-      "givePermission": "トークンを使用する権限を与える",
       "enterAddress": "{network}アドレス",
       "errors": {
         "insufficientBal": "残高不足",
@@ -499,7 +498,6 @@
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
       "startANewSession": "新しいセッションを開始する",
-      "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
       "sessionEnded": "このデバイスでセッションが終了しました",

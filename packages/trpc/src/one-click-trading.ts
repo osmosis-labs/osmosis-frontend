@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   DEFAULT_VS_CURRENCY,
   getAsset,
@@ -7,6 +7,7 @@ import {
   queryAuthenticatorSpendLimit,
 } from "@osmosis-labs/server";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -25,22 +26,12 @@ export const oneClickTradingRouter = createTRPCRouter({
         spendLimitTokenDecimals: number;
       }
     > => {
-      const osmosisChain = ctx.chainList[0];
-      const [osmoAsset, usdcAsset] = await Promise.all([
-        await getAsset({
-          ...ctx,
-          anyDenom: osmosisChain.fees.fee_tokens[0].denom,
-        }),
-        getAsset({ ...ctx, anyDenom: "usdc" }),
-      ]);
+      const usdcAsset = await getAsset({ ...ctx, anyDenom: "usdc" });
 
       return {
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
         spendLimitTokenDecimals: usdcAsset.coinDecimals,
-        networkFeeLimit: new CoinPretty(
-          osmoAsset,
-          DecUtils.getTenExponentN(osmoAsset.coinDecimals)
-        ),
+        networkFeeLimit: OneClickTradingMaxGasLimit,
         sessionPeriod: {
           end: "1hour" as const,
         },

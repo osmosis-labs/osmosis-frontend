@@ -220,7 +220,6 @@
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
-      "givePermission": "Nadaj uprawnienia do używania tokenów",
       "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
@@ -499,7 +498,6 @@
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
       "startANewSession": "Rozpocznij nową sesję",
-      "increaseFeeLimit": "Zwiększ limit opłat sieciowych",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
       "sessionEnded": "Sesja zakończyła się na tym urządzeniu",

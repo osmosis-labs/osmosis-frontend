@@ -220,7 +220,6 @@
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
-      "givePermission": "토큰 사용 권한 부여",
       "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
@@ -499,7 +498,6 @@
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
       "startANewSession": "새 세션 시작",
-      "increaseFeeLimit": "네트워크 수수료 한도 인상",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
       "continueWithWallet": "지갑으로 계속하기",
       "sessionEnded": "이 기기에서 세션이 종료되었습니다.",

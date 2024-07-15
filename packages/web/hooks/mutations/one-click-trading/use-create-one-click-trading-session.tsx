@@ -361,10 +361,7 @@ export const useCreateOneClickTradingSession = ({
         allowedMessages,
         sessionPeriod,
         sessionStartedAtUnix: dayjs().unix(),
-        networkFeeLimit: {
-          ...transaction1CTParams.networkFeeLimit.currency,
-          amount: transaction1CTParams.networkFeeLimit.toCoin().amount,
-        },
+        networkFeeLimit: transaction1CTParams.networkFeeLimit,
         spendLimit: {
           amount: allowedAmount,
           decimals: spendLimitTokenDecimals,

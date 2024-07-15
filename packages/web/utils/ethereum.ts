@@ -16,7 +16,11 @@ export function getWagmiToastErrorMessage({
   t: MultiLanguageT;
   walletName: string;
 }) {
-  if (error.name === UserRejectedRequestError.name) {
+  if (
+    error.name === UserRejectedRequestError.name ||
+    (error.name === "TransactionExecutionError" &&
+      error.message.startsWith("User rejected the request"))
+  ) {
     return {
       titleTranslationKey: "transactionFailed",
       captionTranslationKey: "requestRejected",

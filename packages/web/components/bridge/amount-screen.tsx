@@ -29,12 +29,13 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EthereumChainIds } from "~/config/wagmi";
 import {
   useConnectWalletModalRedirect,
   useDisclosure,
   useTranslation,
 } from "~/hooks";
-import { useEvmWalletAccount } from "~/hooks/evm-wallet";
+import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
@@ -153,8 +154,10 @@ export const AmountScreen = observer(
       address: evmAddress,
       connector: evmConnector,
       isConnected: isEvmWalletConnected,
+      chainId: evmWalletCurrentChainId,
       isConnecting,
     } = useEvmWalletAccount();
+    const { switchChain: switchEvmChain } = useSwitchEvmChain();
 
     const fromCosmosCounterpartyAccount =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
@@ -271,11 +274,24 @@ export const AmountScreen = observer(
 
         if (!chain || !isNil(manualToAddress)) return;
         if (chain.chainType === "evm") {
-          if (isEvmWalletConnected || isConnecting) {
+          if (
+            (isEvmWalletConnected &&
+              evmWalletCurrentChainId === chain.chainId) ||
+            isConnecting
+          ) {
             return;
           }
 
-          onOpenBridgeWalletSelect();
+          if (
+            isEvmWalletConnected &&
+            evmWalletCurrentChainId !== chain.chainId
+          ) {
+            switchEvmChain({
+              chainId: chain.chainId as EthereumChainIds,
+            });
+          } else {
+            onOpenBridgeWalletSelect();
+          }
         } else if (chain.chainType === "cosmos") {
           const account = accountStore.getWallet(chain.chainId);
           const accountRepo = accountStore.getWalletRepo(chain.chainId);
@@ -297,6 +313,7 @@ export const AmountScreen = observer(
       [
         accountStore,
         direction,
+        evmWalletCurrentChainId,
         fromChain,
         isConnecting,
         isEvmWalletConnected,
@@ -304,6 +321,7 @@ export const AmountScreen = observer(
         onOpenBridgeWalletSelect,
         osmosisAccount?.walletName,
         supportedChains.length,
+        switchEvmChain,
         toChain,
       ]
     );
@@ -328,7 +346,9 @@ export const AmountScreen = observer(
       // Use Osmosis Assets to get the source asset
       if (direction === "withdraw") {
         const selectedAsset = assetsInOsmosis?.find(
-          (asset) => asset.coinDenom === selectedDenom
+          (asset) =>
+            asset.coinDenom === selectedDenom ||
+            asset.coinMinimalDenom === selectedDenom
         );
         if (!selectedAsset) return undefined;
         return [
@@ -371,13 +391,20 @@ export const AmountScreen = observer(
           ) as Extract<SupportedAsset, { chainType: "cosmos" }>[],
           userCosmosAddress: fromCosmosCounterpartyAccount?.address,
         };
-      } else {
-        // TODO: can input solana or btc assets
+      } else if (fromChain?.chainType === "bitcoin" && supportedSourceAssets) {
         return {
-          type: fromChain?.chainType ?? "bitcoin",
-          assets: (supportedSourceAssets?.filter(
+          type: "bitcoin" as const,
+          assets: supportedSourceAssets.filter(
             (asset) => asset.chainType === "bitcoin"
-          ) ?? []) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
+          ) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
+        };
+      } else {
+        // solana
+        return {
+          type: "solana" as const,
+          assets: (supportedSourceAssets ?? []).filter(
+            (asset) => asset.chainType === "solana"
+          ) as Extract<SupportedAsset, { chainType: "solana" }>[],
         };
       }
     })();
@@ -385,13 +412,16 @@ export const AmountScreen = observer(
       api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
         { source: balanceSource },
         {
-          enabled: !isNil(fromChain) && !isNil(supportedSourceAssets),
+          enabled:
+            !isNil(fromChain) &&
+            !isNil(supportedSourceAssets) &&
+            supportedSourceAssets.length > 0,
 
           select: (data) => {
             let nextData: typeof data = data;
 
             // Filter out assets with no balance
-            if (nextData) {
+            if (nextData && nextData.length) {
               const filteredData = nextData.filter((asset) =>
                 asset.amount.toDec().isPositive()
               );
@@ -856,7 +886,7 @@ export const AmountScreen = observer(
               ? !isNil(fromAsset) &&
                 Object.keys(fromAsset.supportedVariants).length > 1
               : !isNil(toAsset) &&
-                counterpartySupportedAssetsByChainId[toAsset.chainId].length >
+                counterpartySupportedAssetsByChainId[toAsset.chainId]?.length >
                   1) && (
               <Menu>
                 {({ open }) => (
@@ -1058,7 +1088,7 @@ export const AmountScreen = observer(
             <div className="flex flex-col items-center gap-4">
               {!osmosisWalletConnected ? (
                 connectWalletButton
-              ) : !isWalletNeededConnected ? (
+              ) : !isWalletNeededConnected || quote.isWrongEvmChainSelected ? (
                 <Button
                   onClick={() => {
                     checkChainAndConnectWallet();

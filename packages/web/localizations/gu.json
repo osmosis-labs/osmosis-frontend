@@ -220,7 +220,6 @@
       "availableMobile": "ઉપલબ્ધ છે",
       "availableOn": "{network} પર ઉપલબ્ધ",
       "approving": "મંજૂર કરી રહ્યાં છીએ...",
-      "givePermission": "ટોકન્સનો ઉપયોગ કરવાની પરવાનગી આપો",
       "enterAddress": "{network} સરનામું",
       "errors": {
         "insufficientBal": "અપર્યાપ્ત બેલેન્સ",
@@ -499,7 +498,6 @@
       "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
       "startANewSession": "નવું સત્ર શરૂ કરો",
-      "increaseFeeLimit": "નેટવર્ક ફી મર્યાદા વધારો",
       "approveManually": "{walletName} માં મેન્યુઅલી મંજૂર કરો",
       "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
       "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
