@@ -219,8 +219,8 @@ export function getConcentratedRangePoolApr({
 }
 
 function maybeMakeRatePretty(value: number): RatePretty | undefined {
-  // numia will return 0 if the APR is not applicable, so return undefined to indicate that
-  if (value === 0) {
+  // numia will return 0 or null if the APR is not applicable, so return undefined to indicate that
+  if (value === 0 || value === null) {
     return undefined;
   }
 
