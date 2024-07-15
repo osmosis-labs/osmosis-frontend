@@ -1,7 +1,8 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { queryRPCStatus } from "@osmosis-labs/server";
+import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -26,6 +27,7 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
+  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -36,6 +38,7 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
+  GetDepositAddressParams,
 } from "../interface";
 import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
@@ -52,6 +55,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
   }
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
@@ -162,16 +168,8 @@ export class SkipBridgeProvider implements BridgeProvider {
           throw new Error("Failed to create transaction");
         }
 
-        const sourceChainFinalityTime = this.getFinalityTimeForChain(
-          sourceAsset.chain_id
-        );
-        const destinationChainFinalityTime = this.getFinalityTimeForChain(
-          destinationAsset.chain_id
-        );
-
-        const estimatedTime = Math.max(
-          sourceChainFinalityTime,
-          destinationChainFinalityTime
+        const estimatedTime = await this.estimateTotalTransferTime(
+          route.chain_ids
         );
 
         const estimatedGasFee = await this.estimateGasCost(
@@ -594,13 +592,109 @@ export class SkipBridgeProvider implements BridgeProvider {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
+        continue;
+      }
+
+      // This is likely a multi hop IBC, which means either
+      // to or from chain & respective addresses can include a cosmos
+      // bech32 address that can be used to derive the middle hop cosmos
+      // chain address.
+      if (chain.chain_type === "cosmos") {
+        let bech32Address: string | null = null;
+        if (fromChain.chainType === "cosmos") bech32Address = fromAddress;
+        if (toChain.chainType === "cosmos") bech32Address = toAddress;
+        if (!bech32Address) continue;
+
+        addressList.push(
+          toBech32(chain.bech32_prefix, fromBech32(bech32Address).data)
+        );
       }
     }
 
     return addressList;
   }
 
-  getFinalityTimeForChain(chainID: string) {
+  /**
+   * Sums the total transfer time of each hop between chains
+   * @returns total transfer time in seconds
+   */
+  async estimateTotalTransferTime(chainIds: string[]): Promise<number> {
+    if (chainIds.length < 2) {
+      throw new Error(
+        "At least two chain IDs are required to estimate transfer time."
+      );
+    }
+
+    let totalTransferTime = 0;
+
+    for (let i = 0; i < chainIds.length - 1; i++) {
+      const fromChainId = chainIds[i];
+      const toChainId = chainIds[i + 1];
+      const transferTime = await this.estimateTransferTime(
+        fromChainId,
+        toChainId
+      );
+      totalTransferTime += transferTime;
+    }
+
+    return totalTransferTime;
+  }
+
+  /**
+   * Estimates the transfer time for IBC transfers in seconds.
+   * Looks at the average block time of the two chains.
+   * @returns transfer time in seconds
+   */
+  async estimateTransferTime(
+    fromChainId: string,
+    toChainId: string
+  ): Promise<number> {
+    const fromCosmosChain = this.ctx.chainList.find(
+      (c) => c.chain_id === fromChainId
+    );
+    const toCosmosChain = this.ctx.chainList.find(
+      (c) => c.chain_id === toChainId
+    );
+
+    const fromCosmosRpc = fromCosmosChain?.apis.rpc[0]?.address;
+    const toCosmosRpc = toCosmosChain?.apis.rpc[0]?.address;
+
+    const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
+      fromCosmosChain
+        ? fromCosmosRpc
+          ? queryRPCStatus({ restUrl: fromCosmosRpc }).then(
+              calcAverageBlockTimeMs
+            )
+          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
+        : this.getFinalityTimeForEvmChain(fromChainId) * 1000,
+      toCosmosChain
+        ? toCosmosRpc
+          ? queryRPCStatus({ restUrl: toCosmosRpc }).then(
+              calcAverageBlockTimeMs
+            )
+          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
+        : this.getFinalityTimeForEvmChain(toChainId) * 1000,
+    ]);
+
+    // IBC transfer, since there were 2 rpcs in chain list
+    if (fromCosmosChain && toCosmosChain) {
+      // convert to seconds
+      return Math.floor(
+        // initiating tx
+        (fromBlockTimeMs +
+          // lockup tx
+          toBlockTimeMs +
+          // timeout ack tx
+          fromBlockTimeMs) /
+          1000
+      );
+    } else {
+      return Math.floor(Math.max(fromBlockTimeMs, toBlockTimeMs) / 1000);
+    }
+  }
+
+  /** @returns finality time in seconds */
+  getFinalityTimeForEvmChain(chainID: string) {
     switch (chainID) {
       case "1":
         return 960;
@@ -627,7 +721,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       case "8453":
         return 1440;
       default:
-        return 1;
+        return 960;
     }
   }
 
@@ -691,15 +785,16 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
 
       const gasFee = txSimulation.amount[0];
-      const gasAsset = this.ctx.assetLists
-        .flatMap((list) => list.assets)
-        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+      const chainAssets = await this.getAssets();
+      const { assets } = chainAssets[params.fromChain.chainId.toString()];
+
+      const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
         amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? params.fromAsset.denom,
-        decimals: gasAsset?.decimals ?? params.fromAsset.decimals,
-        address: gasAsset?.coinMinimalDenom ?? params.fromAsset.address,
+        denom: gasAsset?.symbol ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
+        address: gasAsset?.denom ?? gasFee.denom,
       };
     }
   }

@@ -653,6 +653,9 @@ export const assetsRouter = createTRPCRouter({
               )
             );
 
+            // avoid sorting while searching
+            if (search) return assets;
+
             // Sort by volume 24h desc
             marketAssets = sort(marketAssets, "volume24h");
 

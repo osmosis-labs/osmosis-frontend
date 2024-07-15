@@ -483,16 +483,46 @@ describe("SkipBridgeProvider", () => {
     expect(addressList).toEqual([fromAddress, toAddress]);
   });
 
+  it("should generate multi hop IBC addresses", async () => {
+    const chainIDs = ["dydx-mainnet-1", "noble-1", "osmosis-1"];
+    const fromAddress = "dydx1ckgqk0nfqaqs32rv4akjqkcl9754ylwrhj2r0j";
+    const toAddress = "osmo1ckgqk0nfqaqs32rv4akjqkcl9754ylwrkshheh";
+    const fromChain: BridgeChain = {
+      chainId: "dydx-mainnet-1",
+      chainName: "dydx",
+      chainType: "cosmos",
+    };
+    const toChain: BridgeChain = {
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      chainType: "cosmos",
+    };
+
+    const addressList = await provider.getAddressList(
+      chainIDs,
+      fromAddress,
+      toAddress,
+      fromChain,
+      toChain
+    );
+
+    expect(addressList).toEqual([
+      fromAddress,
+      "noble1ckgqk0nfqaqs32rv4akjqkcl9754ylwrkg30ht",
+      toAddress,
+    ]);
+  });
+
   it("should return correct finality time for known chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForChain("1");
+    const finalityTime = provider.getFinalityTimeForEvmChain("1");
 
     expect(finalityTime).toBe(960);
   });
 
   it("should return default finality time for unknown chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForChain("999");
+    const finalityTime = provider.getFinalityTimeForEvmChain("999");
 
-    expect(finalityTime).toBe(1);
+    expect(finalityTime).toBe(960);
   });
 
   it("should generate approval transaction request if needed", async () => {
