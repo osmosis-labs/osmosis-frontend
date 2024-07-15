@@ -89,11 +89,13 @@ export const CryptoFiatInput: FunctionComponent<{
   const setCryptoAmount = useCallback(
     (amount: string) =>
       setCryptoAmountProp(
-        new IntPretty(amount)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(asset.decimals)
-          .toString()
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(asset.decimals)
+              .toString()
       ),
     [setCryptoAmountProp, asset]
   );
@@ -101,11 +103,13 @@ export const CryptoFiatInput: FunctionComponent<{
   const setFiatAmount = useCallback(
     (amount: string) =>
       setFiatAmountProp(
-        new IntPretty(amount)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
-          .toString()
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+              .toString()
       ),
     [setFiatAmountProp, assetPrice]
   );
