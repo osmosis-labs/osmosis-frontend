@@ -229,10 +229,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t(...tError(swapState.error));
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
-    } else if (
-      swapState.hasOverSpendLimitError ||
-      swapState.hasExceededOneClickTradingGasLimit
-    ) {
+    } else if (swapState.hasOverSpendLimitError) {
       buttonText = t("swap.continueAnyway");
     } else {
       buttonText = t("swap.button");
@@ -251,21 +248,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             }}
           >
             {t("swap.warning.increaseSpendLimit")}
-          </Button>
-        </span>
-      );
-    } else if (swapState.hasExceededOneClickTradingGasLimit) {
-      warningText = (
-        <span>
-          {t("swap.warning.exceedsNetworkFeeLimit")}{" "}
-          <Button
-            variant="link"
-            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
-            onClick={() => {
-              setIs1CTIntroModalScreen("settings-no-back-button");
-            }}
-          >
-            {t("swap.warning.increaseNetworkFeeLimit")}
           </Button>
         </span>
       );

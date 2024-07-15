@@ -1,18 +1,13 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   DEFAULT_VS_CURRENCY,
   getAsset,
   getAuthenticators,
-  getFeeTokenGasPriceStep,
   getSessionAuthenticator,
   queryAuthenticatorSpendLimit,
 } from "@osmosis-labs/server";
-import {
-  AssetList,
-  Chain,
-  OneClickTradingTransactionParams,
-} from "@osmosis-labs/types";
-import { OsmosisAverageGasLimit } from "@osmosis-labs/utils";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -31,29 +26,17 @@ export const oneClickTradingRouter = createTRPCRouter({
         spendLimitTokenDecimals: number;
       }
     > => {
-      const [networkFeeLimitStep, usdcAsset] = await Promise.all([
-        getNetworkFeeLimitStep({
-          assetLists: ctx.assetLists,
-          chainList: ctx.chainList,
-        }),
-        getAsset({ anyDenom: "usdc", assetLists: ctx.assetLists }),
-      ]);
+      const usdcAsset = await getAsset({ ...ctx, anyDenom: "usdc" });
 
       return {
         spendLimit: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(5_000)),
         spendLimitTokenDecimals: usdcAsset.coinDecimals,
-        networkFeeLimit: networkFeeLimitStep.average,
+        networkFeeLimit: OneClickTradingMaxGasLimit,
         sessionPeriod: {
           end: "1hour" as const,
         },
       };
     }
-  ),
-  getNetworkFeeLimitStep: publicProcedure.query(async ({ ctx }) =>
-    getNetworkFeeLimitStep({
-      chainList: ctx.chainList,
-      assetLists: ctx.assetLists,
-    })
   ),
   getSessionAuthenticator: publicProcedure
     .input(
@@ -113,47 +96,3 @@ export const oneClickTradingRouter = createTRPCRouter({
       };
     }),
 });
-
-async function getNetworkFeeLimitStep({
-  chainList,
-  assetLists,
-}: {
-  chainList: Chain[];
-  assetLists: AssetList[];
-}) {
-  const osmosisChain = chainList[0];
-  const osmoAsset = await getAsset({
-    anyDenom: osmosisChain.fees.fee_tokens[0].denom,
-    assetLists,
-  });
-
-  if (!osmoAsset) {
-    throw new Error("Osmo asset not found");
-  }
-
-  const osmosisGasPriceStep = await getFeeTokenGasPriceStep({
-    chainId: osmosisChain.chain_id,
-    chainList,
-  });
-
-  if (!osmosisGasPriceStep) {
-    throw new Error("Error fetching osmo price");
-  }
-
-  const osmosisAverageGasLimitDec = new Dec(OsmosisAverageGasLimit);
-
-  return {
-    low: new CoinPretty(
-      osmoAsset,
-      new Dec(osmosisGasPriceStep.low).mul(osmosisAverageGasLimitDec)
-    ),
-    average: new CoinPretty(
-      osmoAsset,
-      new Dec(osmosisGasPriceStep.average).mul(osmosisAverageGasLimitDec)
-    ),
-    high: new CoinPretty(
-      osmoAsset,
-      new Dec(osmosisGasPriceStep.high).mul(osmosisAverageGasLimitDec)
-    ),
-  };
-}

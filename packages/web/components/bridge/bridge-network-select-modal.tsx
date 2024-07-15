@@ -11,23 +11,24 @@ import {
 } from "~/components/screen-manager";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
 import { EthereumChainIds } from "~/config/wagmi";
-import { useWindowSize } from "~/hooks";
+import { useFilteredData, useWindowSize } from "~/hooks";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
-import { useBridgesSupportedAssets } from "./use-bridges-supported-assets";
+import { SupportedChain } from "./use-bridges-supported-assets";
 
 enum NetworkSelectScreen {
   Main = "main",
   SelectWallet = "select-wallet",
 }
+
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
   toChain: BridgeChainWithDisplayInfo;
-  chains: ReturnType<typeof useBridgesSupportedAssets>["supportedChains"];
+  chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   onConfirmManualAddress: ((address: string) => void) | undefined;
   initialManualAddress: string | undefined;
@@ -45,25 +46,25 @@ export const BridgeNetworkSelectModal = ({
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
-  const [isSwitchingChain, setIsSwitchingChain] = useState(false);
-
   const [connectingToEvmChain, setConnectingToEvmChain] =
     useState<Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>>();
 
   const {
     isConnected: isEvmWalletConnected,
-    chainId: currentEvmChainId,
+    chainId: currentEvmWalletChainId,
     connector,
   } = useEvmWalletAccount();
-  const { switchChainAsync } = useSwitchEvmChain();
+  const { switchChainAsync: switchEvmChain, isLoading: isSwitchingChain } =
+    useSwitchEvmChain();
 
-  const [query, setQuery] = useState("");
+  const selectableChains = useMemo(
+    () => chains.filter((chain) => chain.chainId !== toChain.chainId),
+    [chains, toChain]
+  );
 
-  const filteredChains = useMemo(() => {
-    return chains.filter(({ prettyName }) =>
-      prettyName.toLowerCase().includes(query.toLowerCase())
-    );
-  }, [chains, query]);
+  const [_query, setQuery, filteredChains] = useFilteredData(selectableChains, [
+    "prettyName",
+  ]);
 
   return (
     <ScreenManager
@@ -77,11 +78,13 @@ export const BridgeNetworkSelectModal = ({
         <>
           <ModalBase
             title={
-              currentScreen === NetworkSelectScreen.SelectWallet
-                ? `Select ${
-                    direction === "deposit" ? "deposit" : "withdraw"
-                  } wallet`
-                : t("transfer.bridgeNetworkSelect.title")
+              <div className="md:subtitle1 mx-auto text-h6 font-h6">
+                {currentScreen === NetworkSelectScreen.SelectWallet
+                  ? direction === "deposit"
+                    ? t("transfer.selectDepositWallet")
+                    : t("transfer.selectWithdrawWallet")
+                  : t("transfer.bridgeNetworkSelect.title")}
+              </div>
             }
             className="relative !max-w-[30rem]"
             {...modalProps}
@@ -132,9 +135,7 @@ export const BridgeNetworkSelectModal = ({
                   })}
                 >
                   <SearchBox
-                    onInput={(nextValue) => {
-                      setQuery(nextValue);
-                    }}
+                    onInput={setQuery}
                     className="my-4 flex-shrink-0 md:w-full"
                     placeholder={t(
                       "transfer.bridgeNetworkSelect.searchPlaceholder"
@@ -146,7 +147,7 @@ export const BridgeNetworkSelectModal = ({
                       const shouldSwitchChain =
                         isEvmWalletConnected &&
                         chain.chainType === "evm" &&
-                        currentEvmChainId !== chain.chainId;
+                        currentEvmWalletChainId !== chain.chainId;
                       return (
                         <button
                           key={chain.chainId}
@@ -154,12 +155,10 @@ export const BridgeNetworkSelectModal = ({
                           onClick={async () => {
                             if (shouldSwitchChain) {
                               try {
-                                setIsSwitchingChain(true);
-                                await switchChainAsync({
+                                await switchEvmChain({
                                   chainId: chain.chainId as EthereumChainIds,
                                 });
                               } catch {
-                                setIsSwitchingChain(false);
                                 return;
                               }
                             }

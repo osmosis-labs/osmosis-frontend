@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useLocalStorage } from "react-use";
 
-import { Ad, AdBanners } from "~/components/ad-banner";
+import { AdBanners } from "~/components/ad-banner";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
@@ -14,8 +14,6 @@ import {
   useNavBar,
   useTranslation,
 } from "~/hooks";
-import { useGlobalIs1CTIntroModalScreen } from "~/modals";
-import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -141,10 +139,7 @@ const HomeV1 = () => {
   );
 };
 
-const SwapAdsBanner = () => {
-  const [, set1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
-  const flags = useFeatureFlags();
-  const { t } = useTranslation();
+const SwapAdsBanner = observer(() => {
   const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
     undefined,
     {
@@ -163,38 +158,12 @@ const SwapAdsBanner = () => {
 
   if (!data?.banners || isLoading) return null;
 
-  const banners: Ad[] = flags.oneClickTrading
-    ? [
-        // Manually add the 1-Click Trading banner to enable state changes for opening the settings modal.
-        {
-          name: "one-click-trading",
-          headerOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.tradeQuickerAndEasier"
-          ),
-          subheaderOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.startOneClickTradingNow"
-          ),
-          iconImageAltOrTranslationKey: t(
-            "oneClickTrading.swapRotatingBanner.iconAlt"
-          ),
-          iconImageUrl: "/images/1ct-small-icon.svg",
-          gradient: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
-          fontColor: theme.colors.osmoverse["900"],
-          arrowColor: theme.colors.ammelia["900"],
-          onClick() {
-            set1CTIntroModalScreen("settings-no-back-button");
-          },
-        } satisfies Ad,
-        ...data.banners,
-      ]
-    : data.banners;
-
   return (
     // If there is an error, we don't want to show the banner
     <ErrorBoundary fallback={null}>
-      <AdBanners ads={banners} localization={data.localization} />
+      <AdBanners ads={data.banners} localization={data.localization} />
     </ErrorBoundary>
   );
-};
+});
 
 export default observer(Home);

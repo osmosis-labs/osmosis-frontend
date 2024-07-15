@@ -220,7 +220,6 @@
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
-      "givePermission": "اجازه استفاده از توکن ها را بدهید",
       "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
@@ -498,8 +497,7 @@
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "enableOneClickTrading": "معاملات 1-Click را فعال کنید",
-      "increaseFeeLimit": "افزایش سقف هزینه شبکه",
+      "startANewSession": "یک جلسه جدید را شروع کنید",
       "approveManually": "تأیید دستی در {walletName}",
       "continueWithWallet": "با کیف پول ادامه دهید",
       "sessionEnded": "جلسه در این دستگاه به پایان رسید",
@@ -512,13 +510,8 @@
       "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
       "learnMore": "بیشتر بدانید",
       "startTradingButton": "شروع تجارت با 1 کلیک",
-      "defaultParameters": "1-Click Trading به مدت 1 ساعت در این دستگاه با محدودیت هزینه 5000 دلاری فعال خواهد بود.",
-      "changeButton": "تغییر دادن"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "تجارت سریعتر و آسان تر",
-      "startOneClickTradingNow": "اکنون تجارت 1-کلیک کنید",
-      "iconAlt": "1-روی نماد تجاری کوچک کلیک کنید"
+      "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
+      "changeButton": "ویرایش تنظیمات"
     },
     "floatingBanner": {
       "newPill": "جدید",
@@ -529,33 +522,24 @@
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
       "enableTitle": "تجارت 1 کلیکی را فعال کنید",
-      "spendLimitTitle": "محدودیت هزینه",
-      "networkFeeLimitTitle": "محدودیت هزینه شبکه",
+      "spendLimitTitle": "حد حفاظت از دست دادن",
       "sessionPeriodTitle": "دوره جلسه",
       "startButton": "شروع تجارت با 1 کلیک",
       "editSessionButton": "ذخیره تغییرات",
       "endingSession": "پایان جلسه",
       "feeToDisable": "هزینه غیرفعال کردن تجارت 1 کلیک:",
       "spendLimitScreen": {
-        "spendLimitDescription": "حداکثر مبلغی را که می‌توانید در یک دوره معاملاتی 1 کلیکی خرج کنید، تنظیم کنید.",
+        "spendLimitDescription": "تجارت بدون محدودیت در دارایی های مورد اعتماد (50 برتر از نظر ارزش بازار).",
+        "spendLimitSubDescription": "برای همه دارایی‌های دیگر، قبل از نیاز به تأیید کیف پول دستی، محدودیتی برای حداکثر ارزش قابل معامله تعیین کنید. کارمزد معاملات نیز در این حد محاسبه می شود.",
         "fixedAmount": "مقدار ثابت",
         "shareOfBalance": "سهم تعادل",
-        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد",
-        "fluctuationNotice": "توجه داشته باشید که ارزش دلار محدودیت هزینه شما بر اساس ارزش دارایی های شما است که ممکن است در نوسان باشد."
-      },
-      "networkFeeLimitScreen": {
-        "title": "محدودیت هزینه شبکه",
-        "description": "حداکثر مبلغی را که می‌توانید برای کارمزد شبکه برای هر تراکنش منفرد در طول جلسه تجارت 1 کلیک خود خرج کنید، تنظیم کنید.",
-        "info": "اگر کارمزد بیش از این مقدار باشد، می‌توانید با امضای دستی تراکنش‌ها در کیف پول خود اقدام کنید.",
-        "low": "کم",
-        "average": "میانگین",
-        "high": "بالا",
-        "recommended": "توصیه شده"
+        "shareOfBalanceDescription": "{shareOfBalance} کل موجودی شما در Osmosis در حال حاضر ارزش دارد"
       },
       "sessionPeriodScreen": {
         "title": "دوره جلسه",
         "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
         "periods": {
+          "5min": "5 دقیقه",
           "10min": "10 دقیقه",
           "30min": "30 دقیقه",
           "1hour": "1 ساعت",
@@ -572,6 +556,7 @@
     },
     "welcomeBack": {
       "title": "خوش برگشتی",
+      "subtitle": "کیف پول خود را برای ادامه کاوش اسمز وصل کنید.",
       "description": "هنگامی که کیف پول خود را وصل کردید، از شما خواسته می شود تا یک تراکنش را تأیید کنید تا جلسه تجارت 1-Click خود را شروع کنید.",
       "toggleLabel": "1- روی تجارت کلیک کنید",
       "editParamsAriaLabel": "پارامترهای 1CT را تغییر دهید"
@@ -582,7 +567,10 @@
       "description": "جلسه تجارت 1-Click شما زمانی شروع می شود که تراکنش را در کیف پول انتخابی خود تأیید کنید."
     },
     "profile": {
-      "sessionExpired": "جلسه تمام شده"
+      "sessionExpired": "تنظیمات",
+      "restart": "راه اندازی مجدد",
+      "tooltipHeader": "1- روی تنظیمات معاملاتی کلیک کنید",
+      "resetSession": "جلسات معاملاتی 1 کلیکی را از نمایه خود راه اندازی مجدد یا ویرایش کنید."
     }
   },
   "pool": {
@@ -846,9 +834,7 @@
     "continueAnyway": "ادامه دادن به هر طریق",
     "warning": {
       "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
-      "exceedsNetworkFeeLimit": "این مبادله از حد مجاز کارمزد شبکه شما برای تجارت با یک کلیک بیشتر است.",
-      "increaseSpendLimit": "افزایش سقف هزینه",
-      "increaseNetworkFeeLimit": "افزایش سقف هزینه شبکه"
+      "increaseSpendLimit": "افزایش سقف هزینه"
     },
     "settings": {
       "slippage": "تغیرات قابل قبول",
@@ -875,6 +861,7 @@
     "approveOneClickTradingSession": "تأیید معامله 1-کلیک در {walletName} .",
     "errorInitializingOneClickTradingSession": "1-Click Trading را نمی توان فعال کرد.",
     "retryInWalletOrContinue": "در {walletName} دوباره امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
+    "retryInWalletOrContinueNoFunds": "بودجه کافی برای شروع جلسه وجود ندارد. لطفاً مقدار بیشتری را واریز کنید و دوباره در {walletName} امتحان کنید، یا بدون 1-Click Trading ادامه دهید.",
     "continueWithoutOneClickTrading": "بدون 1-Click Trading ادامه دهید",
     "retry": "دوباره امتحان کنید",
     "openExtension": "باز کن",
@@ -893,6 +880,7 @@
     "mobileWallets": "کیف پول همراه",
     "installedWallets": "کیف پول نصب شده",
     "otherWallets": "سایر کیف پول ها",
+    "searchWallets": "کیف پول ها را جستجو کنید",
     "step1Title": "کیف پول ها چیست؟",
     "step1Content": "کیف پول ها برای ارسال، دریافت و دسترسی به تمام دارایی های دیجیتالی شما مثل OSMO و ATOM استفاده می شوند.",
     "step2Title": "بدون حساب. بدون رمز عبور.",
@@ -900,7 +888,12 @@
     "step3Title": "کلیدهای شما، سرمایه شما.",
     "step3Content": "در Osmosis، فقط شما می توانید دارایی های خود را حرکت دهید. با قدرت بزرگ، مسئولیت بزرگی همراه است.",
     "step4Title": "برای شروع یک کیف پول ایجاد کنید",
-    "step4Content": "اولین کیف پول خود را تنظیم کنید و وارد شوید! ارسال، دریافت یا خرید دارایی."
+    "step4Content": "اولین کیف پول خود را تنظیم کنید و وارد شوید! ارسال، دریافت یا خرید دارایی.",
+    "yourConnectedWallets": "کیف پول های متصل شما",
+    "primaryWallet": "کیف پول اولیه",
+    "done": "انجام شده",
+    "manage": "مدیریت کنید",
+    "disconnect": "قطع شدن"
   },
   "swapFailed": "تعویض انجام نشد. نقدینگی ممکن است کافی نباشد. سعی کنید لغزش مجاز را تنظیم کنید.",
   "transactionBroadcasting": "در حال ارسال تراکنش",
@@ -920,6 +913,8 @@
     "receiveAsset": "دریافت دارایی",
     "transfer": "انتقال {denom}",
     "receive": "دریافت {denom}",
+    "selectDepositWallet": "کیف پول سپرده را انتخاب کنید",
+    "selectWithdrawWallet": "برداشت کیف پول را انتخاب کنید",
     "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",
@@ -989,9 +984,15 @@
     "verifyAddressWarning": "آدرسی را که وجوه خود را به آن برداشت می کنید تأیید کنید. ارائه آدرس نادرست منجر به از دست دادن وجوه می شود.",
     "recipientAddress": "آدرس گیرنده در {chain}",
     "enterAddress": "آدرسی را وارد کنید",
+    "sendToAnotherAddress": "به آدرس دیگری ارسال کنید",
     "invalidAddress": "آدرس {chain} نامعتبر است",
     "acknowledgement": "من تصدیق می کنم که مسئولیت کامل پایان جهان و غیره را بر عهده دارم.",
-    "done": "انجام شده"
+    "done": "انجام شده",
+    "transferFrom": "انتقال از {noun}",
+    "risks": "پل زدن با خطراتی همراه است.",
+    "learnMore": "بیشتر بدانید",
+    "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+    "openNoun": "باز کردن {noun}"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

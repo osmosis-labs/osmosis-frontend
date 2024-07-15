@@ -28,6 +28,7 @@ export const useOrderbooks = (): {
 } => {
   const { data: orderbooks, isLoading } =
     api.edge.orderbooks.getPools.useQuery();
+
   const onlyStableOrderbooks = useMemo(
     () =>
       (orderbooks ?? []).filter(({ quoteDenom }) =>

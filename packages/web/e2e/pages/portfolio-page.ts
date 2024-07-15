@@ -2,11 +2,13 @@
 import { Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
+import { TransactionsPage } from "~/e2e/pages/transactions-page";
 
 export class PortfolioPage extends BasePage {
   readonly hideZeros: Locator;
   readonly viewMore: Locator;
   readonly portfolioLink: Locator;
+  readonly viewTransactions: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -17,6 +19,7 @@ export class PortfolioPage extends BasePage {
     this.portfolioLink = page.locator(
       '//a//div[contains(text(), "Portfolio")]'
     );
+    this.viewTransactions = page.locator('//div/a[.="View all"]');
   }
 
   async goto() {
@@ -45,5 +48,11 @@ export class PortfolioPage extends BasePage {
     let tokenBalance: string = await bal.innerText();
     console.log(`Balance for ${token}: ${tokenBalance}`);
     return tokenBalance;
+  }
+
+  async viewTransactionsPage() {
+    await this.viewTransactions.click();
+    await this.page.waitForTimeout(1000);
+    return new TransactionsPage(this.page);
   }
 }

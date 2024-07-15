@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, test } from "@playwright/test";
+import { BrowserContext, chromium, Page, test } from "@playwright/test";
+import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { SwapPage } from "../pages/swap-page";
 
@@ -7,17 +8,28 @@ import { SwapPage } from "../pages/swap-page";
 test.describe("Test Select Swap Pair feature", () => {
   let context: BrowserContext;
   let swapPage: SwapPage;
+  let page: Page;
 
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext("", {
       headless: true,
       viewport: { width: 1280, height: 1024 },
     });
-    swapPage = new SwapPage(context.pages()[0]);
+    page = context.pages()[0];
+    await page.coverage.startJSCoverage({
+      resetOnNavigation: false,
+    });
+    swapPage = new SwapPage(page);
     await swapPage.goto();
   });
 
   test.afterAll(async () => {
+    const coverage = await page.coverage.stopJSCoverage();
+    // coverage report
+    const report = await attachCoverageReport(coverage, test.info());
+    console.log(report.summary);
+
+    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 
@@ -56,8 +68,8 @@ test.describe("Test Select Swap Pair feature", () => {
     await swapPage.selectPair("ATOM", "USDC");
   });
 
-  test("User should be able to select USDC.axl/USDC", async () => {
-    await swapPage.selectPair("USDC.axl", "USDC");
+  test("User should be able to select USDT/USDC", async () => {
+    await swapPage.selectPair("USDT", "USDC");
   });
 
   test("User should be able to select TIA/OSMO", async () => {
@@ -72,8 +84,8 @@ test.describe("Test Select Swap Pair feature", () => {
     await swapPage.selectPair("PICA", "OSMO");
   });
 
-  test("User should be able to select USDC.axl/OSMO", async () => {
-    await swapPage.selectPair("USDC.axl", "OSMO");
+  test("User should be able to select USDT/OSMO", async () => {
+    await swapPage.selectPair("USDT", "OSMO");
   });
 
   test("User should be able to select TIA/BOOT", async () => {
