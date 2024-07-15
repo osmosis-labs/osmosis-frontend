@@ -27,18 +27,20 @@ export default async function transactionScanHandler(req: Request) {
   }
 
   try {
-    const result = await transactionScan({
+    const response = await transactionScan({
       chain: "osmosis",
       tx_bytes: body.tx_bytes,
-      options: ["validation", "simulation", "events"],
+      options: ["validation", "simulation"],
       metadata: {
         type: "in_app",
       },
     });
 
-    if (!result) {
+    if (!response.ok) {
       throw new Error("Response is empty");
     }
+
+    const result = await response.json();
 
     return new Response(JSON.stringify(result), {
       status: 200,
