@@ -56,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
       }
     ),
@@ -88,7 +88,7 @@ export const assetsRouter = createTRPCRouter({
             mapGetAssetsWithUserBalances({
               ...ctx,
               search,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -193,7 +193,7 @@ export const assetsRouter = createTRPCRouter({
         const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
           ...ctx,
@@ -352,7 +352,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               categories,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               includePreview,
             });
 
@@ -410,13 +410,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) =>
-      getUserAssetsTotal({
-        ...ctx,
-        ...input,
-        userOsmoAddress: input.userOsmoAddress,
-      })
-    ),
+    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
