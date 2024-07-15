@@ -100,6 +100,14 @@ export const usePlaceLimit = ({
    * @returns The amount of tokens to be sent with the order in base asset amounts for an Ask and quote asset amounts for a Bid.
    */
   const paymentTokenValue = useMemo(() => {
+    if (isMarket)
+      return (
+        marketState.inAmountInput.amount ??
+        new CoinPretty(
+          orderDirection === "ask" ? baseAsset! : quoteAsset!,
+          new Dec(0)
+        )
+      );
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
       inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
@@ -137,22 +145,8 @@ export const usePlaceLimit = ({
     isMarket,
     priceState.askSpotPrice,
     priceState.bidSpotPrice,
+    marketState.inAmountInput.amount,
   ]);
-
-  /**
-   * Determines the fiat amount the user will pay for their order.
-   * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
-   * In the case of a Bid the fiat amount is the amount of quote asset tokens the user will send multiplied by the current price of the quote asset.
-   */
-  const paymentFiatValue = useMemo(() => {
-    return orderDirection === "ask"
-      ? mulPrice(
-          paymentTokenValue,
-          new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
-          DEFAULT_VS_CURRENCY
-        )
-      : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
-  }, [paymentTokenValue, orderDirection, quoteAssetPrice, priceState]);
 
   /**
    * When creating a market order we want to update the market state with the input amount
@@ -163,9 +157,36 @@ export const usePlaceLimit = ({
   useEffect(() => {
     if (orderDirection === "bid") return;
 
-    const normalizedAmount = paymentTokenValue.toDec().toString();
+    const normalizedAmount = inAmountInput.amount?.toDec().toString() ?? "0";
     marketState.inAmountInput.setAmount(normalizedAmount);
-  }, [paymentTokenValue, orderDirection, marketState.inAmountInput]);
+  }, [inAmountInput.amount, orderDirection, marketState.inAmountInput]);
+
+  /**
+   * Determines the fiat amount the user will pay for their order.
+   * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
+   * In the case of a Bid the fiat amount is the amount of quote asset tokens the user will send multiplied by the current price of the quote asset.
+   */
+  const paymentFiatValue = useMemo(() => {
+    if (isMarket)
+      return (
+        marketState.inAmountInput.fiatValue ??
+        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+      );
+    return orderDirection === "ask"
+      ? mulPrice(
+          paymentTokenValue,
+          new PricePretty(DEFAULT_VS_CURRENCY, priceState.price),
+          DEFAULT_VS_CURRENCY
+        )
+      : mulPrice(paymentTokenValue, quoteAssetPrice, DEFAULT_VS_CURRENCY);
+  }, [
+    paymentTokenValue,
+    orderDirection,
+    quoteAssetPrice,
+    priceState,
+    isMarket,
+    marketState.inAmountInput.fiatValue,
+  ]);
 
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
@@ -245,6 +266,15 @@ export const usePlaceLimit = ({
           ?.lt(paymentTokenValue.toDec() ?? new Dec(0))) ?? true;
 
   const expectedTokenAmountOut = useMemo(() => {
+    if (isMarket) {
+      return (
+        marketState.quote?.amount ??
+        new CoinPretty(
+          orderDirection === "ask" ? quoteAsset! : baseAsset!,
+          new Dec(0)
+        )
+      );
+    }
     const preFeeAmount =
       orderDirection === "ask"
         ? new CoinPretty(
@@ -262,9 +292,14 @@ export const usePlaceLimit = ({
     makerFee,
     quoteAssetPrice,
     paymentFiatValue,
+    isMarket,
+    marketState.quote?.amount,
   ]);
 
   const expectedFiatAmountOut = useMemo(() => {
+    if (isMarket) {
+      return marketState.tokenOutFiatValue;
+    }
     return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
@@ -279,6 +314,8 @@ export const usePlaceLimit = ({
     expectedTokenAmountOut,
     orderDirection,
     quoteAssetPrice,
+    isMarket,
+    marketState.tokenOutFiatValue,
   ]);
 
   const reset = useCallback(() => {

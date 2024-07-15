@@ -30,13 +30,22 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   const { t } = useTranslation();
 
   const fee = useMemo(() => {
+    if (placeLimitState.isMarket) {
+      const marketFee = placeLimitState.marketState.totalFee;
+      return marketFee;
+    }
+
     return (
       placeLimitState.paymentFiatValue?.mul(makerFee) ??
       new PricePretty(DEFAULT_VS_CURRENCY, 0)
     );
-  }, [placeLimitState.paymentFiatValue, makerFee]);
+  }, [
+    placeLimitState.paymentFiatValue,
+    makerFee,
+    placeLimitState.isMarket,
+    placeLimitState.marketState,
+  ]);
 
-  //TODO: Normalize price against the dollar
   const total = useMemo(() => {
     if (
       placeLimitState.paymentFiatValue &&
@@ -46,6 +55,18 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
     }
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }, [placeLimitState.paymentFiatValue, fee]);
+
+  const price = useMemo(() => {
+    if (placeLimitState.isMarket) {
+      const priceState = placeLimitState.priceState;
+      const price =
+        orderDirection === "bid"
+          ? priceState.askSpotPrice
+          : priceState.bidSpotPrice;
+      return price ?? new Dec(0);
+    }
+    return placeLimitState.priceState.price;
+  }, [placeLimitState.isMarket, placeLimitState.priceState, orderDirection]);
 
   const [orderType] = useQueryState("type");
 
@@ -89,14 +110,13 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             </div>
             <div className="flex w-full flex-col items-center justify-center">
               <h5>
-                {orderType === "market" && "≈"}{" "}
-                {placeLimitState.inAmountInput.amount
-                  ? formatPretty(placeLimitState.inAmountInput.amount)
+                {placeLimitState.isMarket && "≈"}{" "}
+                {placeLimitState.expectedTokenAmountOut
+                  ? formatPretty(placeLimitState.expectedTokenAmountOut)
                   : "0"}
               </h5>
               <span className="text-body1 text-osmoverse-300">
-                {t("limitOrders.at")} $
-                {formatPretty(placeLimitState.priceState.price)}
+                {t("limitOrders.at")} ${formatPretty(price ?? new Dec(0))}
               </span>
             </div>
           </div>
@@ -123,10 +143,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             left={t("limitOrders.value")}
             right={
               <span className="text-osmoverse-100">
-                ~
-                {placeLimitState.paymentFiatValue
-                  ? formatPretty(placeLimitState.paymentFiatValue)
-                  : "$0"}
+                ~{total ? formatPretty(total) : "$0"}
               </span>
             }
           />
@@ -137,24 +154,17 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
           <hr className="my-2 text-osmoverse-700" />
           <RecapRow
             left={t("limitOrders.receive")}
-            right={<>{formatPretty(total)}</>}
+            right={<>{formatPretty(placeLimitState.expectedTokenAmountOut)}</>}
           />
-          {orderType === "market" && (
+          {placeLimitState.isMarket && placeLimitState.marketState.quote && (
             <RecapRow
               left={t("limitOrders.receiveMin")}
               right={
                 <span className="body2 text-osmoverse-100">
-                  {formatPretty(placeLimitState.expectedTokenAmountOut, {
-                    maxDecimals: 2,
-                    minimumFractionDigits: 2,
-                  })}{" "}
+                  {formatPretty(placeLimitState.expectedTokenAmountOut)}{" "}
                   <span className="text-osmoverse-300">
                     (~
-                    {formatPretty(placeLimitState.expectedFiatAmountOut, {
-                      maxDecimals: 2,
-                      minimumFractionDigits: 2,
-                    })}
-                    )
+                    {formatPretty(placeLimitState.expectedFiatAmountOut)})
                   </span>
                 </span>
               }
@@ -192,9 +202,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               left={t("assets.table.price")}
               right={
                 <span className="text-osmoverse-100">
-                  {placeLimitState.priceState
-                    ? `$${formatPretty(placeLimitState.priceState.price)}`
-                    : "N/D"}
+                  {price ? `$${formatPretty(price)}` : "$0"}
                 </span>
               }
             />

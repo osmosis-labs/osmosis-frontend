@@ -43,6 +43,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
+  /** Include total supply. */
   extended?: boolean;
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({

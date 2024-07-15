@@ -220,7 +220,6 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
-      "givePermission": "Accorder les autorisations pour utiliser des jetons",
       "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
@@ -498,8 +497,7 @@
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
       "currentlyUnavailable": "Trading en 1 clic actuellement indisponible",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
-      "enableOneClickTrading": "Activer le trading en 1 clic",
-      "increaseFeeLimit": "Augmenter la limite des frais de réseau",
+      "startANewSession": "Démarrer une nouvelle session",
       "approveManually": "Approuver manuellement dans {walletName}",
       "continueWithWallet": "Continuer avec le portefeuille",
       "sessionEnded": "Session terminée sur cet appareil",
@@ -512,13 +510,8 @@
       "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
-      "defaultParameters": "Le trading en 1 clic sera actif pendant 1 heure sur cet appareil avec une limite de dépenses de 5 000 USD.",
-      "changeButton": "Changement"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Tradez plus rapidement et plus facilement",
-      "startOneClickTradingNow": "Commencez le trading en 1 clic maintenant",
-      "iconAlt": "Petit logo de trading en 1 clic"
+      "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
+      "changeButton": "Modifier les paramètres"
     },
     "floatingBanner": {
       "newPill": "Nouveau",
@@ -529,33 +522,24 @@
       "header": "Trading en 1 clic",
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
       "enableTitle": "Activer le trading en 1 clic",
-      "spendLimitTitle": "Limite de dépenses",
-      "networkFeeLimitTitle": "Limite des frais de réseau",
+      "spendLimitTitle": "Limite de protection contre les pertes",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
       "endingSession": "Fin de la séance",
       "feeToDisable": "Frais pour désactiver le trading en 1 clic :",
       "spendLimitScreen": {
-        "spendLimitDescription": "Définissez le montant maximum que vous pouvez dépenser au cours d'une période de session de trading en 1 clic.",
+        "spendLimitDescription": "Négociez sans limites sur les actifs de confiance (top 50 par capitalisation boursière).",
+        "spendLimitSubDescription": "Pour tous les autres actifs, fixez une limite à la valeur maximale négociable avant d’exiger l’approbation manuelle du portefeuille. Les frais de négociation sont également pris en compte dans cette limite.",
         "fixedAmount": "Montant fixé",
         "shareOfBalance": "Part du solde",
-        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement",
-        "fluctuationNotice": "Sachez que la valeur en USD de votre limite de dépenses est basée sur la valeur de vos actifs, qui peut fluctuer."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Limite des frais de réseau",
-        "description": "Définissez le montant maximum que vous pouvez dépenser en frais de réseau pour toute transaction unique au cours de votre session de trading en 1 clic.",
-        "info": "Si les frais dépassent ce montant, vous pouvez procéder en signant manuellement les transactions dans votre portefeuille.",
-        "low": "Faible",
-        "average": "Moyenne",
-        "high": "Haut",
-        "recommended": "Recommandé"
+        "shareOfBalanceDescription": "{shareOfBalance} de votre solde total sur Osmosis vaut actuellement"
       },
       "sessionPeriodScreen": {
         "title": "Période de séance",
         "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
         "periods": {
+          "5min": "5 minutes",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 heure",
@@ -572,6 +556,7 @@
     },
     "welcomeBack": {
       "title": "Content de te revoir",
+      "subtitle": "Connectez votre portefeuille pour continuer à explorer Osmosis.",
       "description": "Une fois que vous aurez connecté votre portefeuille, vous serez invité à approuver une transaction pour démarrer votre session de trading en 1 clic.",
       "toggleLabel": "Trading en 1 clic",
       "editParamsAriaLabel": "Modifier les paramètres 1CT"
@@ -582,7 +567,10 @@
       "description": "Votre session de trading en 1 clic démarrera lorsque vous approuverez la transaction dans le portefeuille de votre choix."
     },
     "profile": {
-      "sessionExpired": "La session a expiré"
+      "sessionExpired": "Paramètres",
+      "restart": "Redémarrage",
+      "tooltipHeader": "Paramètres de trading en 1 clic",
+      "resetSession": "Redémarrez ou modifiez les sessions de trading en 1 clic depuis votre profil."
     }
   },
   "pool": {
@@ -846,9 +834,7 @@
     "continueAnyway": "Continuer quand même",
     "warning": {
       "exceedsSpendLimit": "Cet échange dépasse votre limite de dépenses restantes pour le trading en 1 clic.",
-      "exceedsNetworkFeeLimit": "Ce swap dépasse votre limite de frais de réseau pour le trading en 1 clic.",
-      "increaseSpendLimit": "Augmenter la limite de dépenses",
-      "increaseNetworkFeeLimit": "Augmenter la limite des frais de réseau"
+      "increaseSpendLimit": "Augmenter la limite de dépenses"
     },
     "settings": {
       "slippage": "Tolérance de glissement",
@@ -875,6 +861,7 @@
     "approveOneClickTradingSession": "Approuvez le trading en 1 clic dans {walletName} .",
     "errorInitializingOneClickTradingSession": "Le trading en 1 clic n'a pas pu être activé.",
     "retryInWalletOrContinue": "Réessayez dans {walletName} ou continuez sans trading en 1 clic.",
+    "retryInWalletOrContinueNoFunds": "Pas assez de fonds pour démarrer la session. Veuillez déposer davantage et réessayer dans {walletName} , ou procéder sans trading en 1 clic.",
     "continueWithoutOneClickTrading": "Continuer sans trading en 1 clic",
     "retry": "Recommencez",
     "openExtension": "Ouvrez l'extension de navigateur {walletName} pour connecter votre portefeuille.",
@@ -893,6 +880,7 @@
     "mobileWallets": "Portefeuilles Mobiles",
     "installedWallets": "Portefeuilles Installés",
     "otherWallets": "Autres Portefeuilles",
+    "searchWallets": "Rechercher des portefeuilles",
     "step1Title": "Qu'est-ce que les portefeuilles?",
     "step1Content": "Les portefeuilles sont utilisés pour envoyer, recevoir et accéder à tous vos actifs numériques comme OSMO et ATOM.",
     "step2Title": "Pas de comptes. Pas de mots de passe.",
@@ -900,7 +888,12 @@
     "step3Title": "Vos clés, vos fonds.",
     "step3Content": "Sur Osmosis, seul vous pouvez déplacer vos actifs. Un grand pouvoir implique de grandes responsabilités.",
     "step4Title": "Créez un portefeuille pour commencer",
-    "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs."
+    "step4Content": "Configurez votre premier portefeuille et connectez-vous! Envoyez, recevez ou achetez des actifs.",
+    "yourConnectedWallets": "Vos portefeuilles connectés",
+    "primaryWallet": "Portefeuille principal",
+    "done": "Fait",
+    "manage": "Gérer",
+    "disconnect": "Déconnecter"
   },
   "swapFailed": "L'échange a échoué. Les liquidités pourraient ne pas être suffisantes. Essayez d'ajuster le glissement autorisé.",
   "transactionBroadcasting": "Émission de la transaction",
@@ -920,6 +913,8 @@
     "receiveAsset": "Recevoir l'actif",
     "transfer": "Transférer {denom}",
     "receive": "Recevoir {denom}",
+    "selectDepositWallet": "Sélectionnez un portefeuille de dépôt",
+    "selectWithdrawWallet": "Sélectionnez retirer le portefeuille",
     "receiveAssetDescription": "Lorsque vous déposez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur Osmosis.",
     "estimatingTime": "Temps estimé",
     "calculatingFees": "Calcul des frais",
@@ -989,9 +984,15 @@
     "verifyAddressWarning": "Vérifiez l'adresse à laquelle vous retirez vos fonds. Fournir une adresse incorrecte entraînera une perte de fonds.",
     "recipientAddress": "Adresse du destinataire sur {chain}",
     "enterAddress": "Entrer une adresse",
+    "sendToAnotherAddress": "Envoyer à une autre adresse",
     "invalidAddress": "Adresse {chain} non valide",
     "acknowledgement": "Je reconnais que je suis entièrement responsable de la fin du monde, etc.",
-    "done": "Fait"
+    "done": "Fait",
+    "transferFrom": "Transfert depuis {noun}",
+    "risks": "Le rapprochement comporte des risques.",
+    "learnMore": "Apprendre encore plus",
+    "externalTransferSplash": "Pour transférer {denom} de {networkA} vers {networkB} , veuillez utiliser {service} .",
+    "openNoun": "Ouvrir {noun}"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

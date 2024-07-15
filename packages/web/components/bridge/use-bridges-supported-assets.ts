@@ -5,11 +5,25 @@ import { useMemo } from "react";
 
 import { api, RouterOutputs } from "~/utils/trpc";
 
-const bridgeKeys: Bridge[] = ["Skip", "Squid", "Axelar", "IBC"];
+const supportedAssetsBridges: Bridge[] = [
+  "Skip",
+  "Squid",
+  "Axelar",
+  "IBC",
+  // include nomic and wormhole for suggesting BTC + SOL assets and chains
+  // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
+  // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
+  "Nomic",
+  "Wormhole",
+];
 
 export type SupportedAsset = ReturnType<
   typeof useBridgesSupportedAssets
 >["supportedAssetsByChainId"][string][number];
+
+export type SupportedChain = ReturnType<
+  typeof useBridgesSupportedAssets
+>["supportedChains"][number];
 
 export const useBridgesSupportedAssets = ({
   assets,
@@ -19,7 +33,7 @@ export const useBridgesSupportedAssets = ({
   chain: BridgeChain;
 }) => {
   const supportedAssetsResults = api.useQueries((t) =>
-    bridgeKeys.flatMap((bridge) =>
+    supportedAssetsBridges.flatMap((bridge) =>
       (assets ?? []).map((asset) =>
         t.bridgeTransfer.getSupportedAssetsByBridge(
           {
@@ -42,14 +56,6 @@ export const useBridgesSupportedAssets = ({
             // This causes slow UX even though there's a
             // query that the user can use.
             retry: false,
-
-            // prevent batching so that fast routers can
-            // return requests faster than the slowest router
-            trpc: {
-              context: {
-                skipBatch: true,
-              },
-            },
           }
         )
       )
@@ -60,7 +66,7 @@ export const useBridgesSupportedAssets = ({
     () =>
       supportedAssetsResults.filter(
         (data): data is NonNullable<Required<typeof data>> =>
-          !isNil(data) && data?.isSuccess
+          !isNil(data) && data.isSuccess
       ),
     [supportedAssetsResults]
   );
@@ -78,7 +84,6 @@ export const useBridgesSupportedAssets = ({
    *       "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
    *       "denom": "USDC",
    *       "decimals": 6,
-   *       "sourceDenom": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
    *       "supportedVariants": {
    *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": ["Skip", "Squid", "Axelar"],
    *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": ["Skip", "Squid", "Axelar"],
@@ -105,6 +110,7 @@ export const useBridgesSupportedAssets = ({
     type AssetsByChainId =
       RouterOutputs["bridgeTransfer"]["getSupportedAssetsByBridge"]["supportedAssets"]["assetsByChainId"];
 
+    /** Assets aggregated by chain across all provider returned chain assets. */
     const allAssetsByChainId = successfulQueries.reduce((acc, { data }) => {
       if (!data) return acc;
 
@@ -188,6 +194,11 @@ export const useBridgesSupportedAssets = ({
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
+          .sort((a, b) => {
+            // focus on evm chains to be picked first
+            if (a.chainType === "evm" && b.chainType !== "evm") return -1;
+            return 0;
+          })
           .map((chain) => [chain.chainId, chain])
       ).values()
     );

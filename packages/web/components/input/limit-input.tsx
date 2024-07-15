@@ -13,6 +13,8 @@ import {
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
+import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
 
@@ -25,7 +27,37 @@ export interface LimitInputProps {
   insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
+  quoteBalance?: Dec;
+  baseBalance?: Dec;
+  expectedOutput?: Dec;
+  expectedOutputLoading: boolean;
 }
+
+const calcScale = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      }
+    : {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      };
+
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "1";
+};
 
 export enum FocusedInput {
   FIAT = "fiat",
@@ -33,7 +65,7 @@ export enum FocusedInput {
 }
 
 const nonFocusedClasses =
-  "top-[45%] scale-[43%] text-wosmongton-200 hover:cursor-pointer select-none";
+  "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
 const transformAmount = (value: string) => {
@@ -58,8 +90,14 @@ export const LimitInput: FC<LimitInputProps> = ({
   disableSwitching,
   setMarketAmount,
   quoteAssetPrice,
+  expectedOutput,
+  expectedOutputLoading,
+  quoteBalance,
+  baseBalance,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
+  // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
+  // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
@@ -99,7 +137,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       if (tab === "buy" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? setFiatAmount(updatedValue)
         : setFiatAmount(formatPretty(new Dec(updatedValue)));
     },
@@ -118,12 +156,20 @@ export const LimitInput: FC<LimitInputProps> = ({
       ) {
         return;
       }
-      isFocused
+      isFocused || updatedValue.length === 0
         ? onChange(updatedValue)
         : onChange(formatPretty(new Dec(updatedValue)));
     },
     [onChange, focused]
   );
+
+  const toggleMax = useCallback(() => {
+    if (tab === "buy") {
+      return setFiatAmountSafe(Number(quoteBalance)?.toString() ?? "");
+    }
+
+    return setTokenAmountSafe(Number(baseBalance)?.toString() ?? "");
+  }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
     if (tokenAmount.length === 0 && focused === FocusedInput.FIAT)
@@ -140,24 +186,45 @@ export const LimitInput: FC<LimitInputProps> = ({
     const tokenValue = new Dec(value).quo(price);
     setTokenAmountSafe(tokenValue.toString());
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
-
   return (
     <div className="relative h-[108px]">
-      {(["fiat", "token"] as ("fiat" | "token")[]).map((type) => (
+      {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
         <AutoInput
-          key={type}
-          type={type}
+          key={inputType}
+          type={inputType}
           baseAsset={baseAsset}
           focused={focused}
           swapFocus={swapFocus}
           insufficentFunds={insufficentFunds}
-          amount={type === "fiat" ? fiatAmount : tokenAmount}
-          setter={type === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
+          amount={
+            inputType === "fiat"
+              ? type === "market" && tab === "sell"
+                ? formatPretty(expectedOutput ?? new Dec(0))
+                : fiatAmount
+              : type === "market" && tab === "buy"
+              ? formatPretty(expectedOutput ?? new Dec(0))
+              : tokenAmount
+          }
+          setter={inputType === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
           disableSwitching={disableSwitching}
+          loading={
+            inputType === "fiat"
+              ? tab === "sell" && type === "market" && expectedOutputLoading
+              : tab === "buy" && type === "market" && expectedOutputLoading
+          }
         />
       ))}
-      <button className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100">
-        <span className="body2 text-wosmongton-200">Max</span>
+      <button
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        onClick={toggleMax}
+      >
+        <span
+          className={classNames("body2 text-wosmongton-200", {
+            "text-rust-300": insufficentFunds,
+          })}
+        >
+          Max
+        </span>
       </button>
     </div>
   );
@@ -169,9 +236,16 @@ type AutoInputProps = {
   setter: (v: string) => void;
   amount: string;
   type: "fiat" | "token";
+  loading: boolean;
 } & Omit<
   LimitInputProps,
-  "onChange" | "price" | "tokenAmount" | "setMarketAmount" | "quoteAssetPrice"
+  | "onChange"
+  | "price"
+  | "tokenAmount"
+  | "setMarketAmount"
+  | "quoteAssetPrice"
+  | "expectedOutput"
+  | "expectedOutputLoading"
 >;
 
 function AutoInput({
@@ -183,8 +257,10 @@ function AutoInput({
   setter,
   type,
   disableSwitching,
+  loading,
 }: AutoInputProps) {
   const [input, setInput] = useState<HTMLInputElement | null>(null);
+  const { isMobile } = useWindowSize();
   const currentTypeEnum = useMemo(
     () => (type === "fiat" ? FocusedInput.FIAT : FocusedInput.TOKEN),
     [type]
@@ -213,10 +289,14 @@ function AutoInput({
     [type]
   );
 
+  const scale = useMemo(
+    () => calcScale(amount.length, isMobile),
+    [amount, isMobile]
+  );
   return (
     <div
       className={classNames(
-        "absolute flex w-full items-center justify-center text-h3 transition-all",
+        "absolute flex w-full items-center justify-center text-h3 font-h3 transition-transform",
         {
           [nonFocusedClasses]: !isFocused,
           [focusedClasses]: isFocused,
@@ -225,48 +305,58 @@ function AutoInput({
           "text-white-full": isFocused && +amount > 0,
         }
       )}
+      style={{
+        transform: `scale(${isFocused ? scale : 0.45})`,
+      }}
       onClick={
         !disableSwitching && focused === oppositeTypeEnum
           ? swapFocus
           : undefined
       }
     >
-      {disableSwitching && !isFocused && <span>~</span>}
-      {type === "fiat" && (
-        <span className={classNames({ "font-normal": !isFocused })}>$</span>
+      {loading ? (
+        <div className="flex items-center justify-center text-osmoverse-300 opacity-50 ">
+          <Spinner className="mr-4" /> Estimating...{" "}
+        </div>
+      ) : (
+        <label className="flex w-full shrink grow items-center justify-center">
+          {disableSwitching && !isFocused && <span>~</span>}
+          {type === "fiat" && (
+            <span className={classNames({ "font-normal": !isFocused })}>$</span>
+          )}
+          <AutosizeInput
+            disabled={!isFocused}
+            type="number"
+            placeholder="0"
+            value={amount}
+            inputClassName={classNames(
+              "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
+              { "cursor-pointer font-normal": !isFocused }
+            )}
+            onChange={(e) => setter(e.target.value)}
+            onClick={!isFocused ? swapFocus : undefined}
+            onBlur={() => {
+              if (amount === "0") {
+                setter("");
+              }
+            }}
+            inputRef={(input) => {
+              setInput(input);
+            }}
+          />
+          {type === "token" && (
+            <span
+              className={classNames("text-wosmongton-200", {
+                "opacity-60": focused === currentTypeEnum,
+                "font-normal": !isFocused,
+              })}
+            >
+              {baseAsset ? baseAsset.coinDenom : ""}
+            </span>
+          )}
+          {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
+        </label>
       )}
-      <AutosizeInput
-        autoFocus={isFocused}
-        disabled={!isFocused}
-        type="number"
-        placeholder="0"
-        value={amount}
-        inputClassName={classNames(
-          "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[360px]",
-          { "cursor-pointer font-normal": !isFocused }
-        )}
-        onChange={(e) => setter(e.target.value)}
-        onClick={!isFocused ? swapFocus : undefined}
-        onBlur={() => {
-          if (amount === "0") {
-            setter("");
-          }
-        }}
-        inputRef={(input) => {
-          setInput(input);
-        }}
-      />
-      {type === "token" && (
-        <span
-          className={classNames("text-wosmongton-200", {
-            "opacity-60": focused === currentTypeEnum,
-            "font-normal": !isFocused,
-          })}
-        >
-          {baseAsset ? baseAsset.coinDenom : ""}
-        </span>
-      )}
-      {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
     </div>
   );
 }

@@ -65,6 +65,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       bech32Address: params.fromAddress,
     });
     const gasFee = txSimulation.amount[0];
+    const gasAsset = this.getGasAsset(fromChainId, gasFee.denom);
 
     return {
       input: {
@@ -86,7 +87,9 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       estimatedTime,
       estimatedGasFee: {
-        ...params.fromAsset,
+        address: gasAsset?.address ?? gasFee.denom,
+        denom: gasAsset?.denom ?? gasFee.denom,
+        decimals: gasAsset?.decimals ?? 0,
         amount: gasFee.amount,
       },
       transactionRequest: signDoc,
@@ -167,6 +170,49 @@ export class IbcBridgeProvider implements BridgeProvider {
       msgTypeUrl: typeUrl,
       msg,
     };
+  }
+
+  /**
+   * Gets gas asset from asset list, attempting to match the coinMinimalDenom or counterparty denom.
+   * @returns gas bridge asset, or undefined if not found.
+   */
+  getGasAsset(fromChainId: string, denom: string): BridgeAsset | undefined {
+    // check the asset list
+    const ibcAsset = this.ctx.assetLists
+      .flatMap((list) => list.assets)
+      .find((asset) => asset.coinMinimalDenom === denom);
+
+    if (ibcAsset) {
+      return {
+        address: ibcAsset.coinMinimalDenom,
+        denom: ibcAsset.symbol,
+        decimals: ibcAsset.decimals,
+      };
+    }
+
+    const counterpartyAsset = this.ctx.assetLists
+      .flatMap((list) => list.assets)
+      .find((asset) =>
+        asset.counterparty.some(
+          (c) =>
+            "chainId" in c &&
+            c.chainId === fromChainId &&
+            c.sourceDenom === denom
+        )
+      );
+
+    const counterparty = counterpartyAsset?.counterparty.find(
+      (c) =>
+        "chainId" in c && c.chainId === fromChainId && c.sourceDenom === denom
+    );
+
+    if (counterparty) {
+      return {
+        address: counterparty.sourceDenom,
+        denom: counterparty.symbol,
+        decimals: counterparty.decimals,
+      };
+    }
   }
 
   /**

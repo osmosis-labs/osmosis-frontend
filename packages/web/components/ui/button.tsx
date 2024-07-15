@@ -62,7 +62,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
-  loadingText?: string;
+  loadingText?: ReactNode;
   classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
 }
 
@@ -96,7 +96,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             )}
           >
             <Spinner className={classes?.spinner} />
-            {loadingText ? <span>{loadingText}</span> : props.children}
+            {typeof loadingText !== "undefined" ? (
+              <>
+                {typeof loadingText === "string" ? (
+                  <span>{loadingText}</span>
+                ) : (
+                  loadingText
+                )}
+              </>
+            ) : (
+              props.children
+            )}
           </div>
         ) : (
           props.children
