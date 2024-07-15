@@ -208,8 +208,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         Boolean(swapState.marketState.error) ||
                         Boolean(swapState.marketState.networkFeeError) ||
                         swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.inAmountInput.isTyping ||
-                        swapState.marketState.isQuoteLoading)) ||
+                        swapState.marketState.inAmountInput.isTyping)) ||
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading ||
                     !swapState.inAmountInput.inputAmount ||
