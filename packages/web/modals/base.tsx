@@ -96,16 +96,14 @@ export const ModalCloseButton = ({
 }: {
   onClick: () => void;
   className?: string;
-}) => {
-  return (
-    <IconButton
-      aria-label="Close"
-      className={classNames(
-        "absolute right-8 top-[28px] z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:right-7 md:top-7 xs:right-4",
-        className
-      )}
-      icon={<Icon id="close" width={32} height={32} />}
-      onClick={onClick}
-    />
-  );
-};
+}) => (
+  <IconButton
+    aria-label="Close"
+    className={classNames(
+      "absolute right-8 top-[24px] z-50 !h-12 !w-12 cursor-pointer !py-0 text-wosmongton-200 hover:text-osmoverse-100 md:right-7 md:top-7 md:!h-8 md:!w-8 xs:right-4",
+      className
+    )}
+    icon={<Icon id="close" className="md:h-4 md:w-4" />}
+    onClick={onClick}
+  />
+);

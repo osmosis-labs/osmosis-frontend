@@ -5,7 +5,6 @@ import {
   Wallet,
 } from "@cosmos-kit/core";
 import {
-  Currency,
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
@@ -105,9 +104,10 @@ export interface OneClickTradingInfo {
   readonly sessionKey: string;
   readonly userOsmoAddress: string;
 
-  networkFeeLimit: Currency & {
-    amount: string;
-  };
+  /**
+   * Max gas limit allowed for the transaction.
+   */
+  networkFeeLimit: string;
 
   spendLimit: {
     decimals: number;

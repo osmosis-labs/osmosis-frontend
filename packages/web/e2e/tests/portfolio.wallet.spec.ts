@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
+import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
 
 import { UnzipExtension } from "~/e2e/unzip-extension";
@@ -14,6 +15,7 @@ test.describe("Test Portfolio feature", () => {
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
   let digitBalanceRegEx = /\d+\.\d+/;
+  let page: Page;
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
@@ -22,16 +24,17 @@ test.describe("Test Portfolio feature", () => {
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
+        "--headless=new",
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1280 },
       slowMo: 300,
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
-    const page = context.pages()[1];
+    page = context.pages()[1];
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
@@ -39,7 +42,11 @@ test.describe("Test Portfolio feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    portfolioPage = new PortfolioPage(context.pages()[0]);
+    page = context.pages()[0];
+    await page.coverage.startJSCoverage({
+      resetOnNavigation: false,
+    });
+    portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
     await portfolioPage.hideZeroBalances();
@@ -47,6 +54,12 @@ test.describe("Test Portfolio feature", () => {
   });
 
   test.afterAll(async () => {
+    const coverage = await page.coverage.stopJSCoverage();
+    // coverage report
+    const report = await attachCoverageReport(coverage, test.info());
+    console.log(report.summary);
+
+    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 

@@ -58,10 +58,6 @@ export async function saveAssetImageToTokensDir(
     console.info("Skipping image download for test environment");
   }
 
-  if (fs.existsSync(filePath)) {
-    return null;
-  }
-
   // Fetch the image from the URL.
   const response = await fetch(imageUrl);
   if (!response.ok) {

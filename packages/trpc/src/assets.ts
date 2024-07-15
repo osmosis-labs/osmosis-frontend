@@ -56,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
       }
     ),
@@ -88,7 +88,7 @@ export const assetsRouter = createTRPCRouter({
             mapGetAssetsWithUserBalances({
               ...ctx,
               search,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               onlyVerified,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -193,7 +193,7 @@ export const assetsRouter = createTRPCRouter({
         const userAsset = await getAssetWithUserBalance({
           ...ctx,
           asset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
           ...ctx,
@@ -316,7 +316,7 @@ export const assetsRouter = createTRPCRouter({
         return await getAssetWithUserBalance({
           ...ctx,
           asset: bridgeAsset,
-          userCosmosAddress: userOsmoAddress,
+          userOsmoAddress,
         });
       }
     ),
@@ -352,7 +352,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               categories,
-              userCosmosAddress: userOsmoAddress,
+              userOsmoAddress,
               includePreview,
             });
 
@@ -410,13 +410,7 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
-    .query(({ input, ctx }) =>
-      getUserAssetsTotal({
-        ...ctx,
-        ...input,
-        userOsmoAddress: input.userOsmoAddress,
-      })
-    ),
+    .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
@@ -587,12 +581,13 @@ export const assetsRouter = createTRPCRouter({
           z.object({
             variantsNotToBeExcluded: z.array(z.string()),
             prioritizedDenoms: z.array(z.string()),
+            deprioritizedDenoms: z.array(z.string()),
             type: z.union([z.literal("deposit"), z.literal("withdraw")]),
           })
         )
     )
     .query(
-      async ({
+      ({
         input: {
           search,
           userOsmoAddress,
@@ -601,6 +596,7 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
           variantsNotToBeExcluded,
           prioritizedDenoms,
+          deprioritizedDenoms,
           type,
         },
         ctx,
@@ -611,7 +607,7 @@ export const assetsRouter = createTRPCRouter({
               ...ctx,
               search,
               // Only get balances for withdraw
-              userCosmosAddress:
+              userOsmoAddress:
                 type === "withdraw" ? userOsmoAddress : undefined,
               sortFiatValueDirection: "desc",
               includePreview,
@@ -627,9 +623,9 @@ export const assetsRouter = createTRPCRouter({
                     // Filter out all assets without amount
                     .filter((asset) => !isNil(asset.amount))
                 : assets; // display all assets if no balance
-            }
+            } else {
+              // deposit
 
-            if (type === "deposit") {
               assets = assets
                 // Filter out all asset variants to encourage users to deposit and convert to the canonical asset
                 .filter((asset) => {
@@ -646,20 +642,55 @@ export const assetsRouter = createTRPCRouter({
                 });
             }
 
-            return assets.sort((a, b) => {
-              const aIndex = prioritizedDenoms.indexOf(
-                a.coinDenom as (typeof prioritizedDenoms)[number]
-              );
-              const bIndex = prioritizedDenoms.indexOf(
-                b.coinDenom as (typeof prioritizedDenoms)[number]
-              );
+            let marketAssets = await Promise.all(
+              assets.map((asset) =>
+                getAssetMarketActivity(asset)
+                  .catch((e) => captureErrorAndReturn(e, undefined))
+                  .then((marketAsset) => ({
+                    ...asset,
+                    volume24h: marketAsset ? marketAsset.volume24h : 0,
+                  }))
+              )
+            );
 
-              if (aIndex === -1 && bIndex === -1) return 0; // Both not prioritized
-              if (aIndex === -1) return 1; // a is not prioritized, b is
-              if (bIndex === -1) return -1; // b is not prioritized, a is
+            // avoid sorting while searching
+            if (search) return assets;
 
-              return aIndex - bIndex; // Both are prioritized, sort by their index
-            });
+            // Sort by volume 24h desc
+            marketAssets = sort(marketAssets, "volume24h");
+
+            // Sort by prioritized denoms
+            return marketAssets
+              .sort((a, b) => {
+                const aIndex = prioritizedDenoms.indexOf(
+                  a.coinDenom as (typeof prioritizedDenoms)[number]
+                );
+                const bIndex = prioritizedDenoms.indexOf(
+                  b.coinDenom as (typeof prioritizedDenoms)[number]
+                );
+
+                if (aIndex === -1 && bIndex === -1) return 0; // Both not prioritized
+                if (aIndex === -1) return 1; // a is not prioritized, b is
+                if (bIndex === -1) return -1; // b is not prioritized, a is
+
+                return aIndex - bIndex; // Both are prioritized, sort by their index
+              })
+              .sort((a, b) => {
+                // Both not prioritized, check for deprioritized
+                const aDeprioritizedIndex = deprioritizedDenoms.indexOf(
+                  a.coinDenom as (typeof deprioritizedDenoms)[number]
+                );
+                const bDeprioritizedIndex = deprioritizedDenoms.indexOf(
+                  b.coinDenom as (typeof deprioritizedDenoms)[number]
+                );
+
+                if (aDeprioritizedIndex === -1 && bDeprioritizedIndex === -1)
+                  return 0; // Both not deprioritized
+                if (aDeprioritizedIndex === -1) return -1; // a is not deprioritized, b is
+                if (bDeprioritizedIndex === -1) return 1; // b is not deprioritized, a is
+
+                return aDeprioritizedIndex - bDeprioritizedIndex; // Both are deprioritized, sort by their index
+              }) as typeof assets;
           },
           cacheKey: JSON.stringify({
             search,

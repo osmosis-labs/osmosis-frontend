@@ -23,11 +23,19 @@ interface Props {
  */
 export const BridgeProviderDropdown = ({
   selectedQuote,
-  quotes,
+  quotes: allQuotes,
   onSelect,
 }: Props) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
+
+  const quotes = useMemo(
+    () =>
+      allQuotes.sort((a) =>
+        a.data.provider.id === selectedQuote.provider.id ? -1 : 1
+      ),
+    [allQuotes, selectedQuote]
+  );
 
   const fastestQuote = useMemo(() => {
     const minTime = Math.min(

@@ -5,7 +5,7 @@ import {
   IntPretty,
   PricePretty,
 } from "@keplr-wallet/unit";
-import { isNumeric } from "@osmosis-labs/utils";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
   FunctionComponent,
@@ -24,6 +24,8 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
+
+const mulGasSlippage = new Dec("1.1");
 
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
@@ -48,8 +50,8 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
-  setFiatAmount,
-  setCryptoAmount,
+  setFiatAmount: setFiatAmountProp,
+  setCryptoAmount: setCryptoAmountProp,
   setInputUnit,
 }) => {
   const { t } = useTranslation();
@@ -84,15 +86,38 @@ export const CryptoFiatInput: FunctionComponent<{
     new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
   );
 
+  const setCryptoAmount = useCallback(
+    (amount: string) =>
+      setCryptoAmountProp(
+        new IntPretty(amount)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(asset.decimals)
+          .toString()
+      ),
+    [setCryptoAmountProp, asset]
+  );
+
+  const setFiatAmount = useCallback(
+    (amount: string) =>
+      setFiatAmountProp(
+        new IntPretty(amount)
+          .locale(false)
+          .trim(true)
+          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+          .toString()
+      ),
+    [setFiatAmountProp, assetPrice]
+  );
+
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
       let nextValue = type === "fiat" ? value.replace("$", "") : value;
-      if (!isNumeric(nextValue) && nextValue !== "") return;
+      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
       }
-
       if (nextValue === "") {
         nextValue = "0";
       }
@@ -123,19 +148,25 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (
-      isMax &&
-      transferGasCost &&
-      transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-      transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-    ) {
-      const maxTransferAmount = asset.amount
-        .toDec()
-        .sub(transferGasCost.toDec());
+    if (isMax && transferGasCost) {
+      let maxTransferAmount = new Dec(0);
+
+      const gasFeeMatchesInputDenom =
+        transferGasCost &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom &&
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+
+      if (gasFeeMatchesInputDenom) {
+        maxTransferAmount = asset.amount
+          .toDec()
+          .sub(transferGasCost.toDec().mul(mulGasSlippage));
+      } else {
+        maxTransferAmount = asset.amount.toDec();
+      }
 
       if (
         maxTransferAmount.isPositive() &&
-        inputCoin.toDec().gt(maxTransferAmount)
+        !inputCoin.toDec().equals(maxTransferAmount)
       ) {
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
@@ -149,10 +180,7 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${new IntPretty(fiatInputRaw)
-    .locale(false)
-    .trim(true)
-    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)}`;
+  const fiatCurrentValue = `${assetPrice.symbol}${fiatInputRaw}`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile
@@ -271,9 +299,12 @@ export const CryptoFiatInput: FunctionComponent<{
               }
             }}
             className={classNames(
-              "body2 md:caption w-14 shrink-0 transform rounded-5xl border border-osmoverse-700 py-2 px-3 text-wosmongton-200 transition duration-200 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full disabled:opacity-80 md:w-13",
+              "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
                 "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+                "!border-ammelia-500": hasSubtractedAmount,
+                "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
+                  !isMax,
               }
             )}
             disabled={asset.amount.toDec().isZero()}

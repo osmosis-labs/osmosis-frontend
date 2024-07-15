@@ -18,6 +18,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
+import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -110,7 +111,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           { chain: toChain.prettyName }
         )}
       </div>
-      <p className="body1 1.5lg:caption pb-3 text-center text-osmoverse-400">
+      <p className="body1 1.5lg:caption pb-6 text-center text-osmoverse-400 md:pb-3">
         {t(
           direction === "withdraw"
             ? "transfer.reviewWithdrawP"
@@ -141,7 +142,17 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           isManualAddress={isManualAddress}
         />
       )}
-      <div className="flex w-full items-center gap-3 py-3">
+      <div className="caption pt-6 text-center text-osmoverse-400 md:pt-4">
+        {t("transfer.risks")}{" "}
+        <Link
+          href="/disclaimer#providers-and-bridge-disclaimer"
+          target="_blank"
+          className="mx-auto text-xs font-semibold text-wosmongton-300 hover:text-rust-200"
+        >
+          {t("transfer.learnMore")}
+        </Link>
+      </div>
+      <div className="flex w-full items-center gap-3 py-3 md:py-2">
         <Button
           className="w-full md:h-12"
           variant="secondary"
@@ -153,23 +164,16 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </Button>
         <Button
-          isLoading={quote.isTxPending}
+          isLoading={quote.isTxPending || quote.isApprovingToken}
           className="w-full md:h-12"
           onClick={onConfirm}
-          disabled={!quote.userCanInteract}
+          disabled={!quote.userCanAdvance}
         >
           <div className="md:subtitle1 text-h6 font-h6">
-            {t("transfer.confirm")}
+            {quote?.txButtonText ?? t("transfer.confirm")}
           </div>
         </Button>
       </div>
-      <Link
-        href="/disclaimer#providers-and-bridge-disclaimer"
-        target="_blank"
-        className="mx-auto text-xs font-semibold text-wosmongton-100 hover:text-rust-200"
-      >
-        {t("disclaimer")}
-      </Link>
     </div>
   );
 };
@@ -197,7 +201,7 @@ const AssetBox: FunctionComponent<{
   const { isMobile } = useWindowSize();
 
   const ChainAndWallet = isMobile ? (
-    <div className="caption flex gap-2 px-3 pb-3 pt-1 text-osmoverse-300">
+    <div className="caption flex gap-2 p-3 text-osmoverse-300">
       {t(type === "from" ? "transfer.from" : "transfer.to")}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
@@ -227,7 +231,7 @@ const AssetBox: FunctionComponent<{
       </div>
     </div>
   ) : (
-    <div className="flex place-content-between items-center px-6 pb-3 pt-1">
+    <div className="flex place-content-between items-center px-6 py-3 text-osmoverse-300">
       <div className="flex items-center gap-2">
         {t(type === "from" ? "transfer.from" : "transfer.to")}{" "}
         <ChainLogo
@@ -247,9 +251,9 @@ const AssetBox: FunctionComponent<{
   );
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-2xl border border-osmoverse-700">
-      <div className="flex place-content-between items-center px-6 pt-4 pb-2 md:px-3 md:pt-2 md:pb-1">
-        <div className="flex items-center gap-3">
+    <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
+      <div className="flex place-content-between items-center p-6 md:p-3">
+        <div className="flex items-center gap-4 md:gap-2">
           <Image
             alt="token image"
             src={assetImageUrl}
@@ -293,13 +297,21 @@ const TransferDetails: FunctionComponent<
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
-  const { selectedQuote, fromDisplayChain } = quote;
+  const {
+    selectedQuote,
+    fromDisplayChain,
+    selectedQuoteUpdatedAt,
+    refetchInterval,
+    isRefetchingQuote,
+    isTxPending,
+  } = quote;
 
   if (!selectedQuote) return null;
 
   const { estimatedTime } = selectedQuote;
   const estTime = estimatedTime.humanize();
   const collapsedHeight = isMobile ? 46 : 74;
+  const expandedPadding = isMobile ? 10 : 0;
 
   return (
     <Disclosure>
@@ -308,7 +320,9 @@ const TransferDetails: FunctionComponent<
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + collapsedHeight + 20 // collapsed height
+              ? (detailsHeight + detailsOffset ?? 288) +
+                collapsedHeight +
+                expandedPadding // collapsed height
               : collapsedHeight,
           }}
         >
@@ -316,13 +330,21 @@ const TransferDetails: FunctionComponent<
             {open ? (
               <div className="subtitle1">{t("transfer.transferDetails")}</div>
             ) : (
-              <div className="flex items-center gap-4 md:gap-1.5 md:text-osmoverse-300">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-osmoverse-700 md:h-8 md:w-8">
-                  <Icon id="down-arrow" className="md:h-4 md:w-4" />
-                </div>
+              <div className="flex items-center gap-3 text-osmoverse-300 md:gap-1.5">
+                {selectedQuoteUpdatedAt && (
+                  <BridgeQuoteRemainingTime
+                    className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
+                    dataUpdatedAt={selectedQuoteUpdatedAt}
+                    refetchInterval={refetchInterval}
+                    isPaused={isRefetchingQuote || isTxPending}
+                    strokeWidth={2}
+                  >
+                    <Icon id="down-arrow" className="md:h-4 md:w-4" />
+                  </BridgeQuoteRemainingTime>
+                )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p>{estTime}</p>
+                  <p className="first-letter:capitalize">{estTime}</p>
                 </div>
               </div>
             )}
@@ -332,6 +354,7 @@ const TransferDetails: FunctionComponent<
               selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
               refetchInterval={quote.refetchInterval}
               selectedQuote={selectedQuote}
+              isRemainingTimePaused={isRefetchingQuote || isTxPending}
               open={open}
             />
           </DisclosureButton>

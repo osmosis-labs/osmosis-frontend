@@ -42,6 +42,12 @@ function getErrorMessage({
 }: {
   message?: string;
 } = {}) {
+  if (message.endsWith(".")) {
+    message = message.slice(0, -1);
+  }
+  if (message.startsWith("Fetch error. ")) {
+    message = message.replace("Fetch error. ", "").trim();
+  }
   return `Fetch error. ${message}.`;
 }
 

@@ -40,7 +40,7 @@ export const EstimatedTimeRow: FunctionComponent<{
   >
     <div className="flex items-center gap-1">
       <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />{" "}
-      <p className="text-osmoverse-100">
+      <p className="text-osmoverse-100 first-letter:capitalize">
         {selectedQuote.estimatedTime.humanize()}
       </p>
     </div>
@@ -119,7 +119,7 @@ export const TotalFeesRow: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   isRefetchingQuote: boolean;
 }> = ({ selectedQuote, isRefetchingQuote }) => {
-  const totalCost = calcSelectedQuoteTotalFee(selectedQuote);
+  const totalCost = selectedQuote.quote.totalFeeFiatValue;
   if (!totalCost) return null;
 
   return (
@@ -142,7 +142,7 @@ export const ExpectedOutputRow: FunctionComponent<{
     isLoading={isRefetchingQuote}
   >
     <p className={warnUserOfSlippage ? "text-rust-300" : "text-osmoverse-100"}>
-      {selectedQuote.expectedOutputFiat.toString()}
+      {selectedQuote.expectedOutputFiat.toString()}{" "}
       <span
         className={classNames({
           "text-osmoverse-300": !warnUserOfSlippage,
@@ -154,18 +154,6 @@ export const ExpectedOutputRow: FunctionComponent<{
   </QuoteDetailRow>
 );
 
-export function calcSelectedQuoteTotalFee(
-  quote: NonNullable<BridgeQuote["selectedQuote"]>
-) {
-  let totalCost = quote.gasCostFiat;
-  if (quote.transferFeeFiat) {
-    totalCost = totalCost
-      ? totalCost.add(quote.transferFeeFiat)
-      : quote.transferFeeFiat;
-  }
-  return totalCost;
-}
-
 export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   warnUserOfPriceImpact: boolean | undefined;
@@ -173,6 +161,8 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt: number | undefined;
   refetchInterval: number;
   open: boolean;
+  isRemainingTimePaused: boolean;
+  showRemainingTime?: boolean;
 }> = ({
   selectedQuote,
   warnUserOfPriceImpact,
@@ -180,15 +170,18 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt,
   refetchInterval,
   open,
+  isRemainingTimePaused,
+  showRemainingTime = false,
 }) => {
-  const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
+  const totalFees = selectedQuote.quote.totalFeeFiatValue;
 
   return (
     <div className="flex items-center gap-2 md:gap-1">
-      {!isNil(selectedQuoteUpdatedAt) && (
+      {!isNil(selectedQuoteUpdatedAt) && showRemainingTime && (
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
+          isPaused={isRemainingTimePaused}
         />
       )}
       <div className="flex items-center gap-2 md:gap-1">

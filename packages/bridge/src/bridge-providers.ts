@@ -1,8 +1,10 @@
 import { AxelarBridgeProvider } from "./axelar";
 import { IbcBridgeProvider } from "./ibc";
 import { BridgeProviderContext } from "./interface";
+import { NomicBridgeProvider } from "./nomic";
 import { SkipBridgeProvider } from "./skip";
 import { SquidBridgeProvider } from "./squid";
+import { WormholeBridgeProvider } from "./wormhole";
 
 export type Bridge = keyof BridgeProviders["bridges"];
 
@@ -13,6 +15,8 @@ export class BridgeProviders {
     [AxelarBridgeProvider.ID]: AxelarBridgeProvider;
     [SkipBridgeProvider.ID]: SkipBridgeProvider;
     [IbcBridgeProvider.ID]: IbcBridgeProvider;
+    [NomicBridgeProvider.ID]: NomicBridgeProvider;
+    [WormholeBridgeProvider.ID]: WormholeBridgeProvider;
   };
 
   constructor(integratorId: string, commonContext: BridgeProviderContext) {
@@ -28,6 +32,8 @@ export class BridgeProviders {
       [AxelarBridgeProvider.ID]: new AxelarBridgeProvider(commonContext),
       [SkipBridgeProvider.ID]: new SkipBridgeProvider(commonContext),
       [IbcBridgeProvider.ID]: new IbcBridgeProvider(commonContext),
+      [NomicBridgeProvider.ID]: new NomicBridgeProvider(commonContext),
+      [WormholeBridgeProvider.ID]: new WormholeBridgeProvider(commonContext),
     };
   }
 }
