@@ -51,7 +51,7 @@ export const marketIncentivePoolsSortKeys = [
   "feesSpent24hUsd",
   "volume7dUsd",
   "volume24hUsd",
-  "aprBreakdown.total",
+  "aprBreakdown.total.upper",
 ] as const;
 
 export type MarketIncentivePoolsSortKey =
@@ -276,7 +276,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         header: () => (
           <SortHeader
             label={t("pools.allPools.sort.APRIncentivized")}
-            sortKey="aprBreakdown.total"
+            sortKey="aprBreakdown.total.upper"
             disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortParams.allPoolsSortDir}
