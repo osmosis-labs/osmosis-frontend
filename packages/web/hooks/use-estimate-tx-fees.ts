@@ -67,6 +67,8 @@ async function estimateTxFeesQueryFn({
   let feeAmount = amount;
   const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
 
+  console.log(amount, sendToken);
+
   /**
    * If the send token is provided and send token does not have enough balance to pay for the fee, it will
    * try to prevent the fee token to be the same as the send token.
@@ -140,7 +142,11 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
-    queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
+    queryKey: [
+      "estimate-tx-fees",
+      superjson.stringify(messages),
+      superjson.stringify(sendToken),
+    ],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({
