@@ -34,6 +34,7 @@ export default async function handler(
     bech32Address,
     onlyDefaultFeeDenom,
     gasMultiplier,
+    excludedFeeMinimalDenoms,
   } = req.body as {
     chainId: string;
     messages: { typeUrl: string; value: string }[];
@@ -56,6 +57,7 @@ export default async function handler(
       },
       onlyDefaultFeeDenom,
       gasMultiplier,
+      excludedFeeMinimalDenoms,
     });
     return res.status(200).json(gasFee);
   } catch (e) {

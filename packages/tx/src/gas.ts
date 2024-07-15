@@ -74,6 +74,7 @@ export async function estimateGasFee({
   bech32Address,
   gasMultiplier = 1.5,
   onlyDefaultFeeDenom,
+  excludedFeeMinimalDenoms,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -84,6 +85,8 @@ export async function estimateGasFee({
    *  or to account for slippage in price in gas markets.
    *  Default: `1.5` */
   gasMultiplier?: number;
+
+  excludedFeeMinimalDenoms?: string[];
 
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
@@ -121,6 +124,7 @@ export async function estimateGasFee({
     coinsSpent,
     bech32Address,
     gasMultiplier,
+    excludedFeeMinimalDenoms,
   });
 
   return {
@@ -259,6 +263,7 @@ export async function getGasFeeAmount({
   bech32Address,
   gasMultiplier = 1.5,
   coinsSpent = [],
+  excludedFeeMinimalDenoms,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -268,6 +273,7 @@ export async function getGasFeeAmount({
   /** Coins being spent in applicable transaction.
    *  Will be cross checked with available fee coins on chain and from account if given. */
   coinsSpent?: { denom: string; amount: string }[];
+  excludedFeeMinimalDenoms?: string[];
 }): Promise<
   {
     denom: string;
@@ -303,7 +309,7 @@ export async function getGasFeeAmount({
   // iterate in order of fee denoms
   for (const denom of chainFeeDenoms) {
     const balance = balances.find((balance) => balance.denom === denom);
-    if (balance) {
+    if (balance && !excludedFeeMinimalDenoms?.includes(denom)) {
       feeBalances.push(balance);
     }
   }

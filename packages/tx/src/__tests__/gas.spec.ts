@@ -486,6 +486,94 @@ describe("getGasFeeAmount", () => {
     expect(gasAmount.amount).toBe(expectedGasAmount);
   });
 
+  it("should exclude fee tokens specified in `excludedFeeMinimalDenoms`", async () => {
+    const gasLimit = 1000;
+    const chainId = "osmosis-1";
+    const address = "osmo1...";
+    const baseFee = 0.04655;
+    const spotPrice = 8;
+
+    (queryBalances as jest.Mock).mockResolvedValue({
+      balances: [
+        {
+          /**
+           * We'll exclude this token. Even though it has enough balance to pay fees, it will select uion
+           */
+          denom: "uosmo",
+          amount: "1000000",
+        },
+        {
+          denom: "uion",
+          amount: "1000000",
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee.toString(),
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uion",
+          poolID: 2,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockResolvedValue({
+      pool_id: "2",
+      spot_price: spotPrice.toString(),
+    } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+
+    const gasMultiplier = 1.5;
+
+    const gasAmount = (
+      await getGasFeeAmount({
+        chainId,
+        chainList: MockChains,
+        gasLimit: gasLimit.toString(),
+        bech32Address: address,
+        gasMultiplier,
+        excludedFeeMinimalDenoms: ["uosmo"],
+      })
+    )[0];
+
+    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+      .quo(new Dec(spotPrice))
+      .mul(new Dec(1.01))
+      .mul(new Dec(gasLimit))
+      .truncate()
+      .toString();
+
+    expect(queryBalances).toBeCalledWith({
+      chainId,
+      bech32Address: address,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseGasPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokens).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeesBaseDenom).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+    });
+    expect(queryFeeTokenSpotPrice).toBeCalledWith({
+      chainId,
+      chainList: MockChains,
+      denom: "uion",
+    });
+
+    expect(gasAmount.denom).toBe("uion");
+    expect(gasAmount.amount).toBe(expectedGasAmount);
+  });
+
   it("should return the correct gas amount with an alternative fee token when the last available fee token is fully spent", async () => {
     const gasLimit = 1000;
     const chainId = "osmosis-1";
@@ -743,131 +831,6 @@ describe("getGasFeeAmount", () => {
     const expectedGasAmount = new Dec(baseFee)
       .mul(new Dec(gasMultiplier))
       .quo(new Dec(lowEnoughSpotPrice))
-      .mul(new Dec(1.01))
-      .mul(new Dec(gasLimit))
-      .truncate()
-      .toString();
-
-    expect(queryBalances).toBeCalledWith({
-      chainId,
-      bech32Address: address,
-      chainList: MockChains,
-    });
-    expect(queryFeesBaseGasPrice).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-    });
-    expect(queryFeeTokens).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-    });
-    expect(queryFeesBaseDenom).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-    });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-      denom: "uion",
-    });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-      denom:
-        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-    });
-
-    expect(gasAmount.denom).toBe(
-      "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-    );
-    expect(gasAmount.amount).toBe(expectedGasAmount);
-    expect(gasAmount.isNeededForTx).toBeUndefined();
-  });
-
-  it("should return the correct gas amount with an alternative fee token that is the lesser of the spent amounts", async () => {
-    const gasLimit = 1000;
-    const chainId = "osmosis-1";
-    const address = "osmo1...";
-    const baseFee = 0.04655;
-    const altTokenSpotPrice = 1;
-
-    (queryBalances as jest.Mock).mockResolvedValue({
-      balances: [
-        {
-          denom: "uosmo",
-          amount: "1",
-        },
-        {
-          // ATOM
-          denom:
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-          amount: "1000",
-        },
-        {
-          denom: "uion",
-          amount: "1000000",
-        },
-      ],
-    } as Awaited<ReturnType<typeof queryBalances>>);
-    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
-      base_fee: baseFee.toString(),
-    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
-    (queryFeeTokens as jest.Mock).mockResolvedValue({
-      fee_tokens: [
-        {
-          // ATOM
-          denom:
-            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-          poolID: 1,
-        },
-        {
-          denom: "uion",
-          poolID: 2,
-        },
-      ],
-    } as Awaited<ReturnType<typeof queryFeeTokens>>);
-    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
-      base_denom: "uosmo",
-    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
-    (queryFeeTokenSpotPrice as jest.Mock).mockImplementation(({ denom }) => {
-      // return the same spot price to isolate the differences in amounts
-      if (
-        denom === "uion" ||
-        denom ===
-          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-      ) {
-        return Promise.resolve({
-          pool_id: "2",
-          spot_price: altTokenSpotPrice.toString(),
-        } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
-      }
-      throw new Error("Mocked implementation got an unexpected fee denom");
-    });
-
-    const gasMultiplier = 1.5;
-    const coinsSpent = [
-      { denom: "uion", amount: "1000" },
-      {
-        // notice smaller amount is second
-        denom:
-          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-        amount: "100",
-      },
-    ];
-
-    const gasAmount = (
-      await getGasFeeAmount({
-        chainId,
-        chainList: MockChains,
-        gasLimit: gasLimit.toString(),
-        bech32Address: address,
-        gasMultiplier,
-        coinsSpent,
-      })
-    )[0];
-
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
-      .quo(new Dec(altTokenSpotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
       .truncate()

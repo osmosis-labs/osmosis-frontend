@@ -33,6 +33,7 @@ async function estimateTxFeesQueryFn({
   apiUtils,
   accountStore,
   signOptions,
+  sendToken,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
@@ -46,18 +47,54 @@ async function estimateTxFeesQueryFn({
 }): Promise<QueryResult> {
   if (!messages.length) throw new Error("No messages");
 
-  const { amount, gas } = await accountStore.estimateFee({
-    wallet,
-    messages,
-    signOptions: {
-      ...wallet.walletInfo?.signOptions,
-      ...signOptions,
-      preferNoSetFee: true, // this will automatically calculate the amount as well.
-    },
-  });
+  const baseEstimateFeeOptions: Parameters<typeof accountStore.estimateFee>[0] =
+    {
+      wallet,
+      messages,
+      signOptions: {
+        ...wallet.walletInfo?.signOptions,
+        ...signOptions,
+        preferNoSetFee: true, // this will automatically calculate the amount as well.
+      },
+    };
 
-  const fee = amount[0];
+  const { amount, gas } = await accountStore.estimateFee(
+    baseEstimateFeeOptions
+  );
+
+  let fee = amount[0];
+  let gasLimit = gas;
+  let feeAmount = amount;
   const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
+
+  /**
+   * If the send token is provided and send token does not have enough balance to pay for the fee, it will
+   * try to prevent the fee token to be the same as the send token.
+   *
+   * This is useful to not leave dust amounts while doing a max amount swap.
+   */
+  if (
+    sendToken &&
+    fee.denom === sendToken.balance.toCoin().denom &&
+    new Dec(sendToken.amount.toCoin().amount).gt(
+      new Dec(sendToken.balance.toCoin().amount).sub(new Dec(fee.amount))
+    )
+  ) {
+    try {
+      const { amount, gas } = await accountStore.estimateFee({
+        ...baseEstimateFeeOptions,
+        excludedFeeMinimalDenoms: [sendToken.balance.currency.coinMinimalDenom],
+      });
+      fee = amount[0];
+      gasLimit = gas;
+      feeAmount = amount;
+    } catch (error) {
+      console.warn(
+        "Failed to estimate fees with excluded fee minimal denom. Using the original fee.",
+        error
+      );
+    }
+  }
 
   if (!fee || !asset?.currentPrice) {
     throw new Error("Failed to estimate fees");
@@ -72,8 +109,8 @@ async function estimateTxFeesQueryFn({
   return {
     gasUsdValueToPay,
     gasAmount: new CoinPretty(asset, coinAmountDec),
-    gasLimit: gas,
-    amount,
+    gasLimit,
+    amount: feeAmount,
   };
 }
 
@@ -81,10 +118,19 @@ export function useEstimateTxFees({
   messages,
   chainId,
   signOptions,
+  sendToken,
   enabled = true,
 }: {
   messages: EncodeObject[] | undefined;
   chainId: string;
+  /**
+   * If the send token is provided and does not have enough balance to pay for the fee, it will
+   * try to prevent the fee token to be the same as the send token.
+   */
+  sendToken?: {
+    balance: CoinPretty;
+    amount: CoinPretty;
+  };
   enabled?: boolean;
   signOptions?: SignOptions;
 }) {
@@ -103,6 +149,7 @@ export function useEstimateTxFees({
         messages: messages!,
         apiUtils,
         signOptions,
+        sendToken,
       });
     },
     staleTime: 3_000, // 3 seconds
