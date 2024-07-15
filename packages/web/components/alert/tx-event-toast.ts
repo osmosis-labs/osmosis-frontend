@@ -13,7 +13,8 @@ import { prettifyTxError } from "./prettify";
 // https://github.com/cosmos/cosmos-sdk/blob/8f6a94cd1f9f1c6bf1ad83a751da86270db92e02/types/errors/errors.go#L129
 const txTimeoutHeightReachedErrorCode = 30;
 
-const BROADCASTING_TOAST_ID = "broadcast-failed";
+const BROADCASTING_TOAST_ID = "broadcast";
+export const BROADCASTING_FAILED_TOAST_ID = "broadcast-failed";
 
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
@@ -32,7 +33,10 @@ export function toastOnBroadcastFailed(
         captionTranslationKey:
           prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
-      ToastType.ERROR
+      ToastType.ERROR,
+      {
+        toastId: BROADCASTING_FAILED_TOAST_ID,
+      }
     );
   };
 }

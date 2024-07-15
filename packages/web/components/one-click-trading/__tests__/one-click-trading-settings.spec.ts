@@ -1,18 +1,8 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 
 import { compare1CTTransactionParams } from "../one-click-trading-settings";
-
-const mockCoinPretty = (amount: number) =>
-  new CoinPretty(
-    {
-      coinDenom: "OSMO",
-      coinDecimals: 6,
-      coinMinimalDenom: "uosmo",
-    },
-    new Dec(amount)
-  );
 
 const mockPricePretty = (amount: number) =>
   new PricePretty(DEFAULT_VS_CURRENCY, new Dec(amount));
@@ -22,7 +12,7 @@ describe("compare1CTTransactionParams", () => {
     const prevParams: OneClickTradingTransactionParams = {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
+      networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -36,7 +26,7 @@ describe("compare1CTTransactionParams", () => {
     const prevParams: OneClickTradingTransactionParams = {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
+      networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
     };
 
@@ -49,41 +39,22 @@ describe("compare1CTTransactionParams", () => {
     expect(changes).toContain("spendLimit");
   });
 
-  it("should detect changes in networkFeeLimit", () => {
-    const prevParams: OneClickTradingTransactionParams = {
-      isOneClickEnabled: true,
-      spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
-      sessionPeriod: { end: "1hour" },
-    };
-
-    const nextParams: OneClickTradingTransactionParams = {
-      ...prevParams,
-      networkFeeLimit: mockCoinPretty(15000),
-    };
-
-    const changes = compare1CTTransactionParams({ prevParams, nextParams });
-    expect(changes).toContain("networkFeeLimit");
-  });
-
   it("should detect multiple changes including sessionPeriod", () => {
     const prevParams: OneClickTradingTransactionParams = {
       isOneClickEnabled: true,
       spendLimit: mockPricePretty(5000),
-      networkFeeLimit: mockCoinPretty(13485),
+      networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
     };
 
     const nextParams: OneClickTradingTransactionParams = {
       ...prevParams,
       spendLimit: mockPricePretty(7000),
-      networkFeeLimit: mockCoinPretty(16000),
       sessionPeriod: { end: "3hours" },
     };
 
     const changes = compare1CTTransactionParams({ prevParams, nextParams });
     expect(changes).toContain("spendLimit");
-    expect(changes).toContain("networkFeeLimit");
     expect(changes).toContain("sessionPeriod");
   });
 });

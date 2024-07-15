@@ -40,7 +40,7 @@ export const EstimatedTimeRow: FunctionComponent<{
   >
     <div className="flex items-center gap-1">
       <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />{" "}
-      <p className="text-osmoverse-100">
+      <p className="text-osmoverse-100 first-letter:capitalize">
         {selectedQuote.estimatedTime.humanize()}
       </p>
     </div>
@@ -173,6 +173,8 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt: number | undefined;
   refetchInterval: number;
   open: boolean;
+  isRemainingTimePaused: boolean;
+  showRemainingTime?: boolean;
 }> = ({
   selectedQuote,
   warnUserOfPriceImpact,
@@ -180,15 +182,18 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuoteUpdatedAt,
   refetchInterval,
   open,
+  isRemainingTimePaused,
+  showRemainingTime = false,
 }) => {
   const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
 
   return (
     <div className="flex items-center gap-2 md:gap-1">
-      {!isNil(selectedQuoteUpdatedAt) && (
+      {!isNil(selectedQuoteUpdatedAt) && showRemainingTime && (
         <BridgeQuoteRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
+          isPaused={isRemainingTimePaused}
         />
       )}
       <div className="flex items-center gap-2 md:gap-1">

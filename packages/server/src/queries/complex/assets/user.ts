@@ -44,7 +44,7 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
     assetLists,
     chainList,
     assets: [asset],
-    userCosmosAddress: userCosmosAddress,
+    userOsmoAddress: userOsmoAddress,
     includePreview: true,
   });
   return userAssets[0];
@@ -90,8 +90,8 @@ export async function mapGetAssetsWithUserBalances<
   if (!userCosmosAddress) return assets;
 
   const { balances } = await queryBalances({
-    ...params,
-    bech32Address: userCosmosAddress,
+    chainList: params.chainList,
+    bech32Address: userOsmoAddress,
   });
 
   const eventualUserAssets = assets

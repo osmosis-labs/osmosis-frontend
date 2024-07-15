@@ -9,10 +9,11 @@ def wait_for_deployment(timeout):
     time.sleep(30)
     bearer_token = os.getenv('VERCEL_TOKEN')
     project_id = os.getenv('VERCEL_PROJECT')
+    target = os.getenv('VERCEL_TARGET', 'preview')
     headers = {
         "Authorization": f"Bearer {bearer_token}"
     }
-    url = f"https://api.vercel.com/v6/deployments?projectId={project_id}&target=preview&state=BUILDING"
+    url = f"https://api.vercel.com/v6/deployments?projectId={project_id}&target={target}&state=BUILDING"
     response = requests.get(url, headers=headers)
     deployments = response.json()['deployments']
     print(f"Found {len(deployments)} deployments.")

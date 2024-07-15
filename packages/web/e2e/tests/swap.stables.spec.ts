@@ -36,7 +36,7 @@ test.describe("Test Swap Stables feature", () => {
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1280 },
       slowMo: 400,
     });
     // Get all new pages (including Extension) in the context and wait
@@ -120,9 +120,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDT.axl to kava.USDT", async () => {
+  test("User should be able to swap USDT.axl to USDT.kava", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDT.axl", "kava.USDT");
+    await swapPage.selectPair("USDT.axl", "USDT.kava");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -135,9 +135,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap kava.USDT to USDT.axl", async () => {
+  test("User should be able to swap USDT.kava to USDT.axl", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("kava.USDT", "USDT.axl");
+    await swapPage.selectPair("USDT.kava", "USDT.axl");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
