@@ -6376,9 +6376,9 @@
     draggabilly "^3.0.0"
 
 "@particle-network/chains@*":
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.5.5.tgz#6da6ad03575941595008bf62a1555e0dc3405d1d"
-  integrity sha512-+aqxfYmHlChfFBSezVE2LkbLY9d0ZApxmQj1ATjGSVOM9+bxGWD4gWCm+BIF8GFuJ4jA3T8ueuIzv9Knk4wk8w==
+  version "1.5.6"
+  resolved "https://registry.yarnpkg.com/@particle-network/chains/-/chains-1.5.6.tgz#950ece16c879d2541457fce3770291e3f4e5a669"
+  integrity sha512-jWpEHwh6jHPY3ZaeRWuMcpdZTkSJprec3z87xjWryGQoC8lZxwwGb0x32iPDc+F28UFxV+6Y6DzEBtM791gF0w==
 
 "@particle-network/crypto@^1.0.1":
   version "1.0.1"
@@ -9564,16 +9564,16 @@
     prop-types "^15.6.2"
 
 "@volar/language-core@~2.4.0-alpha.15":
-  version "2.4.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@volar/language-core/-/language-core-2.4.0-alpha.15.tgz#d17dfac0014f5648dd9ccc090918795b03cde0e9"
-  integrity sha512-mt8z4Fm2WxfQYoQHPcKVjLQV6PgPqyKLbkCVY2cr5RSaamqCHjhKEpsFX66aL4D/7oYguuaUw9Bx03Vt0TpIIA==
+  version "2.4.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@volar/language-core/-/language-core-2.4.0-alpha.16.tgz#fd4d38ccbf5ad13ebb29eacfdda719807749ffac"
+  integrity sha512-oOTnIZlx0P/idFwVw+W0NbzKDtZAQMzXSdIFfTePCKcXlb4Ys12GaGkx8NF9dsvPYV3nbv3ZsSxnkZWBmNKd7A==
   dependencies:
-    "@volar/source-map" "2.4.0-alpha.15"
+    "@volar/source-map" "2.4.0-alpha.16"
 
-"@volar/source-map@2.4.0-alpha.15":
-  version "2.4.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-2.4.0-alpha.15.tgz#b90dfd5a3ce30296dfcdcca647c6b41681b1b29b"
-  integrity sha512-8Htngw5TmBY4L3ClDqBGyfLhsB8EmoEXUH1xydyEtEoK0O6NX5ur4Jw8jgvscTlwzizyl/wsN1vn0cQXVbbXYg==
+"@volar/source-map@2.4.0-alpha.16":
+  version "2.4.0-alpha.16"
+  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-2.4.0-alpha.16.tgz#3a86ffadbba6928cd3f6717220dd87f8c1522904"
+  integrity sha512-sL9vNG7iR2hiKZor7UkD5Sufu3QCia4cbp2gX/nGRNSdaPbhOpdAoavwlBm0PrVkpiA19NZuavZoobD8krviFg==
 
 "@vue/compiler-core@3.4.31":
   version "3.4.31"
