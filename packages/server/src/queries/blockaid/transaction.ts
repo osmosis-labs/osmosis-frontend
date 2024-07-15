@@ -4,6 +4,7 @@ import { BLOCKAID_BASE_URL } from "../../env";
 import { blockaidAuthHeaders } from ".";
 
 export interface TransactionScanRequest {
+  chain?: string;
   /**
    * Example: ['simulation']
    */
@@ -12,6 +13,7 @@ export interface TransactionScanRequest {
    * Tx hex bytes
    */
   tx_bytes: string;
+  metadata: { [key: string]: string };
 }
 
 export interface TransactionScanResponse {
