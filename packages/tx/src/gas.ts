@@ -258,7 +258,7 @@ export async function getGasFeeAmount({
   gasLimit,
   bech32Address,
   gasMultiplier = 1.5,
-  coinsSpent,
+  coinsSpent = [],
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -315,13 +315,7 @@ export async function getGasFeeAmount({
     );
   }
 
-  // first check unspent balances
-  const feeDenomsSpent = (coinsSpent ?? []).map(({ denom }) => denom);
-  const unspentFeeBalances = feeBalances.filter(
-    (balance) => !feeDenomsSpent.includes(balance.denom)
-  );
-
-  for (const { denom, amount } of unspentFeeBalances) {
+  for (const { amount, denom } of feeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
@@ -339,51 +333,6 @@ export async function getGasFeeAmount({
       new Int(feeAmount).lte(new Int(1))
     )
       continue;
-
-    // found enough to pay the fee that is not spent
-    return [
-      {
-        amount: feeAmount,
-        denom,
-      },
-    ];
-  }
-
-  // check spent balances last
-  if (!coinsSpent)
-    throw new InsufficientFeeError(
-      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-        bech32Address
-    );
-  const spentFeeBalances = feeBalances.filter((balance) =>
-    coinsSpent.some(({ denom }) => denom === balance.denom)
-  );
-
-  // get all fee amounts for spent balances so we can prioritize the smallest amounts
-  const spentFeesWithAmounts = await Promise.all(
-    spentFeeBalances.map((spentFeeBalance) =>
-      getGasPriceByFeeDenom({
-        chainId,
-        chainList,
-        feeDenom: spentFeeBalance.denom,
-        gasMultiplier,
-      }).then(({ gasPrice }) => ({
-        ...spentFeeBalance,
-        feeAmount: gasPrice.mul(new Dec(gasLimit)).truncate().toString(),
-      }))
-    )
-  );
-
-  // filter spent fees by those that are not enough to pay the fee and sort by smallest amounts
-  const spentFees = spentFeesWithAmounts
-    .filter((spentFee) =>
-      new Dec(spentFee.feeAmount).lte(new Dec(spentFee.amount))
-    )
-    .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
-
-  for (const { amount, feeAmount, denom } of spentFees) {
-    // check for gas price conversion having too little precision
-    if (new Int(feeAmount).lte(new Int(1))) continue;
 
     const spentAmount =
       coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
