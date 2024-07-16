@@ -119,6 +119,26 @@ export class SquidBridgeProvider implements BridgeProvider {
           headers: {
             "x-integrator-id": this.integratorId,
           },
+        }).catch((e) => {
+          if (e instanceof ApiClientError) {
+            const errMsgs = squidErrorMessages(e);
+
+            if (
+              errMsgs.some((m) =>
+                m.includes(
+                  "The input amount is not high enough to cover the bridge fee"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "InsufficientAmountError",
+                message: e.message,
+              });
+            }
+          }
+
+          throw e;
         });
 
         const {
@@ -666,3 +686,16 @@ export class SquidBridgeProvider implements BridgeProvider {
 }
 
 export * from "./transfer-status";
+
+/**
+ * Squid returns error data in the form of an errors object containing an array of errors.
+ * @returns list of error messages
+ */
+function squidErrorMessages(error: ApiClientError): string[] {
+  const e = error as ApiClientError<{
+    errors: { errorType: string; message: string }[];
+  }>;
+  const errors = e.data.errors.map(({ message }) => message);
+  e.message = errors.join(", ");
+  return errors;
+}
