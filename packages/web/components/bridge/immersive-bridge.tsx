@@ -142,7 +142,7 @@ export const ImmersiveBridgeFlow = ({
               />
             )}
 
-            <div className="flex h-full w-[30rem] flex-col gap-10 pt-12 md:w-screen md:pt-20">
+            <div className="flex h-full w-[30rem] flex-col gap-20 pt-12 md:w-screen md:pt-20">
               <StepProgress
                 className="w-full md:hidden"
                 steps={[

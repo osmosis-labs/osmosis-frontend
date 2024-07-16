@@ -344,6 +344,7 @@ export const useBridgeQuotes = ({
 
     if (
       !!bestQuote &&
+      !isTxPending &&
       ((bestQuote?.provider.id !== selectedBridgeProvider &&
         !isBridgeProviderControlledMode) ||
         isBridgeProviderNotFound)
@@ -355,6 +356,7 @@ export const useBridgeQuotes = ({
     quoteResults,
     selectedBridgeProvider,
     isBridgeProviderControlledMode,
+    isTxPending,
   ]);
 
   const isInsufficientFee = useMemo(() => {

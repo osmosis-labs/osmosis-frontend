@@ -38,10 +38,6 @@ async function estimateTxFeesQueryFn({
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
-  sendToken?: {
-    balance: CoinPretty;
-    amount: CoinPretty;
-  };
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
   if (!messages.length) throw new Error("No messages");

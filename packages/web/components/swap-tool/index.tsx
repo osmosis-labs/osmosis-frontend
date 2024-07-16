@@ -961,7 +961,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     !Boolean(swapState.quote) ||
                     isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    Boolean(swapState.networkFeeError)))
+                    (Boolean(swapState.networkFeeError) &&
+                      !swapState.hasOverSpendLimitError)))
               }
               onClick={sendSwapTx}
             >

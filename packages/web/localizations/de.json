@@ -496,6 +496,8 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
+      "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
+      "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
