@@ -112,13 +112,13 @@ export const AmountAndReviewScreen = observer(
         Object.values(fromAsset.supportedVariants)
           .flat()
           .forEach((provider) => assetSupportedBridges.add(provider));
-      } else if (direction === "withdraw" && toAsset) {
+      } else if (direction === "withdraw" && fromAsset && toAsset) {
         // withdraw
         counterpartySupportedAssetsByChainId[toAsset.chainId].forEach(
           (asset) => {
-            Object.values(asset.supportedVariants)
-              .flat()
-              .forEach((provider) => assetSupportedBridges.add(provider));
+            asset.supportedVariants[fromAsset.address]?.forEach((provider) => {
+              assetSupportedBridges.add(provider);
+            });
           }
         );
       }
