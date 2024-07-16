@@ -78,17 +78,17 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         errorMessage?.includes("no routes were provided") ||
         errorMessage?.includes("no candidate routes found")
       ) {
-        throw new NoRouteError();
+        throw new NoRouteError(errorMessage);
       }
 
       if (errorMessage?.includes("not enough liquidity")) {
-        throw new NotEnoughLiquidityError();
+        throw new NotEnoughLiquidityError(errorMessage);
       }
 
       if (
         errorMessage?.includes("amount out is zero, try increasing amount in")
       ) {
-        throw new NotEnoughQuotedError();
+        throw new NotEnoughQuotedError(errorMessage);
       }
 
       throw new Error(errorMessage ?? "Unexpected sidecar router error " + e);
