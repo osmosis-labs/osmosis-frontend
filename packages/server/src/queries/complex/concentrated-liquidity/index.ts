@@ -416,7 +416,7 @@ export async function mapGetUserPositionDetails({
 
       const superfluidApr: RatePretty | undefined = (
         await getPoolIncentives(pool.id)
-      )?.aprBreakdown?.superfluid;
+      )?.aprBreakdown?.superfluid?.upper;
 
       /** User's current superfluid delegation or undelegation */
       let superfluidData:
