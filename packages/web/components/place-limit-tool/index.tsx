@@ -217,8 +217,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     swapState.isMakerFeeLoading ||
                     (swapState.isMarket &&
                       (swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.isLoadingNetworkFee ||
-                        swapState.marketState.isLoadingSelectAssets)) ||
+                        // TODO: Readd swapState.marketState.isLoadingSelectAssets
+                        swapState.marketState.isLoadingNetworkFee)) ||
                     orderbookAssetsLoading
                   }
                   loadingText={t("assets.transfer.loading")}
