@@ -406,7 +406,8 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
-    "noData": "Brak danych"
+    "noData": "Brak danych",
+    "noOrderbook": "Brak księgi zamówień dla pary"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",

@@ -406,7 +406,8 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
-    "noData": "沒有數據"
+    "noData": "沒有數據",
+    "noOrderbook": "沒有配對訂單簿"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",

@@ -406,7 +406,8 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد"
+    "noData": "اطلاعاتی وجود ندارد",
+    "noOrderbook": "بدون دفترچه سفارش برای جفت"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",

@@ -406,7 +406,8 @@
     "invalidAmounts": "Montos no válidos",
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
     "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
-    "noData": "Sin datos"
+    "noData": "Sin datos",
+    "noOrderbook": "Sin libro de pedidos para el par"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
