@@ -17,13 +17,13 @@ export interface LimitInputProps {
   setMarketAmount: (value: string) => void;
   tokenAmount: string;
   price: Dec;
-  insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
   quoteBalance?: Dec;
   baseBalance?: Dec;
   expectedOutput?: Dec;
   expectedOutputLoading: boolean;
+  insufficientFunds?: boolean;
 }
 
 const calcScale = (numChars: number, isMobile: boolean): string => {
@@ -79,7 +79,6 @@ export const LimitInput: FC<LimitInputProps> = ({
   onChange,
   tokenAmount,
   price,
-  insufficentFunds,
   disableSwitching,
   setMarketAmount,
   quoteAssetPrice,
@@ -87,6 +86,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   expectedOutputLoading,
   quoteBalance,
   baseBalance,
+  insufficientFunds,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
@@ -114,7 +114,11 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, type]);
 
   const setFiatAmountSafe = useCallback(
-    (value: string) => {
+    (value?: string) => {
+      if (!value) {
+        return setFiatAmount("");
+      }
+
       const updatedValue = transformAmount(value);
       const isFocused = focused === FocusedInput.FIAT;
       if (
@@ -138,7 +142,11 @@ export const LimitInput: FC<LimitInputProps> = ({
   );
 
   const setTokenAmountSafe = useCallback(
-    (value: string) => {
+    (value?: string) => {
+      if (!value) {
+        return onChange("");
+      }
+
       const updatedValue = transformAmount(value);
       const isFocused = focused === FocusedInput.TOKEN;
 
@@ -166,16 +174,20 @@ export const LimitInput: FC<LimitInputProps> = ({
 
   useEffect(() => {
     if (focused !== FocusedInput.TOKEN || !price) return;
-    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
-    const fiatValue = price.mul(value);
-    setFiatAmountSafe(formatPretty(fiatValue));
+
+    const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+    const fiatValue = value ? price.mul(value) : undefined;
+
+    setFiatAmountSafe(fiatValue ? formatPretty(fiatValue) : undefined);
   }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
-    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
-    const tokenValue = new Dec(value).quo(price);
-    setTokenAmountSafe(tokenValue.toString());
+
+    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+    const tokenValue = value ? new Dec(value).quo(price) : undefined;
+
+    setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
   return (
     <div className="relative h-[108px]">
@@ -186,7 +198,6 @@ export const LimitInput: FC<LimitInputProps> = ({
           baseAsset={baseAsset}
           focused={focused}
           swapFocus={swapFocus}
-          insufficentFunds={insufficentFunds}
           amount={
             inputType === "fiat"
               ? type === "market" && tab === "sell"
@@ -211,7 +222,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       >
         <span
           className={classNames("body2 text-wosmongton-200", {
-            "text-rust-300": insufficentFunds,
+            "text-rust-300": insufficientFunds,
           })}
         >
           Max
@@ -242,7 +253,6 @@ type AutoInputProps = {
 function AutoInput({
   focused,
   baseAsset,
-  insufficentFunds,
   swapFocus,
   amount,
   setter,
@@ -277,7 +287,6 @@ function AutoInput({
         {
           [nonFocusedClasses]: !isFocused,
           [focusedClasses]: isFocused,
-          "text-rust-300": isFocused && insufficentFunds,
           "text-wosmongton-400": isFocused && (amount === "0" || amount === ""),
           "text-white-full": isFocused && +amount > 0,
         }
@@ -307,11 +316,20 @@ function AutoInput({
             placeholder="0"
             value={amount}
             inputClassName={classNames(
-              "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
+              "bg-transparent !m-0 !p-0 text-h3 font-h3 text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
               { "cursor-pointer font-normal": !isFocused }
             )}
             onChange={(e) => setter(e.target.value)}
             onClick={!isFocused ? swapFocus : undefined}
+            extraWidth={
+              isFocused
+                ? type === "fiat"
+                  ? 0
+                  : 4
+                : type === "fiat"
+                ? 0
+                : undefined
+            }
           />
           {type === "token" && (
             <span
@@ -320,7 +338,7 @@ function AutoInput({
                 "font-normal": !isFocused,
               })}
             >
-              {baseAsset ? baseAsset.coinDenom : ""}
+              {baseAsset && baseAsset.coinDenom}
             </span>
           )}
           {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}

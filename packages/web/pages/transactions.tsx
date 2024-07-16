@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
@@ -79,6 +80,8 @@ const Transactions: React.FC = observer(() => {
     onLoadEvent: [EventName.TransactionsPage.pageViewed],
   });
 
+  const [fromPage] = useQueryState("fromPage");
+
   const { t } = useTranslation();
 
   useNavBar({
@@ -94,9 +97,13 @@ const Transactions: React.FC = observer(() => {
             className="text-osmoverse-200"
           />
         }
-        label={t("menu.portfolio")}
-        ariaLabel={t("menu.portfolio")}
-        href="/portfolio"
+        label={
+          fromPage === "swap" ? t("limitOrders.trade") : t("menu.portfolio")
+        }
+        ariaLabel={
+          fromPage === "swap" ? t("limitOrders.trade") : t("menu.portfolio")
+        }
+        href={fromPage === "swap" ? "/" : "/portfolio"}
       />
     ),
     ctas: [],

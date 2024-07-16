@@ -254,13 +254,19 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             <Button
               mode="unstyled"
               onClick={onRequestClose}
-              className="rounded-xl border border-osmoverse-700"
+              className="rounded-2xl border border-osmoverse-700"
             >
               <h6 className="text-wosmongton-200">
                 {t("unstableAssetsWarning.buttonCancel")}
               </h6>
             </Button>
-            <Button onClick={placeLimitState.placeLimit}>
+            <Button
+              onClick={async () => {
+                await placeLimitState.placeLimit();
+                onRequestClose();
+              }}
+              className="!rounded-2xl"
+            >
               <h6>{t("limitOrders.confirm")}</h6>
             </Button>
           </div>

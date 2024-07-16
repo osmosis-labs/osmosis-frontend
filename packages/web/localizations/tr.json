@@ -1276,7 +1276,10 @@
     "estimatingFees": "Ücretlerin tahmin edilmesi",
     "fees": "ücretler",
     "receiveEstimated": "Alma (tahmini)",
-    "swapRoute": "Rotayı değiştir"
+    "swapRoute": "Rotayı değiştir",
+    "trade": "Ticaret",
+    "swapToAnotherAsset": "Başka bir varlığa geç",
+    "openOrders": "Açık siparişler"
   },
   "orderHistory": {
     "orders": "Emirler",

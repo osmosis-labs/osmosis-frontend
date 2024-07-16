@@ -1276,7 +1276,10 @@
     "estimatingFees": "Estimación de tarifas",
     "fees": "honorarios",
     "receiveEstimated": "Recibir (estimado)",
-    "swapRoute": "Intercambiar ruta"
+    "swapRoute": "Intercambiar ruta",
+    "trade": "Comercio",
+    "swapToAnotherAsset": "Cambiar a otro activo",
+    "openOrders": "Ordenes abiertas"
   },
   "orderHistory": {
     "orders": "Pedidos",
