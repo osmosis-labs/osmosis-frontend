@@ -278,7 +278,7 @@ export async function getGasFeeAmount({
      *  spent by the given spent coins list.
      *  Likely, the spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[]
 > {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
@@ -323,12 +323,12 @@ export async function getGasFeeAmount({
   let subtractiveFeeAmount: {
     denom: string;
     amount: string;
-    isNeededForTx?: boolean;
+    isSubtractiveFee: boolean;
   }[] = [];
   let alternativeFeeAmount: {
     denom: string;
     amount: string;
-    isNeededForTx?: boolean;
+    isSubtractiveFee: boolean;
   }[] = [];
 
   for (const { amount, denom } of feeBalances) {
@@ -370,7 +370,7 @@ export async function getGasFeeAmount({
         {
           amount: feeAmount,
           denom,
-          isNeededForTx: true,
+          isSubtractiveFee: true,
         },
       ];
       continue;
@@ -385,7 +385,7 @@ export async function getGasFeeAmount({
       {
         amount: feeAmount,
         denom,
-        isNeededForTx: isBalanceNeededForTx,
+        isSubtractiveFee: false,
       },
     ];
     break;

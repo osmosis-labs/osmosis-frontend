@@ -570,7 +570,7 @@ describe("getGasFeeAmount", () => {
 
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
-    expect(gasAmount.isNeededForTx).toBe(true);
+    expect(gasAmount.isSubtractiveFee).toBe(true);
   });
 
   it("should return the correct gas amount with an alternative fee token when the last available fee token is not fully spent", async () => {
@@ -657,7 +657,7 @@ describe("getGasFeeAmount", () => {
 
     expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
-    expect(gasAmount.isNeededForTx).toBe(false);
+    expect(gasAmount.isSubtractiveFee).toBe(false);
   });
 
   // Scenario: base fee token goes down in price and a very expensive (i.e. WBTC) alternative fee token is checked but resulting fee amount is <= 0
@@ -781,7 +781,7 @@ describe("getGasFeeAmount", () => {
       "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
     );
     expect(gasAmount.amount).toBe(expectedGasAmount);
-    expect(gasAmount.isNeededForTx).toBe(false);
+    expect(gasAmount.isSubtractiveFee).toBe(false);
   });
 
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {
