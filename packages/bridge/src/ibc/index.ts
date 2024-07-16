@@ -63,6 +63,21 @@ export class IbcBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: IbcBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
     });
     const gasFee = txSimulation.amount[0];
     const gasAsset = this.getGasAsset(fromChainId, gasFee.denom);

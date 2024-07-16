@@ -360,17 +360,7 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee = useMemo(() => {
-    if (
-      someError?.message.includes(
-        "No fee tokens found with sufficient balance on account"
-      ) ||
-      someError?.message.includes(
-        "Input amount is too low to cover CCTP bridge relay fee"
-      ) ||
-      someError?.message.includes(
-        "cannot transfer across cctp after route demands swap"
-      )
-    )
+    if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
 
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
@@ -400,21 +390,6 @@ export const useBridgeQuotes = ({
 
     return false;
   }, [someError, inputCoin, selectedQuote]);
-
-  // const isInsufficientFee =
-  //   // Cosmos not fee tokens error
-  //   someError?.message.includes(
-  //     "No fee tokens found with sufficient balance on account"
-  //   ) ||
-  //   (inputAmountRaw !== "" &&
-  //     availableBalance &&
-  //     selectedQuote?.gasCost !== undefined &&
-  //     selectedQuote.gasCost.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-  //     inputCoin
-  //       ?.toDec()
-  //       .sub(availableBalance.toDec()) // subtract by available balance to get the maximum transfer amount
-  //       .abs()
-  //       .lt(selectedQuote.gasCost.toDec()));
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
