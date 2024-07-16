@@ -4,6 +4,7 @@ import { z } from "zod";
 const SquidErrors = z.object({
   errors: z.array(
     z.object({
+      path: z.string().optional(),
       errorType: z.string(),
       message: z.string(),
     })
@@ -18,11 +19,18 @@ type SquidErrors = z.infer<typeof SquidErrors>;
  * @returns list of error messages
  */
 export function getSquidErrors(error: ApiClientError): SquidErrors {
-  const e = error as ApiClientError<SquidErrors>;
-  const squidError = SquidErrors.parse(e.data);
-  const msgs = squidError.errors.map(
-    ({ message }, i) => `${i + 1}) ${message}`
-  );
-  e.message = msgs.join(", ");
-  return squidError;
+  try {
+    const e = error as ApiClientError<SquidErrors>;
+    const squidError = SquidErrors.parse(e.data);
+    const msgs = squidError.errors.map(
+      ({ message }, i) => `${i + 1}) ${message}`
+    );
+    e.message = msgs.join(", ");
+    return squidError;
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      throw new Error("Squid error validation failed:" + e.errors.join(", "));
+    }
+    throw new Error("Squid errors: An unexpected error occurred");
+  }
 }
