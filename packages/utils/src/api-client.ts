@@ -69,6 +69,14 @@ export async function apiClient<T>(
     try {
       let data: any;
 
+      if (response.status === 502) {
+        throw new ApiClientError({
+          message: "Bad Gateway",
+          data: {},
+          response,
+        });
+      }
+
       try {
         data = await response.json();
       } catch (e) {

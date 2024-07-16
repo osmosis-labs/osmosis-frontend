@@ -497,6 +497,8 @@
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
+      "insufficientFunds": "Недостаточно средств OSMO для торговли в 1 клик",
+      "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "startANewSession": "Начать новый сеанс",
       "approveManually": "Утвердить вручную в {walletName}",

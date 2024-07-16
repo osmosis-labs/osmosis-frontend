@@ -497,6 +497,8 @@
       "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
+      "insufficientFunds": "Fonduri OSMO insuficiente pentru tranzacționarea cu 1 clic",
+      "continueWithoutOneClickTrading": "Continuați fără tranzacționare cu 1 clic",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
       "startANewSession": "Începeți o nouă sesiune",
       "approveManually": "Aprobați manual în {walletName}",

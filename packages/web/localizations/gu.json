@@ -497,6 +497,8 @@
       "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
       "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
+      "insufficientFunds": "1-ક્લિક ટ્રેડિંગ માટે અપર્યાપ્ત OSMO ભંડોળ",
+      "continueWithoutOneClickTrading": "1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
       "startANewSession": "નવું સત્ર શરૂ કરો",
       "approveManually": "{walletName} માં મેન્યુઅલી મંજૂર કરો",
