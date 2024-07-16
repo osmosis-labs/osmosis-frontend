@@ -7,7 +7,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
+import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
 import { getShortAddress, isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -71,6 +71,9 @@ interface AmountScreenProps {
   direction: "deposit" | "withdraw";
   selectedDenom: string;
 
+  assetsInOsmosis: MinimalAsset[] | undefined;
+  bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
+
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
   toChain: BridgeChainWithDisplayInfo | undefined;
@@ -99,6 +102,12 @@ export const AmountScreen = observer(
   ({
     direction,
     selectedDenom,
+
+    assetsInOsmosis,
+    bridgesSupportedAssets: {
+      supportedAssetsByChainId: counterpartySupportedAssetsByChainId,
+      supportedChains,
+    },
 
     fromChain,
     setFromChain,
@@ -199,18 +208,6 @@ export const AmountScreen = observer(
         ? evmAddress
         : toCosmosCounterpartyAccount?.address;
 
-    const { data: assetsInOsmosis } =
-      api.edge.assets.getCanonicalAssetWithVariants.useQuery(
-        {
-          findMinDenomOrSymbol: selectedDenom!,
-        },
-        {
-          enabled: !isNil(selectedDenom),
-          cacheTime: 10 * 60 * 1000, // 10 minutes
-          staleTime: 10 * 60 * 1000, // 10 minutes
-        }
-      );
-
     const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
       findChainNameOrId: accountStore.osmosisChainId,
     });
@@ -228,17 +225,6 @@ export const AmountScreen = observer(
        */
       canonicalAsset
     );
-
-    const {
-      supportedAssetsByChainId: counterpartySupportedAssetsByChainId,
-      supportedChains,
-    } = useBridgesSupportedAssets({
-      assets: assetsInOsmosis,
-      chain: {
-        chainId: accountStore.osmosisChainId,
-        chainType: "cosmos",
-      },
-    });
 
     const firstSupportedEvmChain = useMemo(
       () =>
@@ -886,7 +872,8 @@ export const AmountScreen = observer(
             {(direction === "deposit"
               ? !isNil(fromAsset) &&
                 Object.keys(fromAsset.supportedVariants).length > 1
-              : !isNil(toAsset) &&
+              : // direction === "withdraw"
+                !isNil(toAsset) &&
                 counterpartySupportedAssetsByChainId[toAsset.chainId]?.length >
                   1) && (
               <Menu>
