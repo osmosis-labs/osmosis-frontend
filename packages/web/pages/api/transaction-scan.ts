@@ -1,35 +1,41 @@
 import { transactionScan } from "@osmosis-labs/server";
+import { decodeAnyBase64, generateCosmosUnsignedTx } from "@osmosis-labs/tx";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function transactionScanHandler(req: Request) {
+import { ChainList } from "~/config/generated/chain-list";
+
+export default async function transactionScanHandler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const body = await req.json();
-
-  if (
-    !body.tx_bytes ||
-    !body.mode ||
-    typeof body.tx_bytes !== "string" ||
-    typeof body.mode !== "string"
-  ) {
-    return new Response(JSON.stringify({ error: "Invalid tx_bytes or mode" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+  const { chainId, messages, nonCriticalExtensionOptions, bech32Address } =
+    req.body as {
+      chainId: string;
+      messages: { typeUrl: string; value: string }[];
+      nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
+      bech32Address: string;
+      excludedFeeMinimalDenoms?: string[];
+    };
 
   try {
+    const { unsignedTx } = await generateCosmosUnsignedTx({
+      chainId,
+      chainList: ChainList,
+      bech32Address,
+      body: {
+        messages: messages.map(decodeAnyBase64),
+        nonCriticalExtensionOptions:
+          nonCriticalExtensionOptions?.map(decodeAnyBase64),
+      },
+    });
+
     const response = await transactionScan({
       chain: "osmosis",
-      transaction: body.tx_bytes,
+      transaction: unsignedTx,
       options: ["validation", "simulation"],
       metadata: {
         type: "in_app",
@@ -42,28 +48,8 @@ export default async function transactionScanHandler(req: Request) {
 
     const result = await response.json();
 
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return res.status(200).json(result);
   } catch (e) {
-    return new Response(
-      JSON.stringify({
-        message: "An unexpected error occurred. Please try again. ",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    return res.status(500).json({ error: e instanceof Error ? e.message : e });
   }
 }
-
-export const config = {
-  runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
-};

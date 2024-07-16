@@ -601,11 +601,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         await wallet.getRestEndpoint(true)
       );
 
-      axios.post("/api/transaction-scan", {
-        tx_bytes: Buffer.from(encodedTx).toString("base64"),
-        mode: "BROADCAST_MODE_SYNC",
-      });
-
       const res = await axios.post<{
         tx_response: {
           height: string;
@@ -1276,6 +1271,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             oneClickTradingInfo: await this.getOneClickTradingInfo(),
           })
         : undefined;
+
+      apiClient("/api/transaction-scan", {
+        data: {
+          chainId: wallet.chainId,
+          messages: encodedMessages.map(encodeAnyBase64),
+          nonCriticalExtensionOptions:
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
+          bech32Address: wallet.address,
+        },
+      });
 
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
