@@ -45,6 +45,7 @@ import {
 } from "../interface";
 import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
+import { getSquidErrors } from "./error";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -121,11 +122,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           },
         }).catch((e) => {
           if (e instanceof ApiClientError) {
-            const errMsgs = squidErrorMessages(e);
+            const errMsgs = getSquidErrors(e);
 
             if (
-              errMsgs.some((m) =>
-                m.includes(
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
                   "The input amount is not high enough to cover the bridge fee"
                 )
               )
@@ -686,16 +687,3 @@ export class SquidBridgeProvider implements BridgeProvider {
 }
 
 export * from "./transfer-status";
-
-/**
- * Squid returns error data in the form of an errors object containing an array of errors.
- * @returns list of error messages
- */
-function squidErrorMessages(error: ApiClientError): string[] {
-  const e = error as ApiClientError<{
-    errors: { errorType: string; message: string }[];
-  }>;
-  const errors = e.data.errors.map(({ message }) => message);
-  e.message = errors.join(", ");
-  return errors;
-}
