@@ -125,7 +125,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               const msg = e.message;
               if (
                 msg.includes(
-                  "Input amount is too low to cover CCTP bridge relay fee"
+                  "Input amount is too low to cover"
                 )
               ) {
                 throw new BridgeQuoteError({
