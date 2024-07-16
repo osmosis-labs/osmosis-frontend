@@ -406,7 +406,8 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "noOrderbook": "No Orderbook for Pair"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",

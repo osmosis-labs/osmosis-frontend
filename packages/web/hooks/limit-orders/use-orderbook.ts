@@ -183,12 +183,23 @@ export const useOrderbook = ({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
 
+  const error = useMemo(() => {
+    if (
+      !Boolean(orderbook) ||
+      !Boolean(orderbook!.poolId) ||
+      orderbook!.poolId === ""
+    ) {
+      return "errors.noOrderbook";
+    }
+  }, [orderbook]);
+
   return {
     poolId: orderbook?.poolId ?? "",
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,
     isOrderbookLoading,
+    error,
   };
 };
 

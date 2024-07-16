@@ -44,6 +44,7 @@ export const usePlaceLimit = ({
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
     poolId,
+    error: orderbookError,
   } = useOrderbook({
     quoteDenom,
     baseDenom,
@@ -320,6 +321,10 @@ export const usePlaceLimit = ({
   ]);
 
   const error = useMemo(() => {
+    if (orderbookError) {
+      return orderbookError;
+    }
+
     if (insufficientFunds) {
       return "limitOrders.insufficientFunds";
     }
@@ -344,6 +349,7 @@ export const usePlaceLimit = ({
     marketState.error,
     priceState.isValidPrice,
     paymentTokenValue,
+    orderbookError,
   ]);
 
   return {

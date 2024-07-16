@@ -8,7 +8,7 @@ const orderbookPoolsCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 
-const orderBookCodeIds = [865];
+const orderBookCodeIds = [865, 885];
 
 interface OrderbookInstantiateMsg {
   quote_denom: string;
