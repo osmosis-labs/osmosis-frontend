@@ -20,7 +20,9 @@ type SquidErrors = z.infer<typeof SquidErrors>;
 export function getSquidErrors(error: ApiClientError): SquidErrors {
   const e = error as ApiClientError<SquidErrors>;
   const squidError = SquidErrors.parse(e.data);
-  const msgs = squidError.errors.map(({ message }) => message);
+  const msgs = squidError.errors.map(
+    ({ message }, i) => `${i + 1}) ${message}`
+  );
   e.message = msgs.join(", ");
   return squidError;
 }
