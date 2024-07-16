@@ -74,7 +74,6 @@ export async function estimateGasFee({
   bech32Address,
   gasMultiplier = 1.5,
   onlyDefaultFeeDenom,
-  excludedFeeMinimalDenoms,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -86,7 +85,7 @@ export async function estimateGasFee({
    *  Default: `1.5` */
   gasMultiplier?: number;
 
-  excludedFeeMinimalDenoms?: string[];
+  sendCoin?: { denom: string; amount: string };
 
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
@@ -124,7 +123,6 @@ export async function estimateGasFee({
     coinsSpent,
     bech32Address,
     gasMultiplier,
-    excludedFeeMinimalDenoms,
   });
 
   return {
@@ -263,7 +261,6 @@ export async function getGasFeeAmount({
   bech32Address,
   gasMultiplier = 1.5,
   coinsSpent = [],
-  excludedFeeMinimalDenoms,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -273,7 +270,6 @@ export async function getGasFeeAmount({
   /** Coins being spent in applicable transaction.
    *  Will be cross checked with available fee coins on chain and from account if given. */
   coinsSpent?: { denom: string; amount: string }[];
-  excludedFeeMinimalDenoms?: string[];
 }): Promise<
   {
     denom: string;
@@ -309,7 +305,7 @@ export async function getGasFeeAmount({
   // iterate in order of fee denoms
   for (const denom of chainFeeDenoms) {
     const balance = balances.find((balance) => balance.denom === denom);
-    if (balance && !excludedFeeMinimalDenoms?.includes(denom)) {
+    if (balance) {
       feeBalances.push(balance);
     }
   }
@@ -320,6 +316,20 @@ export async function getGasFeeAmount({
         bech32Address
     );
   }
+
+  /**
+   * Coins that can be subtracted to cover fee.
+   */
+  let subtractiveFeeAmount: {
+    denom: string;
+    amount: string;
+    isNeededForTx?: boolean;
+  }[] = [];
+  let alternativeFeeAmount: {
+    denom: string;
+    amount: string;
+    isNeededForTx?: boolean;
+  }[] = [];
 
   for (const { amount, denom } of feeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
@@ -342,23 +352,59 @@ export async function getGasFeeAmount({
 
     const spentAmount =
       coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
-    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
-    const isBalanceNeededForTx = totalSpent.gte(new Dec(amount));
+    /**
+     * If the spent amount (input amount in case of swap) is greater than the balance minus fees
+     * then we are missing balance to pay for the transaction. In this case,
+     * we need to find an alternative token or subtract this amount from the input.
+     */
+    const isBalanceNeededForTx = new Dec(spentAmount).gt(
+      new Dec(amount).sub(new Dec(feeAmount))
+    );
 
-    return [
+    /**
+     * Following last comment, we now store a the subtractive coin that can be used in the transaction,
+     * as long as it's subtracted from the input.
+     */
+    if (isBalanceNeededForTx) {
+      subtractiveFeeAmount = [
+        {
+          amount: feeAmount,
+          denom,
+          isNeededForTx: true,
+        },
+      ];
+      continue;
+    }
+
+    /**
+     * We will also store an alternative fee token.
+     *
+     * Useful to avoid leaving dust amounts for instances like a max amount swap.
+     */
+    alternativeFeeAmount = [
       {
         amount: feeAmount,
         denom,
         isNeededForTx: isBalanceNeededForTx,
       },
     ];
-    // keep trying with other balances
+    break;
   }
 
-  throw new InsufficientFeeError(
-    "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-      bech32Address
-  );
+  if (subtractiveFeeAmount.length === 0 && alternativeFeeAmount.length === 0) {
+    throw new InsufficientFeeError(
+      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
+        bech32Address
+    );
+  }
+
+  /**
+   * we'll always prefer the alternative fee token against the balance needed for tx amount as we want to avoid
+   * having to subtract the input amount. Rather, we use the alternative fee token to avoid dust amounts.
+   */
+  return alternativeFeeAmount.length > 0
+    ? alternativeFeeAmount
+    : subtractiveFeeAmount;
 }
 
 /**

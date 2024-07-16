@@ -1250,12 +1250,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   public async estimateFee({
     wallet,
     messages,
-    excludedFeeMinimalDenoms,
     signOptions = {},
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
-    excludedFeeMinimalDenoms?: string[];
     initialFee?: Optional<StdFee, "gas">;
     signOptions?: SignOptions;
   }): Promise<StdFee> {
@@ -1282,13 +1280,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
           gasMultiplier: GasMultiplier,
-          excludedFeeMinimalDenoms,
         } satisfies {
           chainId: string;
           messages: { typeUrl: string; value: string }[];
           nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
           bech32Address: string;
-          excludedFeeMinimalDenoms?: string[];
           onlyDefaultFeeDenom?: boolean;
           gasMultiplier: number;
         },

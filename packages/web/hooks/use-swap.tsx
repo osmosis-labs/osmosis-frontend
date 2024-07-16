@@ -215,13 +215,6 @@ export function useSwap(
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
     enabled: networkFeeQueryEnabled,
-    sendToken:
-      inAmountInput.balance && inAmountInput.amount
-        ? {
-            amount: inAmountInput.amount,
-            balance: inAmountInput.balance,
-          }
-        : undefined,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
@@ -824,12 +817,6 @@ function useSwapAmountInput({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
     enabled: networkFeeQueryEnabled,
-    sendToken: inAmountInput.balance
-      ? {
-          amount: inAmountInput.balance,
-          balance: inAmountInput.balance,
-        }
-      : undefined,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
