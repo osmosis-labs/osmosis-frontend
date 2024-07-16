@@ -222,13 +222,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   disabled={
                     Boolean(swapState.error) ||
                     (!swapState.isMarket &&
-                      !swapState.priceState.isValidPrice &&
                       swapState.priceState.orderPrice.length > 0) ||
                     isMarketLoading ||
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    !swapState.inAmountInput.inputAmount ||
-                    swapState.inAmountInput.inputAmount === "0"
+                    swapState.isMakerFeeLoading
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||

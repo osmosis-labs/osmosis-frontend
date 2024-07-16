@@ -1,5 +1,9 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import { NotEnoughQuotedError, PoolType } from "@osmosis-labs/pools";
+import {
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+  PoolType,
+} from "@osmosis-labs/pools";
 import {
   NoRouteError,
   SplitTokenInQuote,
@@ -75,6 +79,10 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         errorMessage?.includes("no candidate routes found")
       ) {
         throw new NoRouteError();
+      }
+
+      if (errorMessage?.includes("not enough liquidity")) {
+        throw new NotEnoughLiquidityError();
       }
 
       if (
