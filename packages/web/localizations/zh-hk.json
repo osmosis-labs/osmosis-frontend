@@ -496,6 +496,8 @@
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "currentlyUnavailable": "一鍵交易目前無法使用",
+      "insufficientFunds": "OSMO 資金不足，無法進行一鍵交易",
+      "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
       "networkFeeTooHigh": "網路費太高",
       "startANewSession": "開始新會話",
       "approveManually": "在{walletName}中手動核准",

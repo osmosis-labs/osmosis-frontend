@@ -1280,6 +1280,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
           gasMultiplier: GasMultiplier,
+        } satisfies {
+          chainId: string;
+          messages: { typeUrl: string; value: string }[];
+          nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
+          bech32Address: string;
+          onlyDefaultFeeDenom?: boolean;
+          gasMultiplier: number;
         },
       });
 
