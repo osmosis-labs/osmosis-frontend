@@ -12,7 +12,7 @@ export interface TransactionScanRequest {
   /**
    * Tx hex bytes
    */
-  tx_bytes: string;
+  transaction: string;
   metadata: { [key: string]: string };
 }
 
@@ -61,7 +61,7 @@ export interface Params {
 }
 
 export async function transactionScan(payload: TransactionScanRequest) {
-  const url = new URL("/v0/osmosis/transaction/scan", BLOCKAID_BASE_URL);
+  const url = new URL("/v0/cosmos/transaction/scan/", BLOCKAID_BASE_URL);
 
   return fetch(url.toString(), {
     headers: {

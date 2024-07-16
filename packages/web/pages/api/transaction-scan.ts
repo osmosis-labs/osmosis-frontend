@@ -29,7 +29,7 @@ export default async function transactionScanHandler(req: Request) {
   try {
     const response = await transactionScan({
       chain: "osmosis",
-      tx_bytes: body.tx_bytes,
+      transaction: body.tx_bytes,
       options: ["validation", "simulation"],
       metadata: {
         type: "in_app",
