@@ -229,7 +229,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
+                    (!swapState.isMarket && swapState.isMakerFeeLoading) ||
                     isMarketLoading ||
                     orderbookAssetsLoading
                   }
