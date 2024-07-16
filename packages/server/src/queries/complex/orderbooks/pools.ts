@@ -10,6 +10,11 @@ const orderbookPoolsCache = new LRUCache<string, CacheEntry>(
 
 const orderBookCodeIds = [865];
 
+interface OrderbookInstantiateMsg {
+  quote_denom: string;
+  base_denom: string;
+}
+
 export interface Orderbook {
   baseDenom: string;
   quoteDenom: string;
@@ -31,9 +36,13 @@ export function getOrderbookPools() {
           })
           .map((pool) => {
             const chainModel = pool.chain_model as ChainCosmwasmPool;
+            const instMsg: OrderbookInstantiateMsg = JSON.parse(
+              atob(chainModel.instantiate_msg)
+            );
+
             return {
-              baseDenom: pool.balances[1].denom,
-              quoteDenom: pool.balances[0].denom,
+              baseDenom: instMsg.base_denom,
+              quoteDenom: instMsg.quote_denom,
               contractAddress: chainModel.contract_address,
               poolId: chainModel.pool_id.toString(),
             };

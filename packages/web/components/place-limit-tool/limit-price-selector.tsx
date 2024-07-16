@@ -139,7 +139,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         <SkeletonLoader
           isLoaded={priceState.spotPrice && !priceState.isLoading}
         >
-          <div className="inline-flex items-center gap-1 py-1">
+          <div className="inline-flex items-center gap-1 py-1 text-h6 font-h6">
             {/** TODO: Dynamic width */}
             {inputMode === InputMode.Price && <span>$</span>}
             {inputMode === InputMode.Price ? (
@@ -184,7 +184,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               }
               disabled={!priceState.spotPrice || priceState.isLoading}
             >
-              <span className="body2 text-wosmongton-200">
+              <span className="text-wosmongton-200">
                 {label !== "0%" && (orderDirection === "bid" ? "-" : "+")}
                 {label}
               </span>

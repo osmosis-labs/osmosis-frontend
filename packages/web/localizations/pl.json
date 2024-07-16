@@ -1276,7 +1276,10 @@
     "estimatingFees": "Szacowanie opłat",
     "fees": "opłaty",
     "receiveEstimated": "Otrzymaj (szacunkowo)",
-    "swapRoute": "Zmień trasę"
+    "swapRoute": "Zmień trasę",
+    "trade": "Handel",
+    "swapToAnotherAsset": "Zamień na inny zasób",
+    "openOrders": "Otwarte zlecenia"
   },
   "orderHistory": {
     "orders": "Zamówienia",

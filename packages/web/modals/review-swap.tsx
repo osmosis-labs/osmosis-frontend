@@ -210,13 +210,17 @@ export function ReviewSwapModal({
               <Button
                 mode="unstyled"
                 onClick={onClose}
-                className="rounded-xl border border-osmoverse-700"
+                className="rounded-2xl border border-osmoverse-700"
               >
                 <h6 className="text-wosmongton-200">
                   {t("unstableAssetsWarning.buttonCancel")}
                 </h6>
               </Button>
-              <Button onClick={confirmAction} disabled={isConfirmationDisabled}>
+              <Button
+                onClick={confirmAction}
+                disabled={isConfirmationDisabled}
+                className="!rounded-2xl"
+              >
                 <h6>{t("limitOrders.confirm")}</h6>
               </Button>
             </div>

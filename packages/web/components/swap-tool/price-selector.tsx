@@ -10,8 +10,9 @@ import React, { Fragment, memo, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useTranslation } from "~/hooks";
+import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -45,6 +46,11 @@ export const PriceSelector = memo(
     );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
+    const [__, setBuyOpen] = useQueryState(
+      "buyOpen",
       parseAsBoolean.withDefault(false)
     );
 
@@ -164,174 +170,224 @@ export const PriceSelector = memo(
       }
     }, [setQuote, userQuotes]);
 
+    const {
+      isOpen: isAddFundsModalOpen,
+      onClose: closeAddFundsModal,
+      onOpen: openAddFundsModal,
+    } = useDisclosure();
+
     return (
-      <Menu as="div" className="relative inline-block">
-        {({ open }) => (
-          <>
-            <Menu.Button className="flex w-full items-center justify-between rounded-b-xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
-              <div className="flex w-full items-center justify-between">
-                {quoteAsset && (
-                  <div
-                    className={classNames(
-                      "flex items-center gap-2 transition-opacity",
-                      tokenSelectionAvailable
-                        ? "cursor-pointer"
-                        : "cursor-default",
-                      {
-                        "opacity-40": disabled,
-                      }
-                    )}
-                  >
-                    <span className="body2 text-osmoverse-300">
-                      {tab === "buy"
-                        ? t("limitOrders.payWith")
-                        : t("limitOrders.receive")}
-                    </span>
-                    {quoteAsset.logoURIs && (
-                      <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                        <Image
-                          src={
-                            quoteAsset.logoURIs.svg ||
-                            quoteAsset.logoURIs.png ||
-                            ""
-                          }
-                          alt={`${quoteAsset.symbol} icon`}
-                          width={24}
-                          height={24}
-                          priority
-                        />
-                      </div>
-                    )}
-                    <span className="md:caption body2 w-32 truncate text-left">
-                      {quoteAsset.symbol}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1">
-                  {showQuoteBalance &&
-                    quoteAssetWithBalance &&
-                    quoteAssetWithBalance.usdValue && (
-                      <span className="body2 inline-flex text-osmoverse-300">
-                        {formatPretty(quoteAssetWithBalance.usdValue, {
-                          minimumFractionDigits: 5,
-                        })}{" "}
-                        {t("pool.available").toLowerCase()}
-                      </span>
-                    )}
-                  <div className="flex h-6 w-6 items-center justify-center">
-                    <Icon
-                      id="chevron-down"
+      <>
+        <Menu as="div" className="relative inline-block">
+          {({ open }) => (
+            <>
+              <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+                <div className="flex w-full items-center justify-between">
+                  {quoteAsset && (
+                    <div
                       className={classNames(
-                        "h-[7px] w-3 text-osmoverse-300 transition-transform",
+                        "flex items-center gap-2 transition-opacity",
+                        tokenSelectionAvailable
+                          ? "cursor-pointer"
+                          : "cursor-default",
                         {
-                          "rotate-180": open,
+                          "opacity-40": disabled,
                         }
                       )}
-                    />
+                    >
+                      <span className="body2 text-osmoverse-300">
+                        {tab === "buy"
+                          ? t("limitOrders.payWith")
+                          : t("limitOrders.receive")}
+                      </span>
+                      {quoteAsset.logoURIs && (
+                        <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
+                          <Image
+                            src={
+                              quoteAsset.logoURIs.svg ||
+                              quoteAsset.logoURIs.png ||
+                              ""
+                            }
+                            alt={`${quoteAsset.symbol} icon`}
+                            width={24}
+                            height={24}
+                            priority
+                          />
+                        </div>
+                      )}
+                      <span className="md:caption body2 w-32 truncate text-left">
+                        {quoteAsset.symbol}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    {showQuoteBalance &&
+                      quoteAssetWithBalance &&
+                      quoteAssetWithBalance.usdValue && (
+                        <span className="body2 inline-flex text-osmoverse-300">
+                          {formatPretty(quoteAssetWithBalance.usdValue, {
+                            minimumFractionDigits: 5,
+                          })}{" "}
+                          {t("pool.available").toLowerCase()}
+                        </span>
+                      )}
+                    <div className="flex h-6 w-6 items-center justify-center">
+                      <Icon
+                        id="chevron-down"
+                        className={classNames(
+                          "h-[7px] w-3 text-osmoverse-300 transition-transform",
+                          {
+                            "rotate-180": open,
+                          }
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Menu.Button>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute left-0 z-50 mt-3 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
-                <div className="flex flex-col border-b border-osmoverse-700 p-2">
-                  {selectableQuotes.map(({ symbol, name, logoURIs }) => {
-                    const isSelected = quote === symbol;
-                    const availableBalance =
-                      userQuotes &&
-                      userQuotes.find((u) => u?.symbol === symbol)?.usdValue;
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute left-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+                  <div className="flex flex-col border-b border-osmoverse-700 p-2">
+                    {selectableQuotes.map(({ symbol, name, logoURIs }) => {
+                      const isSelected = quote === symbol;
+                      const availableBalance =
+                        userQuotes &&
+                        userQuotes.find((u) => u?.symbol === symbol)?.usdValue;
 
-                    return (
-                      <Menu.Item key={name}>
-                        {({ active }) => (
-                          <button
-                            onClick={() => setQuote(symbol)}
-                            className={classNames(
-                              "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
-                              { "bg-osmoverse-700": active || isSelected }
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <Image
-                                src={logoURIs.svg || logoURIs.png || ""}
-                                alt={`${name} logo`}
-                                className="h-10 w-10"
-                                width={40}
-                                height={40}
-                              />
-                              <div className="flex flex-col gap-1 text-left">
-                                <p>{name}</p>
-                                <small className="text-sm leading-5 text-osmoverse-300">
-                                  {symbol}
-                                </small>
+                      return (
+                        <Menu.Item key={name}>
+                          {({ active }) => (
+                            <button
+                              onClick={() => setQuote(symbol)}
+                              className={classNames(
+                                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+                                { "bg-osmoverse-700": active || isSelected }
+                              )}
+                            >
+                              <div className="flex items-center gap-3">
+                                <Image
+                                  src={logoURIs.svg || logoURIs.png || ""}
+                                  alt={`${name} logo`}
+                                  className="h-10 w-10"
+                                  width={40}
+                                  height={40}
+                                />
+                                <div className="flex flex-col gap-1 text-left">
+                                  <p>{name}</p>
+                                  <small className="text-sm leading-5 text-osmoverse-300">
+                                    {symbol}
+                                  </small>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              {wallet?.isWalletConnected &&
-                                availableBalance && (
-                                  <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                                    <span
-                                      className={classNames({
-                                        "text-white-full": availableBalance
-                                          .toDec()
-                                          .gt(new Dec(0)),
-                                      })}
-                                    >
-                                      {formatPretty(availableBalance)}
-                                    </span>
-                                    <span className="body2 font-light">
-                                      {t("pool.available").toLowerCase()}
-                                    </span>
-                                  </p>
-                                )}
-                              <Icon
-                                id="check-mark-circle"
-                                className={classNames(
-                                  "h-4 w-4 rounded-full text-[#CC54C2]",
-                                  {
-                                    "opacity-0": !isSelected,
-                                  }
-                                )}
-                              />
-                            </div>
-                          </button>
-                        )}
-                      </Menu.Item>
-                    );
-                  })}
-                </div>
-                <div className="flex flex-col px-5 py-2">
-                  {tab === "buy" && (
-                    <button className="flex w-full items-center justify-between py-3">
-                      <span className="subtitle1 text-left font-semibold text-wosmongton-200">
-                        {t("limitOrders.addFunds")}
+                              <div className="flex items-center gap-3">
+                                {wallet?.isWalletConnected &&
+                                  availableBalance && (
+                                    <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                                      <span
+                                        className={classNames({
+                                          "text-white-full": availableBalance
+                                            .toDec()
+                                            .gt(new Dec(0)),
+                                        })}
+                                      >
+                                        {formatPretty(availableBalance)}
+                                      </span>
+                                      <span className="body2 font-light">
+                                        {t("pool.available").toLowerCase()}
+                                      </span>
+                                    </p>
+                                  )}
+                                <Icon
+                                  id="check-mark-circle"
+                                  className={classNames(
+                                    "h-4 w-4 rounded-full text-[#CC54C2]",
+                                    {
+                                      "opacity-0": !isSelected,
+                                    }
+                                  )}
+                                />
+                              </div>
+                            </button>
+                          )}
+                        </Menu.Item>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-col px-5 py-2">
+                    {tab === "buy" && (
+                      <button
+                        type="button"
+                        onClick={openAddFundsModal}
+                        className="flex w-full items-center justify-between py-3"
+                      >
+                        <span className="subtitle1 text-left font-semibold text-wosmongton-200">
+                          {t("limitOrders.addFunds")}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <div className="relative flex items-center">
+                            {/** Here we just display default quotes */}
+                            {defaultQuotes.map(({ symbol, logoURIs }, i) => {
+                              return (
+                                <Image
+                                  key={`${symbol}-logo`}
+                                  alt=""
+                                  src={logoURIs.svg || logoURIs.png || ""}
+                                  width={24}
+                                  height={24}
+                                  className={classNames("h-6 w-6", {
+                                    "-ml-2": i > 0,
+                                  })}
+                                />
+                              );
+                            })}
+                          </div>
+                          <div className="flex h-6 w-6 items-center justify-center">
+                            <Icon
+                              id="chevron-right"
+                              className="h-3 w-[7px] text-osmoverse-300"
+                            />
+                          </div>
+                        </div>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (tab === "buy") {
+                          setSellOpen(true);
+                        } else {
+                          setBuyOpen(true);
+                        }
+                        setTab("swap");
+                      }}
+                      className="flex w-full items-center justify-between py-3"
+                    >
+                      <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
+                        {tab === "buy"
+                          ? t("limitOrders.swapFromAnotherAsset")
+                          : t("limitOrders.swapToAnotherAsset")}
                       </span>
                       <div className="flex items-center gap-1">
-                        <div className="relative flex items-center">
-                          {/** Here we just display default quotes */}
-                          {defaultQuotes.map(({ symbol, logoURIs }, i) => {
-                            return (
-                              <Image
-                                key={`${symbol}-logo`}
-                                alt=""
-                                src={logoURIs.svg || logoURIs.png || ""}
-                                width={24}
-                                height={24}
-                                className={classNames("h-6 w-6", {
-                                  "-ml-2": i > 0,
-                                })}
-                              />
-                            );
-                          })}
-                        </div>
+                        {wallet?.address ? (
+                          <HighestBalanceAssetsIcons
+                            userOsmoAddress={wallet.address}
+                          />
+                        ) : (
+                          <Image
+                            src={"/images/quote-swap-from-another-asset.png"}
+                            alt=""
+                            width={176}
+                            height={48}
+                            className="h-6 w-[88px]"
+                          />
+                        )}
                         <div className="flex h-6 w-6 items-center justify-center">
                           <Icon
                             id="chevron-right"
@@ -340,39 +396,64 @@ export const PriceSelector = memo(
                         </div>
                       </div>
                     </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      setTab("swap");
-                      setSellOpen(true);
-                    }}
-                    className="flex w-full items-center justify-between py-3"
-                  >
-                    <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
-                      {t("limitOrders.swapFromAnotherAsset")}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <Image
-                        src={"/images/quote-swap-from-another-asset.png"}
-                        alt=""
-                        width={176}
-                        height={48}
-                        className="h-6 w-[88px]"
-                      />
-                      <div className="flex h-6 w-6 items-center justify-center">
-                        <Icon
-                          id="chevron-right"
-                          className="h-3 w-[7px] text-osmoverse-300"
-                        />
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </Menu.Items>
-            </Transition>
-          </>
-        )}
-      </Menu>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </>
+          )}
+        </Menu>
+        <AddFundsModal
+          isOpen={isAddFundsModalOpen}
+          onRequestClose={closeAddFundsModal}
+          from="buy"
+        />
+      </>
     );
   }
 );
+
+function HighestBalanceAssetsIcons({
+  userOsmoAddress,
+}: {
+  userOsmoAddress: string;
+}) {
+  const { data: userSortedAssets } = api.edge.assets.getUserAssets.useQuery(
+    { userOsmoAddress },
+    {
+      select: ({ items }) => {
+        return items
+          .map(({ usdValue, coinImageUrl }) => ({
+            coinImageUrl,
+            usdValue,
+          }))
+          .sort((a, b) => {
+            return a.usdValue?.toDec().gt(b.usdValue?.toDec() ?? new Dec(0))
+              ? -1
+              : 1;
+          })
+          .slice(0, 5)
+          .reverse();
+      },
+    }
+  );
+
+  return (
+    <div className="relative flex h-6 w-[88px] items-center">
+      {userSortedAssets?.map(({ coinImageUrl }, i) =>
+        coinImageUrl ? (
+          <Image
+            key={coinImageUrl}
+            src={coinImageUrl}
+            alt={coinImageUrl}
+            width={24}
+            height={24}
+            className="absolute rounded-full"
+            style={{
+              right: i * 16,
+            }}
+          />
+        ) : null
+      )}
+    </div>
+  );
+}

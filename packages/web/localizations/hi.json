@@ -1276,7 +1276,10 @@
     "estimatingFees": "शुल्क का अनुमान लगाना",
     "fees": "फीस",
     "receiveEstimated": "प्राप्त (अनुमानित)",
-    "swapRoute": "मार्ग बदलें"
+    "swapRoute": "मार्ग बदलें",
+    "trade": "व्यापार",
+    "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
+    "openOrders": "खुले आदेश"
   },
   "orderHistory": {
     "orders": "आदेश",

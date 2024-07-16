@@ -23,6 +23,7 @@ import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
+  useDisclosure,
   useFeatureFlags,
   useOneClickTradingSession,
   useSlippageConfig,
@@ -30,9 +31,9 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
+import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewSwapModal } from "~/modals/review-swap";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
@@ -77,7 +78,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
-    const { fiatRampSelection } = useBridge();
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig();
@@ -106,6 +106,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       parseAsBoolean.withDefault(false)
     );
 
+    const [buyOpen, setBuyOpen] = useQueryState(
+      "buyOpen",
+      parseAsBoolean.withDefault(false)
+    );
+
     const [showToTokenSelectModal, setToTokenSelectDropdownLocal] =
       useState(false);
     const setOneTokenSelectOpen = useCallback((dropdown: "to" | "from") => {
@@ -121,7 +126,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
       setSellOpen(false);
-    }, [setSellOpen]);
+      setBuyOpen(false);
+    }, [setBuyOpen, setSellOpen]);
 
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
@@ -295,11 +301,17 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [swapState.error?.message]
     );
 
+    const {
+      isOpen: isAddFundsModalOpen,
+      onClose: closeAddFundsModal,
+      onOpen: openAddFundsModal,
+    } = useDisclosure();
+
     return (
       <>
         <div className="relative flex flex-col gap-6 overflow-hidden">
           <div className="flex flex-col gap-3">
-            <div className="relative flex flex-col gap-3">
+            <div className="relative flex flex-col">
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full flex-col">
                   <div className="flex items-center justify-between">
@@ -395,7 +407,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         </button>
                       ) : (
                         <button
-                          onClick={fiatRampSelection}
+                          type="button"
+                          onClick={openAddFundsModal}
                           className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
                         >
                           {t("limitOrders.addFunds")}
@@ -405,16 +418,25 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   )}
                 </div>
               </div>
-              {/* TODO - move this custom button to our own button component */}
-              <button
-                className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-[calc(50%-16px)] items-center justify-center rounded-full bg-osmoverse-825"
-                onClick={() => swapState.switchAssets()}
-              >
-                <Icon
-                  id="arrows-swap-16"
-                  className="h-4 w-4 text-wosmongton-200"
-                />
-              </button>
+              <div className="relative flex h-3 w-full">
+                <button
+                  className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
+                  onClick={() => {
+                    const out = formatPretty(
+                      swapState.quote?.amount
+                        ? swapState.quote.amount.toDec()
+                        : new Dec(0)
+                    );
+                    swapState.inAmountInput.setAmount(out);
+                    swapState.switchAssets();
+                  }}
+                >
+                  <Icon
+                    id="arrows-swap-16"
+                    className="h-4 w-4 text-wosmongton-200"
+                  />
+                </button>
+              </div>
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full items-center justify-between">
                   {swapState.toAsset && (
@@ -560,7 +582,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         />
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.buy")}
-          isOpen={showToTokenSelectModal}
+          isOpen={showToTokenSelectModal || buyOpen}
           onClose={closeTokenSelectModals}
           selectableAssets={swapState.selectableAssets}
           onSelect={useCallback(
@@ -577,6 +599,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
+          hideBalances
         />
         <ReviewSwapModal
           isOpen={showSwapReviewModal}
@@ -586,6 +609,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isConfirmationDisabled={isConfirmationDisabled}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+        />
+        <AddFundsModal
+          isOpen={isAddFundsModalOpen}
+          onRequestClose={closeAddFundsModal}
+          from="swap"
+          fromAsset={swapState.fromAsset}
         />
       </>
     );

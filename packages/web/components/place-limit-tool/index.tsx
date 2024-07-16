@@ -1,5 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
@@ -9,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
@@ -18,7 +21,10 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import {
+  useOrderbookAllActiveOrders,
+  useOrderbookSelectableDenoms,
+} from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 
@@ -72,6 +78,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
+    const { orders } = useOrderbookAllActiveOrders({
+      userAddress: account?.address ?? "",
+      pageSize: 100,
+    });
+
+    const openOrders = useMemo(
+      () =>
+        orders.filter(
+          ({ status }) => status === "open" || status === "partiallyFilled"
+        ),
+      [orders]
+    );
+
     // const isSwapToolLoading = false;
     const hasFunds = true;
 
@@ -107,7 +126,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             orderDirection={orderDirection}
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
-            <p className="body2 p-4 text-center font-light text-osmoverse-400">
+            <p
+              className={classNames(
+                "body2 p-4 text-center text-osmoverse-400",
+                { "text-rust-300": swapState.insufficientFunds }
+              )}
+            >
               {getInputWidgetLabel()}
             </p>
             <LimitInput
@@ -121,7 +145,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     : swapState.priceState.bidSpotPrice!
                   : swapState.priceState.price
               }
-              insufficentFunds={swapState.insufficientFunds}
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
@@ -133,6 +156,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               }
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
+              insufficientFunds={swapState.insufficientFunds}
             />
           </div>
           <>
@@ -212,6 +236,35 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </Button>
               )}
             </>
+          )}
+          {account?.isWalletConnected && openOrders.length > 0 && (
+            <Link
+              href="/transactions?tab=orders&fromPage=swap"
+              className="my-3 flex items-center justify-between rounded-2xl bg-osmoverse-850 py-4 px-5"
+            >
+              <div className="flex items-center gap-2">
+                <Icon
+                  id="history-uncolored"
+                  width={24}
+                  height={24}
+                  className="text-osmoverse-500"
+                />
+                <span className="subtitle1 text-osmoverse-200">
+                  {t("limitOrders.openOrders")}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-wosmongton-200">{openOrders.length}</span>
+                <div className="flex h-6 w-6 items-center justify-center">
+                  <Icon
+                    id="chevron-right"
+                    width={10}
+                    height={17}
+                    className="text-wosmongton-200"
+                  />
+                </div>
+              </div>
+            </Link>
           )}
         </div>
         <ReviewLimitOrderModal

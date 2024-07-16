@@ -1,7 +1,6 @@
 import { queryICNSName } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
 
-import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 
 export const useICNSName = ({ address }: { address: string }) => {
