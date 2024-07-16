@@ -324,25 +324,26 @@ export const usePlaceLimit = ({
       return "limitOrders.insufficientFunds";
     }
 
-    if (inAmountInput.error) {
-      return tError(inAmountInput.error)[0];
+    if (!isMarket && !priceState.isValidPrice) {
+      return "limitOrders.invalidPrice";
     }
 
     if (isMarket && marketState.error) {
       return tError(marketState.error)[0];
     }
 
-    if (!priceState.isValidPrice) {
-      return "limitOrders.invalidPrice";
+    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    if (quantity === "0") {
+      return "errors.zeroAmount";
     }
 
     return;
   }, [
     insufficientFunds,
-    inAmountInput.error,
     isMarket,
     marketState.error,
     priceState.isValidPrice,
+    paymentTokenValue,
   ]);
 
   return {
@@ -409,7 +410,7 @@ const useLimitPrice = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualPercentAdjusted, orderDirection]);
 
-  const isValidPrice = useMemo(
+  const isValidInputPrice = useMemo(
     () =>
       Boolean(orderPrice) &&
       orderPrice.length > 0 &&
@@ -420,14 +421,14 @@ const useLimitPrice = ({
 
   const percentAdjusted = useMemo(
     () =>
-      isValidPrice
+      isValidInputPrice
         ? new Dec(orderPrice).quo(spotPrice ?? new Dec(1)).sub(new Dec(1))
         : new Dec(0),
-    [isValidPrice, orderPrice, spotPrice]
+    [isValidInputPrice, orderPrice, spotPrice]
   );
   const price = useMemo(
-    () => (isValidPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
-    [isValidPrice, orderPrice, spotPrice]
+    () => (isValidInputPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
+    [isValidInputPrice, orderPrice, spotPrice]
   );
 
   const isBeyondOppositePrice = useMemo(() => {
@@ -468,6 +469,10 @@ const useLimitPrice = ({
   useEffect(() => {
     reset();
   }, [orderDirection, reset]);
+
+  const isValidPrice = useMemo(() => {
+    return isValidInputPrice || Boolean(spotPrice);
+  }, [isValidInputPrice, spotPrice]);
   return {
     spotPrice,
     orderPrice,
