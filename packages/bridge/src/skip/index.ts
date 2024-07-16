@@ -265,17 +265,17 @@ export class SkipBridgeProvider implements BridgeProvider {
         );
 
       const counterparties = assetListAsset?.counterparty ?? [];
-
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
-        this.ctx.assetLists
-          .flatMap(({ assets }) => assets)
-          .forEach((asset) => {
-            if (asset.variantGroupKey === assetListAsset.variantGroupKey) {
-              counterparties.push(...asset.counterparty);
-            }
-          });
+        const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
+          assets.filter(
+            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          )
+        );
+        counterparties.push(
+          ...variantAssets.flatMap((asset) => asset.counterparty)
+        );
       }
 
       for (const counterparty of counterparties) {
