@@ -234,7 +234,21 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      for (const counterparty of assetListAsset?.counterparty ?? []) {
+      const counterparties = assetListAsset?.counterparty ?? [];
+
+      // since skip supports cosmos swap, we can include other asset list
+      // counterparties of the same variant
+      if (assetListAsset) {
+        this.ctx.assetLists
+          .flatMap(({ assets }) => assets)
+          .forEach((asset) => {
+            if (asset.variantGroupKey === assetListAsset.variantGroupKey) {
+              counterparties.push(...asset.counterparty);
+            }
+          });
+      }
+
+      for (const counterparty of counterparties) {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
         if (
