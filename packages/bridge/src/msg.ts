@@ -1,4 +1,4 @@
-import { ibc } from "@osmosis-labs/proto-codecs";
+import { cosmwasm, ibc } from "@osmosis-labs/proto-codecs";
 
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
@@ -25,5 +25,13 @@ export const cosmosMsgOpts = createMsgOpts({
     gas: 450000,
     messageComposer:
       ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer,
+  },
+});
+
+export const cosmwasmMsgOpts = createMsgOpts({
+  executeWasm: {
+    gas: 0,
+    messageComposer:
+      cosmwasm.wasm.v1.MessageComposer.withTypeUrl.executeContract,
   },
 });

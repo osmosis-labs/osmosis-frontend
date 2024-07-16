@@ -749,6 +749,24 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://app.picasso.network/?from=SOLANA&to=OSMOSIS",
     withdrawUrlOverride: "https://app.picasso.network/?from=OSMOSIS&to=SOLANA",
   },
+  "ETH.arb.axl": {
+    depositUrlOverride:
+      "https://satellite.money/?source=arbitrum&destination=osmosis&asset_denom=arbitrum-weth-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=arbitrum&asset_denom=arbitrum-weth-wei",
+  },
+  "ETH.base.axl": {
+    depositUrlOverride:
+      "https://satellite.money/?source=base&destination=osmosis&asset_denom=base-weth-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=base&asset_denom=base-weth-wei",
+  },
+  "ETH.matic.axl": {
+    depositUrlOverride:
+      "https://satellite.money/?source=polygon&destination=osmosis&asset_denom=polygon-weth-wei",
+    withdrawUrlOverride:
+      "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=polygon-weth-wei",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET

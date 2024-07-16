@@ -30,6 +30,7 @@ import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
+  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -40,8 +41,9 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
+  GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
@@ -66,6 +68,9 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote({
     fromAmount,
@@ -229,7 +234,11 @@ export class SquidBridgeProvider implements BridgeProvider {
                 estimateFromAmount,
                 transactionRequest,
               })
-            : await this.createCosmosTransaction(transactionRequest.data),
+            : await this.createCosmosTransaction(
+                transactionRequest.data,
+                fromAddress,
+                { denom: fromAsset.address, amount: fromAmount }
+              ),
         };
       },
     });
@@ -434,69 +443,98 @@ export class SquidBridgeProvider implements BridgeProvider {
     };
   }
 
-  /** TODO: Handle WASM transactions */
   async createCosmosTransaction(
-    data: string
+    data: string,
+    fromAddress: string,
+    fromCoin: {
+      denom: string;
+      amount: string;
+    }
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
       const parsedData = JSON.parse(data) as {
         msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
-        msg: {
-          sourcePort: string;
-          sourceChannel: string;
-          token: {
-            denom: string;
-            amount: string;
-          };
-          sender: string;
-          receiver: string;
-          timeoutTimestamp: {
-            low: number;
-            high: number;
-            unsigned: boolean;
-          };
-          memo: string;
-        };
       };
 
-      if (
-        parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer"
-      ) {
-        throw new BridgeQuoteError({
-          bridgeId: SquidBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message:
-            "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
+      if (parsedData.msgTypeUrl === IbcTransferType) {
+        const ibcData = parsedData as {
+          msgTypeUrl: typeof IbcTransferType;
+          msg: {
+            sourcePort: string;
+            sourceChannel: string;
+            token: {
+              denom: string;
+              amount: string;
+            };
+            sender: string;
+            receiver: string;
+            timeoutTimestamp: {
+              low: number;
+              high: number;
+              unsigned: boolean;
+            };
+            memo: string;
+          };
+        };
+
+        const timeoutHeight = await this.ctx.getTimeoutHeight({
+          destinationAddress: ibcData.msg.receiver,
         });
+
+        const { typeUrl, value: msg } =
+          cosmosMsgOpts.ibcTransfer.messageComposer({
+            memo: ibcData.msg.memo,
+            receiver: ibcData.msg.receiver,
+            sender: ibcData.msg.sender,
+            sourceChannel: ibcData.msg.sourceChannel,
+            sourcePort: ibcData.msg.sourcePort,
+            timeoutTimestamp: new Long(
+              ibcData.msg.timeoutTimestamp.low,
+              ibcData.msg.timeoutTimestamp.high,
+              ibcData.msg.timeoutTimestamp.unsigned
+            ).toString() as any,
+            // @ts-ignore
+            timeoutHeight,
+            token: ibcData.msg.token,
+          });
+
+        return {
+          type: "cosmos",
+          msgTypeUrl: typeUrl,
+          msg,
+        };
+      } else if (parsedData.msgTypeUrl === WasmTransferType) {
+        const cosmwasmData = parsedData as {
+          msgTypeUrl: typeof WasmTransferType;
+          msg: {
+            wasm: {
+              contract: string;
+              msg: object;
+            };
+          };
+        };
+
+        const { typeUrl, value: msg } =
+          cosmwasmMsgOpts.executeWasm.messageComposer({
+            sender: fromAddress,
+            contract: cosmwasmData.msg.wasm.contract,
+            msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
+            funds: [fromCoin],
+          });
+
+        return {
+          type: "cosmos",
+          msgTypeUrl: typeUrl,
+          msg,
+        };
       }
 
-      const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: parsedData.msg.receiver,
+      throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
+        errorType: "CreateCosmosTxError",
+        message:
+          "Unknown message type. Osmosis FrontEnd only supports the IBC transfer and cosmwasm executeMsg message type",
       });
-
-      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
-        {
-          memo: parsedData.msg.memo,
-          receiver: parsedData.msg.receiver,
-          sender: parsedData.msg.sender,
-          sourceChannel: parsedData.msg.sourceChannel,
-          sourcePort: parsedData.msg.sourcePort,
-          timeoutTimestamp: new Long(
-            parsedData.msg.timeoutTimestamp.low,
-            parsedData.msg.timeoutTimestamp.high,
-            parsedData.msg.timeoutTimestamp.unsigned
-          ).toString() as any,
-          // @ts-ignore
-          timeoutHeight,
-          token: parsedData.msg.token,
-        }
-      );
-
-      return {
-        type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
-      };
     } catch (e) {
       const error = e as Error | BridgeQuoteError;
 

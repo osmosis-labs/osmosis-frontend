@@ -109,7 +109,7 @@ jobs:
           name: preview-portfolio-test-results
           path: packages/web/playwright-report
 
-  preview-pools-tests:
+  preview-pools-and-select-pair-tests:
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
@@ -135,7 +135,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
-          npx playwright test -g "Test Select Pool feature"
+          npx playwright test pools select
       - name: upload pools test results
         if: always()
         id: pools-test-results

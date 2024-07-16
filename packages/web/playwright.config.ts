@@ -14,7 +14,14 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["html", { open: "never" }],
-    ["junit", { outputFile: "test-results/test-results.xml" }],
+    ["junit", { outputFile: "./playwright-report/test-results.xml" }],
+    [
+      "monocart-reporter",
+      {
+        name: "Test Coverage Report",
+        outputFile: "./playwright-report/cov-report.html",
+      },
+    ],
   ],
   timeout: 90000,
   testDir: "./e2e/tests",
