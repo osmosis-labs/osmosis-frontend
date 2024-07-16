@@ -1279,7 +1279,8 @@
     "swapRoute": "Swap route",
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
-    "openOrders": "Open orders"
+    "openOrders": "Open orders",
+    "invalidPrice": "Invalid price"
   },
   "orderHistory": {
     "orders": "Orders",

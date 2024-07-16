@@ -1279,7 +1279,8 @@
     "swapRoute": "경로 교환",
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
-    "openOrders": "오픈 주문"
+    "openOrders": "오픈 주문",
+    "invalidPrice": "잘못된 가격"
   },
   "orderHistory": {
     "orders": "명령",

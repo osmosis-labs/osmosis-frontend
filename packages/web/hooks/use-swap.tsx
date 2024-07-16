@@ -1288,13 +1288,25 @@ function makeRouterErrorFromTrpcError(
   if (isNil(error)) return;
   const tprcShapeMsg = error?.message;
 
-  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+  if (
+    tprcShapeMsg
+      ?.toLowerCase()
+      .includes(NoRouteError.defaultMessage.toLowerCase())
+  ) {
     return { error: new NoRouteError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+  if (
+    tprcShapeMsg
+      ?.toLowerCase()
+      .includes(NotEnoughLiquidityError.defaultMessage.toLowerCase())
+  ) {
     return { error: new NotEnoughLiquidityError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+  if (
+    tprcShapeMsg
+      ?.toLowerCase()
+      .includes(NotEnoughQuotedError.defaultMessage.toLowerCase())
+  ) {
     return { error: new NotEnoughQuotedError(), isUnexpected: false };
   }
   if (error) {

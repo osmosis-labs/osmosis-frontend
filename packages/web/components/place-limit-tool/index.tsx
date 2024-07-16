@@ -112,6 +112,32 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     };
 
+    const buttonText = useMemo(() => {
+      if (swapState.error) {
+        return t(swapState.error);
+      } else {
+        return orderDirection === "bid"
+          ? t("portfolio.buy")
+          : t("limitOrders.sell");
+      }
+    }, [orderDirection, swapState.error, t]);
+
+    const isMarketLoading = useMemo(() => {
+      return (
+        swapState.isMarket &&
+        (swapState.marketState.isQuoteLoading ||
+          Boolean(swapState.marketState.isLoadingNetworkFee) ||
+          swapState.marketState.inAmountInput.isTyping) &&
+        !Boolean(swapState.marketState.error)
+      );
+    }, [
+      swapState.isMarket,
+      swapState.marketState.isLoadingNetworkFee,
+      swapState.marketState.isQuoteLoading,
+      swapState.marketState.inAmountInput.isTyping,
+      swapState.marketState.error,
+    ]);
+
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -149,11 +175,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
               expectedOutput={swapState.marketState.quote?.amount.toDec()}
-              expectedOutputLoading={
-                swapState.marketState.inAmountInput.isTyping ||
-                swapState.marketState.isQuoteLoading ||
-                !!swapState.marketState.isLoadingNetworkFee
-              }
+              expectedOutputLoading={isMarketLoading}
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
               insufficientFunds={swapState.insufficientFunds}
@@ -198,17 +220,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {hasFunds ? (
                 <Button
                   disabled={
+                    Boolean(swapState.error) ||
                     (!swapState.isMarket &&
-                      (swapState.insufficientFunds ||
-                        (!swapState.priceState.isValidPrice &&
-                          swapState.priceState.orderPrice.length > 0))) ||
-                    (swapState.isMarket &&
-                      (swapState.marketState.inAmountInput.isEmpty ||
-                        !Boolean(swapState.marketState.quote) ||
-                        Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError) ||
-                        swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.inAmountInput.isTyping)) ||
+                      !swapState.priceState.isValidPrice &&
+                      swapState.priceState.orderPrice.length > 0) ||
+                    isMarketLoading ||
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading ||
                     !swapState.inAmountInput.inputAmount ||
@@ -217,20 +233,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   isLoading={
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading ||
-                    (swapState.isMarket &&
-                      (swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.isLoadingNetworkFee ||
-                        swapState.marketState.isLoadingSelectAssets)) ||
+                    isMarketLoading ||
                     orderbookAssetsLoading
                   }
                   loadingText={t("assets.transfer.loading")}
                   onClick={() => setReviewOpen(true)}
                 >
-                  <h6>
-                    {orderDirection === "bid"
-                      ? t("portfolio.buy")
-                      : t("limitOrders.sell")}
-                  </h6>
+                  <h6>{buttonText}</h6>
                 </Button>
               ) : (
                 <Button onClick={() => setReviewOpen(true)}>

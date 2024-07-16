@@ -1279,7 +1279,8 @@
     "swapRoute": "Schimbați ruta",
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
-    "openOrders": "Comenzi deschise"
+    "openOrders": "Comenzi deschise",
+    "invalidPrice": "Preț nevalid"
   },
   "orderHistory": {
     "orders": "Comenzi",

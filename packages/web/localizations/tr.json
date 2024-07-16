@@ -1279,7 +1279,8 @@
     "swapRoute": "Rotayı değiştir",
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
-    "openOrders": "Açık siparişler"
+    "openOrders": "Açık siparişler",
+    "invalidPrice": "Geçersiz fiyat"
   },
   "orderHistory": {
     "orders": "Emirler",

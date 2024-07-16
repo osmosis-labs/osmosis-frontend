@@ -1279,7 +1279,8 @@
     "swapRoute": "Zmień trasę",
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
-    "openOrders": "Otwarte zlecenia"
+    "openOrders": "Otwarte zlecenia",
+    "invalidPrice": "Nieprawidłowa cena"
   },
   "orderHistory": {
     "orders": "Zamówienia",

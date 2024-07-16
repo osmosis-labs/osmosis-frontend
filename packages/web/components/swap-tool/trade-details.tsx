@@ -52,13 +52,15 @@ export const TradeDetails = ({
 
   const isLoading = useMemo(
     () =>
-      swapState?.isLoadingNetworkFee ||
-      swapState?.isQuoteLoading ||
-      swapState?.inAmountInput.isTyping,
+      (swapState?.isLoadingNetworkFee ||
+        swapState?.isQuoteLoading ||
+        swapState?.inAmountInput.isTyping) &&
+      !Boolean(swapState.error),
     [
       swapState?.inAmountInput.isTyping,
       swapState?.isLoadingNetworkFee,
       swapState?.isQuoteLoading,
+      swapState?.error,
     ]
   );
 

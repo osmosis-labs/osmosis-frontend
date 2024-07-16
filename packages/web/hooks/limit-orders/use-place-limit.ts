@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { tError } from "~/components/localization";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -318,6 +319,32 @@ export const usePlaceLimit = ({
     marketState.tokenOutFiatValue,
   ]);
 
+  const error = useMemo(() => {
+    if (insufficientFunds) {
+      return "limitOrders.insufficientFunds";
+    }
+
+    if (inAmountInput.error) {
+      return tError(inAmountInput.error)[0];
+    }
+
+    if (isMarket && marketState.error) {
+      return tError(marketState.error)[0];
+    }
+
+    if (!priceState.isValidPrice) {
+      return "limitOrders.invalidPrice";
+    }
+
+    return;
+  }, [
+    insufficientFunds,
+    inAmountInput.error,
+    isMarket,
+    marketState.error,
+    priceState.isValidPrice,
+  ]);
+
   return {
     baseAsset,
     quoteAsset,
@@ -337,6 +364,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    error,
   };
 };
 

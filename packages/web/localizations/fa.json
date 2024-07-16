@@ -1279,7 +1279,8 @@
     "swapRoute": "تعویض مسیر",
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
-    "openOrders": "باز کردن سفارشات"
+    "openOrders": "باز کردن سفارشات",
+    "invalidPrice": "قیمت نامعتبر"
   },
   "orderHistory": {
     "orders": "سفارشات",

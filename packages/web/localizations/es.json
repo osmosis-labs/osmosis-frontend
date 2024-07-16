@@ -1279,7 +1279,8 @@
     "swapRoute": "Intercambiar ruta",
     "trade": "Comercio",
     "swapToAnotherAsset": "Cambiar a otro activo",
-    "openOrders": "Ordenes abiertas"
+    "openOrders": "Ordenes abiertas",
+    "invalidPrice": "Precio no válido"
   },
   "orderHistory": {
     "orders": "Pedidos",

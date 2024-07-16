@@ -1279,7 +1279,8 @@
     "swapRoute": "Обменять маршрут",
     "trade": "Торговля",
     "swapToAnotherAsset": "Обмен на другой актив",
-    "openOrders": "Открытые ордера"
+    "openOrders": "Открытые ордера",
+    "invalidPrice": "Неверная цена"
   },
   "orderHistory": {
     "orders": "Заказы",
