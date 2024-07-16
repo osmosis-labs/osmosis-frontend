@@ -224,7 +224,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       >
         <span
           className={classNames("body2 text-wosmongton-200", {
-            "text-rust-3000": insufficientFunds,
+            "text-rust-300": insufficientFunds,
           })}
         >
           Max
