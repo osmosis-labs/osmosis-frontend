@@ -144,7 +144,7 @@ export const OrderHistory = observer(() => {
     const minIndex = hasFilledOrders;
     const maxIndex = filledOrdersCount + hasFilledOrders;
     return virtualRows
-      .filter((row) => row.index > minIndex && row.index <= maxIndex)
+      .filter((row) => row.index > minIndex && row.index < maxIndex)
       .map((virtualRow) => {
         const row = rows[virtualRow.index - 1];
         return row;
@@ -156,7 +156,7 @@ export const OrderHistory = observer(() => {
     const minIndex = filledOrdersCount + hasFilledOrders;
     const maxIndex = filledOrdersCount + hasFilledOrders + pendingOrdersCount;
     return virtualRows
-      .filter((row) => row.index > minIndex && row.index <= maxIndex)
+      .filter((row) => row.index > minIndex && row.index < maxIndex)
       .map((virtualRow) => {
         const row = rows[virtualRow.index - (1 + hasFilledOrders)];
         return row;
@@ -179,7 +179,7 @@ export const OrderHistory = observer(() => {
     // Past orders fill the rest of the array so we account for that plus and headers
     const maxIndex = orders.length + hasFilledOrders + hasPendingOrders;
     return virtualRows
-      .filter((row) => row.index > minIndex && row.index <= maxIndex)
+      .filter((row) => row.index > minIndex && row.index < maxIndex)
       .map((virtualRow) => {
         const row =
           rows[virtualRow.index - (1 + hasFilledOrders + hasPendingOrders)];
