@@ -240,6 +240,7 @@ export const orderbookRouter = createTRPCRouter({
             orderbookAddress: contractOsmoAddress,
             chainList: ctx.chainList,
           });
+
           const quoteAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
             sourceDenom: quote_denom,
@@ -248,6 +249,7 @@ export const orderbookRouter = createTRPCRouter({
             assetLists: ctx.assetLists,
             sourceDenom: base_denom,
           });
+
           return getTickInfoAndTransformOrders(
             contractOsmoAddress,
             resp.orders,
@@ -302,13 +304,14 @@ export const orderbookRouter = createTRPCRouter({
               });
               const quoteAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
-                sourceDenom: quote_denom,
+                coinMinimalDenom: quote_denom,
               });
 
               const baseAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
-                sourceDenom: base_denom,
+                coinMinimalDenom: base_denom,
               });
+
               const mappedOrders = await getTickInfoAndTransformOrders(
                 contractOsmoAddress,
                 resp.orders,
