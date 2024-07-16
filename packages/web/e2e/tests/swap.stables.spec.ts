@@ -60,9 +60,9 @@ test.describe("Test Swap Stables feature", () => {
     await context.close();
   });
 
-  test("User should be able to swap USDC to USDC.axl", async () => {
+  test("User should be able to swap USDC to USDC.eth.axl", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDC", "USDC.axl");
+    await swapPage.selectPair("USDC", "USDC.eth.axl");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -75,9 +75,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDC.axl to USDC", async () => {
+  test("User should be able to swap USDC.eth.axl to USDC", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDC.axl", "USDC");
+    await swapPage.selectPair("USDC.eth.axl", "USDC");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -90,9 +90,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDT to USDT.axl", async () => {
+  test("User should be able to swap USDT to USDT.eth.axl", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDT", "USDT.axl");
+    await swapPage.selectPair("USDT", "USDT.eth.axl");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -105,9 +105,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDT.axl to USDT", async () => {
+  test("User should be able to swap USDT.eth.axl to USDT", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDT.axl", "USDT");
+    await swapPage.selectPair("USDT.eth.axl", "USDT");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -120,9 +120,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDT.axl to USDT.kava", async () => {
+  test("User should be able to swap USDT.eth.axl to USDT.kava", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDT.axl", "USDT.kava");
+    await swapPage.selectPair("USDT.eth.axl", "USDT.kava");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
@@ -135,9 +135,9 @@ test.describe("Test Swap Stables feature", () => {
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to swap USDT.kava to USDT.axl", async () => {
+  test("User should be able to swap USDT.kava to USDT.eth.axl", async () => {
     await swapPage.goto();
-    await swapPage.selectPair("USDT.kava", "USDT.axl");
+    await swapPage.selectPair("USDT.kava", "USDT.eth.axl");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
