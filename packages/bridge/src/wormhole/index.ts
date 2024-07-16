@@ -63,20 +63,20 @@ export class WormholeBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    // For now we use in-osmosis
-    const url = new URL("https://app.osmosis.zone/wormhole");
+    // For now we use Portal Bridge
+    const url = new URL("https://portalbridge.com/");
 
     url.searchParams.set(
-      "from",
+      "sourceChain",
       fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
     );
     url.searchParams.set(
-      "to",
+      "targetChain",
       toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
     );
     url.searchParams.set(
-      "token",
-      fromChain.chainType === "solana" ? fromAsset.denom : toAsset.denom
+      "asset",
+      fromChain.chainType === "solana" ? fromAsset.address : toAsset.address
     );
 
     return {
