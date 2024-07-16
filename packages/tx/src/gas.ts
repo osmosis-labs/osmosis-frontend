@@ -85,6 +85,8 @@ export async function estimateGasFee({
    *  Default: `1.5` */
   gasMultiplier?: number;
 
+  sendCoin?: { denom: string; amount: string };
+
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
 }): Promise<QuoteStdFee> {
@@ -258,7 +260,7 @@ export async function getGasFeeAmount({
   gasLimit,
   bech32Address,
   gasMultiplier = 1.5,
-  coinsSpent,
+  coinsSpent = [],
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -276,7 +278,7 @@ export async function getGasFeeAmount({
      *  spent by the given spent coins list.
      *  Likely, the spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[]
 > {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
@@ -315,13 +317,21 @@ export async function getGasFeeAmount({
     );
   }
 
-  // first check unspent balances
-  const feeDenomsSpent = (coinsSpent ?? []).map(({ denom }) => denom);
-  const unspentFeeBalances = feeBalances.filter(
-    (balance) => !feeDenomsSpent.includes(balance.denom)
-  );
+  /**
+   * Coins that can be subtracted to cover fee.
+   */
+  let subtractiveFeeAmount: {
+    denom: string;
+    amount: string;
+    isSubtractiveFee: boolean;
+  }[] = [];
+  let alternativeFeeAmount: {
+    denom: string;
+    amount: string;
+    isSubtractiveFee: boolean;
+  }[] = [];
 
-  for (const { denom, amount } of unspentFeeBalances) {
+  for (const { amount, denom } of feeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
@@ -340,70 +350,61 @@ export async function getGasFeeAmount({
     )
       continue;
 
-    // found enough to pay the fee that is not spent
-    return [
+    const spentAmount =
+      coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
+    /**
+     * If the spent amount (input amount in case of swap) is greater than the balance minus fees
+     * then we are missing balance to pay for the transaction. In this case,
+     * we need to find an alternative token or subtract this amount from the input.
+     */
+    const isBalanceNeededForTx = new Dec(spentAmount).gt(
+      new Dec(amount).sub(new Dec(feeAmount))
+    );
+
+    /**
+     * Following last comment, we now store a the subtractive coin that can be used in the transaction,
+     * as long as it's subtracted from the input.
+     */
+    if (isBalanceNeededForTx) {
+      subtractiveFeeAmount = [
+        {
+          amount: feeAmount,
+          denom,
+          isSubtractiveFee: true,
+        },
+      ];
+      continue;
+    }
+
+    /**
+     * We will also store an alternative fee token.
+     *
+     * Useful to avoid leaving dust amounts for instances like a max amount swap.
+     */
+    alternativeFeeAmount = [
       {
         amount: feeAmount,
         denom,
+        isSubtractiveFee: false,
       },
     ];
+    break;
   }
 
-  // check spent balances last
-  if (!coinsSpent)
+  if (subtractiveFeeAmount.length === 0 && alternativeFeeAmount.length === 0) {
     throw new InsufficientFeeError(
       "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
         bech32Address
     );
-  const spentFeeBalances = feeBalances.filter((balance) =>
-    coinsSpent.some(({ denom }) => denom === balance.denom)
-  );
-
-  // get all fee amounts for spent balances so we can prioritize the smallest amounts
-  const spentFeesWithAmounts = await Promise.all(
-    spentFeeBalances.map((spentFeeBalance) =>
-      getGasPriceByFeeDenom({
-        chainId,
-        chainList,
-        feeDenom: spentFeeBalance.denom,
-        gasMultiplier,
-      }).then(({ gasPrice }) => ({
-        ...spentFeeBalance,
-        feeAmount: gasPrice.mul(new Dec(gasLimit)).truncate().toString(),
-      }))
-    )
-  );
-
-  // filter spent fees by those that are not enough to pay the fee and sort by smallest amounts
-  const spentFees = spentFeesWithAmounts
-    .filter((spentFee) =>
-      new Dec(spentFee.feeAmount).lte(new Dec(spentFee.amount))
-    )
-    .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
-
-  for (const { amount, feeAmount, denom } of spentFees) {
-    // check for gas price conversion having too little precision
-    if (new Int(feeAmount).lte(new Int(1))) continue;
-
-    const spentAmount =
-      coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
-    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
-    const isBalanceNeededForTx = totalSpent.gte(new Dec(amount));
-
-    return [
-      {
-        amount: feeAmount,
-        denom,
-        isNeededForTx: isBalanceNeededForTx,
-      },
-    ];
-    // keep trying with other balances
   }
 
-  throw new InsufficientFeeError(
-    "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-      bech32Address
-  );
+  /**
+   * we'll always prefer the alternative fee token against the balance needed for tx amount as we want to avoid
+   * having to subtract the input amount. Rather, we use the alternative fee token to avoid dust amounts.
+   */
+  return alternativeFeeAmount.length > 0
+    ? alternativeFeeAmount
+    : subtractiveFeeAmount;
 }
 
 /**
