@@ -218,29 +218,6 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   };
 };
 
-export const useActiveLimitOrdersByOrderbook = ({
-  orderbookAddress,
-  userAddress,
-}: {
-  orderbookAddress: string;
-  userAddress: string;
-}) => {
-  const { data: orders, isLoading } =
-    api.edge.orderbooks.getActiveOrders.useInfiniteQuery({
-      contractOsmoAddress: orderbookAddress,
-      userOsmoAddress: userAddress,
-    });
-
-  const allOrders = useMemo(() => {
-    return orders?.pages.flatMap((page) => page.items) ?? [];
-  }, [orders]);
-
-  return {
-    orders: allOrders,
-    isLoading,
-  };
-};
-
 export type DisplayableLimitOrder = MappedLimitOrder;
 
 export const useOrderbookAllActiveOrders = ({

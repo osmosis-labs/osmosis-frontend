@@ -217,54 +217,6 @@ export const orderbookRouter = createTRPCRouter({
         makerFee,
       };
     }),
-  getActiveOrders: publicProcedure
-    .input(
-      GetInfiniteLimitOrdersInputSchema.merge(
-        z.object({ contractOsmoAddress: z.string().startsWith("osmo") })
-      )
-    )
-    .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
-          const { contractOsmoAddress, userOsmoAddress } = input;
-          if (contractOsmoAddress.length === 0 || userOsmoAddress.length === 0)
-            return [];
-          const resp = await getOrderbookActiveOrders({
-            orderbookAddress: contractOsmoAddress,
-            userOsmoAddress: userOsmoAddress,
-            chainList: ctx.chainList,
-          });
-
-          if (resp.orders.length === 0) return [];
-          const { quote_denom, base_denom } = await getOrderbookDenoms({
-            orderbookAddress: contractOsmoAddress,
-            chainList: ctx.chainList,
-          });
-
-          const quoteAsset = getAssetFromAssetList({
-            assetLists: ctx.assetLists,
-            sourceDenom: quote_denom,
-          });
-          const baseAsset = getAssetFromAssetList({
-            assetLists: ctx.assetLists,
-            sourceDenom: base_denom,
-          });
-
-          return getTickInfoAndTransformOrders(
-            contractOsmoAddress,
-            resp.orders,
-            ctx.chainList,
-            quoteAsset,
-            baseAsset
-          );
-        },
-        cacheKey: JSON.stringify([
-          "active-orders",
-          input.contractOsmoAddress,
-          input.userOsmoAddress,
-        ]),
-      });
-    }),
   getAllActiveOrders: publicProcedure
     .input(
       GetInfiniteLimitOrdersInputSchema.merge(
