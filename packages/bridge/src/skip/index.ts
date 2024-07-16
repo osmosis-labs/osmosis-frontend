@@ -126,6 +126,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "Input amount is too low to cover"
+                  // Could be Axelar or CCTP
                 )
               ) {
                 throw new BridgeQuoteError({
