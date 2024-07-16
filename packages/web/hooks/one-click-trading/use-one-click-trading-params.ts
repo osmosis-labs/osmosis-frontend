@@ -1,7 +1,8 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { api } from "~/utils/trpc";
@@ -15,10 +16,10 @@ export function getParametersFromOneClickTradingInfo({
 }): OneClickTradingTransactionParams {
   return {
     isOneClickEnabled: defaultIsOneClickEnabled,
-    networkFeeLimit: new CoinPretty(
-      oneClickTradingInfo.networkFeeLimit,
-      new Dec(oneClickTradingInfo.networkFeeLimit.amount)
-    ),
+    networkFeeLimit:
+      typeof oneClickTradingInfo.networkFeeLimit !== "string"
+        ? OneClickTradingMaxGasLimit
+        : oneClickTradingInfo.networkFeeLimit,
     sessionPeriod: {
       end: oneClickTradingInfo.humanizedSessionPeriod,
     },

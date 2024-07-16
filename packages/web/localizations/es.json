@@ -220,7 +220,6 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
-      "givePermission": "Dar permisos para usar tokens",
       "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
@@ -499,7 +498,6 @@
       "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
       "startANewSession": "Iniciar una nueva sesión",
-      "increaseFeeLimit": "Aumentar el límite de la tarifa de red",
       "approveManually": "Aprobar manualmente en {walletName}",
       "continueWithWallet": "Continuar con la billetera",
       "sessionEnded": "La sesión finalizó en este dispositivo",

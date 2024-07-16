@@ -19,6 +19,7 @@ import {
   BitcoinChainInfo,
   EthereumChainInfo,
   isNil,
+  isSameVariant,
   SolanaChainInfo,
   timeout,
 } from "@osmosis-labs/utils";
@@ -94,6 +95,25 @@ export const bridgeTransferRouter = createTRPCRouter({
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
 
+      /**
+       * Since transfer fee is deducted from input amount,
+       * we overwrite the transfer fee asset to be the input
+       * asset if it's the same variant.
+       * This allows us to easily deduct fees from input amount
+       * and find prices on Osmosis.
+       */
+      const feeCoin = isSameVariant(
+        ctx.assetLists,
+        input.fromAsset.address,
+        quote.transferFee.address
+      )
+        ? {
+            ...quote.transferFee,
+            ...input.fromAsset,
+            chainId: input.fromChain.chainId,
+          }
+        : quote.transferFee;
+
       // Get fiat value of:
       // 1. Expected output
       // 2. Transfer fee
@@ -105,69 +125,97 @@ export const bridgeTransferRouter = createTRPCRouter({
       // Prices are on Osmosis, so a counterparty asset should match either the source denom in the asset list
       // or the coinMinimalDenom on Osmosis. If not on Osmosis & no match, no price is provided.
       // TODO: add coingeckoId to bridge provider assets to get price from coingecko in those cases.
-      const [toAssetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all(
-        [
-          getAssetPrice({
+      const [assetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all([
+        // since we're "bridging" the same variant, the to or from
+        // asset could be used for pricing
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: input.toAsset.address,
+            sourceDenom: input.toAsset.address,
+            chainId: input.toChain.chainId,
+            address: input.toAsset.address,
+          },
+        }).catch(() => {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
+              {
+                bridge: input.bridge,
+                coinMinimalDenom: input.toAsset.address,
+                sourceDenom: input.toAsset.address,
+                chainId: input.toChain.chainId,
+                address: input.toAsset.address,
+              }
+            );
+          }
+          return getAssetPrice({
             ...ctx,
             asset: {
-              coinMinimalDenom: input.toAsset.address,
-              sourceDenom: input.toAsset.address,
-              chainId: input.toChain.chainId,
-              address: input.toAsset.address,
+              coinMinimalDenom: input.fromAsset.address,
+              sourceDenom: input.fromAsset.address,
+              chainId: input.fromChain.chainId,
+              address: input.fromAsset.address,
             },
-          }),
-          getAssetPrice({
-            ...ctx,
-            asset: {
-              coinMinimalDenom: quote.transferFee.address,
-              sourceDenom: quote.transferFee.address,
-              chainId: quote.transferFee.chainId,
-              address: quote.transferFee.address,
-            },
-          }).catch(() => {
-            // it's common for bridge providers to not provide correct denoms
+          });
+        }),
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: feeCoin.address,
+            sourceDenom: feeCoin.address,
+            chainId: quote.transferFee.chainId,
+            address: quote.transferFee.address,
+          },
+        }).catch(() => {
+          // it's common for bridge providers to not provide correct denoms
+          if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
               {
                 bridge: input.bridge,
-                coinMinimalDenom: quote.transferFee.address,
-                sourceDenom: quote.transferFee.address,
+                coinMinimalDenom: feeCoin.address,
+                sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
               }
             );
-            return undefined;
-          }),
-          quote.estimatedGasFee
-            ? getAssetPrice({
-                ...ctx,
-                asset: {
-                  coinMinimalDenom: quote.estimatedGasFee.address,
-                  sourceDenom: quote.estimatedGasFee.address,
-                  chainId: quote.fromChain.chainId,
-                  address: quote.estimatedGasFee.address,
-                },
-              }).catch(() => {
-                // it's common for bridge providers to not provide correct denoms
-                if (quote.estimatedGasFee)
-                  console.warn(
-                    "getQuoteByBridge: Failed to get asset price for gas fee",
-                    {
-                      bridge: input.bridge,
-                      coinMinimalDenom: quote.estimatedGasFee.address,
-                      sourceDenom: quote.estimatedGasFee.address,
-                      chainId: quote.fromChain.chainId,
-                      address: quote.estimatedGasFee.address,
-                    }
-                  );
-                return undefined;
-              })
-            : Promise.resolve(undefined),
-        ]
-      );
+          }
+          return undefined;
+        }),
+        quote.estimatedGasFee
+          ? getAssetPrice({
+              ...ctx,
+              asset: {
+                coinMinimalDenom: quote.estimatedGasFee.address,
+                sourceDenom: quote.estimatedGasFee.address,
+                chainId: quote.fromChain.chainId,
+                address: quote.estimatedGasFee.address,
+              },
+            }).catch(() => {
+              // it's common for bridge providers to not provide correct denoms
+              if (
+                quote.estimatedGasFee &&
+                process.env.NODE_ENV === "development"
+              ) {
+                console.warn(
+                  "getQuoteByBridge: Failed to get asset price for gas fee",
+                  {
+                    bridge: input.bridge,
+                    coinMinimalDenom: quote.estimatedGasFee.address,
+                    sourceDenom: quote.estimatedGasFee.address,
+                    chainId: quote.fromChain.chainId,
+                    address: quote.estimatedGasFee.address,
+                  }
+                );
+              }
+              return undefined;
+            })
+          : Promise.resolve(undefined),
+      ]);
 
-      if (!toAssetPrice) {
-        throw new Error("Invalid quote: Missing toAsset price");
+      if (!assetPrice) {
+        throw new Error("Invalid quote: Missing toAsset or fromAsset price");
       }
 
       /** Include decimals with decimal-included price. */
@@ -180,6 +228,44 @@ export const bridgeTransferRouter = createTRPCRouter({
             .mul(price)
         );
       };
+
+      const transferFee = {
+        amount: new CoinPretty(
+          {
+            coinDecimals: feeCoin.decimals,
+            coinDenom: feeCoin.denom,
+            coinMinimalDenom: feeCoin.address,
+          },
+          feeCoin.amount
+        ),
+        fiatValue: feeAssetPrice
+          ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
+          : undefined,
+      };
+
+      const estimatedGasFee = quote.estimatedGasFee
+        ? {
+            amount: new CoinPretty(
+              {
+                coinDecimals: quote.estimatedGasFee.decimals,
+                coinDenom: quote.estimatedGasFee.denom,
+                coinMinimalDenom: quote.estimatedGasFee.address,
+              },
+              quote.estimatedGasFee.amount
+            ),
+            fiatValue:
+              gasFeeAssetPrice && quote.estimatedGasFee
+                ? priceFromBridgeCoin(quote.estimatedGasFee, gasFeeAssetPrice)
+                : undefined,
+          }
+        : undefined;
+
+      let totalFeeFiatValue = estimatedGasFee?.fiatValue;
+      if (transferFee?.fiatValue) {
+        totalFeeFiatValue =
+          totalFeeFiatValue?.add(transferFee.fiatValue) ??
+          transferFee.fiatValue;
+      }
 
       return {
         quote: {
@@ -198,7 +284,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.input.amount
             ),
-            fiatValue: priceFromBridgeCoin(quote.input, toAssetPrice),
+            fiatValue: priceFromBridgeCoin(quote.input, assetPrice),
           },
           expectedOutput: {
             ...quote.expectedOutput,
@@ -213,41 +299,12 @@ export const bridgeTransferRouter = createTRPCRouter({
             fiatValue: priceFromBridgeCoin(
               quote.expectedOutput,
               // output is same token as input
-              toAssetPrice
+              assetPrice
             ),
           },
-          transferFee: {
-            amount: new CoinPretty(
-              {
-                coinDecimals: quote.transferFee.decimals,
-                coinDenom: quote.transferFee.denom,
-                coinMinimalDenom: quote.transferFee.address,
-              },
-              quote.transferFee.amount
-            ),
-            fiatValue: feeAssetPrice
-              ? priceFromBridgeCoin(quote.transferFee, feeAssetPrice)
-              : undefined,
-          },
-          estimatedGasFee: quote.estimatedGasFee
-            ? {
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: quote.estimatedGasFee.decimals,
-                    coinDenom: quote.estimatedGasFee.denom,
-                    coinMinimalDenom: quote.estimatedGasFee.address,
-                  },
-                  quote.estimatedGasFee.amount
-                ),
-                fiatValue:
-                  gasFeeAssetPrice && quote.estimatedGasFee
-                    ? priceFromBridgeCoin(
-                        quote.estimatedGasFee,
-                        gasFeeAssetPrice
-                      )
-                    : undefined,
-              }
-            : undefined,
+          transferFee,
+          estimatedGasFee,
+          totalFeeFiatValue,
         },
       };
     }),
@@ -285,12 +342,15 @@ export const bridgeTransferRouter = createTRPCRouter({
           BridgeChain["chainId"],
           ((typeof supportedAssets)[number] & { providerName: string })[]
         >
-      >((acc, asset) => {
-        if (!acc[asset.chainId]) {
-          acc[asset.chainId] = [];
+      >((acc, chainAsset) => {
+        if (!acc[chainAsset.chainId]) {
+          acc[chainAsset.chainId] = [];
         }
 
-        acc[asset.chainId].push({ ...asset, providerName: input.bridge });
+        acc[chainAsset.chainId].push({
+          ...chainAsset,
+          providerName: input.bridge,
+        });
 
         return acc;
       }, {});
@@ -308,7 +368,6 @@ export const bridgeTransferRouter = createTRPCRouter({
       const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
-            // TODO: Find a way to get eth chains from `getChain` function
             const evmChain = Object.values(EthereumChainInfo).find(
               (chain) => chain.id === chainId
             );

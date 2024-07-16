@@ -134,14 +134,16 @@ export const AssetSelectScreen = observer(
           )}
         </div>
 
-        <SearchBox
-          onInput={debounce((nextValue) => {
-            setSearch(nextValue);
-          }, 300)}
-          className="sticky top-0 z-[1000] my-4 flex-shrink-0 md:w-full"
-          placeholder={t("transfer.assetSelectScreen.searchAssets")}
-          size={isMobile ? "small" : "full"}
-        />
+        <div className="sticky top-0 z-[1000] my-4 w-full flex-shrink-0 bg-osmoverse-900">
+          <SearchBox
+            onInput={debounce((nextValue) => {
+              setSearch(nextValue);
+            }, 300)}
+            className="md:w-full"
+            placeholder={t("transfer.assetSelectScreen.searchAssets")}
+            size={isMobile ? "small" : "full"}
+          />
+        </div>
 
         <div className="flex flex-col gap-1">
           {isLoading ? (

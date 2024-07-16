@@ -21,18 +21,19 @@ export class TransactionsPage extends BasePage {
   }
 
   async viewBySwapAmount(amount: any) {
-    // Transactions need some time to get loaded, wait for 10 seconds.
-    await this.page.waitForTimeout(10000);
+    // Transactions need some time to get loaded, wait for 30 seconds.
+    await this.page.waitForTimeout(30000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
     let isTransactionVisible = await this.page
       .locator(loc)
       .isVisible({ timeout: 3000 });
     if (!isTransactionVisible) {
-      await this.page.waitForTimeout(20000);
+      await this.page.waitForTimeout(30000);
       await this.page.reload();
     }
-    await this.page.locator(loc).click();
+    await this.page.waitForTimeout(1000);
+    await this.page.locator(loc).click({ timeout: 3000 });
   }
 
   async closeTransaction() {

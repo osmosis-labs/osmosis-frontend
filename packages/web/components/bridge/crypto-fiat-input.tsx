@@ -25,7 +25,7 @@ import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 
-const subtractGasSlippage = new Dec("0.98");
+const mulGasSlippage = new Dec("1.1");
 
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
@@ -50,8 +50,8 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
-  setFiatAmount,
-  setCryptoAmount,
+  setFiatAmount: setFiatAmountProp,
+  setCryptoAmount: setCryptoAmountProp,
   setInputUnit,
 }) => {
   const { t } = useTranslation();
@@ -84,6 +84,34 @@ export const CryptoFiatInput: FunctionComponent<{
   const inputValue = new PricePretty(
     assetPrice.fiatCurrency,
     new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
+  );
+
+  const setCryptoAmount = useCallback(
+    (amount: string) =>
+      setCryptoAmountProp(
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(asset.decimals)
+              .toString()
+      ),
+    [setCryptoAmountProp, asset]
+  );
+
+  const setFiatAmount = useCallback(
+    (amount: string) =>
+      setFiatAmountProp(
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+              .toString()
+      ),
+    [setFiatAmountProp, assetPrice]
   );
 
   const onInput = useCallback(
@@ -125,18 +153,24 @@ export const CryptoFiatInput: FunctionComponent<{
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
     if (isMax && transferGasCost) {
-      const maxTransferAmount =
-        transferGasCost.toCoin().denom === inputCoin.toCoin().denom &&
-        transferGasCost.toCoin().denom === asset.amount.toCoin().denom
-          ? asset.amount
-              .toDec()
-              .sub(transferGasCost.toDec())
-              .mul(subtractGasSlippage)
-          : asset.amount.toDec();
+      let maxTransferAmount = new Dec(0);
+
+      const gasFeeMatchesInputDenom =
+        transferGasCost &&
+        transferGasCost.toCoin().denom === asset.amount.toCoin().denom &&
+        transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+
+      if (gasFeeMatchesInputDenom) {
+        maxTransferAmount = asset.amount
+          .toDec()
+          .sub(transferGasCost.toDec().mul(mulGasSlippage));
+      } else {
+        maxTransferAmount = asset.amount.toDec();
+      }
 
       if (
         maxTransferAmount.isPositive() &&
-        inputCoin.toDec().gt(maxTransferAmount)
+        !inputCoin.toDec().equals(maxTransferAmount)
       ) {
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
@@ -150,14 +184,7 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${
-    fiatInputRaw.endsWith(".") || Number(fiatInputRaw) === 0
-      ? fiatInputRaw
-      : new IntPretty(fiatInputRaw)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
-  }`;
+  const fiatCurrentValue = `${assetPrice.symbol}${fiatInputRaw}`;
   const fiatInputFontSize = calcTextSizeClass(
     fiatCurrentValue.length,
     isMobile
@@ -278,7 +305,8 @@ export const CryptoFiatInput: FunctionComponent<{
             className={classNames(
               "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
-                "border-2 border-ammelia-500": isMax,
+                "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
+                "!border-ammelia-500": hasSubtractedAmount,
                 "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
                   !isMax,
               }

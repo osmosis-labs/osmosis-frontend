@@ -48,7 +48,20 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       },
       {
         enabled:
-          !!fromAsset && !!toAsset && !!fromChain && !!toChain && !!toAddress,
+          !!fromAsset &&
+          !!toAsset &&
+          !!fromChain &&
+          !!toChain &&
+          !!toAddress &&
+          !!bridges.length,
+
+        // skip batching so this query does not get
+        // batched with getSupportedAssetsByBridge query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
       }
     );
 
@@ -148,7 +161,20 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
       },
       {
         enabled:
-          !!fromAsset && !!toAsset && !!fromChain && !!toChain && !!toAddress,
+          !!fromAsset &&
+          !!toAsset &&
+          !!fromChain &&
+          !!toChain &&
+          !!toAddress &&
+          !!bridges.length,
+
+        // skip batching so this query does not get
+        // batched with getSupportedAssetsByBridge query
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
       }
     );
 

@@ -7,3 +7,5 @@ export const DefaultGasPriceStep: {
   average: 0.025,
   high: 0.04,
 };
+
+export const OneClickTradingMaxGasLimit = "400000000";

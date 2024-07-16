@@ -119,7 +119,7 @@ export const TotalFeesRow: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   isRefetchingQuote: boolean;
 }> = ({ selectedQuote, isRefetchingQuote }) => {
-  const totalCost = calcSelectedQuoteTotalFee(selectedQuote);
+  const totalCost = selectedQuote.quote.totalFeeFiatValue;
   if (!totalCost) return null;
 
   return (
@@ -142,7 +142,7 @@ export const ExpectedOutputRow: FunctionComponent<{
     isLoading={isRefetchingQuote}
   >
     <p className={warnUserOfSlippage ? "text-rust-300" : "text-osmoverse-100"}>
-      {selectedQuote.expectedOutputFiat.toString()}
+      {selectedQuote.expectedOutputFiat.toString()}{" "}
       <span
         className={classNames({
           "text-osmoverse-300": !warnUserOfSlippage,
@@ -153,18 +153,6 @@ export const ExpectedOutputRow: FunctionComponent<{
     </p>
   </QuoteDetailRow>
 );
-
-export function calcSelectedQuoteTotalFee(
-  quote: NonNullable<BridgeQuote["selectedQuote"]>
-) {
-  let totalCost = quote.gasCostFiat;
-  if (quote.transferFeeFiat) {
-    totalCost = totalCost
-      ? totalCost.add(quote.transferFeeFiat)
-      : quote.transferFeeFiat;
-  }
-  return totalCost;
-}
 
 export const ExpandDetailsControlContent: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
@@ -185,7 +173,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   isRemainingTimePaused,
   showRemainingTime = false,
 }) => {
-  const totalFees = calcSelectedQuoteTotalFee(selectedQuote);
+  const totalFees = selectedQuote.quote.totalFeeFiatValue;
 
   return (
     <div className="flex items-center gap-2 md:gap-1">
