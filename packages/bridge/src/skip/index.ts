@@ -264,11 +264,25 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      for (const counterparty of assetListAsset?.counterparty ?? []) {
+      const counterparties = assetListAsset?.counterparty ?? [];
+      // since skip supports cosmos swap, we can include other asset list
+      // counterparties of the same variant
+      if (assetListAsset) {
+        const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
+          assets.filter(
+            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          )
+        );
+        counterparties.push(
+          ...variantAssets.flatMap((asset) => asset.counterparty)
+        );
+      }
+
+      for (const counterparty of counterparties) {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
         if (
-          !assets[counterparty.chainId].assets.some(
+          !assets[counterparty.chainId]?.assets.some(
             (a) =>
               a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
           )
@@ -364,7 +378,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SkipBridgeProvider.ID,
           "failed to get supported assets:",
