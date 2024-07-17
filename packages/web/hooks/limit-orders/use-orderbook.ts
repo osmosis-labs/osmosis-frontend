@@ -11,11 +11,11 @@ import { useSwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
-  ? "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
-  : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
-const validDenoms = [USDC_DENOM, USDT_DENOM];
+// const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
+//   ? "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
+//   : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+// const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
+// const validDenoms = [USDC_DENOM, USDT_DENOM];
 
 /**
  * Retrieves all available orderbooks for the current chain.
@@ -29,14 +29,7 @@ export const useOrderbooks = (): {
   const { data: orderbooks, isLoading } =
     api.edge.orderbooks.getPools.useQuery();
 
-  const onlyStableOrderbooks = useMemo(
-    () =>
-      (orderbooks ?? []).filter(({ quoteDenom }) =>
-        validDenoms.includes(quoteDenom)
-      ),
-    [orderbooks]
-  );
-  return { orderbooks: onlyStableOrderbooks, isLoading };
+  return { orderbooks: orderbooks ?? [], isLoading };
 };
 
 /**
