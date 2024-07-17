@@ -14,7 +14,7 @@ export interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
-type ClassVariants = "label" | "input" | "trailingSymbol";
+type ClassVariants = "container" | "label" | "input" | "trailingSymbol";
 
 interface Props
   extends Optional<InputProps<string>, "currentValue">,
@@ -37,6 +37,8 @@ interface Props
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
   classes?: Partial<Record<ClassVariants, string>>;
+  styles?: Partial<Record<ClassVariants, React.CSSProperties>>;
+  onClick?: () => void;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
@@ -59,6 +61,8 @@ export const InputBox: FunctionComponent<Props> = ({
   inputRef,
   autoFocus,
   defaultValue,
+  styles,
+  onClick,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const [inputValue, setValue] = useControllableState({
@@ -94,12 +98,15 @@ export const InputBox: FunctionComponent<Props> = ({
         },
         className
       )}
+      style={styles?.container}
+      onClick={onClick}
     >
       <label
         className={classNames(
           "flex w-full shrink grow items-center",
           classes?.label
         )}
+        style={styles?.label}
         htmlFor="text-input"
       >
         {isAutosize ? (
@@ -120,6 +127,7 @@ export const InputBox: FunctionComponent<Props> = ({
               onFocus && onFocus(e);
             }}
             autoFocus={autoFocus}
+            style={styles?.input}
           />
         ) : (
           <input
@@ -142,10 +150,16 @@ export const InputBox: FunctionComponent<Props> = ({
             onInput={(e: any) => onInput(e.target.value)}
             disabled={disabled}
             autoFocus={autoFocus}
+            style={styles?.input}
           />
         )}
         {trailingSymbol && (
-          <span className={classes?.trailingSymbol}>{trailingSymbol}</span>
+          <span
+            className={classes?.trailingSymbol}
+            style={styles?.trailingSymbol}
+          >
+            {trailingSymbol}
+          </span>
         )}
       </label>
       <div className="flex flex-nowrap gap-2">

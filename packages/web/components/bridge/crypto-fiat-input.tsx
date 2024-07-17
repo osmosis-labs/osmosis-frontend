@@ -16,7 +16,6 @@ import {
   useState,
 } from "react";
 
-import { Icon } from "~/components/assets";
 import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
@@ -205,73 +204,101 @@ export const CryptoFiatInput: FunctionComponent<{
   }, [isInputFocused, fiatInputFontSize, cryptoInputFontSize]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex h-24 w-full place-content-between items-center">
+    <div
+      className="relative flex flex-col items-center"
+      style={{
+        height: "calc(100% + 41px)",
+      }}
+    >
+      <div className="flex h-36 w-full place-content-between items-center">
         <div className="w-14 md:w-13" />
         <div
-          className="max-w-full overflow-clip whitespace-nowrap text-center"
+          className="flex h-full max-w-full flex-col items-center justify-end whitespace-nowrap text-center"
           onClick={() => {
             inputRef.current?.focus();
           }}
         >
-          {currentUnit === "fiat" ? (
-            <InputBox
-              // when the font size changes, we need to prompt the autosize input to re-mount
-              // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
-              key={fiatInputFontSize}
-              inputRef={inputRef}
-              className={classNames(
-                "border-none bg-transparent text-center font-bold",
-                fiatInputFontSize
-              )}
-              classes={{
-                label: "!block",
-                input: classNames({
+          <InputBox
+            onClick={() => {
+              if (currentUnit === "fiat") return;
+              setInputUnit("fiat");
+            }}
+            // when the font size changes, we need to prompt the autosize input to re-mount
+            // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
+            key={`fiat-${fiatInputFontSize}`}
+            inputRef={currentUnit === "fiat" ? inputRef : undefined}
+            disabled={currentUnit === "crypto"}
+            className={classNames(
+              "absolute border-none bg-transparent text-center font-bold transition-transform",
+              fiatInputFontSize
+            )}
+            styles={{
+              container: {
+                transform: `scale(${
+                  currentUnit === "fiat" ? 1 : 0.45
+                }) translateY(${currentUnit === "fiat" ? -50 : 80}%)`,
+              },
+            }}
+            classes={{
+              label: "!block",
+              input: classNames({
+                "text-rust-300": isInsufficientBal || isInsufficientFee,
+              }),
+            }}
+            onBlur={() => setIsInputFocused(false)}
+            onFocus={() => setIsInputFocused(true)}
+            currentValue={fiatCurrentValue}
+            onInput={(value) => {
+              onInput("fiat")(value);
+              setIsMax(false);
+            }}
+            isAutosize
+          />
+
+          <InputBox
+            onClick={() => {
+              console.log(currentUnit);
+              if (currentUnit === "crypto") return;
+              setInputUnit("crypto");
+            }}
+            // when the font size changes, we need to prompt the autosize input to re-mount
+            // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
+            key={`crypto-${cryptoInputFontSize}`}
+            inputRef={currentUnit === "crypto" ? inputRef : undefined}
+            disabled={currentUnit === "fiat"}
+            className={classNames(
+              "absolute border-none bg-transparent font-bold transition-transform",
+              cryptoInputFontSize
+            )}
+            styles={{
+              container: {
+                transform: `scale(${
+                  currentUnit === "crypto" ? 1 : 0.45
+                }) translateY(${currentUnit === "crypto" ? -50 : 80}%)`,
+              },
+            }}
+            classes={{
+              label: "!block",
+              input: classNames("!p-0", {
+                "text-rust-300": isInsufficientBal || isInsufficientFee,
+              }),
+              trailingSymbol: classNames(
+                "ml-1 align-middle text-osmoverse-500",
+                {
                   "text-rust-300": isInsufficientBal || isInsufficientFee,
-                }),
-              }}
-              onBlur={() => setIsInputFocused(false)}
-              onFocus={() => setIsInputFocused(true)}
-              currentValue={fiatCurrentValue}
-              onInput={(value) => {
-                onInput("fiat")(value);
-                setIsMax(false);
-              }}
-              isAutosize
-            />
-          ) : (
-            <InputBox
-              // when the font size changes, we need to prompt the autosize input to re-mount
-              // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
-              key={cryptoInputFontSize}
-              inputRef={inputRef}
-              className={classNames(
-                "border-none bg-transparent font-bold",
-                cryptoInputFontSize
-              )}
-              classes={{
-                label: "!block",
-                input: classNames("!p-0", {
-                  "text-rust-300": isInsufficientBal || isInsufficientFee,
-                }),
-                trailingSymbol: classNames(
-                  "ml-1 align-middle text-osmoverse-500",
-                  {
-                    "text-rust-300": isInsufficientBal || isInsufficientFee,
-                  }
-                ),
-              }}
-              onBlur={() => setIsInputFocused(false)}
-              onFocus={() => setIsInputFocused(true)}
-              currentValue={cryptoInputRaw}
-              onInput={(value) => {
-                onInput("crypto")(value);
-                setIsMax(false);
-              }}
-              trailingSymbol={inputCoin.denom}
-              isAutosize
-            />
-          )}
+                }
+              ),
+            }}
+            onBlur={() => setIsInputFocused(false)}
+            onFocus={() => setIsInputFocused(true)}
+            currentValue={cryptoInputRaw}
+            onInput={(value) => {
+              onInput("crypto")(value);
+              setIsMax(false);
+            }}
+            trailingSymbol={inputCoin.denom}
+            isAutosize
+          />
         </div>
 
         <Tooltip
@@ -318,7 +345,7 @@ export const CryptoFiatInput: FunctionComponent<{
         </Tooltip>
       </div>
 
-      <button
+      {/* <button
         className="body1 md:body2 flex items-center gap-2 text-center text-wosmongton-200"
         onClick={() => {
           setInputUnit(currentUnit === "fiat" ? "crypto" : "fiat");
@@ -335,7 +362,7 @@ export const CryptoFiatInput: FunctionComponent<{
           )}
         </span>
         <Icon id="switch" className="h-4 w-4 text-wosmongton-200" />
-      </button>
+      </button> */}
     </div>
   );
 };
