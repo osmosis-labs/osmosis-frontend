@@ -30,12 +30,13 @@ import { useStore } from "~/stores";
 
 export interface PlaceLimitToolProps {
   orderDirection: OrderDirection;
+  fromAssetsPage?: boolean;
 }
 
 const WHALE_MESSAGE_THRESHOLD = 100;
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  () => {
+  ({ fromAssetsPage }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
@@ -115,130 +116,146 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     return (
       <>
         <div className="flex flex-col gap-3">
-          <TokenSelectLimit
-            selectableAssets={selectableBaseAssets}
-            baseAsset={swapState.baseAsset!}
-            quoteAsset={swapState.quoteAsset!}
-            baseBalance={swapState.baseTokenBalance!}
-            quoteBalance={swapState.quoteTokenBalance!}
-            onTokenSelect={setBase}
-            disabled={false}
-            orderDirection={orderDirection}
-          />
-          <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
-            <p
-              className={classNames(
-                "body2 p-4 text-center text-osmoverse-400",
-                { "text-rust-300": swapState.insufficientFunds }
-              )}
-            >
-              {getInputWidgetLabel()}
-            </p>
-            <LimitInput
-              onChange={swapState.inAmountInput.setAmount}
+          <div
+            className={classNames("flex gap-3", {
+              "flex-col": !fromAssetsPage,
+              "flex-col-reverse": fromAssetsPage,
+            })}
+          >
+            <TokenSelectLimit
+              selectableAssets={selectableBaseAssets}
               baseAsset={swapState.baseAsset!}
-              tokenAmount={swapState.inAmountInput.inputAmount}
-              price={
-                type === "market"
-                  ? orderDirection === "bid"
-                    ? swapState.priceState.askSpotPrice!
-                    : swapState.priceState.bidSpotPrice!
-                  : swapState.priceState.price
-              }
-              disableSwitching={type === "market"}
-              setMarketAmount={swapState.marketState.inAmountInput.setAmount}
-              quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
-              expectedOutput={swapState.marketState.quote?.amount.toDec()}
-              expectedOutputLoading={
-                swapState.marketState.inAmountInput.isTyping ||
-                swapState.marketState.isQuoteLoading ||
-                !!swapState.marketState.isLoadingNetworkFee
-              }
-              quoteBalance={swapState.quoteTokenBalance?.toDec()}
-              baseBalance={swapState.baseTokenBalance?.toDec()}
-              insufficientFunds={swapState.insufficientFunds}
+              quoteAsset={swapState.quoteAsset!}
+              baseBalance={swapState.baseTokenBalance!}
+              quoteBalance={swapState.quoteTokenBalance!}
+              onTokenSelect={setBase}
+              disabled={false}
+              orderDirection={orderDirection}
             />
-          </div>
-          <>
-            {type === "limit" && (
-              <LimitPriceSelector
-                swapState={swapState}
-                orderDirection={orderDirection}
-              />
-            )}
-            {!swapState.isMarket && <LimitTradeDetails swapState={swapState} />}
-            {swapState.isMarket && (
-              <TradeDetails
-                swapState={swapState.marketState}
-                baseSpotPrice={
-                  orderDirection === "bid"
-                    ? swapState.priceState.askSpotPrice!
-                    : swapState.priceState.bidSpotPrice!
+            <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
+              <p
+                className={classNames(
+                  "body2 p-4 text-center text-osmoverse-400",
+                  { "text-rust-300": swapState.insufficientFunds }
+                )}
+              >
+                {getInputWidgetLabel()}
+              </p>
+              <LimitInput
+                onChange={swapState.inAmountInput.setAmount}
+                baseAsset={swapState.baseAsset!}
+                tokenAmount={swapState.inAmountInput.inputAmount}
+                price={
+                  type === "market"
+                    ? orderDirection === "bid"
+                      ? swapState.priceState.askSpotPrice!
+                      : swapState.priceState.bidSpotPrice!
+                    : swapState.priceState.price
                 }
+                disableSwitching={type === "market"}
+                setMarketAmount={swapState.marketState.inAmountInput.setAmount}
+                quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
+                expectedOutput={swapState.marketState.quote?.amount.toDec()}
+                expectedOutputLoading={
+                  swapState.marketState.inAmountInput.isTyping ||
+                  swapState.marketState.isQuoteLoading ||
+                  !!swapState.marketState.isLoadingNetworkFee
+                }
+                quoteBalance={swapState.quoteTokenBalance?.toDec()}
+                baseBalance={swapState.baseTokenBalance?.toDec()}
+                insufficientFunds={swapState.insufficientFunds}
               />
-            )}
-          </>
-          {!account?.isWalletConnected ? (
-            <Button
-              onClick={() =>
-                onOpenWalletSelect({
-                  walletOptions: [
-                    {
-                      walletType: "cosmos",
-                      chainId: accountStore.osmosisChainId,
-                    },
-                  ],
-                })
-              }
-            >
-              <h6 className="">{t("connectWallet")}</h6>
-            </Button>
-          ) : (
+            </div>
+          </div>
+          <div
+            className={classNames("flex gap-3", {
+              "flex-col": !fromAssetsPage,
+              "flex-col-reverse": fromAssetsPage,
+            })}
+          >
             <>
-              {hasFunds ? (
-                <Button
-                  disabled={
-                    (!swapState.isMarket &&
-                      (swapState.insufficientFunds ||
-                        (!swapState.priceState.isValidPrice &&
-                          swapState.priceState.orderPrice.length > 0))) ||
-                    (swapState.isMarket &&
-                      (swapState.marketState.inAmountInput.isEmpty ||
-                        !Boolean(swapState.marketState.quote) ||
-                        Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError) ||
-                        swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.inAmountInput.isTyping)) ||
-                    !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    !swapState.inAmountInput.inputAmount ||
-                    swapState.inAmountInput.inputAmount === "0"
+              {type === "limit" && (
+                <LimitPriceSelector
+                  swapState={swapState}
+                  orderDirection={orderDirection}
+                />
+              )}
+              {!swapState.isMarket && (
+                <LimitTradeDetails swapState={swapState} />
+              )}
+              {swapState.isMarket && (
+                <TradeDetails
+                  swapState={swapState.marketState}
+                  baseSpotPrice={
+                    orderDirection === "bid"
+                      ? swapState.priceState.askSpotPrice!
+                      : swapState.priceState.bidSpotPrice!
                   }
-                  isLoading={
-                    !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    (swapState.isMarket &&
-                      (swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.isLoadingNetworkFee ||
-                        swapState.marketState.isLoadingSelectAssets)) ||
-                    orderbookAssetsLoading
-                  }
-                  loadingText={t("assets.transfer.loading")}
-                  onClick={() => setReviewOpen(true)}
-                >
-                  <h6>
-                    {orderDirection === "bid"
-                      ? t("portfolio.buy")
-                      : t("limitOrders.sell")}
-                  </h6>
-                </Button>
-              ) : (
-                <Button onClick={() => setReviewOpen(true)}>
-                  <h6>{t("limitOrders.addFunds")}</h6>
-                </Button>
+                />
               )}
             </>
-          )}
+            {!account?.isWalletConnected ? (
+              <Button
+                onClick={() =>
+                  onOpenWalletSelect({
+                    walletOptions: [
+                      {
+                        walletType: "cosmos",
+                        chainId: accountStore.osmosisChainId,
+                      },
+                    ],
+                  })
+                }
+              >
+                <h6 className="">{t("connectWallet")}</h6>
+              </Button>
+            ) : (
+              <>
+                {hasFunds ? (
+                  <Button
+                    disabled={
+                      (!swapState.isMarket &&
+                        (swapState.insufficientFunds ||
+                          (!swapState.priceState.isValidPrice &&
+                            swapState.priceState.orderPrice.length > 0))) ||
+                      (swapState.isMarket &&
+                        (swapState.marketState.inAmountInput.isEmpty ||
+                          !Boolean(swapState.marketState.quote) ||
+                          Boolean(swapState.marketState.error) ||
+                          Boolean(swapState.marketState.networkFeeError) ||
+                          swapState.marketState.isQuoteLoading ||
+                          swapState.marketState.inAmountInput.isTyping)) ||
+                      !swapState.isBalancesFetched ||
+                      swapState.isMakerFeeLoading ||
+                      !swapState.inAmountInput.inputAmount ||
+                      swapState.inAmountInput.inputAmount === "0"
+                    }
+                    isLoading={
+                      !swapState.isBalancesFetched ||
+                      swapState.isMakerFeeLoading ||
+                      (swapState.isMarket &&
+                        (swapState.marketState.isQuoteLoading ||
+                          swapState.marketState.isLoadingNetworkFee ||
+                          swapState.marketState.isLoadingSelectAssets)) ||
+                      orderbookAssetsLoading
+                    }
+                    loadingText={t("assets.transfer.loading")}
+                    onClick={() => setReviewOpen(true)}
+                  >
+                    <h6>
+                      {orderDirection === "bid"
+                        ? t("portfolio.buy")
+                        : t("limitOrders.sell")}
+                    </h6>
+                  </Button>
+                ) : (
+                  <Button onClick={() => setReviewOpen(true)}>
+                    <h6>{t("limitOrders.addFunds")}</h6>
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
           {account?.isWalletConnected && openOrders.length > 0 && (
             <Link
               href="/transactions?tab=orders&fromPage=swap"
@@ -269,6 +286,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </Link>
           )}
         </div>
+
         <ReviewLimitOrderModal
           placeLimitState={swapState}
           orderDirection={orderDirection}

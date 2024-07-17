@@ -30,11 +30,17 @@ import { TokenNavigation } from "~/components/pages/asset-info-page/token-naviga
 import { TokenPools } from "~/components/pages/asset-info-page/token-pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
 import { YourBalance } from "~/components/pages/asset-info-page/your-balance";
-import { SwapTool } from "~/components/swap-tool";
+import { SwapToolProps } from "~/components/swap-tool";
+import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useAssetInfoConfig,
+  useFeatureFlags,
+  useNavBar,
+  useTranslation,
+} from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
@@ -120,15 +126,16 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
     [assetInfoConfig]
   );
 
-  const SwapTool_ = (
-    <SwapTool
-      fixedWidth
-      useQueryParams={false}
-      useOtherCurrencies={true}
-      initialSendTokenDenom={token.coinDenom === "USDC" ? "OSMO" : "USDC"}
-      initialOutTokenDenom={token.coinDenom}
-      page="Token Info Page"
-    />
+  const swapToolProps: SwapToolProps = useMemo(
+    () => ({
+      fixedWidth: true,
+      useQueryParams: false,
+      useOtherCurrencies: true,
+      initialSendTokenDenom: token.coinDenom === "USDC" ? "OSMO" : "USDC",
+      initialOutTokenDenom: token.coinDenom,
+      page: "Token Info Page",
+    }),
+    [token.coinDenom]
   );
 
   return (
@@ -171,7 +178,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
             <TokenPools denom={token.coinDenom} />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                {SwapTool_}
+                <TradeTool fromAssetsPage swapToolProps={swapToolProps} />
               </div>
             </div>
             {token.isAlloyed && token.contract ? (
@@ -186,7 +193,9 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
           </div>
 
           <div className="flex flex-col gap-11 sm:gap-10">
-            <div className="xl:hidden">{SwapTool_}</div>
+            <div className="xl:hidden">
+              <TradeTool fromAssetsPage swapToolProps={swapToolProps} />
+            </div>
             <YourBalance className="xl:hidden" />
             <TokenStats className="xl:hidden" />
             {token.isAlloyed && token.contract ? (
