@@ -1,5 +1,11 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -28,7 +34,6 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
-  baseSpotPrice: Dec;
   inDenom?: string;
   inPrice?: CoinPretty | PricePretty;
 }
@@ -38,7 +43,6 @@ export const TradeDetails = ({
   slippageConfig,
   outAmountLessSlippage,
   outFiatAmountLessSlippage,
-  baseSpotPrice,
   inDenom,
   inPrice,
 }: Partial<TradeDetailsProps>) => {
