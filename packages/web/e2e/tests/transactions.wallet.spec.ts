@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
+import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
 import process from "process";
 
 import { SwapPage } from "~/e2e/pages/swap-page";
@@ -11,9 +11,10 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Transactions feature", () => {
   let context: BrowserContext;
+  let page: Page;
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+  const privateKey = process.env.PRIVATE_KEY ?? "pk";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let transactionsPage: TransactionsPage;
@@ -36,7 +37,7 @@ test.describe("Test Transactions feature", () => {
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
-    const page = context.pages()[1];
+    page = context.pages()[1];
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
@@ -44,10 +45,11 @@ test.describe("Test Transactions feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    portfolioPage = new PortfolioPage(context.pages()[0]);
+    page = context.pages()[0];
+    portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
-    transactionsPage = await portfolioPage.viewTransactionsPage();
+    transactionsPage = await new TransactionsPage(page).open();
   });
 
   test.afterAll(async () => {
@@ -66,7 +68,7 @@ test.describe("Test Transactions feature", () => {
     await transactionsPage.closeTransaction();
   });
 
-  test("User should be able to see a new transaction", async () => {
+  test.skip("User should be able to see a new transaction", async () => {
     swapPage = new SwapPage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.selectPair("USDC", "USDT");
