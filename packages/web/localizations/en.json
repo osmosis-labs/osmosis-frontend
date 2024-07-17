@@ -1279,7 +1279,7 @@
     "estimatingFees": "Estimating fees",
     "fees": "fees",
     "receiveEstimated": "Receive (minimum)",
-    "swapRoute": "Swap route",
+    "swapRoute": "Order route",
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
     "openOrders": "Open orders",

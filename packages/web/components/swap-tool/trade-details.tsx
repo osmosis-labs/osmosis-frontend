@@ -225,10 +225,6 @@ export const TradeDetails = ({
                     </>
                   }
                 />
-                <hr className="my-2 w-full text-osmoverse-700" />
-                <span className="subtitle1 py-3 text-white-full">
-                  {t("limitOrders.moreDetails")}
-                </span>
                 {slippageConfig && (
                   <RecapRow
                     left={t("swap.settings.slippage")}
@@ -295,6 +291,7 @@ export const TradeDetails = ({
                     }
                   />
                 )}
+                <hr className="my-2 w-full text-osmoverse-700" />
                 {outAmountLessSlippage &&
                   outFiatAmountLessSlippage &&
                   swapState?.toAsset && (
@@ -317,6 +314,11 @@ export const TradeDetails = ({
                       }
                     />
                   )}
+
+                <span className="subtitle1 py-3 text-white-full">
+                  {t("limitOrders.moreDetails")}
+                </span>
+
                 <div className="flex w-full">
                   <RecapRow
                     left={t("limitOrders.swapRoute")}
