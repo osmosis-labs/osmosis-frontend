@@ -13,7 +13,7 @@ export const earnRouter = createTRPCRouter({
     .input(
       z.object({
         strategyId: z.string(),
-        balanceUrl: z.string().optional(),
+        balanceUrl: z.string(),
         userOsmoAddress: z.string(),
       })
     )

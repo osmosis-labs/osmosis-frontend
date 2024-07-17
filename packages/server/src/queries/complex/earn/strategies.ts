@@ -41,11 +41,11 @@ const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
 export async function getStrategyBalance(
   strategyId: string,
   userOsmoAddress: string,
-  rawBalanceUrl?: string
+  rawBalanceUrl: string
 ) {
   const balanceUrl = rawBalanceUrl
-    ?.replace("${id}", strategyId)
-    ?.replace("${address}", userOsmoAddress);
+    .replace("${id}", strategyId)
+    .replace("${address}", userOsmoAddress);
 
   return await cachified({
     cache: earnStrategyBalanceCache,
@@ -54,7 +54,7 @@ export async function getStrategyBalance(
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
         const { balance, strategy, unclaimed_rewards } =
-          await queryEarnUserBalance(strategyId, userOsmoAddress, balanceUrl);
+          await queryEarnUserBalance(balanceUrl);
 
         return {
           balance: {
@@ -137,7 +137,6 @@ export async function getStrategies({
           riskReportUrl: string;
         }>({
           filePath: `cms/earn/strategies.json`,
-          commitHash: "fd745214f7471931e80b36363863e27f0ea681bf",
         });
 
         const aggregatedStrategies: StrategyCMSData[] = [];
@@ -172,7 +171,6 @@ export async function getStrategies({
 
           aggregatedStrategies.push({
             ...rawStrategy,
-            balanceUrl: rawStrategy.balance,
             depositAssets: depositAssets.filter(
               (deposit) => !!deposit
             ) as MinimalAsset[],
