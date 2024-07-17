@@ -1224,7 +1224,8 @@
       "title": "Limit Order",
       "description": {
         "buy": "Buy when {denom} price decreases",
-        "sell": "Sell when {denom} price increases"
+        "sell": "Sell when {denom} price increases",
+        "disabled": "Currently unavailable for {denom}/{quoteDenom}"
       }
     },
     "recurringOrder": {
