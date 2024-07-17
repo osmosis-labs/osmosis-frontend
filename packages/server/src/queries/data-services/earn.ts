@@ -257,12 +257,16 @@ export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
 
 export function queryEarnUserBalance(
   strategyId: string,
-  userOsmoAddress: string
+  userOsmoAddress: string,
+  balanceUrl?: string
 ): Promise<RawEarnStrategyBalance> {
-  const url = new URL(
-    `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
-    NUMIA_BASE_URL
-  );
+  const url = balanceUrl
+    ? balanceUrl
+    : new URL(
+        `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
+        NUMIA_BASE_URL
+      );
+
   return apiClient(url.toString());
 }
 

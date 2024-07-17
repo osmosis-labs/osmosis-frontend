@@ -17,8 +17,12 @@ export const earnRouter = createTRPCRouter({
         userOsmoAddress: z.string(),
       })
     )
-    .query(async ({ input: { strategyId, userOsmoAddress } }) => {
-      const res = await getStrategyBalance(strategyId, userOsmoAddress);
+    .query(async ({ input: { strategyId, userOsmoAddress, balanceUrl } }) => {
+      const res = await getStrategyBalance(
+        strategyId,
+        userOsmoAddress,
+        balanceUrl
+      );
       return res;
     }),
   getStrategyAnnualPercentages: publicProcedure

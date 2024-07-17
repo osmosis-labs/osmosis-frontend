@@ -40,8 +40,13 @@ const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
 );
 export async function getStrategyBalance(
   strategyId: string,
-  userOsmoAddress: string
+  userOsmoAddress: string,
+  rawBalanceUrl?: string
 ) {
+  const balanceUrl = rawBalanceUrl
+    ?.replace("${id}", strategyId)
+    ?.replace("${address}", userOsmoAddress);
+
   return await cachified({
     cache: earnStrategyBalanceCache,
     ttl: 1000 * 20,
@@ -49,7 +54,7 @@ export async function getStrategyBalance(
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
         const { balance, strategy, unclaimed_rewards } =
-          await queryEarnUserBalance(strategyId, userOsmoAddress);
+          await queryEarnUserBalance(strategyId, userOsmoAddress, balanceUrl);
 
         return {
           balance: {
