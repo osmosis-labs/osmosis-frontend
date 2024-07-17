@@ -139,7 +139,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       ];
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           IbcBridgeProvider.ID,
           "failed to get supported assets:",

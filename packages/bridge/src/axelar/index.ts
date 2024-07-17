@@ -345,7 +345,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           AxelarBridgeProvider.ID,
           "failed to get supported assets:",

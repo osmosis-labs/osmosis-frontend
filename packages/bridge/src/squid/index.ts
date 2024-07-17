@@ -370,7 +370,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SquidBridgeProvider.ID,
           "failed to get supported assets:",

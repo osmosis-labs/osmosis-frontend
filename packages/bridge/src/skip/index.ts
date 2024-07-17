@@ -282,7 +282,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
         if (
-          !assets[counterparty.chainId].assets.some(
+          !assets[counterparty.chainId]?.assets.some(
             (a) =>
               a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
           )
@@ -378,7 +378,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SkipBridgeProvider.ID,
           "failed to get supported assets:",
