@@ -1224,7 +1224,8 @@
       "title": "Ordem Limitada",
       "description": {
         "buy": "Compre quando o preço {denom} diminuir",
-        "sell": "Venda quando o preço {denom} aumentar"
+        "sell": "Venda quando o preço {denom} aumentar",
+        "disabled": "Atualmente indisponível para {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

@@ -1224,7 +1224,8 @@
       "title": "Zamówienie z limitem",
       "description": {
         "buy": "Kupuj, gdy cena {denom} spadnie",
-        "sell": "Sprzedawaj, gdy cena {denom} wzrośnie"
+        "sell": "Sprzedawaj, gdy cena {denom} wzrośnie",
+        "disabled": "Obecnie niedostępne dla {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

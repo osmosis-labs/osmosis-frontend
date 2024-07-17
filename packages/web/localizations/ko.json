@@ -1224,7 +1224,8 @@
       "title": "제한 주문",
       "description": {
         "buy": "{denom} 가격이 하락하면 구매하세요.",
-        "sell": "{denom} 가격이 상승하면 매도하세요"
+        "sell": "{denom} 가격이 상승하면 매도하세요",
+        "disabled": "현재는 {denom} / {quoteDenom} 에 사용할 수 없습니다."
       }
     },
     "recurringOrder": {

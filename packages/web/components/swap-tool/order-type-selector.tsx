@@ -72,7 +72,7 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, orderbook, t, tab]
+    [base, orderbook, t, tab, quote]
   );
 
   return (
