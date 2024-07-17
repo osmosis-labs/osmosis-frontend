@@ -221,16 +221,16 @@ export async function getSharePoolBondDurations({
         const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
         if (isLongestDuration) {
           // internal mint incentives
-          if (poolIncentives?.aprBreakdown?.osmosis?.upper) {
+          if (poolIncentives?.aprBreakdown?.osmosis) {
             incentivesBreakdown.push({
-              apr: poolIncentives?.aprBreakdown?.osmosis.upper,
+              apr: poolIncentives?.aprBreakdown?.osmosis,
               type: "osmosis",
             });
           }
           // external incentives
-          if (poolIncentives?.aprBreakdown?.boost?.upper) {
+          if (poolIncentives?.aprBreakdown?.boost) {
             incentivesBreakdown.push({
-              apr: poolIncentives?.aprBreakdown?.boost.upper,
+              apr: poolIncentives?.aprBreakdown?.boost,
               type: "boost",
             });
           }
@@ -240,7 +240,7 @@ export async function getSharePoolBondDurations({
           new RatePretty(0)
         );
         const swapFeeApr =
-          poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0);
+          poolIncentives?.aprBreakdown?.swapFee ?? new RatePretty(0);
         aggregateApr = aggregateApr.add(swapFeeApr);
 
         // get superfluid info for this duration
@@ -248,8 +248,7 @@ export async function getSharePoolBondDurations({
         const userSyntheticLockIds: string[] = [];
         if (isSuperfluidDuration) {
           const superfluidApr =
-            poolIncentives?.aprBreakdown?.superfluid?.upper ??
-            new RatePretty(0);
+            poolIncentives?.aprBreakdown?.superfluid ?? new RatePretty(0);
           aggregateApr = aggregateApr.add(superfluidApr);
 
           const userDelegations = bech32Address
