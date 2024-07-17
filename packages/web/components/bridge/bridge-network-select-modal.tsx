@@ -17,7 +17,7 @@ import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
-import { BridgeWalletSelectScreen } from "./bridge-wallet-select-modal";
+import { BridgeWalletSelectScreens } from "./bridge-wallet-select-modal";
 import { SupportedChain } from "./use-bridges-supported-assets";
 
 enum NetworkSelectScreen {
@@ -101,7 +101,7 @@ export const BridgeNetworkSelectModal = ({
                     setConnectingToEvmChain(undefined);
                   }}
                 />
-                <BridgeWalletSelectScreen
+                <BridgeWalletSelectScreens
                   onClose={() => {
                     modalProps.onRequestClose();
                   }}
