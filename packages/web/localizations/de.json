@@ -406,7 +406,8 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "noOrderbook": "Kein Orderbuch für Paar"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -1281,7 +1282,8 @@
     "swapRoute": "Route wechseln",
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
-    "openOrders": "Offene Aufträge"
+    "openOrders": "Offene Aufträge",
+    "invalidPrice": "Ungültiger Preis"
   },
   "orderHistory": {
     "orders": "Aufträge",

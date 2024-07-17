@@ -10,6 +10,7 @@ import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { formatPretty } from "~/utils/formatter";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
   baseAsset: MinimalAsset;
@@ -61,7 +62,15 @@ const nonFocusedClasses =
   "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
-const transformAmount = (value: string) => {
+const countDecimals = function (value: string) {
+  const split = value.split(".");
+  if (split.length > 1) {
+    return split[1].length;
+  }
+  return 0;
+};
+
+const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
     updatedValue = value + "0";
@@ -71,7 +80,10 @@ const transformAmount = (value: string) => {
     updatedValue = "0" + value;
   }
 
-  return updatedValue;
+  const decimals = countDecimals(updatedValue);
+  return decimals > decimalCount
+    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
+    : updatedValue;
 };
 
 export const LimitInput: FC<LimitInputProps> = ({
@@ -119,8 +131,7 @@ export const LimitInput: FC<LimitInputProps> = ({
         return setFiatAmount("");
       }
 
-      const updatedValue = transformAmount(value);
-      const isFocused = focused === FocusedInput.FIAT;
+      const updatedValue = transformAmount(value, 6);
       if (
         !isValidNumericalRawInput(updatedValue) ||
         updatedValue.length > 26 ||
@@ -129,16 +140,20 @@ export const LimitInput: FC<LimitInputProps> = ({
         return;
       }
 
+      const isFocused = focused === FocusedInput.FIAT;
+
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
       if (tab === "buy" && updatedValue.length > 0) {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      isFocused || updatedValue.length === 0
-        ? setFiatAmount(updatedValue)
-        : setFiatAmount(formatPretty(new Dec(updatedValue)));
+      setFiatAmount(
+        parseFloat(updatedValue) !== 0 && !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue
+      );
     },
-    [setFiatAmount, focused, tab, setMarketAmount, quoteAssetPrice]
+    [focused, setFiatAmount, tab, setMarketAmount, quoteAssetPrice]
   );
 
   const setTokenAmountSafe = useCallback(
@@ -147,8 +162,7 @@ export const LimitInput: FC<LimitInputProps> = ({
         return onChange("");
       }
 
-      const updatedValue = transformAmount(value);
-      const isFocused = focused === FocusedInput.TOKEN;
+      const updatedValue = transformAmount(value, baseAsset?.coinDecimals);
 
       if (
         !isValidNumericalRawInput(updatedValue) ||
@@ -157,11 +171,15 @@ export const LimitInput: FC<LimitInputProps> = ({
       ) {
         return;
       }
-      isFocused || updatedValue.length === 0
-        ? onChange(updatedValue)
-        : onChange(formatPretty(new Dec(updatedValue)));
+
+      const isFocused = focused === FocusedInput.TOKEN;
+      onChange(
+        parseFloat(updatedValue) !== 0 && !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue
+      );
     },
-    [onChange, focused]
+    [onChange, focused, baseAsset?.coinDecimals]
   );
 
   const toggleMax = useCallback(() => {
@@ -178,7 +196,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
     const fiatValue = value ? price.mul(value) : undefined;
 
-    setFiatAmountSafe(fiatValue ? formatPretty(fiatValue) : undefined);
+    setFiatAmountSafe(fiatValue ? fiatValue.toString() : undefined);
   }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
 
   useEffect(() => {
@@ -186,7 +204,6 @@ export const LimitInput: FC<LimitInputProps> = ({
 
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
     const tokenValue = value ? new Dec(value).quo(price) : undefined;
-
     setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
   return (

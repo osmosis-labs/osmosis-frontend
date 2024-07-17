@@ -406,7 +406,8 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok"
+    "noData": "Veri yok",
+    "noOrderbook": "Çift için Sipariş Defteri Yok"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -1281,7 +1282,8 @@
     "swapRoute": "Rotayı değiştir",
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
-    "openOrders": "Açık siparişler"
+    "openOrders": "Açık siparişler",
+    "invalidPrice": "Geçersiz fiyat"
   },
   "orderHistory": {
     "orders": "Emirler",

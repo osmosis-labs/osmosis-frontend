@@ -406,7 +406,8 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados"
+    "noData": "Sem dados",
+    "noOrderbook": "Sem carteira de pedidos para par"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -1281,7 +1282,8 @@
     "swapRoute": "Trocar rota",
     "trade": "Troca",
     "swapToAnotherAsset": "Trocar por outro ativo",
-    "openOrders": "Pedidos em aberto"
+    "openOrders": "Pedidos em aberto",
+    "invalidPrice": "Preço inválido"
   },
   "orderHistory": {
     "orders": "Pedidos",

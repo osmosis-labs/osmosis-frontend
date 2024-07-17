@@ -406,7 +406,8 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
-    "noData": "データなし"
+    "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -1281,7 +1282,8 @@
     "swapRoute": "ルートの交換",
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
-    "openOrders": "オープン注文"
+    "openOrders": "オープン注文",
+    "invalidPrice": "無効な価格"
   },
   "orderHistory": {
     "orders": "注文",

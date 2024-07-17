@@ -406,7 +406,8 @@
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
-    "noData": "કોઈ ડેટા નથી"
+    "noData": "કોઈ ડેટા નથી",
+    "noOrderbook": "જોડી માટે કોઈ ઓર્ડરબુક નથી"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
@@ -1281,7 +1282,8 @@
     "swapRoute": "સ્વેપ રૂટ",
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
-    "openOrders": "ઓર્ડર ખોલો"
+    "openOrders": "ઓર્ડર ખોલો",
+    "invalidPrice": "અમાન્ય કિંમત"
   },
   "orderHistory": {
     "orders": "ઓર્ડર",
