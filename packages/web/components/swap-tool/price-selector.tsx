@@ -102,7 +102,7 @@ export const PriceSelector = memo(
                 usdValue: walletAsset.usdValue,
               };
 
-              if (asset?.symbol === "USDC") return returnAsset;
+              // if (asset?.symbol === "USDC") return returnAsset;
 
               // In the future, we might want to pass every coin instead of just stables.
               return asset?.rawAsset.categories.includes("stablecoin")
