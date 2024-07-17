@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { tError } from "~/components/localization";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -43,6 +44,7 @@ export const usePlaceLimit = ({
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
     poolId,
+    error: orderbookError,
   } = useOrderbook({
     quoteDenom,
     baseDenom,
@@ -323,6 +325,37 @@ export const usePlaceLimit = ({
     priceState.reset();
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
+  const error = useMemo(() => {
+    if (orderbookError) {
+      return orderbookError;
+    }
+
+    if (insufficientFunds) {
+      return "limitOrders.insufficientFunds";
+    }
+
+    if (!isMarket && !priceState.isValidPrice) {
+      return "limitOrders.invalidPrice";
+    }
+
+    if (isMarket && marketState.error) {
+      return tError(marketState.error)[0];
+    }
+
+    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    if (quantity === "0") {
+      return "errors.zeroAmount";
+    }
+
+    return;
+  }, [
+    insufficientFunds,
+    isMarket,
+    marketState.error,
+    priceState.isValidPrice,
+    paymentTokenValue,
+    orderbookError,
+  ]);
 
   return {
     baseAsset,
@@ -344,6 +377,7 @@ export const usePlaceLimit = ({
     isMarket,
     quoteAssetPrice,
     reset,
+    error,
   };
 };
 
@@ -388,7 +422,7 @@ const useLimitPrice = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualPercentAdjusted, orderDirection]);
 
-  const isValidPrice = useMemo(
+  const isValidInputPrice = useMemo(
     () =>
       Boolean(orderPrice) &&
       orderPrice.length > 0 &&
@@ -399,14 +433,14 @@ const useLimitPrice = ({
 
   const percentAdjusted = useMemo(
     () =>
-      isValidPrice
+      isValidInputPrice
         ? new Dec(orderPrice).quo(spotPrice ?? new Dec(1)).sub(new Dec(1))
         : new Dec(0),
-    [isValidPrice, orderPrice, spotPrice]
+    [isValidInputPrice, orderPrice, spotPrice]
   );
   const price = useMemo(
-    () => (isValidPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
-    [isValidPrice, orderPrice, spotPrice]
+    () => (isValidInputPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
+    [isValidInputPrice, orderPrice, spotPrice]
   );
 
   const isBeyondOppositePrice = useMemo(() => {
@@ -447,6 +481,10 @@ const useLimitPrice = ({
   useEffect(() => {
     reset();
   }, [orderDirection, reset]);
+
+  const isValidPrice = useMemo(() => {
+    return isValidInputPrice || Boolean(spotPrice);
+  }, [isValidInputPrice, spotPrice]);
   return {
     spotPrice,
     orderPrice,

@@ -406,7 +406,8 @@
     "invalidAmounts": "Montant(s) invalide(s)",
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
-    "noData": "Pas de données"
+    "noData": "Pas de données",
+    "noOrderbook": "Pas de carnet de commandes pour la paire"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "Le trading en 1 clic a expiré",
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
       "currentlyUnavailable": "Trading en 1 clic actuellement indisponible",
+      "insufficientFunds": "Fonds OSMO insuffisants pour le trading en 1 clic",
+      "continueWithoutOneClickTrading": "Continuer sans trading en 1 clic",
       "networkFeeTooHigh": "Frais de réseau trop élevés",
       "startANewSession": "Démarrer une nouvelle session",
       "approveManually": "Approuver manuellement dans {walletName}",
@@ -1279,7 +1282,8 @@
     "swapRoute": "Changer d'itinéraire",
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
-    "openOrders": "Commandes ouvertes"
+    "openOrders": "Commandes ouvertes",
+    "invalidPrice": "Prix invalide"
   },
   "orderHistory": {
     "orders": "Ordres",

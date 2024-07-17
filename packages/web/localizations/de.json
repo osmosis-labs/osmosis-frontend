@@ -406,7 +406,8 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "noOrderbook": "Kein Orderbuch für Paar"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
+      "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
+      "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
@@ -1279,7 +1282,8 @@
     "swapRoute": "Route wechseln",
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
-    "openOrders": "Offene Aufträge"
+    "openOrders": "Offene Aufträge",
+    "invalidPrice": "Ungültiger Preis"
   },
   "orderHistory": {
     "orders": "Aufträge",

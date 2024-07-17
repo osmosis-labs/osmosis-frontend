@@ -406,7 +406,8 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد"
+    "noData": "اطلاعاتی وجود ندارد",
+    "noOrderbook": "بدون دفترچه سفارش برای جفت"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
+      "insufficientFunds": "بودجه OSMO ناکافی برای تجارت 1 کلیکی",
+      "continueWithoutOneClickTrading": "بدون معامله 1 کلیکی ادامه دهید",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
       "startANewSession": "یک جلسه جدید را شروع کنید",
       "approveManually": "تأیید دستی در {walletName}",
@@ -1279,7 +1282,8 @@
     "swapRoute": "تعویض مسیر",
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
-    "openOrders": "باز کردن سفارشات"
+    "openOrders": "باز کردن سفارشات",
+    "invalidPrice": "قیمت نامعتبر"
   },
   "orderHistory": {
     "orders": "سفارشات",

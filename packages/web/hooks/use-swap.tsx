@@ -281,7 +281,7 @@ export function useSwap(
               }))
             : false;
 
-          const shouldBeSignedWithOneClickTrading =
+          let shouldBeSignedWithOneClickTrading =
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
             !networkFeeError;
@@ -289,25 +289,35 @@ export function useSwap(
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            networkFeeError
+            (networkFeeError ||
+              networkFee?.amount.some(({ denom }) => denom !== "uosmo"))
           ) {
             try {
-              const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
+              const TOAST_ID = networkFeeError
+                ? "ONE_CLICK_UNAVAILABLE"
+                : "ONE_CLICK_INSUFFICIENT_OSMO";
+              const titleTranslationKey = networkFeeError
+                ? "oneClickTrading.toast.currentlyUnavailable"
+                : "oneClickTrading.toast.insufficientFunds";
+              const buttonText = networkFeeError
+                ? "oneClickTrading.toast.approveManually"
+                : "oneClickTrading.toast.continueWithoutOneClickTrading";
+
               await new Promise((continueTx, reject) => {
                 displayToast(
                   {
-                    titleTranslationKey:
-                      "oneClickTrading.toast.currentlyUnavailable",
+                    titleTranslationKey,
                     captionElement: (
                       <Button
                         variant="link"
                         className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
                         onClick={() => {
-                          toast.dismiss(ONE_CLICK_UNAVAILABLE_TOAST_ID);
+                          toast.dismiss(TOAST_ID);
+                          shouldBeSignedWithOneClickTrading = false;
                           continueTx(void 0);
                         }}
                       >
-                        {t("oneClickTrading.toast.approveManually", {
+                        {t(buttonText, {
                           walletName: account.walletInfo?.prettyName ?? "",
                         })}
                       </Button>
@@ -315,7 +325,7 @@ export function useSwap(
                   },
                   ToastType.ONE_CLICK_TRADING,
                   {
-                    toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
+                    toastId: TOAST_ID,
                     onClose: () => {
                       reject();
                     },
@@ -1270,7 +1280,7 @@ function useQueryRouterBestQuote(
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(
+export function makeRouterErrorFromTrpcError(
   error:
     | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
     | null

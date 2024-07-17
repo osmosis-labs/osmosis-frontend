@@ -179,9 +179,27 @@ export const useOrderbook = ({
       ),
     [orderbooks, baseAsset, quoteAsset]
   );
-  const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
+  const {
+    makerFee,
+    isLoading: isMakerFeeLoading,
+    error: makerFeeError,
+  } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
+
+  const error = useMemo(() => {
+    if (
+      !Boolean(orderbook) ||
+      !Boolean(orderbook!.poolId) ||
+      orderbook!.poolId === ""
+    ) {
+      return "errors.noOrderbook";
+    }
+
+    if (Boolean(makerFeeError)) {
+      return makerFeeError?.message;
+    }
+  }, [orderbook, makerFeeError]);
 
   return {
     poolId: orderbook?.poolId ?? "",
@@ -189,6 +207,7 @@ export const useOrderbook = ({
     makerFee,
     isMakerFeeLoading,
     isOrderbookLoading,
+    error,
   };
 };
 
@@ -202,10 +221,13 @@ export const useOrderbook = ({
  * @returns {Object} An object containing the maker fee and the loading state.
  */
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
-  const { data: makerFeeData, isLoading } =
-    api.edge.orderbooks.getMakerFee.useQuery({
-      osmoAddress: orderbookAddress,
-    });
+  const {
+    data: makerFeeData,
+    isLoading,
+    error,
+  } = api.edge.orderbooks.getMakerFee.useQuery({
+    osmoAddress: orderbookAddress,
+  });
 
   const makerFee = useMemo(() => {
     if (isLoading) return new Dec(0);
@@ -215,29 +237,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   return {
     makerFee,
     isLoading,
-  };
-};
-
-export const useActiveLimitOrdersByOrderbook = ({
-  orderbookAddress,
-  userAddress,
-}: {
-  orderbookAddress: string;
-  userAddress: string;
-}) => {
-  const { data: orders, isLoading } =
-    api.edge.orderbooks.getActiveOrders.useInfiniteQuery({
-      contractOsmoAddress: orderbookAddress,
-      userOsmoAddress: userAddress,
-    });
-
-  const allOrders = useMemo(() => {
-    return orders?.pages.flatMap((page) => page.items) ?? [];
-  }, [orders]);
-
-  return {
-    orders: allOrders,
-    isLoading,
+    error,
   };
 };
 

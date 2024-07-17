@@ -406,7 +406,8 @@
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
-    "noData": "데이터 없음"
+    "noData": "데이터 없음",
+    "noOrderbook": "페어 주문서 없음"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
+      "insufficientFunds": "1-Click 거래를 위한 OSMO 자금이 부족합니다.",
+      "continueWithoutOneClickTrading": "원클릭 거래 없이 계속하기",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
       "startANewSession": "새 세션 시작",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
@@ -1279,7 +1282,8 @@
     "swapRoute": "경로 교환",
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
-    "openOrders": "오픈 주문"
+    "openOrders": "오픈 주문",
+    "invalidPrice": "잘못된 가격"
   },
   "orderHistory": {
     "orders": "명령",

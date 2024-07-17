@@ -406,7 +406,8 @@
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
-    "noData": "Нет данных"
+    "noData": "Нет данных",
+    "noOrderbook": "Нет книги заказов для пары"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
+      "insufficientFunds": "Недостаточно средств OSMO для торговли в 1 клик",
+      "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "startANewSession": "Начать новый сеанс",
       "approveManually": "Утвердить вручную в {walletName}",
@@ -1279,7 +1282,8 @@
     "swapRoute": "Обменять маршрут",
     "trade": "Торговля",
     "swapToAnotherAsset": "Обмен на другой актив",
-    "openOrders": "Открытые ордера"
+    "openOrders": "Открытые ордера",
+    "invalidPrice": "Неверная цена"
   },
   "orderHistory": {
     "orders": "Заказы",
