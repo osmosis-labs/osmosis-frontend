@@ -325,17 +325,25 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           className="h-12 w-12"
                         />
                         <button
-                          onClick={() => setOneTokenSelectOpen("from")}
-                          className="flex flex-col"
+                          onClick={() =>
+                            showTokenSelectRecommendedTokens &&
+                            setOneTokenSelectOpen("from")
+                          }
+                          className={classNames("flex flex-col", {
+                            "pointer-events-none":
+                              !showTokenSelectRecommendedTokens,
+                          })}
                         >
                           <div className="flex items-center gap-1">
                             <h5>{swapState.fromAsset.coinDenom}</h5>
-                            <div className="flex h-6 w-6 items-center justify-center">
-                              <Icon
-                                id="chevron-down"
-                                className="h-auto w-4.5 text-osmoverse-400"
-                              />
-                            </div>
+                            {showTokenSelectRecommendedTokens && (
+                              <div className="flex h-6 w-6 items-center justify-center">
+                                <Icon
+                                  id="chevron-down"
+                                  className="h-auto w-4.5 text-osmoverse-400"
+                                />
+                              </div>
+                            )}
                           </div>
                           <p className="whitespace-nowrap text-osmoverse-300">
                             {swapState.fromAsset.coinName}
@@ -449,17 +457,25 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         className="h-12 w-12"
                       />
                       <button
-                        onClick={() => setOneTokenSelectOpen("to")}
-                        className="flex flex-col"
+                        onClick={() =>
+                          showTokenSelectRecommendedTokens &&
+                          setOneTokenSelectOpen("to")
+                        }
+                        className={classNames("flex flex-col", {
+                          "pointer-events-none":
+                            !showTokenSelectRecommendedTokens,
+                        })}
                       >
                         <div className="flex items-center gap-1">
                           <h5>{swapState.toAsset.coinDenom}</h5>
-                          <div className="flex h-6 w-6 items-center justify-center">
-                            <Icon
-                              id="chevron-down"
-                              className="h-auto w-4.5 text-osmoverse-400"
-                            />
-                          </div>
+                          {showTokenSelectRecommendedTokens && (
+                            <div className="flex h-6 w-6 items-center justify-center">
+                              <Icon
+                                id="chevron-down"
+                                className="h-auto w-4.5 text-osmoverse-400"
+                              />
+                            </div>
+                          )}
                         </div>
                         <p className="whitespace-nowrap text-osmoverse-300">
                           {swapState.toAsset.coinName}
