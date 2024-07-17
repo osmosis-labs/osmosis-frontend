@@ -675,9 +675,7 @@
       "total": "TAEG total",
       "explainer": {
         "title": "Comment sont calculés les TAEG ?",
-        "p1": "Tous les TAEG sont des estimations. Ils sont calculés en prenant le TAEG moyen de la liquidité du pool.",
-        "p2": "Dans les pools suralimentés, la plupart des utilisateurs recevront des récompenses inférieures. Cela est dû à des positions plus concentrées, qui captent davantage d’incitations.",
-        "p3": "Afin de conserver des estimations conservatrices, tous les TAEG sont divisés par un facteur de 3."
+        "subtitle": "Tous les TAEG sont des estimations basées sur les 7 derniers jours. À mesure que le volume des échanges et les prix fluctuent, le TAEG changera en conséquence. La plage affichée est basée sur les éléments suivants.<inlang-LineFeed>\nLa limite inférieure fait référence à des positions conservatrices et complètes. Cela peut entraîner un TAEG extrêmement faible, car la liquidité est répartie sur toutes les transactions. La borne supérieure est calculée pour une position avec une concentration de 30% autour du prix spot. Gardez à l’esprit qu’une position ne sera plus rentable si elle sort de la fourchette."
       }
     }
   },

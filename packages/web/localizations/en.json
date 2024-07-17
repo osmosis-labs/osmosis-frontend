@@ -675,9 +675,7 @@
       "total": "Total APR",
       "explainer": {
         "title": "How are APRs calculated?",
-        "p1": "All APRs are estimates. They are calculated by taking the average APR for liquidity in the pool.",
-        "p2": "In supercharged pools, most users will receive lower rewards. This is due to positions that are more concentrated, which capture more of the incentives.",
-        "p3": "In order to keep estimates conservative, all APRs are divided by factor of 3."
+        "subtitle": "All APRs are estimates based on the past 7 days. As trade volume and price fluctuate, the APR will change accordingly. The displayed range is based on the following.\n\nThe lower bound references conservative, full-range positions. This may result in an extremely low APR as liquidity is spread across all trades. The upper bound is calculated for a position with a 30% concentration around the spot price. Bear in mind, a position will no longer earn if it goes out of range."
       }
     }
   },
