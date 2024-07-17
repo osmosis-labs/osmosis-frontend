@@ -320,6 +320,11 @@ export const usePlaceLimit = ({
     marketState.tokenOutFiatValue,
   ]);
 
+  const reset = useCallback(() => {
+    inAmountInput.reset();
+    priceState.reset();
+    marketState.inAmountInput.reset();
+  }, [inAmountInput, priceState, marketState]);
   const error = useMemo(() => {
     if (orderbookError) {
       return orderbookError;
@@ -371,6 +376,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    reset,
     error,
   };
 };

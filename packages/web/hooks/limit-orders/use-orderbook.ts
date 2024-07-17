@@ -197,7 +197,7 @@ export const useOrderbook = ({
     }
 
     if (Boolean(makerFeeError)) {
-      return makerFeeError;
+      return makerFeeError?.message;
     }
   }, [orderbook, makerFeeError]);
 

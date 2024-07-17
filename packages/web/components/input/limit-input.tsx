@@ -191,6 +191,8 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
+    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT)
+      setFiatAmount("");
     if (focused !== FocusedInput.TOKEN || !price) return;
 
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
@@ -283,14 +285,14 @@ function AutoInput({
     [type]
   );
 
-  const oppositeTypeEnum = useMemo(
-    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
-    [type]
-  );
-
   const isFocused = useMemo(
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
+  );
+
+  const oppositeTypeEnum = useMemo(
+    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
+    [type]
   );
 
   const scale = useMemo(
