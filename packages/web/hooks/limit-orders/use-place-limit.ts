@@ -35,7 +35,7 @@ export const usePlaceLimit = ({
   baseDenom,
   orderDirection,
   useQueryParams = false,
-  useOtherCurrencies = false,
+  useOtherCurrencies = true,
   type,
 }: UsePlaceLimitParams) => {
   const { accountStore } = useStore();
@@ -43,7 +43,6 @@ export const usePlaceLimit = ({
     makerFee,
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
-    poolId,
     error: orderbookError,
   } = useOrderbook({
     quoteDenom,
@@ -74,8 +73,8 @@ export const usePlaceLimit = ({
     initialFromDenom: orderDirection === "ask" ? baseDenom : quoteDenom,
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
-    useOtherCurrencies: false,
-    forceSwapInPoolId: poolId,
+    useOtherCurrencies,
+    // forceSwapInPoolId: poolId,
     maxSlippage: new Dec(0.1),
   });
 
