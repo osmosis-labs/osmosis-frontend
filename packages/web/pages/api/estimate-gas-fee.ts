@@ -34,13 +34,11 @@ export default async function handler(
     bech32Address,
     onlyDefaultFeeDenom,
     gasMultiplier,
-    sendCoin,
   } = req.body as {
     chainId: string;
     messages: { typeUrl: string; value: string }[];
     nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
     bech32Address: string;
-    sendCoin?: { denom: string; amount: string };
     onlyDefaultFeeDenom?: boolean;
     gasMultiplier: number;
   };
@@ -57,7 +55,6 @@ export default async function handler(
       },
       onlyDefaultFeeDenom,
       gasMultiplier,
-      sendCoin,
     });
     return res.status(200).json(gasFee);
   } catch (e) {

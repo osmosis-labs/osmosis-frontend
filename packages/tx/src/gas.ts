@@ -362,7 +362,7 @@ export async function getGasFeeAmount({
     );
 
     /**
-     * Following last comment, we now store a the subtractive coin that can be used in the transaction,
+     * Following last comment, we now store a the subtractive coin that can be used in the transaction
      * as long as it's subtracted from the input.
      */
     if (isBalanceNeededForTx) {
