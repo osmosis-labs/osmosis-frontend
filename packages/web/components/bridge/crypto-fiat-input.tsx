@@ -17,17 +17,15 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { useControllableState } from "~/hooks/use-controllable-state";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 
 const mulGasSlippage = new Dec("1.1");
-const scale = 1;
-const minScale = 16 / 96; // = 1rem / 6rem
 
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
@@ -118,12 +116,13 @@ export const CryptoFiatInput: FunctionComponent<{
 
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
-      let nextValue = type === "fiat" ? value.replace("$", "") : value;
+      let nextValue = value;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
         nextValue = nextValue.slice(1);
       }
+
       if (nextValue === "") {
         nextValue = "0";
       }
@@ -186,43 +185,21 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [asset, isMax, onInput]);
 
-  const fiatCurrentValue = `${assetPrice.symbol}${fiatInputRaw}`;
-  const fiatInputFontSize = calcTextSizeClass(
-    fiatCurrentValue.length,
-    isMobile
-  );
-  const cryptoInputFontSize = calcTextSizeClass(
-    cryptoInputRaw.length + inputCoin.denom.length,
-    isMobile
-  );
-  const [isInputFocused, setIsInputFocused] = useState(false);
-
-  // when the key to the autosize input changes, it will re-mount
-  // causing the input to lose focus,
-  // so we use an effect to re-focus the input if it's already focused
-  useEffect(() => {
-    if (isInputFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isInputFocused, fiatInputFontSize, cryptoInputFontSize]);
-
   return (
-    <div
-      className="relative flex flex-col items-center"
-      style={{
-        height: "calc(100% + 41px)",
-      }}
-    >
+    <div className="relative flex flex-col items-center">
       <div className="flex h-36 w-full place-content-between items-center">
         <div className="w-14 md:w-13" />
         <div
-          className="flex h-full max-w-full flex-col items-center justify-end whitespace-nowrap text-center"
+          className="flex h-full flex-col items-center whitespace-nowrap text-center"
           onClick={() => {
             inputRef.current?.focus();
           }}
         >
           <div
-            className="absolute top-1/2 transition-transform"
+            className={classNames(
+              "absolute top-1/2 transition-transform",
+              currentUnit === "fiat" ? "max-w-[300px]" : ""
+            )}
             style={{
               transform: `scale(${
                 currentUnit === "fiat" ? 1 : 0.3
@@ -230,40 +207,25 @@ export const CryptoFiatInput: FunctionComponent<{
             }}
           >
             {currentUnit === "fiat" ? (
-              <InputBox
-                onClick={() => {
-                  if (currentUnit === "fiat") return;
-                  setInputUnit("fiat");
-                }}
-                // when the font size changes, we need to prompt the autosize input to re-mount
-                // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
-                key={`fiat-${fiatInputFontSize}`}
-                inputRef={currentUnit === "fiat" ? inputRef : undefined}
-                className={classNames(
-                  "border-none bg-transparent text-center font-bold",
-                  fiatInputFontSize
-                )}
+              <ScaledTickerInput
+                fiatSymbol={assetPrice.symbol}
+                inputRef={inputRef}
                 classes={{
-                  label: "!block",
                   input: classNames({
                     "text-rust-300": isInsufficientBal || isInsufficientFee,
                   }),
                 }}
-                onBlur={() => setIsInputFocused(false)}
-                onFocus={() => setIsInputFocused(true)}
-                currentValue={fiatCurrentValue}
-                onInput={(value) => {
+                value={fiatInputRaw}
+                onChange={(value) => {
                   onInput("fiat")(value);
                   setIsMax(false);
                 }}
-                isAutosize
               />
             ) : (
               <button
                 className={classNames(
-                  "flex items-center gap-3 text-center !font-normal text-wosmongton-200",
-                  fiatInputFontSize
-                  // calcTextSizeClass(0, isMobile)
+                  "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
+                  isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
                 )}
                 onClick={() => {
                   setInputUnit("fiat");
@@ -276,7 +238,10 @@ export const CryptoFiatInput: FunctionComponent<{
           </div>
 
           <div
-            className="absolute top-1/2 transition-transform"
+            className={classNames(
+              "absolute top-1/2 transition-transform",
+              currentUnit === "crypto" ? "max-w-[300px]" : ""
+            )}
             style={{
               transform: `scale(${
                 currentUnit === "crypto" ? 1 : 0.3
@@ -284,49 +249,28 @@ export const CryptoFiatInput: FunctionComponent<{
             }}
           >
             {currentUnit === "crypto" ? (
-              <InputBox
-                onClick={() => {
-                  console.log(currentUnit);
-                  if (currentUnit === "crypto") return;
-                  setInputUnit("crypto");
-                }}
-                // when the font size changes, we need to prompt the autosize input to re-mount
-                // see: https://github.com/JedWatson/react-input-autosize?tab=readme-ov-file#changing-the-styles-at-runtime
-                key={`crypto-${cryptoInputFontSize}`}
-                inputRef={currentUnit === "crypto" ? inputRef : undefined}
-                className={classNames(
-                  "border-none bg-transparent font-bold",
-                  cryptoInputFontSize
-                )}
+              <ScaledTickerInput
+                coinDenom={inputCoin.denom}
+                inputRef={inputRef}
                 classes={{
-                  label: "!block",
-                  input: classNames("!p-0", {
+                  input: classNames({
                     "text-rust-300": isInsufficientBal || isInsufficientFee,
                   }),
-                  trailingSymbol: classNames(
-                    "ml-1 align-middle text-osmoverse-500",
-                    {
-                      "text-rust-300": isInsufficientBal || isInsufficientFee,
-                    }
-                  ),
+                  ticker: classNames("ml-1 text-osmoverse-500", {
+                    "text-rust-300": isInsufficientBal || isInsufficientFee,
+                  }),
                 }}
-                onBlur={() => setIsInputFocused(false)}
-                onFocus={() => setIsInputFocused(true)}
-                currentValue={cryptoInputRaw}
-                onInput={(value) => {
+                value={cryptoInputRaw}
+                onChange={(value) => {
                   onInput("crypto")(value);
                   setIsMax(false);
                 }}
-                trailingSymbol={inputCoin.denom}
-                isAutosize
               />
             ) : (
               <button
                 className={classNames(
-                  "flex items-center gap-3 text-center !font-normal text-wosmongton-200",
-                  cryptoInputFontSize
-
-                  // calcTextSizeClass(0, isMobile)
+                  "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
+                  isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
                 )}
                 onClick={() => {
                   setInputUnit("crypto");
@@ -389,28 +333,120 @@ export const CryptoFiatInput: FunctionComponent<{
   );
 };
 
-const calcTextSizeClass = (numChars: number, isMobile: boolean): string => {
-  const sizeMapping: { [key: number]: string } = isMobile
-    ? {
-        8: "text-h3 font-h3",
-        10: "text-h4 font-h4",
-        12: "text-h5 font-h5",
-        18: "text-h6 font-h6",
-        24: "text-lg",
+interface ScaledTickerInputProps {
+  fiatSymbol?: string;
+  coinDenom?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  classes?: Partial<Record<"input" | "ticker", string>>;
+
+  inputRef?: React.RefObject<HTMLInputElement>;
+}
+
+function ScaledTickerInput({
+  fiatSymbol,
+  coinDenom,
+  value,
+  onChange,
+  classes,
+  inputRef,
+}: ScaledTickerInputProps) {
+  const { isMobile } = useWindowSize();
+  const [inputValue, setInputValue] = useControllableState({
+    defaultValue: "",
+    value: value,
+    onChange,
+  });
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputSizerRef = useRef<HTMLDivElement>(null);
+  const tickerRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const minScale = 16 / 96; // = 1rem / 6rem
+    let contentWidth;
+    let inputMaxWidth =
+      (1 / minScale) * (wrapperRef.current?.offsetWidth || 0) -
+      (tickerRef.current?.offsetWidth || 0);
+
+    const updateSize = () => {
+      if (inputSizerRef.current && wrapperRef.current && tickerRef.current) {
+        contentWidth =
+          (inputSizerRef.current?.offsetWidth || 0) +
+          (tickerRef.current?.offsetWidth || 0);
+        let scale = Math.min(
+          1,
+          Math.max(
+            minScale,
+            (wrapperRef.current?.offsetWidth || 0) / contentWidth
+          )
+        );
+        wrapperRef.current.style.transform = `scale(${scale})`;
+        inputSizerRef.current.style.maxWidth = `${inputMaxWidth}px`;
       }
-    : {
-        8: "text-h2 font-h2",
-        10: "text-h3 font-h3",
-        12: "text-h4 font-h4",
-        18: "text-h5 font-h5",
-        24: "text-h6 font-h6",
-      };
+    };
 
-  for (const [key, value] of Object.entries(sizeMapping)) {
-    if (numChars <= Number(key)) {
-      return value;
-    }
-  }
+    updateSize();
+  }, [inputValue, isMobile]);
 
-  return isMobile ? "text-sm" : "text-md";
-};
+  return (
+    <label
+      className={classNames(
+        "mx-auto block max-w-full rounded-xl px-2",
+        isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
+      )}
+    >
+      <div
+        ref={wrapperRef}
+        className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center"
+      >
+        <div className="text-8xl flex items-baseline justify-center">
+          {fiatSymbol ? (
+            <span
+              ref={tickerRef}
+              className={classNames("self-center", classes?.ticker)}
+            >
+              {fiatSymbol}
+            </span>
+          ) : null}
+          <div
+            ref={inputSizerRef}
+            data-value={inputValue || "0"}
+            className={classNames(
+              "relative self-center overflow-hidden align-middle",
+              "after:invisible after:whitespace-nowrap after:font-[inherit] after:content-[attr(data-value)]"
+            )}
+          >
+            <input
+              ref={inputRef}
+              className={classNames(
+                "absolute m-0 h-full w-full bg-transparent p-0 placeholder-inherit outline-0",
+                classes?.input
+              )}
+              type="text"
+              placeholder="0"
+              data-expand="true"
+              minLength={1}
+              style={{
+                fontSize: "inherit",
+              }}
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+            />
+          </div>
+          {fiatSymbol ? null : (
+            <span
+              ref={tickerRef}
+              className={classNames(
+                "self-center pl-1 opacity-60",
+                classes?.ticker
+              )}
+            >
+              {coinDenom}
+            </span>
+          )}
+        </div>
+      </div>
+    </label>
+  );
+}
