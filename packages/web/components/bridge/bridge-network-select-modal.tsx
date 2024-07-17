@@ -1,14 +1,9 @@
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
-import React, { useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
 
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { SearchBox } from "~/components/input";
-import {
-  Screen,
-  ScreenGoBackButton,
-  ScreenManager,
-} from "~/components/screen-manager";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
 import { EthereumChainIds } from "~/config/wagmi";
 import { useFilteredData, useWindowSize } from "~/hooks";
@@ -17,13 +12,7 @@ import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
-import { BridgeWalletSelectScreens } from "./bridge-wallet-select-modal";
 import { SupportedChain } from "./use-bridges-supported-assets";
-
-enum NetworkSelectScreen {
-  Main = "main",
-  SelectWallet = "select-wallet",
-}
 
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   direction: BridgeTransactionDirection;
@@ -34,7 +23,9 @@ interface BridgeNetworkSelectModalProps extends ModalBaseProps {
   initialManualAddress: string | undefined;
 }
 
-export const BridgeNetworkSelectModal = ({
+export const BridgeNetworkSelectModal: FunctionComponent<
+  BridgeNetworkSelectModalProps
+> = ({
   direction,
   chains,
   onSelectChain,
@@ -42,19 +33,26 @@ export const BridgeNetworkSelectModal = ({
   onConfirmManualAddress,
   initialManualAddress,
   ...modalProps
-}: BridgeNetworkSelectModalProps) => {
+}) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
-  const [connectingToEvmChain, setConnectingToEvmChain] =
-    useState<Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>>();
+  // focus search on modal open
+  const searchBoxRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (modalProps.isOpen) {
+      setTimeout(() => {
+        searchBoxRef.current?.focus();
+      }, 0);
+    }
+  }, [modalProps.isOpen]);
 
   const {
     isConnected: isEvmWalletConnected,
     chainId: currentEvmWalletChainId,
     connector,
   } = useEvmWalletAccount();
-  const { switchChainAsync: switchEvmChain, isLoading: isSwitchingChain } =
+  const { switchChainAsync: switchEvmChain, isLoading: isSwitchingEvmChain } =
     useSwitchEvmChain();
 
   const selectableChains = useMemo(
@@ -67,143 +65,86 @@ export const BridgeNetworkSelectModal = ({
   ]);
 
   return (
-    <ScreenManager
-      currentScreen={
-        connectingToEvmChain
-          ? NetworkSelectScreen.SelectWallet
-          : NetworkSelectScreen.Main
+    <ModalBase
+      title={
+        <div className="md:subtitle1 mx-auto text-h6 font-h6">
+          {t("transfer.bridgeNetworkSelect.title")}
+        </div>
       }
+      className="relative !max-w-[30rem]"
+      {...modalProps}
+      onAfterClose={() => {
+        setQuery("");
+      }}
     >
-      {({ currentScreen }) => (
-        <>
-          <ModalBase
-            title={
-              <div className="md:subtitle1 mx-auto text-h6 font-h6">
-                {currentScreen === NetworkSelectScreen.SelectWallet
-                  ? direction === "deposit"
-                    ? t("transfer.selectDepositWallet")
-                    : t("transfer.selectWithdrawWallet")
-                  : t("transfer.bridgeNetworkSelect.title")}
-              </div>
-            }
-            className="relative !max-w-[30rem]"
-            {...modalProps}
-            onAfterClose={() => {
-              setQuery("");
-              setConnectingToEvmChain(undefined);
-            }}
-          >
-            <Screen screenName={NetworkSelectScreen.SelectWallet}>
-              <div className="animate-[fadeIn_0.25s]">
-                <ScreenGoBackButton
-                  className="absolute top-7 left-4"
-                  onClick={() => {
-                    setConnectingToEvmChain(undefined);
-                  }}
-                />
-                <BridgeWalletSelectScreens
-                  onClose={() => {
-                    modalProps.onRequestClose();
-                  }}
-                  direction={direction}
-                  onSelectChain={(chain) => {
+      <div className="animate-[fadeIn_0.25s]">
+        {isEvmWalletConnected && isSwitchingEvmChain && (
+          <div className="flex items-center justify-center pt-12">
+            <SwitchingNetworkState
+              walletLogo={connector?.icon}
+              walletName={connector?.name}
+            />
+          </div>
+        )}
+
+        <div
+          className={classNames({
+            // Hide it to not unmount the function
+            hidden: isSwitchingEvmChain,
+          })}
+        >
+          <SearchBox
+            ref={searchBoxRef}
+            onInput={setQuery}
+            className="my-4 flex-shrink-0 md:w-full"
+            placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
+            size={isMobile ? "small" : "full"}
+          />
+          <div className="flex flex-col gap-1">
+            {filteredChains.map((chain) => {
+              const shouldSwitchEvmChain =
+                isEvmWalletConnected &&
+                chain.chainType === "evm" &&
+                currentEvmWalletChainId !== chain.chainId;
+              return (
+                <button
+                  key={chain.chainId}
+                  className="flex items-center justify-between rounded-2xl p-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0"
+                  onClick={async () => {
+                    if (shouldSwitchEvmChain) {
+                      await switchEvmChain({
+                        chainId: chain.chainId as EthereumChainIds,
+                      }).catch((e) => {
+                        console.error("Failed to switch EVM chain", e);
+                      });
+                    }
+
                     onSelectChain(chain);
                   }}
-                  evmChain={connectingToEvmChain}
-                  toChain={toChain}
-                  initialManualAddress={initialManualAddress}
-                  onConfirmManualAddress={onConfirmManualAddress}
-                />
-              </div>
-            </Screen>
-
-            <Screen screenName={NetworkSelectScreen.Main}>
-              <div className="animate-[fadeIn_0.25s]">
-                {isEvmWalletConnected && isSwitchingChain && (
-                  <div className="flex items-center justify-center pt-12">
-                    <SwitchingNetworkState
-                      walletLogo={connector?.icon}
-                      walletName={connector?.name}
-                    />
-                  </div>
-                )}
-
-                <div
-                  className={classNames({
-                    // Hide it to not unmount the function
-                    hidden: isSwitchingChain,
-                  })}
                 >
-                  <SearchBox
-                    onInput={setQuery}
-                    className="my-4 flex-shrink-0 md:w-full"
-                    placeholder={t(
-                      "transfer.bridgeNetworkSelect.searchPlaceholder"
-                    )}
-                    size={isMobile ? "small" : "full"}
-                  />
-                  <div className="flex flex-col gap-1">
-                    {filteredChains.map((chain) => {
-                      const shouldSwitchChain =
-                        isEvmWalletConnected &&
-                        chain.chainType === "evm" &&
-                        currentEvmWalletChainId !== chain.chainId;
-                      return (
-                        <button
-                          key={chain.chainId}
-                          className="flex items-center justify-between rounded-2xl p-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0"
-                          onClick={async () => {
-                            if (shouldSwitchChain) {
-                              try {
-                                await switchEvmChain({
-                                  chainId: chain.chainId as EthereumChainIds,
-                                });
-                              } catch {
-                                return;
-                              }
-                            }
+                  <div className="flex items-center gap-4 md:gap-3">
+                    <ChainLogo
+                      prettyName={chain.prettyName}
+                      logoUri={chain.logoUri}
+                      color={chain.color}
+                      size="lg"
+                    />
 
-                            if (
-                              !isEvmWalletConnected &&
-                              chain.chainType === "evm"
-                            ) {
-                              setConnectingToEvmChain({
-                                ...chain,
-                                chainId: Number(chain.chainId),
-                              });
-                              return;
-                            }
-
-                            onSelectChain(chain);
-                          }}
-                        >
-                          <div className="flex items-center gap-4 md:gap-3">
-                            <ChainLogo
-                              prettyName={chain.prettyName}
-                              logoUri={chain.logoUri}
-                              color={chain.color}
-                              size="lg"
-                            />
-
-                            <span className="subtitle1 md:body2">
-                              {chain.prettyName}
-                            </span>
-                          </div>
-                          {shouldSwitchChain && (
-                            <span className="body1 md:body2 text-wosmongton-300">
-                              {t("transfer.connect")}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
+                    <span className="subtitle1 md:body2">
+                      {chain.prettyName}
+                    </span>
                   </div>
-                </div>
-              </div>
-            </Screen>
-          </ModalBase>
-        </>
-      )}
-    </ScreenManager>
+                  {shouldSwitchEvmChain && (
+                    <span className="body1 md:body2 text-wosmongton-300">
+                      {t("transfer.connect")}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </ModalBase>
   );
 };
