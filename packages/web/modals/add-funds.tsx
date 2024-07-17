@@ -8,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
+import { useToFromDenoms } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals/base";
 
 interface AddFundsModalProps {
@@ -21,6 +22,9 @@ interface AddFundsModalProps {
           usdValue: PricePretty;
         }>)
     | undefined;
+  setFromAssetDenom: ReturnType<typeof useToFromDenoms>["setFromAssetDenom"];
+  setToAssetDenom: ReturnType<typeof useToFromDenoms>["setToAssetDenom"];
+  standalone?: boolean;
 }
 
 export function AddFundsModal({
@@ -28,6 +32,9 @@ export function AddFundsModal({
   onRequestClose,
   from,
   fromAsset,
+  setFromAssetDenom,
+  setToAssetDenom,
+  standalone,
 }: AddFundsModalProps) {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
@@ -170,8 +177,8 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                set({ from: "USDC" });
-                set({ to: fromAsset?.coinDenom ?? "ATOM" });
+                setFromAssetDenom("USDC");
+                setToAssetDenom(fromAsset?.coinDenom ?? "ATOM");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -202,8 +209,8 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                set({ tab: "swap" });
-                set({ to: "USDC" });
+                if (!standalone) set({ tab: "swap" });
+                setToAssetDenom("USDC");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -235,8 +242,8 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                set({ from: "" });
-                set({ to: fromAsset?.coinDenom ?? "" });
+                setFromAssetDenom("");
+                setToAssetDenom(fromAsset?.coinDenom ?? "");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"

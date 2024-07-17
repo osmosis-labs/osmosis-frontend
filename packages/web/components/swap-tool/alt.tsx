@@ -430,11 +430,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <button
                   className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
                   onClick={() => {
-                    const out = formatPretty(
-                      swapState.quote?.amount
-                        ? swapState.quote.amount.toDec()
-                        : new Dec(0)
-                    );
+                    const out = swapState.quote?.amount
+                      ? formatPretty(swapState.quote.amount.toDec())
+                      : "";
                     swapState.inAmountInput.setAmount(out);
                     swapState.switchAssets();
                   }}
@@ -628,9 +626,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
-          onRequestClose={closeAddFundsModal}
+          onRequestClose={() => {
+            closeAddFundsModal();
+            onRequestModalClose?.();
+          }}
           from="swap"
           fromAsset={swapState.fromAsset}
+          setFromAssetDenom={swapState.setFromAssetDenom}
+          setToAssetDenom={swapState.setToAssetDenom}
+          standalone={!showTokenSelectRecommendedTokens}
         />
       </>
     );
