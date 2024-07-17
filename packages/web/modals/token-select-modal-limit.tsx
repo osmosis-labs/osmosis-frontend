@@ -55,6 +55,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
   fetchNextPageAssets?: () => void;
   headerTitle: string;
   hideBalances?: boolean;
+  setAssetQueryInput?: (input: string) => void;
 }> = observer(
   ({
     isOpen,
@@ -66,9 +67,10 @@ export const TokenSelectModalLimit: FunctionComponent<{
     isLoadingSelectAssets = false,
     isFetchingNextPageAssets = false,
     hasNextPageAssets = false,
-    fetchNextPageAssets = () => {},
+    fetchNextPageAssets,
     headerTitle,
     hideBalances,
+    setAssetQueryInput,
   }) => {
     const { t } = useTranslation();
 
@@ -203,7 +205,11 @@ export const TokenSelectModalLimit: FunctionComponent<{
 
     const onSearch = (nextValue: string) => {
       setKeyboardSelectedIndex(0);
-      setQuery(nextValue);
+      if (setAssetQueryInput) {
+        setAssetQueryInput(nextValue);
+      } else {
+        setQuery(nextValue);
+      }
     };
 
     const assetToActivate = selectableAssets.find(
@@ -456,7 +462,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   onVisible={() => {
                     // If this element becomes visible at bottom of list, fetch next page
                     if (!isFetchingNextPageAssets && hasNextPageAssets) {
-                      fetchNextPageAssets();
+                      fetchNextPageAssets?.();
                     }
                   }}
                 />

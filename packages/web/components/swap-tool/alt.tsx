@@ -593,6 +593,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
+          setAssetQueryInput={swapState.setAssetsQueryInput}
+          fetchNextPageAssets={swapState.fetchNextPageAssets}
+          hasNextPageAssets={swapState.hasNextPageAssets}
+          isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
+          isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.buy")}
@@ -614,6 +619,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           hideBalances
+          setAssetQueryInput={swapState.setAssetsQueryInput}
+          fetchNextPageAssets={swapState.fetchNextPageAssets}
+          hasNextPageAssets={swapState.hasNextPageAssets}
+          isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
+          isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <ReviewSwapModal
           isOpen={showSwapReviewModal}
