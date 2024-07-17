@@ -597,19 +597,31 @@ export const AprBreakdownCell: PoolCellComponent = ({
   row: {
     original: { aprBreakdown },
   },
-}) =>
-  (aprBreakdown && (
+}) => {
+  if (!aprBreakdown) {
+    return null;
+  }
+
+  const available = Boolean(
+    aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper
+  );
+
+  const disabled =
+    !available &&
+    !Boolean(aprBreakdown.superfluid?.upper) &&
+    Boolean(aprBreakdown.swapFee?.upper);
+
+  return (
     <Tooltip
       rootClassNames="!rounded-2xl drop-shadow-md"
       content={<AprBreakdown {...aprBreakdown} />}
+      disabled={disabled}
     >
       <p
         className={classNames(
           "ml-auto flex items-center gap-1.5 whitespace-nowrap",
           {
-            "text-bullish-500": Boolean(
-              aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper
-            ),
+            "text-bullish-500": available,
           }
         )}
       >
@@ -617,9 +629,9 @@ export const AprBreakdownCell: PoolCellComponent = ({
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
-        ) : (
+        ) : !disabled ? (
           <Icon id="info" className="h-4 w-4" />
-        )}
+        ) : null}
         {aprBreakdown?.total?.lower &&
         aprBreakdown?.total?.upper?.maxDecimals(1).toString() ===
           aprBreakdown?.total?.lower.maxDecimals(1).toString() ? (
@@ -632,5 +644,5 @@ export const AprBreakdownCell: PoolCellComponent = ({
         )}
       </p>
     </Tooltip>
-  )) ??
-  null;
+  );
+};
