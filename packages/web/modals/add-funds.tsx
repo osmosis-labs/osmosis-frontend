@@ -22,8 +22,8 @@ interface AddFundsModalProps {
           usdValue: PricePretty;
         }>)
     | undefined;
-  setFromAssetDenom: ReturnType<typeof useToFromDenoms>["setFromAssetDenom"];
-  setToAssetDenom: ReturnType<typeof useToFromDenoms>["setToAssetDenom"];
+  setFromAssetDenom?: ReturnType<typeof useToFromDenoms>["setFromAssetDenom"];
+  setToAssetDenom?: ReturnType<typeof useToFromDenoms>["setToAssetDenom"];
   standalone?: boolean;
 }
 
@@ -177,8 +177,8 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                setFromAssetDenom("USDC");
-                setToAssetDenom(fromAsset?.coinDenom ?? "ATOM");
+                setFromAssetDenom?.("USDC");
+                setToAssetDenom?.(fromAsset?.coinDenom ?? "ATOM");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -210,7 +210,7 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 if (!standalone) set({ tab: "swap" });
-                setToAssetDenom("USDC");
+                setToAssetDenom?.("USDC");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -242,8 +242,8 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                setFromAssetDenom("");
-                setToAssetDenom(fromAsset?.coinDenom ?? "");
+                setFromAssetDenom?.("");
+                setToAssetDenom?.(fromAsset?.coinDenom ?? "");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
