@@ -8,7 +8,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { SearchBox } from "~/components/input";
+import { NoSearchResultsSplash, SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
@@ -108,6 +108,7 @@ export const AssetSelectScreen = observer(
       [data?.pages]
     );
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+    const noSearchResults = Boolean(search) && !isLoading && !assets.length;
 
     // focus search on modal open
     const searchBoxRef = useRef<HTMLInputElement>(null);
@@ -139,7 +140,7 @@ export const AssetSelectScreen = observer(
           )}
         </div>
 
-        <div className="sticky top-0 z-[1000] my-4 w-full flex-shrink-0 bg-osmoverse-900">
+        <div className="sticky top-0 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3">
           <SearchBox
             ref={searchBoxRef}
             onInput={debounce((nextValue) => {
@@ -152,7 +153,9 @@ export const AssetSelectScreen = observer(
         </div>
 
         <div className="flex flex-col gap-1">
-          {isLoading ? (
+          {noSearchResults ? (
+            <NoSearchResultsSplash className="pt-3" query={search} />
+          ) : isLoading ? (
             <div className="self-center pt-3">
               <Spinner />
             </div>
