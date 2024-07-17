@@ -43,7 +43,7 @@ export const usePlaceLimit = ({
     makerFee,
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
-    poolId,
+    // poolId,
     error: orderbookError,
   } = useOrderbook({
     quoteDenom,
@@ -75,7 +75,7 @@ export const usePlaceLimit = ({
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
     useOtherCurrencies: false,
-    forceSwapInPoolId: poolId,
+    // forceSwapInPoolId: poolId,
     maxSlippage: new Dec(0.1),
   });
 
@@ -326,7 +326,7 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
   const error = useMemo(() => {
-    if (orderbookError) {
+    if (!isMarket && orderbookError) {
       return orderbookError;
     }
 
