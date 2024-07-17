@@ -67,6 +67,7 @@ export const useGetEarnStrategies = (
     (isWalletConnected ? _strategies ?? [] : []).map((strat) =>
       q.edge.earn.getStrategyBalance(
         {
+          balanceUrl: strat.balanceUrl,
           strategyId: strat.id,
           userOsmoAddress,
         },
@@ -84,6 +85,7 @@ export const useGetEarnStrategies = (
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyAnnualPercentages(
         {
+          strategyId: strat.id,
           aprUrl: strat.aprUrl ?? "",
         },
         {
@@ -93,6 +95,7 @@ export const useGetEarnStrategies = (
           select: (data) => ({ ...data, strategyId: strat.id }),
           trpc: { context: { skipBatch: true } },
           retry: false,
+          enabled: Boolean(strat.aprUrl),
         }
       )
     )
@@ -102,6 +105,7 @@ export const useGetEarnStrategies = (
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyTVL(
         {
+          strategyId: strat.id,
           tvlUrl: strat.tvlUrl ?? "",
         },
         {
@@ -123,7 +127,9 @@ export const useGetEarnStrategies = (
         queryKey: ["geoblocked", strat.geoblock],
         queryFn: async () => {
           return {
-            response: await apiClient<LevanaGeoBlockedResponse>(strat.geoblock),
+            response: await apiClient<LevanaGeoBlockedResponse>(
+              strat.geoblock.replace("${id}", strat.id)
+            ),
             geoblock: strat.geoblock,
           };
         },

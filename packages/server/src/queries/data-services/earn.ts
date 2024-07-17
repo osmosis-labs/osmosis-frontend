@@ -94,6 +94,7 @@ export interface RawStrategyCMSData {
   contract: string;
   tvl: string;
   apr: string;
+  balance?: string;
   geoblock: string;
   lockDuration: string;
   riskLevel: number;
@@ -186,6 +187,10 @@ export interface StrategyCMSData {
    * URL for querying TVL
    */
   tvl: string;
+  /**
+   * URL for querying Balance
+   */
+  balanceUrl?: string;
   /**
    * Link for geoblocking check
    */

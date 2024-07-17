@@ -71,7 +71,12 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAnnualPercentages(aprUrl: string) {
+export async function getStrategyAnnualPercentages(
+  strategyId: string,
+  rawAprUrl: string
+) {
+  const aprUrl = rawAprUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyAnnualPercentagesCache,
     ttl: 1000 * 20,
@@ -86,7 +91,9 @@ export async function getStrategyAnnualPercentages(aprUrl: string) {
   });
 }
 
-export async function getStrategyTVL(tvlUrl: string) {
+export async function getStrategyTVL(strategyId: string, rawTvlUrl: string) {
+  const tvlUrl = rawTvlUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyTVLCache,
     ttl: 1000 * 20,
@@ -123,7 +130,10 @@ export async function getStrategies({
           categories: StategyCMSCategory[];
           platforms: StategyCMSCategory[];
           riskReportUrl: string;
-        }>({ filePath: `cms/earn/strategies.json` });
+        }>({
+          filePath: `cms/earn/strategies.json`,
+          commitHash: "fd745214f7471931e80b36363863e27f0ea681bf",
+        });
 
         const aggregatedStrategies: StrategyCMSData[] = [];
 
@@ -157,6 +167,7 @@ export async function getStrategies({
 
           aggregatedStrategies.push({
             ...rawStrategy,
+            balanceUrl: rawStrategy.balance,
             depositAssets: depositAssets.filter(
               (deposit) => !!deposit
             ) as MinimalAsset[],
