@@ -89,7 +89,8 @@ export async function apiClient<T>(
         });
       }
 
-      if (response.ok) {
+      // Look for specific errors returned from OK response
+      if (response.ok && typeof data === "object") {
         // Cosmos chains return a code if there's an error
         if ("code" in data && Boolean(data.code)) {
           throw new ApiClientError({
