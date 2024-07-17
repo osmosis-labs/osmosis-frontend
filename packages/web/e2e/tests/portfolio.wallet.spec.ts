@@ -10,7 +10,7 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
-  const privateKey = process.env.PRIVATE_KEY ?? "private_key";
+  const privateKey = process.env.PRIVATE_KEY ?? "pk";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
@@ -49,8 +49,6 @@ test.describe("Test Portfolio feature", () => {
     portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
-    await portfolioPage.hideZeroBalances();
-    await portfolioPage.viewMoreBalances();
   });
 
   test.afterAll(async () => {
@@ -85,6 +83,10 @@ test.describe("Test Portfolio feature", () => {
     expect(ethBalance).toMatch(dollarBalanceRegEx);
     const kujiBalance = await portfolioPage.getBalanceFor("KUJI");
     expect(kujiBalance).toMatch(dollarBalanceRegEx);
+    const solBalance = await portfolioPage.getBalanceFor("SOL");
+    expect(solBalance).toMatch(dollarBalanceRegEx);
+    const milkTIABalance = await portfolioPage.getBalanceFor("milkTIA");
+    expect(milkTIABalance).toMatch(dollarBalanceRegEx);
     const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
     // allBTC has not $ price atm
     expect(abtcBalance).toMatch(digitBalanceRegEx);
