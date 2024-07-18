@@ -49,6 +49,8 @@ test.describe("Test Portfolio feature", () => {
     portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
+    await portfolioPage.hideZeroBalances();
+    await portfolioPage.viewMoreBalances();
   });
 
   test.afterAll(async () => {

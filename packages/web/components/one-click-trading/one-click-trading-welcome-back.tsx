@@ -37,7 +37,7 @@ export const OneClickTradingWelcomeBack = ({
   const isInteractionDisabled = isLoading || isDisabled;
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-5">
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-h5 font-h5">
           {t("oneClickTrading.welcomeBack.title")}
@@ -97,9 +97,14 @@ export const OneClickTradingWelcomeBack = ({
         />
       </div>
 
-      <p className="text-center text-caption font-caption text-osmoverse-300">
-        {t("oneClickTrading.welcomeBack.description")}
-      </p>
+      <div className="flex flex-col gap-2">
+        <p className="text-center text-caption font-caption text-osmoverse-300">
+          {t("oneClickTrading.welcomeBack.description")}
+        </p>
+        <p className="px-8 text-center text-caption text-osmoverse-300">
+          {t("oneClickTrading.introduction.ledgerComingSoon")}
+        </p>
+      </div>
     </div>
   );
 };

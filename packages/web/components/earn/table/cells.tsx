@@ -260,7 +260,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   }, [item]);
 
   const isBalanceVisible = useMemo(
-    () => item.table.getColumn("balance")?.getIsVisible(),
+    () => item.table.getColumn("totalBalance")?.getIsVisible(),
     [item.table]
   );
 

@@ -53,7 +53,7 @@ export const useGetEarnStrategies = (
             : involvedDenoms.every((involvedDenom) =>
                 holdenDenoms?.includes(involvedDenom)
               ),
-          balance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+          totalBalance: new PricePretty(DEFAULT_VS_CURRENCY, 0),
           aprUrl: _strategy.apr,
           tvlUrl: _strategy.tvl,
           tvl: undefined,
@@ -64,26 +64,32 @@ export const useGetEarnStrategies = (
   );
 
   const balanceQueries = api.useQueries((q) =>
-    (isWalletConnected ? _strategies ?? [] : []).map((strat) =>
-      q.edge.earn.getStrategyBalance(
-        {
-          strategyId: strat.id,
-          userOsmoAddress,
-        },
-        {
-          enabled: userOsmoAddress !== "",
-          staleTime: 1000 * 60 * 15,
-          cacheTime: 1000 * 60 * 30,
-          trpc: { context: { skipBatch: true } },
-        }
+    (isWalletConnected ? _strategies ?? [] : [])
+      .filter(
+        (strat) => strat.balance !== undefined && strat.balance.length > 0
       )
-    )
+      .map((strat) =>
+        q.edge.earn.getStrategyBalance(
+          {
+            balanceUrl: strat.balance!,
+            strategyId: strat.id,
+            userOsmoAddress,
+          },
+          {
+            enabled: userOsmoAddress !== "",
+            staleTime: 1000 * 60 * 15,
+            cacheTime: 1000 * 60 * 30,
+            trpc: { context: { skipBatch: true } },
+          }
+        )
+      )
   );
 
   const annualPercentagesQueries = api.useQueries((q) =>
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyAnnualPercentages(
         {
+          strategyId: strat.id,
           aprUrl: strat.aprUrl ?? "",
         },
         {
@@ -93,6 +99,7 @@ export const useGetEarnStrategies = (
           select: (data) => ({ ...data, strategyId: strat.id }),
           trpc: { context: { skipBatch: true } },
           retry: false,
+          enabled: Boolean(strat.aprUrl),
         }
       )
     )
@@ -102,6 +109,7 @@ export const useGetEarnStrategies = (
     (_strategies ?? []).map((strat) =>
       q.edge.earn.getStrategyTVL(
         {
+          strategyId: strat.id,
           tvlUrl: strat.tvlUrl ?? "",
         },
         {
@@ -123,7 +131,9 @@ export const useGetEarnStrategies = (
         queryKey: ["geoblocked", strat.geoblock],
         queryFn: async () => {
           return {
-            response: await apiClient<LevanaGeoBlockedResponse>(strat.geoblock),
+            response: await apiClient<LevanaGeoBlockedResponse>(
+              strat.geoblock.replace("${id}", strat.id)
+            ),
             geoblock: strat.geoblock,
           };
         },
@@ -183,7 +193,7 @@ export const useGetEarnStrategies = (
         if (earnStrategy)
           myStrategies.push({
             ...earnStrategy,
-            balance: balanceQuery.data.balance.usd,
+            totalBalance: balanceQuery.data.balance.usd,
           });
         accumulatedBalance = accumulatedBalance.add(
           balanceQuery.data.balance.usd
