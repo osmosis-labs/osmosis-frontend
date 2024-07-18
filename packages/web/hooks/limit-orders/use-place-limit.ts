@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -16,7 +16,7 @@ function getNormalizationFactor(
   baseAssetDecimals: number,
   quoteAssetDecimals: number
 ) {
-  return new Dec(10 ** (quoteAssetDecimals - baseAssetDecimals));
+  return new Dec(10).pow(new Int(quoteAssetDecimals - baseAssetDecimals));
 }
 
 export type OrderDirection = "bid" | "ask";
