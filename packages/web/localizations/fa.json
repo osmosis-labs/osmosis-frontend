@@ -513,7 +513,8 @@
       "learnMore": "بیشتر بدانید",
       "startTradingButton": "شروع تجارت با 1 کلیک",
       "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
-      "changeButton": "ویرایش تنظیمات"
+      "changeButton": "ویرایش تنظیمات",
+      "ledgerComingSoon": "پشتیبانی کیف پول سخت افزاری لجر به زودی."
     },
     "floatingBanner": {
       "newPill": "جدید",

@@ -513,7 +513,8 @@
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
-      "changeButton": "Editeaza setarile"
+      "changeButton": "Editeaza setarile",
+      "ledgerComingSoon": "Asistență pentru portofelul hardware Ledger va veni în curând."
     },
     "floatingBanner": {
       "newPill": "Nou",
