@@ -253,9 +253,9 @@ export const EventName = {
     placeOrderStarted: "Limit Order: Place order started",
     placeOrderCompleted: "Limit Order: Place order completed",
     placeOrderFailed: "Limit Order: Place order failed",
-    claimOrdersStarted: "Limit Order: Claim order started",
-    claimOrdersCompleted: "Limit Order: Claim order completed",
-    claimOrdersFailed: "Limit Order: Claim order failed",
+    claimOrdersStarted: "Limit Order: Claim all orders started",
+    claimOrdersCompleted: "Limit Order: Claim all orders completed",
+    claimOrdersFailed: "Limit Order: Claim all orders failed",
     pageViewed: "Limit Order: Order page viewed",
   },
 };

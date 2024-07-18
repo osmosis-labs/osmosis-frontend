@@ -224,8 +224,45 @@ export const usePlaceLimit = ({
     }
 
     if (isMarket) {
-      await marketState.sendTradeTokenInTx();
-      return;
+      const baseEvent = {
+        fromToken: marketState.fromAsset?.coinDenom,
+        tokenAmount: Number(
+          marketState.inAmountInput.amount?.toDec().toString() ?? "0"
+        ),
+        toToken: marketState.toAsset?.coinDenom,
+        isOnHome: page === "Swap Page",
+        isMultiHop: marketState.quote?.split.some(
+          ({ pools }) => pools.length !== 1
+        ),
+        isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
+        valueUsd: Number(
+          marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+        ),
+        feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
+        page,
+        quoteTimeMilliseconds: marketState.quote?.timeMs,
+        router: marketState.quote?.name,
+      };
+      try {
+        logEvent([EventName.Swap.swapStarted, baseEvent]);
+        const result = await marketState.sendTradeTokenInTx();
+        logEvent([
+          EventName.Swap.swapCompleted,
+          {
+            ...baseEvent,
+            isMultiHop: result === "multihop",
+          },
+        ]);
+      } catch (error) {
+        console.error("swap failed", error);
+        if (error instanceof Error && error.message === "Request rejected") {
+          // don't log when the user rejects in wallet
+          return;
+        }
+        logEvent([EventName.Swap.swapFailed, baseEvent]);
+      } finally {
+        return;
+      }
     }
 
     const paymentDenom = paymentTokenValue.toCoin().denom;
@@ -270,8 +307,12 @@ export const usePlaceLimit = ({
       );
       logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
     } catch (error) {
-      const { message } = error as Error;
       console.error("Error attempting to broadcast place limit tx", error);
+      if (error instanceof Error && error.message === "Request rejected") {
+        // don't log when the user rejects in wallet
+        return;
+      }
+      const { message } = error as Error;
       logEvent([
         EventName.LimitOrder.placeOrderFailed,
         { ...baseEvent, errorMessage: message },
