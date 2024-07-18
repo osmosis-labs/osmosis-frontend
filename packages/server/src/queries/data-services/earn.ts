@@ -2,8 +2,6 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
-
 export const EarnStrategyCategories = [
   "Staking",
   "Perp LP",
@@ -94,6 +92,7 @@ export interface RawStrategyCMSData {
   contract: string;
   tvl: string;
   apr: string;
+  balance?: string;
   geoblock: string;
   lockDuration: string;
   riskLevel: number;
@@ -187,6 +186,10 @@ export interface StrategyCMSData {
    */
   tvl: string;
   /**
+   * URL for querying Balance
+   */
+  balance?: string;
+  /**
    * Link for geoblocking check
    */
   geoblock: string;
@@ -234,7 +237,7 @@ export interface EarnStrategyBalance {
 export type TokensType = "stablecoins" | "correlated" | "bluechip";
 
 export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
-  balance: PricePretty;
+  totalBalance: PricePretty;
   holdsTokens: boolean;
   daily?: RatePretty;
   tvl?: StrategyTVL;
@@ -251,13 +254,8 @@ export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
 }
 
 export function queryEarnUserBalance(
-  strategyId: string,
-  userOsmoAddress: string
+  url: string
 ): Promise<RawEarnStrategyBalance> {
-  const url = new URL(
-    `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
-    NUMIA_BASE_URL
-  );
   return apiClient(url.toString());
 }
 

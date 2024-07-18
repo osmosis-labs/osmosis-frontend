@@ -40,8 +40,13 @@ const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
 );
 export async function getStrategyBalance(
   strategyId: string,
-  userOsmoAddress: string
+  userOsmoAddress: string,
+  rawBalanceUrl: string
 ) {
+  const balanceUrl = rawBalanceUrl
+    .replace("${id}", strategyId)
+    .replace("${address}", userOsmoAddress);
+
   return await cachified({
     cache: earnStrategyBalanceCache,
     ttl: 1000 * 20,
@@ -49,7 +54,7 @@ export async function getStrategyBalance(
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
         const { balance, strategy, unclaimed_rewards } =
-          await queryEarnUserBalance(strategyId, userOsmoAddress);
+          await queryEarnUserBalance(balanceUrl);
 
         return {
           balance: {
@@ -71,7 +76,12 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAnnualPercentages(aprUrl: string) {
+export async function getStrategyAnnualPercentages(
+  strategyId: string,
+  rawAprUrl: string
+) {
+  const aprUrl = rawAprUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyAnnualPercentagesCache,
     ttl: 1000 * 20,
@@ -86,7 +96,9 @@ export async function getStrategyAnnualPercentages(aprUrl: string) {
   });
 }
 
-export async function getStrategyTVL(tvlUrl: string) {
+export async function getStrategyTVL(strategyId: string, rawTvlUrl: string) {
+  const tvlUrl = rawTvlUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyTVLCache,
     ttl: 1000 * 20,
@@ -123,7 +135,9 @@ export async function getStrategies({
           categories: StategyCMSCategory[];
           platforms: StategyCMSCategory[];
           riskReportUrl: string;
-        }>({ filePath: `cms/earn/strategies.json` });
+        }>({
+          filePath: `cms/earn/strategies.json`,
+        });
 
         const aggregatedStrategies: StrategyCMSData[] = [];
 
