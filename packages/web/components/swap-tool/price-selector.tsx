@@ -99,7 +99,6 @@ export const PriceSelector = memo(
               const returnAsset: AssetWithBalance = {
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
-                usdValue: walletAsset.usdValue,
               };
 
               // if (asset?.symbol === "USDC") return returnAsset;
@@ -111,7 +110,7 @@ export const PriceSelector = memo(
             })
             .filter(Boolean)
             .toSorted((a, b) =>
-              a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
+              a?.amount?.toDec().gt(b?.amount?.toDec()!) ? 1 : -1
             ) as AssetWithBalance[],
       }
     );
