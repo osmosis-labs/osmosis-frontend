@@ -110,6 +110,10 @@ async function getTickInfoAndTransformOrders(
     const percentClaimed = new Dec(
       (placedQuantity - quantity) / placedQuantity
     );
+
+    const normalizationFactor = new Dec(10).pow(
+      new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
+    );
     const [tickEtas, tickUnrealizedCancelled] =
       o.order_direction === "bid"
         ? [
@@ -144,7 +148,7 @@ async function getTickInfoAndTransformOrders(
         : new Dec(placedQuantity).mul(price);
     return {
       ...o,
-      price,
+      price: price.quo(normalizationFactor),
       quantity,
       placed_quantity: placedQuantity,
       percentClaimed,
@@ -175,6 +179,10 @@ function mapHistoricalToMapped(
       o.order_direction === "bid"
         ? new Dec(placedQuantityMin).quo(price)
         : new Dec(placedQuantityMin).mul(price);
+
+    const normalizationFactor = new Dec(10).pow(
+      new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
+    );
     return {
       quoteAsset,
       baseAsset,
@@ -192,7 +200,7 @@ function mapHistoricalToMapped(
       placedQuantityMin,
       quantityMin,
       quantity: parseInt(o.quantity),
-      price,
+      price: price.quo(normalizationFactor),
       status: o.status as OrderStatus,
       tick_id: parseInt(o.tick_id),
       output,
@@ -336,11 +344,11 @@ export const orderbookRouter = createTRPCRouter({
           // TODO: Use actual quote denom here
           const quoteAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
-            sourceDenom: quote_denom,
+            coinMinimalDenom: quote_denom,
           });
           const baseAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
-            sourceDenom: base_denom,
+            coinMinimalDenom: base_denom,
           });
           const mappedOrders = await getTickInfoAndTransformOrders(
             contractOsmoAddress,

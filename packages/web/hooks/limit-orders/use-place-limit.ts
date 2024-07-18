@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,6 +11,13 @@ import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
+
+function getNormalizationFactor(
+  baseAssetDecimals: number,
+  quoteAssetDecimals: number
+) {
+  return new Dec(10).pow(new Int(quoteAssetDecimals - baseAssetDecimals));
+}
 
 export type OrderDirection = "bid" | "ask";
 
@@ -164,6 +171,13 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.setAmount(normalizedAmount);
   }, [inAmountInput.amount, orderDirection, marketState.inAmountInput]);
 
+  const normalizationFactor = useMemo(() => {
+    return getNormalizationFactor(
+      baseAsset!.coinDecimals,
+      quoteAsset!.coinDecimals
+    );
+  }, [baseAsset, quoteAsset]);
+
   /**
    * Determines the fiat amount the user will pay for their order.
    * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
@@ -205,7 +219,9 @@ export const usePlaceLimit = ({
     const paymentDenom = paymentTokenValue.toCoin().denom;
     // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
     // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(priceState.price.quo(quoteAssetPrice.toDec()));
+    const tickId = priceToTick(
+      priceState.price.quo(quoteAssetPrice.toDec()).mul(normalizationFactor)
+    );
     const msg = {
       place_limit: {
         tick_id: parseInt(tickId.toString()),
@@ -238,6 +254,7 @@ export const usePlaceLimit = ({
     isMarket,
     marketState,
     quoteAssetPrice,
+    normalizationFactor,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
