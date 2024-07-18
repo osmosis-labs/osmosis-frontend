@@ -148,8 +148,7 @@ export const TradeDetails = ({
                   )}
                 >
                   <span className="body2 text-osmoverse-300">
-                    ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
-                    {t("limitOrders.fees")}
+                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
                   </span>
                   <Icon
                     id="chevron-down"
@@ -200,11 +199,7 @@ export const TradeDetails = ({
                   }
                 />
                 <RecapRow
-                  left={`${t("pools.aprBreakdown.swapFees")} ${
-                    swapState?.quote?.swapFee
-                      ? `(${swapState?.quote?.swapFee})`
-                      : ""
-                  }`}
+                  left={`${t("pools.aprBreakdown.swapFees")}`}
                   right={
                     <>
                       {swapState?.tokenInFeeAmountFiatValue && (
@@ -214,12 +209,10 @@ export const TradeDetails = ({
                             {formatPretty(
                               swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
                             )}
-                          </span>{" "}
-                          (
-                          {formatPretty(
-                            swapState?.tokenInFeeAmountFiatValue.toDec()
-                          )}{" "}
-                          USDC)
+                          </span>
+                          {swapState?.quote?.swapFee
+                            ? ` (${swapState?.quote?.swapFee})`
+                            : ""}
                         </span>
                       )}
                     </>
@@ -316,12 +309,12 @@ export const TradeDetails = ({
                   )}
 
                 <span className="subtitle1 py-3 text-white-full">
-                  {t("limitOrders.moreDetails")}
+                  {t("limitOrders.swapRoute")}
                 </span>
 
                 <div className="flex w-full">
                   <RecapRow
-                    left={t("limitOrders.swapRoute")}
+                    left=""
                     className="!h-auto flex-col !items-start gap-2.5"
                     right={
                       <div className="flex w-full flex-col gap-2">

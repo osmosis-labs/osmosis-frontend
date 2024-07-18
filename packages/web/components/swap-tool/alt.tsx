@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -37,7 +37,7 @@ import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewSwapModal } from "~/modals/review-swap";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -94,8 +94,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
 
+    const outputDifference = new RatePretty(
+      swapState.inAmountInput?.fiatValue
+        ?.toDec()
+        .sub(swapState.tokenOutFiatValue?.toDec())
+        .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+    );
+
+    const showOutputDifferenceWarning =
+      outputDifference.toDec().abs().gt(new Dec(0.05)) ?? false;
+
     const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.1)) ??
+      swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ??
       false;
 
     // token select dropdown
@@ -367,12 +377,20 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         className={classNames(
                           "body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity"
                         )}
-                      >{`≈ ${formatPretty(
-                        swapState.inAmountInput.fiatValue ?? new Dec(0),
-                        {
-                          maxDecimals: 8,
-                        }
-                      )}`}</span>
+                      >
+                        {swapState.inAmountInput?.fiatValue
+                          ?.toDec()
+                          .gt(new Dec(0))
+                          ? `${formatPretty(
+                              swapState.inAmountInput?.fiatValue,
+                              {
+                                ...getPriceExtendedFormatOptions(
+                                  swapState.inAmountInput?.fiatValue?.toDec()
+                                ),
+                              }
+                            )}`
+                          : ""}
+                      </span>
                     </div>
                   </div>
                   {account?.isWalletConnected && (
@@ -484,18 +502,35 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         }
                       )}
                     >
-                      {formatPretty(
-                        swapState.quote?.amount
-                          ? swapState.quote.amount.toDec()
-                          : new Dec(0)
-                      )}
+                      {swapState.quote?.amount
+                        ? formatPretty(swapState.quote.amount.toDec(), {
+                            minimumSignificantDigits: 6,
+                            maximumSignificantDigits: 6,
+                            maxDecimals: 10,
+                            notation: "standard",
+                          })
+                        : "0"}
                     </h5>
-                    <span className="body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity">{`≈ ${formatPretty(
-                      swapState.tokenOutFiatValue ?? new Dec(0),
-                      {
-                        maxDecimals: 8,
-                      }
-                    )}`}</span>
+                    <span className="body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity">
+                      {swapState.tokenOutFiatValue?.toDec().gt(new Dec(0)) ? (
+                        <span>
+                          {formatPretty(swapState.tokenOutFiatValue, {
+                            ...getPriceExtendedFormatOptions(
+                              swapState.tokenOutFiatValue.toDec()
+                            ),
+                          })}
+                          <span
+                            className={
+                              showOutputDifferenceWarning
+                                ? "text-rust-400"
+                                : "text-osmoverse-700"
+                            }
+                          >{` (-${outputDifference})`}</span>
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </span>
                   </div>
                 </div>
               </div>

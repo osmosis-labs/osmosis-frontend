@@ -834,6 +834,8 @@
     "priceImpact": "Market Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
+    "showDetails": "Show Details",
+    "hideDetails": "Hide",
     "continueAnyway": "Continue Anyway",
     "warning": {
       "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
@@ -1278,7 +1280,7 @@
     "decreases": "decreases",
     "estimatingFees": "Estimating fees",
     "fees": "fees",
-    "receiveEstimated": "Receive (minimum)",
+    "receiveEstimated": "Receive at least",
     "swapRoute": "Order route",
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
