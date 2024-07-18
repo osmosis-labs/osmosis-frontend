@@ -24,6 +24,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   isMax?: boolean;
   setIsMax?: (nextValue: boolean) => void;
+  canSetMax?: boolean;
   transferGasCost: CoinPretty | undefined;
   transferGasChain: { prettyName: string };
 
@@ -50,6 +51,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   isMax: isMaxProp,
   setIsMax: setIsMaxProp,
+  canSetMax = true,
   transferGasCost,
   transferGasChain,
 
@@ -148,7 +150,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax && transferGasCost) {
+    if (isMax && transferGasCost && canSetMax) {
       let maxTransferAmount = new Dec(0);
 
       const gasFeeMatchesInputDenom =
@@ -172,16 +174,23 @@ export const CryptoFiatInput: FunctionComponent<{
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
     }
-  }, [isMax, transferGasCost, assetWithBalance.amount, inputCoin, onInput]);
+  }, [
+    isMax,
+    transferGasCost,
+    assetWithBalance.amount,
+    inputCoin,
+    onInput,
+    canSetMax,
+  ]);
 
   // Apply max amount if asset changes
   useEffect(() => {
-    if (isMax) {
+    if (isMax && canSetMax) {
       onInput("crypto")(
         trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
       );
     }
-  }, [assetWithBalance, isMax, onInput]);
+  }, [assetWithBalance, canSetMax, isMax, onInput]);
 
   return (
     <div className="relative flex flex-col items-center">

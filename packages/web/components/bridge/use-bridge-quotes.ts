@@ -287,8 +287,8 @@ export const useBridgeQuotes = ({
 
   const numSucceeded = successfulQuotes.length;
   const isOneSuccessful = Boolean(numSucceeded);
-  const amountOfErrors = erroredQuotes.length;
-  const isOneErrored = Boolean(amountOfErrors);
+  const isAllSuccessful = numSucceeded === bridges.length;
+  const isOneErrored = Boolean(erroredQuotes.length);
 
   // if none have returned a resulting quote, find some error
   const someError = useMemo(
@@ -653,17 +653,25 @@ export const useBridgeQuotes = ({
     (!isOneSuccessful ||
       quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
     quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
+  const isLoadingAnyBridgeQuote = quoteResults.some(
+    (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
+  );
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady = isWithdraw && !isTxPending;
-  const isWalletConnected =
+  const isWithdrawReady =
+    isWithdraw && !isTxPending && !isLoadingBridgeTransaction;
+  const isFromWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
       : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady =
-    isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
+    isDeposit &&
+    isFromWalletConnected &&
+    !isLoadingBridgeQuote &&
+    !isTxPending &&
+    !isLoadingBridgeTransaction;
   const userCanAdvance =
     (isDepositReady || isWithdrawReady) &&
     !isInsufficientFee &&
@@ -711,6 +719,7 @@ export const useBridgeQuotes = ({
     warnUserOfPriceImpact,
 
     successfulQuotes,
+    isAllQuotesSuccessful: isAllSuccessful,
     selectedBridgeProvider,
     setSelectedBridgeProvider: onChangeBridgeProvider,
 
@@ -718,6 +727,7 @@ export const useBridgeQuotes = ({
     selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,
     refetchInterval,
     isLoadingBridgeQuote,
+    isLoadingAnyBridgeQuote,
     isLoadingBridgeTransaction,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
   };
