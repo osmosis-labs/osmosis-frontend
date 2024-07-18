@@ -834,6 +834,8 @@
     "priceImpact": "मूल्य प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
+    "showDetails": "प्रदर्शन का विवरण",
+    "hideDetails": "छिपाना",
     "continueAnyway": "फिर भी जारी रखें",
     "warning": {
       "exceedsSpendLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी शेष खर्च सीमा से अधिक है।",

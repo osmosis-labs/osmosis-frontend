@@ -834,6 +834,8 @@
     "priceImpact": "Impacto sobre el precio",
     "routerTooltipFee": "Tarifa",
     "routerTooltipSpreadFactor": "Factor de dispersión",
+    "showDetails": "Mostrar detalles",
+    "hideDetails": "Esconder",
     "continueAnyway": "De todas maneras, continúe",
     "warning": {
       "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",

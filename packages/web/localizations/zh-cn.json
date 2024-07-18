@@ -834,6 +834,8 @@
     "priceImpact": "价格影响",
     "routerTooltipFee": "费用",
     "routerTooltipSpreadFactor": "扩频因子",
+    "showDetails": "显示详细资料",
+    "hideDetails": "隐藏",
     "continueAnyway": "无论如何继续",
     "warning": {
       "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",

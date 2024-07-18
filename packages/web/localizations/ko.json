@@ -834,6 +834,8 @@
     "priceImpact": "가격 변동",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
+    "showDetails": "세부정보 표시",
+    "hideDetails": "숨다",
     "continueAnyway": "계속 진행",
     "warning": {
       "exceedsSpendLimit": "이 교환은 1-클릭 거래에 대한 남은 지출 한도를 초과합니다.",

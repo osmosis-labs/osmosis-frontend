@@ -834,6 +834,8 @@
     "priceImpact": "価格への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
+    "showDetails": "詳細を表示",
+    "hideDetails": "隠れる",
     "continueAnyway": "とにかく続けます",
     "warning": {
       "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",

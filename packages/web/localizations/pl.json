@@ -834,6 +834,8 @@
     "priceImpact": "Wpływ na cenę",
     "routerTooltipFee": "Opłata",
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
+    "showDetails": "Pokaż szczegóły",
+    "hideDetails": "Ukrywać",
     "continueAnyway": "Kontynuować mimo to",
     "warning": {
       "exceedsSpendLimit": "Ta zamiana przekracza pozostały limit wydatków w ramach handlu jednym kliknięciem.",

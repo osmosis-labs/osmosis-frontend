@@ -834,6 +834,8 @@
     "priceImpact": "Влияние на цену",
     "routerTooltipFee": "Платеж",
     "routerTooltipSpreadFactor": "Фактор распространения",
+    "showDetails": "Показать детали",
+    "hideDetails": "Скрывать",
     "continueAnyway": "Продолжай в любом случае",
     "warning": {
       "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",

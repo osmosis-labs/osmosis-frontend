@@ -834,6 +834,8 @@
     "priceImpact": "تاثیر قیمت",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
+    "showDetails": "نمایش جزئیات",
+    "hideDetails": "پنهان شدن",
     "continueAnyway": "ادامه دادن به هر طریق",
     "warning": {
       "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
