@@ -42,8 +42,8 @@ export const AmountAndReviewScreen = observer(
     const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
     const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
-    const [cryptoAmount, setCryptoAmount] = useState<string>("0");
-    const [fiatAmount, setFiatAmount] = useState<string>("0");
+    const [cryptoAmount, setCryptoAmount] = useState<string>("");
+    const [fiatAmount, setFiatAmount] = useState<string>("");
 
     const [manualToAddress, setManualToAddress] = useState<string>();
 

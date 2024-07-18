@@ -25,6 +25,7 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
@@ -45,7 +46,6 @@ import { ChainLogo } from "../assets/chain-logo";
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
-import { CryptoFiatInput } from "./crypto-fiat-input";
 import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import {
   MoreBridgeOptionsModal,
@@ -681,10 +681,10 @@ export const AmountScreen = observer(
           <div className="flex w-full flex-col gap-6 md:gap-4">
             <CryptoFiatInput
               currentUnit={inputUnit}
-              cryptoInputRaw={cryptoAmount}
-              fiatInputRaw={fiatAmount}
+              cryptoInput={cryptoAmount}
+              fiatInput={fiatAmount}
               assetPrice={assetInOsmosisPrice}
-              asset={fromAsset}
+              assetWithBalance={fromAsset}
               isInsufficientBal={Boolean(isInsufficientBal)}
               isInsufficientFee={Boolean(isInsufficientFee)}
               transferGasCost={selectedQuote?.gasCost}
@@ -693,10 +693,10 @@ export const AmountScreen = observer(
                *  Only once we get the best quote, we can modify the input amount
                *  to account for gas then restart the quote search process. */
               canSetMax={!quote.isLoadingAnyBridgeQuote}
-              setFiatAmount={setFiatAmount}
-              setCryptoAmount={setCryptoAmount}
-              setInputUnit={setInputUnit}
-              fromChain={fromChain}
+              onChangeFiatInput={setFiatAmount}
+              onChangeCryptoInput={setCryptoAmount}
+              setCurrentUnit={setInputUnit}
+              transferGasChain={fromChain}
             />
 
             <>
