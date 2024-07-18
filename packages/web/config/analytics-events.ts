@@ -256,5 +256,6 @@ export const EventName = {
     claimOrdersStarted: "Limit Order: Claim order started",
     claimOrdersCompleted: "Limit Order: Claim order completed",
     claimOrdersFailed: "Limit Order: Claim order failed",
+    pageViewed: "Limit Order: Order page viewed",
   },
 };

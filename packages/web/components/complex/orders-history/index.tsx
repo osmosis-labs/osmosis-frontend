@@ -24,7 +24,9 @@ import { useStore } from "~/stores";
 export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
 
 export const OrderHistory = observer(() => {
-  const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.LimitOrder.pageViewed],
+  });
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
