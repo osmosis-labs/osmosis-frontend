@@ -15,6 +15,11 @@ export class TransactionsPage extends BasePage {
     this.closeTransactionBtn = page.getByLabel("Close").nth(1);
   }
 
+  async open() {
+    await this.page.goto("/transactions");
+    return this;
+  }
+
   async viewTransactionByNumber(number: number) {
     await this.transactionRow.nth(number).click();
     await this.page.waitForTimeout(1000);

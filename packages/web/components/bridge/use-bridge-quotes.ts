@@ -287,8 +287,8 @@ export const useBridgeQuotes = ({
 
   const numSucceeded = successfulQuotes.length;
   const isOneSuccessful = Boolean(numSucceeded);
-  const amountOfErrors = erroredQuotes.length;
-  const isOneErrored = Boolean(amountOfErrors);
+  const isAllSuccessful = numSucceeded === bridges.length;
+  const isOneErrored = Boolean(erroredQuotes.length);
 
   // if none have returned a resulting quote, find some error
   const someError = useMemo(
@@ -360,17 +360,7 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee = useMemo(() => {
-    if (
-      someError?.message.includes(
-        "No fee tokens found with sufficient balance on account"
-      ) ||
-      someError?.message.includes(
-        "Input amount is too low to cover CCTP bridge relay fee"
-      ) ||
-      someError?.message.includes(
-        "cannot transfer across cctp after route demands swap"
-      )
-    )
+    if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
 
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
@@ -400,21 +390,6 @@ export const useBridgeQuotes = ({
 
     return false;
   }, [someError, inputCoin, selectedQuote]);
-
-  // const isInsufficientFee =
-  //   // Cosmos not fee tokens error
-  //   someError?.message.includes(
-  //     "No fee tokens found with sufficient balance on account"
-  //   ) ||
-  //   (inputAmountRaw !== "" &&
-  //     availableBalance &&
-  //     selectedQuote?.gasCost !== undefined &&
-  //     selectedQuote.gasCost.denom === availableBalance.denom && // make sure the fee is in the same denom as the asset
-  //     inputCoin
-  //       ?.toDec()
-  //       .sub(availableBalance.toDec()) // subtract by available balance to get the maximum transfer amount
-  //       .abs()
-  //       .lt(selectedQuote.gasCost.toDec()));
 
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
@@ -678,17 +653,25 @@ export const useBridgeQuotes = ({
     (!isOneSuccessful ||
       quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
     quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
+  const isLoadingAnyBridgeQuote = quoteResults.some(
+    (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
+  );
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady = isWithdraw && !isTxPending;
-  const isWalletConnected =
+  const isWithdrawReady =
+    isWithdraw && !isTxPending && !isLoadingBridgeTransaction;
+  const isFromWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
       : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady =
-    isDeposit && isWalletConnected && !isLoadingBridgeQuote && !isTxPending;
+    isDeposit &&
+    isFromWalletConnected &&
+    !isLoadingBridgeQuote &&
+    !isTxPending &&
+    !isLoadingBridgeTransaction;
   const userCanAdvance =
     (isDepositReady || isWithdrawReady) &&
     !isInsufficientFee &&
@@ -736,6 +719,7 @@ export const useBridgeQuotes = ({
     warnUserOfPriceImpact,
 
     successfulQuotes,
+    isAllQuotesSuccessful: isAllSuccessful,
     selectedBridgeProvider,
     setSelectedBridgeProvider: onChangeBridgeProvider,
 
@@ -743,6 +727,7 @@ export const useBridgeQuotes = ({
     selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,
     refetchInterval,
     isLoadingBridgeQuote,
+    isLoadingAnyBridgeQuote,
     isLoadingBridgeTransaction,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
   };

@@ -32,7 +32,7 @@ const marketIncentivePoolsSortKeys = [
   "feesSpent24hUsd",
   "volume7dUsd",
   "volume24hUsd",
-  "aprBreakdown.total.upper",
+  "aprBreakdown.total",
 ] as const;
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
