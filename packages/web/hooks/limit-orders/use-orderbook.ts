@@ -202,6 +202,7 @@ export const useOrderbook = ({
   }, [orderbook, makerFeeError]);
 
   return {
+    orderbook,
     poolId: orderbook?.poolId ?? "",
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,

@@ -1224,7 +1224,8 @@
       "title": "限價訂單",
       "description": {
         "buy": "當{denom}價格下跌時購買",
-        "sell": "當{denom}價格上漲時出售"
+        "sell": "當{denom}價格上漲時出售",
+        "disabled": "目前不適用於{denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

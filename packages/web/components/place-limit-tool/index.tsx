@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -21,10 +22,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import {
-  useOrderbookAllActiveOrders,
-  useOrderbookSelectableDenoms,
-} from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 
@@ -38,8 +36,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
-      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [{ base, quote, tab, type }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
@@ -138,6 +134,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.error,
     ]);
 
+    const selectableBaseAssets = useMemo(() => {
+      return swapState.marketState.selectableAssets.filter(
+        (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
+      );
+    }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -175,7 +176,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
               expectedOutput={swapState.marketState.quote?.amount.toDec()}
-              expectedOutputLoading={isMarketLoading}
+              expectedOutputLoading={
+                isMarketLoading || swapState.marketState.inAmountInput.isTyping
+              }
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
               insufficientFunds={swapState.insufficientFunds}
@@ -196,6 +199,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   orderDirection === "bid"
                     ? swapState.priceState.askSpotPrice!
                     : swapState.priceState.bidSpotPrice!
+                }
+                inDenom={swapState.baseAsset?.coinDenom}
+                inPrice={
+                  new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    swapState.priceState.spotPrice
+                  )
                 }
               />
             )}
@@ -224,14 +234,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     (!swapState.isMarket &&
                       swapState.priceState.orderPrice.length > 0) ||
                     isMarketLoading ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.inAmountInput.isEmpty ||
+                        swapState.marketState.inAmountInput.amount
+                          ?.toDec()
+                          .isZero())) ||
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
                     (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                    isMarketLoading ||
-                    orderbookAssetsLoading
+                    isMarketLoading
                   }
                   loadingText={t("assets.transfer.loading")}
                   onClick={() => setReviewOpen(true)}

@@ -1224,7 +1224,8 @@
       "title": "限价订单",
       "description": {
         "buy": "当{denom}价格下降时买入",
-        "sell": "当{denom}价格上涨时卖出"
+        "sell": "当{denom}价格上涨时卖出",
+        "disabled": "目前不适用于{denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

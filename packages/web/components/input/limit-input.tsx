@@ -9,7 +9,6 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { formatPretty } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
@@ -144,7 +143,7 @@ export const LimitInput: FC<LimitInputProps> = ({
 
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
-      if (tab === "buy" && updatedValue.length > 0) {
+      if (tab === "buy") {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
       setFiatAmount(
@@ -191,15 +190,19 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
-    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT)
+    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
       setFiatAmount("");
+      if (tab === "buy") {
+        setMarketAmount("");
+      }
+    }
     if (focused !== FocusedInput.TOKEN || !price) return;
 
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
     const fiatValue = value ? price.mul(value) : undefined;
 
     setFiatAmountSafe(fiatValue ? fiatValue.toString() : undefined);
-  }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
+  }, [price, tokenAmount, setFiatAmountSafe, focused, tab, setMarketAmount]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
@@ -220,10 +223,12 @@ export const LimitInput: FC<LimitInputProps> = ({
           amount={
             inputType === "fiat"
               ? type === "market" && tab === "sell"
-                ? formatPretty(expectedOutput ?? new Dec(0))
+                ? trimPlaceholderZeros(
+                    (expectedOutput ?? new Dec(0)).toString()
+                  )
                 : fiatAmount
               : type === "market" && tab === "buy"
-              ? formatPretty(expectedOutput ?? new Dec(0))
+              ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
               : tokenAmount
           }
           setter={inputType === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}

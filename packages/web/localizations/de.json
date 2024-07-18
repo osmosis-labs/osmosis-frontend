@@ -1224,7 +1224,8 @@
       "title": "Limit-Auftrag",
       "description": {
         "buy": "Kaufen, wenn der Preis {denom} sinkt",
-        "sell": "Verkaufen, wenn der Preis {denom} steigt"
+        "sell": "Verkaufen, wenn der Preis {denom} steigt",
+        "disabled": "Derzeit nicht verfügbar für {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

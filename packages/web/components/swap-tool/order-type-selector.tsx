@@ -1,11 +1,12 @@
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { Fragment, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
+import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
   // id: "market" | "limit" | "recurring";
@@ -13,6 +14,7 @@ interface UITradeType {
   title: string;
   description: string;
   icon: SpriteIconId;
+  disabled: boolean;
 }
 
 // const TRADE_TYPES = ["market", "limit", "recurring"] as const;
@@ -26,7 +28,16 @@ export const OrderTypeSelector = () => {
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
   const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
+  const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
+
+  const { orderbook } = useOrderbook({ baseDenom: base, quoteDenom: quote });
+
+  useEffect(() => {
+    if (type === "limit" && !orderbook) {
+      setType("market");
+    }
+  }, [orderbook, setType, type]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
@@ -38,15 +49,21 @@ export const OrderTypeSelector = () => {
             ? t("limitOrders.marketOrder.description.buy")
             : t("limitOrders.marketOrder.description.sell"),
         icon: "exchange",
+        disabled: false,
       },
       {
         id: "limit",
         title: t("limitOrders.limitOrder.title"),
-        description:
-          tab === "buy"
-            ? t("limitOrders.limitOrder.description.buy", { denom: base })
-            : t("limitOrders.limitOrder.description.sell", { denom: base }),
+        description: !orderbook
+          ? t("limitOrders.limitOrder.description.disabled", {
+              denom: base,
+              quoteDenom: quote,
+            })
+          : tab === "buy"
+          ? t("limitOrders.limitOrder.description.buy", { denom: base })
+          : t("limitOrders.limitOrder.description.sell", { denom: base }),
         icon: "trade",
+        disabled: !orderbook,
       },
       // {
       //   id: "recurring",
@@ -55,7 +72,7 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, t, tab]
+    [base, orderbook, t, tab, quote]
   );
 
   return (
@@ -84,7 +101,7 @@ export const OrderTypeSelector = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2 p-2">
-            {uiTradeTypes.map(({ id, title, description, icon }) => {
+            {uiTradeTypes.map(({ id, title, description, icon, disabled }) => {
               const isSelected = type === id;
 
               return (
@@ -93,9 +110,11 @@ export const OrderTypeSelector = () => {
                     <button
                       onClick={() => setType(id)}
                       className={classNames(
-                        "flex gap-3 rounded-lg py-2 px-3 transition-colors",
-                        { "bg-osmoverse-700": active || isSelected }
+                        "flex gap-3 rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
+                        { "bg-osmoverse-700": active || isSelected },
+                        { "opacity-50": disabled }
                       )}
+                      disabled={disabled}
                     >
                       <div className="flex h-6 w-6 items-center justify-center">
                         <Icon
