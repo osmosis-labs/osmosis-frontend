@@ -66,7 +66,7 @@ export const BridgeWalletSelectModal: FunctionComponent<
   );
 };
 
-const enum WalletSelectScreens {
+enum WalletSelectScreens {
   WalletSelect = "wallet-select",
   SendToAnotherAddress = "send-to-another-address",
 }
