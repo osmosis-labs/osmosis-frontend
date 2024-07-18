@@ -3,6 +3,7 @@ import {
   avalanche,
   avalancheFuji,
   base,
+  blast,
   bsc,
   bscTestnet,
   Chain,
@@ -49,7 +50,8 @@ export type AxelarSourceChain =
   | "Filecoin"
   | "Filecoin Hyperspace"
   | "Arbitrum"
-  | "Base";
+  | "Base"
+  | "Blast";
 
 // TODO: maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
@@ -200,5 +202,12 @@ export const EthereumChainInfo = createEthereumChainInfo({
     clientChainId: "Base",
     color: "#0052FF",
     relativeLogoUrl: "/networks/base.svg",
+  }),
+  Blast: mapChainInfo({
+    chain: blast,
+    axelarChainName: "Blast",
+    clientChainId: "Blast",
+    color: "#fcfc03",
+    relativeLogoUrl: "/networks/blast.svg",
   }),
 });
