@@ -1,5 +1,11 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -28,7 +34,8 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
-  baseSpotPrice: Dec;
+  inDenom?: string;
+  inPrice?: CoinPretty | PricePretty;
 }
 
 export const TradeDetails = ({
@@ -36,7 +43,8 @@ export const TradeDetails = ({
   slippageConfig,
   outAmountLessSlippage,
   outFiatAmountLessSlippage,
-  baseSpotPrice,
+  inDenom,
+  inPrice,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
@@ -106,19 +114,13 @@ export const TradeDetails = ({
                     }
                   )}
                 >
-                  {swapState?.fromAsset?.coinDenom}{" "}
-                  {t("assets.table.price").toLowerCase()} ≈{" "}
-                  {swapState?.toAsset &&
-                    formatPretty(
-                      baseSpotPrice ??
-                        swapState.inBaseOutQuoteSpotPrice ??
-                        new Dec(0),
-                      {
-                        maxDecimals: baseSpotPrice
-                          ? 2
-                          : Math.min(swapState.toAsset.coinDecimals, 8),
-                      }
-                    )}
+                  {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                  {inPrice &&
+                    formatPretty(inPrice ?? inPrice ?? new Dec(0), {
+                      maxDecimals: inPrice
+                        ? 2
+                        : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
+                    })}
                 </span>
                 <span
                   className={classNames("absolute transition-opacity", {

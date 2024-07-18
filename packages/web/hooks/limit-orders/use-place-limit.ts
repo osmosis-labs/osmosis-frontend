@@ -43,21 +43,12 @@ export const usePlaceLimit = ({
     makerFee,
     isMakerFeeLoading,
     contractAddress: orderbookContractAddress,
-    poolId,
+    // poolId,
     error: orderbookError,
   } = useOrderbook({
     quoteDenom,
     baseDenom,
   });
-  const priceState = useLimitPrice({
-    orderbookContractAddress,
-    orderDirection,
-  });
-
-  const isMarket = useMemo(
-    () => type === "market" || priceState.isBeyondOppositePrice,
-    [type, priceState.isBeyondOppositePrice]
-  );
 
   const swapAssets = useSwapAssets({
     initialFromDenom: baseDenom,
@@ -75,12 +66,23 @@ export const usePlaceLimit = ({
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
     useOtherCurrencies: false,
-    forceSwapInPoolId: poolId,
+    // forceSwapInPoolId: poolId,
     maxSlippage: new Dec(0.1),
   });
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
+
+  const priceState = useLimitPrice({
+    orderbookContractAddress,
+    orderDirection,
+    baseDenom: baseAsset?.coinMinimalDenom,
+  });
+
+  const isMarket = useMemo(
+    () => type === "market" || priceState.isBeyondOppositePrice,
+    [type, priceState.isBeyondOppositePrice]
+  );
 
   const account = accountStore.getWallet(osmosisChainId);
 
@@ -326,7 +328,7 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
   const error = useMemo(() => {
-    if (orderbookError) {
+    if (!isMarket && orderbookError) {
       return orderbookError;
     }
 
@@ -384,20 +386,27 @@ export const usePlaceLimit = ({
 const useLimitPrice = ({
   orderbookContractAddress,
   orderDirection,
+  baseDenom,
 }: {
   orderbookContractAddress: string;
   orderDirection: OrderDirection;
+  baseDenom?: string;
 }) => {
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
+  const { data: assetPrice, isLoading: loadingAssetPrice } =
+    api.edge.assets.getAssetPrice.useQuery({
+      coinMinimalDenom: baseDenom ?? "",
+    });
+
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
 
   const spotPrice = useMemo(() => {
-    if (!data) return new Dec(1);
-    return orderDirection === "ask" ? data.askSpotPrice : data.bidSpotPrice;
-  }, [orderDirection, data]);
+    if (!assetPrice) return new Dec(1);
+    return assetPrice.toDec();
+  }, [assetPrice]);
 
   const adjustByPercentage = useCallback(
     (percentage: Dec) => {
@@ -444,11 +453,8 @@ const useLimitPrice = ({
   );
 
   const isBeyondOppositePrice = useMemo(() => {
-    if (!data) return false;
-    return orderDirection === "ask"
-      ? data.bidSpotPrice.gte(price)
-      : data.askSpotPrice.lte(price);
-  }, [orderDirection, data, price]);
+    return orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
+  }, [orderDirection, price, spotPrice]);
 
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);

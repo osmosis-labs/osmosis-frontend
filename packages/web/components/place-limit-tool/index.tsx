@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -175,7 +176,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
               expectedOutput={swapState.marketState.quote?.amount.toDec()}
-              expectedOutputLoading={isMarketLoading}
+              expectedOutputLoading={
+                isMarketLoading || swapState.marketState.inAmountInput.isTyping
+              }
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
               insufficientFunds={swapState.insufficientFunds}
@@ -196,6 +199,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   orderDirection === "bid"
                     ? swapState.priceState.askSpotPrice!
                     : swapState.priceState.bidSpotPrice!
+                }
+                inDenom={swapState.baseAsset?.coinDenom}
+                inPrice={
+                  new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    swapState.priceState.spotPrice
+                  )
                 }
               />
             )}
@@ -224,6 +234,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     (!swapState.isMarket &&
                       swapState.priceState.orderPrice.length > 0) ||
                     isMarketLoading ||
+                    (swapState.isMarket &&
+                      (swapState.marketState.inAmountInput.isEmpty ||
+                        swapState.marketState.inAmountInput.amount
+                          ?.toDec()
+                          .isZero())) ||
                     !swapState.isBalancesFetched ||
                     swapState.isMakerFeeLoading
                   }
