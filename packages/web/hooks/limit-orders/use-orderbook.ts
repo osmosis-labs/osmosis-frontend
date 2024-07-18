@@ -253,6 +253,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetching,
     isFetchingNextPage,
     hasNextPage,
+    refetch,
   } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
     {
       contractAddresses: addresses,
@@ -263,6 +264,7 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
+      refetchInterval: 5000,
     }
   );
 
@@ -276,6 +278,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetching,
     isFetchingNextPage,
     hasNextPage,
+    refetch,
   };
 };
 
