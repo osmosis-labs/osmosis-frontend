@@ -284,7 +284,7 @@ export const AmountScreen = observer(
           return;
         }
 
-        accountRepo?.connect(osmosisAccount?.walletName).catch(() => {
+        accountRepo?.connect(osmosisAccount?.walletName).catch((error) => {
           console.error("Failed to connect Osmosis account:", error);
           if (supportedChains.length > 1) {
             setIsNetworkSelectVisible(true);
