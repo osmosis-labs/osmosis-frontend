@@ -523,5 +523,6 @@ const useLimitPrice = ({
     isBeyondOppositePrice,
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
+    loadingAssetPrice,
   };
 };

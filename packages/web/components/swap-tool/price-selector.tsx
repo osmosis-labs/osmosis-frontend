@@ -21,7 +21,6 @@ interface PriceSelectorProps {
   tokenSelectionAvailable: boolean;
   showQuoteBalance: boolean;
   baseDenom: string;
-  setBase: (base: string) => void;
 }
 
 type AssetWithBalance = Asset & {

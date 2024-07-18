@@ -195,11 +195,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             {swapState.isMarket && (
               <TradeDetails
                 swapState={swapState.marketState}
-                baseSpotPrice={
-                  orderDirection === "bid"
-                    ? swapState.priceState.askSpotPrice!
-                    : swapState.priceState.bidSpotPrice!
-                }
                 inDenom={swapState.baseAsset?.coinDenom}
                 inPrice={
                   new PricePretty(
