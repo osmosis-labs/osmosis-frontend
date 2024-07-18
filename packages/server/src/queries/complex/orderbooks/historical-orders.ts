@@ -21,7 +21,8 @@ export function getOrderbookHistoricalOrders({
       queryHistoricalOrders(userOsmoAddress).then((data) => {
         const orders = data;
         orders.forEach((o) => {
-          if (o.status === "cancelled" && o.claimed_quantity !== o.quantity) {
+          if (o.status === "cancelled" && o.claimed_quantity !== "0") {
+            console.log(o.claimed_quantity, o.quantity);
             const newOrder: HistoricalLimitOrder = {
               ...o,
               quantity: o.claimed_quantity,
