@@ -561,7 +561,7 @@ export const AmountScreen = observer(
     };
 
     return (
-      <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:p-2">
+      <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
         <div className="mb-6 flex items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
           <span>
             {direction === "deposit"
