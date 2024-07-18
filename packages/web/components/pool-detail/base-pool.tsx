@@ -2,15 +2,15 @@ import { IntPretty } from "@keplr-wallet/unit";
 import type { Pool } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { FunctionComponent } from "react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useMeasure } from "react-use";
 
+import { Icon, PoolAssetsIcon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { AssetBreakdownChart } from "~/components/chart";
 import { useTranslation } from "~/hooks";
-
-import { Icon, PoolAssetsIcon } from "../assets";
-import { Button } from "../buttons";
-import { AssetBreakdownChart } from "../chart";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
@@ -19,7 +19,13 @@ export const BasePoolDetails: FunctionComponent<{
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
 
-  const poolName = pool.reserveCoins.map((asset) => asset.denom).join(" / ");
+  const poolNameAssetLinks = pool.reserveCoins.map((poolAsset, index) => (
+    <Fragment key={poolAsset.denom}>
+      <Link href={`/assets/${poolAsset.denom}`}>{poolAsset.denom}</Link>
+      {index < pool.reserveCoins.length - 1 && " / "}
+    </Fragment>
+  ));
+
   const poolValue = pool.totalFiatValueLocked;
 
   const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
@@ -61,7 +67,7 @@ export const BasePoolDetails: FunctionComponent<{
                     }))}
                     size="sm"
                   />
-                  <h5>{poolName}</h5>
+                  <h5>{poolNameAssetLinks}</h5>
                 </div>
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
