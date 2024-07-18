@@ -40,8 +40,8 @@ export const useSelectableWallets = ({
           if (wallet.name === "Coinbase Wallet") {
             walletToAdd.icon = "/logos/coinbase.svg";
 
-            if (wallet.type === "coinbaseWallet") {
-              walletToAdd.name = "Coinbase Smart Wallet";
+            if (wallet.type === "injected") {
+              walletToAdd.name = "Coinbase Extension";
             }
           }
 
