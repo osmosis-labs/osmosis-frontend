@@ -179,11 +179,9 @@ export const OrderHistory = observer(() => {
       hasPendingOrders;
     // Past orders fill the rest of the array so we account for that plus and headers
     const maxIndex = virtualRows.length - 1;
-    console.log(minIndex, maxIndex);
     return virtualRows
       .filter((row) => row.index > minIndex && row.index <= maxIndex)
       .map((virtualRow) => {
-        console.log(virtualRow.index);
         const row =
           rows[virtualRow.index - (1 + hasFilledOrders + hasPendingOrders)];
         return row;
