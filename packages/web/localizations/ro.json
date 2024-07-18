@@ -1224,7 +1224,8 @@
       "title": "Ordin limită",
       "description": {
         "buy": "Cumpărați când prețul {denom} scade",
-        "sell": "Vindeți când prețul {denom} crește"
+        "sell": "Vindeți când prețul {denom} crește",
+        "disabled": "Momentan indisponibil pentru {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

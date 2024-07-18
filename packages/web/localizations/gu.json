@@ -1224,7 +1224,8 @@
       "title": "મર્યાદા ઓર્ડર",
       "description": {
         "buy": "જ્યારે {denom} કિંમત ઘટે ત્યારે ખરીદો",
-        "sell": "જ્યારે {denom} કિંમત વધે ત્યારે વેચો"
+        "sell": "જ્યારે {denom} કિંમત વધે ત્યારે વેચો",
+        "disabled": "હાલમાં {denom} / {quoteDenom} માટે ઉપલબ્ધ નથી"
       }
     },
     "recurringOrder": {

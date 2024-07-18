@@ -22,10 +22,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import {
-  useOrderbookAllActiveOrders,
-  useOrderbookSelectableDenoms,
-} from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 
@@ -39,8 +36,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
-      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [{ base, quote, tab, type }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
@@ -139,6 +134,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.error,
     ]);
 
+    const selectableBaseAssets = useMemo(() => {
+      return swapState.marketState.selectableAssets.filter(
+        (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
+      );
+    }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -245,8 +245,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   isLoading={
                     !swapState.isBalancesFetched ||
                     (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                    isMarketLoading ||
-                    orderbookAssetsLoading
+                    isMarketLoading
                   }
                   loadingText={t("assets.transfer.loading")}
                   onClick={() => setReviewOpen(true)}

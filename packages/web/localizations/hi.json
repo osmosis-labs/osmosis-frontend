@@ -1224,7 +1224,8 @@
       "title": "सीमा आदेश",
       "description": {
         "buy": "जब {denom} कीमत घट जाए तो खरीदें",
-        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें"
+        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें",
+        "disabled": "वर्तमान में {denom} / {quoteDenom} के लिए उपलब्ध नहीं है"
       }
     },
     "recurringOrder": {

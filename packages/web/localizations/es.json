@@ -1224,7 +1224,8 @@
       "title": "Orden límite",
       "description": {
         "buy": "Compre cuando el precio {denom} baje",
-        "sell": "Vender cuando el precio {denom} aumente"
+        "sell": "Vender cuando el precio {denom} aumente",
+        "disabled": "Actualmente no disponible para {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {

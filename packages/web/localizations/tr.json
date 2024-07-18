@@ -1224,7 +1224,8 @@
       "title": "Limit Emri",
       "description": {
         "buy": "{denom} fiyatı düştüğünde satın alın",
-        "sell": "{denom} fiyatı arttığında sat"
+        "sell": "{denom} fiyatı arttığında sat",
+        "disabled": "Şu anda {denom} / {quoteDenom} için kullanılamıyor"
       }
     },
     "recurringOrder": {

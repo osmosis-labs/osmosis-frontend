@@ -1224,7 +1224,8 @@
       "title": "指値注文",
       "description": {
         "buy": "{denom}価格が下がったら購入する",
-        "sell": "{denom}価格が上昇したら売る"
+        "sell": "{denom}価格が上昇したら売る",
+        "disabled": "現在{denom} / {quoteDenom}ではご利用いただけません"
       }
     },
     "recurringOrder": {
