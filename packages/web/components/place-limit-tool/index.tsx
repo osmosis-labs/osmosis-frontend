@@ -20,20 +20,21 @@ import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-det
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
+import { EventPage } from "~/config";
 import { useTranslation, useWalletSelect } from "~/hooks";
-import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
+import { usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 
 export interface PlaceLimitToolProps {
-  orderDirection: OrderDirection;
+  page: EventPage;
 }
 
 const WHALE_MESSAGE_THRESHOLD = 100;
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  () => {
+  ({ page }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -60,6 +61,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       baseDenom: base,
       quoteDenom: quote,
       type,
+      page,
     });
 
     // Adjust price to base price if the type changes to "market"

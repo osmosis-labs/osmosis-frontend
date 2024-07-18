@@ -4,9 +4,11 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
+import { EventName, EventPage } from "~/config";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -29,6 +31,7 @@ export interface UsePlaceLimitParams {
   baseDenom: string;
   quoteDenom: string;
   type: "limit" | "market";
+  page: EventPage;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -44,7 +47,9 @@ export const usePlaceLimit = ({
   useQueryParams = false,
   useOtherCurrencies = true,
   type,
+  page,
 }: UsePlaceLimitParams) => {
+  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const {
     makerFee,
@@ -205,6 +210,13 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.fiatValue,
   ]);
 
+  const feeUsdValue = useMemo(() => {
+    return (
+      paymentFiatValue?.mul(makerFee) ??
+      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+    );
+  }, [paymentFiatValue, makerFee]);
+
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -230,7 +242,21 @@ export const usePlaceLimit = ({
         claim_bounty: CLAIM_BOUNTY,
       },
     };
+
+    const baseEvent = {
+      type: orderDirection === "bid" ? "buy" : "sell",
+      fromToken: paymentDenom,
+      toToken:
+        orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
+      valueUsd: Number(paymentFiatValue?.toDec().toString() ?? "0"),
+      tokenAmount: Number(quantity),
+      page,
+      isOnHomePage: page === "Swap Page",
+      feeUsdValue,
+    };
+
     try {
+      logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
       await account?.cosmwasm.sendExecuteContractMsg(
         "executeWasm",
         orderbookContractAddress,
@@ -242,8 +268,14 @@ export const usePlaceLimit = ({
           },
         ]
       );
+      logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
     } catch (error) {
+      const { message } = error as Error;
       console.error("Error attempting to broadcast place limit tx", error);
+      logEvent([
+        EventName.LimitOrder.placeOrderFailed,
+        { ...baseEvent, errorMessage: message },
+      ]);
     }
   }, [
     orderbookContractAddress,
@@ -255,6 +287,12 @@ export const usePlaceLimit = ({
     marketState,
     quoteAssetPrice,
     normalizationFactor,
+    paymentFiatValue,
+    baseAsset,
+    quoteAsset,
+    logEvent,
+    page,
+    feeUsdValue,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
@@ -396,6 +434,7 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     reset,
     error,
+    feeUsdValue,
   };
 };
 

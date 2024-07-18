@@ -249,4 +249,9 @@ export const EventName = {
     enableOneClickTrading: "1CT: Enable 1-Click Trading",
     accessed: "1CT: Accessed",
   },
+  LimitOrder: {
+    placeOrderStarted: "Limit Order: Place order started",
+    placeOrderCompleted: "Limit Order: Place order completed",
+    placeOrderFailed: "Limit Order: Place order failed",
+  },
 };
