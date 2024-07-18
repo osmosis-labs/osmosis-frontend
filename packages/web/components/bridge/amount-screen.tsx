@@ -45,7 +45,7 @@ import { ChainLogo } from "../assets/chain-logo";
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
-import { CryptoFiatInput } from "./crypto-fiat-input";
+import { ImmersiveBridgeInput } from "./crypto-fiat-input";
 import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import {
   MoreBridgeOptionsModal,
@@ -679,7 +679,7 @@ export const AmountScreen = observer(
 
         {quote.enabled ? (
           <div className="flex w-full flex-col gap-6 md:gap-4">
-            <CryptoFiatInput
+            <ImmersiveBridgeInput
               currentUnit={inputUnit}
               cryptoInputRaw={cryptoAmount}
               fiatInputRaw={fiatAmount}
