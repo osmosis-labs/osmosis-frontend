@@ -102,7 +102,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     );
 
     const showOutputDifferenceWarning =
-      outputDifference.toDec().abs().gt(new Dec(0.05)) ?? false;
+      outputDifference.toDec().abs().gt(new Dec(0.05));
 
     const showPriceImpactWarning =
       swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ??
