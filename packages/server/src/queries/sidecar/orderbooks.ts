@@ -6,6 +6,7 @@ export type CanonicalOrderbooksResponse = {
   base: string;
   quote: string;
   pool_id: number;
+  contract_address: string;
 }[];
 
 export async function queryCanonicalOrderbooks() {
