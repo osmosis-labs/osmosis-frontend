@@ -273,7 +273,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   spreadFactor &&
                   !dynamicSpreadFactor && (
                     <p className="text-caption">
-                      {spreadFactor.maxDecimals(1).toString()}
+                      {spreadFactor.maxDecimals(2).toString()}
                     </p>
                   )}
               </button>
