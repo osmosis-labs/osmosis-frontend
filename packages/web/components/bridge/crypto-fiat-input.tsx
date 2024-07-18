@@ -37,6 +37,7 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientFee: boolean;
   fromChain: BridgeChainWithDisplayInfo;
   transferGasCost: CoinPretty | undefined;
+  canSetMax?: boolean;
   setFiatAmount: (amount: string) => void;
   setCryptoAmount: (amount: string) => void;
   setInputUnit: (unit: "fiat" | "crypto") => void;
@@ -50,6 +51,7 @@ export const CryptoFiatInput: FunctionComponent<{
   isInsufficientBal,
   isInsufficientFee,
   transferGasCost,
+  canSetMax = true,
   setFiatAmount: setFiatAmountProp,
   setCryptoAmount: setCryptoAmountProp,
   setInputUnit,
@@ -89,11 +91,13 @@ export const CryptoFiatInput: FunctionComponent<{
   const setCryptoAmount = useCallback(
     (amount: string) =>
       setCryptoAmountProp(
-        new IntPretty(amount)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(asset.decimals)
-          .toString()
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(asset.decimals)
+              .toString()
       ),
     [setCryptoAmountProp, asset]
   );
@@ -101,11 +105,13 @@ export const CryptoFiatInput: FunctionComponent<{
   const setFiatAmount = useCallback(
     (amount: string) =>
       setFiatAmountProp(
-        new IntPretty(amount)
-          .locale(false)
-          .trim(true)
-          .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
-          .toString()
+        amount.endsWith(".") || amount.endsWith("0")
+          ? amount
+          : new IntPretty(amount)
+              .locale(false)
+              .trim(true)
+              .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+              .toString()
       ),
     [setFiatAmountProp, assetPrice]
   );
@@ -148,7 +154,7 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax && transferGasCost) {
+    if (isMax && transferGasCost && canSetMax) {
       let maxTransferAmount = new Dec(0);
 
       const gasFeeMatchesInputDenom =
@@ -171,14 +177,14 @@ export const CryptoFiatInput: FunctionComponent<{
         onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
       }
     }
-  }, [isMax, transferGasCost, asset.amount, inputCoin, onInput]);
+  }, [isMax, canSetMax, transferGasCost, asset.amount, inputCoin, onInput]);
 
   // Apply max amount if asset changes
   useEffect(() => {
-    if (isMax) {
+    if (isMax && canSetMax) {
       onInput("crypto")(trimPlaceholderZeros(asset.amount.toDec().toString()));
     }
-  }, [asset, isMax, onInput]);
+  }, [asset, isMax, canSetMax, onInput]);
 
   const fiatCurrentValue = `${assetPrice.symbol}${fiatInputRaw}`;
   const fiatInputFontSize = calcTextSizeClass(

@@ -406,7 +406,8 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
-    "noData": "Nu există date"
+    "noData": "Nu există date",
+    "noOrderbook": "Fără carnet de comandă pentru pereche"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
+      "insufficientFunds": "Fonduri OSMO insuficiente pentru tranzacționarea cu 1 clic",
+      "continueWithoutOneClickTrading": "Continuați fără tranzacționare cu 1 clic",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
       "startANewSession": "Începeți o nouă sesiune",
       "approveManually": "Aprobați manual în {walletName}",
@@ -1221,7 +1224,8 @@
       "title": "Ordin limită",
       "description": {
         "buy": "Cumpărați când prețul {denom} scade",
-        "sell": "Vindeți când prețul {denom} crește"
+        "sell": "Vindeți când prețul {denom} crește",
+        "disabled": "Momentan indisponibil pentru {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "Estimarea taxelor",
     "fees": "taxe",
     "receiveEstimated": "Primire (estimat)",
-    "swapRoute": "Schimbați ruta"
+    "swapRoute": "Schimbați ruta",
+    "trade": "Comerț",
+    "swapToAnotherAsset": "Schimbați cu un alt activ",
+    "openOrders": "Comenzi deschise",
+    "invalidPrice": "Preț nevalid"
   },
   "orderHistory": {
     "orders": "Comenzi",

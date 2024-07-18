@@ -53,8 +53,9 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
           <button
             key={`swap-tab-${tab.value}`}
             onClick={() => setTab(tab.value)}
-            className={classNames("rounded-3xl px-4 py-3", {
+            className={classNames("rounded-3xl px-4 py-3 transition-colors", {
               "bg-osmoverse-700": isActive,
+              "hover:bg-osmoverse-850": !isActive,
             })}
           >
             <p

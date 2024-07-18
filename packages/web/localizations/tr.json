@@ -406,7 +406,8 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok"
+    "noData": "Veri yok",
+    "noOrderbook": "Çift için Sipariş Defteri Yok"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
+      "insufficientFunds": "Tek Tıklamayla Ticaret için yetersiz OSMO fonu",
+      "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
       "startANewSession": "Yeni bir oturum başlat",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
@@ -1221,7 +1224,8 @@
       "title": "Limit Emri",
       "description": {
         "buy": "{denom} fiyatı düştüğünde satın alın",
-        "sell": "{denom} fiyatı arttığında sat"
+        "sell": "{denom} fiyatı arttığında sat",
+        "disabled": "Şu anda {denom} / {quoteDenom} için kullanılamıyor"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "Ücretlerin tahmin edilmesi",
     "fees": "ücretler",
     "receiveEstimated": "Alma (tahmini)",
-    "swapRoute": "Rotayı değiştir"
+    "swapRoute": "Rotayı değiştir",
+    "trade": "Ticaret",
+    "swapToAnotherAsset": "Başka bir varlığa geç",
+    "openOrders": "Açık siparişler",
+    "invalidPrice": "Geçersiz fiyat"
   },
   "orderHistory": {
     "orders": "Emirler",

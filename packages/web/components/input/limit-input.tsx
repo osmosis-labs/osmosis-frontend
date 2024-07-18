@@ -9,7 +9,7 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { formatPretty } from "~/utils/formatter";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
   baseAsset: MinimalAsset;
@@ -17,13 +17,13 @@ export interface LimitInputProps {
   setMarketAmount: (value: string) => void;
   tokenAmount: string;
   price: Dec;
-  insufficentFunds?: boolean;
   disableSwitching?: boolean;
   quoteAssetPrice: Dec;
   quoteBalance?: Dec;
   baseBalance?: Dec;
   expectedOutput?: Dec;
   expectedOutputLoading: boolean;
+  insufficientFunds?: boolean;
 }
 
 const calcScale = (numChars: number, isMobile: boolean): string => {
@@ -61,7 +61,15 @@ const nonFocusedClasses =
   "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
-const transformAmount = (value: string) => {
+const countDecimals = function (value: string) {
+  const split = value.split(".");
+  if (split.length > 1) {
+    return split[1].length;
+  }
+  return 0;
+};
+
+const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
     updatedValue = value + "0";
@@ -71,7 +79,10 @@ const transformAmount = (value: string) => {
     updatedValue = "0" + value;
   }
 
-  return updatedValue;
+  const decimals = countDecimals(updatedValue);
+  return decimals > decimalCount
+    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
+    : updatedValue;
 };
 
 export const LimitInput: FC<LimitInputProps> = ({
@@ -79,7 +90,6 @@ export const LimitInput: FC<LimitInputProps> = ({
   onChange,
   tokenAmount,
   price,
-  insufficentFunds,
   disableSwitching,
   setMarketAmount,
   quoteAssetPrice,
@@ -87,6 +97,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   expectedOutputLoading,
   quoteBalance,
   baseBalance,
+  insufficientFunds,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
@@ -114,9 +125,12 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, type]);
 
   const setFiatAmountSafe = useCallback(
-    (value: string) => {
-      const updatedValue = transformAmount(value);
-      const isFocused = focused === FocusedInput.FIAT;
+    (value?: string) => {
+      if (!value) {
+        return setFiatAmount("");
+      }
+
+      const updatedValue = transformAmount(value, 6);
       if (
         !isValidNumericalRawInput(updatedValue) ||
         updatedValue.length > 26 ||
@@ -124,23 +138,30 @@ export const LimitInput: FC<LimitInputProps> = ({
       ) {
         return;
       }
+
+      const isFocused = focused === FocusedInput.FIAT;
 
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
-      if (tab === "buy" && updatedValue.length > 0) {
+      if (tab === "buy") {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      isFocused || updatedValue.length === 0
-        ? setFiatAmount(updatedValue)
-        : setFiatAmount(formatPretty(new Dec(updatedValue)));
+      setFiatAmount(
+        parseFloat(updatedValue) !== 0 && !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue
+      );
     },
-    [setFiatAmount, focused, tab, setMarketAmount, quoteAssetPrice]
+    [focused, setFiatAmount, tab, setMarketAmount, quoteAssetPrice]
   );
 
   const setTokenAmountSafe = useCallback(
-    (value: string) => {
-      const updatedValue = transformAmount(value);
-      const isFocused = focused === FocusedInput.TOKEN;
+    (value?: string) => {
+      if (!value) {
+        return onChange("");
+      }
+
+      const updatedValue = transformAmount(value, baseAsset?.coinDecimals);
 
       if (
         !isValidNumericalRawInput(updatedValue) ||
@@ -149,11 +170,15 @@ export const LimitInput: FC<LimitInputProps> = ({
       ) {
         return;
       }
-      isFocused || updatedValue.length === 0
-        ? onChange(updatedValue)
-        : onChange(formatPretty(new Dec(updatedValue)));
+
+      const isFocused = focused === FocusedInput.TOKEN;
+      onChange(
+        parseFloat(updatedValue) !== 0 && !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue
+      );
     },
-    [onChange, focused]
+    [onChange, focused, baseAsset?.coinDecimals]
   );
 
   const toggleMax = useCallback(() => {
@@ -165,17 +190,26 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
 
   useEffect(() => {
+    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
+      setFiatAmount("");
+      if (tab === "buy") {
+        setMarketAmount("");
+      }
+    }
     if (focused !== FocusedInput.TOKEN || !price) return;
-    const value = new Dec(tokenAmount.length > 0 ? tokenAmount : 0);
-    const fiatValue = price.mul(value);
-    setFiatAmountSafe(formatPretty(fiatValue));
-  }, [price, tokenAmount, setFiatAmountSafe, focused, tab]);
+
+    const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+    const fiatValue = value ? price.mul(value) : undefined;
+
+    setFiatAmountSafe(fiatValue ? fiatValue.toString() : undefined);
+  }, [price, tokenAmount, setFiatAmountSafe, focused, tab, setMarketAmount]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
-    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : "0";
-    const tokenValue = new Dec(value).quo(price);
-    setTokenAmountSafe(tokenValue.toString());
+
+    const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+    const tokenValue = value ? new Dec(value).quo(price) : undefined;
+    setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
   return (
     <div className="relative h-[108px]">
@@ -186,14 +220,15 @@ export const LimitInput: FC<LimitInputProps> = ({
           baseAsset={baseAsset}
           focused={focused}
           swapFocus={swapFocus}
-          insufficentFunds={insufficentFunds}
           amount={
             inputType === "fiat"
               ? type === "market" && tab === "sell"
-                ? formatPretty(expectedOutput ?? new Dec(0))
+                ? trimPlaceholderZeros(
+                    (expectedOutput ?? new Dec(0)).toString()
+                  )
                 : fiatAmount
               : type === "market" && tab === "buy"
-              ? formatPretty(expectedOutput ?? new Dec(0))
+              ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
               : tokenAmount
           }
           setter={inputType === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
@@ -211,7 +246,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       >
         <span
           className={classNames("body2 text-wosmongton-200", {
-            "text-rust-300": insufficentFunds,
+            "text-rust-300": insufficientFunds,
           })}
         >
           Max
@@ -242,7 +277,6 @@ type AutoInputProps = {
 function AutoInput({
   focused,
   baseAsset,
-  insufficentFunds,
   swapFocus,
   amount,
   setter,
@@ -256,14 +290,14 @@ function AutoInput({
     [type]
   );
 
-  const oppositeTypeEnum = useMemo(
-    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
-    [type]
-  );
-
   const isFocused = useMemo(
     () => focused === currentTypeEnum,
     [currentTypeEnum, focused]
+  );
+
+  const oppositeTypeEnum = useMemo(
+    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
+    [type]
   );
 
   const scale = useMemo(
@@ -277,7 +311,6 @@ function AutoInput({
         {
           [nonFocusedClasses]: !isFocused,
           [focusedClasses]: isFocused,
-          "text-rust-300": isFocused && insufficentFunds,
           "text-wosmongton-400": isFocused && (amount === "0" || amount === ""),
           "text-white-full": isFocused && +amount > 0,
         }
@@ -307,11 +340,20 @@ function AutoInput({
             placeholder="0"
             value={amount}
             inputClassName={classNames(
-              "bg-transparent text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
+              "bg-transparent !m-0 !p-0 text-h3 font-h3 text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
               { "cursor-pointer font-normal": !isFocused }
             )}
             onChange={(e) => setter(e.target.value)}
             onClick={!isFocused ? swapFocus : undefined}
+            extraWidth={
+              isFocused
+                ? type === "fiat"
+                  ? 0
+                  : 4
+                : type === "fiat"
+                ? 0
+                : undefined
+            }
           />
           {type === "token" && (
             <span
@@ -320,7 +362,7 @@ function AutoInput({
                 "font-normal": !isFocused,
               })}
             >
-              {baseAsset ? baseAsset.coinDenom : ""}
+              {baseAsset && baseAsset.coinDenom}
             </span>
           )}
           {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}

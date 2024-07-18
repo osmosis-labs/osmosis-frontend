@@ -45,6 +45,7 @@ import {
 } from "../interface";
 import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
+import { getSquidErrors } from "./error";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -119,6 +120,26 @@ export class SquidBridgeProvider implements BridgeProvider {
           headers: {
             "x-integrator-id": this.integratorId,
           },
+        }).catch((e) => {
+          if (e instanceof ApiClientError) {
+            const errMsgs = getSquidErrors(e);
+
+            if (
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
+                  "The input amount is not high enough to cover the bridge fee"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "InsufficientAmountError",
+                message: e.message,
+              });
+            }
+          }
+
+          throw e;
         });
 
         const {
@@ -349,7 +370,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SquidBridgeProvider.ID,
           "failed to get supported assets:",

@@ -8,7 +8,12 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useNavBar,
+  useTranslation,
+} from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -28,12 +33,16 @@ const HomeNew = () => {
   // const [previousTrade, setPreviousTrade] =
   //   useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
+  const { t } = useTranslation();
+
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
+  useNavBar({ title: t("limitOrders.trade") });
+
   return (
-    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+    <main className="relative flex h-full overflow-auto bg-osmoverse-900 pb-2 pt-8">
       {/* <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"
@@ -62,7 +71,7 @@ const HomeNew = () => {
           </g>
         </svg>
       </div> */}
-      <div className="my-auto flex h-auto w-full items-center justify-center">
+      <div className="flex h-auto w-full justify-center">
         <div className="flex w-[35rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
           <TradeTool />

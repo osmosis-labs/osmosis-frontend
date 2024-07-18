@@ -406,7 +406,8 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
-    "noData": "沒有數據"
+    "noData": "沒有數據",
+    "noOrderbook": "沒有配對訂單簿"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "currentlyUnavailable": "一鍵交易目前無法使用",
+      "insufficientFunds": "OSMO 資金不足，無法進行一鍵交易",
+      "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
       "networkFeeTooHigh": "網路費太高",
       "startANewSession": "開始新會話",
       "approveManually": "在{walletName}中手動核准",
@@ -1221,7 +1224,8 @@
       "title": "限價訂單",
       "description": {
         "buy": "當{denom}價格下跌時購買",
-        "sell": "當{denom}價格上漲時出售"
+        "sell": "當{denom}價格上漲時出售",
+        "disabled": "目前不適用於{denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "估算費用",
     "fees": "費用",
     "receiveEstimated": "收到（預計）",
-    "swapRoute": "交換路線"
+    "swapRoute": "交換路線",
+    "trade": "貿易",
+    "swapToAnotherAsset": "交換到另一種資產",
+    "openOrders": "未結訂單",
+    "invalidPrice": "價格無效"
   },
   "orderHistory": {
     "orders": "命令",

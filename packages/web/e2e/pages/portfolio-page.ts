@@ -31,19 +31,9 @@ export class PortfolioPage extends BasePage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async hideZeroBalances() {
-    await this.hideZeros.click();
-    await this.page.waitForTimeout(1000);
-  }
-
-  async viewMoreBalances() {
-    await this.viewMore.click();
-    await this.page.waitForTimeout(1000);
-  }
-
   async getBalanceFor(token: string) {
     const bal = this.page
-      .locator(`//tbody/tr//a[@href="/assets/${token}"]`)
+      .locator(`//tbody/tr//a[@href="/assets/${token}?ref=portfolio"]`)
       .nth(1);
     let tokenBalance: string = await bal.innerText();
     console.log(`Balance for ${token}: ${tokenBalance}`);

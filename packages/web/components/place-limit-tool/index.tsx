@@ -1,5 +1,8 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
@@ -9,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
@@ -18,7 +22,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
 
@@ -32,8 +36,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   () => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
-      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const [{ base, quote, tab, type }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
@@ -72,6 +74,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
+    const { orders } = useOrderbookAllActiveOrders({
+      userAddress: account?.address ?? "",
+      pageSize: 100,
+    });
+
+    const openOrders = useMemo(
+      () =>
+        orders.filter(
+          ({ status }) => status === "open" || status === "partiallyFilled"
+        ),
+      [orders]
+    );
+
     // const isSwapToolLoading = false;
     const hasFunds = true;
 
@@ -93,6 +108,37 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     };
 
+    const buttonText = useMemo(() => {
+      if (swapState.error) {
+        return t(swapState.error);
+      } else {
+        return orderDirection === "bid"
+          ? t("portfolio.buy")
+          : t("limitOrders.sell");
+      }
+    }, [orderDirection, swapState.error, t]);
+
+    const isMarketLoading = useMemo(() => {
+      return (
+        swapState.isMarket &&
+        (swapState.marketState.isQuoteLoading ||
+          Boolean(swapState.marketState.isLoadingNetworkFee) ||
+          swapState.marketState.inAmountInput.isTyping) &&
+        !Boolean(swapState.marketState.error)
+      );
+    }, [
+      swapState.isMarket,
+      swapState.marketState.isLoadingNetworkFee,
+      swapState.marketState.isQuoteLoading,
+      swapState.marketState.inAmountInput.isTyping,
+      swapState.marketState.error,
+    ]);
+
+    const selectableBaseAssets = useMemo(() => {
+      return swapState.marketState.selectableAssets.filter(
+        (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
+      );
+    }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -107,7 +153,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             orderDirection={orderDirection}
           />
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
-            <p className="body2 p-4 text-center font-light text-osmoverse-400">
+            <p
+              className={classNames(
+                "body2 p-4 text-center text-osmoverse-400",
+                { "text-rust-300": swapState.insufficientFunds }
+              )}
+            >
               {getInputWidgetLabel()}
             </p>
             <LimitInput
@@ -121,18 +172,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     : swapState.priceState.bidSpotPrice!
                   : swapState.priceState.price
               }
-              insufficentFunds={swapState.insufficientFunds}
               disableSwitching={type === "market"}
               setMarketAmount={swapState.marketState.inAmountInput.setAmount}
               quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
               expectedOutput={swapState.marketState.quote?.amount.toDec()}
               expectedOutputLoading={
-                swapState.marketState.inAmountInput.isTyping ||
-                swapState.marketState.isQuoteLoading ||
-                !!swapState.marketState.isLoadingNetworkFee
+                isMarketLoading || swapState.marketState.inAmountInput.isTyping
               }
               quoteBalance={swapState.quoteTokenBalance?.toDec()}
               baseBalance={swapState.baseTokenBalance?.toDec()}
+              insufficientFunds={swapState.insufficientFunds}
             />
           </div>
           <>
@@ -146,10 +195,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             {swapState.isMarket && (
               <TradeDetails
                 swapState={swapState.marketState}
-                baseSpotPrice={
-                  orderDirection === "bid"
-                    ? swapState.priceState.askSpotPrice!
-                    : swapState.priceState.bidSpotPrice!
+                inDenom={swapState.baseAsset?.coinDenom}
+                inPrice={
+                  new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    swapState.priceState.spotPrice
+                  )
                 }
               />
             )}
@@ -174,39 +225,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {hasFunds ? (
                 <Button
                   disabled={
+                    Boolean(swapState.error) ||
                     (!swapState.isMarket &&
-                      (swapState.insufficientFunds ||
-                        (!swapState.priceState.isValidPrice &&
-                          swapState.priceState.orderPrice.length > 0))) ||
+                      swapState.priceState.orderPrice.length > 0) ||
+                    isMarketLoading ||
                     (swapState.isMarket &&
                       (swapState.marketState.inAmountInput.isEmpty ||
-                        !Boolean(swapState.marketState.quote) ||
-                        Boolean(swapState.marketState.error) ||
-                        Boolean(swapState.marketState.networkFeeError) ||
-                        swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.inAmountInput.isTyping)) ||
+                        swapState.marketState.inAmountInput.amount
+                          ?.toDec()
+                          .isZero())) ||
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    !swapState.inAmountInput.inputAmount ||
-                    swapState.inAmountInput.inputAmount === "0"
+                    swapState.isMakerFeeLoading
                   }
                   isLoading={
                     !swapState.isBalancesFetched ||
-                    swapState.isMakerFeeLoading ||
-                    (swapState.isMarket &&
-                      (swapState.marketState.isQuoteLoading ||
-                        swapState.marketState.isLoadingNetworkFee ||
-                        swapState.marketState.isLoadingSelectAssets)) ||
-                    orderbookAssetsLoading
+                    (!swapState.isMarket && swapState.isMakerFeeLoading) ||
+                    isMarketLoading
                   }
                   loadingText={t("assets.transfer.loading")}
                   onClick={() => setReviewOpen(true)}
                 >
-                  <h6>
-                    {orderDirection === "bid"
-                      ? t("portfolio.buy")
-                      : t("limitOrders.sell")}
-                  </h6>
+                  <h6>{buttonText}</h6>
                 </Button>
               ) : (
                 <Button onClick={() => setReviewOpen(true)}>
@@ -214,6 +253,35 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </Button>
               )}
             </>
+          )}
+          {account?.isWalletConnected && openOrders.length > 0 && (
+            <Link
+              href="/transactions?tab=orders&fromPage=swap"
+              className="my-3 flex items-center justify-between rounded-2xl bg-osmoverse-850 py-4 px-5"
+            >
+              <div className="flex items-center gap-2">
+                <Icon
+                  id="history-uncolored"
+                  width={24}
+                  height={24}
+                  className="text-osmoverse-500"
+                />
+                <span className="subtitle1 text-osmoverse-200">
+                  {t("limitOrders.openOrders")}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-wosmongton-200">{openOrders.length}</span>
+                <div className="flex h-6 w-6 items-center justify-center">
+                  <Icon
+                    id="chevron-right"
+                    width={10}
+                    height={17}
+                    className="text-wosmongton-200"
+                  />
+                </div>
+              </div>
+            </Link>
           )}
         </div>
         <ReviewLimitOrderModal

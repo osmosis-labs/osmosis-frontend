@@ -406,7 +406,8 @@
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
-    "noData": "कोई डेटा नहीं"
+    "noData": "कोई डेटा नहीं",
+    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
+      "insufficientFunds": "1-क्लिक ट्रेडिंग के लिए OSMO फंड अपर्याप्त है",
+      "continueWithoutOneClickTrading": "1-क्लिक ट्रेडिंग के बिना जारी रखें",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
       "startANewSession": "नया सत्र शुरू करें",
       "approveManually": "{walletName} में मैन्युअल रूप से स्वीकृत करें",
@@ -1221,7 +1224,8 @@
       "title": "सीमा आदेश",
       "description": {
         "buy": "जब {denom} कीमत घट जाए तो खरीदें",
-        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें"
+        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें",
+        "disabled": "वर्तमान में {denom} / {quoteDenom} के लिए उपलब्ध नहीं है"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "शुल्क का अनुमान लगाना",
     "fees": "फीस",
     "receiveEstimated": "प्राप्त (अनुमानित)",
-    "swapRoute": "मार्ग बदलें"
+    "swapRoute": "मार्ग बदलें",
+    "trade": "व्यापार",
+    "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
+    "openOrders": "खुले आदेश",
+    "invalidPrice": "अमान्य मूल्य"
   },
   "orderHistory": {
     "orders": "आदेश",

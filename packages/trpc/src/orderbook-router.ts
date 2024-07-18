@@ -110,6 +110,10 @@ async function getTickInfoAndTransformOrders(
     const percentClaimed = new Dec(
       (placedQuantity - quantity) / placedQuantity
     );
+
+    const normalizationFactor = new Dec(10).pow(
+      new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
+    );
     const [tickEtas, tickUnrealizedCancelled] =
       o.order_direction === "bid"
         ? [
@@ -144,7 +148,7 @@ async function getTickInfoAndTransformOrders(
         : new Dec(placedQuantity).mul(price);
     return {
       ...o,
-      price,
+      price: price.quo(normalizationFactor),
       quantity,
       placed_quantity: placedQuantity,
       percentClaimed,
@@ -175,6 +179,10 @@ function mapHistoricalToMapped(
       o.order_direction === "bid"
         ? new Dec(placedQuantityMin).quo(price)
         : new Dec(placedQuantityMin).mul(price);
+
+    const normalizationFactor = new Dec(10).pow(
+      new Int((quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0))
+    );
     return {
       quoteAsset,
       baseAsset,
@@ -192,7 +200,7 @@ function mapHistoricalToMapped(
       placedQuantityMin,
       quantityMin,
       quantity: parseInt(o.quantity),
-      price,
+      price: price.quo(normalizationFactor),
       status: o.status as OrderStatus,
       tick_id: parseInt(o.tick_id),
       output,
@@ -216,52 +224,6 @@ export const orderbookRouter = createTRPCRouter({
       return {
         makerFee,
       };
-    }),
-  getActiveOrders: publicProcedure
-    .input(
-      GetInfiniteLimitOrdersInputSchema.merge(
-        z.object({ contractOsmoAddress: z.string().startsWith("osmo") })
-      )
-    )
-    .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
-          const { contractOsmoAddress, userOsmoAddress } = input;
-          if (contractOsmoAddress.length === 0 || userOsmoAddress.length === 0)
-            return [];
-          const resp = await getOrderbookActiveOrders({
-            orderbookAddress: contractOsmoAddress,
-            userOsmoAddress: userOsmoAddress,
-            chainList: ctx.chainList,
-          });
-
-          if (resp.orders.length === 0) return [];
-          const { quote_denom, base_denom } = await getOrderbookDenoms({
-            orderbookAddress: contractOsmoAddress,
-            chainList: ctx.chainList,
-          });
-          const quoteAsset = getAssetFromAssetList({
-            assetLists: ctx.assetLists,
-            sourceDenom: quote_denom,
-          });
-          const baseAsset = getAssetFromAssetList({
-            assetLists: ctx.assetLists,
-            sourceDenom: base_denom,
-          });
-          return getTickInfoAndTransformOrders(
-            contractOsmoAddress,
-            resp.orders,
-            ctx.chainList,
-            quoteAsset,
-            baseAsset
-          );
-        },
-        cacheKey: JSON.stringify([
-          "active-orders",
-          input.contractOsmoAddress,
-          input.userOsmoAddress,
-        ]),
-      });
     }),
   getAllActiveOrders: publicProcedure
     .input(
@@ -302,13 +264,14 @@ export const orderbookRouter = createTRPCRouter({
               });
               const quoteAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
-                sourceDenom: quote_denom,
+                coinMinimalDenom: quote_denom,
               });
 
               const baseAsset = getAssetFromAssetList({
                 assetLists: ctx.assetLists,
-                sourceDenom: base_denom,
+                coinMinimalDenom: base_denom,
               });
+
               const mappedOrders = await getTickInfoAndTransformOrders(
                 contractOsmoAddress,
                 resp.orders,
@@ -381,11 +344,11 @@ export const orderbookRouter = createTRPCRouter({
           // TODO: Use actual quote denom here
           const quoteAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
-            sourceDenom: quote_denom,
+            coinMinimalDenom: quote_denom,
           });
           const baseAsset = getAssetFromAssetList({
             assetLists: ctx.assetLists,
-            sourceDenom: base_denom,
+            coinMinimalDenom: base_denom,
           });
           const mappedOrders = await getTickInfoAndTransformOrders(
             contractOsmoAddress,

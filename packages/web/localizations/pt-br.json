@@ -406,7 +406,8 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados"
+    "noData": "Sem dados",
+    "noOrderbook": "Sem carteira de pedidos para par"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
+      "insufficientFunds": "Fundos OSMO insuficientes para negociação em 1 clique",
+      "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
       "networkFeeTooHigh": "Taxa de rede muito alta",
       "startANewSession": "Iniciar uma nova sessão",
       "approveManually": "Aprovar manualmente em {walletName}",
@@ -1221,7 +1224,8 @@
       "title": "Ordem Limitada",
       "description": {
         "buy": "Compre quando o preço {denom} diminuir",
-        "sell": "Venda quando o preço {denom} aumentar"
+        "sell": "Venda quando o preço {denom} aumentar",
+        "disabled": "Atualmente indisponível para {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "Estimando taxas",
     "fees": "tarifas",
     "receiveEstimated": "Receber (estimado)",
-    "swapRoute": "Trocar rota"
+    "swapRoute": "Trocar rota",
+    "trade": "Troca",
+    "swapToAnotherAsset": "Trocar por outro ativo",
+    "openOrders": "Pedidos em aberto",
+    "invalidPrice": "Preço inválido"
   },
   "orderHistory": {
     "orders": "Pedidos",

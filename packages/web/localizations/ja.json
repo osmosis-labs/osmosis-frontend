@@ -406,7 +406,8 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
-    "noData": "データなし"
+    "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
+      "insufficientFunds": "ワンクリック取引に必要なOSMO資金が不足しています",
+      "continueWithoutOneClickTrading": "1クリック取引なしで続行",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
       "startANewSession": "新しいセッションを開始する",
       "approveManually": "{walletName}で手動で承認する",
@@ -1221,7 +1224,8 @@
       "title": "指値注文",
       "description": {
         "buy": "{denom}価格が下がったら購入する",
-        "sell": "{denom}価格が上昇したら売る"
+        "sell": "{denom}価格が上昇したら売る",
+        "disabled": "現在{denom} / {quoteDenom}ではご利用いただけません"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "料金の見積り",
     "fees": "手数料",
     "receiveEstimated": "受け取る（推定）",
-    "swapRoute": "ルートの交換"
+    "swapRoute": "ルートの交換",
+    "trade": "貿易",
+    "swapToAnotherAsset": "別の資産に交換する",
+    "openOrders": "オープン注文",
+    "invalidPrice": "無効な価格"
   },
   "orderHistory": {
     "orders": "注文",

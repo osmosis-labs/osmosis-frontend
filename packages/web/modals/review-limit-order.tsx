@@ -3,7 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
 import { useQueryState } from "nuqs";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -28,6 +28,7 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   makerFee,
 }) => {
   const { t } = useTranslation();
+  const [isSigningMessage, setIsSigningMessage] = useState<boolean>(false);
 
   const fee = useMemo(() => {
     if (placeLimitState.isMarket) {
@@ -69,6 +70,14 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   }, [placeLimitState.isMarket, placeLimitState.priceState, orderDirection]);
 
   const [orderType] = useQueryState("type");
+
+  const onConfirm = useCallback(async () => {
+    setIsSigningMessage(true);
+    await placeLimitState.placeLimit();
+    placeLimitState.reset();
+    setIsSigningMessage(false);
+    onRequestClose();
+  }, [placeLimitState, onRequestClose]);
 
   return (
     <ModalBase
@@ -254,13 +263,14 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
             <Button
               mode="unstyled"
               onClick={onRequestClose}
-              className="rounded-xl border border-osmoverse-700"
+              isLoading={isSigningMessage}
+              className="rounded-2xl border border-osmoverse-700"
             >
               <h6 className="text-wosmongton-200">
                 {t("unstableAssetsWarning.buttonCancel")}
               </h6>
             </Button>
-            <Button onClick={placeLimitState.placeLimit}>
+            <Button onClick={onConfirm} isLoading={isSigningMessage}>
               <h6>{t("limitOrders.confirm")}</h6>
             </Button>
           </div>

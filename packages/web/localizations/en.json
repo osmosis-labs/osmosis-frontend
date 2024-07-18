@@ -406,7 +406,8 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "noOrderbook": "No Orderbook for Pair"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "insufficientFunds": "Insufficient OSMO funds for 1-Click Trading",
+      "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
       "networkFeeTooHigh": "Network fee too high",
       "startANewSession": "Start a new session",
       "approveManually": "Approve manually in {walletName}",
@@ -1221,7 +1224,8 @@
       "title": "Limit Order",
       "description": {
         "buy": "Buy when {denom} price decreases",
-        "sell": "Sell when {denom} price increases"
+        "sell": "Sell when {denom} price increases",
+        "disabled": "Currently unavailable for {denom}/{quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "Estimating fees",
     "fees": "fees",
     "receiveEstimated": "Receive (estimated)",
-    "swapRoute": "Swap route"
+    "swapRoute": "Swap route",
+    "trade": "Trade",
+    "swapToAnotherAsset": "Swap to another asset",
+    "openOrders": "Open orders",
+    "invalidPrice": "Invalid price"
   },
   "orderHistory": {
     "orders": "Orders",

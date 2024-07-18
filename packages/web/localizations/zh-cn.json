@@ -406,7 +406,8 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
-    "noData": "没有数据"
+    "noData": "没有数据",
+    "noOrderbook": "暂无订单簿"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -496,6 +497,8 @@
       "oneClickTradingExpired": "一键交易已过期",
       "oneClickTradingDisabled": "一键交易已禁用",
       "currentlyUnavailable": "一键交易目前不可用",
+      "insufficientFunds": "OSMO 资金不足，无法进行一键交易",
+      "continueWithoutOneClickTrading": "无需一键交易即可继续",
       "networkFeeTooHigh": "网络费太高",
       "startANewSession": "开始新会话",
       "approveManually": "在{walletName}中手动批准",
@@ -1221,7 +1224,8 @@
       "title": "限价订单",
       "description": {
         "buy": "当{denom}价格下降时买入",
-        "sell": "当{denom}价格上涨时卖出"
+        "sell": "当{denom}价格上涨时卖出",
+        "disabled": "目前不适用于{denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1276,7 +1280,11 @@
     "estimatingFees": "估算费用",
     "fees": "费用",
     "receiveEstimated": "收到（估计）",
-    "swapRoute": "交换路线"
+    "swapRoute": "交换路线",
+    "trade": "贸易",
+    "swapToAnotherAsset": "转换为其他资产",
+    "openOrders": "未结订单",
+    "invalidPrice": "价格无效"
   },
   "orderHistory": {
     "orders": "命令",
