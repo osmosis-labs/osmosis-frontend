@@ -14,7 +14,6 @@ import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { FiatRampKey } from "~/integrations";
-import { ModalCloseButton } from "~/modals";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
 
@@ -114,7 +113,7 @@ export const ImmersiveBridgeFlow = ({
           <Transition
             show={isVisible}
             as="div"
-            className="fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-osmoverse-900"
+            className="fixed inset-0 z-[999] h-screen w-screen bg-osmoverse-900"
             enter="transition-opacity duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -126,25 +125,24 @@ export const ImmersiveBridgeFlow = ({
               setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
-            <ModalCloseButton onClick={onClose} />
-            {step !== ImmersiveBridgeScreen.Asset && (
-              <IconButton
-                onClick={() => {
-                  setStep(
-                    (Number(step) - 1).toString() as ImmersiveBridgeScreen
-                  );
-                }}
-                className={
-                  "absolute left-8 top-[28px] z-50 !h-12 !w-12 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                }
-                icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
-                aria-label="Go Back"
-              />
-            )}
-
-            <div className="flex h-full w-[30rem] flex-col gap-20 pt-12 md:w-screen md:pt-20">
+            <div className="mx-auto flex max-w-7xl place-content-between items-center gap-3 py-8 px-10">
+              {step === ImmersiveBridgeScreen.Asset ? (
+                <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
+              ) : (
+                <IconButton
+                  aria-label="Go Back"
+                  className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
+                  variant="secondary"
+                  icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
+                  onClick={() => {
+                    setStep(
+                      (Number(step) - 1).toString() as ImmersiveBridgeScreen
+                    );
+                  }}
+                />
+              )}
               <StepProgress
-                className="w-full md:hidden"
+                className="mx-6 max-w-3xl shrink md:hidden"
                 steps={[
                   {
                     displayLabel: t("transfer.stepLabels.asset"),
@@ -166,8 +164,17 @@ export const ImmersiveBridgeFlow = ({
                 ]}
                 currentStep={Number(step)}
               />
+              <IconButton
+                aria-label="Close"
+                className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
+                variant="secondary"
+                icon={<Icon id="close" className="md:h-4 md:w-4" />}
+                onClick={onClose}
+              />
+            </div>
 
-              <div className="h-full flex-1 overflow-y-scroll px-2">
+            <div className="h-full w-full overflow-y-auto">
+              <div className="mx-auto max-w-lg md:px-4">
                 <Screen screenName={ImmersiveBridgeScreen.Asset}>
                   {({ setCurrentScreen }) => (
                     <AssetSelectScreen

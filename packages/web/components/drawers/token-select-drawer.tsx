@@ -273,7 +273,6 @@ export const TokenSelectDrawer: FunctionComponent<{
                 <div className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                   <SearchBox
                     ref={searchBoxRef}
-                    type="text"
                     className="!w-full"
                     placeholder={t("components.searchTokens")}
                     onInput={onSearch}

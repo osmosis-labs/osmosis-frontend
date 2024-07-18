@@ -7,7 +7,7 @@ import Image from "next/image";
 import React, { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { SearchBox } from "~/components/input";
+import { NoSearchResultsSplash, SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
@@ -107,6 +107,7 @@ export const AssetSelectScreen = observer(
       [data?.pages]
     );
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+    const noSearchResults = Boolean(search) && !isLoading && !assets.length;
 
     return (
       <>
@@ -134,7 +135,7 @@ export const AssetSelectScreen = observer(
           )}
         </div>
 
-        <div className="sticky top-0 z-[1000] my-4 w-full flex-shrink-0 bg-osmoverse-900">
+        <div className="sticky top-0 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3">
           <SearchBox
             onInput={debounce((nextValue) => {
               setSearch(nextValue);
@@ -142,11 +143,14 @@ export const AssetSelectScreen = observer(
             className="md:w-full"
             placeholder={t("transfer.assetSelectScreen.searchAssets")}
             size={isMobile ? "small" : "full"}
+            autoFocus
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          {isLoading ? (
+          {noSearchResults ? (
+            <NoSearchResultsSplash className="pt-3" query={search} />
+          ) : isLoading ? (
             <div className="self-center pt-3">
               <Spinner />
             </div>
