@@ -10,13 +10,22 @@ import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  Fragment,
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import { PoolComposition } from "~/components/chart/pool-composition";
+import { Spinner } from "~/components/loaders";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -36,9 +45,6 @@ import {
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
-
-import { Spinner } from "../loaders";
-import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const E = EventName.PoolDetail;
 
@@ -298,6 +304,17 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       []
     );
 
+    const poolNameAssetLinks = useMemo(
+      () =>
+        pool.reserveCoins.map((poolAsset, index) => (
+          <Fragment key={poolAsset.denom}>
+            <Link href={`/assets/${poolAsset.denom}`}>{poolAsset.denom}</Link>
+            {index < pool.reserveCoins.length - 1 && " / "}
+          </Fragment>
+        )),
+      [pool.reserveCoins]
+    );
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         {pool && showAddLiquidityModal && (
@@ -388,7 +405,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       }))}
                       size="sm"
                     />
-                    <h5>{poolName}</h5>
+                    <h5>{poolNameAssetLinks}</h5>
                   </div>
                   <div className="flex flex-col gap-1">
                     {isSuperfluid && (
