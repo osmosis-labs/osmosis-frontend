@@ -1,6 +1,6 @@
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
-import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import React, { FunctionComponent, useMemo } from "react";
 
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { SearchBox } from "~/components/input";
@@ -36,16 +36,6 @@ export const BridgeNetworkSelectModal: FunctionComponent<
 }) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
-
-  // focus search on modal open
-  const searchBoxRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (modalProps.isOpen) {
-      setTimeout(() => {
-        searchBoxRef.current?.focus();
-      }, 0);
-    }
-  }, [modalProps.isOpen]);
 
   const {
     isConnected: isEvmWalletConnected,
@@ -94,11 +84,11 @@ export const BridgeNetworkSelectModal: FunctionComponent<
           })}
         >
           <SearchBox
-            ref={searchBoxRef}
             onInput={setQuery}
             className="my-4 flex-shrink-0 md:w-full"
             placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
             size={isMobile ? "small" : "full"}
+            autoFocus
           />
           <div className="flex flex-col gap-1">
             {filteredChains.map((chain) => {

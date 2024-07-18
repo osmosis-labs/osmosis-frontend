@@ -198,6 +198,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                         setSearch(nextValue);
                       }}
                       currentValue={search}
+                      autoFocus
                     />
                   )}
 

@@ -4,8 +4,7 @@ import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { useMemo, useRef, useState } from "react";
-import { useMount } from "react-use";
+import React, { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { NoSearchResultsSplash, SearchBox } from "~/components/input";
@@ -110,10 +109,6 @@ export const AssetSelectScreen = observer(
     const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
     const noSearchResults = Boolean(search) && !isLoading && !assets.length;
 
-    // focus search on modal open
-    const searchBoxRef = useRef<HTMLInputElement>(null);
-    useMount(() => setTimeout(() => searchBoxRef.current?.focus(), 0));
-
     return (
       <>
         <ActivateUnverifiedTokenConfirmation
@@ -142,13 +137,13 @@ export const AssetSelectScreen = observer(
 
         <div className="sticky top-0 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3">
           <SearchBox
-            ref={searchBoxRef}
             onInput={debounce((nextValue) => {
               setSearch(nextValue);
             }, 300)}
             className="md:w-full"
             placeholder={t("transfer.assetSelectScreen.searchAssets")}
             size={isMobile ? "small" : "full"}
+            autoFocus
           />
         </div>
 
