@@ -52,6 +52,10 @@ export const OrderHistory = observer(() => {
       await claimAllOrders();
       logEvent([EventName.LimitOrder.claimOrdersCompleted]);
     } catch (error) {
+      if (error instanceof Error && error.message === "Request rejected") {
+        // don't log when the user rejects in wallet
+        return;
+      }
       const { message } = error as Error;
       logEvent([
         EventName.LimitOrder.claimOrdersFailed,
