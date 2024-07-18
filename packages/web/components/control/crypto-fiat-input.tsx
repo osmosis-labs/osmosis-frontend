@@ -103,7 +103,7 @@ export const CryptoFiatInput: FunctionComponent<{
         },
         cryptoInputRaw === ""
           ? new Dec(0)
-          : new Dec(cryptoInputRaw).mul(
+          : new Dec(cryptoInputRaw || "0").mul(
               DecUtils.getTenExponentN(assetWithBalance.decimals)
             )
       ),
@@ -119,13 +119,6 @@ export const CryptoFiatInput: FunctionComponent<{
       let nextValue = value;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
-      if (nextValue.startsWith("0") && !nextValue.startsWith("0.")) {
-        nextValue = nextValue.slice(1);
-      }
-
-      if (nextValue === "") {
-        nextValue = "0";
-      }
       if (nextValue === ".") {
         nextValue = "0.";
       }
@@ -133,14 +126,14 @@ export const CryptoFiatInput: FunctionComponent<{
       if (type === "fiat") {
         // Update the crypto amount based on the fiat amount
         const priceInFiat = assetPrice.toDec();
-        const nextFiatAmount = new Dec(nextValue);
+        const nextFiatAmount = new Dec(nextValue || "0");
         const nextCryptoAmount = nextFiatAmount.quo(priceInFiat).toString();
 
         setCryptoInputRaw(trimPlaceholderZeros(nextCryptoAmount));
       } else {
         // Update the fiat amount based on the crypto amount
         const priceInFiat = assetPrice.toDec();
-        const nextCryptoAmount = new Dec(nextValue);
+        const nextCryptoAmount = new Dec(nextValue || "0");
         const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
 
         setFiatInputRaw(trimPlaceholderZeros(nextFiatAmount));
