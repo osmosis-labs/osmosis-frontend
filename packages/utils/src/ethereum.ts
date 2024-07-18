@@ -15,6 +15,7 @@ import {
   mainnet,
   moonbaseAlpha,
   moonbeam,
+  optimism,
   polygon,
   polygonMumbai,
 } from "viem/chains";
@@ -51,7 +52,8 @@ export type AxelarSourceChain =
   | "Filecoin Hyperspace"
   | "Arbitrum"
   | "Base"
-  | "Blast";
+  | "Blast"
+  | "Optimism";
 
 // TODO: maybe we can use EVM chain ID (numeric) or ethereum chain registry
 const createEthereumChainInfo = <
@@ -68,14 +70,14 @@ const createEthereumChainInfo = <
   dict: Dict
 ) => dict;
 
-function mapChainInfo<WagmiChain>({
+function mapChainInfo<Chain>({
   chain,
   axelarChainName: chainName,
   clientChainId,
   color,
   relativeLogoUrl,
 }: {
-  chain: WagmiChain;
+  chain: Chain;
   axelarChainName: AxelarSourceChain;
   clientChainId: string;
   color: string;
@@ -197,17 +199,24 @@ export const EthereumChainInfo = createEthereumChainInfo({
     relativeLogoUrl: "/networks/filecoin.svg",
   }),
   Base: mapChainInfo({
-    chain: base,
+    chain: base as Chain,
     axelarChainName: "Base",
     clientChainId: "Base",
     color: "#0052FF",
     relativeLogoUrl: "/networks/base.svg",
   }),
   Blast: mapChainInfo({
-    chain: blast,
+    chain: blast as Chain,
     axelarChainName: "Blast",
     clientChainId: "Blast",
     color: "#fcfc03",
     relativeLogoUrl: "/networks/blast.svg",
+  }),
+  Optimism: mapChainInfo({
+    chain: optimism as Chain,
+    axelarChainName: "Optimism",
+    clientChainId: "Optimism",
+    color: "#FF0420",
+    relativeLogoUrl: "/networks/optimism.svg",
   }),
 });

@@ -396,9 +396,9 @@ export class SquidBridgeProvider implements BridgeProvider {
   }): Promise<EvmBridgeTransactionRequest> {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
-    const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-      return String(chainId) === String(fromChain.chainId);
-    });
+    const squidFromChain = (await this.getChains()).find(
+      ({ chainId }) => String(chainId) === String(fromChain.chainId)
+    );
 
     if (!squidFromChain) {
       throw new BridgeQuoteError({
