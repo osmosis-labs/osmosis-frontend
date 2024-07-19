@@ -124,7 +124,11 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
       itemContainerKeyDown,
       searchBarKeyDown,
       setItemAttribute,
-    } = useKeyboardNavigation(assets, onSelectAsset, searchBoxRef);
+    } = useKeyboardNavigation({
+      items: assets,
+      onSelectItem: onSelectAsset,
+      searchBoxRef,
+    });
 
     return (
       <div onKeyDown={itemContainerKeyDown}>

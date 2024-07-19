@@ -111,11 +111,11 @@ export const TokenSelectDrawer: FunctionComponent<{
       itemContainerKeyDown,
       searchBarKeyDown,
       setItemAttribute,
-    } = useKeyboardNavigation(
-      assets,
-      (asset) => onClickAsset(asset.coinDenom),
-      searchBoxRef
-    );
+    } = useKeyboardNavigation({
+      items: assets,
+      onSelectItem: (asset) => onClickAsset(asset.coinDenom),
+      searchBoxRef,
+    });
 
     const onSearch = (nextValue: string) => {
       swapState.setAssetsQueryInput(nextValue);

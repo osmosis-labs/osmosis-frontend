@@ -24,12 +24,17 @@ function getAllElements(dataAttributeName: string) {
 }
 
 /** Navigate a list of items, with an optional search bar to accompany the selection. */
-export function useKeyboardNavigation<TItem>(
-  items: TItem[],
-  onSelectItem: (item: TItem) => void,
-  searchBoxRef: RefObject<HTMLInputElement> | undefined,
-  dataAttributeName = "key-nav-item"
-) {
+export function useKeyboardNavigation<TItem>({
+  items,
+  onSelectItem,
+  searchBoxRef,
+  dataAttributeName = "key-nav-item",
+}: {
+  items: TItem[];
+  onSelectItem: (item: TItem) => void;
+  searchBoxRef: RefObject<HTMLInputElement> | undefined;
+  dataAttributeName?: string;
+}) {
   /** Prevent global collision */
   const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
   const itemsRef = useLatest(items);
