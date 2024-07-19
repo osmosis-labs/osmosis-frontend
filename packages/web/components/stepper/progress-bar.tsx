@@ -38,11 +38,11 @@ export const StepProgress: FunctionComponent<
           const isClickable = !isNil(onClick);
 
           return (
-            <div
+            <button
               key={displayLabel}
               role={isClickable ? "button" : undefined}
               className={classNames(
-                "body2 transition-color absolute top-2 -translate-x-1/2 duration-150",
+                "body2 transition-color absolute top-0 -translate-x-1/2 p-4 duration-150",
                 {
                   "text-white-full": selected,
                   "text-osmoverse-300": !selected,
@@ -56,7 +56,7 @@ export const StepProgress: FunctionComponent<
               onClick={onClick}
             >
               {displayLabel}
-            </div>
+            </button>
           );
         })}
     </div>
