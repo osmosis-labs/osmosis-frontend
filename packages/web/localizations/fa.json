@@ -1286,7 +1286,8 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "openOrders": "باز کردن سفارشات",
-    "invalidPrice": "قیمت نامعتبر"
+    "invalidPrice": "قیمت نامعتبر",
+    "unavailable": "برای {denom} در دسترس نیست"
   },
   "orderHistory": {
     "orders": "سفارشات",
