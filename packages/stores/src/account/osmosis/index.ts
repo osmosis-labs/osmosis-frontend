@@ -753,6 +753,19 @@ export class OsmosisAccountImpl {
     quote: { token: AppCurrency; amount: string },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
+    let token_min_amount0 = "0";
+    let token_min_amount1 = "0";
+
+    const slippageMultiplier = new Dec(1).sub(new Dec(15).quo(new Dec(100)));
+
+    token_min_amount0 = base
+      ? new Dec(base.amount).mul(slippageMultiplier).truncate().toString()
+      : token_min_amount0;
+
+    token_min_amount1 = quote
+      ? new Dec(quote.amount).mul(slippageMultiplier).truncate().toString()
+      : token_min_amount1;
+
     const sortedCoins = [base, quote]
       .sort((a, b) =>
         a?.token.coinMinimalDenom.localeCompare(b?.token.coinMinimalDenom)
@@ -770,8 +783,8 @@ export class OsmosisAccountImpl {
       lowerTick: BigInt(minTick.toString()),
       upperTick: BigInt(maxTick.toString()),
       sender: this.address,
-      tokenMinAmount0: base.amount,
-      tokenMinAmount1: quote.amount,
+      tokenMinAmount0: token_min_amount0,
+      tokenMinAmount1: token_min_amount1,
       tokensProvided: sortedCoins,
     });
 
