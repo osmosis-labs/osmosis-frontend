@@ -42,23 +42,15 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
-    const [{ base, quote, tab, type, from }, set] = useQueryStates({
-      base: parseAsString.withDefault("OSMO"),
+    const [{ from, quote, tab, type }, set] = useQueryStates({
+      from: parseAsString.withDefault("ATOM"),
       quote: parseAsString.withDefault("USDC"),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
-      from: parseAsString,
       to: parseAsString,
     });
 
-    const setBase = useCallback((base: string) => set({ base }), [set]);
-
-    useEffect(() => {
-      if (from) {
-        set({ base: from });
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from]);
+    const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
     const orderDirection = useMemo(
       () => (tab === "buy" ? "bid" : "ask"),
@@ -71,7 +63,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
       useQueryParams: false,
-      baseDenom: base,
+      baseDenom: from,
       quoteDenom: quote,
       type,
     });

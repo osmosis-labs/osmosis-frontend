@@ -91,6 +91,14 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       maxSlippage: slippageConfig.slippage.toDec(),
     });
 
+    if (swapState.fromAsset?.coinDenom === swapState.toAsset?.coinDenom) {
+      if (swapState.toAsset?.coinDenom === "OSMO") {
+        swapState.setToAssetDenom("USDC");
+      } else {
+        swapState.setToAssetDenom("OSMO");
+      }
+    }
+
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
 
