@@ -10,6 +10,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 function getNormalizationFactor(
@@ -399,6 +400,9 @@ export const usePlaceLimit = ({
   };
 };
 
+const MAX_TICK_PRICE = 340282300000000000000;
+const MIN_TICK_PRICE = 0.000000000001;
+
 const useLimitPrice = ({
   orderbookContractAddress,
   orderDirection,
@@ -411,10 +415,16 @@ const useLimitPrice = ({
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
-  const { data: assetPrice, isLoading: loadingAssetPrice } =
-    api.edge.assets.getAssetPrice.useQuery({
+  const {
+    data: assetPrice,
+    isLoading: loadingAssetPrice,
+    isRefetching: priceRefetching,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    {
       coinMinimalDenom: baseDenom ?? "",
-    });
+    },
+    { refetchInterval: 10000 }
+  );
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
@@ -482,22 +492,43 @@ const useLimitPrice = ({
   }, []);
 
   const setPrice = useCallback((price: string) => {
-    if (!price) {
+    if (!price || price.length === 0) {
       setOrderPrice("");
     } else {
+      const newPrice = new Dec(price);
+      if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
+        price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
+      } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
+        price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
+      }
+
+      if (countDecimals(price) > 2) {
+        price = parseFloat(price).toFixed(2).toString();
+      }
+
       setOrderPrice(price);
     }
   }, []);
 
   const setPercentAdjusted = useCallback(
     (percentAdjusted: string) => {
-      if (!percentAdjusted) {
+      if (!percentAdjusted || percentAdjusted.length === 0) {
         setManualPercentAdjusted("");
       } else {
+        if (countDecimals(percentAdjusted) > 10) {
+          percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        }
+        if (
+          orderDirection === "bid" &&
+          new Dec(percentAdjusted).gte(new Dec(100))
+        ) {
+          return;
+        }
+
         setManualPercentAdjusted(percentAdjusted);
       }
     },
-    [setManualPercentAdjusted]
+    [setManualPercentAdjusted, orderDirection]
   );
 
   useEffect(() => {
@@ -524,5 +555,6 @@ const useLimitPrice = ({
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
     loadingAssetPrice,
+    priceRefetching,
   };
 };

@@ -9,7 +9,7 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { trimPlaceholderZeros } from "~/utils/number";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
   baseAsset: MinimalAsset;
@@ -60,14 +60,6 @@ export enum FocusedInput {
 const nonFocusedClasses =
   "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
-
-const countDecimals = function (value: string) {
-  const split = value.split(".");
-  if (split.length > 1) {
-    return split[1].length;
-  }
-  return 0;
-};
 
 const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
