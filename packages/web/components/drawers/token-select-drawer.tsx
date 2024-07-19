@@ -274,6 +274,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                           "bg-osmoverse-900": keyboardSelectedIndex === index,
                         }
                       )}
+                      data-testid="token-select-asset"
                       onClick={(e) => {
                         e.stopPropagation();
                         onClickAsset(coinDenom);
