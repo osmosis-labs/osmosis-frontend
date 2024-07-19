@@ -51,6 +51,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
   );
 
   const [_query, setQuery, filteredChains] = useFilteredData(selectableChains, [
+    "chainId",
     "prettyName",
   ]);
 
@@ -61,11 +62,9 @@ export const BridgeNetworkSelectModal: FunctionComponent<
           {t("transfer.bridgeNetworkSelect.title")}
         </div>
       }
-      className="relative !max-w-[30rem]"
+      className="min-h-[80vh] !max-w-lg"
       {...modalProps}
-      onAfterClose={() => {
-        setQuery("");
-      }}
+      onAfterClose={() => setQuery("")}
     >
       <div className="animate-[fadeIn_0.25s]">
         {isEvmWalletConnected && isSwitchingEvmChain && (
