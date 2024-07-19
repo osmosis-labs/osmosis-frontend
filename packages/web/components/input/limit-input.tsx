@@ -116,7 +116,13 @@ export const LimitInput: FC<LimitInputProps> = ({
   const setFiatAmountSafe = useCallback(
     (value?: string) => {
       if (!value) {
+        setMarketAmount("");
         return setFiatAmount("");
+      }
+
+      // Limit decimal input to two digits
+      if (value.split(".")[1]?.length > 2) {
+        return;
       }
 
       const updatedValue = transformAmount(value);
@@ -189,6 +195,7 @@ export const LimitInput: FC<LimitInputProps> = ({
 
     setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
+
   return (
     <div className="relative h-[108px]">
       {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
