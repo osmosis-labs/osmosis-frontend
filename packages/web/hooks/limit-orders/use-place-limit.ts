@@ -261,7 +261,7 @@ export const usePlaceLimit = ({
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
-        enabled: !!account?.address,
+        enabled: Boolean(account?.address),
         select: (balances) =>
           balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
             ?.coin,
@@ -271,7 +271,7 @@ export const usePlaceLimit = ({
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
-        enabled: !!account?.address,
+        enabled: Boolean(account?.address),
         select: (balances) =>
           balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
             ?.coin,
@@ -408,13 +408,23 @@ const useLimitPrice = ({
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
-    osmoAddress: orderbookContractAddress,
-  });
+  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
+    {
+      osmoAddress: orderbookContractAddress,
+    },
+    {
+      enabled: Boolean(orderbookContractAddress),
+    }
+  );
   const { data: assetPrice, isLoading: loadingAssetPrice } =
-    api.edge.assets.getAssetPrice.useQuery({
-      coinMinimalDenom: baseDenom ?? "",
-    });
+    api.edge.assets.getAssetPrice.useQuery(
+      {
+        coinMinimalDenom: baseDenom ?? "",
+      },
+      {
+        enabled: Boolean(baseDenom) && baseDenom!.length > 0,
+      }
+    );
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
