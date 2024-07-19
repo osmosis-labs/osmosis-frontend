@@ -41,7 +41,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onClose: closeAddFundsModal,
       onOpen: openAddFundsModal,
     } = useDisclosure();
-    const [{ base, quote, tab, type }, set] = useQueryStates({
+
+    const [{ base, quote, tab, type, from }, set] = useQueryStates({
       base: parseAsString.withDefault("OSMO"),
       quote: parseAsString.withDefault("USDC"),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
@@ -51,6 +52,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
 
     const setBase = useCallback((base: string) => set({ base }), [set]);
+
+    useEffect(() => {
+      if (from) {
+        set({ base: from });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [from]);
 
     const orderDirection = useMemo(
       () => (tab === "buy" ? "bid" : "ask"),
