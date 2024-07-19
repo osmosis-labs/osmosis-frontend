@@ -76,6 +76,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
     const shouldShowUnverifiedAssets =
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
+    // for some reason, redundant queries would be sent without this memo
     const queryParameters = useMemo(
       () => ({
         type,
@@ -165,7 +166,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
             placeholder={t("transfer.assetSelectScreen.searchAssets")}
             size={isMobile ? "small" : "full"}
             onKeyDown={searchBarKeyDown}
-            autoFocus
+            autoFocus={!isMobile}
           />
         </div>
 

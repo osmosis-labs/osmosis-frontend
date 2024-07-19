@@ -87,7 +87,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
             className="my-4 flex-shrink-0 md:w-full"
             placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
             size={isMobile ? "small" : "full"}
-            autoFocus
+            autoFocus={!isMobile}
           />
           <div className="flex flex-col gap-1">
             {filteredChains.map((chain) => {
