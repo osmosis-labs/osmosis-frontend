@@ -366,7 +366,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     <div className="flex flex-col items-end py-2">
                       <input
                         ref={fromAmountInputEl}
-                        type="number"
+                        type="text"
                         className={classNames(
                           "w-full bg-transparent text-right text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
                           "text-h5 font-h5 md:font-subtitle1",
