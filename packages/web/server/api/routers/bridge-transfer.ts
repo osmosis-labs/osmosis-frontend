@@ -15,6 +15,7 @@ import {
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
   EthereumChainInfo,
@@ -54,13 +55,14 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   Wormhole: "/bridges/wormhole.svg",
 };
 
-const ExternalBridgeLogoUrls: Record<Bridge, string> = {
+const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
   Axelar: "/external-bridges/satellite.svg",
   IBC: "/external-bridges/tfm.svg",
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/external-bridges/portalbridge.svg",
+  Generic: "/external-bridges/generic.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -504,34 +506,87 @@ export const bridgeTransferRouter = createTRPCRouter({
           )
         : Object.values(bridgeProviders.bridges);
 
-      return {
-        externalUrls: (
-          await Promise.all(
-            bridgesToQuery.map((bridgeProvider) =>
-              timeout(
-                () =>
-                  bridgeProvider
-                    .getExternalUrl(input)
-                    .then((externalUrl) =>
-                      !isNil(externalUrl)
-                        ? {
-                            ...externalUrl,
-                            logo: ExternalBridgeLogoUrls[
-                              bridgeProvider.providerName
-                            ],
-                          }
-                        : undefined
-                    )
-                    .catch(() => undefined),
-                5_000, // 5 seconds
-                `Failed to get external url for ${bridgeProvider.providerName}`
-              )().catch(() => undefined)
-            )
+      const externalUrls = (
+        await Promise.all(
+          bridgesToQuery.map((bridgeProvider) =>
+            timeout(
+              () =>
+                bridgeProvider
+                  .getExternalUrl(input)
+                  .then((externalUrl) =>
+                    !isNil(externalUrl)
+                      ? {
+                          ...externalUrl,
+                          logo: ExternalBridgeLogoUrls[
+                            bridgeProvider.providerName
+                          ],
+                        }
+                      : undefined
+                  )
+                  .catch(() => undefined),
+              5_000, // 5 seconds
+              `Failed to get external url for ${bridgeProvider.providerName}`
+            )().catch(() => undefined)
           )
-        ).filter(
-          (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
-            Boolean(externalUrl)
-        ),
+        )
+      ).filter((externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
+        Boolean(externalUrl)
+      );
+
+      // add external urls for external interfaces from asset list, as long as not already added
+      const assetListFromAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset.address);
+      const assetListToAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((asset) => asset.coinMinimalDenom === input.toAsset.address);
+
+      const externalTransferMethods = (
+        assetListFromAsset?.transferMethods.filter(
+          ({ type }) => type === "external_interface"
+        ) ?? []
+      ).concat(
+        assetListToAsset?.transferMethods.filter(
+          ({ type }) => type === "external_interface"
+        ) ?? []
+      ) as ExternalInterfaceBridgeTransferMethod[];
+
+      externalTransferMethods.forEach(
+        ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
+          const depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
+          const withdrawUrl = withdrawUrl_ ? new URL(withdrawUrl_) : undefined;
+
+          let urlToAdd: (typeof externalUrls)[number] | undefined =
+            input.fromChain.chainId === "osmosis-1" && withdrawUrl
+              ? {
+                  urlProviderName: name,
+                  logo: ExternalBridgeLogoUrls["Generic"],
+                  url: withdrawUrl,
+                }
+              : input.toChain.chainId === "osmosis-1" && depositUrl
+              ? {
+                  urlProviderName: name,
+                  logo: ExternalBridgeLogoUrls["Generic"],
+                  url: depositUrl,
+                }
+              : undefined;
+
+          // ensure is not already in provider URLs before adding
+          if (
+            urlToAdd &&
+            !externalUrls.some(
+              ({ urlProviderName, url }) =>
+                urlProviderName === urlToAdd.urlProviderName &&
+                url.host === urlToAdd.url.host
+            )
+          ) {
+            externalUrls.push(urlToAdd);
+          }
+        }
+      );
+
+      return {
+        externalUrls,
       };
     }),
 });
