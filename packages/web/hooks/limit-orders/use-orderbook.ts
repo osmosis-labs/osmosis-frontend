@@ -57,7 +57,6 @@ export const useOrderbookSelectableDenoms = <TAsset extends MinimalAsset>() => {
     const selectableDenoms = orderbooks.map((orderbook) => orderbook.baseDenom);
     return Array.from(new Set(selectableDenoms));
   }, [orderbooks]);
-
   // Map selectable asset pages to array of assets
   const selectableAssets = useMemo(() => {
     return selectableAssetPages?.pages.flatMap((page) => page.items) ?? [];
@@ -84,20 +83,31 @@ export const useOrderbookSelectableDenoms = <TAsset extends MinimalAsset>() => {
 
           return makeMinimalAsset(asset.rawAsset) as TAsset;
         })
-        .filter((a) => a !== undefined) as TAsset[],
+        .filter(Boolean) as TAsset[],
     [selectableBaseDenoms, selectableAssets]
   );
-
   // Create mapping between base denom strings and a string of selectable quote asset denom strings
   const selectableQuoteDenoms = useMemo(() => {
-    const quoteDenoms: Record<string, string[]> = {};
-    selectableBaseDenoms.forEach((_, i) => {
-      quoteDenoms[selectableBaseDenoms[i]] = orderbooks
-        .filter((orderbook) => orderbook.baseDenom === selectableBaseDenoms[i])
-        .map((orderbook) => orderbook.quoteDenom);
+    const quoteDenoms: Record<string, TAsset[]> = {};
+    selectableBaseAssets.forEach((asset) => {
+      quoteDenoms[asset.coinDenom] = orderbooks
+        .filter((orderbook) => {
+          return orderbook.baseDenom === asset.coinMinimalDenom;
+        })
+        .map((orderbook) => {
+          const { quoteDenom } = orderbook;
+          const asset = getAssetFromAssetList({
+            coinMinimalDenom: quoteDenom,
+            assetLists: AssetLists,
+          });
+          if (!asset) return;
+
+          return makeMinimalAsset(asset.rawAsset) as TAsset;
+        })
+        .filter(Boolean) as TAsset[];
     });
     return quoteDenoms;
-  }, [selectableBaseDenoms, orderbooks]);
+  }, [selectableBaseAssets, orderbooks]);
 
   return {
     selectableBaseDenoms,

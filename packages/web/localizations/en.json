@@ -1227,7 +1227,7 @@
       "description": {
         "buy": "Buy when {denom} price decreases",
         "sell": "Sell when {denom} price increases",
-        "disabled": "Currently unavailable for {denom}/{quoteDenom}"
+        "disabled": "Currently unavailable for {denom}"
       }
     },
     "recurringOrder": {

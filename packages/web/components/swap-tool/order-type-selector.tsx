@@ -6,7 +6,7 @@ import React, { Fragment, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
   // id: "market" | "limit" | "recurring";
@@ -28,16 +28,35 @@ export const OrderTypeSelector = () => {
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
   const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
-  const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
+  const [quote, setQuote] = useQueryState(
+    "quote",
+    parseAsString.withDefault("USDC")
+  );
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
-  const { orderbook } = useOrderbook({ baseDenom: base, quoteDenom: quote });
+  const { selectableBaseAssets, selectableQuoteDenoms } =
+    useOrderbookSelectableDenoms();
+
+  const hasOrderbook = useMemo(
+    () => selectableBaseAssets.some((asset) => asset.coinDenom === base),
+    [base, selectableBaseAssets]
+  );
+
+  const selectableQuotes = useMemo(() => {
+    return selectableQuoteDenoms[base] ?? [];
+  }, [base, selectableQuoteDenoms]);
 
   useEffect(() => {
-    if (type === "limit" && !orderbook) {
+    if (type === "limit" && !hasOrderbook) {
       setType("market");
+    } else if (
+      type === "limit" &&
+      !selectableQuotes.some((asset) => asset.coinDenom === quote) &&
+      selectableQuotes.length > 0
+    ) {
+      setQuote(selectableQuotes[0].coinDenom);
     }
-  }, [orderbook, setType, type]);
+  }, [hasOrderbook, setType, type, selectableQuotes, setQuote, quote]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
@@ -54,16 +73,15 @@ export const OrderTypeSelector = () => {
       {
         id: "limit",
         title: t("limitOrders.limitOrder.title"),
-        description: !orderbook
+        description: !hasOrderbook
           ? t("limitOrders.limitOrder.description.disabled", {
               denom: base,
-              quoteDenom: quote,
             })
           : tab === "buy"
           ? t("limitOrders.limitOrder.description.buy", { denom: base })
           : t("limitOrders.limitOrder.description.sell", { denom: base }),
         icon: "trade",
-        disabled: !orderbook,
+        disabled: !hasOrderbook,
       },
       // {
       //   id: "recurring",
@@ -72,7 +90,7 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, orderbook, t, tab, quote]
+    [base, hasOrderbook, t, tab, quote]
   );
 
   return (
