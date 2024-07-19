@@ -58,7 +58,7 @@ export const BridgeWalletSelectModal: FunctionComponent<
             : t("transfer.selectWithdrawWallet")}
         </div>
       }
-      className="!max-w-[450px]"
+      className="min-h-[50vh] !max-w-lg"
       {...props}
     >
       <BridgeWalletSelectScreens {...props} onClose={props.onRequestClose} />
@@ -198,7 +198,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                         setSearch(nextValue);
                       }}
                       currentValue={search}
-                      autoFocus
+                      autoFocus={!isMobile}
                     />
                   )}
 

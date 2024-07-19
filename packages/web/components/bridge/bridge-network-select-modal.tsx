@@ -51,6 +51,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
   );
 
   const [_query, setQuery, filteredChains] = useFilteredData(selectableChains, [
+    "chainId",
     "prettyName",
   ]);
 
@@ -61,11 +62,9 @@ export const BridgeNetworkSelectModal: FunctionComponent<
           {t("transfer.bridgeNetworkSelect.title")}
         </div>
       }
-      className="relative !max-w-[30rem]"
+      className="min-h-[80vh] !max-w-lg"
       {...modalProps}
-      onAfterClose={() => {
-        setQuery("");
-      }}
+      onAfterClose={() => setQuery("")}
     >
       <div className="animate-[fadeIn_0.25s]">
         {isEvmWalletConnected && isSwitchingEvmChain && (
@@ -88,7 +87,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
             className="my-4 flex-shrink-0 md:w-full"
             placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
             size={isMobile ? "small" : "full"}
-            autoFocus
+            autoFocus={!isMobile}
           />
           <div className="flex flex-col gap-1">
             {filteredChains.map((chain) => {
