@@ -36,6 +36,7 @@ export const KV_STORE_REST_API_URL = process.env.KV_STORE_REST_API_URL;
 export const KV_STORE_REST_API_TOKEN = process.env.KV_STORE_REST_API_TOKEN;
 
 export const BLOCKAID_BASE_URL = process.env.BLOCKAID_BASE_URL;
+export const BLOCKAID_API_KEY = process.env.BLOCKAID_API_KEY;
 
 // flags
 export const EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS =
