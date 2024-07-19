@@ -128,9 +128,15 @@ export const TokenSelectModalLimit: FunctionComponent<{
 
     const onClickAsset = (coinDenom: string) => {
       let isRecommended = false;
-      const selectedAsset = selectableAssets.find(
-        (asset) => asset && asset.coinDenom === coinDenom
-      );
+      const selectedAsset =
+        selectableAssets.find((asset) => asset?.coinDenom === coinDenom) ??
+        recommendedAssets.find((asset) => {
+          if (asset.coinDenom === coinDenom) {
+            isRecommended = true;
+            return true;
+          }
+          return false;
+        });
 
       // shouldn't happen, but doing nothing is better
       if (!selectedAsset) return;
@@ -316,27 +322,29 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   onMouseDown={onMouseDownQuickSelect}
                   className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
                 >
-                  {recommendedAssets.map(({ coinDenom, coinImageUrl }) => (
-                    <button
-                      key={coinDenom}
-                      className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
-                      onClick={() => {
-                        onClickAsset(coinDenom);
-                      }}
-                    >
-                      {coinImageUrl && (
-                        <div className="h-6 w-6 rounded-full">
-                          <Image
-                            src={coinImageUrl}
-                            alt="token icon"
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                      )}
-                      <p className="font-semibold">{coinDenom}</p>
-                    </button>
-                  ))}
+                  {recommendedAssets.map(({ coinDenom, coinImageUrl }, i) => {
+                    return (
+                      <button
+                        key={coinDenom}
+                        className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
+                        onClick={() => {
+                          onClickAsset(coinDenom);
+                        }}
+                      >
+                        {coinImageUrl && (
+                          <div className="h-6 w-6 rounded-full">
+                            <Image
+                              src={coinImageUrl}
+                              alt="token icon"
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                        )}
+                        <p className="font-semibold">{coinDenom}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
