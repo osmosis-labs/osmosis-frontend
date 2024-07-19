@@ -210,7 +210,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </Button>
             ) : (
               <>
-                {!hasFunds ? (
+                {hasFunds ? (
                   <Button
                     disabled={
                       (!swapState.isMarket &&
