@@ -23,6 +23,7 @@ function getAllElements(dataAttributeName: string) {
   return document.querySelectorAll(`[${dataAttributeName}]`);
 }
 
+/** Navigate a list of items, with an optional search bar to accompany the selection. */
 export function useKeyboardNavigation<TItem>(
   items: TItem[],
   onSelectItem: (item: TItem) => void,

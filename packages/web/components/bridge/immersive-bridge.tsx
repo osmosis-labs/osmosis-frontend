@@ -125,74 +125,78 @@ export const ImmersiveBridgeFlow = ({
               setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
-            <div className="mx-auto flex max-w-7xl place-content-between items-center gap-3 py-8 px-10">
-              {step === ImmersiveBridgeScreen.Asset ? (
-                <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
-              ) : (
-                <IconButton
-                  aria-label="Go Back"
-                  className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                  variant="secondary"
-                  icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
-                  onClick={() => {
-                    setStep(
-                      (Number(step) - 1).toString() as ImmersiveBridgeScreen
-                    );
-                  }}
-                />
-              )}
-              <StepProgress
-                className="mx-6 max-w-3xl shrink md:hidden"
-                steps={[
-                  {
-                    displayLabel: t("transfer.stepLabels.asset"),
-                    onClick:
-                      step !== ImmersiveBridgeScreen.Asset
-                        ? () => setStep(ImmersiveBridgeScreen.Asset)
-                        : undefined,
-                  },
-                  {
-                    displayLabel: t("transfer.stepLabels.amount"),
-                    onClick:
-                      step === ImmersiveBridgeScreen.Review
-                        ? () => setStep(ImmersiveBridgeScreen.Amount)
-                        : undefined,
-                  },
-                  {
-                    displayLabel: t("transfer.stepLabels.review"),
-                  },
-                ]}
-                currentStep={Number(step)}
-              />
-              <IconButton
-                aria-label="Close"
-                className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                variant="secondary"
-                icon={<Icon id="close" className="md:h-4 md:w-4" />}
-                onClick={onClose}
-              />
-            </div>
-
-            <div className="h-full w-full overflow-y-auto">
-              <div className="mx-auto max-w-lg md:px-4">
-                <Screen screenName={ImmersiveBridgeScreen.Asset}>
-                  {({ setCurrentScreen }) => (
-                    <AssetSelectScreen
-                      type={direction}
-                      onSelectAsset={(asset) => {
-                        setCurrentScreen(ImmersiveBridgeScreen.Amount);
-                        setSelectedAssetDenom(asset.coinDenom);
-                      }}
-                    />
-                  )}
-                </Screen>
-                {currentScreen !== ImmersiveBridgeScreen.Asset && (
-                  <AmountAndReviewScreen
-                    direction={direction}
-                    onClose={onClose}
-                    selectedAssetDenom={selectedAssetDenom}
+            <div className="flex h-full w-full flex-col">
+              <div className="mx-auto flex w-full max-w-7xl place-content-between items-center gap-3 py-8 px-10">
+                {step === ImmersiveBridgeScreen.Asset ? (
+                  <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
+                ) : (
+                  <IconButton
+                    aria-label="Go Back"
+                    className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
+                    variant="secondary"
+                    icon={
+                      <Icon id="arrow-left-thin" className="md:h-4 md:w-4" />
+                    }
+                    onClick={() => {
+                      setStep(
+                        (Number(step) - 1).toString() as ImmersiveBridgeScreen
+                      );
+                    }}
                   />
                 )}
+                <StepProgress
+                  className="mx-6 max-w-3xl shrink md:hidden"
+                  steps={[
+                    {
+                      displayLabel: t("transfer.stepLabels.asset"),
+                      onClick:
+                        step !== ImmersiveBridgeScreen.Asset
+                          ? () => setStep(ImmersiveBridgeScreen.Asset)
+                          : undefined,
+                    },
+                    {
+                      displayLabel: t("transfer.stepLabels.amount"),
+                      onClick:
+                        step === ImmersiveBridgeScreen.Review
+                          ? () => setStep(ImmersiveBridgeScreen.Amount)
+                          : undefined,
+                    },
+                    {
+                      displayLabel: t("transfer.stepLabels.review"),
+                    },
+                  ]}
+                  currentStep={Number(step)}
+                />
+                <IconButton
+                  aria-label="Close"
+                  className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
+                  variant="secondary"
+                  icon={<Icon id="close" className="md:h-4 md:w-4" />}
+                  onClick={onClose}
+                />
+              </div>
+
+              <div className="h-full w-full overflow-y-auto">
+                <div className="mx-auto max-w-lg md:px-4">
+                  <Screen screenName={ImmersiveBridgeScreen.Asset}>
+                    {({ setCurrentScreen }) => (
+                      <AssetSelectScreen
+                        type={direction}
+                        onSelectAsset={(asset) => {
+                          setCurrentScreen(ImmersiveBridgeScreen.Amount);
+                          setSelectedAssetDenom(asset.coinDenom);
+                        }}
+                      />
+                    )}
+                  </Screen>
+                  {currentScreen !== ImmersiveBridgeScreen.Asset && (
+                    <AmountAndReviewScreen
+                      direction={direction}
+                      onClose={onClose}
+                      selectedAssetDenom={selectedAssetDenom}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </Transition>
