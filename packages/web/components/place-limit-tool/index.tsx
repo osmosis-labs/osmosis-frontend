@@ -226,8 +226,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 <Button
                   disabled={
                     Boolean(swapState.error) ||
-                    (!swapState.isMarket &&
-                      swapState.priceState.orderPrice.length > 0) ||
                     isMarketLoading ||
                     (swapState.isMarket &&
                       (swapState.marketState.inAmountInput.isEmpty ||

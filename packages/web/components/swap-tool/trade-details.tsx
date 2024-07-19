@@ -150,8 +150,7 @@ export const TradeDetails = ({
                   )}
                 >
                   <span className="body2 text-osmoverse-300">
-                    ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
-                    {t("limitOrders.fees")}
+                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
                   </span>
                   <Icon
                     id="chevron-down"
@@ -202,11 +201,7 @@ export const TradeDetails = ({
                   }
                 />
                 <RecapRow
-                  left={`${t("pools.aprBreakdown.swapFees")} ${
-                    swapState?.quote?.swapFee
-                      ? `(${swapState?.quote?.swapFee})`
-                      : ""
-                  }`}
+                  left={`${t("pools.aprBreakdown.swapFees")}`}
                   right={
                     <>
                       {swapState?.tokenInFeeAmountFiatValue && (
@@ -216,43 +211,15 @@ export const TradeDetails = ({
                             {formatPretty(
                               swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
                             )}
-                          </span>{" "}
-                          (
-                          {formatPretty(
-                            swapState?.tokenInFeeAmountFiatValue.toDec()
-                          )}{" "}
-                          USDC)
+                          </span>
+                          {swapState?.quote?.swapFee
+                            ? ` (${swapState?.quote?.swapFee})`
+                            : ""}
                         </span>
                       )}
                     </>
                   }
                 />
-                <hr className="my-2 w-full text-osmoverse-700" />
-                {outAmountLessSlippage &&
-                  outFiatAmountLessSlippage &&
-                  swapState?.toAsset && (
-                    <RecapRow
-                      left={t("limitOrders.receiveEstimated")}
-                      right={
-                        <span>
-                          <span className="text-osmoverse-100">
-                            {formatPretty(outAmountLessSlippage, {
-                              maxDecimals: 8,
-                            })}{" "}
-                            {swapState?.toAsset.coinDenom}
-                          </span>{" "}
-                          {outFiatAmountLessSlippage && (
-                            <span className="text-osmoverse-300">
-                              (~{formatPretty(outFiatAmountLessSlippage)})
-                            </span>
-                          )}
-                        </span>
-                      }
-                    />
-                  )}
-                <span className="subtitle1 py-3 text-white-full">
-                  {t("limitOrders.moreDetails")}
-                </span>
                 {slippageConfig && (
                   <RecapRow
                     left={t("swap.settings.slippage")}
@@ -319,9 +286,37 @@ export const TradeDetails = ({
                     }
                   />
                 )}
+                <hr className="my-2 w-full text-osmoverse-700" />
+                {outAmountLessSlippage &&
+                  outFiatAmountLessSlippage &&
+                  swapState?.toAsset && (
+                    <RecapRow
+                      left={t("limitOrders.receiveEstimated")}
+                      right={
+                        <span>
+                          <span className="text-osmoverse-100">
+                            {formatPretty(outAmountLessSlippage, {
+                              maxDecimals: 8,
+                            })}{" "}
+                            {swapState?.toAsset.coinDenom}
+                          </span>{" "}
+                          {outFiatAmountLessSlippage && (
+                            <span className="text-osmoverse-300">
+                              (~{formatPretty(outFiatAmountLessSlippage)})
+                            </span>
+                          )}
+                        </span>
+                      }
+                    />
+                  )}
+
+                <span className="subtitle1 py-3 text-white-full">
+                  {t("limitOrders.swapRoute")}
+                </span>
+
                 <div className="flex w-full">
                   <RecapRow
-                    left={t("limitOrders.swapRoute")}
+                    left=""
                     className="!h-auto flex-col !items-start gap-2.5"
                     right={
                       <div className="flex w-full flex-col gap-2">
