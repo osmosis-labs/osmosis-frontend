@@ -150,28 +150,41 @@ export const CryptoFiatInput: FunctionComponent<{
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax && transferGasCost && canSetMax) {
-      let maxTransferAmount = new Dec(0);
+    if (isMax && canSetMax) {
+      if (transferGasCost) {
+        let maxTransferAmount = new Dec(0);
 
-      const gasFeeMatchesInputDenom =
-        transferGasCost &&
-        transferGasCost.toCoin().denom ===
-          assetWithBalance.amount.toCoin().denom &&
-        transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+        const gasFeeMatchesInputDenom =
+          transferGasCost &&
+          transferGasCost.toCoin().denom ===
+            assetWithBalance.amount.toCoin().denom &&
+          transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
 
-      if (gasFeeMatchesInputDenom) {
-        maxTransferAmount = assetWithBalance.amount
-          .toDec()
-          .sub(transferGasCost.toDec().mul(mulGasSlippage));
+        if (gasFeeMatchesInputDenom) {
+          maxTransferAmount = assetWithBalance.amount
+            .toDec()
+            .sub(transferGasCost.toDec().mul(mulGasSlippage));
+        } else {
+          maxTransferAmount = assetWithBalance.amount.toDec();
+        }
+
+        console.log({
+          max: maxTransferAmount.toString(),
+          input: inputCoin.toDec().toString(),
+          gt: inputCoin.toDec().gt(maxTransferAmount),
+        });
+
+        if (
+          maxTransferAmount.isPositive() &&
+          inputCoin.toDec().gt(maxTransferAmount)
+        ) {
+          console.log("set to max", maxTransferAmount.toString());
+          onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+        }
       } else {
-        maxTransferAmount = assetWithBalance.amount.toDec();
-      }
-
-      if (
-        maxTransferAmount.isPositive() &&
-        !inputCoin.toDec().equals(maxTransferAmount)
-      ) {
-        onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+        onInput("crypto")(
+          trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
+        );
       }
     }
   }, [
@@ -182,15 +195,6 @@ export const CryptoFiatInput: FunctionComponent<{
     onInput,
     canSetMax,
   ]);
-
-  // Apply max amount if asset changes
-  useEffect(() => {
-    if (isMax && canSetMax) {
-      onInput("crypto")(
-        trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
-      );
-    }
-  }, [assetWithBalance, canSetMax, isMax, onInput]);
 
   return (
     <div className="relative flex flex-col items-center">
