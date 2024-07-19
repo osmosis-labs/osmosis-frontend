@@ -52,6 +52,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
+    if (from === quote) {
+      if (quote === "USDC") {
+        set({ quote: "USDT" });
+      } else {
+        set({ quote: "USDC" });
+      }
+    }
+
     const orderDirection = useMemo(
       () => (tab === "buy" ? "bid" : "ask"),
       [tab]
