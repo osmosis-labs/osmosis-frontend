@@ -101,8 +101,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
     );
 
-    const showOutputDifferenceWarning =
-      outputDifference.toDec().abs().gt(new Dec(0.05));
+    const showOutputDifferenceWarning = outputDifference
+      .toDec()
+      .abs()
+      .gt(new Dec(0.05));
 
     const showPriceImpactWarning =
       swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ??
@@ -644,8 +646,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           swapState={swapState}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
+          slippageConfig={slippageConfig}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          outputDifference={outputDifference}
+          showOutputDifferenceWarning={showOutputDifferenceWarning}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
