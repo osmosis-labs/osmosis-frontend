@@ -4,6 +4,7 @@ import process from "process";
 
 import { SwapPage } from "~/e2e/pages/swap-page";
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
+import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
@@ -33,6 +34,7 @@ test.describe("Test Transactions feature", () => {
       ],
       viewport: { width: 1440, height: 1280 },
       slowMo: 300,
+      proxy: new TestConfig().getProxyConfig(),
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];

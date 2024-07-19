@@ -2,6 +2,8 @@
 import { BrowserContext, chromium, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
+import { TestConfig } from "~/e2e/test-config";
+
 import { SwapPage } from "../pages/swap-page";
 
 // Pairs are selected from top 10
@@ -13,7 +15,8 @@ test.describe("Test Select Swap Pair feature", () => {
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext("", {
       headless: true,
-      viewport: { width: 1280, height: 1024 },
+      viewport: { width: 1440, height: 1280 },
+      proxy: new TestConfig().getProxyConfig(),
     });
     page = context.pages()[0];
     await page.coverage.startJSCoverage({

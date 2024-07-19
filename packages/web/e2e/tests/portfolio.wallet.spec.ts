@@ -3,6 +3,7 @@ import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
 
+import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
@@ -30,6 +31,7 @@ test.describe("Test Portfolio feature", () => {
       ],
       viewport: { width: 1440, height: 1280 },
       slowMo: 300,
+      proxy: new TestConfig().getProxyConfig(),
     });
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
