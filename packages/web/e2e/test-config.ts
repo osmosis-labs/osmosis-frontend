@@ -4,7 +4,7 @@ export class TestConfig {
     const username = process.env.TEST_PROXY_USERNAME ?? "osmo";
     const password = process.env.TEST_PROXY_PASSWORD ?? "tlnyproxy88";
 
-    console.log("Get Test Proxy configuration for server: " + server);
+    console.info("Get Test Proxy configuration for server: " + server);
 
     return {
       server: server,
