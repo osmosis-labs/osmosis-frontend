@@ -187,7 +187,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     (type: "fiat" | "token", value?: string) => {
       const update = type === "fiat" ? setFiatAmount : onChange;
 
-      if (!value) {
+      if (!value?.trim()) {
         if (type === "fiat") {
           setMarketAmount("");
         }
@@ -197,7 +197,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       const updatedValue = transformAmount(
         value,
         type === "fiat" ? 6 : baseAsset?.coinDecimals
-      );
+      ).trim();
 
       if (
         !isValidNumericalRawInput(updatedValue) ||

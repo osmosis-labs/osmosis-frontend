@@ -486,31 +486,32 @@ const useLimitPrice = ({
   }, []);
 
   const setPrice = useCallback((price: string) => {
-    if (!price) {
+    const updatedValue = price.trim();
+
+    if (!updatedValue) {
       return setOrderPrice("");
     }
 
-    if (!isValidNumericalRawInput(price) || price.length > 12) {
+    if (!isValidNumericalRawInput(updatedValue) || updatedValue.length > 12) {
       return;
     }
 
-    setOrderPrice(price);
+    setOrderPrice(updatedValue);
   }, []);
 
   const setPercentAdjusted = useCallback(
     (percentAdjusted: string) => {
-      if (!percentAdjusted) {
+      const updatedValue = percentAdjusted.trim();
+
+      if (!updatedValue) {
         return setManualPercentAdjusted("");
       }
 
-      if (
-        !isValidNumericalRawInput(percentAdjusted) ||
-        percentAdjusted.length > 12
-      ) {
+      if (!isValidNumericalRawInput(updatedValue) || updatedValue.length > 12) {
         return;
       }
 
-      setManualPercentAdjusted(percentAdjusted);
+      setManualPercentAdjusted(updatedValue);
     },
     [setManualPercentAdjusted]
   );
