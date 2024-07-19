@@ -216,8 +216,10 @@ export const TokenSelectModalLimit: FunctionComponent<{
       (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
     );
 
+    if (!isOpen) return;
+
     return (
-      <div onKeyDown={containerKeyDown}>
+      <div className="absolute" onKeyDown={containerKeyDown}>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}

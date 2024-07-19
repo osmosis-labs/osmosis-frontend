@@ -3,12 +3,12 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryStates } from "nuqs";
+import { useCallback } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
-import { useToFromDenoms } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals/base";
 
 interface AddFundsModalProps {
@@ -22,8 +22,8 @@ interface AddFundsModalProps {
           usdValue: PricePretty;
         }>)
     | undefined;
-  setFromAssetDenom?: ReturnType<typeof useToFromDenoms>["setFromAssetDenom"];
-  setToAssetDenom?: ReturnType<typeof useToFromDenoms>["setToAssetDenom"];
+  setFromAssetDenom?: (value: string) => void;
+  setToAssetDenom?: (value: string) => void;
   standalone?: boolean;
 }
 
@@ -32,8 +32,8 @@ export function AddFundsModal({
   onRequestClose,
   from,
   fromAsset,
-  setFromAssetDenom,
-  setToAssetDenom,
+  setFromAssetDenom: _setFromAssetDenom,
+  setToAssetDenom: _setToAssetDenom,
   standalone,
 }: AddFundsModalProps) {
   const { t } = useTranslation();
@@ -44,6 +44,18 @@ export function AddFundsModal({
     to: parseAsString,
     from: parseAsString,
   });
+
+  const setFromAssetDenom = useCallback(
+    (value: string) =>
+      _setFromAssetDenom ? _setFromAssetDenom(value) : set({ from: value }),
+    [_setFromAssetDenom, set]
+  );
+  
+  const setToAssetDenom = useCallback(
+    (value: string) =>
+      _setToAssetDenom ? _setToAssetDenom(value) : set({ to: value }),
+    [_setToAssetDenom, set]
+  );
 
   return (
     <ModalBase
@@ -119,7 +131,7 @@ export function AddFundsModal({
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <div className="flex h-12 w-12 items-center justify-center">
+              <div className="flex h-12 min-w-[48px] items-center justify-center">
                 <Icon
                   id="deposit"
                   width={32}
@@ -177,6 +189,7 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
+                set({ tab: "swap" });
                 setFromAssetDenom?.("USDC");
                 setToAssetDenom?.(fromAsset?.coinDenom ?? "ATOM");
                 onRequestClose();
@@ -210,12 +223,13 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 if (!standalone) set({ tab: "swap" });
+                setFromAssetDenom?.("OSMO");
                 setToAssetDenom?.("USDC");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <div className="flex h-12 w-12 items-center justify-center">
+              <div className="flex h-12 min-w-[48px] items-center justify-center">
                 <Icon
                   id="exchange"
                   width={32}
@@ -242,13 +256,14 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
+                if (!standalone) set({ tab: "swap" });
                 setFromAssetDenom?.("");
                 setToAssetDenom?.(fromAsset?.coinDenom ?? "");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <div className="flex h-12 w-12 items-center justify-center">
+              <div className="flex h-12 min-w-[48px] items-center justify-center">
                 <Icon
                   id="exchange"
                   width={32}
