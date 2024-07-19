@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
@@ -140,12 +140,12 @@ export const AddInitialLiquidity = observer(
                   poolId,
                   undefined,
                   {
-                    amount: new Int(baseAmount.toString()),
-                    denom: selectedBase.token.coinMinimalDenom,
+                    amount: baseAmount,
+                    token: selectedBase.token,
                   },
                   {
-                    amount: new Int(quoteAmount.toString()),
-                    denom: selectedQuote.token.coinMinimalDenom,
+                    amount: quoteAmount,
+                    token: selectedQuote.token,
                   },
                   () => {
                     onClose?.();

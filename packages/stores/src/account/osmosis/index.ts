@@ -1,6 +1,6 @@
 import { StdFee } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { Currency } from "@keplr-wallet/types";
+import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
@@ -749,24 +749,29 @@ export class OsmosisAccountImpl {
   async sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
     poolId: string,
     memo: string = "",
-    // tokenMinAmount0,
-    // tokenMinAmount1,
-    baseCoin: Coin,
-    quoteCoin: Coin,
+    base: { token: AppCurrency; amount: string },
+    quote: { token: AppCurrency; amount: string },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const sortedCoins = [baseCoin, quoteCoin]
-      .filter((coin): coin is Coin => coin !== undefined)
-      .sort((a, b) => a?.denom.localeCompare(b?.denom))
-      .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+    const sortedCoins = [base, quote]
+      .sort((a, b) =>
+        a?.token.coinMinimalDenom.localeCompare(b?.token.coinMinimalDenom)
+      )
+      .map(({ token, amount }) => ({
+        denom: token.coinMinimalDenom,
+        amount: new Dec(amount)
+          .mul(DecUtils.getTenExponentNInPrecisionRange(token.coinDecimals))
+          .truncate()
+          .toString(),
+      }));
 
     const msg = this.msgOpts.clCreatePosition.messageComposer({
       poolId: BigInt(poolId),
       lowerTick: BigInt(minTick.toString()),
       upperTick: BigInt(maxTick.toString()),
       sender: this.address,
-      tokenMinAmount0: baseCoin.amount.toString(),
-      tokenMinAmount1: quoteCoin.amount.toString(),
+      tokenMinAmount0: base.amount,
+      tokenMinAmount1: quote.amount,
       tokensProvided: sortedCoins,
     });
 
