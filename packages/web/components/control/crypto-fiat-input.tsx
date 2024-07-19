@@ -168,17 +168,10 @@ export const CryptoFiatInput: FunctionComponent<{
           maxTransferAmount = assetWithBalance.amount.toDec();
         }
 
-        console.log({
-          max: maxTransferAmount.toString(),
-          input: inputCoin.toDec().toString(),
-          gt: inputCoin.toDec().gt(maxTransferAmount),
-        });
-
         if (
           maxTransferAmount.isPositive() &&
           inputCoin.toDec().gt(maxTransferAmount)
         ) {
-          console.log("set to max", maxTransferAmount.toString());
           onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
         }
       } else {
