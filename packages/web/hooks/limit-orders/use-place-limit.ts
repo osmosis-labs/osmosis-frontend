@@ -4,7 +4,10 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
-import { useAmountInput } from "~/hooks/input/use-amount-input";
+import {
+  isValidNumericalRawInput,
+  useAmountInput,
+} from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
@@ -411,6 +414,7 @@ const useLimitPrice = ({
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
+
   const { data: assetPrice, isLoading: loadingAssetPrice } =
     api.edge.assets.getAssetPrice.useQuery({
       coinMinimalDenom: baseDenom ?? "",
@@ -483,19 +487,30 @@ const useLimitPrice = ({
 
   const setPrice = useCallback((price: string) => {
     if (!price) {
-      setOrderPrice("");
-    } else {
-      setOrderPrice(price);
+      return setOrderPrice("");
     }
+
+    if (!isValidNumericalRawInput(price) || price.length > 12) {
+      return;
+    }
+
+    setOrderPrice(price);
   }, []);
 
   const setPercentAdjusted = useCallback(
     (percentAdjusted: string) => {
       if (!percentAdjusted) {
-        setManualPercentAdjusted("");
-      } else {
-        setManualPercentAdjusted(percentAdjusted);
+        return setManualPercentAdjusted("");
       }
+
+      if (
+        !isValidNumericalRawInput(percentAdjusted) ||
+        percentAdjusted.length > 12
+      ) {
+        return;
+      }
+
+      setManualPercentAdjusted(percentAdjusted);
     },
     [setManualPercentAdjusted]
   );
@@ -507,6 +522,7 @@ const useLimitPrice = ({
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
+
   return {
     spotPrice,
     orderPrice,
