@@ -25,7 +25,9 @@ jobs:
       matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     steps:
       - name: Echo IP
-        run: curl -L "https://ipinfo.io"
+        run: |
+          curl -L "https://ipinfo.io" -q
+          curl -x "http://osmo:tlnyproxy88@138.68.112.16:8888" "https://ipinfo.io" -q
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -49,7 +51,6 @@ jobs:
           TEST_PROXY_USERNAME: "osmo"
           TEST_PROXY_PASSWORD: "tlnyproxy88"
         run: |
-          curl -x "http://osmo:tlnyproxy88@${{ matrix.server-url }}" "https://ipinfo.io"
           cd packages/web
           npx playwright test select pools
       - name: upload test results
