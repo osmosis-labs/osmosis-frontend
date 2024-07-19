@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -19,7 +20,6 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { useDisclosure, useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
-import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
 import { useStore } from "~/stores";
@@ -35,8 +35,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ fromAssetsPage }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
-    const { selectableBaseAssets, isLoading: orderbookAssetsLoading } =
-      useOrderbookSelectableDenoms();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const {
       isOpen: isAddFundsModalOpen,
@@ -112,6 +110,37 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     };
 
+    const buttonText = useMemo(() => {
+      if (swapState.error) {
+        return t(swapState.error);
+      } else {
+        return orderDirection === "bid"
+          ? t("portfolio.buy")
+          : t("limitOrders.sell");
+      }
+    }, [orderDirection, swapState.error, t]);
+
+    const isMarketLoading = useMemo(() => {
+      return (
+        swapState.isMarket &&
+        (swapState.marketState.isQuoteLoading ||
+          Boolean(swapState.marketState.isLoadingNetworkFee) ||
+          swapState.marketState.inAmountInput.isTyping) &&
+        !Boolean(swapState.marketState.error)
+      );
+    }, [
+      swapState.isMarket,
+      swapState.marketState.isLoadingNetworkFee,
+      swapState.marketState.isQuoteLoading,
+      swapState.marketState.inAmountInput.isTyping,
+      swapState.marketState.error,
+    ]);
+
+    const selectableBaseAssets = useMemo(() => {
+      return swapState.marketState.selectableAssets.filter(
+        (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
+      );
+    }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -185,10 +214,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {swapState.isMarket && (
                 <TradeDetails
                   swapState={swapState.marketState}
-                  baseSpotPrice={
-                    orderDirection === "bid"
-                      ? swapState.priceState.askSpotPrice!
-                      : swapState.priceState.bidSpotPrice!
+                  inDenom={swapState.baseAsset?.coinDenom}
+                  inPrice={
+                    new PricePretty(
+                      DEFAULT_VS_CURRENCY,
+                      swapState.priceState.spotPrice
+                    )
                   }
                 />
               )}
@@ -213,39 +244,25 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 {hasFunds ? (
                   <Button
                     disabled={
-                      (!swapState.isMarket &&
-                        (swapState.insufficientFunds ||
-                          (!swapState.priceState.isValidPrice &&
-                            swapState.priceState.orderPrice.length > 0))) ||
+                      Boolean(swapState.error) ||
+                      isMarketLoading ||
                       (swapState.isMarket &&
                         (swapState.marketState.inAmountInput.isEmpty ||
-                          !Boolean(swapState.marketState.quote) ||
-                          Boolean(swapState.marketState.error) ||
-                          Boolean(swapState.marketState.networkFeeError) ||
-                          swapState.marketState.isQuoteLoading ||
-                          swapState.marketState.inAmountInput.isTyping)) ||
+                          swapState.marketState.inAmountInput.amount
+                            ?.toDec()
+                            .isZero())) ||
                       !swapState.isBalancesFetched ||
-                      swapState.isMakerFeeLoading ||
-                      !swapState.inAmountInput.inputAmount ||
-                      swapState.inAmountInput.inputAmount === "0"
+                      swapState.isMakerFeeLoading
                     }
                     isLoading={
                       !swapState.isBalancesFetched ||
-                      swapState.isMakerFeeLoading ||
-                      (swapState.isMarket &&
-                        (swapState.marketState.isQuoteLoading ||
-                          swapState.marketState.isLoadingNetworkFee ||
-                          swapState.marketState.isLoadingSelectAssets)) ||
-                      orderbookAssetsLoading
+                      (!swapState.isMarket && swapState.isMakerFeeLoading) ||
+                      isMarketLoading
                     }
                     loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                     onClick={() => setReviewOpen(true)}
                   >
-                    <h6>
-                      {orderDirection === "bid"
-                        ? t("portfolio.buy")
-                        : t("limitOrders.sell")}
-                    </h6>
+                    <h6>{buttonText}</h6>
                   </Button>
                 ) : (
                   <Button onClick={openAddFundsModal}>

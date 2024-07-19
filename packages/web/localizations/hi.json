@@ -406,7 +406,8 @@
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
-    "noData": "कोई डेटा नहीं"
+    "noData": "कोई डेटा नहीं",
+    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
@@ -830,9 +831,11 @@
     "MAX": "अधिकतम",
     "minimumSlippage": "स्लिपेज के बाद प्राप्त न्यूनतम राशि ( {slippage} )",
     "pool": "पूल # {id}",
-    "priceImpact": "मूल्य प्रभाव",
+    "priceImpact": "बाजार प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
+    "showDetails": "प्रदर्शन का विवरण",
+    "hideDetails": "छिपाना",
     "continueAnyway": "फिर भी जारी रखें",
     "warning": {
       "exceedsSpendLimit": "यह स्वैप 1-क्लिक ट्रेडिंग के लिए आपकी शेष खर्च सीमा से अधिक है।",
@@ -1223,7 +1226,8 @@
       "title": "सीमा आदेश",
       "description": {
         "buy": "जब {denom} कीमत घट जाए तो खरीदें",
-        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें"
+        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें",
+        "disabled": "वर्तमान में {denom} / {quoteDenom} के लिए उपलब्ध नहीं है"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "कम हो जाती है",
     "estimatingFees": "शुल्क का अनुमान लगाना",
     "fees": "फीस",
-    "receiveEstimated": "प्राप्त (अनुमानित)",
-    "swapRoute": "मार्ग बदलें",
+    "receiveEstimated": "कम से कम प्राप्त करें",
+    "swapRoute": "आदेश मार्ग",
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
-    "openOrders": "खुले आदेश"
+    "openOrders": "खुले आदेश",
+    "invalidPrice": "अमान्य मूल्य"
   },
   "orderHistory": {
     "orders": "आदेश",

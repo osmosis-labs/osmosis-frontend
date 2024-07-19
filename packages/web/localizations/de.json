@@ -406,7 +406,8 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "noOrderbook": "Kein Orderbuch für Paar"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -830,9 +831,11 @@
     "MAX": "MAX",
     "minimumSlippage": "Nach Slippage erhaltenes Minimum ( {slippage} )",
     "pool": "Pool # {id}",
-    "priceImpact": "Preisauswirkungen",
+    "priceImpact": "Auswirkungen auf den Markt",
     "routerTooltipFee": "Gebühr",
     "routerTooltipSpreadFactor": "Spread-Faktor",
+    "showDetails": "Zeige Details",
+    "hideDetails": "Verstecken",
     "continueAnyway": "Mache trotzdem weiter",
     "warning": {
       "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
@@ -1223,7 +1226,8 @@
       "title": "Limit-Auftrag",
       "description": {
         "buy": "Kaufen, wenn der Preis {denom} sinkt",
-        "sell": "Verkaufen, wenn der Preis {denom} steigt"
+        "sell": "Verkaufen, wenn der Preis {denom} steigt",
+        "disabled": "Derzeit nicht verfügbar für {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "nimmt ab",
     "estimatingFees": "Gebührenschätzung",
     "fees": "Gebühren",
-    "receiveEstimated": "Erhalten (geschätzt)",
-    "swapRoute": "Route wechseln",
+    "receiveEstimated": "Erhalten Sie mindestens",
+    "swapRoute": "Route bestellen",
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
-    "openOrders": "Offene Aufträge"
+    "openOrders": "Offene Aufträge",
+    "invalidPrice": "Ungültiger Preis"
   },
   "orderHistory": {
     "orders": "Aufträge",

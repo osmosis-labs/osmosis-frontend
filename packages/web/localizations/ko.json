@@ -406,7 +406,8 @@
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
-    "noData": "데이터 없음"
+    "noData": "데이터 없음",
+    "noOrderbook": "페어 주문서 없음"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -830,9 +831,11 @@
     "MAX": "최대",
     "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "pool": "풀 #{id}",
-    "priceImpact": "가격 변동",
+    "priceImpact": "시장 영향",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
+    "showDetails": "세부정보 표시",
+    "hideDetails": "숨다",
     "continueAnyway": "계속 진행",
     "warning": {
       "exceedsSpendLimit": "이 교환은 1-클릭 거래에 대한 남은 지출 한도를 초과합니다.",
@@ -1223,7 +1226,8 @@
       "title": "제한 주문",
       "description": {
         "buy": "{denom} 가격이 하락하면 구매하세요.",
-        "sell": "{denom} 가격이 상승하면 매도하세요"
+        "sell": "{denom} 가격이 상승하면 매도하세요",
+        "disabled": "현재는 {denom} / {quoteDenom} 에 사용할 수 없습니다."
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "감소하다",
     "estimatingFees": "수수료 추정",
     "fees": "수수료",
-    "receiveEstimated": "수신 (예상)",
-    "swapRoute": "경로 교환",
+    "receiveEstimated": "최소한 받아라",
+    "swapRoute": "주문 경로",
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
-    "openOrders": "오픈 주문"
+    "openOrders": "오픈 주문",
+    "invalidPrice": "잘못된 가격"
   },
   "orderHistory": {
     "orders": "명령",

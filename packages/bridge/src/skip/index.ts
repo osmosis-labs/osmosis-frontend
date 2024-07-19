@@ -112,13 +112,43 @@ export class SkipBridgeProvider implements BridgeProvider {
           });
         }
 
-        const route = await this.skipClient.route({
-          source_asset_denom: sourceAsset.denom,
-          source_asset_chain_id: fromChain.chainId.toString(),
-          dest_asset_denom: destinationAsset.denom,
-          dest_asset_chain_id: toChain.chainId.toString(),
-          amount_in: fromAmount,
-        });
+        const route = await this.skipClient
+          .route({
+            source_asset_denom: sourceAsset.denom,
+            source_asset_chain_id: fromChain.chainId.toString(),
+            dest_asset_denom: destinationAsset.denom,
+            dest_asset_chain_id: toChain.chainId.toString(),
+            amount_in: fromAmount,
+          })
+          .catch((e) => {
+            if (e instanceof Error) {
+              const msg = e.message;
+              if (
+                msg.includes(
+                  "Input amount is too low to cover"
+                  // Could be Axelar or CCTP
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "InsufficientAmountError",
+                  message: msg,
+                });
+              }
+              if (
+                msg.includes(
+                  "cannot transfer across cctp after route demands swap"
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "NoQuotesError",
+                  message: msg,
+                });
+              }
+            }
+            throw e;
+          });
 
         const addressList = await this.getAddressList(
           route.chain_ids,
@@ -234,11 +264,25 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      for (const counterparty of assetListAsset?.counterparty ?? []) {
+      const counterparties = assetListAsset?.counterparty ?? [];
+      // since skip supports cosmos swap, we can include other asset list
+      // counterparties of the same variant
+      if (assetListAsset) {
+        const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
+          assets.filter(
+            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          )
+        );
+        counterparties.push(
+          ...variantAssets.flatMap((asset) => asset.counterparty)
+        );
+      }
+
+      for (const counterparty of counterparties) {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
         if (
-          !assets[counterparty.chainId].assets.some(
+          !assets[counterparty.chainId]?.assets.some(
             (a) =>
               a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
           )
@@ -334,7 +378,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SkipBridgeProvider.ID,
           "failed to get supported assets:",
@@ -818,6 +862,21 @@ export class SkipBridgeProvider implements BridgeProvider {
           ],
         },
         bech32Address: params.fromAddress,
+      }).catch((e) => {
+        if (
+          e instanceof Error &&
+          e.message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "InsufficientAmountError",
+            message: e.message,
+          });
+        }
+
+        throw e;
       });
 
       const gasFee = txSimulation.amount[0];

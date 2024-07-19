@@ -44,6 +44,10 @@ export const PriceSelector = memo(
       "quote",
       parseAsString.withDefault("USDC")
     );
+    const [base, setBase] = useQueryState(
+      "base",
+      parseAsString.withDefault("OSMO")
+    );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
       parseAsBoolean.withDefault(false)
@@ -62,6 +66,12 @@ export const PriceSelector = memo(
           ?.rawAsset as Asset | undefined,
       [quote]
     );
+
+    useEffect(() => {
+      if (quote === base) {
+        setBase("OSMO");
+      }
+    }, [base, quote, setBase]);
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);

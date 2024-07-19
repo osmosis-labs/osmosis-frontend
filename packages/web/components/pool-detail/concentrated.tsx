@@ -31,7 +31,7 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
-import { AprBreakdown } from "../cards/apr-breakdown";
+import { AprBreakdownLegacy } from "../cards/apr-breakdown";
 import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -462,16 +462,6 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
 
     const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
-    const { data: incentives, isLoading: isLoadingIncentives } =
-      api.edge.pools.getPoolIncentives.useQuery(
-        {
-          poolId,
-        },
-        {
-          enabled: featureFlags.aprBreakdown,
-        }
-      );
-
     return (
       <div className="flex flex-wrap gap-4">
         <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-1000 px-8 py-7">
@@ -513,13 +503,11 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
         </div>
         {featureFlags.aprBreakdown && (
-          <SkeletonLoader isLoaded={!isLoadingIncentives}>
-            <AprBreakdown
-              className="shrink-0 rounded-3xl bg-osmoverse-1000"
-              showDisclaimerTooltip
-              {...incentives?.aprBreakdown}
-            />
-          </SkeletonLoader>
+          <AprBreakdownLegacy
+            className="shrink-0 rounded-3xl bg-osmoverse-1000"
+            poolId={poolId}
+            showDisclaimerTooltip
+          />
         )}
 
         {hasIncentives && (

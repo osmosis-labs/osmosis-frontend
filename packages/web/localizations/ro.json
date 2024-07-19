@@ -406,7 +406,8 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
-    "noData": "Nu există date"
+    "noData": "Nu există date",
+    "noOrderbook": "Fără carnet de comandă pentru pereche"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -830,9 +831,11 @@
     "MAX": "MAXIM",
     "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Impact pret",
+    "priceImpact": "Impactul pieței",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Factorul de răspândire",
+    "showDetails": "Arata detaliile",
+    "hideDetails": "Ascunde",
     "continueAnyway": "Continua oricum",
     "warning": {
       "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
@@ -1223,7 +1226,8 @@
       "title": "Ordin limită",
       "description": {
         "buy": "Cumpărați când prețul {denom} scade",
-        "sell": "Vindeți când prețul {denom} crește"
+        "sell": "Vindeți când prețul {denom} crește",
+        "disabled": "Momentan indisponibil pentru {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "scade",
     "estimatingFees": "Estimarea taxelor",
     "fees": "taxe",
-    "receiveEstimated": "Primire (estimat)",
-    "swapRoute": "Schimbați ruta",
+    "receiveEstimated": "Primește cel puțin",
+    "swapRoute": "Traseul comenzii",
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
-    "openOrders": "Comenzi deschise"
+    "openOrders": "Comenzi deschise",
+    "invalidPrice": "Preț nevalid"
   },
   "orderHistory": {
     "orders": "Comenzi",

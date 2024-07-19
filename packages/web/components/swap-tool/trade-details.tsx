@@ -1,5 +1,11 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -28,7 +34,8 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
-  baseSpotPrice: Dec;
+  inDenom?: string;
+  inPrice?: CoinPretty | PricePretty;
 }
 
 export const TradeDetails = ({
@@ -36,7 +43,8 @@ export const TradeDetails = ({
   slippageConfig,
   outAmountLessSlippage,
   outFiatAmountLessSlippage,
-  baseSpotPrice,
+  inDenom,
+  inPrice,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
@@ -52,13 +60,15 @@ export const TradeDetails = ({
 
   const isLoading = useMemo(
     () =>
-      swapState?.isLoadingNetworkFee ||
-      swapState?.isQuoteLoading ||
-      swapState?.inAmountInput.isTyping,
+      (swapState?.isLoadingNetworkFee ||
+        swapState?.isQuoteLoading ||
+        swapState?.inAmountInput.isTyping) &&
+      !Boolean(swapState.error),
     [
       swapState?.inAmountInput.isTyping,
       swapState?.isLoadingNetworkFee,
       swapState?.isQuoteLoading,
+      swapState?.error,
     ]
   );
 
@@ -104,19 +114,13 @@ export const TradeDetails = ({
                     }
                   )}
                 >
-                  {swapState?.fromAsset?.coinDenom}{" "}
-                  {t("assets.table.price").toLowerCase()} ≈{" "}
-                  {swapState?.toAsset &&
-                    formatPretty(
-                      baseSpotPrice ??
-                        swapState.inBaseOutQuoteSpotPrice ??
-                        new Dec(0),
-                      {
-                        maxDecimals: baseSpotPrice
-                          ? 2
-                          : Math.min(swapState.toAsset.coinDecimals, 8),
-                      }
-                    )}
+                  {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                  {inPrice &&
+                    formatPretty(inPrice ?? inPrice ?? new Dec(0), {
+                      maxDecimals: inPrice
+                        ? 2
+                        : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
+                    })}
                 </span>
                 <span
                   className={classNames("absolute transition-opacity", {
@@ -146,8 +150,7 @@ export const TradeDetails = ({
                   )}
                 >
                   <span className="body2 text-osmoverse-300">
-                    ~${formatPretty(swapState?.totalFee ?? new Dec(0))}{" "}
-                    {t("limitOrders.fees")}
+                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
                   </span>
                   <Icon
                     id="chevron-down"
@@ -198,11 +201,7 @@ export const TradeDetails = ({
                   }
                 />
                 <RecapRow
-                  left={`${t("pools.aprBreakdown.swapFees")} ${
-                    swapState?.quote?.swapFee
-                      ? `(${swapState?.quote?.swapFee})`
-                      : ""
-                  }`}
+                  left={`${t("pools.aprBreakdown.swapFees")}`}
                   right={
                     <>
                       {swapState?.tokenInFeeAmountFiatValue && (
@@ -212,43 +211,15 @@ export const TradeDetails = ({
                             {formatPretty(
                               swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
                             )}
-                          </span>{" "}
-                          (
-                          {formatPretty(
-                            swapState?.tokenInFeeAmountFiatValue.toDec()
-                          )}{" "}
-                          USDC)
+                          </span>
+                          {swapState?.quote?.swapFee
+                            ? ` (${swapState?.quote?.swapFee})`
+                            : ""}
                         </span>
                       )}
                     </>
                   }
                 />
-                <hr className="my-2 w-full text-osmoverse-700" />
-                {outAmountLessSlippage &&
-                  outFiatAmountLessSlippage &&
-                  swapState?.toAsset && (
-                    <RecapRow
-                      left={t("limitOrders.receiveEstimated")}
-                      right={
-                        <span>
-                          <span className="text-osmoverse-100">
-                            {formatPretty(outAmountLessSlippage, {
-                              maxDecimals: 8,
-                            })}{" "}
-                            {swapState?.toAsset.coinDenom}
-                          </span>{" "}
-                          {outFiatAmountLessSlippage && (
-                            <span className="text-osmoverse-300">
-                              (~{formatPretty(outFiatAmountLessSlippage)})
-                            </span>
-                          )}
-                        </span>
-                      }
-                    />
-                  )}
-                <span className="subtitle1 py-3 text-white-full">
-                  {t("limitOrders.moreDetails")}
-                </span>
                 {slippageConfig && (
                   <RecapRow
                     left={t("swap.settings.slippage")}
@@ -315,9 +286,37 @@ export const TradeDetails = ({
                     }
                   />
                 )}
+                <hr className="my-2 w-full text-osmoverse-700" />
+                {outAmountLessSlippage &&
+                  outFiatAmountLessSlippage &&
+                  swapState?.toAsset && (
+                    <RecapRow
+                      left={t("limitOrders.receiveEstimated")}
+                      right={
+                        <span>
+                          <span className="text-osmoverse-100">
+                            {formatPretty(outAmountLessSlippage, {
+                              maxDecimals: 8,
+                            })}{" "}
+                            {swapState?.toAsset.coinDenom}
+                          </span>{" "}
+                          {outFiatAmountLessSlippage && (
+                            <span className="text-osmoverse-300">
+                              (~{formatPretty(outFiatAmountLessSlippage)})
+                            </span>
+                          )}
+                        </span>
+                      }
+                    />
+                  )}
+
+                <span className="subtitle1 py-3 text-white-full">
+                  {t("limitOrders.swapRoute")}
+                </span>
+
                 <div className="flex w-full">
                   <RecapRow
-                    left={t("limitOrders.swapRoute")}
+                    left=""
                     className="!h-auto flex-col !items-start gap-2.5"
                     right={
                       <div className="flex w-full flex-col gap-2">

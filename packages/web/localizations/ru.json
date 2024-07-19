@@ -406,7 +406,8 @@
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
-    "noData": "Нет данных"
+    "noData": "Нет данных",
+    "noOrderbook": "Нет книги заказов для пары"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -830,9 +831,11 @@
     "MAX": "МАКС",
     "minimumSlippage": "Минимум, полученный после проскальзывания ( {slippage} )",
     "pool": "Пул № {id}",
-    "priceImpact": "Влияние на цену",
+    "priceImpact": "Влияние на рынок",
     "routerTooltipFee": "Платеж",
     "routerTooltipSpreadFactor": "Фактор распространения",
+    "showDetails": "Показать детали",
+    "hideDetails": "Скрывать",
     "continueAnyway": "Продолжай в любом случае",
     "warning": {
       "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",
@@ -1223,7 +1226,8 @@
       "title": "Лимитный ордер",
       "description": {
         "buy": "Покупайте, когда цена {denom} снижается",
-        "sell": "Продавайте, когда цена {denom} возрастает"
+        "sell": "Продавайте, когда цена {denom} возрастает",
+        "disabled": "В настоящее время недоступно для {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "уменьшается",
     "estimatingFees": "Оценка сборов",
     "fees": "сборы",
-    "receiveEstimated": "Получить (оценка)",
-    "swapRoute": "Обменять маршрут",
+    "receiveEstimated": "Получите хотя бы",
+    "swapRoute": "Заказать маршрут",
     "trade": "Торговля",
     "swapToAnotherAsset": "Обмен на другой актив",
-    "openOrders": "Открытые ордера"
+    "openOrders": "Открытые ордера",
+    "invalidPrice": "Неверная цена"
   },
   "orderHistory": {
     "orders": "Заказы",

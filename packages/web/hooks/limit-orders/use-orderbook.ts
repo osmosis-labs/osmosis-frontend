@@ -11,11 +11,11 @@ import { useSwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
-  ? "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
-  : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
-const validDenoms = [USDC_DENOM, USDT_DENOM];
+// const USDC_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET
+//   ? "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
+//   : "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+// const USDT_DENOM = process.env.NEXT_PUBLIC_IS_TESTNET ? "" : "";
+// const validDenoms = [USDC_DENOM, USDT_DENOM];
 
 /**
  * Retrieves all available orderbooks for the current chain.
@@ -29,14 +29,7 @@ export const useOrderbooks = (): {
   const { data: orderbooks, isLoading } =
     api.edge.orderbooks.getPools.useQuery();
 
-  const onlyStableOrderbooks = useMemo(
-    () =>
-      (orderbooks ?? []).filter(({ quoteDenom }) =>
-        validDenoms.includes(quoteDenom)
-      ),
-    [orderbooks]
-  );
-  return { orderbooks: onlyStableOrderbooks, isLoading };
+  return { orderbooks: orderbooks ?? [], isLoading };
 };
 
 /**
@@ -179,16 +172,36 @@ export const useOrderbook = ({
       ),
     [orderbooks, baseAsset, quoteAsset]
   );
-  const { makerFee, isLoading: isMakerFeeLoading } = useMakerFee({
+  const {
+    makerFee,
+    isLoading: isMakerFeeLoading,
+    error: makerFeeError,
+  } = useMakerFee({
     orderbookAddress: orderbook?.contractAddress ?? "",
   });
 
+  const error = useMemo(() => {
+    if (
+      !Boolean(orderbook) ||
+      !Boolean(orderbook!.poolId) ||
+      orderbook!.poolId === ""
+    ) {
+      return "errors.noOrderbook";
+    }
+
+    if (Boolean(makerFeeError)) {
+      return makerFeeError?.message;
+    }
+  }, [orderbook, makerFeeError]);
+
   return {
+    orderbook,
     poolId: orderbook?.poolId ?? "",
     contractAddress: orderbook?.contractAddress ?? "",
     makerFee,
     isMakerFeeLoading,
     isOrderbookLoading,
+    error,
   };
 };
 
@@ -202,10 +215,13 @@ export const useOrderbook = ({
  * @returns {Object} An object containing the maker fee and the loading state.
  */
 const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
-  const { data: makerFeeData, isLoading } =
-    api.edge.orderbooks.getMakerFee.useQuery({
-      osmoAddress: orderbookAddress,
-    });
+  const {
+    data: makerFeeData,
+    isLoading,
+    error,
+  } = api.edge.orderbooks.getMakerFee.useQuery({
+    osmoAddress: orderbookAddress,
+  });
 
   const makerFee = useMemo(() => {
     if (isLoading) return new Dec(0);
@@ -215,29 +231,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   return {
     makerFee,
     isLoading,
-  };
-};
-
-export const useActiveLimitOrdersByOrderbook = ({
-  orderbookAddress,
-  userAddress,
-}: {
-  orderbookAddress: string;
-  userAddress: string;
-}) => {
-  const { data: orders, isLoading } =
-    api.edge.orderbooks.getActiveOrders.useInfiniteQuery({
-      contractOsmoAddress: orderbookAddress,
-      userOsmoAddress: userAddress,
-    });
-
-  const allOrders = useMemo(() => {
-    return orders?.pages.flatMap((page) => page.items) ?? [];
-  }, [orders]);
-
-  return {
-    orders: allOrders,
-    isLoading,
+    error,
   };
 };
 

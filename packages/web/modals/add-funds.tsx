@@ -50,7 +50,7 @@ export function AddFundsModal({
       _setFromAssetDenom ? _setFromAssetDenom(value) : set({ from: value }),
     [_setFromAssetDenom, set]
   );
-  
+
   const setToAssetDenom = useCallback(
     (value: string) =>
       _setToAssetDenom ? _setToAssetDenom(value) : set({ to: value }),

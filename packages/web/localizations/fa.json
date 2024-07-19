@@ -406,7 +406,8 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد"
+    "noData": "اطلاعاتی وجود ندارد",
+    "noOrderbook": "بدون دفترچه سفارش برای جفت"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -830,9 +831,11 @@
     "MAX": "همه",
     "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
     "pool": "استخر #{id}",
-    "priceImpact": "تاثیر قیمت",
+    "priceImpact": "تاثیر بازار",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
+    "showDetails": "نمایش جزئیات",
+    "hideDetails": "پنهان شدن",
     "continueAnyway": "ادامه دادن به هر طریق",
     "warning": {
       "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
@@ -1223,7 +1226,8 @@
       "title": "سفارش محدود",
       "description": {
         "buy": "زمانی که قیمت {denom} کاهش یابد، خرید کنید",
-        "sell": "فروش زمانی که قیمت {denom} افزایش می یابد"
+        "sell": "فروش زمانی که قیمت {denom} افزایش می یابد",
+        "disabled": "در حال حاضر برای {denom} / {quoteDenom} در دسترس نیست"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "کاهش می دهد",
     "estimatingFees": "برآورد هزینه ها",
     "fees": "هزینه ها",
-    "receiveEstimated": "دریافت (تخمینی)",
-    "swapRoute": "تعویض مسیر",
+    "receiveEstimated": "حداقل دریافت کنید",
+    "swapRoute": "مسیر سفارش",
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
-    "openOrders": "باز کردن سفارشات"
+    "openOrders": "باز کردن سفارشات",
+    "invalidPrice": "قیمت نامعتبر"
   },
   "orderHistory": {
     "orders": "سفارشات",

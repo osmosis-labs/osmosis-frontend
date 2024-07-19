@@ -406,7 +406,8 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "noOrderbook": "No Orderbook for Pair"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -830,9 +831,11 @@
     "MAX": "MAX",
     "minimumSlippage": "Minimum received after slippage ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Price Impact",
+    "priceImpact": "Market Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
+    "showDetails": "Show Details",
+    "hideDetails": "Hide",
     "continueAnyway": "Continue Anyway",
     "warning": {
       "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
@@ -1223,7 +1226,8 @@
       "title": "Limit Order",
       "description": {
         "buy": "Buy when {denom} price decreases",
-        "sell": "Sell when {denom} price increases"
+        "sell": "Sell when {denom} price increases",
+        "disabled": "Currently unavailable for {denom}/{quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "decreases",
     "estimatingFees": "Estimating fees",
     "fees": "fees",
-    "receiveEstimated": "Receive (estimated)",
-    "swapRoute": "Swap route",
+    "receiveEstimated": "Receive at least",
+    "swapRoute": "Order route",
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
-    "openOrders": "Open orders"
+    "openOrders": "Open orders",
+    "invalidPrice": "Invalid price"
   },
   "orderHistory": {
     "orders": "Orders",

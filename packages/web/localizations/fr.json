@@ -406,7 +406,8 @@
     "invalidAmounts": "Montant(s) invalide(s)",
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
-    "noData": "Pas de données"
+    "noData": "Pas de données",
+    "noOrderbook": "Pas de carnet de commandes pour la paire"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -830,9 +831,11 @@
     "MAX": "MAX",
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "pool": "Bassin n°{id}",
-    "priceImpact": "Impact du prix",
+    "priceImpact": "Impact sur le marché",
     "routerTooltipFee": "Frais",
     "routerTooltipSpreadFactor": "Facteur de propagation",
+    "showDetails": "Afficher les détails",
+    "hideDetails": "Cacher",
     "continueAnyway": "Continuer quand même",
     "warning": {
       "exceedsSpendLimit": "Cet échange dépasse votre limite de dépenses restantes pour le trading en 1 clic.",
@@ -1223,7 +1226,8 @@
       "title": "Ordre Limité",
       "description": {
         "buy": "Achetez lorsque le prix {denom} diminue",
-        "sell": "Vendre lorsque le prix {denom} augmente"
+        "sell": "Vendre lorsque le prix {denom} augmente",
+        "disabled": "Actuellement indisponible pour {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "diminue",
     "estimatingFees": "Estimation des frais",
     "fees": "frais",
-    "receiveEstimated": "Recevoir (estimé)",
-    "swapRoute": "Changer d'itinéraire",
+    "receiveEstimated": "Recevez au moins",
+    "swapRoute": "Itinéraire de commande",
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
-    "openOrders": "Commandes ouvertes"
+    "openOrders": "Commandes ouvertes",
+    "invalidPrice": "Prix invalide"
   },
   "orderHistory": {
     "orders": "Ordres",

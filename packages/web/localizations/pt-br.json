@@ -406,7 +406,8 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados"
+    "noData": "Sem dados",
+    "noOrderbook": "Sem carteira de pedidos para par"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -830,9 +831,11 @@
     "MAX": "MÁXIMO",
     "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
     "pool": "Piscina #{id}",
-    "priceImpact": "Impacto sobre o preço",
+    "priceImpact": "Impacto no mercado",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Fator de propagação",
+    "showDetails": "Mostrar detalhes",
+    "hideDetails": "Esconder",
     "continueAnyway": "Continue de qualquer maneira",
     "warning": {
       "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
@@ -1223,7 +1226,8 @@
       "title": "Ordem Limitada",
       "description": {
         "buy": "Compre quando o preço {denom} diminuir",
-        "sell": "Venda quando o preço {denom} aumentar"
+        "sell": "Venda quando o preço {denom} aumentar",
+        "disabled": "Atualmente indisponível para {denom} / {quoteDenom}"
       }
     },
     "recurringOrder": {
@@ -1277,11 +1281,12 @@
     "decreases": "diminui",
     "estimatingFees": "Estimando taxas",
     "fees": "tarifas",
-    "receiveEstimated": "Receber (estimado)",
-    "swapRoute": "Trocar rota",
+    "receiveEstimated": "Receba pelo menos",
+    "swapRoute": "Rota do pedido",
     "trade": "Troca",
     "swapToAnotherAsset": "Trocar por outro ativo",
-    "openOrders": "Pedidos em aberto"
+    "openOrders": "Pedidos em aberto",
+    "invalidPrice": "Preço inválido"
   },
   "orderHistory": {
     "orders": "Pedidos",
