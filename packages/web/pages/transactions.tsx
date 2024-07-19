@@ -9,9 +9,10 @@ import { TransactionContent } from "~/components/transactions/transaction-conten
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details/transaction-details-slideover";
 import { EventName } from "~/config";
-import { useFeatureFlags, useNavBar } from "~/hooks";
 import {
   useAmplitudeAnalytics,
+  useFeatureFlags,
+  useNavBar,
   useTranslation,
   useWalletSelect,
   useWindowSize,
