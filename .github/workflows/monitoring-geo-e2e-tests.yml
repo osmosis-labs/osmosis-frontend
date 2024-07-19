@@ -16,7 +16,8 @@ jobs:
           echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"staging\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
-    name: ${{ matrix.env }}
+    timeout-minutes: 15
+    name: ${{ matrix.env }}-fe-quote-tests
     needs: setup-matrix
     runs-on: ubuntu-latest
     strategy:
