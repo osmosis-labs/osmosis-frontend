@@ -61,6 +61,8 @@ export interface Params {
 }
 
 export async function transactionScan(payload: TransactionScanRequest) {
+  if (!BLOCKAID_BASE_URL) throw new Error("BLOCKAID_BASE_URL not set");
+
   const url = new URL("/v0/cosmos/transaction/scan/", BLOCKAID_BASE_URL);
 
   return fetch(url.toString(), {
