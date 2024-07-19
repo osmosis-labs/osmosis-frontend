@@ -3,8 +3,13 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
-import { FunctionComponent, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -55,6 +60,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
   fetchNextPageAssets?: () => void;
   headerTitle: string;
   hideBalances?: boolean;
+  assetQueryInput?: string;
   setAssetQueryInput?: (input: string) => void;
 }> = observer(
   ({
@@ -62,7 +68,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     onClose: onCloseProp,
     onSelect: onSelectProp,
     showSearchBox = true,
-    showRecommendedTokens = true,
+    showRecommendedTokens,
     selectableAssets,
     isLoadingSelectAssets = false,
     isFetchingNextPageAssets = false,
@@ -71,6 +77,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
     headerTitle,
     hideBalances,
     setAssetQueryInput,
+    assetQueryInput,
   }) => {
     const { t } = useTranslation();
 
@@ -78,8 +85,6 @@ export const TokenSelectModalLimit: FunctionComponent<{
     const { onOpenWalletSelect } = useWalletSelect();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
     const recommendedAssets = useRecommendedAssets();
-
-    const [tab] = useQueryState("tab");
 
     const isWalletConnected = accountStore.getWallet(
       accountStore.osmosisChainId
@@ -198,22 +203,34 @@ export const TokenSelectModalLimit: FunctionComponent<{
     //   },
     // });
 
-    const [, setQuery, results] = useFilteredData(selectableAssets, [
+    const [filterValue, setQuery, results] = useFilteredData(selectableAssets, [
       "coinDenom",
       "coinName",
     ]);
 
-    const onSearch = (nextValue: string) => {
-      setKeyboardSelectedIndex(0);
-      if (setAssetQueryInput) {
-        setAssetQueryInput(nextValue);
-      } else {
-        setQuery(nextValue);
-      }
-    };
+    const searchValue = useMemo(
+      () => (!!assetQueryInput ? assetQueryInput : filterValue),
+      [assetQueryInput, filterValue]
+    );
 
-    const assetToActivate = selectableAssets.find(
-      (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
+    const onSearch = useCallback(
+      (nextValue: string) => {
+        setKeyboardSelectedIndex(0);
+        if (setAssetQueryInput) {
+          setAssetQueryInput(nextValue);
+        } else {
+          setQuery(nextValue);
+        }
+      },
+      [setAssetQueryInput, setKeyboardSelectedIndex, setQuery]
+    );
+
+    const assetToActivate = useMemo(
+      () =>
+        selectableAssets.find(
+          (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
+        ),
+      [confirmUnverifiedAssetDenom, selectableAssets]
     );
 
     if (!isOpen) return;
@@ -285,6 +302,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                     </div>
                     <input
                       autoFocus
+                      value={searchValue}
                       onChange={(e) => onSearch(e.target.value)}
                       placeholder={t("limitOrders.searchAssets")}
                       className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
@@ -292,7 +310,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   </div>
                 </div>
               )}
-              {tab === "buy" && showRecommendedTokens && (
+              {showRecommendedTokens && (
                 <div
                   ref={quickSelectRef}
                   onMouseDown={onMouseDownQuickSelect}

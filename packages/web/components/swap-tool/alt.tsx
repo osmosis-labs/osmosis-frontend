@@ -594,6 +594,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           setAssetQueryInput={swapState.setAssetsQueryInput}
+          assetQueryInput={swapState.assetsQueryInput}
           fetchNextPageAssets={swapState.fetchNextPageAssets}
           hasNextPageAssets={swapState.hasNextPageAssets}
           isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
@@ -620,6 +621,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           hideBalances
           setAssetQueryInput={swapState.setAssetsQueryInput}
+          assetQueryInput={swapState.assetsQueryInput}
           fetchNextPageAssets={swapState.fetchNextPageAssets}
           hasNextPageAssets={swapState.hasNextPageAssets}
           isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}

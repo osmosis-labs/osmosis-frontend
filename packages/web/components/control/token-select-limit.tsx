@@ -185,7 +185,6 @@ export const TokenSelectLimit: FunctionComponent<
           onClose={() => setIsSelectOpen(false)}
           onSelect={onSelect}
           showSearchBox
-          showRecommendedTokens
           selectableAssets={preSortedTokens}
         />
       </div>
