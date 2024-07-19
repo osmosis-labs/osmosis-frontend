@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Conecteaza Portofel",
+  "switchNetwork": "Schimbați rețeaua",
   "errors": {
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",

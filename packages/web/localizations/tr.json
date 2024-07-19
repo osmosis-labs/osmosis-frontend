@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Cüzdanı bağla",
+  "switchNetwork": "Ağı değiştir",
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",

@@ -99,7 +99,7 @@ export function ScaledCurrencyInput({
               }}
               onChange={(e) => {
                 const nextValue = e.target.value;
-                if (!isNumeric(nextValue)) return;
+                if (nextValue !== "" && !isNumeric(nextValue)) return;
                 setInputValue(nextValue);
               }}
               value={inputValue}

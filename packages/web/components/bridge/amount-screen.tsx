@@ -949,7 +949,6 @@ export const AmountScreen = observer(
                         <>
                           {Object.keys(fromAsset.supportedVariants).map(
                             (variantCoinMinimalDenom, index) => {
-                              // TODO: HANDLE WITHDRAW CASE
                               const asset = assetsInOsmosis.find(
                                 (asset) =>
                                   asset.coinMinimalDenom ===
@@ -1105,11 +1104,17 @@ export const AmountScreen = observer(
                   className="w-full"
                 >
                   <h6 className="flex items-center gap-3">
-                    <Icon
-                      id="wallet"
-                      className="text-white h-[24px] w-[24px]"
-                    />
-                    {t("connectWallet")}
+                    {quote.isWrongEvmChainSelected ? (
+                      t("switchNetwork")
+                    ) : (
+                      <>
+                        <Icon
+                          id="wallet"
+                          className="text-white h-[24px] w-[24px]"
+                        />
+                        {t("connectWallet")}
+                      </>
+                    )}
                   </h6>
                 </Button>
               ) : (

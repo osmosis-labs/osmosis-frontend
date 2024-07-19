@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Conectar billetera",
+  "switchNetwork": "Cambiar de red",
   "errors": {
     "calculatingShareOutAmount": "Problema calculando la cantidad de salida",
     "depositNoBalance": "No tienes activos para depositar",

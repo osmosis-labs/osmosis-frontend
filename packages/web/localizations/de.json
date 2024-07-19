@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Wallet verbinden",
+  "switchNetwork": "Netzwerk wechseln",
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
