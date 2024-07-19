@@ -176,7 +176,7 @@ export const ImmersiveBridgeFlow = ({
                 />
               </div>
 
-              <div className="w-full overflow-y-scroll">
+              <div className="w-full flex-1">
                 <div className="mx-auto max-w-lg md:px-4">
                   <Screen screenName={ImmersiveBridgeScreen.Asset}>
                     {({ setCurrentScreen }) => (
