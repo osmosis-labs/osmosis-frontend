@@ -37,7 +37,7 @@ export const OrderHistory = observer(() => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const { count, claimAllOrders } = useOrderbookClaimableOrders({
+  const { claimAllOrders } = useOrderbookClaimableOrders({
     userAddress: wallet?.address ?? "",
   });
 
@@ -143,8 +143,8 @@ export const OrderHistory = observer(() => {
   ]);
 
   const filledOrderRows = useMemo(() => {
-    const minIndex = hasFilledOrders;
-    const maxIndex = filledOrdersCount + hasFilledOrders;
+    const minIndex = 0;
+    const maxIndex = filledOrdersCount + hasFilledOrders - 1;
     return virtualRows
       .filter((row) => row.index > minIndex && row.index <= maxIndex)
       .map((virtualRow) => {
@@ -260,7 +260,7 @@ export const OrderHistory = observer(() => {
                       <div className="flex items-center gap-2 pb-3">
                         <h6>Filled orders to claim</h6>
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                          <span className="caption">{count}</span>
+                          <span className="caption">{filledOrders.length}</span>
                         </div>
                       </div>
                       <div className="flex h-12 w-12 items-center justify-center">

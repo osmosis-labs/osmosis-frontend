@@ -263,6 +263,7 @@ export const useOrderbookAllActiveOrders = ({
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
+      enabled: Boolean(userAddress) && addresses.length > 0,
       keepPreviousData: true,
       refetchInterval: 5000,
     }
