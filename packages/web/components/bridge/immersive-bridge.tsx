@@ -113,7 +113,7 @@ export const ImmersiveBridgeFlow = ({
           <Transition
             show={isVisible}
             as="div"
-            className="fixed inset-0 z-[999] h-screen w-screen bg-osmoverse-900"
+            className="fixed inset-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
             enter="transition-opacity duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -125,8 +125,8 @@ export const ImmersiveBridgeFlow = ({
               setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
-            <div className="flex h-full w-full flex-col">
-              <div className="mx-auto flex w-full max-w-7xl place-content-between items-center gap-3 py-8 px-10">
+            <div className="flex-1 overflow-auto">
+              <div className="sticky top-0 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
                 {step === ImmersiveBridgeScreen.Asset ? (
                   <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
                 ) : (
@@ -176,7 +176,7 @@ export const ImmersiveBridgeFlow = ({
                 />
               </div>
 
-              <div className="h-full w-full overflow-y-auto">
+              <div className="w-full flex-1">
                 <div className="mx-auto max-w-lg md:px-4">
                   <Screen screenName={ImmersiveBridgeScreen.Asset}>
                     {({ setCurrentScreen }) => (

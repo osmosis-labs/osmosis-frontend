@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "वॉलेट कनेक्ट करें",
+  "switchNetwork": "नेटवर्क स्विच करें",
   "errors": {
     "calculatingShareOutAmount": "राशि की गणना करने में समस्या",
     "depositNoBalance": "आपके पास जमा करने के लिए कोई संपत्ति नहीं है",

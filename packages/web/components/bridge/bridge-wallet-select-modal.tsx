@@ -91,7 +91,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     const { isMobile } = useWindowSize();
 
     const cosmosAccount = cosmosChain
-      ? accountStore.getWallet(cosmosChain.chainId)
+      ? accountStore.getWallet(accountStore.osmosisChainId)
       : undefined;
 
     const [search, setSearch] = useState("");

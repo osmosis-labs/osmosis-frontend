@@ -1,3 +1,4 @@
+import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useEffect, useRef } from "react";
 
@@ -36,9 +37,6 @@ export function ScaledCurrencyInput({
   useEffect(() => {
     const minScale = 16 / 96; // = 1rem / 6rem
     let contentWidth;
-    let inputMaxWidth =
-      (1 / minScale) * (wrapperRef.current?.offsetWidth || 0) -
-      (tickerRef.current?.offsetWidth || 0);
 
     const updateSize = () => {
       if (inputSizerRef.current && wrapperRef.current && tickerRef.current) {
@@ -53,7 +51,6 @@ export function ScaledCurrencyInput({
           )
         );
         wrapperRef.current.style.transform = `scale(${scale})`;
-        inputSizerRef.current.style.maxWidth = `${inputMaxWidth}px`;
       }
     };
 
@@ -71,7 +68,7 @@ export function ScaledCurrencyInput({
         ref={wrapperRef}
         className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center"
       >
-        <div className="text-8xl flex items-baseline justify-center">
+        <div className="flex items-baseline justify-center">
           {fiatSymbol ? (
             <span
               ref={tickerRef}
@@ -84,7 +81,7 @@ export function ScaledCurrencyInput({
             ref={inputSizerRef}
             data-value={inputValue || "0"}
             className={classNames(
-              "relative self-center overflow-hidden align-middle",
+              "relative self-center align-middle",
               "after:invisible after:whitespace-nowrap after:font-[inherit] after:content-[attr(data-value)]"
             )}
           >
@@ -94,14 +91,17 @@ export function ScaledCurrencyInput({
                 "absolute m-0 h-full w-full bg-transparent p-0 placeholder-inherit outline-0",
                 classes?.input
               )}
-              type="text"
               placeholder="0"
               data-expand="true"
               minLength={1}
               style={{
                 fontSize: "inherit",
               }}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                if (nextValue !== "" && !isNumeric(nextValue)) return;
+                setInputValue(nextValue);
+              }}
               value={inputValue}
             />
           </div>

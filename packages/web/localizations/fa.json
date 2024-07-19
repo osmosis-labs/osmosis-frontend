@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "اتصال کیف پول",
+  "switchNetwork": "سوئیچ شبکه",
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
     "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
