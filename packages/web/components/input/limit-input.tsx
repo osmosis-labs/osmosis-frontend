@@ -116,6 +116,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   const setFiatAmountSafe = useCallback(
     (value?: string) => {
       if (!value) {
+        setMarketAmount("");
         return setFiatAmount("");
       }
 
