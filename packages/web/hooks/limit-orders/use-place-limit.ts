@@ -34,7 +34,7 @@ export interface UsePlaceLimitParams {
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
 
 // TODO: adjust as necessary
-const CLAIM_BOUNTY = "0.001";
+const CLAIM_BOUNTY = "0.0001";
 
 export const usePlaceLimit = ({
   osmosisChainId,
