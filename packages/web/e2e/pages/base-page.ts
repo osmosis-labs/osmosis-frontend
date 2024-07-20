@@ -26,7 +26,7 @@ export class BasePage {
     await this.page.waitForTimeout(1000);
     // Handle Pop-up page ->
     const newPage = await pagePromise;
-    await newPage.waitForLoadState();
+    await newPage.waitForLoadState("load", { timeout: 10000 });
     const pageTitle = await newPage.title();
     console.log("Title of the new page: " + pageTitle);
     await newPage.getByRole("button", { name: "Approve" }).click();
