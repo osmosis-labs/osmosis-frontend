@@ -1,7 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
-    BaseAccount,
-    BaseAccountTypeStr,
+  BaseAccount,
+  BaseAccountTypeStr,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -196,21 +196,25 @@ export async function generateCosmosUnsignedTx({
 // The structure of the account object is different for base and vesting accounts.
 // Therefore, we need to check the type of the account object to parse the sequence number.
 function parseSeqeunceFromAccount(account: any) {
-    let sequence: number = 0;
-    if (account.account["@type"] === BaseAccountTypeStr) {
-        const base_acc = account as BaseAccount;
-        sequence = Number(base_acc.account.sequence);
-    } else {
-        // We assume that if not a base account, it's a vesting account.
-        const vesting_acc = account as VestingAccount;
-        sequence = Number(vesting_acc.account.base_vesting_account.base_account.sequence);
-    }
+  let sequence: number = 0;
+  if (account.account["@type"] === BaseAccountTypeStr) {
+    const base_acc = account as BaseAccount;
+    sequence = Number(base_acc.account.sequence);
+  } else {
+    // We assume that if not a base account, it's a vesting account.
+    const vesting_acc = account as VestingAccount;
+    sequence = Number(
+      vesting_acc.account.base_vesting_account.base_account.sequence
+    );
+  }
 
-    if (Number.isNaN(sequence)) {
-        console.error(account);
-        throw new Error("Invalid sequence number: " + sequence + " " + JSON.stringify(account));
-    }
-    return sequence;
+  if (Number.isNaN(sequence)) {
+    console.error(account);
+    throw new Error(
+      "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
+    );
+  }
+  return sequence;
 }
 
 /**
