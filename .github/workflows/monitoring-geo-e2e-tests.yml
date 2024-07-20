@@ -50,9 +50,10 @@ jobs:
           TEST_PROXY: ${{ matrix.server-url }}
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
+          PRIVATE_KEY: ${{secrets.TEST_PRIVATE_KEY}}
         run: |
           cd packages/web
-          npx playwright test select pools
+          npx playwright test select pools transactions
       - name: upload test results
         if: always()
         id: e2e-test-results
