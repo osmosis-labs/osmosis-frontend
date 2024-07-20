@@ -32,6 +32,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   swapState,
   orderDirection,
 }) => {
+  const [input, setInput] = useState<HTMLInputElement | null>(null);
   const { t } = useTranslation();
   const { priceState } = swapState;
   const [inputMode, setInputMode] = useState(InputMode.Percentage);
@@ -42,10 +43,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         ? InputMode.Price
         : InputMode.Percentage
     );
-  }, [inputMode]);
+
+    if (input) input.focus();
+  }, [inputMode, input]);
 
   useEffect(() => {
     swapState.priceState.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderDirection]);
 
   useEffect(() => {
@@ -67,6 +71,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             }).toString()
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceState.spotPrice, priceState.orderPrice, inputMode]);
 
   const priceLabel = useMemo(() => {
@@ -199,6 +204,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                   getPriceExtendedFormatOptions(swapState.priceState.price)
                 )}
                 onChange={(e) => swapState.priceState.setPrice(e.target.value)}
+                inputRef={setInput}
               />
             ) : (
               <AutosizeInput
@@ -213,6 +219,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                     .abs()
                     .toString()
                 )}
+                inputRef={setInput}
                 onChange={(e) =>
                   swapState.priceState.setPercentAdjusted(
                     e.target.value.replace("%", "")
