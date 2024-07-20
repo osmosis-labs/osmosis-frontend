@@ -40,7 +40,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should return gasUsed on successful simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
@@ -79,7 +82,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw an error if sequence number is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "invalid" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "invalid",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
@@ -163,8 +169,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should re-throw any other sendTxSimulate error object", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      "@type": BaseAccountTypeStr,
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     });
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 
