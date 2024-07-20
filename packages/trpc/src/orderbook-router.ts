@@ -3,6 +3,7 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
+  getOrderbookActiveState,
   getOrderbookDenoms,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
@@ -373,8 +374,20 @@ export const orderbookRouter = createTRPCRouter({
       });
       return historicalOrders;
     }),
-  getPools: publicProcedure.query(async () => {
-    const pools = await getOrderbookPools();
-    return pools;
+  getPools: publicProcedure.query(async ({ ctx }) => {
+    const allOrderbooks = await getOrderbookPools();
+    const activePools = await allOrderbooks.map(async (orderbook) => {
+      const activeState = await getOrderbookActiveState({
+        orderbookAddress: orderbook.contractAddress,
+        chainList: ctx.chainList,
+      });
+      return {
+        ...orderbook,
+        active: activeState,
+      };
+    });
+
+    const orderbooks = (await Promise.all(activePools)).filter((o) => o.active);
+    return orderbooks;
   }),
 });

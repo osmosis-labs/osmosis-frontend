@@ -196,6 +196,25 @@ export const queryOrderbookState = createNodeQuery<
   },
 });
 
+interface OrderbookActiveStateResponse {
+  data: boolean;
+}
+
+export const queryOrderbookActiveState = createNodeQuery<
+  OrderbookActiveStateResponse,
+  {
+    orderbookAddress: string;
+  }
+>({
+  path: ({ orderbookAddress }) => {
+    const msg = JSON.stringify({
+      is_active: {},
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
 export interface HistoricalLimitOrder {
   place_timestamp: string;
   place_tx_hash: string;
