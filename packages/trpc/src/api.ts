@@ -157,6 +157,6 @@ export const makeSkipBatchLink = (url: string) =>
     // when condition is false, use batching
     false: httpBatchLink({
       url,
-      maxURLLength: 163_840,
+      maxURLLength: 10_000,
     }),
   });

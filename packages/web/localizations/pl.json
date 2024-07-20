@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Połącz portfel",
+  "switchNetwork": "Przełącz sieć",
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "depositNoBalance": "Nie masz środków do wpłaty",

@@ -2,50 +2,25 @@ import { Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import {
-  Fragment,
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, FunctionComponent, useRef, useState } from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
+import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapState } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 
-import { useConst } from "../../hooks/use-const";
 import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
-import { useKeyActions } from "../../hooks/use-key-actions";
-import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
 import { Spinner } from "../loaders/spinner";
-
-const dataAttributeName = "data-token-id";
-
-function getTokenItemId(uniqueId: string, index: number) {
-  return `token-selector-item-${uniqueId}-${index}`;
-}
-
-function getTokenElement(uniqueId: string, index: number) {
-  return document.querySelector(
-    `[${dataAttributeName}=${getTokenItemId(uniqueId, index)}]`
-  );
-}
-
-function getAllTokenElements() {
-  return document.querySelectorAll(`[${dataAttributeName}]`);
-}
 
 export const TokenSelectDrawer: FunctionComponent<{
   isOpen: boolean;
@@ -66,16 +41,9 @@ export const TokenSelectDrawer: FunctionComponent<{
     const { t } = useTranslation();
     const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
-    const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
-    const [
-      keyboardSelectedIndex,
-      setKeyboardSelectedIndex,
-      keyboardSelectedIndexRef,
-    ] = useStateRef(0);
-
-    const [assets, setAssets] = useState(swapState.selectableAssets);
-    const [isRequestingClose, setIsRequestingClose] = useState(false);
+    const assets = swapState.selectableAssets;
+    const assetsRef = useLatest(assets);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
 
@@ -86,14 +54,6 @@ export const TokenSelectDrawer: FunctionComponent<{
     const shouldShowUnverifiedAssets =
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
-    // Only update tokens while not requesting to close
-    useEffect(() => {
-      if (isRequestingClose) return;
-      setAssets(swapState.selectableAssets);
-    }, [isRequestingClose, swapState.selectableAssets]);
-
-    const assetsRef = useLatest(assets);
-
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
 
@@ -101,7 +61,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       useDraggableScroll(quickSelectRef);
 
     const onClose = () => {
-      setIsRequestingClose(true);
       swapState.setAssetsQueryInput("");
       setKeyboardSelectedIndex(0);
       onCloseProp?.();
@@ -115,8 +74,12 @@ export const TokenSelectDrawer: FunctionComponent<{
     const onClickAsset = (coinDenom: string) => {
       let isRecommended = false;
       const selectedAsset =
-        assets.find((asset) => asset.coinDenom === coinDenom) ??
+        assetsRef.current?.find((asset) => asset.coinDenom === coinDenom) ??
         swapState.recommendedAssets.find((asset) => {
+          console.log(
+            "Checking asset in recommendedAssets array:",
+            asset.coinDenom
+          );
           if (asset.coinDenom === coinDenom) {
             isRecommended = true;
             return true;
@@ -142,57 +105,16 @@ export const TokenSelectDrawer: FunctionComponent<{
       Escape: onClose,
     });
 
-    const { handleKeyDown: containerKeyDown } = useKeyActions({
-      ArrowDown: () => {
-        setKeyboardSelectedIndex((selectedIndex) =>
-          selectedIndex === getAllTokenElements().length - 1
-            ? 0
-            : selectedIndex + 1
-        );
-
-        getTokenElement(
-          uniqueId,
-          keyboardSelectedIndexRef.current
-        )?.scrollIntoView({
-          block: "nearest",
-        });
-
-        // Focus on search bar if user starts keyboard navigation
-        searchBoxRef.current?.focus();
-      },
-      ArrowUp: () => {
-        setKeyboardSelectedIndex((selectedIndex) =>
-          selectedIndex === 0
-            ? getAllTokenElements().length - 1
-            : selectedIndex - 1
-        );
-
-        getTokenElement(
-          uniqueId,
-          keyboardSelectedIndexRef.current
-        )?.scrollIntoView({
-          block: "nearest",
-        });
-
-        // Focus on search bar if user starts keyboard navigation
-        searchBoxRef.current?.focus();
-      },
-      Enter: () => {
-        const asset = assetsRef.current[keyboardSelectedIndexRef.current];
-        if (!asset) return;
-        const { coinDenom } = asset;
-
-        onClickAsset(coinDenom);
-      },
-    });
-
-    const { handleKeyDown: searchBarKeyDown } = useKeyActions({
-      ArrowDown: (event) => {
-        event.preventDefault();
-      },
-      ArrowUp: (event) => {
-        event.preventDefault();
-      },
+    const {
+      selectedIndex: keyboardSelectedIndex,
+      setSelectedIndex: setKeyboardSelectedIndex,
+      itemContainerKeyDown,
+      searchBarKeyDown,
+      setItemAttribute,
+    } = useKeyboardNavigation({
+      items: assets,
+      onSelectItem: (asset) => onClickAsset(asset.coinDenom),
+      searchBoxRef,
     });
 
     const onSearch = (nextValue: string) => {
@@ -205,7 +127,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     );
 
     return (
-      <div onKeyDown={containerKeyDown}>
+      <div onKeyDown={itemContainerKeyDown}>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}
@@ -248,7 +170,6 @@ export const TokenSelectDrawer: FunctionComponent<{
           leaveFrom="visible opacity-100 translate-y-0"
           leaveTo="visible opacity-0 translate-y-[15%]"
           afterEnter={() => searchBoxRef?.current?.focus()}
-          afterLeave={() => setIsRequestingClose(false)}
         >
           <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16">
             <div
@@ -343,94 +264,90 @@ export const TokenSelectDrawer: FunctionComponent<{
                       isVerified,
                     },
                     index
-                  ) => {
-                    return (
-                      <button
-                        key={coinMinimalDenom}
+                  ) => (
+                    <button
+                      key={coinMinimalDenom}
+                      className={classNames(
+                        "flex cursor-pointer items-center justify-between px-5 py-2",
+                        "transition-colors duration-150 ease-out",
+                        {
+                          "bg-osmoverse-900": keyboardSelectedIndex === index,
+                        }
+                      )}
+                      data-testid="token-select-asset"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClickAsset(coinDenom);
+                      }}
+                      onMouseOver={() => setKeyboardSelectedIndex(index)}
+                      onFocus={() => setKeyboardSelectedIndex(index)}
+                      {...setItemAttribute(index)}
+                    >
+                      <div
                         className={classNames(
-                          "flex cursor-pointer items-center justify-between px-5 py-2",
-                          "transition-colors duration-150 ease-out",
+                          "flex w-full items-center justify-between text-left",
                           {
-                            "bg-osmoverse-900": keyboardSelectedIndex === index,
+                            "opacity-40":
+                              !shouldShowUnverifiedAssets && !isVerified,
                           }
                         )}
-                        data-testid="token-select-asset"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onClickAsset?.(coinDenom);
-                        }}
-                        onMouseOver={() => setKeyboardSelectedIndex(index)}
-                        onFocus={() => setKeyboardSelectedIndex(index)}
-                        {...{
-                          [dataAttributeName]: getTokenItemId(uniqueId, index),
-                        }}
                       >
-                        <div
-                          className={classNames(
-                            "flex w-full items-center justify-between text-left",
-                            {
-                              "opacity-40":
-                                !shouldShowUnverifiedAssets && !isVerified,
-                            }
-                          )}
-                        >
-                          <div className="flex items-center">
-                            {coinImageUrl && (
-                              <div className="mr-4 h-8 w-8 rounded-full">
-                                <Image
-                                  src={coinImageUrl}
-                                  alt="token icon"
-                                  width={32}
-                                  height={32}
-                                />
-                              </div>
-                            )}
-                            <div className="mr-4">
-                              <h6 className="button font-button text-white-full">
-                                {coinDenom}
-                              </h6>
-                              <div className="caption text-left font-medium text-osmoverse-400">
-                                {coinName}
-                              </div>
+                        <div className="flex items-center">
+                          {coinImageUrl && (
+                            <div className="mr-4 h-8 w-8 rounded-full">
+                              <Image
+                                src={coinImageUrl}
+                                alt="token icon"
+                                width={32}
+                                height={32}
+                              />
                             </div>
-                            {!isVerified && shouldShowUnverifiedAssets && (
-                              <Tooltip
-                                content={t(
-                                  "components.selectToken.unverifiedAsset"
-                                )}
-                              >
-                                <Icon
-                                  id="alert-triangle"
-                                  className="h-5 w-5 text-osmoverse-400"
-                                />
-                              </Tooltip>
-                            )}
+                          )}
+                          <div className="mr-4">
+                            <h6 className="button font-button text-white-full">
+                              {coinDenom}
+                            </h6>
+                            <div className="caption text-left font-medium text-osmoverse-400">
+                              {coinName}
+                            </div>
                           </div>
-
-                          {amount &&
-                            isVerified &&
-                            usdValue &&
-                            amount.toDec().isPositive() && (
-                              <div className="flex flex-col text-right">
-                                <p className="button">
-                                  {formatPretty(amount.hideDenom(true), {
-                                    maxDecimals: 6,
-                                  })}
-                                </p>
-                                <span className="caption font-medium text-osmoverse-400">
-                                  {usdValue.toString()}
-                                </span>
-                              </div>
-                            )}
+                          {!isVerified && shouldShowUnverifiedAssets && (
+                            <Tooltip
+                              content={t(
+                                "components.selectToken.unverifiedAsset"
+                              )}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                className="h-5 w-5 text-osmoverse-400"
+                              />
+                            </Tooltip>
+                          )}
                         </div>
-                        {!shouldShowUnverifiedAssets && !isVerified && (
-                          <p className="caption whitespace-nowrap text-wosmongton-200">
-                            {t("components.selectToken.clickToActivate")}
-                          </p>
-                        )}
-                      </button>
-                    );
-                  }
+
+                        {amount &&
+                          isVerified &&
+                          usdValue &&
+                          amount.toDec().isPositive() && (
+                            <div className="flex flex-col text-right">
+                              <p className="button">
+                                {formatPretty(amount.hideDenom(true), {
+                                  maxDecimals: 6,
+                                })}
+                              </p>
+                              <span className="caption font-medium text-osmoverse-400">
+                                {usdValue.toString()}
+                              </span>
+                            </div>
+                          )}
+                      </div>
+                      {!shouldShowUnverifiedAssets && !isVerified && (
+                        <p className="caption whitespace-nowrap text-wosmongton-200">
+                          {t("components.selectToken.clickToActivate")}
+                        </p>
+                      )}
+                    </button>
+                  )
                 )}
                 <Intersection
                   onVisible={() => {

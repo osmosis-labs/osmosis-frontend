@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Подключить кошелек",
+  "switchNetwork": "Переключить сеть",
   "errors": {
     "calculatingShareOutAmount": "Проблема с расчетом суммы",
     "depositNoBalance": "У вас нет активов для депозита",

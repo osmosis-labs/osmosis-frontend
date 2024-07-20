@@ -7,6 +7,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
+import { IntPretty } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
 import { getShortAddress, isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -537,6 +538,38 @@ export const AmountScreen = observer(
       osmosisWalletConnected,
     ]);
 
+    const onChangeCryptoInput = useCallback(
+      (amount: string) => {
+        if (isNil(fromAsset?.decimals)) return;
+        setCryptoAmount(
+          amount.endsWith(".") || amount.endsWith("0") || amount === ""
+            ? amount
+            : new IntPretty(amount)
+                .locale(false)
+                .trim(true)
+                .maxDecimals(fromAsset.decimals)
+                .toString()
+        );
+      },
+      [fromAsset?.decimals, setCryptoAmount]
+    );
+
+    const onChangeFiatInput = useCallback(
+      (amount: string) => {
+        if (isNil(assetInOsmosisPrice?.fiatCurrency.maxDecimals)) return;
+        setFiatAmount(
+          amount.endsWith(".") || amount.endsWith("0") || amount === ""
+            ? amount
+            : new IntPretty(amount)
+                .locale(false)
+                .trim(true)
+                .maxDecimals(assetInOsmosisPrice.fiatCurrency.maxDecimals)
+                .toString()
+        );
+      },
+      [assetInOsmosisPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+    );
+
     if (
       isLoadingCanonicalAssetPrice ||
       isNil(supportedSourceAssets) ||
@@ -678,8 +711,8 @@ export const AmountScreen = observer(
                *  Only once we get the best quote, we can modify the input amount
                *  to account for gas then restart the quote search process. */
               canSetMax={!quote.isLoadingAnyBridgeQuote}
-              onChangeFiatInput={setFiatAmount}
-              onChangeCryptoInput={setCryptoAmount}
+              onChangeFiatInput={onChangeFiatInput}
+              onChangeCryptoInput={onChangeCryptoInput}
               setCurrentUnit={setInputUnit}
               transferGasChain={fromChain}
             />
@@ -916,7 +949,6 @@ export const AmountScreen = observer(
                         <>
                           {Object.keys(fromAsset.supportedVariants).map(
                             (variantCoinMinimalDenom, index) => {
-                              // TODO: HANDLE WITHDRAW CASE
                               const asset = assetsInOsmosis.find(
                                 (asset) =>
                                   asset.coinMinimalDenom ===
@@ -950,8 +982,7 @@ export const AmountScreen = observer(
                                   <button
                                     className={classNames(
                                       "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
+                                      isSelected && "bg-osmoverse-700"
                                     )}
                                     onClick={onClick}
                                   >
@@ -1072,11 +1103,17 @@ export const AmountScreen = observer(
                   className="w-full"
                 >
                   <h6 className="flex items-center gap-3">
-                    <Icon
-                      id="wallet"
-                      className="text-white h-[24px] w-[24px]"
-                    />
-                    {t("connectWallet")}
+                    {quote.isWrongEvmChainSelected ? (
+                      t("switchNetwork")
+                    ) : (
+                      <>
+                        <Icon
+                          id="wallet"
+                          className="text-white h-[24px] w-[24px]"
+                        />
+                        {t("connectWallet")}
+                      </>
+                    )}
                   </h6>
                 </Button>
               ) : (

@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",
+  "switchNetwork": "નેટવર્ક સ્વિચ કરો",
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
