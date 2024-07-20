@@ -10,7 +10,6 @@ import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 function getNormalizationFactor(
@@ -402,6 +401,11 @@ export const usePlaceLimit = ({
 
 const DEFAULT_PERCENT_ADJUSTMENT = "0.5";
 
+/**
+ * Handles the logic for the limit price selector.
+ * Allows the user to input either a set fiat price or a percentage related to the current spot price.
+ * Also returns relevant spot price for each direction.
+ */
 const useLimitPrice = ({
   orderbookContractAddress,
   orderDirection,
@@ -416,9 +420,9 @@ const useLimitPrice = ({
   });
   const {
     data: assetPrice,
-    isLoading: loadingAssetPrice,
-    isRefetching: isAssetPriceRefetching,
-    refetch: refetchPrice,
+    isLoading: loadingSpotPrice,
+    isRefetching: isSpotPriceRefetching,
+    refetch: refetchSpotPrice,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
@@ -432,20 +436,12 @@ const useLimitPrice = ({
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
 
+  // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
-    if (!assetPrice) return new Dec(1);
-    return assetPrice.toDec();
+    return assetPrice ? assetPrice.toDec() : new Dec(1);
   }, [assetPrice]);
 
-  const adjustByPercentage = useCallback(
-    (percentage: Dec) => {
-      setOrderPrice(
-        formatPretty((spotPrice ?? new Dec(0)).mul(new Dec(1).add(percentage)))
-      );
-    },
-    [spotPrice]
-  );
-
+  // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (price: string) => {
       setOrderPrice(price);
@@ -457,6 +453,9 @@ const useLimitPrice = ({
     [setOrderPrice]
   );
 
+  // Adjusts the percentage for placing the order.
+  // Adjusting the precentage also resets a user based input in order to maintain
+  // a percentage related to the current spot price.
   const setManualPercentAdjustedSafe = useCallback(
     (percentAdjusted: string) => {
       if (percentAdjusted.startsWith(".")) {
@@ -469,6 +468,7 @@ const useLimitPrice = ({
       )
         return;
 
+      // Do not allow the user to input 100% below current price
       if (
         orderDirection === "bid" &&
         percentAdjusted.length > 0 &&
@@ -479,11 +479,13 @@ const useLimitPrice = ({
 
       setManualPercentAdjusted(percentAdjusted);
 
+      // Reset the user's manual order price if they adjust percentage
       if (orderPrice.length > 0) setOrderPrice("");
     },
     [setManualPercentAdjusted, orderPrice.length, orderDirection]
   );
 
+  // Whether the user's manual order price is a valid price
   const isValidInputPrice = useMemo(
     () =>
       Boolean(orderPrice) &&
@@ -493,25 +495,36 @@ const useLimitPrice = ({
     [orderPrice]
   );
 
+  // The current price. If the user has input a manual order price then that is used, otherwise we look at the percentage adjusted.
+  // If the user has a percentage adjusted input we calculate the price relative to the spot price
+  // given the current direction of the order.
+  // If the form is empty we default to a percentage relative to the spot price.
   const price = useMemo(() => {
+    if (orderPrice && orderPrice.length > 0) {
+      return new Dec(orderPrice);
+    }
+
     const percent =
       manualPercentAdjusted.length > 0
         ? manualPercentAdjusted
         : DEFAULT_PERCENT_ADJUSTMENT;
     const percentAdjusted =
       orderDirection === "bid"
-        ? new Dec(1).sub(new Dec(percent).quo(new Dec(100)))
-        : new Dec(1).add(new Dec(percent).quo(new Dec(100)));
-    return orderPrice && orderPrice.length > 0
-      ? new Dec(orderPrice)
-      : spotPrice.mul(percentAdjusted) ?? new Dec(1);
+        ? // Adjust negatively for bid orders
+          new Dec(1).sub(new Dec(percent).quo(new Dec(100)))
+        : // Adjust positively for ask orders
+          new Dec(1).add(new Dec(percent).quo(new Dec(100)));
+
+    return spotPrice.mul(percentAdjusted) ?? new Dec(1);
   }, [orderPrice, spotPrice, manualPercentAdjusted, orderDirection]);
 
+  // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
     () => price.quo(spotPrice ?? new Dec(1)).sub(new Dec(1)),
     [price, spotPrice]
   );
 
+  // If the user is inputting a price that crosses over the spot price
   const isBeyondOppositePrice = useMemo(() => {
     return orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
   }, [orderDirection, price, spotPrice]);
@@ -523,8 +536,8 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
-    refetchPrice();
-  }, [refetchPrice]);
+    refetchSpotPrice();
+  }, [refetchSpotPrice]);
 
   useEffect(() => {
     reset();
@@ -533,25 +546,23 @@ const useLimitPrice = ({
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
+
   return {
     spotPrice,
     orderPrice,
     price,
     priceFiat,
-    adjustByPercentage,
     manualPercentAdjusted,
     setPercentAdjusted: setManualPercentAdjustedSafe,
     _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
-    isLoading,
+    isLoading: isLoading || loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
-    loadingAssetPrice,
-    isAssetPriceRefetching,
-    refetchPrice,
+    isSpotPriceRefetching,
   };
 };

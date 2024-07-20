@@ -68,7 +68,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market" &&
         swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
       ) {
-        swapState.priceState.adjustByPercentage(new Dec(0));
+        swapState.priceState.reset();
       }
     }, [swapState.priceState, type]);
 

@@ -48,11 +48,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   }, [inputMode, input]);
 
   useEffect(() => {
-    swapState.priceState.reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderDirection]);
-
-  useEffect(() => {
     if (
       priceState.spotPrice &&
       priceState.orderPrice.length > 0 &&
@@ -141,7 +136,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           >
             <div
               className={classNames("flex items-center justify-center", {
-                "animate-pulse": swapState.priceState.isAssetPriceRefetching,
+                "animate-pulse": swapState.priceState.isSpotPriceRefetching,
               })}
             >
               {inputMode === InputMode.Price &&
