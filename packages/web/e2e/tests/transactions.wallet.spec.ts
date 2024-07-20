@@ -28,7 +28,6 @@ test.describe("Test Transactions feature", () => {
     context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
-        "--headless=new",
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
       ],
