@@ -19,9 +19,6 @@ interface LimitTradeDetailsProps {
 export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
   ({ swapState }) => {
     const { t } = useTranslation();
-    const makerFeeFiat = useMemo(() => {
-      return swapState.feeUsdValue;
-    }, [swapState.feeUsdValue]);
 
     const isLoading = useMemo(() => {
       return swapState.isMakerFeeLoading;
@@ -130,7 +127,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                     <span>
                       <span className="text-osmoverse-100">
                         ~
-                        {formatPretty(makerFeeFiat, {
+                        {formatPretty(swapState.feeUsdValue, {
                           maxDecimals: 2,
                           minimumFractionDigits: 2,
                         })}
