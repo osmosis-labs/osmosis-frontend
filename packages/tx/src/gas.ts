@@ -206,7 +206,7 @@ function parseSeqeunceFromAccount(account: any) {
         sequence = Number(vesting_acc.account.base_vesting_account.base_account.sequence);
     }
 
-    if (isNaN(sequence)) {
+    if (Number.isNaN(sequence)) {
         console.error(account);
         throw new Error("Invalid sequence number: " + sequence + " " + JSON.stringify(account));
     }
