@@ -146,6 +146,17 @@ export class SkipBridgeProvider implements BridgeProvider {
                   message: msg,
                 });
               }
+              if (
+                msg.includes(
+                  "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "NoQuotesError",
+                  message: msg,
+                });
+              }
             }
             throw e;
           });
