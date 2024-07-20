@@ -209,6 +209,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           </>
           {!account?.isWalletConnected ? (
             <Button
+              type="button"
               onClick={() =>
                 onOpenWalletSelect({
                   walletOptions: [
