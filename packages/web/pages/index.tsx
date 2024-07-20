@@ -74,7 +74,7 @@ const HomeNew = () => {
       <div className="flex h-auto w-full justify-center">
         <div className="flex w-[35rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-          <TradeTool />
+          <TradeTool page={"Swap Page"} />
         </div>
       </div>
     </main>

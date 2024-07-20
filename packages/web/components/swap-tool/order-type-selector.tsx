@@ -4,8 +4,8 @@ import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { SpriteIconId } from "~/config";
-import { useTranslation } from "~/hooks";
+import { EventName, SpriteIconId } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
@@ -22,6 +22,7 @@ export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = () => {
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const [type, setType] = useQueryState(
     "type",
@@ -57,6 +58,18 @@ export const OrderTypeSelector = () => {
       setQuote(selectableQuotes[0].coinDenom);
     }
   }, [hasOrderbook, setType, type, selectableQuotes, setQuote, quote]);
+
+  useEffect(() => {
+    switch (type) {
+      case "market":
+        logEvent([EventName.LimitOrder.marketOrderSelected]);
+        break;
+      case "limit":
+        logEvent([EventName.LimitOrder.limitOrderSelected]);
+        break;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
