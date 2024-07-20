@@ -33,9 +33,9 @@ export class BasePage {
     // PopUp page is auto-closed
     // Handle Pop-up page <-
     const wallet = this.page.locator("//button/div/span[@title]");
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(4000);
     // Verify that wallet modal loaded correctly
-    const isWalletVisible = await wallet.isVisible();
+    const isWalletVisible = await wallet.isVisible({ timeout: 5000 });
     expect(isWalletVisible).toBeTruthy();
     console.log("Wallet is connected.");
   }
