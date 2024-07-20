@@ -77,10 +77,10 @@ export function removeCommasFromNumber(number: string): string {
   return number.replace(/,/g, "");
 }
 
-export const countDecimals = function (value: string) {
+export function countDecimals(value: string) {
   const split = value.split(".");
   if (split.length > 1) {
     return split[1].length;
   }
   return 0;
-};
+}
