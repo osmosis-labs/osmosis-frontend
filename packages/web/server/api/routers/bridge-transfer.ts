@@ -553,8 +553,17 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       externalTransferMethods.forEach(
         ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
-          const depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
-          const withdrawUrl = withdrawUrl_ ? new URL(withdrawUrl_) : undefined;
+          let depositUrl, withdrawUrl;
+          try {
+            depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
+          } catch {
+            depositUrl = undefined;
+          }
+          try {
+            withdrawUrl = withdrawUrl_ ? new URL(withdrawUrl_) : undefined;
+          } catch {
+            withdrawUrl = undefined;
+          }
 
           let urlToAdd: (typeof externalUrls)[number] | undefined =
             input.fromChain.chainId === "osmosis-1" && withdrawUrl
