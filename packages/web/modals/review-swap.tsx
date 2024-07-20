@@ -83,7 +83,7 @@ export function ReviewSwapModal({
         </div>
         <div className="flex flex-col px-8 pb-8">
           <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
-            <div className="flex items-center justify-between p-2">
+            <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
                 {swapState.fromAsset && (
                   <Image
@@ -135,7 +135,7 @@ export function ReviewSwapModal({
                 >{`-${outputDifference}`}</span>
               </div>
             </div>
-            <div className="flex items-center justify-between p-2">
+            <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
                 {swapState.toAsset && (
                   <Image
@@ -149,13 +149,17 @@ export function ReviewSwapModal({
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
                   <span className="subtitle1">
-                    {swapState.quote?.amount &&
-                      formatPretty(swapState.quote?.amount.toDec(), {
-                        minimumSignificantDigits: 6,
-                        maximumSignificantDigits: 6,
-                        maxDecimals: 10,
-                        notation: "standard",
-                      })}
+                    {swapState.quote?.amount && (
+                      <>
+                        {formatPretty(swapState.quote?.amount.toDec(), {
+                          minimumSignificantDigits: 6,
+                          maximumSignificantDigits: 6,
+                          maxDecimals: 10,
+                          notation: "standard",
+                        })}{" "}
+                        {swapState.toAsset?.coinDenom}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
