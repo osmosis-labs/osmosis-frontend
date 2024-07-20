@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
@@ -399,6 +400,8 @@ export const usePlaceLimit = ({
   };
 };
 
+const DEFAULT_PERCENT_ADJUSTMENT = "0.5";
+
 const useLimitPrice = ({
   orderbookContractAddress,
   orderDirection,
@@ -411,10 +414,20 @@ const useLimitPrice = ({
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
-  const { data: assetPrice, isLoading: loadingAssetPrice } =
-    api.edge.assets.getAssetPrice.useQuery({
+  const {
+    data: assetPrice,
+    isLoading: loadingAssetPrice,
+    isRefetching: isAssetPriceRefetching,
+    refetch: refetchPrice,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    {
       coinMinimalDenom: baseDenom ?? "",
-    });
+    },
+    {
+      refetchInterval: 10000,
+      enabled: Boolean(baseDenom) && baseDenom!.length > 0,
+    }
+  );
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
@@ -433,19 +446,43 @@ const useLimitPrice = ({
     [spotPrice]
   );
 
-  useEffect(() => {
-    if (manualPercentAdjusted.length > 0) {
-      const adjustment = new Dec(manualPercentAdjusted).quo(new Dec(100));
-      if (adjustment.isNegative()) return adjustByPercentage(new Dec(0));
+  const setManualOrderPrice = useCallback(
+    (price: string) => {
+      setOrderPrice(price);
 
-      adjustByPercentage(
-        orderDirection === "ask" ? adjustment : adjustment.mul(new Dec(-1))
-      );
-    } else {
-      adjustByPercentage(new Dec(0));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manualPercentAdjusted, orderDirection]);
+      if (price.length === 0) {
+        setManualPercentAdjusted("");
+      }
+    },
+    [setOrderPrice]
+  );
+
+  const setManualPercentAdjustedSafe = useCallback(
+    (percentAdjusted: string) => {
+      if (percentAdjusted.startsWith(".")) {
+        percentAdjusted = "0" + percentAdjusted;
+      }
+
+      if (
+        percentAdjusted.length > 0 &&
+        !isValidNumericalRawInput(percentAdjusted)
+      )
+        return;
+
+      if (
+        orderDirection === "bid" &&
+        percentAdjusted.length > 0 &&
+        new Dec(percentAdjusted).gte(new Dec(100))
+      ) {
+        return;
+      }
+
+      setManualPercentAdjusted(percentAdjusted);
+
+      if (orderPrice.length > 0) setOrderPrice("");
+    },
+    [setManualPercentAdjusted, orderPrice.length, orderDirection]
+  );
 
   const isValidInputPrice = useMemo(
     () =>
@@ -456,16 +493,23 @@ const useLimitPrice = ({
     [orderPrice]
   );
 
+  const price = useMemo(() => {
+    const percent =
+      manualPercentAdjusted.length > 0
+        ? manualPercentAdjusted
+        : DEFAULT_PERCENT_ADJUSTMENT;
+    const percentAdjusted =
+      orderDirection === "bid"
+        ? new Dec(1).sub(new Dec(percent).quo(new Dec(100)))
+        : new Dec(1).add(new Dec(percent).quo(new Dec(100)));
+    return orderPrice && orderPrice.length > 0
+      ? new Dec(orderPrice)
+      : spotPrice.mul(percentAdjusted) ?? new Dec(1);
+  }, [orderPrice, spotPrice, manualPercentAdjusted, orderDirection]);
+
   const percentAdjusted = useMemo(
-    () =>
-      isValidInputPrice
-        ? new Dec(orderPrice).quo(spotPrice ?? new Dec(1)).sub(new Dec(1))
-        : new Dec(0),
-    [isValidInputPrice, orderPrice, spotPrice]
-  );
-  const price = useMemo(
-    () => (isValidInputPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
-    [isValidInputPrice, orderPrice, spotPrice]
+    () => price.quo(spotPrice ?? new Dec(1)).sub(new Dec(1)),
+    [price, spotPrice]
   );
 
   const isBeyondOppositePrice = useMemo(() => {
@@ -479,26 +523,8 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
-  }, []);
-
-  const setPrice = useCallback((price: string) => {
-    if (!price) {
-      setOrderPrice("");
-    } else {
-      setOrderPrice(price);
-    }
-  }, []);
-
-  const setPercentAdjusted = useCallback(
-    (percentAdjusted: string) => {
-      if (!percentAdjusted) {
-        setManualPercentAdjusted("");
-      } else {
-        setManualPercentAdjusted(percentAdjusted);
-      }
-    },
-    [setManualPercentAdjusted]
-  );
+    refetchPrice();
+  }, [refetchPrice]);
 
   useEffect(() => {
     reset();
@@ -514,15 +540,18 @@ const useLimitPrice = ({
     priceFiat,
     adjustByPercentage,
     manualPercentAdjusted,
-    setPercentAdjusted,
+    setPercentAdjusted: setManualPercentAdjustedSafe,
+    _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
     isLoading,
     reset,
-    setPrice,
+    setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
     loadingAssetPrice,
+    isAssetPriceRefetching,
+    refetchPrice,
   };
 };

@@ -152,6 +152,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             disabled={false}
             orderDirection={orderDirection}
           />
+          {type === "limit" && (
+            <LimitPriceSelector
+              swapState={swapState}
+              orderDirection={orderDirection}
+            />
+          )}
           <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
             <p
               className={classNames(
@@ -184,27 +190,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               insufficientFunds={swapState.insufficientFunds}
             />
           </div>
-          <>
-            {type === "limit" && (
-              <LimitPriceSelector
-                swapState={swapState}
-                orderDirection={orderDirection}
-              />
-            )}
-            {!swapState.isMarket && <LimitTradeDetails swapState={swapState} />}
-            {swapState.isMarket && (
-              <TradeDetails
-                swapState={swapState.marketState}
-                inDenom={swapState.baseAsset?.coinDenom}
-                inPrice={
-                  new PricePretty(
-                    DEFAULT_VS_CURRENCY,
-                    swapState.priceState.spotPrice
-                  )
-                }
-              />
-            )}
-          </>
+          {!swapState.isMarket && <LimitTradeDetails swapState={swapState} />}
+          {swapState.isMarket && (
+            <TradeDetails
+              swapState={swapState.marketState}
+              inDenom={swapState.baseAsset?.coinDenom}
+              inPrice={
+                new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  swapState.priceState.spotPrice
+                )
+              }
+            />
+          )}
           {!account?.isWalletConnected ? (
             <Button
               onClick={() =>
