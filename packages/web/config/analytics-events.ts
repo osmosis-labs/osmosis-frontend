@@ -250,6 +250,11 @@ export const EventName = {
     accessed: "1CT: Accessed",
   },
   LimitOrder: {
+    buySelected: "Buy tab selected",
+    sellSelected: "Sell tab selected",
+    swapSelected: "Swap tab selected",
+    marketOrderSelected: "Market Order selected",
+    limitOrderSelected: "Limit Order selected",
     placeOrderStarted: "Limit Order: Place order started",
     placeOrderCompleted: "Limit Order: Place order completed",
     placeOrderFailed: "Limit Order: Place order failed",

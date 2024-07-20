@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClientOnly } from "~/components/client-only";
@@ -12,7 +12,8 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
-import { EventPage } from "~/config";
+import { EventName, EventPage } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useOrderbookClaimableOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
@@ -22,6 +23,7 @@ export interface TradeToolProps {
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
   ({ page }: TradeToolProps) => {
+    const { logEvent } = useAmplitudeAnalytics();
     const [tab, setTab] = useQueryState(
       "tab",
       parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
@@ -38,6 +40,21 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
       userAddress:
         accountStore.getWallet(accountStore.osmosisChainId)?.address ?? "",
     });
+
+    useEffect(() => {
+      switch (tab) {
+        case SwapToolTab.BUY:
+          logEvent([EventName.LimitOrder.buySelected]);
+          break;
+        case SwapToolTab.SELL:
+          logEvent([EventName.LimitOrder.sellSelected]);
+          break;
+        case SwapToolTab.SWAP:
+          logEvent([EventName.LimitOrder.swapSelected]);
+          break;
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tab]);
 
     return (
       <ClientOnly>
