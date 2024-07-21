@@ -118,12 +118,12 @@ export const TokenSelectLimit: FunctionComponent<
               setIsSelectOpen(!isSelectOpen);
             }
           }}
-          className="flex items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5 hover:bg-osmoverse-825"
+          className="grid grid-cols-[auto_140px] items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5 hover:bg-osmoverse-825"
         >
           {baseAsset && (
             <div
               className={classNames(
-                "flex items-center gap-4 transition-opacity",
+                "mr-3 grid grid-cols-[48px_auto] items-center gap-4 overflow-hidden text-ellipsis transition-opacity",
                 tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
                 {
                   "opacity-40": disabled,
@@ -141,10 +141,12 @@ export const TokenSelectLimit: FunctionComponent<
                   />
                 </div>
               )}
-              <div className="flex flex-col">
-                <h6 className="inline-flex items-center gap-2">
-                  <span>{baseAsset.coinName}</span>
-                  <span className="md:caption truncate text-left text-osmoverse-400">
+              <div className="flex flex-col truncate">
+                <h6 className="inline-flex flex-wrap items-center gap-2 overflow-hidden whitespace-nowrap">
+                  <span className="truncate text-left">
+                    {baseAsset.coinName}
+                  </span>
+                  <span className="md:caption body2 truncate text-left leading-[17px] text-osmoverse-300">
                     {baseAsset.coinDenom}
                   </span>
                 </h6>
@@ -152,9 +154,9 @@ export const TokenSelectLimit: FunctionComponent<
             </div>
           )}
 
-          <div className="flex h-6 items-center justify-center">
+          <div className="flex h-6 items-center justify-end">
             {showBaseBalance && (
-              <div className="flex text-body1 text-osmoverse-300">
+              <div className="flex text-body2 text-osmoverse-300">
                 {formatPretty(baseFiatBalance)}{" "}
                 {t("addLiquidity.available").toLowerCase()}
               </div>

@@ -3,9 +3,10 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Disableable } from "~/components/types";
@@ -30,7 +31,7 @@ type AssetWithBalance = Asset & {
 
 const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
-export const PriceSelector = memo(
+export const PriceSelector = observer(
   ({
     tokenSelectionAvailable,
     disabled,
@@ -332,7 +333,7 @@ export const PriceSelector = memo(
                     })}
                   </div>
                   <div className="flex flex-col">
-                    {tab === "buy" && (
+                    {tab === "buy" && wallet?.address && (
                       <button
                         type="button"
                         onClick={openAddFundsModal}

@@ -1245,13 +1245,13 @@
     "enterAnAmountTo": "Enter an amount to",
     "sell": "Sell",
     "insufficientFunds": "Insufficient Funds",
-    "addFunds": "Add Funds",
+    "addFunds": "Add funds",
     "watchOut": "Watch out! Whale incoming",
     "selectAnAssetTo": {
       "buy": "Select an asset to buy",
       "sell": "Select an asset to sell"
     },
-    "payWith": "Pay With",
+    "payWith": "Pay with",
     "receive": "Receive",
     "swapFromAnotherAsset": "Swap from another asset",
     "connectYourWallet": "Connect your wallet",
