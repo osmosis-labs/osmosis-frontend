@@ -257,7 +257,7 @@ export const PriceSelector = memo(
                 leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items className="absolute left-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
-                  <div className="no-scrollbar flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
+                  <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
                     <SelectableQuotes
                       selectableQuotes={selectableQuotes}
                       userQuotes={userQuotes}
