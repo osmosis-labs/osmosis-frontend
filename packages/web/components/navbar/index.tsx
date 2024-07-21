@@ -185,7 +185,7 @@ export const NavBar: FunctionComponent<
       <>
         <div
           className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
             className
           )}
         >
@@ -254,9 +254,6 @@ export const NavBar: FunctionComponent<
             </Popover>
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            <h4 className="md:text-h6 md:font-h6">
-              {navBarStore.title || title}
-            </h4>
             <div className="flex items-center gap-3 lg:gap-1">
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (

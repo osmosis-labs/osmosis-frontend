@@ -90,7 +90,7 @@ export const OrderTypeSelector = () => {
 
   return (
     <Menu as="div" className="relative inline-block">
-      <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4">
+      <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4 hover:bg-osmoverse-700">
         <p className="font-semibold text-wosmongton-200">
           {type === "market" ? t("limitOrders.market") : t("limitOrders.limit")}
         </p>
@@ -145,6 +145,13 @@ export const OrderTypeSelector = () => {
                         <small className="text-sm leading-5 text-osmoverse-300">
                           {description}
                         </small>
+                      </div>
+                      <div
+                        className={classNames("flex flex-col", {
+                          "opacity-0": !isSelected,
+                        })}
+                      >
+                        <Icon id="check-mark" height={16} width={16} />
                       </div>
                     </button>
                   )}

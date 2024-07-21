@@ -61,7 +61,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         <div className="relative flex flex-col gap-3 md:gap-3 md:px-3 md:pb-4 md:pt-4">
           <div className="flex w-full items-center justify-between">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
               {isWalletConnected && (
                 <Link

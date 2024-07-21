@@ -191,7 +191,7 @@ export const PriceSelector = memo(
         <Menu as="div" className="relative inline-block">
           {({ open }) => (
             <>
-              <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+              <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 hover:bg-osmoverse-825 md:justify-start">
                 <div className="flex w-full items-center justify-between">
                   {quoteAsset && (
                     <div
@@ -331,12 +331,12 @@ export const PriceSelector = memo(
                       );
                     })}
                   </div>
-                  <div className="flex flex-col px-5 py-2">
+                  <div className="flex flex-col">
                     {tab === "buy" && (
                       <button
                         type="button"
                         onClick={openAddFundsModal}
-                        className="flex w-full items-center justify-between py-3"
+                        className="flex w-full items-center justify-between py-4 px-5 hover:bg-osmoverse-825"
                       >
                         <span className="subtitle1 text-left font-semibold text-wosmongton-200">
                           {t("limitOrders.addFunds")}
@@ -377,7 +377,7 @@ export const PriceSelector = memo(
                         }
                         setTab("swap");
                       }}
-                      className="flex w-full items-center justify-between py-3"
+                      className="flex w-full items-center justify-between py-4 px-5 hover:bg-osmoverse-825"
                     >
                       <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
                         {tab === "buy"
