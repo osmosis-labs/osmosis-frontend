@@ -173,7 +173,6 @@ export const TokenSelectLimit: FunctionComponent<
           showQuoteBalance={showQuoteBalance}
           tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
-          baseDenom={baseAsset.coinMinimalDenom}
         />
         <TokenSelectModalLimit
           headerTitle={

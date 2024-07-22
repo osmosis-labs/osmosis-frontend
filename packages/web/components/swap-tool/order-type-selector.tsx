@@ -29,7 +29,10 @@ export const OrderTypeSelector = () => {
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
   const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
-  const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
+  const [quote, setQuote] = useQueryState(
+    "quote",
+    parseAsString.withDefault("USDC")
+  );
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const { selectableBaseAssets, selectableQuoteDenoms } =
