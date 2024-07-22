@@ -157,7 +157,7 @@ export const ImmersiveBridgeFlow = ({
             }}
           >
             <div className="flex-1 overflow-y-auto">
-              <div className="sticky top-0 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
+              <div className="sticky top-0 z-[999] mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
                 {step === ImmersiveBridgeScreen.Asset ? (
                   <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
                 ) : (
