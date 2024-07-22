@@ -83,7 +83,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market" &&
         swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
       ) {
-        swapState.priceState.adjustByPercentage(new Dec(0));
+        swapState.priceState.reset();
       }
     }, [swapState.priceState, type]);
 
@@ -169,6 +169,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disabled={false}
               orderDirection={orderDirection}
             />
+            {type === "limit" && (
+              <LimitPriceSelector
+                swapState={swapState}
+                orderDirection={orderDirection}
+              />
+            )}
             <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
               <p
                 className={classNames(
@@ -211,12 +217,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             })}
           >
             <>
-              {type === "limit" && (
-                <LimitPriceSelector
-                  swapState={swapState}
-                  orderDirection={orderDirection}
-                />
-              )}
               {!swapState.isMarket && (
                 <LimitTradeDetails swapState={swapState} />
               )}
