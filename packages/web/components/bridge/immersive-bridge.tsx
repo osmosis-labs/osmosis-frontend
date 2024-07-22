@@ -47,11 +47,7 @@ export const ImmersiveBridgeFlow = ({
     "deposit" | "withdraw" | null
   >("transferDirection", {
     history: "replace",
-    parse: (value) => {
-      if (value === "deposit") return "deposit";
-      if (value === "withdraw") return "withdraw";
-      return null;
-    },
+    parse: (value) => (value === "withdraw" ? "withdraw" : "deposit"),
   });
   const [selectedAssetDenom, setSelectedAssetDenom] = useQueryState<
     string | null
