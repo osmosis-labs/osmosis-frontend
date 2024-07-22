@@ -5,13 +5,13 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { Asset, RouterKey } from "@osmosis-labs/server";
+import type { RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
   SignOptions,
 } from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
+import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -96,8 +96,7 @@ export function useSwap(
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
-  const { isOneClickTradingEnabled, oneClickTradingInfo } =
-    useOneClickTradingSession();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
@@ -222,35 +221,6 @@ export function useSwap(
   });
   const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
-  const hasExceededOneClickTradingGasLimit = useMemo(() => {
-    if (
-      !isOneClickTradingEnabled ||
-      !oneClickTradingInfo ||
-      inAmountInput.isEmpty
-    ) {
-      return false;
-    }
-
-    const networkFeeLimit = new CoinPretty(
-      oneClickTradingInfo.networkFeeLimit,
-      oneClickTradingInfo.networkFeeLimit.amount
-    );
-
-    if (
-      networkFee?.gasAmount.denom === networkFeeLimit.denom &&
-      networkFee?.gasAmount.toDec().gt(networkFeeLimit.toDec())
-    ) {
-      return true;
-    }
-
-    return false;
-  }, [
-    inAmountInput.isEmpty,
-    isOneClickTradingEnabled,
-    networkFee,
-    oneClickTradingInfo,
-  ]);
-
   const hasOverSpendLimitError = useMemo(() => {
     if (
       !networkFeeError?.message ||
@@ -311,35 +281,43 @@ export function useSwap(
               }))
             : false;
 
-          const shouldBeSignedWithOneClickTrading =
+          let shouldBeSignedWithOneClickTrading =
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
             !networkFeeError;
 
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
-            networkFeeError
+            (networkFeeError ||
+              networkFee?.amount.some(({ denom }) => denom !== "uosmo"))
           ) {
             try {
-              const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
+              const TOAST_ID = networkFeeError
+                ? "ONE_CLICK_UNAVAILABLE"
+                : "ONE_CLICK_INSUFFICIENT_OSMO";
+              const titleTranslationKey = networkFeeError
+                ? "oneClickTrading.toast.currentlyUnavailable"
+                : "oneClickTrading.toast.insufficientFunds";
+              const buttonText = networkFeeError
+                ? "oneClickTrading.toast.approveManually"
+                : "oneClickTrading.toast.continueWithoutOneClickTrading";
+
               await new Promise((continueTx, reject) => {
                 displayToast(
                   {
-                    titleTranslationKey:
-                      "oneClickTrading.toast.currentlyUnavailable",
+                    titleTranslationKey,
                     captionElement: (
                       <Button
                         variant="link"
                         className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
                         onClick={() => {
-                          toast.dismiss(ONE_CLICK_UNAVAILABLE_TOAST_ID);
+                          toast.dismiss(TOAST_ID);
+                          shouldBeSignedWithOneClickTrading = false;
                           continueTx(void 0);
                         }}
                       >
-                        {t("oneClickTrading.toast.approveManually", {
+                        {t(buttonText, {
                           walletName: account.walletInfo?.prettyName ?? "",
                         })}
                       </Button>
@@ -347,7 +325,7 @@ export function useSwap(
                   },
                   ToastType.ONE_CLICK_TRADING,
                   {
-                    toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
+                    toastId: TOAST_ID,
                     onClose: () => {
                       reject();
                     },
@@ -427,7 +405,6 @@ export function useSwap(
       isOneClickTradingEnabled,
       accountStore,
       hasOverSpendLimitError,
-      hasExceededOneClickTradingGasLimit,
       networkFeeError,
       featureFlags.swapToolSimulateFee,
       networkFee,
@@ -530,7 +507,6 @@ export function useSwap(
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
-    hasExceededOneClickTradingGasLimit,
   };
 }
 
@@ -661,7 +637,7 @@ export function useSwapAssets({
     Boolean(fromAssetDenom) &&
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
-  // use a separate query for search to maintain pagination in other infinite query
+
   const {
     data: selectableAssetPages,
     isLoading: isLoadingSelectAssets,
@@ -827,6 +803,8 @@ function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
@@ -839,6 +817,9 @@ function useSwapAmountInput({
     chainId: chainStore.osmosis.chainId,
     messages: quoteForCurrentBalance?.messages,
     enabled: networkFeeQueryEnabled,
+    signOptions: {
+      useOneClickTrading: isOneClickTradingEnabled,
+    },
   });
   const isLoadingCurrentBalanceNetworkFee =
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
@@ -961,7 +942,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends Asset>({
+function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -1008,12 +989,12 @@ function getSwapTxParameters({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1095,12 +1076,12 @@ function getSwapMessages({
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: Asset &
+  fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
-  toAsset: Asset &
+  toAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
       usdValue: PricePretty;
@@ -1156,12 +1137,12 @@ function useQueryRouterBestQuote(
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
   > & {
-    tokenIn: Asset &
+    tokenIn: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;
       }>;
-    tokenOut: Asset &
+    tokenOut: MinimalAsset &
       Partial<{
         amount: CoinPretty;
         usdValue: PricePretty;

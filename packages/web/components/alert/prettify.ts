@@ -1,6 +1,9 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
-import { isSlippageErrorMessage } from "@osmosis-labs/tx";
+import {
+  isInsufficientFeeError,
+  isSlippageErrorMessage,
+} from "@osmosis-labs/tx";
 
 import { MultiLanguageT } from "~/hooks";
 
@@ -19,13 +22,10 @@ const regexInvalidClPositionAmounts =
 const regexFailedSwapSlippage =
   /failed to execute message; message index: \d+: (.*?) token is lesser than min amount: calculated amount is lesser than min amount: invalid request/;
 
-const regexInsufficientFeeError =
-  /Insufficient balance for transaction fees. Please add funds to continue./;
-
 const regexRejectedTx = /Request rejected/;
 
 const regexOverspendError =
-  /Spend limit error: Overspend: remaining q(?:uo|ou)ta (\d+), requested (\d+)/;
+  /Spend limit error: Overspend: (\d+) has been spent but limit is (\d+)/;
 
 export function isOverspendErrorMessage({
   message,
@@ -114,8 +114,7 @@ export function prettifyTxError(
       }
     }
 
-    const matchInsufficientFeeError = message.match(regexInsufficientFeeError);
-    if (matchInsufficientFeeError) {
+    if (isInsufficientFeeError(message)) {
       return ["errors.insufficientFee"];
     }
 

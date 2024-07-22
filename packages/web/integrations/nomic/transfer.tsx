@@ -1,4 +1,4 @@
-import type { SourceChain } from "@osmosis-labs/bridge";
+import { AxelarSourceChain } from "@osmosis-labs/utils";
 import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -43,7 +43,7 @@ export const NomicTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
     balanceOnOsmosis: IBCBalance;
-    selectedSourceChainKey: SourceChain;
+    selectedSourceChainKey: AxelarSourceChain;
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
@@ -547,7 +547,7 @@ export const NomicTransfer: FunctionComponent<
                         marginLeft: 8,
                       }}
                       className="inline"
-                      src="/logos/nomic.svg"
+                      src="/external-bridges/nomic.svg"
                     />
                   </a>
                 </div>

@@ -41,7 +41,6 @@ import { Spinner } from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
-import { LinkIconButton } from "~/components/ui/button";
 import { ArrowButton } from "~/components/ui/button";
 import { ShowMoreButton } from "~/components/ui/button";
 import { Button, ChartButton } from "~/components/ui/button";
@@ -472,13 +471,11 @@ const CustomButtons = () => {
         />
       </Component>
       <Component title="Link Icon">
-        <LinkIconButton
-          href=""
-          target="_blank"
-          rel="external"
-          aria-label="X"
-          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
-        />
+        <Button size="icon" variant="secondary" aria-label="X" asChild>
+          <Link href="" target="_blank" rel="external">
+            <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
+          </Link>
+        </Button>
       </Component>
       <Component title="Show More">
         <ShowMoreButton
@@ -1010,6 +1007,8 @@ const InputsShadcn = () => {
     </Card>
   );
 };
+
+import Link from "next/link";
 
 import { QRCode } from "~/components/qrcode";
 

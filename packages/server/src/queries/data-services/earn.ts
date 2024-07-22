@@ -1,8 +1,6 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
-
-import { NUMIA_BASE_URL } from "../../env";
-import { Asset } from "../../queries/complex/assets";
 
 export const EarnStrategyCategories = [
   "Staking",
@@ -94,6 +92,7 @@ export interface RawStrategyCMSData {
   contract: string;
   tvl: string;
   apr: string;
+  balance?: string;
   geoblock: string;
   lockDuration: string;
   riskLevel: number;
@@ -187,6 +186,10 @@ export interface StrategyCMSData {
    */
   tvl: string;
   /**
+   * URL for querying Balance
+   */
+  balance?: string;
+  /**
    * Link for geoblocking check
    */
   geoblock: string;
@@ -197,15 +200,15 @@ export interface StrategyCMSData {
   /**
    * Array describing assets deposited for participation in the strategy.
    */
-  depositAssets: Asset[];
+  depositAssets: MinimalAsset[];
   /**
    * Array describing assets representing a position in the strategy.
    */
-  positionAssets: Asset[];
+  positionAssets: MinimalAsset[];
   /**
    * Array describing rewarded assets for participating in the strategy.
    */
-  rewardAssets: Asset[];
+  rewardAssets: MinimalAsset[];
   /**
    * Array of tags associated with the strategy.
    * The currently accepted tags are:
@@ -234,7 +237,7 @@ export interface EarnStrategyBalance {
 export type TokensType = "stablecoins" | "correlated" | "bluechip";
 
 export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
-  balance: PricePretty;
+  totalBalance: PricePretty;
   holdsTokens: boolean;
   daily?: RatePretty;
   tvl?: StrategyTVL;
@@ -251,13 +254,8 @@ export interface EarnStrategy extends Omit<StrategyCMSData, "tvl"> {
 }
 
 export function queryEarnUserBalance(
-  strategyId: string,
-  userOsmoAddress: string
+  url: string
 ): Promise<RawEarnStrategyBalance> {
-  const url = new URL(
-    `/earn/strategies/${strategyId}/balance/${userOsmoAddress}`,
-    NUMIA_BASE_URL
-  );
   return apiClient(url.toString());
 }
 

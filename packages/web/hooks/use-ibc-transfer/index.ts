@@ -111,7 +111,7 @@ export function useIbcTransfer({
       });
     }
 
-    counterpartyAccountRepo?.connect(account?.walletName).catch(() =>
+    counterpartyAccountRepo?.connect(account?.walletName, false).catch(() =>
       onOpenWalletSelect({
         walletOptions: [{ walletType: "cosmos", chainId: counterpartyChainId }],
       })
@@ -129,7 +129,7 @@ export function useIbcTransfer({
       prevAccountStatus !== account?.walletStatus &&
       account?.walletStatus === WalletStatus.Connected
     ) {
-      counterpartyAccountRepo?.connect(account?.walletName).catch(() =>
+      counterpartyAccountRepo?.connect(account?.walletName, false).catch(() =>
         onOpenWalletSelect({
           walletOptions: [
             { walletType: "cosmos", chainId: counterpartyChainId },

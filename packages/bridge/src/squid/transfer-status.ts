@@ -1,4 +1,5 @@
 import { StatusResponse } from "@0xsquid/sdk";
+import { Chain } from "@osmosis-labs/types";
 import { apiClient, poll } from "@osmosis-labs/utils";
 
 import type {
@@ -19,7 +20,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   readonly apiUrl: string;
   readonly squidScanBaseUrl: string;
 
-  constructor(env: BridgeEnvironment) {
+  constructor(env: BridgeEnvironment, protected readonly chainList: Chain[]) {
     this.apiUrl =
       env === "mainnet"
         ? "https://api.0xsquid.com"
@@ -102,9 +103,26 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   }
 
   makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash } = JSON.parse(
+    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
-    return `${this.squidScanBaseUrl}/gmp/${sendTxHash}`;
+
+    if (typeof fromChainId === "number" || typeof toChainId === "number") {
+      // EVM transfer
+      return `${this.squidScanBaseUrl}/gmp/${sendTxHash}`;
+    } else {
+      const chain = this.chainList.find(
+        (chain) => chain.chain_id === fromChainId
+      );
+
+      if (!chain) throw new Error("Chain not found: " + fromChainId);
+
+      if (chain.explorers.length === 0) {
+        // attempt to link to mintscan since this is an IBC transfer
+        return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
+      }
+
+      return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { truncateString } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import Link from "next/link";
+import { Fragment, FunctionComponent } from "react";
 
 export const PoolAssetsName: FunctionComponent<{
   size?: "sm" | "md";
@@ -10,17 +11,25 @@ export const PoolAssetsName: FunctionComponent<{
   if (!assetDenoms) return null;
 
   const assetsName =
-    assetDenoms.length >= 3
-      ? `${assetDenoms.length} Token Pool`
-      : assetDenoms
-          .map((asset) =>
-            asset.startsWith("ibc/")
-              ? truncateString(asset)
-              : asset.includes("channel")
-              ? truncateString(asset.split(" ")[0], 12)
-              : truncateString(asset, 16)
-          )
-          .join(size === "sm" ? "/" : " / ");
+    assetDenoms.length >= 3 ? (
+      `${assetDenoms.length} Token Pool`
+    ) : (
+      <>
+        {assetDenoms.map((asset, index) => (
+          <Fragment key={asset}>
+            <Link href={`/assets/${asset}`}>
+              {asset.startsWith("ibc/")
+                ? truncateString(asset)
+                : asset.includes("channel")
+                ? truncateString(asset.split(" ")[0], 12)
+                : truncateString(asset, 16)}
+            </Link>
+            {index < assetDenoms.length - 1 && (size === "sm" ? "/" : " / ")}
+          </Fragment>
+        ))}
+      </>
+    );
+
   return size === "sm" ? (
     <span className={classNames("subtitle1 md:subtitle2", className)}>
       {assetsName}

@@ -1,5 +1,5 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -19,7 +19,7 @@ import { queryOsmosisCMS } from "../../../queries/github";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { dayjs } from "../../../utils/dayjs";
 import { captureIfError } from "../../../utils/error";
-import { type Asset, getAsset } from "../assets";
+import { getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { convertToPricePretty } from "../price";
 
@@ -40,8 +40,13 @@ const earnRawStrategyCMSDataCache = new LRUCache<string, CacheEntry>(
 );
 export async function getStrategyBalance(
   strategyId: string,
-  userOsmoAddress: string
+  userOsmoAddress: string,
+  rawBalanceUrl: string
 ) {
+  const balanceUrl = rawBalanceUrl
+    .replace("${id}", strategyId)
+    .replace("${address}", userOsmoAddress);
+
   return await cachified({
     cache: earnStrategyBalanceCache,
     ttl: 1000 * 20,
@@ -49,7 +54,7 @@ export async function getStrategyBalance(
     getFreshValue: async (): Promise<EarnStrategyBalance | undefined> => {
       try {
         const { balance, strategy, unclaimed_rewards } =
-          await queryEarnUserBalance(strategyId, userOsmoAddress);
+          await queryEarnUserBalance(balanceUrl);
 
         return {
           balance: {
@@ -71,7 +76,12 @@ export async function getStrategyBalance(
   });
 }
 
-export async function getStrategyAnnualPercentages(aprUrl: string) {
+export async function getStrategyAnnualPercentages(
+  strategyId: string,
+  rawAprUrl: string
+) {
+  const aprUrl = rawAprUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyAnnualPercentagesCache,
     ttl: 1000 * 20,
@@ -86,7 +96,9 @@ export async function getStrategyAnnualPercentages(aprUrl: string) {
   });
 }
 
-export async function getStrategyTVL(tvlUrl: string) {
+export async function getStrategyTVL(strategyId: string, rawTvlUrl: string) {
+  const tvlUrl = rawTvlUrl.replace("${id}", strategyId);
+
   return await cachified({
     cache: earnStrategyTVLCache,
     ttl: 1000 * 20,
@@ -114,14 +126,18 @@ export async function getStrategies({
     getFreshValue: async (): Promise<{
       riskReportUrl?: string;
       categories: StategyCMSCategory[];
+      platforms: StategyCMSCategory[];
       strategies: StrategyCMSData[];
     }> => {
       try {
         const cmsData = await queryOsmosisCMS<{
           strategies: RawStrategyCMSData[];
           categories: StategyCMSCategory[];
+          platforms: StategyCMSCategory[];
           riskReportUrl: string;
-        }>({ filePath: `cms/earn/strategies.json` });
+        }>({
+          filePath: `cms/earn/strategies.json`,
+        });
 
         const aggregatedStrategies: StrategyCMSData[] = [];
 
@@ -157,11 +173,13 @@ export async function getStrategies({
             ...rawStrategy,
             depositAssets: depositAssets.filter(
               (deposit) => !!deposit
-            ) as Asset[],
+            ) as MinimalAsset[],
             positionAssets: positionAssets.filter(
               (position) => !!position
-            ) as Asset[],
-            rewardAssets: rewardAssets.filter((reward) => !!reward) as Asset[],
+            ) as MinimalAsset[],
+            rewardAssets: rewardAssets.filter(
+              (reward) => !!reward
+            ) as MinimalAsset[],
             hasLockingDuration:
               dayjs.duration(lockDuration).asMilliseconds() > 0,
           });
@@ -170,6 +188,7 @@ export async function getStrategies({
         return {
           riskReportUrl: cmsData.riskReportUrl,
           categories: cmsData.categories,
+          platforms: cmsData.platforms,
           strategies: aggregatedStrategies.filter((strat) => !strat.unlisted),
         };
       } catch (error) {

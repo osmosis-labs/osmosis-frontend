@@ -14,10 +14,13 @@ export interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
+type ClassVariants = "container" | "label" | "input" | "trailingSymbol";
+
 interface Props
   extends Optional<InputProps<string>, "currentValue">,
     Disableable,
     CustomClasses {
+  inputKey?: string;
   /** Style of the component, see Figma. */
   style?: "no-border" | "enabled" | "active" | "error";
   type?: HTMLInputTypeAttribute;
@@ -29,12 +32,17 @@ interface Props
   clearButton?: boolean;
   /** Display a symbol after the input box, ex: '%'. */
   trailingSymbol?: React.ReactNode;
+  /** @deprecated Use 'classes' instead */
   inputClassName?: string;
   isAutosize?: boolean;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
+  classes?: Partial<Record<ClassVariants, string>>;
+  styles?: Partial<Record<ClassVariants, React.CSSProperties>>;
+  onClick?: () => void;
 }
 
 export const InputBox: FunctionComponent<Props> = ({
+  inputKey,
   currentValue,
   onInput,
   onFocus,
@@ -46,12 +54,15 @@ export const InputBox: FunctionComponent<Props> = ({
   labelButtons = [],
   trailingSymbol,
   inputClassName,
+  classes,
   disabled = false,
   className,
   isAutosize,
   inputRef,
   autoFocus,
   defaultValue,
+  styles,
+  onClick,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const [inputValue, setValue] = useControllableState({
@@ -59,6 +70,18 @@ export const InputBox: FunctionComponent<Props> = ({
     defaultValue,
     onChange: onInput,
   });
+
+  const inputClassName_ = classNames(
+    "md:leading-0 w-full appearance-none bg-transparent pt-px align-middle leading-10 placeholder:text-osmoverse-500 md:p-0",
+    {
+      "text-white-disabled": disabled,
+      "text-white-high": currentValue != "" && !disabled,
+      "float-right text-right": rightEntry,
+      "pr-1": !trailingSymbol,
+    },
+    classes?.input,
+    inputClassName
+  );
 
   return (
     <div
@@ -75,19 +98,26 @@ export const InputBox: FunctionComponent<Props> = ({
         },
         className
       )}
+      style={styles?.container}
+      onClick={onClick}
     >
       <label
-        className="flex w-full shrink grow items-center"
+        className={classNames(
+          "flex w-full shrink grow items-center",
+          classes?.label
+        )}
+        style={styles?.label}
         htmlFor="text-input"
       >
         {isAutosize ? (
           <AutosizeInput
+            key={inputKey}
             inputRef={(ref) => {
               if (inputRef) {
                 inputRef.current = ref;
               }
             }}
-            inputClassName={inputClassName}
+            inputClassName={inputClassName_}
             minWidth={0}
             value={inputValue}
             onInput={(e: any) => setValue(e.target.value)}
@@ -97,21 +127,14 @@ export const InputBox: FunctionComponent<Props> = ({
               onFocus && onFocus(e);
             }}
             autoFocus={autoFocus}
+            style={styles?.input}
           />
         ) : (
           <input
+            key={inputKey}
             ref={inputRef}
             id="text-input"
-            className={classNames(
-              "md:leading-0 w-full appearance-none bg-transparent pt-px align-middle leading-10 placeholder:text-osmoverse-500 md:p-0",
-              {
-                "text-white-disabled": disabled,
-                "text-white-high": currentValue != "" && !disabled,
-                "float-right text-right": rightEntry,
-                "pr-1": !trailingSymbol,
-              },
-              inputClassName
-            )}
+            className={inputClassName_}
             value={currentValue}
             placeholder={placeholder ?? ""}
             autoComplete="off"
@@ -127,9 +150,17 @@ export const InputBox: FunctionComponent<Props> = ({
             onInput={(e: any) => onInput(e.target.value)}
             disabled={disabled}
             autoFocus={autoFocus}
+            style={styles?.input}
           />
         )}
-        {trailingSymbol && <span>{trailingSymbol}</span>}
+        {trailingSymbol && (
+          <span
+            className={classes?.trailingSymbol}
+            style={styles?.trailingSymbol}
+          >
+            {trailingSymbol}
+          </span>
+        )}
       </label>
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&

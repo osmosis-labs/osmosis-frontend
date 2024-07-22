@@ -15,7 +15,7 @@ import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 const searchBoxClasses = cva(
-  "flex flex-nowrap items-center justify-between gap-2 bg-osmoverse-850 relative transition-colors [&_input]:placeholder:font-medium",
+  "flex flex-nowrap items-center group justify-between gap-3 bg-osmoverse-825 transition-colors ease-out duration-200 group-focus-within:bg-osmoverse-800",
   {
     variants: {
       /**
@@ -37,9 +37,8 @@ const searchBoxClasses = cva(
         full: "h-14 pl-5 pr-3 w-full [&_input]:text-body1 [&_input]:font-body2",
       },
       variant: {
-        default: "[&_input]:placeholder:text-osmoverse-400 rounded-full",
-        outline:
-          "border border-osmoverse-500 [&_input]:placeholder:text-osmoverse-500 rounded-xl",
+        default: "rounded-full",
+        outline: "border border-osmoverse-500 rounded-xl",
       },
     },
     defaultVariants: {
@@ -105,16 +104,17 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           className
         )}
       >
-        <div className="h-3 w-3 shrink-0 text-osmoverse-400">
-          <Icon id="search" height={12} width={12} />
+        <div className="h-6 w-6 shrink-0 text-wosmongton-200 transition-colors duration-200 ease-out group-focus-within:text-wosmongton-100">
+          <Icon id="search" />
         </div>
-        <label className="shrink grow">
+        <label htmlFor="search-input" className="shrink grow">
           <input
+            id="search-input"
             ref={ref}
-            className="h-full w-full appearance-none bg-transparent tracking-wider transition-colors"
+            className="h-full w-full appearance-none bg-transparent tracking-wider placeholder:font-medium placeholder:text-osmoverse-500 group-focus-within:placeholder:text-osmoverse-600"
             defaultValue={_debounce ? currentValue : undefined}
             value={_debounce ? undefined : currentValue}
-            type={type}
+            type={type ?? "text"}
             autoFocus={autoFocus}
             placeholder={placeholder}
             autoComplete="off"

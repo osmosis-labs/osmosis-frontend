@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
@@ -15,7 +15,6 @@ import React, {
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getSessionPeriodTranslationKey,
   SessionPeriodScreen,
@@ -24,7 +23,9 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, IconButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { EventName } from "~/config";
 import {
+  useAmplitudeAnalytics,
   useDisclosure,
   useOneClickTradingSession,
   useTranslation,
@@ -32,7 +33,6 @@ import {
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -41,7 +41,6 @@ type Classes = "root";
 enum SettingsScreens {
   Main = "main",
   SpendLimit = "spendLimit",
-  NetworkFeeLimit = "networkFeeLimit",
   SessionPeriod = "sessionPeriod",
 }
 
@@ -72,20 +71,11 @@ export function compare1CTTransactionParams({
 }: {
   prevParams: OneClickTradingTransactionParams;
   nextParams: OneClickTradingTransactionParams;
-}): Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"> {
-  let changes = new Set<
-    "spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"
-  >();
+}): Array<"spendLimit" | "resetPeriod" | "sessionPeriod"> {
+  let changes = new Set<"spendLimit" | "resetPeriod" | "sessionPeriod">();
 
   if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
     changes.add("spendLimit");
-  }
-
-  if (
-    prevParams?.networkFeeLimit.toString() !==
-    nextParams?.networkFeeLimit.toString()
-  ) {
-    changes.add("networkFeeLimit");
   }
 
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
@@ -117,12 +107,13 @@ export const OneClickTradingSettings = ({
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
-    Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
+    Array<"spendLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
   const { chainStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -215,22 +206,21 @@ export const OneClickTradingSettings = ({
         onCancel={closeCloseConfirmDialog}
         onDiscard={onClose!}
       />
+      {onClose && (
+        <ModalCloseButton
+          onClick={() => {
+            if (changes.length > 0) {
+              return openCloseConfirmDialog();
+            }
+
+            onClose();
+          }}
+        />
+      )}
       <ScreenManager defaultScreen={SettingsScreens.Main}>
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName="main">
-              {onClose && (
-                <ModalCloseButton
-                  onClick={() => {
-                    if (changes.length > 0) {
-                      return openCloseConfirmDialog();
-                    }
-
-                    onClose();
-                  }}
-                />
-              )}
-
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
                   <IconButton
@@ -267,7 +257,9 @@ export const OneClickTradingSettings = ({
                           className:
                             "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
                         })}
-                        // TODO: Add link
+                        href="https://support.osmosis.zone/tutorials/1clicktrading"
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         {t("oneClickTrading.introduction.learnMore")} ↗️
                       </a>
@@ -282,9 +274,17 @@ export const OneClickTradingSettings = ({
                       if (hasExistingSession) onEndSession?.();
                       setTransaction1CTParams((params) => {
                         if (!params) throw new Error("1CT Params is undefined");
+
+                        const nextValue = !params.isOneClickEnabled;
+                        if (nextValue) {
+                          logEvent([
+                            EventName.OneClickTrading.enableOneClickTrading,
+                          ]);
+                        }
+
                         return {
                           ...params,
-                          isOneClickEnabled: !params.isOneClickEnabled,
+                          isOneClickEnabled: nextValue,
                         };
                       });
                     }}
@@ -342,39 +342,6 @@ export const OneClickTradingSettings = ({
                     isDisabled={isDisabled}
                   />
                   <SettingRow
-                    title={t("oneClickTrading.settings.networkFeeLimitTitle")}
-                    onClick={() =>
-                      setCurrentScreen(SettingsScreens.NetworkFeeLimit)
-                    }
-                    content={
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className={classNames(
-                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
-                          changes.includes("networkFeeLimit") &&
-                            "text-bullish-400"
-                        )}
-                        disabled={isDisabled}
-                      >
-                        <p>
-                          {transaction1CTParams
-                            ? formatPretty(
-                                transaction1CTParams?.networkFeeLimit
-                              )
-                            : ""}
-                        </p>
-                        <Icon
-                          id="chevron-right"
-                          width={18}
-                          height={18}
-                          className="text-osmoverse-500 group-hover:text-white-full"
-                        />
-                      </Button>
-                    }
-                    isDisabled={isDisabled}
-                  />
-                  <SettingRow
                     title={t("oneClickTrading.settings.sessionPeriodTitle")}
                     onClick={() =>
                       setCurrentScreen(SettingsScreens.SessionPeriod)
@@ -416,12 +383,9 @@ export const OneClickTradingSettings = ({
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        loadingText={t(
-                          "oneClickTrading.settings.editSessionButton"
-                        )}
                       >
                         {t("oneClickTrading.settings.editSessionButton")}
                       </Button>
@@ -432,33 +396,47 @@ export const OneClickTradingSettings = ({
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        loadingText={t("oneClickTrading.settings.startButton")}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
                     </div>
                   )}
 
-                {isOneClickTradingEnabled &&
-                  (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
-                    <SkeletonLoader
-                      className="h-5 self-center"
-                      isLoaded={!isLoadingEstimateRemoveTx}
-                    >
-                      <p className="text-center text-caption font-caption text-osmoverse-300">
-                        {t("oneClickTrading.settings.feeToDisable")} ~
-                        {estimateRemoveTxData?.gasAmount.toString() ??
-                          "0.000000 OSMO"}{" "}
-                        (
-                        {estimateRemoveTxData?.gasUsdValueToPay.toString() ??
-                          "(< $0.00)"}
-                        )
-                      </p>
-                    </SkeletonLoader>
-                  )}
+                <div className="flex flex-col gap-2">
+                  {isOneClickTradingEnabled &&
+                    (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
+                      <SkeletonLoader
+                        className="h-5 self-center"
+                        isLoaded={!isLoadingEstimateRemoveTx}
+                      >
+                        <p className="text-center text-caption font-caption text-osmoverse-300">
+                          {t("oneClickTrading.settings.feeToDisable")} ~
+                          {estimateRemoveTxData?.gasAmount.toString() ??
+                            "0.000000 OSMO"}{" "}
+                          (
+                          {estimateRemoveTxData?.gasUsdValueToPay ? (
+                            <>
+                              {estimateRemoveTxData.gasUsdValueToPay
+                                .toDec()
+                                .lte(new Dec(0.001))
+                                ? `< ${estimateRemoveTxData.gasUsdValueToPay.symbol}0.001`
+                                : estimateRemoveTxData.gasUsdValueToPay.toString()}
+                            </>
+                          ) : (
+                            "(< $0.00)"
+                          )}
+                          )
+                        </p>
+                      </SkeletonLoader>
+                    )}
+
+                  <p className="px-8 text-center text-caption text-osmoverse-300">
+                    {t("oneClickTrading.introduction.ledgerComingSoon")}
+                  </p>
+                </div>
               </div>
             </Screen>
 
@@ -477,17 +455,6 @@ export const OneClickTradingSettings = ({
                       ? `${remainingSpendLimit} ${t("remaining")}`
                       : undefined
                   }
-                />
-              </div>
-            </Screen>
-
-            <Screen screenName={SettingsScreens.NetworkFeeLimit}>
-              <div
-                className={classNames("flex flex-col gap-12", classes?.root)}
-              >
-                <NetworkFeeLimitScreen
-                  transaction1CTParams={transaction1CTParams!}
-                  setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
             </Screen>

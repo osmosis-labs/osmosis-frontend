@@ -261,6 +261,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
       import("@cosmos-kit/cdcwallet-extension").then(
         (m) => m.CdcwalletExtensionWallet
       ),
+    mobileDisabled: false,
     async supportsChain(chainId) {
       const cdcAvailableChains: MainnetChainIds[] = [
         "cosmoshub-4",

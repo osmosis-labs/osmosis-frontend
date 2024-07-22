@@ -244,10 +244,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t(...tError(swapState.error));
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
-    } else if (
-      swapState.hasOverSpendLimitError ||
-      swapState.hasExceededOneClickTradingGasLimit
-    ) {
+    } else if (swapState.hasOverSpendLimitError) {
       buttonText = t("swap.continueAnyway");
     } else {
       buttonText = t("swap.button");
@@ -266,21 +263,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             }}
           >
             {t("swap.warning.increaseSpendLimit")}
-          </Button>
-        </span>
-      );
-    } else if (swapState.hasExceededOneClickTradingGasLimit) {
-      warningText = (
-        <span>
-          {t("swap.warning.exceedsNetworkFeeLimit")}{" "}
-          <Button
-            variant="link"
-            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
-            onClick={() => {
-              setIs1CTIntroModalScreen("settings-no-back-button");
-            }}
-          >
-            {t("swap.warning.increaseNetworkFeeLimit")}
           </Button>
         </span>
       );
@@ -342,8 +324,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         icon={
                           <Icon
                             id="close"
-                            width={32}
-                            height={32}
+                            width={24}
+                            height={24}
                             className="text-osmoverse-400"
                           />
                         }
@@ -977,7 +959,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     !Boolean(swapState.quote) ||
                     isSwapToolLoading ||
                     Boolean(swapState.error) ||
-                    Boolean(swapState.networkFeeError)))
+                    (Boolean(swapState.networkFeeError) &&
+                      !swapState.hasOverSpendLimitError)))
               }
               onClick={sendSwapTx}
             >

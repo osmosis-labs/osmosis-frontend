@@ -142,7 +142,6 @@
       "failed": "Failed",
       "failedWithReason": "Failed: {reason}",
       "pending": "Pending",
-      "pendingRefunded": "Failed: Pending refund",
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
@@ -151,7 +150,8 @@
       "successDeposit": "Deposited",
       "successWithdraw": "Withdrew",
       "failDeposit": "Deposit failed",
-      "failWithdraw": "Withdraw failed"
+      "failWithdraw": "Withdraw failed",
+      "connectionError": "Connection error"
     },
     "ibcTransfer": {
       "buttonAdd": "Add",
@@ -220,7 +220,6 @@
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
       "approving": "Approving...",
-      "givePermission": "Give permissions to use tokens",
       "enterAddress": "{network} address",
       "errors": {
         "insufficientBal": "Insufficient Balance",
@@ -368,6 +367,7 @@
     }
   },
   "connectWallet": "Connect wallet",
+  "switchNetwork": "Switch network",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
@@ -401,12 +401,13 @@
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
     "fallbackSupport": "support",
-    "chartUnavailable": "Chart unavailable",
+    "chartUnavailable": "No data available",
     "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
     "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
-    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue."
+    "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "noData": "No data"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -496,9 +497,10 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "insufficientFunds": "Insufficient OSMO funds for 1-Click Trading",
+      "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
       "networkFeeTooHigh": "Network fee too high",
-      "enableOneClickTrading": "Enable 1-Click Trading",
-      "increaseFeeLimit": "Increase network fee limit",
+      "startANewSession": "Start a new session",
       "approveManually": "Approve manually in {walletName}",
       "continueWithWallet": "Continue with wallet",
       "sessionEnded": "Session ended on this device",
@@ -511,13 +513,9 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "1-Click Trading will be active for 1 hour on this device with a $5,000 USD spend limit",
-      "changeButton": "Change"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Trade quicker and easier",
-      "startOneClickTradingNow": "Start 1-Click Trading now",
-      "iconAlt": "1-Click Trading Small Logo"
+      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
+      "changeButton": "Edit settings",
+      "ledgerComingSoon": "Ledger hardware wallet support coming soon."
     },
     "floatingBanner": {
       "newPill": "New",
@@ -528,33 +526,24 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Spend Limit",
-      "networkFeeLimitTitle": "Network fee limit",
+      "spendLimitTitle": "Loss protection limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
       "endingSession": "Ending session",
       "feeToDisable": "Fee to disable 1-Click Trading:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Set the maximum amount that you can spend within a 1-Click Trading session period.",
+        "spendLimitDescription": "Trade without limits on trusted assets (top 50 by market cap).",
+        "spendLimitSubDescription": "For all other assets, set a limit on the maximum tradable value before requiring manual wallet approval. Trading fees also count towards this limit.",
         "fixedAmount": "Fixed amount",
         "shareOfBalance": "Share of balance",
-        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth",
-        "fluctuationNotice": "Be advised that the USD value of your spend limit is based on the value of your assets which may fluctuate."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Network fee limit",
-        "description": "Set the maximum amount you can spend on network fees for any single transaction during your 1-Click Trading session.",
-        "info": "If a fee exceeds this amount, you may proceed by manually signing transactions in your wallet.",
-        "low": "Low",
-        "average": "Average",
-        "high": "High",
-        "recommended": "Recommended"
+        "shareOfBalanceDescription": "{shareOfBalance} of your total balance on Osmosis is currently worth"
       },
       "sessionPeriodScreen": {
         "title": "Session period",
         "description": "Set a duration to allow 1-Click Trading on this device.",
         "periods": {
+          "5min": "5 minutes",
           "10min": "10 minutes",
           "30min": "30 minutes",
           "1hour": "1 hour",
@@ -571,6 +560,7 @@
     },
     "welcomeBack": {
       "title": "Welcome back",
+      "subtitle": "Connect your wallet to continue exploring Osmosis.",
       "description": "Once you connect your wallet, you will be prompted to approve a transaction to start your 1-Click Trading session.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Change 1CT params"
@@ -581,7 +571,10 @@
       "description": "Your 1-Click Trading session will start when you approve the transaction in your chosen wallet."
     },
     "profile": {
-      "sessionExpired": "Session expired"
+      "sessionExpired": "Settings",
+      "restart": "Restart",
+      "tooltipHeader": "1-Click Trading Settings",
+      "resetSession": "Restart or edit 1-Click Trading sessions from your profile."
     }
   },
   "pool": {
@@ -718,7 +711,9 @@
   },
   "search": {
     "noResultsFor": "No results for \"{query}\"",
-    "adjust": "Try adjusting your search query"
+    "adjust": "Try adjusting your search query",
+    "noPools": "No pools",
+    "poolsEmpty": "Currently there are no pools for {denom} on Osmosis"
   },
   "stake": {
     "available": "Available",
@@ -843,9 +838,7 @@
     "continueAnyway": "Continue Anyway",
     "warning": {
       "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
-      "exceedsNetworkFeeLimit": "This swap exceeds your network fee limit for 1-Click Trading.",
-      "increaseSpendLimit": "Increase spend limit",
-      "increaseNetworkFeeLimit": "Increase network fee limit"
+      "increaseSpendLimit": "Increase spend limit"
     },
     "settings": {
       "slippage": "Slippage tolerance",
@@ -872,6 +865,7 @@
     "approveOneClickTradingSession": "Approve 1-Click Trading in {walletName}.",
     "errorInitializingOneClickTradingSession": "1-Click Trading could not be enabled.",
     "retryInWalletOrContinue": "Retry in {walletName}, or continue without 1-Click Trading.",
+    "retryInWalletOrContinueNoFunds": "Not enough funds to start the session. Please deposit more and retry in {walletName}, or proceed without 1-Click Trading.",
     "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
     "retry": "Retry",
     "openExtension": "Open the {walletName} browser extension to connect your wallet.",
@@ -890,6 +884,7 @@
     "mobileWallets": "Mobile Wallets",
     "installedWallets": "Installed Wallets",
     "otherWallets": "Other Wallets",
+    "searchWallets": "Search wallets",
     "step1Title": "What are wallets?",
     "step1Content": "Wallets are used to send, receive, and access all your digital assets like OSMO and ATOM.",
     "step2Title": "No accounts. No passwords.",
@@ -897,7 +892,12 @@
     "step3Title": "Your keys, your funds.",
     "step3Content": "On Osmosis, only you are able to move your assets. With great power comes great responsibility.",
     "step4Title": "Create a wallet to get started",
-    "step4Content": "Set up your first wallet and get signed in! Send, receive, or buy assets."
+    "step4Content": "Set up your first wallet and get signed in! Send, receive, or buy assets.",
+    "yourConnectedWallets": "Your connected wallets",
+    "primaryWallet": "Primary wallet",
+    "done": "Done",
+    "manage": "Manage",
+    "disconnect": "Disconnect"
   },
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
@@ -908,11 +908,17 @@
     "withdraw": "Withdraw",
     "fromNetwork": "From network",
     "toNetwork": "To network",
+    "from": "From",
+    "to": "To",
     "max": "Max",
     "available": "available",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",
+    "transfer": "Transfer {denom}",
+    "receive": "Receive {denom}",
+    "selectDepositWallet": "Select deposit wallet",
+    "selectWithdrawWallet": "Select withdraw wallet",
     "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",
@@ -921,7 +927,21 @@
     "moreDepositOptions": "More deposit options",
     "moreWithdrawOptions": "More withdraw options",
     "convertTo": "Convert to",
+    "depositAs": "Deposit as",
+    "withdrawAs": "Withdraw as",
     "recommended": "Recommended",
+    "fee": "fee",
+    "fees": "fees",
+    "unknown": "Unknown",
+    "unknownFeeTooltip": "Currently network fees on {networkName} can’t be calculated. Network fees should be displayed in your wallet upon transaction approval.",
+    "free": "Free",
+    "cheapest": "Cheapest",
+    "fastest": "Fastest",
+    "stepLabels": {
+      "asset": "Asset",
+      "amount": "Amount",
+      "review": "Review"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
@@ -929,7 +949,54 @@
       "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Select an asset to deposit",
+      "titleWithdraw": "Select an asset to withdraw",
+      "searchAssets": "Search assets"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Select network",
+      "searchPlaceholder": "Search supported networks"
+    },
+    "pendingWithdraw": "Pending withdraw",
+    "pendingDeposit": "Pending deposit",
+    "completedWithdraw": "Withdraw completed",
+    "completedDeposit": "Deposit completed",
+    "failedWithdraw": "Withdraw failed",
+    "failedDeposit": "Deposit failed",
+    "connectionError": "Connection error",
+    "transferDetails": "Transfer details",
+    "provider": "Provider",
+    "estimatedTime": "Estimated time",
+    "providerFees": "Provider fees",
+    "networkFee": "{networkName} network fee",
+    "totalFees": "Total fees",
+    "estimatedAmountReceived": "Estimated amount received",
+    "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
+    "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received.",
+    "connect": "Connect",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmDepositTo": "Confirm deposit to {chain}",
+    "confirmWithdrawTo": "Confirm withdraw to {chain}",
+    "reviewDepositP": "Review your deposit details before confirming. Once deposited, your transaction is irreversible.",
+    "reviewWithdrawP": "Review your withdraw details before confirming. Once withdrawn, your transaction is irreversible.",
+    "lookingForBalances": "Looking for balances",
+    "dontForgetFees": "Don't forget about fees!",
+    "feesReserved": "A small amount of your total {assetName} balance has been reserved to pay fees on {networkName}.",
+    "verifyAddressWarning": "Verify the address you are withdrawing your funds to. Providing an incorrect address will result in loss of funds.",
+    "recipientAddress": "Recipient address on {chain}",
+    "enterAddress": "Enter an address",
+    "sendToAnotherAddress": "Send to another address",
+    "invalidAddress": "Invalid {chain} address",
+    "acknowledgement": "I acknowledge that I am fully responsible for the world ending etc.",
+    "done": "Done",
+    "transferFrom": "Transfer from {noun}",
+    "risks": "Bridging comes with risks.",
+    "learnMore": "Learn more",
+    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
+    "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
@@ -972,30 +1039,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
+    "onOsmosis": "on Osmosis",
     "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
     "collapse": "Collapse",
+    "info": {
+      "title": "Info",
+      "show": "Show",
+      "collapse": "Collapse",
+      "moreStats": "More stats"
+    },
     "followTheConversation": "Follow the conversation",
     "chart": {
       "xHour": "{h}H",
       "xDay": "{d}D",
       "xYear": "{y}Y",
-      "all": "ALL"
+      "all": "ALL",
+      "price": "Price",
+      "volume": "Volume",
+      "advanced": "Advanced",
+      "simple": "Simple"
     },
     "watchlist": "Watchlist",
-    "marketCapRank": "Market Cap Rank",
-    "marketCap": "Market Cap",
-    "circulatingSupply": "Circulating Supply",
-    "buyToken": "Buy {coinDenom}",
-    "staking": "Staking",
-    "liquidityInOSMOPools": "Liquidity in {number} {denom} pools",
+    "marketCapRank": "Market cap rank",
+    "marketCap": "Market cap",
+    "fullyDilutedValuation": "Fully diluted valuation",
+    "volume24h": "Total volume (24h)",
+    "volumeOnOsmosis": "Osmosis volume (24h)",
+    "liquidityOnOsmosis": "Liquidity on Osmosis",
+    "circulatingSupply": "Circulating supply",
+    "supplyOnOsmosis": "Supply on Osmosis",
     "underlyingAssets": {
       "title": "Underlying assets",
       "description": "{name} ({denom}) on Osmosis is comprised of {count} different types of {name}.",

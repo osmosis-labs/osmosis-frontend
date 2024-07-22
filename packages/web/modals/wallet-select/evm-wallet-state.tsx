@@ -7,7 +7,7 @@ import { ErrorWalletState } from "~/components/wallet-states";
 import { useTranslation } from "~/hooks";
 import { ConnectEvmWalletReturn } from "~/hooks/evm-wallet";
 import { WalletSelectModalProps } from "~/modals/wallet-select";
-import { OnConnectWallet } from "~/modals/wallet-select/utils";
+import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 
 export const EvmWalletState: FunctionComponent<
   Pick<WalletSelectModalProps, "onRequestClose"> & {

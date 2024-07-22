@@ -58,10 +58,6 @@ export async function saveAssetImageToTokensDir(
     console.info("Skipping image download for test environment");
   }
 
-  if (fs.existsSync(filePath)) {
-    return null;
-  }
-
   // Fetch the image from the URL.
   const response = await fetch(imageUrl);
   if (!response.ok) {
@@ -342,7 +338,7 @@ export function getChainList({
             : chain.chain_id,
           pretty_name: isOsmosis
             ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.pretty_name
-            : chain.chain_name,
+            : chain.pretty_name,
           apis: {
             rpc:
               isOsmosis && OSMOSIS_RPC_OVERWRITE

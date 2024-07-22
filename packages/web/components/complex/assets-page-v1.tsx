@@ -7,10 +7,10 @@ import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { Button, ShowMoreButton } from "~/components/ui/button";
-import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -44,7 +44,7 @@ const TransactionsLink = () => {
 
 export const AssetsPageV1: FunctionComponent = observer(() => {
   const { isMobile } = useWindowSize();
-  const { assetsStore } = useStore();
+  const { assetsStore, accountStore } = useStore();
   const {
     nativeBalances,
     ibcBalances,
@@ -54,19 +54,25 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const { t } = useTranslation();
   const { startBridge, bridgeAsset } = useBridge();
 
+  const isWalletConnected = Boolean(
+    accountStore.getWallet(accountStore.osmosisChainId)?.isWalletConnected
+  );
+
   // set nav bar ctas
   useNavBar({
     ctas: [
       {
         label: t("assets.table.depositButton"),
+        disabled: !isWalletConnected,
         onClick: () => {
-          startBridge("deposit");
+          startBridge({ direction: "deposit" });
         },
       },
       {
         label: t("assets.table.withdrawButton"),
+        disabled: !isWalletConnected,
         onClick: () => {
-          startBridge("withdraw");
+          startBridge({ direction: "withdraw" });
         },
       },
     ],
@@ -75,7 +81,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableDeposit = useCallback(
     (_chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
-        bridgeAsset(coinDenom, "deposit");
+        bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
       }
     },
     [bridgeAsset]
@@ -83,7 +89,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const onTableWithdraw = useCallback(
     (_chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
-        bridgeAsset(coinDenom, "withdraw");
+        bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
       }
     },
     [bridgeAsset]

@@ -39,6 +39,10 @@ export const useSelectableWallets = ({
 
           if (wallet.name === "Coinbase Wallet") {
             walletToAdd.icon = "/logos/coinbase.svg";
+
+            if (wallet.type === "injected") {
+              walletToAdd.name = "Coinbase Extension";
+            }
           }
 
           return [...acc, walletToAdd];
@@ -69,6 +73,23 @@ export const useSelectableWallets = ({
 
             const _window = window as Record<string, any>;
             const mobileWebModeName = "mobile-web";
+
+            /**
+             * If on mobile and `leap` is in `window`, it means that the user enters
+             * the frontend from Leap's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (
+              _window?.cdc_wallet?.cosmos &&
+              _window?.cdc_wallet?.cosmos.mode === mobileWebModeName
+            ) {
+              return array
+                .filter(
+                  (wallet) =>
+                    wallet.name === AvailableCosmosWallets.CryptocomWallet
+                )
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
 
             /**
              * If on mobile and `leap` is in `window`, it means that the user enters

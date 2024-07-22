@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { RootStore } from "~/stores/root";
 import { api } from "~/utils/trpc";
 
@@ -12,7 +11,7 @@ export const storeContext = React.createContext<RootStore | null>(null);
 
 /** Once data is invalidated, React Query will automatically refetch data
  *  when the dependent component becomes visible. */
-function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
+export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAsset.invalidate();
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
@@ -26,14 +25,14 @@ function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.pools.getUserSharePool.invalidate();
   apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
   apiUtils.local.balances.getUserBalances.invalidate();
+  apiUtils.local.bridgeTransfer.getSupportedAssetsBalances.invalidate();
+  apiUtils.edge.assets.getImmersiveBridgeAssets.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";
 
 export const StoreProvider = ({ children }: PropsWithChildren) => {
   const apiUtils = api.useUtils();
-  const [_, setOneClickTradingIntroModalScreen] =
-    useGlobalIs1CTIntroModalScreen();
   const { t } = useTranslation();
   const [rootStore] = useState(
     () =>
@@ -49,24 +48,9 @@ export const StoreProvider = ({ children }: PropsWithChildren) => {
           onExceeds1CTNetworkFeeLimit: ({ finish, continueTx }) => {
             displayToast(
               {
-                titleTranslationKey: t(
-                  "oneClickTrading.toast.networkFeeTooHigh"
-                ),
+                titleTranslationKey: "oneClickTrading.toast.networkFeeTooHigh",
                 captionElement: (
-                  <div className="flex flex-col items-start gap-2">
-                    <Button
-                      variant="link"
-                      className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
-                      onClick={() => {
-                        toast.dismiss(EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID);
-                        setOneClickTradingIntroModalScreen(
-                          "settings-no-back-button"
-                        );
-                        finish();
-                      }}
-                    >
-                      {t("oneClickTrading.toast.increaseFeeLimit")}
-                    </Button>
+                  <div className="flex flex-col items-start">
                     <Button
                       variant="link"
                       className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"

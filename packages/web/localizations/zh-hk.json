@@ -142,7 +142,6 @@
       "failed": "失敗的",
       "failedWithReason": "失敗的: {reason}",
       "pending": "待處理中",
-      "pendingRefunded": "失敗，待退款",
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",
@@ -151,7 +150,8 @@
       "successDeposit": "已存入",
       "successWithdraw": "退出",
       "failDeposit": "存款失敗",
-      "failWithdraw": "提現失敗"
+      "failWithdraw": "提現失敗",
+      "connectionError": "連線錯誤"
     },
     "ibcTransfer": {
       "buttonAdd": "添加",
@@ -220,7 +220,6 @@
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
-      "givePermission": "授予使用令牌的權限",
       "enterAddress": "{network}位址",
       "errors": {
         "insufficientBal": "結餘唔夠喎",
@@ -368,6 +367,7 @@
     }
   },
   "connectWallet": "連接錢包",
+  "switchNetwork": "交換網絡",
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你冇資產存入喎",
@@ -406,7 +406,8 @@
     "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
-    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。"
+    "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
+    "noData": "沒有數據"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -496,9 +497,10 @@
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "currentlyUnavailable": "一鍵交易目前無法使用",
+      "insufficientFunds": "OSMO 資金不足，無法進行一鍵交易",
+      "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
       "networkFeeTooHigh": "網路費太高",
-      "enableOneClickTrading": "啟用一鍵交易",
-      "increaseFeeLimit": "提高網路費用限額",
+      "startANewSession": "開始新會話",
       "approveManually": "在{walletName}中手動核准",
       "continueWithWallet": "繼續使用錢包",
       "sessionEnded": "會話在此裝置上結束",
@@ -511,13 +513,9 @@
       "introducingSubtitle": "進行更快、更輕鬆的交易，無需多個錢包批准的麻煩。",
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
-      "defaultParameters": "一鍵交易將在此裝置上啟動 1 小時，支出限額為 5,000 美元",
-      "changeButton": "改變"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "交易更快、更輕鬆",
-      "startOneClickTradingNow": "立即開始一鍵交易",
-      "iconAlt": "一鍵交易小徽標"
+      "defaultParameters": "預設為 1 小時，損失保護限額為 5,000 美元。",
+      "changeButton": "編輯設定",
+      "ledgerComingSoon": "Ledger 硬體錢包支援即將推出。"
     },
     "floatingBanner": {
       "newPill": "新的",
@@ -528,33 +526,24 @@
       "header": "一鍵交易",
       "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
       "enableTitle": "啟用一鍵交易",
-      "spendLimitTitle": "消費限額",
-      "networkFeeLimitTitle": "網路費用限額",
+      "spendLimitTitle": "損失保護限額",
       "sessionPeriodTitle": "會議期間",
       "startButton": "開始一鍵交易",
       "editSessionButton": "儲存變更",
       "endingSession": "結束會議",
       "feeToDisable": "停用一鍵交易的費用：",
       "spendLimitScreen": {
-        "spendLimitDescription": "設定您在一鍵交易會話期間可以花費的最大金額。",
+        "spendLimitDescription": "對可信資產進行無限制交易（按市值排名前 50 名）。",
+        "spendLimitSubDescription": "對於所有其他資產，在需要手動錢包批准之前設定最大可交易價值的限制。交易費用也計入此限額。",
         "fixedAmount": "固定值",
         "shareOfBalance": "餘額份額",
-        "shareOfBalanceDescription": "您在 Osmosis 上的總餘額的{shareOfBalance}目前價值",
-        "fluctuationNotice": "請注意，您的支出限額的美元價值取決於您的資產價值，該價值可能會波動。"
-      },
-      "networkFeeLimitScreen": {
-        "title": "網路費用限額",
-        "description": "設定一鍵交易會話期間任何單筆交易的網路費用最高金額。",
-        "info": "如果費用超過此金額，您可以透過在錢包中手動簽署交易來繼續。",
-        "low": "低的",
-        "average": "平均的",
-        "high": "高的",
-        "recommended": "受到推崇的"
+        "shareOfBalanceDescription": "您在 Osmosis 上的總餘額的{shareOfBalance}目前價值"
       },
       "sessionPeriodScreen": {
         "title": "會議期間",
         "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
         "periods": {
+          "5min": "5分鐘",
           "10min": "10分鐘",
           "30min": "30分鐘",
           "1hour": "1小時",
@@ -571,6 +560,7 @@
     },
     "welcomeBack": {
       "title": "歡迎回來",
+      "subtitle": "連接您的錢包以繼續探索 Osmosis。",
       "description": "連接錢包後，系統將提示您批准交易以開始一鍵交易會話。",
       "toggleLabel": "一鍵交易",
       "editParamsAriaLabel": "更改1CT參數"
@@ -581,7 +571,10 @@
       "description": "當您在所選錢包中批准交易時，您的一鍵交易會話將開始。"
     },
     "profile": {
-      "sessionExpired": "會話已過期"
+      "sessionExpired": "設定",
+      "restart": "重新開始",
+      "tooltipHeader": "一鍵交易設定",
+      "resetSession": "從您的個人資料重新啟動或編輯一鍵交易會話。"
     }
   },
   "pool": {
@@ -718,7 +711,9 @@
   },
   "search": {
     "noResultsFor": "沒有“ {query} ”的結果",
-    "adjust": "嘗試調整您的搜尋查詢"
+    "adjust": "嘗試調整您的搜尋查詢",
+    "noPools": "沒有泳池",
+    "poolsEmpty": "目前 Osmosis 上沒有{denom}"
   },
   "stake": {
     "available": "可用的",
@@ -843,9 +838,7 @@
     "continueAnyway": "無論如何繼續",
     "warning": {
       "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
-      "exceedsNetworkFeeLimit": "此交換超出了一鍵交易的網路費用限制。",
-      "increaseSpendLimit": "提高支出限額",
-      "increaseNetworkFeeLimit": "提高網路費用限額"
+      "increaseSpendLimit": "提高支出限額"
     },
     "settings": {
       "slippage": "允許嘅滑價",
@@ -872,6 +865,7 @@
     "approveOneClickTradingSession": "批准{walletName}中的一鍵交易。",
     "errorInitializingOneClickTradingSession": "無法啟用一鍵交易。",
     "retryInWalletOrContinue": "在{walletName}中重試，或繼續而不進行一鍵交易。",
+    "retryInWalletOrContinueNoFunds": "資金不足，無法啟動會議。請存入更多資金並在{walletName}中重試，或繼續而不進行一鍵交易。",
     "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
     "retry": "重試",
     "openExtension": "打開 {walletName} 瀏覽器擴展程序來連接您的錢包。",
@@ -890,6 +884,7 @@
     "mobileWallets": "移動錢包",
     "installedWallets": "已安裝的錢包",
     "otherWallets": "其他錢包",
+    "searchWallets": "搜尋錢包",
     "step1Title": "什麼是錢包？",
     "step1Content": "錢包用於發送、接收和訪問您的所有數字資產，如OSMO和ATOM。",
     "step2Title": "無需帳戶。無需密碼。",
@@ -897,7 +892,12 @@
     "step3Title": "您的密鑰，您的資金。",
     "step3Content": "在Osmosis上，只有您能移動您的資產。權力越大，責任越大。",
     "step4Title": "創建一個錢包以開始",
-    "step4Content": "設置您的第一個錢包並登錄！發送、接收或購買資產。"
+    "step4Content": "設置您的第一個錢包並登錄！發送、接收或購買資產。",
+    "yourConnectedWallets": "您的連網錢包",
+    "primaryWallet": "主錢包",
+    "done": "完畢",
+    "manage": "管理",
+    "disconnect": "斷開"
   },
   "swapFailed": "兌換失敗。流動性可能不夠。嘗試調整允許的滑點。",
   "transactionBroadcasting": "交易正在被廣播",
@@ -908,11 +908,17 @@
     "withdraw": "提取",
     "fromNetwork": "來自網路",
     "toNetwork": "至網路",
+    "from": "從",
+    "to": "到",
     "max": "最大限度",
     "available": "可用的",
     "transferWith": "轉移與",
     "transferTo": "傳送到",
     "receiveAsset": "接收資產",
+    "transfer": "傳輸{denom}",
+    "receive": "接收{denom}",
+    "selectDepositWallet": "選擇存款錢包",
+    "selectWithdrawWallet": "選擇提款錢包",
     "receiveAssetDescription": "當您存入某些資產時，您可以選擇想要在 Osmosis 上接收的資產版本。",
     "estimatingTime": "預計時間",
     "calculatingFees": "計算費用",
@@ -921,7 +927,21 @@
     "moreDepositOptions": "更多存款選擇",
     "moreWithdrawOptions": "更多提款選項",
     "convertTo": "轉換成",
+    "depositAs": "存款為",
+    "withdrawAs": "提款為",
     "recommended": "受到推崇的",
+    "fee": "費用",
+    "fees": "費用",
+    "unknown": "未知",
+    "unknownFeeTooltip": "目前無法計算{networkName}上的網路費用。交易批准後，網路費用應顯示在您的錢包中。",
+    "free": "自由的",
+    "cheapest": "最便宜",
+    "fastest": "最快的",
+    "stepLabels": {
+      "asset": "資產",
+      "amount": "數量",
+      "review": "審查"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
@@ -929,7 +949,54 @@
       "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "選擇要存入的資產",
+      "titleWithdraw": "選擇要提取的資產",
+      "searchAssets": "搜尋資產"
+    },
+    "bridgeNetworkSelect": {
+      "title": "選擇網路",
+      "searchPlaceholder": "搜尋支援的網絡"
+    },
+    "pendingWithdraw": "待提款",
+    "pendingDeposit": "待定存款",
+    "completedWithdraw": "提現完成",
+    "completedDeposit": "存款完成",
+    "failedWithdraw": "提現失敗",
+    "failedDeposit": "存款失敗",
+    "connectionError": "連線錯誤",
+    "transferDetails": "轉帳詳情",
+    "provider": "提供者",
+    "estimatedTime": "預計時間",
+    "providerFees": "提供者費用",
+    "networkFee": "{networkName}網路費用",
+    "totalFees": "總費用",
+    "estimatedAmountReceived": "預計收到金額",
+    "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
+    "priceImpactWarning": "此交易的價格影響為{priceImpact} ，這可能會影響最終收到的金額。",
+    "connect": "連接",
+    "confirm": "確認",
+    "cancel": "取消",
+    "confirmDepositTo": "確認充值至{chain}",
+    "confirmWithdrawTo": "確認提現至{chain}",
+    "reviewDepositP": "確認前請檢查您的存款詳細資料。一旦存入，您的交易就不可逆轉。",
+    "reviewWithdrawP": "確認前請檢查您的提款詳細資料。一旦撤回，您的交易將不可逆轉。",
+    "lookingForBalances": "尋找餘額",
+    "dontForgetFees": "不要忘記費用！",
+    "feesReserved": "您的{assetName}總餘額中的一小部分已被保留用於支付{networkName}費用。",
+    "verifyAddressWarning": "驗證您要提取資金的地址。提供不正確的地址將導致資金損失。",
+    "recipientAddress": "{chain}上的收件者地址",
+    "enterAddress": "輸入地址",
+    "sendToAnotherAddress": "發送到另一個地址",
+    "invalidAddress": "無效的{chain}地址",
+    "acknowledgement": "我承認我對世界末日等負全部責任。",
+    "done": "完畢",
+    "transferFrom": "從{noun}轉移",
+    "risks": "橋接伴隨著風險。",
+    "learnMore": "了解更多",
+    "externalTransferSplash": "將{denom}從{networkA}傳送到{networkB} ，請使用{service} 。",
+    "openNoun": "打開{noun}"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
@@ -972,30 +1039,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "透過{denom}賺錢",
     "explorePools": "探索泳池",
-    "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
-    "stakeYourDenomToEarnNoAPR": "質押您的{denom}以獲得獎勵",
-    "provideLiquidity": "提供流動性並賺取費用和掉期費用",
     "yourBalance": "您的餘額",
+    "onOsmosis": "關於滲透",
     "aboutDenom": "關於{name}",
     "ariaView": "查看{name}",
     "ariaViewOn": "查看{name}",
     "collapse": "坍塌",
+    "info": {
+      "title": "資訊",
+      "show": "展示",
+      "collapse": "坍塌",
+      "moreStats": "更多統計數據"
+    },
     "followTheConversation": "關注對話",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全部"
+      "all": "全部",
+      "price": "價格",
+      "volume": "體積",
+      "advanced": "先進的",
+      "simple": "簡單的"
     },
     "watchlist": "注意列表",
     "marketCapRank": "市值排名",
     "marketCap": "市值",
+    "fullyDilutedValuation": "完全攤薄估值",
+    "volume24h": "24小時總量",
+    "volumeOnOsmosis": "24 小時滲透體積",
+    "liquidityOnOsmosis": "滲透流動性",
     "circulatingSupply": "循環供應",
-    "buyToken": "購買{coinDenom}",
-    "staking": "質押",
-    "liquidityInOSMOPools": "{number} {denom}池中的流動性",
+    "supplyOnOsmosis": "滲透供應",
     "underlyingAssets": {
       "title": "基礎資產",
       "description": "Osmosis 上的 { {name} ( {denom} ) 由{count}不同類型的{name} 。",

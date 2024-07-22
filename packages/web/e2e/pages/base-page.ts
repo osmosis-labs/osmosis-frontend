@@ -6,6 +6,7 @@ export class BasePage {
   readonly connectWalletBtn: Locator;
   readonly kepltWalletBtn: Locator;
   readonly portfolioLink: Locator;
+  readonly poolsLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +15,7 @@ export class BasePage {
       .first();
     this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
     this.portfolioLink = page.getByText("Portfolio");
+    this.poolsLink = page.getByText("Pools");
   }
 
   async connectWallet() {
@@ -30,15 +32,27 @@ export class BasePage {
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
-    const wallet = this.page.locator(
-      '//button//span[contains(text(), "osmo")]'
-    );
+    const wallet = this.page.locator("//button/div/span[@title]");
     await this.page.waitForTimeout(2000);
-    expect(wallet).toBeTruthy();
+    // Verify that wallet modal loaded correctly
+    const isWalletVisible = await wallet.isVisible();
+    expect(isWalletVisible).toBeTruthy();
     console.log("Wallet is connected.");
   }
 
   async gotoPortfolio() {
     await this.portfolioLink.click();
+    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(2000);
+    await this.printUrl();
+  }
+
+  async gotoPools() {
+    await this.poolsLink.click();
+  }
+
+  async printUrl() {
+    const currentUrl = this.page.url();
+    console.log("FE opened at: " + currentUrl);
   }
 }

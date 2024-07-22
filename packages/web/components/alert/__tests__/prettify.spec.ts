@@ -11,19 +11,19 @@ cases(
     {
       name: "should return true for valid overspend error messages",
       message:
-        "execution blocked by authenticator (account = osmo12smx2wdlyttvyzvzgfayfz23nqwq2qjateuf7thj, authenticator id = 350, msg index = 0, msg type url = /osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn): Spend limit error: Overspend: remaining quota 3451138, requested 7744313: execute wasm contract failed [CosmWasm/wasmd@v0.45.1-0.20231128163306-4b9b61faeaa3/x/wasm/keeper/keeper.go:518] With gas wanted: '300000000' and gas used: '807240'",
+        "Fetch error. execution blocked by authenticator (account = osmo1sh8lreekwcytxpqr6lxmw5cl7kdrfsdfat2ujlvz, authenticator id = 208, msg index = 0, msg type url = /osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn): Spend limit error: Overspend: 50065777 has been spent but limit is 1000000: execute wasm contract failed [CosmWasm/wasmd@v0.45.1-0.20231128163306-4b9b61faeaa3/x/wasm/keeper/keeper.go:518] With gas wanted: '300000000' and gas used: '412629' .",
       result: true,
     },
     {
       name: "should return true for another valid overspend error message",
       message:
-        "Spend limit error: Overspend: remaining quota 1000, requested 2000",
+        "Fetch error. Spend limit error: Overspend: 2000 has been spent but limit is 1000.",
       result: true,
     },
     {
       name: "should return true for another valid overspend error message",
       message:
-        "execution blocked by authenticator (account = osmo12smx2wdlyttvyzvzgfayfz23nqwq2qjateuf7thj, authenticator id = 353, msg index = 0, msg type url = /osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn): Spend limit error: Overspend: remaining qouta 5000000, requested 23232939: execute wasm contract failed [CosmWasm/wasmd@v0.45.1-0.20231128163306-4b9b61faeaa3/x/wasm/keeper/keeper.go:518] With gas wanted: '300000000' and gas used: '501232' ",
+        "Fetch error. execution blocked by authenticator (account = osmo1sh8lreekwcytxpql6lxmw5cl7kdrflpt2ujlvz, authenticator id = 209, msg index = 0, msg type url = /osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn): Spend limit error: Overspend: 23232939 has been spent but limit is 5000000: execute wasm contract failed [CosmWasm/wasmd@v0.45.1-0.20231128163306-4b9b61faeaa3/x/wasm/keeper/keeper.go:518] With gas wanted: '300000000' and gas used: '501232' .",
       result: true,
     },
     {

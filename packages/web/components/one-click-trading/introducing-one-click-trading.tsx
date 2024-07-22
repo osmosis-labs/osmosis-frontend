@@ -36,7 +36,9 @@ export const IntroducingOneClick = ({
             className:
               "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
           })}
-          // TODO: Add link
+          href="https://support.osmosis.zone/tutorials/1clicktrading"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {t("oneClickTrading.introduction.learnMore")} ↗️
         </a>
@@ -56,18 +58,23 @@ export const IntroducingOneClick = ({
       >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
-      <p className="px-8 text-caption text-osmoverse-300">
-        {t("oneClickTrading.introduction.defaultParameters")} –{" "}
-        <Button
-          variant="link"
-          className="!inline !px-0 !text-caption text-wosmongton-300"
-          size="sm"
-          onClick={onClickEditParams}
-          disabled={isLoading || isDisabled}
-        >
-          {t("oneClickTrading.introduction.changeButton")}
-        </Button>
-      </p>
+      <div className="flex flex-col gap-2">
+        <p className="px-8 text-caption text-osmoverse-300">
+          {t("oneClickTrading.introduction.defaultParameters")} –{" "}
+          <Button
+            variant="link"
+            className="!inline !px-0 !text-caption text-wosmongton-300"
+            size="sm"
+            onClick={onClickEditParams}
+            disabled={isLoading || isDisabled}
+          >
+            {t("oneClickTrading.introduction.changeButton")}
+          </Button>
+        </p>
+        <p className="px-8 text-caption text-osmoverse-300">
+          {t("oneClickTrading.introduction.ledgerComingSoon")}
+        </p>
+      </div>
     </div>
   );
 };

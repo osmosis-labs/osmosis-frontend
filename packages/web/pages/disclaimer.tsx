@@ -88,7 +88,7 @@ const Disclaimer: NextPage = () => {
           the funds.
         </div>
       </div>
-      {flags.multiBridgeProviders && (
+      {(flags.multiBridgeProviders || flags.newDepositWithdrawFlow) && (
         <div
           className="mx-auto max-w-container overflow-y-auto p-5 md:h-full"
           id="providers-and-bridge-disclaimer"

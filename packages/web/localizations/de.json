@@ -142,7 +142,6 @@
       "failed": "Fehlgeschlagen",
       "failedWithReason": "Fehlgeschlagen: {reason}",
       "pending": "Ausstehend",
-      "pendingRefunded": "Fehlgeschlagen: Rückerstattung steht aus",
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
@@ -151,7 +150,8 @@
       "successDeposit": "Hinterlegt",
       "successWithdraw": "Zurückgezogen",
       "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen"
+      "failWithdraw": "Auszahlung fehlgeschlagen",
+      "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {
       "buttonAdd": "Hinzufügen",
@@ -220,7 +220,6 @@
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
-      "givePermission": "Erteilen Sie Berechtigungen zur Verwendung von Token",
       "enterAddress": "{network} Adresse",
       "errors": {
         "insufficientBal": "Mangelhaftes Gleichgewicht",
@@ -368,6 +367,7 @@
     }
   },
   "connectWallet": "Wallet verbinden",
+  "switchNetwork": "Netzwerk wechseln",
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
@@ -406,7 +406,8 @@
     "swapSlippage": "Der Austausch für {coinDenom} ist aufgrund von Schlupf fehlgeschlagen. Versuchen Sie, die Schlupftoleranz zu erhöhen.",
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
-    "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren."
+    "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
+    "noData": "Keine Daten"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -496,9 +497,10 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
+      "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
+      "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "enableOneClickTrading": "Aktivieren Sie den 1-Klick-Handel",
-      "increaseFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit",
+      "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
       "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",
@@ -511,13 +513,9 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "defaultParameters": "1-Click Trading ist auf diesem Gerät 1 Stunde lang aktiv, mit einem Ausgabenlimit von 5.000 USD",
-      "changeButton": "Ändern"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Handeln Sie schneller und einfacher",
-      "startOneClickTradingNow": "Starten Sie jetzt mit dem 1-Click-Trading",
-      "iconAlt": "1-Click Trading Kleines Logo"
+      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
+      "changeButton": "Einstellungen bearbeiten",
+      "ledgerComingSoon": "Unterstützung für Ledger-Hardware-Wallets in Kürze verfügbar."
     },
     "floatingBanner": {
       "newPill": "Neu",
@@ -528,33 +526,24 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Ausgabenlimit",
-      "networkFeeLimitTitle": "Begrenzung der Netzwerkgebühren",
+      "spendLimitTitle": "Verlustschutzgrenze",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
       "endingSession": "Sitzung beenden",
       "feeToDisable": "Gebühr für die Deaktivierung des 1-Click-Handels:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Legen Sie den Höchstbetrag fest, den Sie innerhalb eines 1-Click-Handelssitzungszeitraums ausgeben können.",
+        "spendLimitDescription": "Handeln Sie unbegrenzt mit vertrauenswürdigen Vermögenswerten (Top 50 nach Marktkapitalisierung).",
+        "spendLimitSubDescription": "Legen Sie für alle anderen Vermögenswerte ein Limit für den maximal handelbaren Wert fest, bevor Sie eine manuelle Wallet-Genehmigung verlangen. Handelsgebühren werden ebenfalls auf dieses Limit angerechnet.",
         "fixedAmount": "Fester Betrag",
         "shareOfBalance": "Anteil des Guthabens",
-        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert",
-        "fluctuationNotice": "Beachten Sie, dass der USD-Wert Ihres Ausgabenlimits auf dem Wert Ihres Vermögens basiert, der schwanken kann."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Begrenzung der Netzwerkgebühr",
-        "description": "Legen Sie den Höchstbetrag fest, den Sie während Ihrer 1-Click-Handelssitzung für Netzwerkgebühren für jede einzelne Transaktion ausgeben können.",
-        "info": "Wenn die Gebühr diesen Betrag übersteigt, können Sie Transaktionen manuell in Ihrem Wallet signieren.",
-        "low": "Niedrig",
-        "average": "Durchschnitt",
-        "high": "Hoch",
-        "recommended": "Empfohlen"
+        "shareOfBalanceDescription": "{shareOfBalance} Ihres Gesamtguthabens bei Osmosis ist derzeit wert"
       },
       "sessionPeriodScreen": {
         "title": "Sitzungszeitraum",
         "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
         "periods": {
+          "5min": "5 Minuten",
           "10min": "10 Minuten",
           "30min": "30 Minuten",
           "1hour": "1 Stunde",
@@ -571,6 +560,7 @@
     },
     "welcomeBack": {
       "title": "Willkommen zurück",
+      "subtitle": "Verbinden Sie Ihr Portemonnaie, um Osmosis weiter zu erkunden.",
       "description": "Sobald Sie Ihr Wallet verbunden haben, werden Sie aufgefordert, eine Transaktion zu genehmigen, um Ihre 1-Click-Handelssitzung zu starten.",
       "toggleLabel": "1-Klick-Handel",
       "editParamsAriaLabel": "1CT-Parameter ändern"
@@ -581,7 +571,10 @@
       "description": "Ihre 1-Click-Handelssitzung beginnt, wenn Sie die Transaktion in Ihrem gewählten Wallet genehmigen."
     },
     "profile": {
-      "sessionExpired": "Sitzung abgelaufen"
+      "sessionExpired": "Einstellungen",
+      "restart": "Neu starten",
+      "tooltipHeader": "1-Klick-Handelseinstellungen",
+      "resetSession": "Starten Sie 1-Click-Trading-Sitzungen von Ihrem Profil aus neu oder bearbeiten Sie sie."
     }
   },
   "pool": {
@@ -718,7 +711,9 @@
   },
   "search": {
     "noResultsFor": "Keine Ergebnisse für \" {query} \"",
-    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen"
+    "adjust": "Versuchen Sie, Ihre Suchanfrage anzupassen",
+    "noPools": "Keine Pools",
+    "poolsEmpty": "Derzeit gibt es keine Pools für {denom} auf Osmosis"
   },
   "stake": {
     "available": "Verfügbar",
@@ -843,9 +838,7 @@
     "continueAnyway": "Mache trotzdem weiter",
     "warning": {
       "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
-      "exceedsNetworkFeeLimit": "Dieser Swap überschreitet Ihr Netzwerkgebührenlimit für 1-Click-Handel.",
-      "increaseSpendLimit": "Ausgabenlimit erhöhen",
-      "increaseNetworkFeeLimit": "Erhöhen Sie das Netzwerkgebührenlimit"
+      "increaseSpendLimit": "Ausgabenlimit erhöhen"
     },
     "settings": {
       "slippage": "Rutschtoleranz",
@@ -872,6 +865,7 @@
     "approveOneClickTradingSession": "Genehmigen Sie den 1-Klick-Handel in {walletName} .",
     "errorInitializingOneClickTradingSession": "1-Click-Handel konnte nicht aktiviert werden.",
     "retryInWalletOrContinue": "Versuchen Sie es erneut in {walletName} oder fahren Sie ohne 1-Click-Handel fort.",
+    "retryInWalletOrContinueNoFunds": "Nicht genügend Guthaben, um die Sitzung zu starten. Bitte zahlen Sie mehr ein und versuchen Sie es erneut in {walletName} oder fahren Sie ohne 1-Click Trading fort.",
     "continueWithoutOneClickTrading": "Ohne 1-Click-Handel fortfahren",
     "retry": "Wiederholen",
     "openExtension": "Öffnen Sie die Browsererweiterung {walletName} um Ihre Wallet zu verbinden.",
@@ -890,6 +884,7 @@
     "mobileWallets": "Mobile Geldbörsen",
     "installedWallets": "Installierte Wallets",
     "otherWallets": "Andere Geldbörsen",
+    "searchWallets": "Suche nach Geldbörsen",
     "step1Title": "Was sind Geldbörsen?",
     "step1Content": "Wallets werden zum Senden, Empfangen und Zugreifen auf alle Ihre digitalen Assets wie OSMO und ATOM verwendet.",
     "step2Title": "Keine Konten. Keine Passwörter.",
@@ -897,7 +892,12 @@
     "step3Title": "Ihre Schlüssel, Ihr Geld.",
     "step3Content": "Auf Osmosis können nur Sie Ihr Vermögen bewegen. Mit großer Macht kommt große Verantwortung.",
     "step4Title": "Erstellen Sie zunächst eine Wallet",
-    "step4Content": "Richten Sie Ihr erstes Wallet ein und melden Sie sich an! Senden, empfangen oder kaufen Sie Vermögenswerte."
+    "step4Content": "Richten Sie Ihr erstes Wallet ein und melden Sie sich an! Senden, empfangen oder kaufen Sie Vermögenswerte.",
+    "yourConnectedWallets": "Ihre verbundenen Geldbörsen",
+    "primaryWallet": "Primäre Geldbörse",
+    "done": "Erledigt",
+    "manage": "Verwalten",
+    "disconnect": "Trennen"
   },
   "swapFailed": "Der Tausch ist fehlgeschlagen. Möglicherweise reicht die Liquidität nicht aus. Versuchen Sie, den zulässigen Schlupf anzupassen.",
   "transactionBroadcasting": "Transaktionsübertragung",
@@ -908,11 +908,17 @@
     "withdraw": "Zurückziehen",
     "fromNetwork": "Aus dem Netzwerk",
     "toNetwork": "Netzwerken",
+    "from": "Von {network}",
+    "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",
+    "transfer": "Übertragen {denom}",
+    "receive": "Empfangen Sie {denom}",
+    "selectDepositWallet": "Einzahlungs-Wallet auswählen",
+    "selectWithdrawWallet": "Wählen Sie eine Auszahlungs-Wallet aus",
     "receiveAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
     "estimatingTime": "Zeit schätzen",
     "calculatingFees": "Gebührenberechnung",
@@ -921,7 +927,21 @@
     "moreDepositOptions": "Mehr Einzahlungsmöglichkeiten",
     "moreWithdrawOptions": "Weitere Auszahlungsoptionen",
     "convertTo": "Konvertieren zu",
+    "depositAs": "Einzahlung als",
+    "withdrawAs": "Abheben als",
     "recommended": "Empfohlen",
+    "fee": "Gebühr",
+    "fees": "Gebühren",
+    "unknown": "Unbekannt",
+    "unknownFeeTooltip": "Derzeit können Netzwerkgebühren für {networkName} nicht berechnet werden. Netzwerkgebühren sollten nach der Transaktionsgenehmigung in Ihrem Wallet angezeigt werden.",
+    "free": "Frei",
+    "cheapest": "Am billigsten",
+    "fastest": "Am schnellsten",
+    "stepLabels": {
+      "asset": "Vermögenswert",
+      "amount": "Menge",
+      "review": "Rezension"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
@@ -929,7 +949,54 @@
       "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Wählen Sie einen Vermögenswert zur Einzahlung aus",
+      "titleWithdraw": "Wählen Sie einen Vermögenswert zum Abheben aus",
+      "searchAssets": "Assets suchen"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Netzwerk auswählen",
+      "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
+    },
+    "pendingWithdraw": "Ausstehender Auszug",
+    "pendingDeposit": "Ausstehende Einzahlung",
+    "completedWithdraw": "Auszahlung abgeschlossen",
+    "completedDeposit": "Einzahlung abgeschlossen",
+    "failedWithdraw": "Auszahlung fehlgeschlagen",
+    "failedDeposit": "Einzahlung fehlgeschlagen",
+    "connectionError": "Verbindungsfehler",
+    "transferDetails": "Überweisungsdetails",
+    "provider": "Anbieter",
+    "estimatedTime": "Geschätzte Zeit",
+    "providerFees": "Anbietergebühren",
+    "networkFee": "{networkName} Netzwerkgebühr",
+    "totalFees": "Gesamtkosten",
+    "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
+    "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
+    "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken.",
+    "connect": "Verbinden",
+    "confirm": "Bestätigen",
+    "cancel": "Stornieren",
+    "confirmDepositTo": "Einzahlung an {chain} bestätigen",
+    "confirmWithdrawTo": "Auszahlung an {chain} bestätigen",
+    "reviewDepositP": "Überprüfen Sie vor der Bestätigung Ihre Einzahlungsdetails. Nach der Einzahlung ist Ihre Transaktion unumkehrbar.",
+    "reviewWithdrawP": "Überprüfen Sie vor der Bestätigung Ihre Auszahlungsdetails. Nach der Auszahlung ist Ihre Transaktion unumkehrbar.",
+    "lookingForBalances": "Auf der Suche nach Gleichgewichten",
+    "dontForgetFees": "Gebühren nicht vergessen!",
+    "feesReserved": "Ein kleiner Betrag Ihres gesamten {assetName} Guthabens wurde für die Zahlung von Gebühren für {networkName} reserviert.",
+    "verifyAddressWarning": "Überprüfen Sie die Adresse, an die Sie Ihr Geld abheben. Die Angabe einer falschen Adresse führt zum Verlust des Geldes.",
+    "recipientAddress": "Empfängeradresse auf {chain}",
+    "enterAddress": "Gib eine Adresse ein",
+    "sendToAnotherAddress": "An andere Adresse versenden",
+    "invalidAddress": "Ungültige {chain} -Adresse",
+    "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
+    "done": "Erledigt",
+    "transferFrom": "Übertragung von {noun}",
+    "risks": "Das Überbrücken ist mit Risiken verbunden.",
+    "learnMore": "Erfahren Sie mehr",
+    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
+    "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
@@ -972,30 +1039,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Verdienen Sie mit {denom}",
     "explorePools": "Entdecken Sie Pools",
-    "stakeYourDenomToEarn": "Setzen Sie Ihren {denom} um einen {apr} % effektiven Jahreszins zu verdienen",
-    "stakeYourDenomToEarnNoAPR": "Setzen Sie Ihren {denom} um Belohnungen zu verdienen",
-    "provideLiquidity": "Stellen Sie Liquidität bereit und verdienen Sie an Gebühren und Swaps",
     "yourBalance": "Dein Kontostand",
+    "onOsmosis": "auf Osmosis",
     "aboutDenom": "Über {name}",
     "ariaView": "Ansicht {name}",
     "ariaViewOn": "Ansicht auf {name}",
     "collapse": "Zusammenbruch",
+    "info": {
+      "title": "Die Info",
+      "show": "Zeigen",
+      "collapse": "Zusammenbruch",
+      "moreStats": "Weitere Statistiken"
+    },
     "followTheConversation": "Verfolgen Sie das Gespräch",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "ALLE"
+      "all": "ALLE",
+      "price": "Preis",
+      "volume": "Volumen",
+      "advanced": "Fortschrittlich",
+      "simple": "Einfach"
     },
     "watchlist": "Beobachtungsliste",
     "marketCapRank": "Marktkapitalisierungsrang",
     "marketCap": "Marktkapitalisierung",
+    "fullyDilutedValuation": "Vollständig verwässerte Bewertung",
+    "volume24h": "24h Gesamtvolumen",
+    "volumeOnOsmosis": "24h Volumen auf Osmose",
+    "liquidityOnOsmosis": "Liquidität durch Osmose",
     "circulatingSupply": "Umlaufversorgung",
-    "buyToken": "Kaufen Sie {coinDenom}",
-    "staking": "Abstecken",
-    "liquidityInOSMOPools": "Liquidität in {number} {denom} Pools",
+    "supplyOnOsmosis": "Versorgung durch Osmose",
     "underlyingAssets": {
       "title": "Basiswerte",
       "description": "{name} ( {denom} ) auf Osmosis besteht aus {count} verschiedenen Typen von {name} .",

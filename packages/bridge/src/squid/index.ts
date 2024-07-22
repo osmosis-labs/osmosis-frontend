@@ -8,7 +8,13 @@ import {
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
+import {
+  apiClient,
+  ApiClientError,
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import Long from "long";
 import {
@@ -21,10 +27,10 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
+  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -35,9 +41,11 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
+  GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
+import { getSquidErrors } from "./error";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -61,6 +69,9 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
+  getDepositAddress?:
+    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
+    | undefined;
 
   async getQuote({
     fromAmount,
@@ -109,6 +120,26 @@ export class SquidBridgeProvider implements BridgeProvider {
           headers: {
             "x-integrator-id": this.integratorId,
           },
+        }).catch((e) => {
+          if (e instanceof ApiClientError) {
+            const errMsgs = getSquidErrors(e);
+
+            if (
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
+                  "The input amount is not high enough to cover the bridge fee"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "InsufficientAmountError",
+                message: e.message,
+              });
+            }
+          }
+
+          throw e;
         });
 
         const {
@@ -151,7 +182,10 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        if (data.route.params.toToken.address !== toAsset.address) {
+        if (
+          data.route.params.toToken.address.toLowerCase() !==
+          toAsset.address.toLowerCase()
+        ) {
           throw new BridgeQuoteError({
             bridgeId: SquidBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
@@ -186,20 +220,33 @@ export class SquidBridgeProvider implements BridgeProvider {
           },
           fromChain,
           toChain,
-          transferFee: {
-            denom: feeCosts[0].token.symbol,
-            amount: feeCosts[0].amount,
-            chainId: feeCosts[0].token.chainId,
-            decimals: feeCosts[0].token.decimals,
-            address: feeCosts[0].token.address,
-          },
+          transferFee:
+            feeCosts.length === 1
+              ? {
+                  denom: feeCosts[0].token.symbol,
+                  amount: feeCosts[0].amount,
+                  chainId: feeCosts[0].token.chainId,
+                  decimals: feeCosts[0].token.decimals,
+                  address: feeCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  chainId: fromChain.chainId,
+                  amount: "0",
+                },
           estimatedTime: estimatedRouteDuration,
-          estimatedGasFee: {
-            denom: gasCosts[0].token.symbol,
-            amount: gasCosts[0].amount,
-            decimals: gasCosts[0].token.decimals,
-            address: gasCosts[0].token.address,
-          },
+          estimatedGasFee:
+            gasCosts.length === 1
+              ? {
+                  denom: gasCosts[0].token.symbol,
+                  amount: gasCosts[0].amount,
+                  decimals: gasCosts[0].token.decimals,
+                  address: gasCosts[0].token.address,
+                }
+              : {
+                  ...fromAsset,
+                  amount: "0",
+                },
           transactionRequest: isEvmTransaction
             ? await this.createEvmTransaction({
                 fromAsset,
@@ -208,7 +255,11 @@ export class SquidBridgeProvider implements BridgeProvider {
                 estimateFromAmount,
                 transactionRequest,
               })
-            : await this.createCosmosTransaction(transactionRequest.data),
+            : await this.createCosmosTransaction(
+                transactionRequest.data,
+                fromAddress,
+                { denom: fromAsset.address, amount: fromAmount }
+              ),
         };
       },
     });
@@ -319,11 +370,13 @@ export class SquidBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        SquidBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV !== "production") {
+        console.error(
+          SquidBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
@@ -343,9 +396,9 @@ export class SquidBridgeProvider implements BridgeProvider {
   }): Promise<EvmBridgeTransactionRequest> {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
-    const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-      return String(chainId) === String(fromChain.chainId);
-    });
+    const squidFromChain = (await this.getChains()).find(
+      ({ chainId }) => String(chainId) === String(fromChain.chainId)
+    );
 
     if (!squidFromChain) {
       throw new BridgeQuoteError({
@@ -411,69 +464,98 @@ export class SquidBridgeProvider implements BridgeProvider {
     };
   }
 
-  /** TODO: Handle WASM transactions */
   async createCosmosTransaction(
-    data: string
+    data: string,
+    fromAddress: string,
+    fromCoin: {
+      denom: string;
+      amount: string;
+    }
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
       const parsedData = JSON.parse(data) as {
         msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
-        msg: {
-          sourcePort: string;
-          sourceChannel: string;
-          token: {
-            denom: string;
-            amount: string;
-          };
-          sender: string;
-          receiver: string;
-          timeoutTimestamp: {
-            low: number;
-            high: number;
-            unsigned: boolean;
-          };
-          memo: string;
-        };
       };
 
-      if (
-        parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer"
-      ) {
-        throw new BridgeQuoteError({
-          bridgeId: SquidBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message:
-            "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
+      if (parsedData.msgTypeUrl === IbcTransferType) {
+        const ibcData = parsedData as {
+          msgTypeUrl: typeof IbcTransferType;
+          msg: {
+            sourcePort: string;
+            sourceChannel: string;
+            token: {
+              denom: string;
+              amount: string;
+            };
+            sender: string;
+            receiver: string;
+            timeoutTimestamp: {
+              low: number;
+              high: number;
+              unsigned: boolean;
+            };
+            memo: string;
+          };
+        };
+
+        const timeoutHeight = await this.ctx.getTimeoutHeight({
+          destinationAddress: ibcData.msg.receiver,
         });
+
+        const { typeUrl, value: msg } =
+          cosmosMsgOpts.ibcTransfer.messageComposer({
+            memo: ibcData.msg.memo,
+            receiver: ibcData.msg.receiver,
+            sender: ibcData.msg.sender,
+            sourceChannel: ibcData.msg.sourceChannel,
+            sourcePort: ibcData.msg.sourcePort,
+            timeoutTimestamp: new Long(
+              ibcData.msg.timeoutTimestamp.low,
+              ibcData.msg.timeoutTimestamp.high,
+              ibcData.msg.timeoutTimestamp.unsigned
+            ).toString() as any,
+            // @ts-ignore
+            timeoutHeight,
+            token: ibcData.msg.token,
+          });
+
+        return {
+          type: "cosmos",
+          msgTypeUrl: typeUrl,
+          msg,
+        };
+      } else if (parsedData.msgTypeUrl === WasmTransferType) {
+        const cosmwasmData = parsedData as {
+          msgTypeUrl: typeof WasmTransferType;
+          msg: {
+            wasm: {
+              contract: string;
+              msg: object;
+            };
+          };
+        };
+
+        const { typeUrl, value: msg } =
+          cosmwasmMsgOpts.executeWasm.messageComposer({
+            sender: fromAddress,
+            contract: cosmwasmData.msg.wasm.contract,
+            msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
+            funds: [fromCoin],
+          });
+
+        return {
+          type: "cosmos",
+          msgTypeUrl: typeUrl,
+          msg,
+        };
       }
 
-      const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: parsedData.msg.receiver,
+      throw new BridgeQuoteError({
+        bridgeId: SquidBridgeProvider.ID,
+        errorType: "CreateCosmosTxError",
+        message:
+          "Unknown message type. Osmosis FrontEnd only supports the IBC transfer and cosmwasm executeMsg message type",
       });
-
-      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
-        {
-          memo: parsedData.msg.memo,
-          receiver: parsedData.msg.receiver,
-          sender: parsedData.msg.sender,
-          sourceChannel: parsedData.msg.sourceChannel,
-          sourcePort: parsedData.msg.sourcePort,
-          timeoutTimestamp: new Long(
-            parsedData.msg.timeoutTimestamp.low,
-            parsedData.msg.timeoutTimestamp.high,
-            parsedData.msg.timeoutTimestamp.unsigned
-          ).toString() as any,
-          // @ts-ignore
-          timeoutHeight,
-          token: parsedData.msg.token,
-        }
-      );
-
-      return {
-        type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
-      };
     } catch (e) {
       const error = e as Error | BridgeQuoteError;
 
