@@ -9,7 +9,7 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation, useWindowKeyActions } from "~/hooks";
+import { useTranslation, useWindowKeyActions, useWindowSize } from "~/hooks";
 import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
@@ -35,6 +35,7 @@ export const ImmersiveBridgeFlow = ({
   children,
 }: PropsWithChildren<BridgeFlowProvider>) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<ImmersiveBridgeScreen>(
@@ -56,7 +57,8 @@ export const ImmersiveBridgeFlow = ({
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
-  useLockBodyScroll(isVisible);
+  // `!isMobile`: body scroll is needed on mobile safari
+  useLockBodyScroll(isVisible && !isMobile);
 
   const onClose = () => {
     setIsVisible(false);
