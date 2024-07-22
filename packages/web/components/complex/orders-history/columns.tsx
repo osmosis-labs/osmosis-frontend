@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -9,7 +9,7 @@ import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
 
@@ -98,8 +98,15 @@ export const tableColumns = [
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
                     order_direction === "bid"
-                      ? placed_quantity / 1_000_000
-                      : output.quo(new Dec(1_000_000))
+                      ? placed_quantity /
+                        Number(
+                          new Dec(10)
+                            .pow(new Int(quoteAsset?.decimals ?? 0))
+                            .toString()
+                        )
+                      : output.quo(
+                          new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
+                        )
                   )
                 )}{" "}
                 of
@@ -133,7 +140,11 @@ export const tableColumns = [
           <p className="body2 text-osmoverse-300">
             {baseAsset?.symbol} · Limit
           </p>
-          <p>{formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price))}</p>
+          <p>
+            {formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price), {
+              ...getPriceExtendedFormatOptions(price),
+            })}
+          </p>
         </div>
       );
     },

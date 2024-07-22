@@ -8,14 +8,13 @@ import {
 } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import {
-  useAmplitudeAnalytics,
   useDisclosure,
   UseDisclosureReturn,
   usePreviousWhen,
@@ -39,14 +38,10 @@ interface TradeDetailsProps {
 
 export const TradeDetails = ({
   swapState,
-  slippageConfig,
-  outAmountLessSlippage,
-  outFiatAmountLessSlippage,
   inDenom,
   inPrice,
   inPriceFetching,
 }: Partial<TradeDetailsProps>) => {
-  const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
 
   const routesVisDisclosure = useDisclosure();
@@ -75,25 +70,6 @@ export const TradeDetails = ({
   const priceImpact = useMemo(
     () => swapState?.quote?.priceImpactTokenOut,
     [swapState?.quote?.priceImpactTokenOut]
-  );
-
-  const [manualSlippage, setManualSlippage] = useState("");
-  const handleManualSlippageChange = useCallback(
-    (value: string) => {
-      if (value.length > 3) return;
-
-      if (value == "") {
-        setManualSlippage("");
-        slippageConfig?.setManualSlippage(
-          slippageConfig?.defaultManualSlippage
-        );
-        return;
-      }
-
-      setManualSlippage(value);
-      slippageConfig?.setManualSlippage(new Dec(+value).toString());
-    },
-    [slippageConfig]
   );
 
   return (
@@ -278,29 +254,6 @@ export function Closer({
   }, [close, isInAmountEmpty]);
 
   return <></>;
-}
-
-function SlippageButton({
-  slippage,
-  selected,
-  onSelect,
-}: {
-  slippage: RatePretty;
-  index: number;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      onClick={onSelect}
-      className={classNames(
-        "flex w-fit items-center justify-center rounded-3xl py-1.5 px-2 transition-colors hover:bg-osmoverse-825",
-        { "bg-osmoverse-825": selected }
-      )}
-    >
-      {formatPretty(slippage)}
-    </button>
-  );
 }
 
 type Split =

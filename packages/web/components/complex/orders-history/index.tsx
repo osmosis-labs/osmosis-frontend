@@ -42,7 +42,7 @@ export const OrderHistory = observer(() => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const { count, claimAllOrders } = useOrderbookClaimableOrders({
+  const { claimAllOrders } = useOrderbookClaimableOrders({
     userAddress: wallet?.address ?? "",
   });
 
@@ -86,7 +86,6 @@ export const OrderHistory = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [table, orders]
   );
-
   const pastOrders = useMemo(
     () =>
       table
@@ -117,12 +116,15 @@ export const OrderHistory = observer(() => {
     () => (pendingOrdersCount > 0 ? 1 : 0),
     [pendingOrdersCount]
   );
+  // Whether a past orders header was added
+  const hasPastOrders = useMemo(
+    () => (pastOrders.length > 0 ? 1 : 0),
+    [pastOrders]
+  );
 
   const rowVirtualizer = useWindowVirtualizer({
     // To account for headers we add an additional row to virtualization per header added
-    count:
-      rows.length +
-      (hasFilledOrders + hasPendingOrders + pastOrders.length > 0 ? 1 : 0),
+    count: rows.length + (hasFilledOrders + hasPendingOrders + hasPastOrders),
     estimateSize: () => 84,
     paddingStart: 272,
     overscan: 3,
@@ -164,8 +166,8 @@ export const OrderHistory = observer(() => {
   ]);
 
   const filledOrderRows = useMemo(() => {
-    const minIndex = hasFilledOrders;
-    const maxIndex = filledOrdersCount + hasFilledOrders;
+    const minIndex = 0;
+    const maxIndex = filledOrdersCount + hasFilledOrders - 1;
     return virtualRows
       .filter((row) => row.index > minIndex && row.index <= maxIndex)
       .map((virtualRow) => {
@@ -191,7 +193,6 @@ export const OrderHistory = observer(() => {
     rows,
     virtualRows,
   ]);
-
   const pastOrderRows = useMemo(() => {
     // For past orders we must account for all of the previous orders and if they added headers
     const minIndex =
@@ -200,7 +201,7 @@ export const OrderHistory = observer(() => {
       pendingOrdersCount +
       hasPendingOrders;
     // Past orders fill the rest of the array so we account for that plus and headers
-    const maxIndex = orders.length + hasFilledOrders + hasPendingOrders;
+    const maxIndex = virtualRows.length - 1;
     return virtualRows
       .filter((row) => row.index > minIndex && row.index <= maxIndex)
       .map((virtualRow) => {
@@ -215,7 +216,6 @@ export const OrderHistory = observer(() => {
     pendingOrdersCount,
     rows,
     virtualRows,
-    orders.length,
   ]);
 
   if (isLoading) {
@@ -283,7 +283,7 @@ export const OrderHistory = observer(() => {
                       <div className="flex items-center gap-2 pb-3">
                         <h6>Filled orders to claim</h6>
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                          <span className="caption">{count}</span>
+                          <span className="caption">{filledOrders.length}</span>
                         </div>
                       </div>
                       <div className="flex h-12 w-12 items-center justify-center">
