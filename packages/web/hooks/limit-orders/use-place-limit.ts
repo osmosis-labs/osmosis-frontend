@@ -605,6 +605,11 @@ const useLimitPrice = ({
           return;
         }
 
+        const split = percentAdjusted.split(".");
+        if (split[0].length > 9) {
+          return;
+        }
+
         setManualPercentAdjusted(percentAdjusted);
       }
     },
@@ -618,6 +623,7 @@ const useLimitPrice = ({
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
+
   return {
     spotPrice,
     orderPrice,

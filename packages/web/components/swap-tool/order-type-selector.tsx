@@ -28,7 +28,7 @@ export const OrderTypeSelector = () => {
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
-  const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
+  const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
   const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 

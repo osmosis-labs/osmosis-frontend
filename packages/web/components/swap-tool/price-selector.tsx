@@ -45,7 +45,7 @@ export const PriceSelector = memo(
       parseAsString.withDefault("USDC")
     );
     const [base, setBase] = useQueryState(
-      "base",
+      "from",
       parseAsString.withDefault("OSMO")
     );
     const [_, setSellOpen] = useQueryState(
@@ -109,10 +109,9 @@ export const PriceSelector = memo(
               const returnAsset: AssetWithBalance = {
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
-                usdValue: walletAsset.usdValue,
               };
 
-              if (asset?.symbol === "USDC") return returnAsset;
+              // if (asset?.symbol === "USDC") return returnAsset;
 
               // In the future, we might want to pass every coin instead of just stables.
               return asset?.rawAsset.categories.includes("stablecoin")
@@ -121,7 +120,7 @@ export const PriceSelector = memo(
             })
             .filter(Boolean)
             .toSorted((a, b) =>
-              a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
+              a?.amount?.toDec().gt(b?.amount?.toDec()!) ? 1 : -1
             ) as AssetWithBalance[],
       }
     );

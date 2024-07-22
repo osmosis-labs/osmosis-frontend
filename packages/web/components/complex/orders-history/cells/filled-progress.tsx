@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
+import classNames from "classnames";
 import React, { useMemo } from "react";
 
 import { ProgressBar } from "~/components/ui/progress-bar";
@@ -39,6 +40,10 @@ export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
     <ProgressBar
       segments={progressSegments}
       classNames="h-[8px] w-[64px]"
+      totalPercentClassNames={classNames({
+        "text-bullish-400": percentFilled.gt(new Dec(0)),
+        "text-osmoverse-500": !percentFilled.gt(new Dec(0)),
+      })}
       totalPercent={formatPretty(roundedAmountFilled, {
         maxDecimals: 0,
       })}
