@@ -1286,7 +1286,8 @@
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
     "openOrders": "ઓર્ડર ખોલો",
-    "invalidPrice": "અમાન્ય કિંમત"
+    "invalidPrice": "અમાન્ય કિંમત",
+    "unavailable": "{denom} માટે અનુપલબ્ધ"
   },
   "orderHistory": {
     "orders": "ઓર્ડર",

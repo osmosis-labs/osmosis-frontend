@@ -20,7 +20,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   totalPercentClassNames,
 }) => {
   return (
-    <div className="flex w-full items-center">
+    <div className="flex items-center gap-2">
       <div
         className={cn(
           "w-full overflow-hidden rounded-xl bg-osmoverse-700",
@@ -38,7 +38,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         ))}
       </div>
       {totalPercent && totalPercent.length > 0 && (
-        <span className={cn("ml-2 text-bullish-400", totalPercentClassNames)}>
+        <span className={cn("caption", totalPercentClassNames)}>
           {totalPercent}%
         </span>
       )}

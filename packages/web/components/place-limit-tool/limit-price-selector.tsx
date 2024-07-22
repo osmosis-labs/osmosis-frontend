@@ -185,7 +185,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             {inputMode === InputMode.Price ? (
               <AutosizeInput
                 id="price-input"
-                type="number"
+                type="text"
                 min={0}
                 extraWidth={0}
                 inputClassName="bg-transparent text-white-full"

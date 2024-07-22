@@ -1286,7 +1286,8 @@
     "trade": "Торговля",
     "swapToAnotherAsset": "Обмен на другой актив",
     "openOrders": "Открытые ордера",
-    "invalidPrice": "Неверная цена"
+    "invalidPrice": "Неверная цена",
+    "unavailable": "Недоступно для {denom}"
   },
   "orderHistory": {
     "orders": "Заказы",
