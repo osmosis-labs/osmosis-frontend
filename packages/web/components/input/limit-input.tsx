@@ -6,7 +6,6 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -256,6 +255,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       <button
         className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 transition-opacity disabled:opacity-50"
         onClick={toggleMax}
+        disabled={tab === "buy" ? !quoteBalance : !baseBalance}
       >
         <span className={classNames("body2 text-wosmongton-200")}>Max</span>
       </button>
@@ -336,64 +336,61 @@ function AutoInput({
           : undefined
       }
     >
-      {loading ? (
-        <div className="flex items-center justify-center text-osmoverse-300 opacity-50 ">
-          <Spinner className="mr-4" /> Estimating...{" "}
-        </div>
-      ) : (
-        <label className="flex w-full shrink grow items-center justify-center">
-          {disableSwitching && !isFocused && <span>~</span>}
-          {type === "fiat" && (
-            <>
-              {isSubOneCent && <span>{"<"}</span>}
-              <span className={classNames({ "font-normal": !isFocused })}>
-                $
-              </span>
-            </>
-          )}
-          <AutosizeInput
-            disabled={!isFocused}
-            type="text"
-            placeholder="0"
-            value={amount}
-            inputRef={(input) => {
-              if (isFocused) {
-                setInputRef(input);
-              }
-            }}
-            inputClassName={classNames(
-              "bg-transparent !m-0 !p-0 text-h3 font-h3 text-left focus:outline-none max-w-[700px] placeholder:text-osmoverse-500",
-              {
-                "font-normal placeholder:text-osmoverse-300 font-body1 text-center":
-                  !isFocused,
-                "cursor-pointer": !isFocused && !disableSwitching,
-              }
-            )}
-            onChange={(e) => setter(e.target.value)}
-            onClick={!isFocused ? swapFocus : undefined}
-            extraWidth={
-              isFocused
-                ? type === "fiat"
-                  ? 0
-                  : 4
-                : type === "fiat"
-                ? 0
-                : undefined
+      <label
+        className={classNames(
+          "flex w-full shrink grow items-center justify-center",
+          { "animate-pulse": !isFocused && loading }
+        )}
+      >
+        {disableSwitching && !isFocused && <span>~</span>}
+        {type === "fiat" && (
+          <>
+            {isSubOneCent && <span>{"<"}</span>}
+            <span className={classNames({ "font-normal": !isFocused })}>$</span>
+          </>
+        )}
+        <AutosizeInput
+          disabled={!isFocused}
+          type="text"
+          placeholder="0"
+          value={amount}
+          inputRef={(input) => {
+            if (isFocused) {
+              setInputRef(input);
             }
-          />
-          {type === "token" && (
-            <span
-              className={classNames("ml-1 text-wosmongton-200", {
-                "opacity-60": focused === currentTypeEnum,
-                "font-normal text-osmoverse-300": !isFocused,
-              })}
-            >
-              {baseAsset && baseAsset.coinDenom}
-            </span>
+          }}
+          inputClassName={classNames(
+            "bg-transparent !m-0 !p-0 text-h3 font-h3 text-left focus:outline-none max-w-[700px] placeholder:text-osmoverse-500 h-[72px]",
+            {
+              "font-normal placeholder:text-osmoverse-300 font-body1 text-center":
+                !isFocused,
+              "cursor-pointer": !isFocused && !disableSwitching,
+            }
           )}
-          {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
-        </label>
-      )}
+          onChange={(e) => setter(e.target.value)}
+          onClick={!isFocused ? swapFocus : undefined}
+          extraWidth={
+            isFocused
+              ? type === "fiat"
+                ? 0
+                : 4
+              : type === "fiat"
+              ? 0
+              : undefined
+          }
+        />
+        {type === "token" && (
+          <span
+            className={classNames("ml-1 text-wosmongton-200", {
+              "opacity-60": focused === currentTypeEnum,
+              "font-normal text-osmoverse-300": !isFocused,
+            })}
+          >
+            {baseAsset && baseAsset.coinDenom}
+          </span>
+        )}
+        {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
+      </label>
     </div>
   );
 }

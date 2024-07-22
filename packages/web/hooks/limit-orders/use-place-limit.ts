@@ -359,11 +359,9 @@ export const usePlaceLimit = ({
     );
 
   const insufficientFunds =
-    (orderDirection === "bid"
+    orderDirection === "bid"
       ? quoteTokenBalance?.toDec()?.lt(paymentTokenValue.toDec() ?? new Dec(0))
-      : baseTokenBalance
-          ?.toDec()
-          ?.lt(paymentTokenValue.toDec() ?? new Dec(0))) ?? true;
+      : baseTokenBalance?.toDec()?.lt(paymentTokenValue.toDec() ?? new Dec(0));
 
   const expectedTokenAmountOut = useMemo(() => {
     if (isMarket) {

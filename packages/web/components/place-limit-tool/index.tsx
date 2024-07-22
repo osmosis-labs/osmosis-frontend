@@ -13,6 +13,7 @@ import {
 
 import { TokenSelectLimit } from "~/components/control/token-select-limit";
 import { LimitInput } from "~/components/input/limit-input";
+import { Spinner } from "~/components/loaders";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
@@ -102,8 +103,26 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [swapState.baseTokenBalance, swapState.quoteTokenBalance, tab]
     );
 
+    const isMarketLoading = useMemo(() => {
+      return (
+        swapState.isMarket &&
+        (swapState.marketState.isQuoteLoading ||
+          !!swapState.marketState.isLoadingNetworkFee ||
+          swapState.marketState.inAmountInput.isTyping) &&
+        !Boolean(swapState.marketState.error)
+      );
+    }, [
+      swapState.isMarket,
+      swapState.marketState.isLoadingNetworkFee,
+      swapState.marketState.isQuoteLoading,
+      swapState.marketState.inAmountInput.isTyping,
+      swapState.marketState.error,
+    ]);
+
     const getInputWidgetLabel = () => {
       switch (true) {
+        case isMarketLoading:
+          return t("limitOrders.findingBestPrice");
         case swapState.insufficientFunds:
           return t("limitOrders.insufficientFunds");
         case +swapState.inAmountInput.inputAmount > WHALE_MESSAGE_THRESHOLD:
@@ -121,7 +140,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     };
 
     const buttonText = useMemo(() => {
-      if (swapState.error) {
+      if (
+        swapState.error &&
+        swapState.error !== "errors.zeroAmount" &&
+        swapState.error !== "errors.emptyAmount" &&
+        swapState.error !== "limitOrders.insufficientFunds"
+      ) {
         return t(swapState.error);
       } else {
         return orderDirection === "bid"
@@ -129,22 +153,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           : t("limitOrders.sell");
       }
     }, [orderDirection, swapState.error, t]);
-
-    const isMarketLoading = useMemo(() => {
-      return (
-        swapState.isMarket &&
-        (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee) ||
-          swapState.marketState.inAmountInput.isTyping) &&
-        !Boolean(swapState.marketState.error)
-      );
-    }, [
-      swapState.isMarket,
-      swapState.marketState.isLoadingNetworkFee,
-      swapState.marketState.isQuoteLoading,
-      swapState.marketState.inAmountInput.isTyping,
-      swapState.marketState.error,
-    ]);
 
     const selectableBaseAssets = useMemo(() => {
       return swapState.marketState.selectableAssets.filter(
@@ -186,14 +194,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               className="relative flex flex-col rounded-2xl bg-osmoverse-1000"
               onClick={focusInput}
             >
-              <p
-                className={classNames(
-                  "body2 p-4 text-center text-osmoverse-400",
-                  { "text-rust-300": swapState.insufficientFunds }
+              <div className="flex flex-row items-center justify-center">
+                {isMarketLoading && (
+                  <Spinner className="h-4 w-4 text-wosmongton-500" />
                 )}
-              >
-                {getInputWidgetLabel()}
-              </p>
+                <p
+                  className={classNames(
+                    "body2 p-4 text-center text-osmoverse-400",
+                    {
+                      "text-rust-300": swapState.insufficientFunds,
+                      "animate-pulse": isMarketLoading,
+                    }
+                  )}
+                >
+                  {getInputWidgetLabel()}
+                </p>
+              </div>
+
               <LimitInput
                 onChange={swapState.inAmountInput.setAmount}
                 baseAsset={swapState.baseAsset!}
