@@ -400,7 +400,7 @@ const SelectableQuotes = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
+    const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
     const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault("USDC")
