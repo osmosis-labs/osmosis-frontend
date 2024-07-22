@@ -96,7 +96,7 @@ export const PriceSelector = memo(
     const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
       { userOsmoAddress: wallet?.address },
       {
-        enabled: Boolean(wallet?.address),
+        enabled: !!wallet?.address,
         select: (data) =>
           data.items
             .map((walletAsset) => {

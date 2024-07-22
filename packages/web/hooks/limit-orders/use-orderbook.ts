@@ -243,9 +243,14 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
     data: makerFeeData,
     isLoading,
     error,
-  } = api.edge.orderbooks.getMakerFee.useQuery({
-    osmoAddress: orderbookAddress,
-  });
+  } = api.edge.orderbooks.getMakerFee.useQuery(
+    {
+      osmoAddress: orderbookAddress,
+    },
+    {
+      enabled: !!orderbookAddress,
+    }
+  );
 
   const makerFee = useMemo(() => {
     if (isLoading) return new Dec(0);
@@ -287,6 +292,7 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
+      enabled: !!userAddress && addresses.length > 0,
     }
   );
 
@@ -316,10 +322,15 @@ export const useOrderbookClaimableOrders = ({
     data: orders,
     isLoading,
     isFetching,
-  } = api.edge.orderbooks.getClaimableOrders.useQuery({
-    contractAddresses: addresses,
-    userOsmoAddress: userAddress,
-  });
+  } = api.edge.orderbooks.getClaimableOrders.useQuery(
+    {
+      contractAddresses: addresses,
+      userOsmoAddress: userAddress,
+    },
+    {
+      enabled: !!userAddress && addresses.length > 0,
+    }
+  );
 
   const claimAllOrders = useCallback(async () => {
     if (!account || !orders) return;
