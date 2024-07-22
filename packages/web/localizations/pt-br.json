@@ -407,6 +407,7 @@
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
     "noData": "Sem dados",
+    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
     "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
     "startAgain": "Comece de novo"
   },

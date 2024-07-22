@@ -407,6 +407,7 @@
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
     "noData": "Keine Daten",
+    "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
     "startAgain": "Fang nochmal an"
   },

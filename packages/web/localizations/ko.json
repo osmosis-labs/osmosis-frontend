@@ -407,6 +407,7 @@
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
     "noData": "데이터 없음",
+    "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
     "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
     "startAgain": "다시 시작"
   },

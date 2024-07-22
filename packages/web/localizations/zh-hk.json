@@ -407,6 +407,7 @@
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
     "noData": "沒有數據",
+    "uhOhSomethingWentWrong": "呃哦，出了點問題",
     "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
     "startAgain": "重新開始"
   },
