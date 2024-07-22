@@ -16,14 +16,11 @@ import {
   getAssetFromAssetList,
   isNil,
   makeMinimalAsset,
+  sum,
 } from "@osmosis-labs/utils";
-import { sum } from "@osmosis-labs/utils";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
-import { useMemo } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";

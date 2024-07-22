@@ -1,17 +1,19 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ellipsisText } from "@osmosis-labs/utils";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
+import { useCallback, useState } from "react";
+import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config/analytics-events";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
-import { useWindowSize } from "~/hooks/window/use-window-size";
 import { ModalBase } from "~/modals";
 import { RecapRow } from "~/modals/review-limit-order";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 interface ReviewSwapModalProps {
   isOpen: boolean;
@@ -19,8 +21,11 @@ interface ReviewSwapModalProps {
   swapState: ReturnType<typeof useSwap>;
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
+  slippageConfig?: ObservableSlippageConfig;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
+  outputDifference?: RatePretty;
+  showOutputDifferenceWarning?: boolean;
 }
 
 export function ReviewSwapModal({
@@ -29,11 +34,35 @@ export function ReviewSwapModal({
   swapState,
   confirmAction,
   isConfirmationDisabled,
+  slippageConfig,
   outAmountLessSlippage,
   outFiatAmountLessSlippage,
+  outputDifference,
+  showOutputDifferenceWarning,
 }: ReviewSwapModalProps) {
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
+  // const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const [manualSlippage, setManualSlippage] = useState("");
+
+  const handleManualSlippageChange = useCallback(
+    (value: string) => {
+      if (value.length > 3) return;
+
+      if (value == "") {
+        setManualSlippage("");
+        slippageConfig?.setManualSlippage(
+          slippageConfig?.defaultManualSlippage
+        );
+        return;
+      }
+
+      setManualSlippage(value);
+      slippageConfig?.setManualSlippage(new Dec(+value).toString());
+    },
+    [slippageConfig]
+  );
 
   return (
     <ModalBase
@@ -54,7 +83,7 @@ export function ReviewSwapModal({
         </div>
         <div className="flex flex-col px-8 pb-8">
           <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
-            <div className="flex items-center justify-between p-2">
+            <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
                 {swapState.fromAsset && (
                   <Image
@@ -67,21 +96,23 @@ export function ReviewSwapModal({
                 )}
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("limitOrders.sell")}</p>
-                  <span className="subtitle1">
-                    {swapState.fromAsset?.coinName}
-                  </span>
+                  <span className="subtitle1">{`${swapState.inAmountInput.inputAmount} ${swapState.fromAsset?.coinDenom}`}</span>
                 </div>
               </div>
               <div className="flex flex-col items-end">
+                {/* <span className="subtitle1 font-normal">{` .`}</span> */}
                 <p className="text-osmoverse-300">
                   {formatPretty(
                     swapState.inAmountInput.fiatValue ??
-                      new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                      new PricePretty(DEFAULT_VS_CURRENCY, 0),
+                    {
+                      ...getPriceExtendedFormatOptions(
+                        swapState.inAmountInput?.fiatValue?.toDec() ??
+                          new Dec(0)
+                      ),
+                    }
                   )}
                 </p>
-                <span className="subtitle1 font-normal">
-                  {`${swapState.inAmountInput.inputAmount} ${swapState.fromAsset?.coinDenom}`}
-                </span>
               </div>
             </div>
             <div className="flex items-center justify-between p-2">
@@ -92,17 +123,19 @@ export function ReviewSwapModal({
                     className="h-6 w-6 text-osmoverse-400"
                   />
                 </div>
-                <span className="body2 text-osmoverse-300">
-                  {t("limitOrders.estimatedFees")}
-                </span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="body2 text-osmoverse-300">
-                  ~${formatPretty(swapState.totalFee)}
-                </span>
+                <span
+                  className={classNames(
+                    "body2",
+                    showOutputDifferenceWarning
+                      ? "text-rust-400"
+                      : "text-osmoverse-600"
+                  )}
+                >{`-${outputDifference}`}</span>
               </div>
             </div>
-            <div className="flex items-center justify-between p-2">
+            <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
                 {swapState.toAsset && (
                   <Image
@@ -116,59 +149,82 @@ export function ReviewSwapModal({
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
                   <span className="subtitle1">
-                    {swapState.toAsset?.coinName}
+                    {swapState.quote?.amount && (
+                      <>
+                        {formatPretty(swapState.quote?.amount.toDec(), {
+                          minimumSignificantDigits: 6,
+                          maximumSignificantDigits: 6,
+                          maxDecimals: 10,
+                          notation: "standard",
+                        })}{" "}
+                        {swapState.toAsset?.coinDenom}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
               <div className="flex flex-col items-end">
                 <p className="text-osmoverse-300">
-                  {formatPretty(swapState.tokenOutFiatValue ?? new Dec(0))}
+                  {formatPretty(swapState.tokenOutFiatValue ?? new Dec(0), {
+                    ...getPriceExtendedFormatOptions(
+                      swapState.tokenOutFiatValue?.toDec() ?? new Dec(0)
+                    ),
+                  })}
                 </p>
-                <span className="subtitle1 font-normal">
-                  {swapState.quote?.amount &&
-                    formatPretty(swapState.quote?.amount)}
-                </span>
               </div>
             </div>
           </div>
           <div className="flex flex-col">
             <div className="flex flex-col py-3">
-              <RecapRow
-                left={t("limitOrders.expectedRate")}
-                right={
-                  <span
-                    className={classNames(
-                      "body2 text-osmoverse-100 transition-opacity",
-                      {
-                        "opacity-50":
-                          swapState.isQuoteLoading ||
-                          swapState.inAmountInput.isTyping,
-                      }
-                    )}
-                  >
-                    1{" "}
-                    <span title={swapState.fromAsset?.coinDenom}>
-                      {ellipsisText(
-                        swapState.fromAsset?.coinDenom ?? "",
-                        isMobile ? 11 : 20
-                      )}
-                    </span>{" "}
-                    {`≈ ${
-                      swapState.toAsset
-                        ? formatPretty(
-                            swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
-                            {
-                              maxDecimals: Math.min(
-                                swapState.toAsset.coinDecimals,
-                                8
-                              ),
-                            }
-                          )
-                        : "0"
-                    }`}
-                  </span>
-                }
-              />
+              {slippageConfig && (
+                <RecapRow
+                  left={t("swap.settings.slippage")}
+                  right={
+                    <div className="flex items-center justify-end">
+                      <div
+                        className={classNames(
+                          "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
+                          {
+                            "bg-osmoverse-825":
+                              slippageConfig?.isManualSlippage,
+                          }
+                        )}
+                      >
+                        <AutosizeInput
+                          type="number"
+                          minWidth={30}
+                          placeholder={
+                            slippageConfig?.defaultManualSlippage + "%"
+                          }
+                          className="w-fit bg-transparent px-0"
+                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
+                          value={manualSlippage}
+                          onFocus={() =>
+                            slippageConfig?.setIsManualSlippage(true)
+                          }
+                          // autoFocus={slippageConfig?.isManualSlippage}
+                          onChange={(e) => {
+                            handleManualSlippageChange(e.target.value);
+
+                            logEvent([
+                              EventName.Swap.slippageToleranceSet,
+                              {
+                                fromToken: swapState?.fromAsset?.coinDenom,
+                                toToken: swapState?.toAsset?.coinDenom,
+                                // isOnHome: page === "Swap Page",
+                                isOnHome: true,
+                                percentage: slippageConfig?.slippage.toString(),
+                                page: "Swap Page",
+                              },
+                            ]);
+                          }}
+                        />
+                        {manualSlippage !== "" && <span>%</span>}
+                      </div>
+                    </div>
+                  }
+                />
+              )}
               <RecapRow
                 left={t("limitOrders.receiveMin")}
                 right={
@@ -178,14 +234,20 @@ export function ReviewSwapModal({
                       swapState.toAsset && (
                         <span className="text-osmoverse-100">
                           {formatPretty(outAmountLessSlippage, {
-                            maxDecimals: 8,
+                            maxDecimals: 6,
                           })}{" "}
                           {swapState.toAsset.coinDenom}
                         </span>
                       )}{" "}
                     {outFiatAmountLessSlippage && (
                       <span className="text-osmoverse-300">
-                        (~{formatPretty(outFiatAmountLessSlippage)})
+                        (~
+                        {formatPretty(outFiatAmountLessSlippage, {
+                          ...getPriceExtendedFormatOptions(
+                            outFiatAmountLessSlippage.toDec()
+                          ),
+                        })}
+                        )
                       </span>
                     )}
                   </span>

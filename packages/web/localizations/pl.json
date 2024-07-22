@@ -1286,7 +1286,8 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
     "openOrders": "Otwarte zlecenia",
-    "invalidPrice": "Nieprawidłowa cena"
+    "invalidPrice": "Nieprawidłowa cena",
+    "unavailable": "Niedostępne dla {denom}"
   },
   "orderHistory": {
     "orders": "Zamówienia",

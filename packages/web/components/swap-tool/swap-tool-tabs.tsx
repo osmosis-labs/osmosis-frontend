@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
 import { useTranslation } from "~/hooks";
+import { theme } from "~/tailwind.config";
 
 export enum SwapToolTab {
   SWAP = "swap",
@@ -32,14 +33,17 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
       {
         label: t("portfolio.buy"),
         value: SwapToolTab.BUY,
+        color: theme.colors.bullish[400],
       },
       {
         label: t("limitOrders.sell"),
         value: SwapToolTab.SELL,
+        color: theme.colors.rust[400],
       },
       {
         label: t("swap.title"),
         value: SwapToolTab.SWAP,
+        color: theme.colors.wosmongton[300],
       },
     ],
     [t]
@@ -54,13 +58,16 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
             key={`swap-tab-${tab.value}`}
             onClick={() => setTab(tab.value)}
             className={classNames("rounded-3xl px-4 py-3 transition-colors", {
-              "bg-osmoverse-700": isActive,
               "hover:bg-osmoverse-850": !isActive,
             })}
+            style={{
+              backgroundColor: isActive ? tab.color : undefined,
+            }}
           >
             <p
               className={classNames("font-semibold", {
                 "text-wosmongton-100": !isActive,
+                "text-osmoverse-900": isActive,
               })}
             >
               {tab.label}

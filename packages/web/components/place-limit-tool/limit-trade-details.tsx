@@ -1,7 +1,6 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import React, { FC, memo, useMemo } from "react";
 
@@ -20,18 +19,6 @@ interface LimitTradeDetailsProps {
 export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
   ({ swapState }) => {
     const { t } = useTranslation();
-    const { makerFeeFiat /*totalFeeFiat*/ } = useMemo(() => {
-      const makerFeeFiat = (
-        swapState.paymentFiatValue ??
-        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-      ).mul(swapState.makerFee);
-
-      const totalFeeFiat = makerFeeFiat;
-      return {
-        makerFeeFiat,
-        totalFeeFiat,
-      };
-    }, [swapState.makerFee, swapState.paymentFiatValue]);
 
     const isLoading = useMemo(() => {
       return swapState.isMakerFeeLoading;
@@ -140,7 +127,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                     <span>
                       <span className="text-osmoverse-100">
                         ~
-                        {formatPretty(makerFeeFiat, {
+                        {formatPretty(swapState.feeUsdValue, {
                           maxDecimals: 2,
                           minimumFractionDigits: 2,
                         })}

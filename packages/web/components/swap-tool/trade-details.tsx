@@ -9,13 +9,11 @@ import {
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
-import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -36,6 +34,7 @@ interface TradeDetailsProps {
   outFiatAmountLessSlippage?: PricePretty;
   inDenom?: string;
   inPrice?: CoinPretty | PricePretty;
+  inPriceFetching?: boolean;
 }
 
 export const TradeDetails = ({
@@ -45,6 +44,7 @@ export const TradeDetails = ({
   outFiatAmountLessSlippage,
   inDenom,
   inPrice,
+  inPriceFetching,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
@@ -82,6 +82,14 @@ export const TradeDetails = ({
     (value: string) => {
       if (value.length > 3) return;
 
+      if (value == "") {
+        setManualSlippage("");
+        slippageConfig?.setManualSlippage(
+          slippageConfig?.defaultManualSlippage
+        );
+        return;
+      }
+
       setManualSlippage(value);
       slippageConfig?.setManualSlippage(new Dec(+value).toString());
     },
@@ -106,22 +114,25 @@ export const TradeDetails = ({
                 )}
                 disabled={isInAmountEmpty}
               >
-                <span
-                  className={classNames(
-                    "body2 text-osmoverse-300 transition-opacity",
-                    {
-                      "opacity-0": open,
-                    }
-                  )}
-                >
-                  {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                  {inPrice &&
-                    formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                      maxDecimals: inPrice
-                        ? 2
-                        : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
-                    })}
-                </span>
+                <SkeletonLoader isLoaded={Boolean(inPrice)}>
+                  <span
+                    className={classNames(
+                      "body2 text-osmoverse-300 transition-opacity",
+                      {
+                        "opacity-0": open,
+                        "animate-pulse": inPriceFetching,
+                      }
+                    )}
+                  >
+                    {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                    {inPrice &&
+                      formatPretty(inPrice ?? inPrice ?? new Dec(0), {
+                        maxDecimals: inPrice
+                          ? 2
+                          : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
+                      })}
+                  </span>
+                </SkeletonLoader>
                 <span
                   className={classNames("absolute transition-opacity", {
                     "opacity-100": open,
@@ -209,7 +220,11 @@ export const TradeDetails = ({
                           <span className="text-osmoverse-100">
                             ~
                             {formatPretty(
-                              swapState?.tokenInFeeAmountFiatValue ?? new Dec(0)
+                              swapState?.tokenInFeeAmountFiatValue ??
+                                new Dec(0),
+                              {
+                                maxDecimals: 2,
+                              }
                             )}
                           </span>
                           {swapState?.quote?.swapFee
@@ -220,95 +235,6 @@ export const TradeDetails = ({
                     </>
                   }
                 />
-                {slippageConfig && (
-                  <RecapRow
-                    left={t("swap.settings.slippage")}
-                    right={
-                      <div className="flex items-center justify-end">
-                        {slippageConfig?.selectableSlippages.map((props) => (
-                          <SlippageButton
-                            key={`slippage-${props.index}`}
-                            {...props}
-                            onSelect={() => {
-                              slippageConfig.select(props.index);
-
-                              logEvent([
-                                EventName.Swap.slippageToleranceSet,
-                                {
-                                  percentage:
-                                    slippageConfig.slippage.toString(),
-                                  page: "Swap Page",
-                                },
-                              ]);
-                            }}
-                          />
-                        ))}
-                        <div
-                          className={classNames(
-                            "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
-                            {
-                              "bg-osmoverse-825":
-                                slippageConfig?.isManualSlippage,
-                            }
-                          )}
-                        >
-                          <AutosizeInput
-                            type="number"
-                            minWidth={30}
-                            placeholder={t("pool.custom")}
-                            className="w-fit bg-transparent px-0"
-                            inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
-                            value={manualSlippage}
-                            onFocus={() =>
-                              slippageConfig?.setIsManualSlippage(true)
-                            }
-                            autoFocus={slippageConfig?.isManualSlippage}
-                            onChange={(e) => {
-                              handleManualSlippageChange(e.target.value);
-
-                              logEvent([
-                                EventName.Swap.slippageToleranceSet,
-                                {
-                                  fromToken: swapState?.fromAsset?.coinDenom,
-                                  toToken: swapState?.toAsset?.coinDenom,
-                                  // isOnHome: page === "Swap Page",
-                                  isOnHome: true,
-                                  percentage:
-                                    slippageConfig?.slippage.toString(),
-                                  page: "Swap Page",
-                                },
-                              ]);
-                            }}
-                          />
-                          {manualSlippage !== "" && <span>%</span>}
-                        </div>
-                      </div>
-                    }
-                  />
-                )}
-                <hr className="my-2 w-full text-osmoverse-700" />
-                {outAmountLessSlippage &&
-                  outFiatAmountLessSlippage &&
-                  swapState?.toAsset && (
-                    <RecapRow
-                      left={t("limitOrders.receiveEstimated")}
-                      right={
-                        <span>
-                          <span className="text-osmoverse-100">
-                            {formatPretty(outAmountLessSlippage, {
-                              maxDecimals: 8,
-                            })}{" "}
-                            {swapState?.toAsset.coinDenom}
-                          </span>{" "}
-                          {outFiatAmountLessSlippage && (
-                            <span className="text-osmoverse-300">
-                              (~{formatPretty(outFiatAmountLessSlippage)})
-                            </span>
-                          )}
-                        </span>
-                      }
-                    />
-                  )}
 
                 <span className="subtitle1 py-3 text-white-full">
                   {t("limitOrders.swapRoute")}

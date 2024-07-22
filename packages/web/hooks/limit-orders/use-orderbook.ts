@@ -1,9 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { Orderbook } from "@osmosis-labs/server";
+import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
 import { MappedLimitOrder } from "@osmosis-labs/trpc";
 import { MinimalAsset } from "@osmosis-labs/types";
-import { getAssetFromAssetList, makeMinimalAsset } from "@osmosis-labs/utils";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -37,14 +37,12 @@ export const useOrderbooks = (): {
  * Fetch is asynchronous so a loading state is returned.
  * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
  */
-export const useOrderbookSelectableDenoms = <TAsset extends MinimalAsset>() => {
+export const useOrderbookSelectableDenoms = () => {
   const { orderbooks, isLoading } = useOrderbooks();
 
   const { data: selectableAssetPages } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
-      {
-        limit: 50, // items per page
-      },
+      {},
       {
         enabled: true,
         getNextPageParam: (lastPage: any) => lastPage.nextCursor,
@@ -57,47 +55,73 @@ export const useOrderbookSelectableDenoms = <TAsset extends MinimalAsset>() => {
     const selectableDenoms = orderbooks.map((orderbook) => orderbook.baseDenom);
     return Array.from(new Set(selectableDenoms));
   }, [orderbooks]);
-
   // Map selectable asset pages to array of assets
   const selectableAssets = useMemo(() => {
     return selectableAssetPages?.pages.flatMap((page) => page.items) ?? [];
   }, [selectableAssetPages]);
 
   // Map selectable base asset denoms to asset objects
-  const selectableBaseAssets: TAsset[] = useMemo(
+  const selectableBaseAssets = useMemo(
     () =>
       selectableBaseDenoms
         .map((denom) => {
           const existingAsset = selectableAssets.find(
-            (asset) => asset.coinDenom === denom
+            (asset) => asset.coinMinimalDenom === denom
           );
           if (existingAsset) {
-            return existingAsset as TAsset;
+            return existingAsset;
           }
           const asset = getAssetFromAssetList({
-            symbol: denom,
-            sourceDenom: denom,
+            coinMinimalDenom: denom,
             assetLists: AssetLists,
           });
 
           if (!asset) return;
 
-          return makeMinimalAsset(asset.rawAsset) as TAsset;
+          return asset;
         })
-        .filter((a) => a !== undefined) as TAsset[],
+        .filter(Boolean) as (MinimalAsset & MaybeUserAssetCoin)[],
     [selectableBaseDenoms, selectableAssets]
   );
-
   // Create mapping between base denom strings and a string of selectable quote asset denom strings
   const selectableQuoteDenoms = useMemo(() => {
-    const quoteDenoms: Record<string, string[]> = {};
-    selectableBaseDenoms.forEach((_, i) => {
-      quoteDenoms[selectableBaseDenoms[i]] = orderbooks
-        .filter((orderbook) => orderbook.baseDenom === selectableBaseDenoms[i])
-        .map((orderbook) => orderbook.quoteDenom);
+    const quoteDenoms: Record<string, (MinimalAsset & MaybeUserAssetCoin)[]> =
+      {};
+    selectableBaseAssets.forEach((asset) => {
+      quoteDenoms[asset.coinDenom] = orderbooks
+        .filter((orderbook) => {
+          return orderbook.baseDenom === asset.coinMinimalDenom;
+        })
+        .map((orderbook) => {
+          const { quoteDenom } = orderbook;
+
+          const existingAsset = selectableAssets.find(
+            (asset) => asset.coinMinimalDenom === quoteDenom
+          );
+
+          if (existingAsset) {
+            return existingAsset;
+          }
+
+          const asset = getAssetFromAssetList({
+            coinMinimalDenom: quoteDenom,
+            assetLists: AssetLists,
+          });
+          if (!asset) return;
+
+          return { ...asset, amount: undefined, usdValue: undefined };
+        })
+        .filter(Boolean)
+        .sort((a, b) =>
+          (a?.amount?.toDec() ?? new Dec(0)).gt(
+            b?.amount?.toDec() ?? new Dec(0)
+          )
+            ? 1
+            : -1
+        ) as (MinimalAsset & MaybeUserAssetCoin)[];
     });
     return quoteDenoms;
-  }, [selectableBaseDenoms, orderbooks]);
+  }, [selectableBaseAssets, orderbooks, selectableAssets]);
 
   return {
     selectableBaseDenoms,

@@ -1286,7 +1286,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "openOrders": "未結訂單",
-    "invalidPrice": "價格無效"
+    "invalidPrice": "價格無效",
+    "unavailable": "不適用於{denom}"
   },
   "orderHistory": {
     "orders": "命令",

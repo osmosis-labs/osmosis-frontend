@@ -4,9 +4,9 @@ import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { SpriteIconId } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
+import { EventName, SpriteIconId } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
   // id: "market" | "limit" | "recurring";
@@ -22,22 +22,54 @@ export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = () => {
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const [type, setType] = useQueryState(
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
-  const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
-  const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
+  const [base] = useQueryState("from", parseAsString.withDefault("ATOM"));
+  const [quote, setQuote] = useQueryState(
+    "quote",
+    parseAsString.withDefault("USDC")
+  );
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
-  const { orderbook } = useOrderbook({ baseDenom: base, quoteDenom: quote });
+  const { selectableBaseAssets, selectableQuoteDenoms } =
+    useOrderbookSelectableDenoms();
+
+  const hasOrderbook = useMemo(
+    () => selectableBaseAssets.some((asset) => asset.coinDenom === base),
+    [base, selectableBaseAssets]
+  );
+
+  const selectableQuotes = useMemo(() => {
+    return selectableQuoteDenoms[base] ?? [];
+  }, [base, selectableQuoteDenoms]);
 
   useEffect(() => {
-    if (type === "limit" && !orderbook) {
+    if (type === "limit" && !hasOrderbook) {
       setType("market");
+    } else if (
+      type === "limit" &&
+      !selectableQuotes.some((asset) => asset.coinDenom === quote) &&
+      selectableQuotes.length > 0
+    ) {
+      setQuote(selectableQuotes[0].coinDenom);
     }
-  }, [orderbook, setType, type]);
+  }, [hasOrderbook, setType, type, selectableQuotes, setQuote, quote]);
+
+  useEffect(() => {
+    switch (type) {
+      case "market":
+        logEvent([EventName.LimitOrder.marketOrderSelected]);
+        break;
+      case "limit":
+        logEvent([EventName.LimitOrder.limitOrderSelected]);
+        break;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
@@ -54,16 +86,15 @@ export const OrderTypeSelector = () => {
       {
         id: "limit",
         title: t("limitOrders.limitOrder.title"),
-        description: !orderbook
+        description: !hasOrderbook
           ? t("limitOrders.limitOrder.description.disabled", {
               denom: base,
-              quoteDenom: quote,
             })
           : tab === "buy"
           ? t("limitOrders.limitOrder.description.buy", { denom: base })
           : t("limitOrders.limitOrder.description.sell", { denom: base }),
         icon: "trade",
-        disabled: !orderbook,
+        disabled: !hasOrderbook,
       },
       // {
       //   id: "recurring",
@@ -72,7 +103,7 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, orderbook, t, tab, quote]
+    [base, hasOrderbook, t, tab]
   );
 
   return (
@@ -108,6 +139,7 @@ export const OrderTypeSelector = () => {
                 <Menu.Item key={title}>
                   {({ active }) => (
                     <button
+                      type="button"
                       onClick={() => setType(id)}
                       className={classNames(
                         "flex gap-3 rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",

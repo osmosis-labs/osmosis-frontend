@@ -7,11 +7,13 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import {
   DisplayableLimitOrder,
   useOrderbookAllActiveOrders,
@@ -22,6 +24,9 @@ import { useStore } from "~/stores";
 export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
 
 export const OrderHistory = observer(() => {
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.LimitOrder.pageViewed],
+  });
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -40,6 +45,24 @@ export const OrderHistory = observer(() => {
   const { claimAllOrders } = useOrderbookClaimableOrders({
     userAddress: wallet?.address ?? "",
   });
+
+  const claimOrders = useCallback(async () => {
+    try {
+      logEvent([EventName.LimitOrder.claimOrdersStarted]);
+      await claimAllOrders();
+      logEvent([EventName.LimitOrder.claimOrdersCompleted]);
+    } catch (error) {
+      if (error instanceof Error && error.message === "Request rejected") {
+        // don't log when the user rejects in wallet
+        return;
+      }
+      const { message } = error as Error;
+      logEvent([
+        EventName.LimitOrder.claimOrdersFailed,
+        { errorMessage: message },
+      ]);
+    }
+  }, [claimAllOrders, logEvent]);
 
   const filledOrders = useMemo(
     () =>
@@ -274,7 +297,7 @@ export const OrderHistory = observer(() => {
                     </div>
                     <button
                       className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4"
-                      onClick={claimAllOrders}
+                      onClick={claimOrders}
                     >
                       <span className="subtitle1">Claim all</span>
                     </button>
