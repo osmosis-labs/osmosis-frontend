@@ -173,6 +173,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     return setAmountSafe("token", Number(baseBalance)?.toString() ?? "");
   }, [tab, baseBalance, setAmountSafe, quoteBalance]);
 
+  // Update token amount when fiat amount changes
   useEffect(() => {
     if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
       setAmountSafe("fiat", "");
@@ -196,6 +197,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     setAmountSafe,
   ]);
 
+  // Update fiat amount when token amount changes
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
 
@@ -215,6 +217,29 @@ export const LimitInput: FC<LimitInputProps> = ({
           !expectedOutput.isZero();
   }, [fiatAmount, expectedOutput, type, tab]);
 
+  const fiatInputValue = useMemo(() => {
+    // Displaying expected output
+    if (type === "market" && tab === "sell") {
+      // Display 0.01 if amount is sub 1c
+      const value = isSubOneCent ? new Dec(0.01) : expectedOutput ?? new Dec(0);
+      // Trim placeholder 0s to stop showing $0.00
+      return trimPlaceholderZeros(
+        formatPretty(value, getPriceExtendedFormatOptions(value))
+      );
+    }
+
+    return isSubOneCent ? "0.01" : fiatAmount;
+  }, [expectedOutput, isSubOneCent, type, tab, fiatAmount]);
+
+  const tokenInputValue = useMemo(() => {
+    // Displaying expected output
+    if (type === "market" && tab === "buy") {
+      return trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString());
+    }
+
+    return tokenAmount;
+  }, [expectedOutput, type, tab, tokenAmount]);
+
   return (
     <div className="relative h-[124px]">
       {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
@@ -225,30 +250,7 @@ export const LimitInput: FC<LimitInputProps> = ({
             baseAsset={baseAsset}
             focused={focused}
             swapFocus={swapFocus}
-            amount={
-              inputType === "fiat"
-                ? type === "market" && tab === "sell"
-                  ? trimPlaceholderZeros(
-                      formatPretty(
-                        isSubOneCent
-                          ? new Dec(0.01)
-                          : expectedOutput ?? new Dec(0),
-                        getPriceExtendedFormatOptions(
-                          isSubOneCent
-                            ? new Dec(0.01)
-                            : expectedOutput ?? new Dec(0)
-                        )
-                      )
-                    )
-                  : isSubOneCent
-                  ? "0.01"
-                  : fiatAmount
-                : type === "market" && tab === "buy"
-                ? trimPlaceholderZeros(
-                    (expectedOutput ?? new Dec(0)).toString()
-                  )
-                : tokenAmount
-            }
+            amount={inputType === "fiat" ? fiatInputValue : tokenInputValue}
             setter={(v) =>
               inputType === "fiat"
                 ? setAmountSafe("fiat", v)
@@ -328,7 +330,7 @@ function AutoInput({
     () => calcScale(amount.length, isMobile),
     [amount, isMobile]
   );
-  console.log(isSubOneCent);
+
   return (
     <div
       className={classNames(

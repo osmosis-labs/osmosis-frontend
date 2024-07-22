@@ -509,12 +509,11 @@ const useLimitPrice = ({
     data: assetPrice,
     isLoading: loadingSpotPrice,
     isRefetching: isSpotPriceRefetching,
-    refetch: refetchSpotPrice,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 10000, enabled: !!baseDenom }
+    { refetchInterval: 10000, enabled: !!baseDenom, cacheTime: 5000 }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
@@ -640,34 +639,7 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
-    refetchSpotPrice();
-  }, [refetchSpotPrice]);
-
-  // const setPercentAdjusted = useCallback(
-  //   (percentAdjusted: string) => {
-  //     if (!percentAdjusted || percentAdjusted.length === 0) {
-  //       setManualPercentAdjusted("");
-  //     } else {
-  //       if (countDecimals(percentAdjusted) > 10) {
-  //         percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
-  //       }
-  //       if (
-  //         orderDirection === "bid" &&
-  //         new Dec(percentAdjusted).gte(new Dec(100))
-  //       ) {
-  //         return;
-  //       }
-
-  //       const split = percentAdjusted.split(".");
-  //       if (split[0].length > 9) {
-  //         return;
-  //       }
-
-  //       setManualPercentAdjusted(percentAdjusted);
-  //     }
-  //   },
-  //   [setManualPercentAdjusted, orderDirection]
-  // );
+  }, []);
 
   useEffect(() => {
     reset();
