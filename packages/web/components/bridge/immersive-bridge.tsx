@@ -67,7 +67,7 @@ export const ImmersiveBridgeFlow = ({
       setIsVisible(true);
       setStep(ImmersiveBridgeScreen.Amount);
     }
-  }, [direction, selectedAssetDenom, isVisible, setIsVisible, setDirection]);
+  }, [direction, selectedAssetDenom, isVisible, setDirection]);
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
