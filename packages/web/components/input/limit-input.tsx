@@ -8,6 +8,7 @@ import AutosizeInput from "react-input-autosize";
 import { Icon } from "~/components/assets";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
@@ -228,10 +229,16 @@ export const LimitInput: FC<LimitInputProps> = ({
               inputType === "fiat"
                 ? type === "market" && tab === "sell"
                   ? trimPlaceholderZeros(
-                      (isSubOneCent
-                        ? "0.01"
-                        : expectedOutput ?? new Dec(0)
-                      ).toString()
+                      formatPretty(
+                        isSubOneCent
+                          ? new Dec(0.01)
+                          : expectedOutput ?? new Dec(0),
+                        getPriceExtendedFormatOptions(
+                          isSubOneCent
+                            ? new Dec(0.01)
+                            : expectedOutput ?? new Dec(0)
+                        )
+                      )
                     )
                   : isSubOneCent
                   ? "0.01"
