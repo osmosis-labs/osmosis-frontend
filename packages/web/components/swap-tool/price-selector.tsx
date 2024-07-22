@@ -211,11 +211,24 @@ export const PriceSelector = observer(
                   <div className="flex items-center gap-1">
                     {showQuoteBalance &&
                       quoteAssetWithBalance &&
-                      quoteAssetWithBalance.usdValue && (
+                      quoteAssetWithBalance.amount && (
                         <span className="body2 inline-flex text-osmoverse-300">
-                          {formatPretty(quoteAssetWithBalance.usdValue, {
-                            minimumFractionDigits: 5,
-                          })}{" "}
+                          {quoteAssetWithBalance.amount
+                            .toDec()
+                            .gte(new Dec(0.01))
+                            ? formatPretty(
+                                new PricePretty(
+                                  DEFAULT_VS_CURRENCY,
+                                  quoteAssetWithBalance.amount
+                                ),
+                                {
+                                  // ...getPriceExtendedFormatOptions(
+                                  //   quoteAssetWithBalance.amount.toDec()
+                                  // ),
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : "<$0.01"}{" "}
                           {t("pool.available").toLowerCase()}
                         </span>
                       )}

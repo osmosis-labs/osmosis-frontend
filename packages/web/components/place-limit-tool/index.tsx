@@ -33,6 +33,7 @@ const WHALE_MESSAGE_THRESHOLD = 100;
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
+    const [input, setInput] = useState<HTMLInputElement | null>(null);
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -150,6 +151,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
       );
     }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
+
+    const focusInput = useCallback(() => {
+      if (input) {
+        input.focus();
+      }
+    }, [input]);
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -175,7 +182,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 orderDirection={orderDirection}
               />
             )}
-            <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
+            <div
+              className="relative flex flex-col rounded-2xl bg-osmoverse-1000"
+              onClick={focusInput}
+            >
               <p
                 className={classNames(
                   "body2 p-4 text-center text-osmoverse-400",
@@ -207,6 +217,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 quoteBalance={swapState.quoteTokenBalance?.toDec()}
                 baseBalance={swapState.baseTokenBalance?.toDec()}
                 insufficientFunds={swapState.insufficientFunds}
+                setInputRef={setInput}
               />
             </div>
           </div>
