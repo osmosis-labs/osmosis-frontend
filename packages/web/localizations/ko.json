@@ -1286,7 +1286,8 @@
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
     "openOrders": "오픈 주문",
-    "invalidPrice": "잘못된 가격"
+    "invalidPrice": "잘못된 가격",
+    "unavailable": "{denom} 에는 사용할 수 없습니다."
   },
   "orderHistory": {
     "orders": "명령",

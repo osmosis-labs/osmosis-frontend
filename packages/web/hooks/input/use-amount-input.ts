@@ -11,9 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { useCallback, useState } from "react";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -55,17 +53,18 @@ export function useAmountInput({
 
   const setAmount = useCallback(
     (amount: string) => {
+      let updatedAmount = amount.trim();
       // check validity of raw input
-      if (!isValidNumericalRawInput(amount)) return;
-      if (amount.startsWith(".")) {
-        amount = "0" + amount;
+      if (!isValidNumericalRawInput(updatedAmount)) return;
+      if (updatedAmount.startsWith(".")) {
+        updatedAmount = "0" + updatedAmount;
       }
 
       if (fraction != null) {
         setFraction(null);
       }
 
-      setAmount_(amount);
+      setAmount_(updatedAmount);
     },
     [fraction]
   );
