@@ -33,12 +33,13 @@ export function useWindowSize(
   maxMobileWidth: Breakpoint = Breakpoint.md
 ): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    isMobile: window.innerWidth <= maxMobileWidth,
-    isLargeDesktop: window.innerWidth >= Breakpoint.xxl,
-    isExtraLargeDesktop: window.innerWidth >= Breakpoint.xxxl,
+    width: 0,
+    height: 0,
+    isMobile: false,
+    isLargeDesktop: false,
+    isExtraLargeDesktop: false,
   });
+
   useEffect(() => {
     function handleResize() {
       setWindowSize({
