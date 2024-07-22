@@ -4,8 +4,9 @@ import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -14,6 +15,7 @@ export type PoolType = ObservableQueryPool["type"];
 export interface PoolTypeConfig {
   imageSrc: string;
   caption: string;
+  iconId?: SpriteIconId;
 }
 
 export const SelectType: FunctionComponent<{
@@ -32,19 +34,22 @@ export const SelectType: FunctionComponent<{
       switch (type) {
         case "weighted":
           return {
+            iconId: "weighted-pool",
             imageSrc: "/icons/weighted-pool.svg",
             caption: t("pools.createPool.weightedPool"),
           };
         case "stable":
           return {
+            iconId: "stable-pool",
             imageSrc: "/icons/stable-pool.svg",
             caption: t("pools.createPool.stablePool"),
           };
         case "concentrated":
           return {
+            iconId: "concentrated-pool",
             imageSrc: "/icons/stable-pool.svg",
             // TODO: i18n
-            caption: "Concentrated pool",
+            caption: "Supercharged pool",
           };
       }
     },
@@ -58,7 +63,7 @@ export const SelectType: FunctionComponent<{
     <div className="flex flex-col gap-8 pt-8">
       <div className="flex w-full flex-wrap justify-center gap-4">
         {types.map((type) => {
-          const { caption, imageSrc } = getTypeConfig(type)!;
+          const { caption, imageSrc, iconId } = getTypeConfig(type)!;
           return (
             <button
               className="w-full max-w-[296px]"
@@ -78,7 +83,16 @@ export const SelectType: FunctionComponent<{
                     "-rotate-6 scale-110": selectedType === type,
                   })}
                 >
-                  <Image src={imageSrc} alt={caption} height={64} width={64} />
+                  {iconId ? (
+                    <Icon id={iconId} width={64} height={64} />
+                  ) : (
+                    <Image
+                      src={imageSrc}
+                      alt={caption}
+                      height={64}
+                      width={64}
+                    />
+                  )}
                 </div>
                 <div className="mx-auto">
                   <h6 className="md:caption">{caption}</h6>
