@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "连接钱包",
-  "switchNetwork": "切换网络",
   "errors": {
     "calculatingShareOutAmount": "计算金额溢出",
     "depositNoBalance": "您没有可以存入的资产",
@@ -407,7 +406,9 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
-    "noData": "没有数据"
+    "noData": "没有数据",
+    "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
+    "startAgain": "重新开始"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",

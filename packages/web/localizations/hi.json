@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "वॉलेट कनेक्ट करें",
-  "switchNetwork": "नेटवर्क स्विच करें",
   "errors": {
     "calculatingShareOutAmount": "राशि की गणना करने में समस्या",
     "depositNoBalance": "आपके पास जमा करने के लिए कोई संपत्ति नहीं है",
@@ -407,7 +406,9 @@
     "invalidAmounts": "अमान्य राशि",
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
-    "noData": "कोई डेटा नहीं"
+    "noData": "कोई डेटा नहीं",
+    "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
+    "startAgain": "फिर से शुरू करें"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",

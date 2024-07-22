@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",
-  "switchNetwork": "નેટવર્ક સ્વિચ કરો",
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
@@ -407,7 +406,9 @@
     "invalidAmounts": "અમાન્ય રકમ(ઓ)",
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
-    "noData": "કોઈ ડેટા નથી"
+    "noData": "કોઈ ડેટા નથી",
+    "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
+    "startAgain": "ફરી શરૂ કરો"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",

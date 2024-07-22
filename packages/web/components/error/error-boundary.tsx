@@ -1,37 +1,18 @@
 import * as Sentry from "@sentry/nextjs";
-import React, { ReactNode } from "react";
-
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback: ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-export class ErrorBoundary extends React.Component<
+import React, { ErrorInfo, FunctionComponent } from "react";
+import {
+  ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+} from "react-error-boundary";
 
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error): void {
+export const ErrorBoundary: FunctionComponent<ErrorBoundaryProps> = ({
+  onError: onErrorProp,
+  ...props
+}) => {
+  const handleError = (error: Error, info: ErrorInfo) => {
     Sentry.captureException(error);
-  }
+    onErrorProp?.(error, info);
+  };
 
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
-
-    return this.props.children;
-  }
-}
+  return <ReactErrorBoundary {...props} onError={handleError} />;
+};

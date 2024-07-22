@@ -88,7 +88,7 @@ export function ScaledCurrencyInput({
             <input
               ref={inputRef}
               className={classNames(
-                "absolute m-0 h-full w-full bg-transparent p-0 placeholder-inherit outline-0",
+                "absolute m-0 h-full w-full bg-transparent p-0 placeholder-opacity-70 outline-0",
                 classes?.input
               )}
               placeholder="0"

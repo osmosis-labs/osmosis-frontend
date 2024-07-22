@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Connecter le portefeuille",
-  "switchNetwork": "Changer de réseau",
   "errors": {
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
@@ -407,7 +406,9 @@
     "invalidAmounts": "Montant(s) invalide(s)",
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
-    "noData": "Pas de données"
+    "noData": "Pas de données",
+    "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
+    "startAgain": "Recommencer"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
