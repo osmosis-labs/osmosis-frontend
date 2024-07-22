@@ -492,9 +492,14 @@ const useLimitPrice = ({
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
-    osmoAddress: orderbookContractAddress,
-  });
+  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
+    {
+      osmoAddress: orderbookContractAddress,
+    },
+    {
+      enabled: orderbookContractAddress.length > 0,
+    }
+  );
   const {
     data: assetPrice,
     isLoading: loadingAssetPrice,
@@ -503,7 +508,7 @@ const useLimitPrice = ({
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 10000 }
+    { refetchInterval: 10000, enabled: !!baseDenom }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
