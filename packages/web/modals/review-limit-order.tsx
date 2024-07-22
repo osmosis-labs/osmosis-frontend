@@ -2,7 +2,6 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -10,7 +9,7 @@ import { Button } from "~/components/buttons";
 import { useTranslation } from "~/hooks";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { ModalBase } from "~/modals/base";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 export interface ReviewLimitOrderModalProps {
   isOpen: boolean;
@@ -60,16 +59,16 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
   const price = useMemo(() => {
     if (placeLimitState.isMarket) {
       const priceState = placeLimitState.priceState;
-      const price =
-        orderDirection === "bid"
-          ? priceState.askSpotPrice
-          : priceState.bidSpotPrice;
+      const price = priceState.spotPrice;
       return price ?? new Dec(0);
     }
     return placeLimitState.priceState.price;
-  }, [placeLimitState.isMarket, placeLimitState.priceState, orderDirection]);
+  }, [placeLimitState.isMarket, placeLimitState.priceState]);
 
-  const [orderType] = useQueryState("type");
+  const orderType = useMemo(
+    () => (placeLimitState.isMarket ? "market" : "limit"),
+    [placeLimitState.isMarket]
+  );
 
   const onConfirm = useCallback(async () => {
     setIsSigningMessage(true);
@@ -119,7 +118,11 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
                   : "0"}
               </h5>
               <span className="text-body1 text-osmoverse-300">
-                {t("limitOrders.at")} ${formatPretty(price ?? new Dec(0))}
+                {t("limitOrders.at")} $
+                {formatPretty(
+                  price ?? new Dec(0),
+                  getPriceExtendedFormatOptions(price)
+                )}
               </span>
             </div>
           </div>
@@ -205,7 +208,12 @@ export const ReviewLimitOrderModal: React.FC<ReviewLimitOrderModalProps> = ({
               left={t("assets.table.price")}
               right={
                 <span className="text-osmoverse-100">
-                  {price ? `$${formatPretty(price)}` : "$0"}
+                  {price
+                    ? `$${formatPretty(
+                        price,
+                        getPriceExtendedFormatOptions(price)
+                      )}`
+                    : "$0"}
                 </span>
               }
             />

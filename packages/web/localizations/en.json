@@ -1227,7 +1227,7 @@
       "description": {
         "buy": "Buy when {denom} price decreases",
         "sell": "Sell when {denom} price increases",
-        "disabled": "Currently unavailable for {denom}/{quoteDenom}"
+        "disabled": "Currently unavailable for {denom}"
       }
     },
     "recurringOrder": {
@@ -1286,7 +1286,8 @@
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
     "openOrders": "Open orders",
-    "invalidPrice": "Invalid price"
+    "invalidPrice": "Invalid price",
+    "unavailable": "Unavailable for {denom}"
   },
   "orderHistory": {
     "orders": "Orders",

@@ -91,6 +91,14 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       maxSlippage: slippageConfig.slippage.toDec(),
     });
 
+    if (swapState.fromAsset?.coinDenom === swapState.toAsset?.coinDenom) {
+      if (swapState.toAsset?.coinDenom === "OSMO") {
+        swapState.setToAssetDenom("USDC");
+      } else {
+        swapState.setToAssetDenom("OSMO");
+      }
+    }
+
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
 
@@ -101,8 +109,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
     );
 
-    const showOutputDifferenceWarning =
-      outputDifference.toDec().abs().gt(new Dec(0.05));
+    const showOutputDifferenceWarning = outputDifference
+      .toDec()
+      .abs()
+      .gt(new Dec(0.05));
 
     const showPriceImpactWarning =
       swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ??
@@ -335,17 +345,25 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                           className="h-12 w-12"
                         />
                         <button
-                          onClick={() => setOneTokenSelectOpen("from")}
-                          className="flex flex-col"
+                          onClick={() =>
+                            showTokenSelectRecommendedTokens &&
+                            setOneTokenSelectOpen("from")
+                          }
+                          className={classNames("flex flex-col", {
+                            "pointer-events-none":
+                              !showTokenSelectRecommendedTokens,
+                          })}
                         >
                           <div className="flex items-center gap-1">
                             <h5>{swapState.fromAsset.coinDenom}</h5>
-                            <div className="flex h-6 w-6 items-center justify-center">
-                              <Icon
-                                id="chevron-down"
-                                className="h-auto w-4.5 text-osmoverse-400"
-                              />
-                            </div>
+                            {showTokenSelectRecommendedTokens && (
+                              <div className="flex h-6 w-6 items-center justify-center">
+                                <Icon
+                                  id="chevron-down"
+                                  className="h-auto w-4.5 text-osmoverse-400"
+                                />
+                              </div>
+                            )}
                           </div>
                           <p className="whitespace-nowrap text-osmoverse-300">
                             {swapState.fromAsset.coinName}
@@ -356,7 +374,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     <div className="flex flex-col items-end py-2">
                       <input
                         ref={fromAmountInputEl}
-                        type="number"
+                        type="text"
                         className={classNames(
                           "w-full bg-transparent text-right text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
                           "text-h5 font-h5 md:font-subtitle1",
@@ -440,11 +458,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <button
                   className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
                   onClick={() => {
-                    const out = formatPretty(
-                      swapState.quote?.amount
-                        ? swapState.quote.amount.toDec()
-                        : new Dec(0)
-                    );
+                    const out = swapState.quote?.amount
+                      ? formatPretty(swapState.quote.amount.toDec())
+                      : "";
                     swapState.inAmountInput.setAmount(out);
                     swapState.switchAssets();
                   }}
@@ -467,17 +483,25 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         className="h-12 w-12"
                       />
                       <button
-                        onClick={() => setOneTokenSelectOpen("to")}
-                        className="flex flex-col"
+                        onClick={() =>
+                          showTokenSelectRecommendedTokens &&
+                          setOneTokenSelectOpen("to")
+                        }
+                        className={classNames("flex flex-col", {
+                          "pointer-events-none":
+                            !showTokenSelectRecommendedTokens,
+                        })}
                       >
                         <div className="flex items-center gap-1">
                           <h5>{swapState.toAsset.coinDenom}</h5>
-                          <div className="flex h-6 w-6 items-center justify-center">
-                            <Icon
-                              id="chevron-down"
-                              className="h-auto w-4.5 text-osmoverse-400"
-                            />
-                          </div>
+                          {showTokenSelectRecommendedTokens && (
+                            <div className="flex h-6 w-6 items-center justify-center">
+                              <Icon
+                                id="chevron-down"
+                                className="h-auto w-4.5 text-osmoverse-400"
+                              />
+                            </div>
+                          )}
                         </div>
                         <p className="whitespace-nowrap text-osmoverse-300">
                           {swapState.toAsset.coinName}
@@ -616,6 +640,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
+          setAssetQueryInput={swapState.setAssetsQueryInput}
+          assetQueryInput={swapState.assetsQueryInput}
+          fetchNextPageAssets={swapState.fetchNextPageAssets}
+          hasNextPageAssets={swapState.hasNextPageAssets}
+          isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
+          isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.buy")}
@@ -637,6 +667,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
           hideBalances
+          setAssetQueryInput={swapState.setAssetsQueryInput}
+          assetQueryInput={swapState.assetsQueryInput}
+          fetchNextPageAssets={swapState.fetchNextPageAssets}
+          hasNextPageAssets={swapState.hasNextPageAssets}
+          isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
+          isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <ReviewSwapModal
           isOpen={showSwapReviewModal}
@@ -649,9 +685,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
-          onRequestClose={closeAddFundsModal}
+          onRequestClose={() => {
+            closeAddFundsModal();
+            onRequestModalClose?.();
+          }}
           from="swap"
           fromAsset={swapState.fromAsset}
+          setFromAssetDenom={swapState.setFromAssetDenom}
+          setToAssetDenom={swapState.setToAssetDenom}
+          standalone={!showTokenSelectRecommendedTokens}
         />
       </>
     );

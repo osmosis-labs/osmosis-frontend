@@ -112,13 +112,14 @@ export const TokenSelectLimit: FunctionComponent<
     return (
       <div className="flex flex-col">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             if (tokenSelectionAvailable) {
               setIsSelectOpen(!isSelectOpen);
             }
           }}
-          className="flex items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5"
+          className="flex items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5 text-left"
         >
           {baseAsset && (
             <div
@@ -143,7 +144,9 @@ export const TokenSelectLimit: FunctionComponent<
               )}
               <div className="flex flex-col">
                 <h6 className="inline-flex items-center gap-2">
-                  <span>{baseAsset.coinName}</span>
+                  <span className="max-w-[150px] truncate md:max-w-[100px]">
+                    {baseAsset.coinName}
+                  </span>
                   <span className="md:caption truncate text-left text-osmoverse-400">
                     {baseAsset.coinDenom}
                   </span>
@@ -173,7 +176,6 @@ export const TokenSelectLimit: FunctionComponent<
           showQuoteBalance={showQuoteBalance}
           tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
-          baseDenom={baseAsset.coinMinimalDenom}
         />
         <TokenSelectModalLimit
           headerTitle={
@@ -185,7 +187,6 @@ export const TokenSelectLimit: FunctionComponent<
           onClose={() => setIsSelectOpen(false)}
           onSelect={onSelect}
           showSearchBox
-          showRecommendedTokens
           selectableAssets={preSortedTokens}
         />
       </div>

@@ -67,7 +67,7 @@ export const TransactionContent = ({
   const showConnectWallet = !isWalletConnected && !isLoading;
 
   return (
-    <ClientOnly>
+    <ClientOnly className="w-full">
       <div className="flex w-full flex-col pb-16">
         <div className="flex w-full justify-between pt-8 pb-4">
           <div className="flex flex-col gap-4">
