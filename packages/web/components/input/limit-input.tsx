@@ -57,8 +57,7 @@ export enum FocusedInput {
   TOKEN = "token",
 }
 
-const nonFocusedClasses =
-  "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
+const nonFocusedClasses = "top-[40%] text-osmoverse-300 cursor-pointer body1";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
 const countDecimals = function (value: string) {
@@ -212,7 +211,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setTokenAmountSafe, focused]);
   return (
-    <div className="relative h-[108px]">
+    <div className="relative h-[124px]">
       {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
         <AutoInput
           key={inputType}
@@ -241,16 +240,10 @@ export const LimitInput: FC<LimitInputProps> = ({
         />
       ))}
       <button
-        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 transition-opacity disabled:opacity-50"
         onClick={toggleMax}
       >
-        <span
-          className={classNames("body2 text-wosmongton-200", {
-            "text-rust-300": insufficientFunds,
-          })}
-        >
-          Max
-        </span>
+        <span className={classNames("body2 text-wosmongton-200")}>Max</span>
       </button>
     </div>
   );
@@ -335,13 +328,18 @@ function AutoInput({
             <span className={classNames({ "font-normal": !isFocused })}>$</span>
           )}
           <AutosizeInput
-            disabled={!isFocused}
+            disabled={!isFocused && disableSwitching}
+            onFocus={!isFocused && !disableSwitching ? swapFocus : undefined}
             type="number"
             placeholder="0"
             value={amount}
             inputClassName={classNames(
-              "bg-transparent !m-0 !p-0 text-h3 font-h3 text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
-              { "cursor-pointer font-normal": !isFocused }
+              "bg-transparent !m-0 !p-0 text-left focus:outline-none max-w-[700px] placeholder:text-osmoverse-500",
+              {
+                "font-normal placeholder:text-osmoverse-300 font-body1 text-center":
+                  !isFocused,
+                "cursor-pointer": !isFocused && !disableSwitching,
+              }
             )}
             onChange={(e) => setter(e.target.value)}
             onClick={!isFocused ? swapFocus : undefined}
@@ -359,7 +357,7 @@ function AutoInput({
             <span
               className={classNames("text-wosmongton-200", {
                 "opacity-60": focused === currentTypeEnum,
-                "font-normal": !isFocused,
+                "font-normal text-osmoverse-300": !isFocused,
               })}
             >
               {baseAsset && baseAsset.coinDenom}
@@ -374,19 +372,8 @@ function AutoInput({
 
 function SwapArrows() {
   return (
-    <div className="ml-1 flex h-12 w-14 items-center">
-      <Icon
-        id="arrow-right"
-        className="h-full w-auto rotate-90 text-wosmongton-200"
-        width={16}
-        height={24}
-      />
-      <Icon
-        id="arrow-right"
-        className="-ml-1 h-full w-auto -rotate-90 text-wosmongton-200"
-        width={16}
-        height={24}
-      />
+    <div className="ml-3 flex h-[64px] w-[64px] items-center justify-center rounded-full border-[1px] border-osmoverse-700 p-2">
+      <Icon id="switch" width={40} height={40} />
     </div>
   );
 }
