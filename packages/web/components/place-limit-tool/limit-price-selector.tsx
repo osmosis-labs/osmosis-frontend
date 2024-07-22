@@ -121,7 +121,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   return (
     <div className="flex w-full flex-col items-start justify-start rounded-2xl bg-osmoverse-1000 py-3 px-5">
       <label
-        className="inline-flex w-full items-center justify-between gap-1 py-3"
+        className="inline-flex min-h-[32px] w-full items-center justify-between gap-1"
         htmlFor="price-input"
       >
         <span className="body2 text-osmoverse-300">
@@ -129,7 +129,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             denom: swapState.baseAsset?.coinDenom ?? "",
           })}{" "}
         </span>
-
         <div className="flex items-center justify-center">
           <SkeletonLoader
             isLoaded={priceState.spotPrice && !priceState.isLoading}
@@ -154,18 +153,15 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                     })}
                   />
                 )}
-              <div
-                className={classNames(
-                  "body2 inline-flex items-center gap-1 font-body2",
-                  {
-                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                    "text-osmoverse-300":
-                      !swapState.priceState.isBeyondOppositePrice,
-                  }
-                )}
+              <span
+                className={classNames("body2", {
+                  "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                  "text-osmoverse-300":
+                    !swapState.priceState.isBeyondOppositePrice,
+                })}
               >
-                <span>{priceLabel}</span>
-              </div>
+                {priceLabel}
+              </span>
             </div>
           </SkeletonLoader>
           {swapState.priceState.isBeyondOppositePrice && (
@@ -241,10 +237,11 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           </button>
         </div>
       </div>
-      <div className="grid w-full grid-cols-4 items-center justify-around gap-2 py-2">
+      <div className="flex w-full items-center justify-between gap-2 pt-3 pb-2">
         {percentAdjustmentOptions.map(({ label, value }) => (
           <button
-            className="mr-1 flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-700 px-3 disabled:opacity-50"
+            type="button"
+            className="flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-700 px-3 py-1 disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               priceState.setPrice("");
@@ -254,8 +251,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             }}
             disabled={!priceState.spotPrice || priceState.isLoading}
           >
-            <span className="text-wosmongton-200">
-              {label !== "0%" && (orderDirection === "bid" ? "-" : "+")}
+            <span className="body2 text-wosmongton-200">
+              {orderDirection === "bid" ? "-" : "+"}
               {label}
             </span>
           </button>
