@@ -322,7 +322,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   onMouseDown={onMouseDownQuickSelect}
                   className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
                 >
-                  {recommendedAssets.map(({ coinDenom, coinImageUrl }, i) => {
+                  {recommendedAssets.map(({ coinDenom, coinImageUrl }) => {
                     return (
                       <button
                         key={coinDenom}

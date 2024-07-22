@@ -4,15 +4,15 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
-import {
-  isValidNumericalRawInput,
-  useAmountInput,
-} from "~/hooks/input/use-amount-input";
+import { EventName, EventPage } from "~/config";
+import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 function getNormalizationFactor(
@@ -32,6 +32,7 @@ export interface UsePlaceLimitParams {
   baseDenom: string;
   quoteDenom: string;
   type: "limit" | "market";
+  page: EventPage;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -47,7 +48,9 @@ export const usePlaceLimit = ({
   useQueryParams = false,
   useOtherCurrencies = true,
   type,
+  page,
 }: UsePlaceLimitParams) => {
+  const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const {
     makerFee,
@@ -208,6 +211,13 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.fiatValue,
   ]);
 
+  const feeUsdValue = useMemo(() => {
+    return (
+      paymentFiatValue?.mul(makerFee) ??
+      new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+    );
+  }, [paymentFiatValue, makerFee]);
+
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -215,8 +225,45 @@ export const usePlaceLimit = ({
     }
 
     if (isMarket) {
-      await marketState.sendTradeTokenInTx();
-      return;
+      const baseEvent = {
+        fromToken: marketState.fromAsset?.coinDenom,
+        tokenAmount: Number(
+          marketState.inAmountInput.amount?.toDec().toString() ?? "0"
+        ),
+        toToken: marketState.toAsset?.coinDenom,
+        isOnHome: page === "Swap Page",
+        isMultiHop: marketState.quote?.split.some(
+          ({ pools }) => pools.length !== 1
+        ),
+        isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
+        valueUsd: Number(
+          marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+        ),
+        feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
+        page,
+        quoteTimeMilliseconds: marketState.quote?.timeMs,
+        router: marketState.quote?.name,
+      };
+      try {
+        logEvent([EventName.Swap.swapStarted, baseEvent]);
+        const result = await marketState.sendTradeTokenInTx();
+        logEvent([
+          EventName.Swap.swapCompleted,
+          {
+            ...baseEvent,
+            isMultiHop: result === "multihop",
+          },
+        ]);
+      } catch (error) {
+        console.error("swap failed", error);
+        if (error instanceof Error && error.message === "Request rejected") {
+          // don't log when the user rejects in wallet
+          return;
+        }
+        logEvent([EventName.Swap.swapFailed, baseEvent]);
+      } finally {
+        return;
+      }
     }
 
     const paymentDenom = paymentTokenValue.toCoin().denom;
@@ -233,7 +280,21 @@ export const usePlaceLimit = ({
         claim_bounty: CLAIM_BOUNTY,
       },
     };
+
+    const baseEvent = {
+      type: orderDirection === "bid" ? "buy" : "sell",
+      fromToken: paymentDenom,
+      toToken:
+        orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
+      valueUsd: Number(paymentFiatValue?.toDec().toString() ?? "0"),
+      tokenAmount: Number(quantity),
+      page,
+      isOnHomePage: page === "Swap Page",
+      feeUsdValue,
+    };
+
     try {
+      logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
       await account?.cosmwasm.sendExecuteContractMsg(
         "executeWasm",
         orderbookContractAddress,
@@ -245,8 +306,18 @@ export const usePlaceLimit = ({
           },
         ]
       );
+      logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
     } catch (error) {
       console.error("Error attempting to broadcast place limit tx", error);
+      if (error instanceof Error && error.message === "Request rejected") {
+        // don't log when the user rejects in wallet
+        return;
+      }
+      const { message } = error as Error;
+      logEvent([
+        EventName.LimitOrder.placeOrderFailed,
+        { ...baseEvent, errorMessage: message },
+      ]);
     }
   }, [
     orderbookContractAddress,
@@ -258,6 +329,12 @@ export const usePlaceLimit = ({
     marketState,
     quoteAssetPrice,
     normalizationFactor,
+    paymentFiatValue,
+    baseAsset,
+    quoteAsset,
+    logEvent,
+    page,
+    feeUsdValue,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
@@ -399,8 +476,12 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     reset,
     error,
+    feeUsdValue,
   };
 };
+
+const MAX_TICK_PRICE = 340282300000000000000;
+const MIN_TICK_PRICE = 0.000000000001;
 
 const useLimitPrice = ({
   orderbookContractAddress,
@@ -414,11 +495,16 @@ const useLimitPrice = ({
   const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
     osmoAddress: orderbookContractAddress,
   });
-
-  const { data: assetPrice, isLoading: loadingAssetPrice } =
-    api.edge.assets.getAssetPrice.useQuery({
+  const {
+    data: assetPrice,
+    isLoading: loadingAssetPrice,
+    isRefetching: priceRefetching,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    {
       coinMinimalDenom: baseDenom ?? "",
-    });
+    },
+    { refetchInterval: 10000 }
+  );
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
@@ -486,34 +572,48 @@ const useLimitPrice = ({
   }, []);
 
   const setPrice = useCallback((price: string) => {
-    const updatedValue = price.trim();
+    if (!price || price.length === 0) {
+      setOrderPrice("");
+    } else {
+      const newPrice = new Dec(price);
+      if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
+        price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
+      } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
+        price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
+      }
 
-    if (!updatedValue) {
-      return setOrderPrice("");
+      if (countDecimals(price) > 2) {
+        price = parseFloat(price).toFixed(2).toString();
+      }
+
+      setOrderPrice(price);
     }
-
-    if (!isValidNumericalRawInput(updatedValue) || updatedValue.length > 12) {
-      return;
-    }
-
-    setOrderPrice(updatedValue);
   }, []);
 
   const setPercentAdjusted = useCallback(
     (percentAdjusted: string) => {
-      const updatedValue = percentAdjusted.trim();
+      if (!percentAdjusted || percentAdjusted.length === 0) {
+        setManualPercentAdjusted("");
+      } else {
+        if (countDecimals(percentAdjusted) > 10) {
+          percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        }
+        if (
+          orderDirection === "bid" &&
+          new Dec(percentAdjusted).gte(new Dec(100))
+        ) {
+          return;
+        }
 
-      if (!updatedValue) {
-        return setManualPercentAdjusted("");
+        const split = percentAdjusted.split(".");
+        if (split[0].length > 9) {
+          return;
+        }
+
+        setManualPercentAdjusted(percentAdjusted);
       }
-
-      if (!isValidNumericalRawInput(updatedValue) || updatedValue.length > 12) {
-        return;
-      }
-
-      setManualPercentAdjusted(updatedValue);
     },
-    [setManualPercentAdjusted]
+    [setManualPercentAdjusted, orderDirection]
   );
 
   useEffect(() => {
@@ -541,5 +641,6 @@ const useLimitPrice = ({
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
     loadingAssetPrice,
+    priceRefetching,
   };
 };

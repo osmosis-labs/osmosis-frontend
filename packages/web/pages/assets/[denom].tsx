@@ -178,7 +178,10 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
             <TokenPools denom={token.coinDenom} />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                <TradeTool fromAssetsPage swapToolProps={swapToolProps} />
+                <TradeTool
+                  page="Token Info Page"
+                  swapToolProps={swapToolProps}
+                />
               </div>
             </div>
             {token.isAlloyed && token.contract ? (
@@ -194,7 +197,7 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
 
           <div className="flex flex-col gap-11 sm:gap-10">
             <div className="xl:hidden">
-              <TradeTool fromAssetsPage swapToolProps={swapToolProps} />
+              <TradeTool page="Token Info Page" swapToolProps={swapToolProps} />
             </div>
             <YourBalance className="xl:hidden" />
             <TokenStats className="xl:hidden" />

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClientOnly } from "~/components/client-only";
@@ -13,7 +13,8 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
-import { useTranslation } from "~/hooks";
+import { EventName, EventPage } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import {
   useOrderbookAllActiveOrders,
   useOrderbookClaimableOrders,
@@ -21,12 +22,13 @@ import {
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {
-  fromAssetsPage?: boolean;
   swapToolProps?: SwapToolProps;
+  page: EventPage;
 }
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
-  ({ fromAssetsPage, swapToolProps }) => {
+  ({ page, swapToolProps }) => {
+    const { logEvent } = useAmplitudeAnalytics();
     const [tab, setTab] = useQueryState(
       "tab",
       parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
@@ -55,6 +57,20 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
       [orders]
     );
 
+    useEffect(() => {
+      switch (tab) {
+        case SwapToolTab.BUY:
+          logEvent([EventName.LimitOrder.buySelected]);
+          break;
+        case SwapToolTab.SELL:
+          logEvent([EventName.LimitOrder.sellSelected]);
+          break;
+        case SwapToolTab.SWAP:
+          logEvent([EventName.LimitOrder.swapSelected]);
+          break;
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tab]);
     return (
       <ClientOnly>
         <div className="relative flex flex-col gap-3 md:gap-3 md:px-3 md:pb-4 md:pt-4">
@@ -85,31 +101,21 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return (
-                  <PlaceLimitTool
-                    fromAssetsPage={fromAssetsPage}
-                    orderDirection={"bid"}
-                  />
-                );
+                return <PlaceLimitTool page={page} />;
               case SwapToolTab.SELL:
-                return (
-                  <PlaceLimitTool
-                    fromAssetsPage={fromAssetsPage}
-                    orderDirection={"ask"}
-                  />
-                );
+                return <PlaceLimitTool page={page} />;
               case SwapToolTab.SWAP:
               default:
                 return (
                   <AltSwapTool
                     useOtherCurrencies
                     useQueryParams
-                    page="Swap Page"
+                    page={page}
                     {...swapToolProps}
                   />
                 );
             }
-          }, [fromAssetsPage, swapToolProps, tab])}
+          }, [page, swapToolProps, tab])}
           {wallet?.isWalletConnected && openOrders.length > 0 && (
             <Link
               href="/transactions?tab=orders&fromPage=swap"

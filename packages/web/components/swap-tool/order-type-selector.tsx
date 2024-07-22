@@ -4,8 +4,8 @@ import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { SpriteIconId } from "~/config";
-import { useTranslation } from "~/hooks";
+import { EventName, SpriteIconId } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
@@ -22,12 +22,13 @@ export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = () => {
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const [type, setType] = useQueryState(
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
-  const [base] = useQueryState("base", parseAsString.withDefault("OSMO"));
+  const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
   const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
@@ -38,6 +39,18 @@ export const OrderTypeSelector = () => {
       setType("market");
     }
   }, [orderbook, setType, type]);
+
+  useEffect(() => {
+    switch (type) {
+      case "market":
+        logEvent([EventName.LimitOrder.marketOrderSelected]);
+        break;
+      case "limit":
+        logEvent([EventName.LimitOrder.limitOrderSelected]);
+        break;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [

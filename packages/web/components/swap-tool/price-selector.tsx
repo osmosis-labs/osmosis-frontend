@@ -45,7 +45,7 @@ export const PriceSelector = memo(
       parseAsString.withDefault("USDC")
     );
     const [base, setBase] = useQueryState(
-      "base",
+      "from",
       parseAsString.withDefault("OSMO")
     );
     const [_, setSellOpen] = useQueryState(
