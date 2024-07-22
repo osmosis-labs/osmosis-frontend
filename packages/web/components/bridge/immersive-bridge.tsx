@@ -135,7 +135,9 @@ export const ImmersiveBridgeFlow = ({
               <QueryErrorResetBoundary>
                 {({ reset: resetQueries }) => (
                   <ErrorBoundary
-                    FallbackComponent={GeneralErrorScreen}
+                    FallbackComponent={(props) => (
+                      <GeneralErrorScreen {...props} onClose={onClose} />
+                    )}
                     onReset={resetQueries}
                   >
                     <div className="flex-1 overflow-y-auto">
