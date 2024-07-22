@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-import { SwapTool } from "~/components/swap-tool";
+import { AltSwapTool } from "~/components/swap-tool/alt";
 import { EventPage } from "~/config";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -29,9 +29,9 @@ export const TradeTokens: FunctionComponent<
       {...modalProps}
       isOpen={showModalBase && modalProps.isOpen}
       hideCloseButton
-      className="!w-fit !p-0"
+      className="!w-fit !bg-osmoverse-900 !px-4 !py-6"
     >
-      <SwapTool
+      <AltSwapTool
         fixedWidth
         useQueryParams={false}
         useOtherCurrencies={useOtherCurrencies}

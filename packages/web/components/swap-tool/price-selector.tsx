@@ -50,7 +50,7 @@ export const PriceSelector = memo(
     const [tab, setTab] = useQueryState("tab");
     const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
     const [base, setBase] = useQueryState(
-      "base",
+      "from",
       parseAsString.withDefault("OSMO")
     );
     const [_, setSellOpen] = useQueryState(
@@ -109,7 +109,6 @@ export const PriceSelector = memo(
               const returnAsset: AssetWithBalance = {
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
-                usdValue: walletAsset.usdValue,
               };
 
               // In the future, we might want to pass every coin instead of just stables.

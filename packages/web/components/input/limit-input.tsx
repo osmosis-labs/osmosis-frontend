@@ -9,7 +9,7 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { trimPlaceholderZeros } from "~/utils/number";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
   baseAsset: MinimalAsset;
@@ -60,14 +60,6 @@ export enum FocusedInput {
 const nonFocusedClasses =
   "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
 const focusedClasses = "top-[0%] font-h3 font-normal";
-
-const countDecimals = function (value: string) {
-  const split = value.split(".");
-  if (split.length > 1) {
-    return split[1].length;
-  }
-  return 0;
-};
 
 const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
@@ -124,13 +116,81 @@ export const LimitInput: FC<LimitInputProps> = ({
     }
   }, [tab, type]);
 
-  const setFiatAmountSafe = useCallback(
-    (value?: string) => {
-      if (!value) {
-        return setFiatAmount("");
+  // const setFiatAmountSafe = useCallback(
+  //   (value?: string) => {
+  //     if (!value) {
+  //       setMarketAmount("");
+  //       return setFiatAmount("");
+  //     }
+
+  //     const updatedValue = transformAmount(value, 6);
+
+  //     if (
+  //       !isValidNumericalRawInput(updatedValue) ||
+  //       updatedValue.length > 26 ||
+  //       (updatedValue.length > 0 && updatedValue.startsWith("-"))
+  //     ) {
+  //       return;
+  //     }
+
+  //     const isFocused = focused === FocusedInput.FIAT;
+
+  //     // Hacky solution to deal with rounding
+  //     // TODO: Investigate a way to improve this
+  //     if (tab === "buy") {
+  //       setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
+  //     }
+  //     setFiatAmount(
+  //       parseFloat(updatedValue) !== 0 && !isFocused
+  //         ? trimPlaceholderZeros(updatedValue)
+  //         : updatedValue
+  //     );
+  //   },
+  //   [focused, setFiatAmount, tab, setMarketAmount, quoteAssetPrice]
+  // );
+
+  // const setTokenAmountSafe = useCallback(
+  //   (value?: string) => {
+  //     if (!value) {
+  //       return onChange("");
+  //     }
+
+  //     const updatedValue = transformAmount(value, baseAsset?.coinDecimals);
+
+  //     if (
+  //       !isValidNumericalRawInput(updatedValue) ||
+  //       updatedValue.length > 26 ||
+  //       (updatedValue.length > 0 && updatedValue.startsWith("-"))
+  //     ) {
+  //       return;
+  //     }
+
+  //     const isFocused = focused === FocusedInput.TOKEN;
+  //     onChange(
+  //       parseFloat(updatedValue) !== 0 && !isFocused
+  //         ? trimPlaceholderZeros(updatedValue)
+  //         : updatedValue
+  //     );
+  //   },
+  //   [onChange, focused, baseAsset?.coinDecimals]
+  // );
+
+  const setAmountSafe = useCallback(
+    (type: "fiat" | "token", value?: string) => {
+      const update = type === "fiat" ? setFiatAmount : onChange;
+
+      if (!value?.trim()) {
+        if (type === "fiat") {
+          setMarketAmount("");
+        }
+        return update("");
       }
 
-      const updatedValue = transformAmount(value, 6);
+      const updatedValue = transformAmount(
+        value,
+        type === "fiat" ? 6 : baseAsset?.coinDecimals
+      ).trim();
+
       if (
         !isValidNumericalRawInput(updatedValue) ||
         updatedValue.length > 26 ||
@@ -139,59 +199,42 @@ export const LimitInput: FC<LimitInputProps> = ({
         return;
       }
 
-      const isFocused = focused === FocusedInput.FIAT;
+      const isFocused =
+        focused === FocusedInput[type === "fiat" ? "FIAT" : "TOKEN"];
 
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
-      if (tab === "buy") {
+      if (type === "fiat" && tab === "buy") {
         setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
       }
-      setFiatAmount(
+
+      update(
         parseFloat(updatedValue) !== 0 && !isFocused
           ? trimPlaceholderZeros(updatedValue)
           : updatedValue
       );
     },
-    [focused, setFiatAmount, tab, setMarketAmount, quoteAssetPrice]
-  );
-
-  const setTokenAmountSafe = useCallback(
-    (value?: string) => {
-      if (!value) {
-        return onChange("");
-      }
-
-      const updatedValue = transformAmount(value, baseAsset?.coinDecimals);
-
-      if (
-        !isValidNumericalRawInput(updatedValue) ||
-        updatedValue.length > 26 ||
-        (updatedValue.length > 0 && updatedValue.startsWith("-"))
-      ) {
-        return;
-      }
-
-      const isFocused = focused === FocusedInput.TOKEN;
-      onChange(
-        parseFloat(updatedValue) !== 0 && !isFocused
-          ? trimPlaceholderZeros(updatedValue)
-          : updatedValue
-      );
-    },
-    [onChange, focused, baseAsset?.coinDecimals]
+    [
+      baseAsset?.coinDecimals,
+      focused,
+      onChange,
+      quoteAssetPrice,
+      setMarketAmount,
+      tab,
+    ]
   );
 
   const toggleMax = useCallback(() => {
     if (tab === "buy") {
-      return setFiatAmountSafe(Number(quoteBalance)?.toString() ?? "");
+      return setAmountSafe("fiat", Number(quoteBalance)?.toString() ?? "");
     }
 
-    return setTokenAmountSafe(Number(baseBalance)?.toString() ?? "");
-  }, [tab, setTokenAmountSafe, baseBalance, setFiatAmountSafe, quoteBalance]);
+    return setAmountSafe("token", Number(baseBalance)?.toString() ?? "");
+  }, [tab, baseBalance, setAmountSafe, quoteBalance]);
 
   useEffect(() => {
     if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
-      setFiatAmount("");
+      setAmountSafe("fiat", "");
       if (tab === "buy") {
         setMarketAmount("");
       }
@@ -201,16 +244,25 @@ export const LimitInput: FC<LimitInputProps> = ({
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
     const fiatValue = value ? price.mul(value) : undefined;
 
-    setFiatAmountSafe(fiatValue ? fiatValue.toString() : undefined);
-  }, [price, tokenAmount, setFiatAmountSafe, focused, tab, setMarketAmount]);
+    setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+  }, [
+    price,
+    tokenAmount,
+    setFiatAmount,
+    focused,
+    tab,
+    setMarketAmount,
+    setAmountSafe,
+  ]);
 
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
 
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
     const tokenValue = value ? new Dec(value).quo(price) : undefined;
-    setTokenAmountSafe(tokenValue ? tokenValue.toString() : undefined);
-  }, [price, fiatAmount, setTokenAmountSafe, focused]);
+    setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
+  }, [price, fiatAmount, setAmountSafe, focused]);
+
   return (
     <div className="relative h-[108px]">
       {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
@@ -231,7 +283,11 @@ export const LimitInput: FC<LimitInputProps> = ({
               ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
               : tokenAmount
           }
-          setter={inputType === "fiat" ? setFiatAmountSafe : setTokenAmountSafe}
+          setter={(v) =>
+            inputType === "fiat"
+              ? setAmountSafe("fiat", v)
+              : setAmountSafe("token", v)
+          }
           disableSwitching={disableSwitching}
           loading={
             inputType === "fiat"
@@ -336,7 +392,7 @@ function AutoInput({
           )}
           <AutosizeInput
             disabled={!isFocused}
-            type="number"
+            type="text"
             placeholder="0"
             value={amount}
             inputClassName={classNames(
