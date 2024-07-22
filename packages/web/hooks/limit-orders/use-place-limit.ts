@@ -497,7 +497,7 @@ const useLimitPrice = ({
       osmoAddress: orderbookContractAddress,
     },
     {
-      enabled: orderbookContractAddress.length > 0,
+      enabled: !!orderbookContractAddress,
     }
   );
   const {
