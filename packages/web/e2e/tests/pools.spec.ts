@@ -12,11 +12,10 @@ test.describe("Test Select Pool feature", () => {
   let page: Page;
 
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext("", {
-      headless: true,
-      viewport: { width: 1280, height: 1024 },
-      proxy: new TestConfig().getProxyConfig(),
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserConfig(true)
+    );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
       resetOnNavigation: false,

@@ -22,17 +22,10 @@ test.describe("Test Portfolio feature", () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
     console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: [
-        "--headless=new",
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-      viewport: { width: 1440, height: 1280 },
-      slowMo: 300,
-      proxy: new TestConfig().getProxyConfig(),
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
+    );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
