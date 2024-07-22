@@ -110,7 +110,6 @@ export const PriceSelector = memo(
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
               };
-
               // In the future, we might want to pass every coin instead of just stables.
               return asset?.rawAsset.categories.includes("stablecoin")
                 ? returnAsset
