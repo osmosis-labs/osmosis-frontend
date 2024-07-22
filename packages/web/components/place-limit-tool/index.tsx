@@ -23,7 +23,7 @@ import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { OrderDirection, usePlaceLimit } from "~/hooks/limit-orders";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
-import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
+import { ReviewSwapModal } from "~/modals/review-swap";
 import { useStore } from "~/stores";
 
 export interface PlaceLimitToolProps {
@@ -284,12 +284,24 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </Link>
           )}
         </div>
-        <ReviewLimitOrderModal
+        {/* <ReviewLimitOrderModal
           placeLimitState={swapState}
           orderDirection={orderDirection}
           isOpen={reviewOpen}
           makerFee={swapState.makerFee}
           onRequestClose={() => setReviewOpen(false)}
+        /> */}
+        <ReviewSwapModal
+          isOpen={reviewOpen}
+          onClose={() => setReviewOpen(false)}
+          swapState={swapState}
+          confirmAction={sendSwapTx}
+          isConfirmationDisabled={isConfirmationDisabled}
+          slippageConfig={slippageConfig}
+          outAmountLessSlippage={outAmountLessSlippage}
+          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          outputDifference={outputDifference}
+          showOutputDifferenceWarning={showOutputDifferenceWarning}
         />
       </>
     );
