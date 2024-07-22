@@ -158,18 +158,6 @@ export const PriceSelector = memo(
       [quote, userQuotes]
     );
 
-    /**
-     * Default selection is highest balance stable.
-     * When user changes selection, app should persist
-     * selection across both Buy and Sell trade modes.
-     */
-    //TODO: FIGURE OUT A WAY TO READD THIS
-    // useEffect(() => {
-    //   if (userQuotes && userQuotes.length > 0) {
-    //     setQuote(userQuotes[0].symbol);
-    //   }
-    // }, [setQuote, userQuotes]);
-
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
