@@ -224,7 +224,7 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
       osmoAddress: orderbookAddress,
     },
     {
-      enabled: Boolean(orderbookAddress),
+      enabled: !!orderbookAddress,
     }
   );
 
@@ -268,7 +268,7 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
-      enabled: Boolean(userAddress) && addresses.length > 0,
+      enabled: !!userAddress && addresses.length > 0,
     }
   );
 
@@ -304,7 +304,7 @@ export const useOrderbookClaimableOrders = ({
       userOsmoAddress: userAddress,
     },
     {
-      enabled: Boolean(userAddress) && addresses.length > 0,
+      enabled: !!userAddress && addresses.length > 0,
     }
   );
 

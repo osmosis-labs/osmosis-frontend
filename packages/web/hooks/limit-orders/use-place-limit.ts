@@ -261,7 +261,7 @@ export const usePlaceLimit = ({
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
-        enabled: Boolean(account?.address),
+        enabled: !!account?.address,
         select: (balances) =>
           balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
             ?.coin,
@@ -271,7 +271,7 @@ export const usePlaceLimit = ({
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
-        enabled: Boolean(account?.address),
+        enabled: !!account?.address,
         select: (balances) =>
           balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
             ?.coin,
@@ -413,7 +413,7 @@ const useLimitPrice = ({
       osmoAddress: orderbookContractAddress,
     },
     {
-      enabled: Boolean(orderbookContractAddress),
+      enabled: !!orderbookContractAddress,
     }
   );
   const { data: assetPrice, isLoading: loadingAssetPrice } =
@@ -422,7 +422,7 @@ const useLimitPrice = ({
         coinMinimalDenom: baseDenom ?? "",
       },
       {
-        enabled: Boolean(baseDenom) && baseDenom!.length > 0,
+        enabled: !!baseDenom,
       }
     );
 
