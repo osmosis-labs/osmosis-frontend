@@ -28,7 +28,7 @@ export const OrderTypeSelector = () => {
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
-  const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
+  const [base] = useQueryState("from", parseAsString.withDefault("ATOM"));
   const [quote, setQuote] = useQueryState(
     "quote",
     parseAsString.withDefault("USDC")
@@ -139,6 +139,7 @@ export const OrderTypeSelector = () => {
                 <Menu.Item key={title}>
                   {({ active }) => (
                     <button
+                      type="button"
                       onClick={() => setType(id)}
                       className={classNames(
                         "flex gap-3 rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
