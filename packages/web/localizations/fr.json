@@ -1286,7 +1286,8 @@
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
     "openOrders": "Commandes ouvertes",
-    "invalidPrice": "Prix invalide"
+    "invalidPrice": "Prix invalide",
+    "unavailable": "Indisponible pour {denom}"
   },
   "orderHistory": {
     "orders": "Ordres",
