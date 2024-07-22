@@ -187,7 +187,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                 <button
                   key={asset.coinMinimalDenom}
                   className={classNames(
-                    "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0",
+                    "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-1",
                     {
                       "bg-osmoverse-700/50": keyboardSelectedIndex === index,
                     }

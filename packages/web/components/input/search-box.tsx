@@ -8,7 +8,9 @@ import {
   FunctionComponent,
   useCallback,
   useMemo,
+  useState,
 } from "react";
+import { useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
@@ -94,6 +96,13 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       [_debounce, _onInput]
     );
 
+    const [canAutoFocus, setCanAutoFocus] = useState(false);
+
+    // only autofucus on mount to ensure that window is defined and the element is in the DOM
+    useMount(() => {
+      setCanAutoFocus(true);
+    });
+
     return (
       <div
         className={classNames(
@@ -115,7 +124,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
             defaultValue={_debounce ? currentValue : undefined}
             value={_debounce ? undefined : currentValue}
             type={type ?? "text"}
-            autoFocus={autoFocus}
+            autoFocus={canAutoFocus && autoFocus}
             placeholder={placeholder}
             autoComplete="off"
             onFocus={(e: any) => {
