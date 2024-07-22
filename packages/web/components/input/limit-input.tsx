@@ -204,12 +204,15 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [price, fiatAmount, setAmountSafe, focused]);
 
   const isSubOneCent = useMemo(() => {
-    return (
-      fiatAmount.length > 0 &&
-      new Dec(fiatAmount).lt(new Dec(0.01)) &&
-      !new Dec(fiatAmount).isZero()
-    );
-  }, [fiatAmount]);
+    return type === "limit" || tab === "buy"
+      ? fiatAmount.length > 0 &&
+          new Dec(fiatAmount).lt(new Dec(0.01)) &&
+          !new Dec(fiatAmount).isZero()
+      : tab === "sell" &&
+          !!expectedOutput &&
+          expectedOutput.lt(new Dec(0.01)) &&
+          !expectedOutput.isZero();
+  }, [fiatAmount, expectedOutput, type, tab]);
 
   return (
     <div className="relative h-[124px]">
@@ -225,7 +228,10 @@ export const LimitInput: FC<LimitInputProps> = ({
               inputType === "fiat"
                 ? type === "market" && tab === "sell"
                   ? trimPlaceholderZeros(
-                      (expectedOutput ?? new Dec(0)).toString()
+                      (isSubOneCent
+                        ? "0.01"
+                        : expectedOutput ?? new Dec(0)
+                      ).toString()
                     )
                   : isSubOneCent
                   ? "0.01"

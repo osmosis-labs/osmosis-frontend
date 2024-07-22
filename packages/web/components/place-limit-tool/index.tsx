@@ -203,7 +203,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     "body2 p-4 text-center text-osmoverse-400",
                     {
                       "text-rust-300": swapState.insufficientFunds,
-                      "animate-pulse": isMarketLoading,
                     }
                   )}
                 >
