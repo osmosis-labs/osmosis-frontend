@@ -435,7 +435,6 @@
   "menu": {
     "assets": "Actifs",
     "portfolio": "Portefeuille",
-    "help": "Support",
     "info": "Info",
     "pools": "Bassins",
     "stake": "Stake",
@@ -451,7 +450,11 @@
     "more": "Plus",
     "new": "NOUVEAU",
     "settings": "Paramètres",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "helpCenter": "Centre d'aide",
+    "liveSupport": "Support en direct",
+    "bugs": "Soumettre un rapport de bug",
+    "docs": "Documents"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",

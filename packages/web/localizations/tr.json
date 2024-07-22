@@ -435,7 +435,6 @@
   "menu": {
     "assets": "Varlıklar",
     "portfolio": "Portföy",
-    "help": "Destek",
     "info": "Bilgi",
     "pools": "Havuzlar",
     "stake": "Stake",
@@ -451,7 +450,11 @@
     "more": "Daha",
     "new": "YENİ",
     "settings": "Ayarlar",
-    "notifications": "Bildirimler"
+    "notifications": "Bildirimler",
+    "helpCenter": "Yardım Merkezi",
+    "liveSupport": "Canlı destek",
+    "bugs": "Hata Raporu Gönder",
+    "docs": "Dokümanlar"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

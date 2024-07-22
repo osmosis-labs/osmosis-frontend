@@ -435,7 +435,6 @@
   "menu": {
     "assets": "Vermögenswerte",
     "portfolio": "Portfolio",
-    "help": "Support-Labor",
     "info": "Statistiken",
     "pools": "Pools",
     "stake": "Einsatz",
@@ -451,7 +450,11 @@
     "more": "Mehr",
     "new": "NEU",
     "settings": "Einstellungen",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "helpCenter": "Hilfezentrum",
+    "liveSupport": "Live Support",
+    "bugs": "Fehlerbericht senden",
+    "docs": "Dokumentation"
   },
   "notifi": {
     "saveChanges": "Änderungen speichern",

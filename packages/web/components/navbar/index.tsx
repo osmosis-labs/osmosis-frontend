@@ -26,7 +26,7 @@ import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
+import { HelpPopover, MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-trading-toast";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
@@ -67,9 +67,17 @@ export const NavBar: FunctionComponent<
     backElementClassNames?: string;
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
+    tertiaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
 > = observer(
-  ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
+  ({
+    title,
+    className,
+    backElementClassNames,
+    menus,
+    secondaryMenuItems,
+    tertiaryMenuItems,
+  }) => {
     const {
       navBarStore,
       chainStore: {
@@ -306,6 +314,7 @@ export const NavBar: FunctionComponent<
                 />
               </NotifiContextProvider>
             )}
+            <HelpPopover tertiaryMenuItems={tertiaryMenuItems} />
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}

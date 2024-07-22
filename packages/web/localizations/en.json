@@ -435,7 +435,6 @@
   "menu": {
     "assets": "Assets",
     "portfolio": "Portfolio",
-    "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
@@ -451,7 +450,11 @@
     "more": "More",
     "new": "NEW",
     "settings": "Settings",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "helpCenter": "Help Center",
+    "liveSupport": "Live Support",
+    "bugs": "Submit Bug Report",
+    "docs": "Docs"
   },
   "notifi": {
     "saveChanges": "Save changes",
