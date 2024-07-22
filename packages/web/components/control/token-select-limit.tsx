@@ -112,6 +112,7 @@ export const TokenSelectLimit: FunctionComponent<
     return (
       <div className="flex flex-col">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             if (tokenSelectionAvailable) {
@@ -175,7 +176,6 @@ export const TokenSelectLimit: FunctionComponent<
           showQuoteBalance={showQuoteBalance}
           tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
-          baseDenom={baseAsset.coinMinimalDenom}
         />
         <TokenSelectModalLimit
           headerTitle={
@@ -187,7 +187,6 @@ export const TokenSelectLimit: FunctionComponent<
           onClose={() => setIsSelectOpen(false)}
           onSelect={onSelect}
           showSearchBox
-          showRecommendedTokens
           selectableAssets={preSortedTokens}
         />
       </div>

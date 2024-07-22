@@ -3,8 +3,13 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
-import { FunctionComponent, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -55,20 +60,24 @@ export const TokenSelectModalLimit: FunctionComponent<{
   fetchNextPageAssets?: () => void;
   headerTitle: string;
   hideBalances?: boolean;
+  assetQueryInput?: string;
+  setAssetQueryInput?: (input: string) => void;
 }> = observer(
   ({
     isOpen,
     onClose: onCloseProp,
     onSelect: onSelectProp,
     showSearchBox = true,
-    showRecommendedTokens = true,
+    showRecommendedTokens,
     selectableAssets,
     isLoadingSelectAssets = false,
     isFetchingNextPageAssets = false,
     hasNextPageAssets = false,
-    fetchNextPageAssets = () => {},
+    fetchNextPageAssets,
     headerTitle,
     hideBalances,
+    setAssetQueryInput,
+    assetQueryInput,
   }) => {
     const { t } = useTranslation();
 
@@ -76,8 +85,6 @@ export const TokenSelectModalLimit: FunctionComponent<{
     const { onOpenWalletSelect } = useWalletSelect();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
     const recommendedAssets = useRecommendedAssets();
-
-    const [tab] = useQueryState("tab");
 
     const isWalletConnected = accountStore.getWallet(
       accountStore.osmosisChainId
@@ -121,9 +128,15 @@ export const TokenSelectModalLimit: FunctionComponent<{
 
     const onClickAsset = (coinDenom: string) => {
       let isRecommended = false;
-      const selectedAsset = selectableAssets.find(
-        (asset) => asset && asset.coinDenom === coinDenom
-      );
+      const selectedAsset =
+        selectableAssets.find((asset) => asset?.coinDenom === coinDenom) ??
+        recommendedAssets.find((asset) => {
+          if (asset.coinDenom === coinDenom) {
+            isRecommended = true;
+            return true;
+          }
+          return false;
+        });
 
       // shouldn't happen, but doing nothing is better
       if (!selectedAsset) return;
@@ -196,22 +209,40 @@ export const TokenSelectModalLimit: FunctionComponent<{
     //   },
     // });
 
-    const [query, setQuery, results] = useFilteredData(selectableAssets, [
+    const [filterValue, setQuery, results] = useFilteredData(selectableAssets, [
       "coinDenom",
       "coinName",
     ]);
 
-    const onSearch = (nextValue: string) => {
-      setKeyboardSelectedIndex(0);
-      setQuery(nextValue);
-    };
-
-    const assetToActivate = selectableAssets.find(
-      (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
+    const searchValue = useMemo(
+      () => (!!assetQueryInput ? assetQueryInput : filterValue),
+      [assetQueryInput, filterValue]
     );
 
+    const onSearch = useCallback(
+      (nextValue: string) => {
+        setKeyboardSelectedIndex(0);
+        if (setAssetQueryInput) {
+          setAssetQueryInput(nextValue);
+        } else {
+          setQuery(nextValue);
+        }
+      },
+      [setAssetQueryInput, setKeyboardSelectedIndex, setQuery]
+    );
+
+    const assetToActivate = useMemo(
+      () =>
+        selectableAssets.find(
+          (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
+        ),
+      [confirmUnverifiedAssetDenom, selectableAssets]
+    );
+
+    if (!isOpen) return;
+
     return (
-      <div onKeyDown={containerKeyDown}>
+      <div className="absolute" onKeyDown={containerKeyDown}>
         <ActivateUnverifiedTokenConfirmation
           coinDenom={assetToActivate?.coinDenom}
           coinImageUrl={assetToActivate?.coinImageUrl}
@@ -277,6 +308,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                     </div>
                     <input
                       autoFocus
+                      value={searchValue}
                       onChange={(e) => onSearch(e.target.value)}
                       placeholder={t("limitOrders.searchAssets")}
                       className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
@@ -284,33 +316,35 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   </div>
                 </div>
               )}
-              {tab === "buy" && showRecommendedTokens && (
+              {showRecommendedTokens && (
                 <div
                   ref={quickSelectRef}
                   onMouseDown={onMouseDownQuickSelect}
                   className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
                 >
-                  {recommendedAssets.map(({ coinDenom, coinImageUrl }) => (
-                    <button
-                      key={coinDenom}
-                      className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
-                      onClick={() => {
-                        onClickAsset(coinDenom);
-                      }}
-                    >
-                      {coinImageUrl && (
-                        <div className="h-6 w-6 rounded-full">
-                          <Image
-                            src={coinImageUrl}
-                            alt="token icon"
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                      )}
-                      <p className="font-semibold">{coinDenom}</p>
-                    </button>
-                  ))}
+                  {recommendedAssets.map(({ coinDenom, coinImageUrl }) => {
+                    return (
+                      <button
+                        key={coinDenom}
+                        className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
+                        onClick={() => {
+                          onClickAsset(coinDenom);
+                        }}
+                      >
+                        {coinImageUrl && (
+                          <div className="h-6 w-6 rounded-full">
+                            <Image
+                              src={coinImageUrl}
+                              alt="token icon"
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                        )}
+                        <p className="font-semibold">{coinDenom}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -466,7 +500,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                       className="text-osmoverse-700"
                     />
                     <span className="mt-6 text-h6 font-h6 text-white-high">
-                      No results for "{query}"
+                      No results for "{searchValue}"
                     </span>
                     <span className="body1 pt-1">
                       Try adjusting your search query
@@ -477,7 +511,7 @@ export const TokenSelectModalLimit: FunctionComponent<{
                   onVisible={() => {
                     // If this element becomes visible at bottom of list, fetch next page
                     if (!isFetchingNextPageAssets && hasNextPageAssets) {
-                      fetchNextPageAssets();
+                      fetchNextPageAssets?.();
                     }
                   }}
                 />

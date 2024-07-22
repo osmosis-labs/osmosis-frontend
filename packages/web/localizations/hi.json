@@ -1286,7 +1286,8 @@
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
     "openOrders": "खुले आदेश",
-    "invalidPrice": "अमान्य मूल्य"
+    "invalidPrice": "अमान्य मूल्य",
+    "unavailable": "{denom} के लिए अनुपलब्ध"
   },
   "orderHistory": {
     "orders": "आदेश",

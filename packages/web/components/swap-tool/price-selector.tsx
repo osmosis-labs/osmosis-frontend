@@ -1,5 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY, MaybeUserAssetCoin } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -15,38 +16,41 @@ import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface PriceSelectorProps {
   tokenSelectionAvailable: boolean;
   showQuoteBalance: boolean;
-  baseDenom: string;
 }
 
-type AssetWithBalance = Asset & {
-  amount?: CoinPretty;
-  usdValue?: PricePretty;
-};
+type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
 const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
-export const PriceSelector = observer(
+function sortByAmount(
+  assetA?: MaybeUserAssetCoin,
+  assetB?: MaybeUserAssetCoin
+) {
+  return (assetA?.amount?.toDec() ?? new Dec(0)).gt(
+    assetB?.amount?.toDec() ?? new Dec(0)
+  )
+    ? -1
+    : 1;
+}
+
+export const PriceSelector = memo(
   ({
     tokenSelectionAvailable,
     disabled,
     showQuoteBalance,
-    baseDenom,
   }: PriceSelectorProps & Disableable) => {
     const { t } = useTranslation();
 
     const [tab, setTab] = useQueryState("tab");
-    const [quote, setQuote] = useQueryState(
-      "quote",
-      parseAsString.withDefault("USDC")
-    );
+    const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
     const [base, setBase] = useQueryState(
-      "base",
+      "from",
       parseAsString.withDefault("OSMO")
     );
     const [_, setSellOpen] = useQueryState(
@@ -92,14 +96,9 @@ export const PriceSelector = observer(
     const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
       { userOsmoAddress: wallet?.address },
       {
-        enabled: Boolean(wallet?.address),
+        enabled: !!wallet?.address,
         select: (data) =>
           data.items
-            .filter((walletAsset) =>
-              (selectableQuoteDenoms[baseDenom] ?? []).includes(
-                walletAsset.coinMinimalDenom
-              )
-            )
             .map((walletAsset) => {
               const asset = getAssetFromAssetList({
                 assetLists: AssetLists,
@@ -110,20 +109,21 @@ export const PriceSelector = observer(
               const returnAsset: AssetWithBalance = {
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
-                usdValue: walletAsset.usdValue,
               };
-
-              if (asset?.symbol === "USDC") return returnAsset;
-
               // In the future, we might want to pass every coin instead of just stables.
               return asset?.rawAsset.categories.includes("stablecoin")
                 ? returnAsset
                 : undefined;
             })
             .filter(Boolean)
-            .toSorted((a, b) =>
-              a?.usdValue?.toDec().gt(b?.usdValue?.toDec()!) ? 1 : -1
-            ) as AssetWithBalance[],
+            .toSorted(sortByAmount)
+            .toSorted((assetA) => {
+              const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
+                (asset) => asset.coinDenom === assetA?.symbol
+              );
+
+              return isAssetAAvailable ? -1 : 1;
+            }) as AssetWithBalance[],
       }
     );
 
@@ -141,45 +141,22 @@ export const PriceSelector = observer(
      */
     const defaultQuotesWithBalances = useMemo(
       () =>
-        defaultQuotes.map(
-          (defaultQuote) =>
-            userQuotes?.find(({ symbol }) => defaultQuote.symbol === symbol) ??
-            defaultQuote
-        ),
-      [defaultQuotes, userQuotes]
+        userQuotes?.filter(
+          ({ amount }) => amount?.toDec().gt(new Dec(0)) ?? false
+        ) ?? [],
+      [userQuotes]
     );
 
     const selectableQuotes = useMemo(() => {
-      if (!wallet?.isWalletConnected) {
-        return defaultQuotes;
-      }
-
       return tab === "sell"
         ? userQuotesWithoutBalances
         : defaultQuotesWithBalances;
-    }, [
-      defaultQuotes,
-      defaultQuotesWithBalances,
-      tab,
-      userQuotesWithoutBalances,
-      wallet?.isWalletConnected,
-    ]);
+    }, [defaultQuotesWithBalances, tab, userQuotesWithoutBalances]);
 
     const quoteAssetWithBalance = useMemo(
       () => userQuotes?.find(({ symbol }) => symbol === quote),
       [quote, userQuotes]
     );
-
-    /**
-     * Default selection is highest balance stable.
-     * When user changes selection, app should persist
-     * selection across both Buy and Sell trade modes.
-     */
-    useEffect(() => {
-      if (userQuotes && userQuotes.length > 0) {
-        setQuote(userQuotes[0].symbol);
-      }
-    }, [setQuote, userQuotes]);
 
     const {
       isOpen: isAddFundsModalOpen,
@@ -266,71 +243,11 @@ export const PriceSelector = observer(
                 leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items className="absolute left-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
-                  <div className="flex flex-col border-b border-osmoverse-700 p-2">
-                    {selectableQuotes.map(({ symbol, name, logoURIs }) => {
-                      const isSelected = quote === symbol;
-                      const availableBalance =
-                        userQuotes &&
-                        userQuotes.find((u) => u?.symbol === symbol)?.usdValue;
-
-                      return (
-                        <Menu.Item key={name}>
-                          {({ active }) => (
-                            <button
-                              onClick={() => setQuote(symbol)}
-                              className={classNames(
-                                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
-                                { "bg-osmoverse-700": active || isSelected }
-                              )}
-                            >
-                              <div className="flex items-center gap-3">
-                                <Image
-                                  src={logoURIs.svg || logoURIs.png || ""}
-                                  alt={`${name} logo`}
-                                  className="h-10 w-10"
-                                  width={40}
-                                  height={40}
-                                />
-                                <div className="flex flex-col gap-1 text-left">
-                                  <p>{name}</p>
-                                  <small className="text-sm leading-5 text-osmoverse-300">
-                                    {symbol}
-                                  </small>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                {wallet?.isWalletConnected &&
-                                  availableBalance && (
-                                    <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                                      <span
-                                        className={classNames({
-                                          "text-white-full": availableBalance
-                                            .toDec()
-                                            .gt(new Dec(0)),
-                                        })}
-                                      >
-                                        {formatPretty(availableBalance)}
-                                      </span>
-                                      <span className="body2 font-light">
-                                        {t("pool.available").toLowerCase()}
-                                      </span>
-                                    </p>
-                                  )}
-                                <Icon
-                                  id="check-mark-circle"
-                                  className={classNames(
-                                    "h-4 w-4 rounded-full text-[#CC54C2]",
-                                    {
-                                      "opacity-0": !isSelected,
-                                    }
-                                  )}
-                                />
-                              </div>
-                            </button>
-                          )}
-                        </Menu.Item>
-                      );
-                    })}
+                  <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
+                    <SelectableQuotes
+                      selectableQuotes={selectableQuotes}
+                      userQuotes={userQuotes}
+                    />
                   </div>
                   <div className="flex flex-col">
                     {tab === "buy" && wallet?.address && (
@@ -432,18 +349,7 @@ function HighestBalanceAssetsIcons({
     { userOsmoAddress },
     {
       select: ({ items }) => {
-        return items
-          .map(({ usdValue, coinImageUrl }) => ({
-            coinImageUrl,
-            usdValue,
-          }))
-          .sort((a, b) => {
-            return a.usdValue?.toDec().gt(b.usdValue?.toDec() ?? new Dec(0))
-              ? -1
-              : 1;
-          })
-          .slice(0, 5)
-          .reverse();
+        return items.sort(sortByAmount).slice(0, 5).reverse();
       },
     }
   );
@@ -468,3 +374,120 @@ function HighestBalanceAssetsIcons({
     </div>
   );
 }
+
+const SelectableQuotes = observer(
+  ({
+    selectableQuotes = [],
+    userQuotes = [],
+  }: {
+    selectableQuotes?: AssetWithBalance[];
+    userQuotes?: AssetWithBalance[];
+  }) => {
+    const { t } = useTranslation();
+    const { accountStore } = useStore();
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+    const [base] = useQueryState("from", parseAsString.withDefault("OSMO"));
+    const [quote, setQuote] = useQueryState(
+      "quote",
+      parseAsString.withDefault("USDC")
+    );
+    const [type] = useQueryState("type", parseAsString.withDefault("market"));
+
+    const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
+
+    return selectableQuotes.map(({ symbol, name, logoURIs }) => {
+      const isSelected = quote === symbol;
+      const availableBalance =
+        userQuotes &&
+        (userQuotes.find((u) => u?.symbol === symbol)?.amount?.toDec() ??
+          new Dec(0));
+      const isDisabled =
+        type === "limit" &&
+        !selectableQuoteDenoms[base]?.some(
+          (asset) => asset.coinDenom === symbol
+        );
+      return (
+        <Menu.Item key={name}>
+          {({ active }) => (
+            <button
+              onClick={() => setQuote(symbol)}
+              className={classNames(
+                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
+                {
+                  "bg-osmoverse-700": active || isSelected,
+                  "opacity-50": isDisabled,
+                }
+              )}
+              disabled={isDisabled}
+            >
+              <div className="flex items-center gap-3">
+                <Image
+                  src={logoURIs.svg || logoURIs.png || ""}
+                  alt={`${name} logo`}
+                  className="h-10 w-10"
+                  width={40}
+                  height={40}
+                />
+                <div className="flex flex-col gap-1 text-left">
+                  <p>{name}</p>
+                  <small className="text-sm leading-5 text-osmoverse-300">
+                    {symbol}
+                  </small>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {isDisabled ? (
+                  <div className="flex w-[80px] items-end gap-3">
+                    <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+                      <span className="body2 font-light">
+                        {t("limitOrders.unavailable", {
+                          denom: base,
+                        })}
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  wallet?.isWalletConnected &&
+                  availableBalance &&
+                  !availableBalance.isZero() &&
+                  !isDisabled && (
+                    <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                      <span
+                        className={classNames({
+                          "text-white-full": availableBalance.gt(new Dec(0)),
+                        })}
+                      >
+                        {formatPretty(
+                          new PricePretty(
+                            DEFAULT_VS_CURRENCY,
+                            availableBalance
+                          ),
+                          getPriceExtendedFormatOptions(availableBalance)
+                        )}
+                      </span>
+                      <span className="body2 font-light">
+                        {t("pool.available").toLowerCase()}
+                      </span>
+                    </p>
+                  )
+                )}
+                <Icon
+                  id="check-mark"
+                  width={16}
+                  height={16}
+                  className={classNames(
+                    "text-white h-[16px] w-[16px] rounded-full",
+                    {
+                      "opacity-0": !isSelected,
+                    }
+                  )}
+                />
+              </div>
+            </button>
+          )}
+        </Menu.Item>
+      );
+    });
+  }
+);

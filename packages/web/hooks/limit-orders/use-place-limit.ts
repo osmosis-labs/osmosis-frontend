@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
@@ -11,7 +12,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 function getNormalizationFactor(
@@ -37,7 +38,7 @@ export interface UsePlaceLimitParams {
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
 
 // TODO: adjust as necessary
-const CLAIM_BOUNTY = "0.001";
+const CLAIM_BOUNTY = "0.0001";
 
 export const usePlaceLimit = ({
   osmosisChainId,
@@ -479,6 +480,16 @@ export const usePlaceLimit = ({
   };
 };
 
+const DEFAULT_PERCENT_ADJUSTMENT = "0.5";
+
+const MAX_TICK_PRICE = 340282300000000000000;
+const MIN_TICK_PRICE = 0.000000000001;
+
+/**
+ * Handles the logic for the limit price selector.
+ * Allows the user to input either a set fiat price or a percentage related to the current spot price.
+ * Also returns relevant spot price for each direction.
+ */
 const useLimitPrice = ({
   orderbookContractAddress,
   orderDirection,
@@ -488,45 +499,99 @@ const useLimitPrice = ({
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery({
-    osmoAddress: orderbookContractAddress,
-  });
-  const { data: assetPrice, isLoading: loadingAssetPrice } =
-    api.edge.assets.getAssetPrice.useQuery({
+  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
+    {
+      osmoAddress: orderbookContractAddress,
+    },
+    {
+      enabled: !!orderbookContractAddress,
+    }
+  );
+  const {
+    data: assetPrice,
+    isLoading: loadingSpotPrice,
+    isRefetching: isSpotPriceRefetching,
+    refetch: refetchSpotPrice,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    {
       coinMinimalDenom: baseDenom ?? "",
-    });
+    },
+    { refetchInterval: 10000, enabled: !!baseDenom }
+  );
 
   const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
 
+  // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
-    if (!assetPrice) return new Dec(1);
-    return assetPrice.toDec();
+    return assetPrice ? assetPrice.toDec() : new Dec(1);
   }, [assetPrice]);
 
-  const adjustByPercentage = useCallback(
-    (percentage: Dec) => {
-      setOrderPrice(
-        formatPretty((spotPrice ?? new Dec(0)).mul(new Dec(1).add(percentage)))
-      );
+  // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
+  const setManualOrderPrice = useCallback(
+    (price: string) => {
+      if (countDecimals(price) > 2) {
+        price = parseFloat(price).toFixed(2).toString();
+      }
+
+      const newPrice = new Dec(price.length > 0 ? price : "0");
+      if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
+        price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
+      } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
+        price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
+      }
+
+      setOrderPrice(price);
+
+      if (price.length === 0) {
+        setManualPercentAdjusted("");
+      }
     },
-    [spotPrice]
+    [setOrderPrice]
   );
 
-  useEffect(() => {
-    if (manualPercentAdjusted.length > 0) {
-      const adjustment = new Dec(manualPercentAdjusted).quo(new Dec(100));
-      if (adjustment.isNegative()) return adjustByPercentage(new Dec(0));
+  // Adjusts the percentage for placing the order.
+  // Adjusting the precentage also resets a user based input in order to maintain
+  // a percentage related to the current spot price.
+  const setManualPercentAdjustedSafe = useCallback(
+    (percentAdjusted: string) => {
+      if (percentAdjusted.startsWith(".")) {
+        percentAdjusted = "0" + percentAdjusted;
+      }
 
-      adjustByPercentage(
-        orderDirection === "ask" ? adjustment : adjustment.mul(new Dec(-1))
-      );
-    } else {
-      adjustByPercentage(new Dec(0));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manualPercentAdjusted, orderDirection]);
+      if (
+        percentAdjusted.length > 0 &&
+        !isValidNumericalRawInput(percentAdjusted)
+      )
+        return;
 
+      if (countDecimals(percentAdjusted) > 10) {
+        percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+      }
+
+      const split = percentAdjusted.split(".");
+      if (split[0].length > 9) {
+        return;
+      }
+
+      // Do not allow the user to input 100% below current price
+      if (
+        orderDirection === "bid" &&
+        percentAdjusted.length > 0 &&
+        new Dec(percentAdjusted).gte(new Dec(100))
+      ) {
+        return;
+      }
+
+      setManualPercentAdjusted(percentAdjusted);
+
+      // Reset the user's manual order price if they adjust percentage
+      if (orderPrice.length > 0) setOrderPrice("");
+    },
+    [setManualPercentAdjusted, orderPrice.length, orderDirection]
+  );
+
+  // Whether the user's manual order price is a valid price
   const isValidInputPrice = useMemo(
     () =>
       Boolean(orderPrice) &&
@@ -536,18 +601,36 @@ const useLimitPrice = ({
     [orderPrice]
   );
 
+  // The current price. If the user has input a manual order price then that is used, otherwise we look at the percentage adjusted.
+  // If the user has a percentage adjusted input we calculate the price relative to the spot price
+  // given the current direction of the order.
+  // If the form is empty we default to a percentage relative to the spot price.
+  const price = useMemo(() => {
+    if (orderPrice && orderPrice.length > 0) {
+      return new Dec(orderPrice);
+    }
+
+    const percent =
+      manualPercentAdjusted.length > 0
+        ? manualPercentAdjusted
+        : DEFAULT_PERCENT_ADJUSTMENT;
+    const percentAdjusted =
+      orderDirection === "bid"
+        ? // Adjust negatively for bid orders
+          new Dec(1).sub(new Dec(percent).quo(new Dec(100)))
+        : // Adjust positively for ask orders
+          new Dec(1).add(new Dec(percent).quo(new Dec(100)));
+
+    return spotPrice.mul(percentAdjusted) ?? new Dec(1);
+  }, [orderPrice, spotPrice, manualPercentAdjusted, orderDirection]);
+
+  // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
-    () =>
-      isValidInputPrice
-        ? new Dec(orderPrice).quo(spotPrice ?? new Dec(1)).sub(new Dec(1))
-        : new Dec(0),
-    [isValidInputPrice, orderPrice, spotPrice]
-  );
-  const price = useMemo(
-    () => (isValidInputPrice ? new Dec(orderPrice) : spotPrice ?? new Dec(1)),
-    [isValidInputPrice, orderPrice, spotPrice]
+    () => price.quo(spotPrice ?? new Dec(1)).sub(new Dec(1)),
+    [price, spotPrice]
   );
 
+  // If the user is inputting a price that crosses over the spot price
   const isBeyondOppositePrice = useMemo(() => {
     return orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
   }, [orderDirection, price, spotPrice]);
@@ -559,26 +642,34 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
-  }, []);
+    refetchSpotPrice();
+  }, [refetchSpotPrice]);
 
-  const setPrice = useCallback((price: string) => {
-    if (!price) {
-      setOrderPrice("");
-    } else {
-      setOrderPrice(price);
-    }
-  }, []);
+  // const setPercentAdjusted = useCallback(
+  //   (percentAdjusted: string) => {
+  //     if (!percentAdjusted || percentAdjusted.length === 0) {
+  //       setManualPercentAdjusted("");
+  //     } else {
+  //       if (countDecimals(percentAdjusted) > 10) {
+  //         percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+  //       }
+  //       if (
+  //         orderDirection === "bid" &&
+  //         new Dec(percentAdjusted).gte(new Dec(100))
+  //       ) {
+  //         return;
+  //       }
 
-  const setPercentAdjusted = useCallback(
-    (percentAdjusted: string) => {
-      if (!percentAdjusted) {
-        setManualPercentAdjusted("");
-      } else {
-        setManualPercentAdjusted(percentAdjusted);
-      }
-    },
-    [setManualPercentAdjusted]
-  );
+  //       const split = percentAdjusted.split(".");
+  //       if (split[0].length > 9) {
+  //         return;
+  //       }
+
+  //       setManualPercentAdjusted(percentAdjusted);
+  //     }
+  //   },
+  //   [setManualPercentAdjusted, orderDirection]
+  // );
 
   useEffect(() => {
     reset();
@@ -587,22 +678,23 @@ const useLimitPrice = ({
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
+
   return {
     spotPrice,
     orderPrice,
     price,
     priceFiat,
-    adjustByPercentage,
     manualPercentAdjusted,
-    setPercentAdjusted,
+    setPercentAdjusted: setManualPercentAdjustedSafe,
+    _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
-    isLoading,
+    isLoading: isLoading || loadingSpotPrice,
     reset,
-    setPrice,
+    setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
     bidSpotPrice: data?.bidSpotPrice,
     askSpotPrice: data?.askSpotPrice,
-    loadingAssetPrice,
+    isSpotPriceRefetching,
   };
 };
