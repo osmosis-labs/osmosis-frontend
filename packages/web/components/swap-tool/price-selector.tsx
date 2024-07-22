@@ -39,7 +39,7 @@ function sortByAmount(
     : 1;
 }
 
-export const PriceSelector = memo(
+export const PriceSelector = observer(
   ({
     tokenSelectionAvailable,
     disabled,
