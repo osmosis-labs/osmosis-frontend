@@ -204,6 +204,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     swapState.priceState.spotPrice
                   )
                 }
+                inPriceFetching={swapState.priceState.priceRefetching}
               />
             )}
           </>

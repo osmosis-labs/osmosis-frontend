@@ -13,7 +13,7 @@ import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { EventName } from "~/config";
 import {
@@ -36,6 +36,7 @@ interface TradeDetailsProps {
   outFiatAmountLessSlippage?: PricePretty;
   inDenom?: string;
   inPrice?: CoinPretty | PricePretty;
+  inPriceFetching?: boolean;
 }
 
 export const TradeDetails = ({
@@ -45,6 +46,7 @@ export const TradeDetails = ({
   outFiatAmountLessSlippage,
   inDenom,
   inPrice,
+  inPriceFetching,
 }: Partial<TradeDetailsProps>) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
@@ -106,22 +108,25 @@ export const TradeDetails = ({
                 )}
                 disabled={isInAmountEmpty}
               >
-                <span
-                  className={classNames(
-                    "body2 text-osmoverse-300 transition-opacity",
-                    {
-                      "opacity-0": open,
-                    }
-                  )}
-                >
-                  {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                  {inPrice &&
-                    formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                      maxDecimals: inPrice
-                        ? 2
-                        : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
-                    })}
-                </span>
+                <SkeletonLoader isLoaded={Boolean(inPrice)}>
+                  <span
+                    className={classNames(
+                      "body2 text-osmoverse-300 transition-opacity",
+                      {
+                        "opacity-0": open,
+                        "animate-pulse": inPriceFetching,
+                      }
+                    )}
+                  >
+                    {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                    {inPrice &&
+                      formatPretty(inPrice ?? inPrice ?? new Dec(0), {
+                        maxDecimals: inPrice
+                          ? 2
+                          : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
+                      })}
+                  </span>
+                </SkeletonLoader>
                 <span
                   className={classNames("absolute transition-opacity", {
                     "opacity-100": open,
