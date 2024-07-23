@@ -421,6 +421,7 @@ export const usePlaceLimit = ({
     priceState.reset();
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
+
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
@@ -527,6 +528,10 @@ const useLimitPrice = ({
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (price: string) => {
+      if (!isValidNumericalRawInput(price)) {
+        return;
+      }
+
       if (countDecimals(price) > 2) {
         price = parseFloat(price).toFixed(2).toString();
       }
@@ -552,6 +557,10 @@ const useLimitPrice = ({
   // a percentage related to the current spot price.
   const setManualPercentAdjustedSafe = useCallback(
     (percentAdjusted: string) => {
+      if (!isValidNumericalRawInput(percentAdjusted)) {
+        return;
+      }
+
       if (percentAdjusted.startsWith(".")) {
         percentAdjusted = "0" + percentAdjusted;
       }
