@@ -168,7 +168,7 @@ function filterAssetList(
         /** Search is performed on the raw asset list data, instead of `Asset` type. */
         ["symbol", "name"] as (keyof AssetListAsset)[],
         params.search,
-        0.3
+        0.2
       );
       assetListAssets = symbolOrNameMatches;
       console.log("symbolOrNameMatches", symbolOrNameMatches);
