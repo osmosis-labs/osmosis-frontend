@@ -1,12 +1,13 @@
 import "@testing-library/jest-dom";
 
-import * as Sentry from "@sentry/nextjs";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
+import { captureError } from "~/utils/error";
+
 import { ErrorBoundary } from "../error-boundary";
 
-jest.mock("@sentry/nextjs");
+jest.mock("~/utils/error");
 
 describe("ErrorBoundary", () => {
   const ChildComponent = () => {
@@ -33,7 +34,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
-  it("should call Sentry.captureException when an error is thrown", () => {
+  it("should call captureError when an error is thrown", () => {
     const FallbackComponent = () => <div>Something went wrong</div>;
 
     render(
@@ -42,7 +43,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>
     );
 
-    expect(Sentry.captureException).toHaveBeenCalledWith(expect.any(Error));
+    expect(captureError).toHaveBeenCalledWith(expect.any(Error));
   });
 
   it("should call onError prop when an error is thrown", () => {
