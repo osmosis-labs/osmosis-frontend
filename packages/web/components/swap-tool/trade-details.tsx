@@ -11,9 +11,10 @@ import classNames from "classnames";
 import { useEffect, useMemo } from "react";
 import { useMeasure } from "react-use";
 
-import { Icon } from "~/components/assets";
-import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { Icon } from "~/components/assets/icon";
+import { SkeletonLoader } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import {
   useDisclosure,
   UseDisclosureReturn,
@@ -72,6 +73,11 @@ export const TradeDetails = ({
     [swapState?.quote?.priceImpactTokenOut]
   );
 
+  const isPriceImpactHigh = useMemo(
+    () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
+    [priceImpact]
+  );
+
   return (
     <div className="flex w-full">
       <Disclosure>
@@ -92,13 +98,9 @@ export const TradeDetails = ({
               >
                 <SkeletonLoader isLoaded={Boolean(inPrice)}>
                   <span
-                    className={classNames(
-                      "body2 text-osmoverse-300 transition-opacity",
-                      {
-                        "opacity-0": open,
-                        "animate-pulse": inPriceFetching,
-                      }
-                    )}
+                    className={classNames("body2 text-osmoverse-300", {
+                      "animate-pulse": inPriceFetching,
+                    })}
                   >
                     {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
                     {inPrice &&
@@ -109,48 +111,27 @@ export const TradeDetails = ({
                       })}
                   </span>
                 </SkeletonLoader>
-                <span
-                  className={classNames("absolute transition-opacity", {
-                    "opacity-100": open,
-                    "opacity-0": !open,
-                  })}
+                <GenericDisclaimer
+                  title="High price impact"
+                  body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                  disabled={!isPriceImpactHigh}
                 >
-                  {t("limitOrders.tradeDetails")}
-                </span>
-                <div
-                  className={classNames(
-                    "absolute right-0 flex items-center gap-2 transition-opacity",
-                    { "opacity-0": !isLoading }
-                  )}
-                >
-                  <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                  <span className="body2 text-osmoverse-400">
-                    {t("limitOrders.estimatingFees")}
-                  </span>
-                </div>
-                <div
-                  className={classNames(
-                    "flex items-center gap-2 transition-all",
-                    {
-                      "opacity-0": isInAmountEmpty || isLoading,
-                    }
-                  )}
-                >
-                  <span className="body2 text-osmoverse-300">
-                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                  </span>
-                  <Icon
-                    id="chevron-down"
-                    width={16}
-                    height={16}
+                  <div
                     className={classNames(
-                      "text-osmoverse-300 transition-transform",
+                      "flex items-center gap-2 transition-opacity",
                       {
-                        "rotate-180": open,
+                        "opacity-0": isInAmountEmpty,
                       }
                     )}
-                  />
-                </div>
+                  >
+                    {isPriceImpactHigh && (
+                      <Icon id="alert-circle-filled" width={16} height={16} />
+                    )}
+                    <span className="body2 text-wosmongton-300">
+                      {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                    </span>
+                  </div>
+                </GenericDisclaimer>
               </Disclosure.Button>
               <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
                 <RecapRow
@@ -173,18 +154,31 @@ export const TradeDetails = ({
                   }
                 />
                 <RecapRow
-                  left={t("swap.priceImpact")}
+                  left={t("assets.transfer.priceImpact")}
                   right={
-                    <span
-                      className={classNames({
-                        "text-rust-400": priceImpact
-                          ?.toDec()
-                          .abs()
-                          .gt(new Dec(0.1)),
-                      })}
+                    <GenericDisclaimer
+                      title="High price impact"
+                      body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                      disabled={!isPriceImpactHigh}
                     >
-                      -{formatPretty(priceImpact ?? new Dec(0))}
-                    </span>
+                      <div className="inline-flex items-center gap-1">
+                        {isPriceImpactHigh && (
+                          <Icon
+                            id="alert-circle-filled"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                        <span
+                          className={classNames({
+                            "text-rust-400": isPriceImpactHigh,
+                            "text-bullish-400": !isPriceImpactHigh,
+                          })}
+                        >
+                          -{formatPretty(priceImpact ?? new Dec(0))}
+                        </span>
+                      </div>
+                    </GenericDisclaimer>
                   }
                 />
                 <RecapRow
@@ -203,34 +197,52 @@ export const TradeDetails = ({
                               }
                             )}
                           </span>
-                          {swapState?.quote?.swapFee
-                            ? ` (${swapState?.quote?.swapFee})`
-                            : ""}
+                          <span className="text-osmoverse-500">
+                            {swapState?.quote?.swapFee
+                              ? ` (${swapState?.quote?.swapFee})`
+                              : ""}
+                          </span>
                         </span>
                       )}
                     </>
                   }
                 />
+                <Disclosure>
+                  {({ open }) => {
+                    const routes = swapState?.quote?.split;
 
-                <span className="subtitle1 py-3 text-white-full">
-                  {t("limitOrders.swapRoute")}
-                </span>
-
-                <div className="flex w-full">
-                  <RecapRow
-                    left=""
-                    className="!h-auto flex-col !items-start gap-2.5"
-                    right={
-                      <div className="flex w-full flex-col gap-2">
-                        <RoutesTaken
-                          {...routesVisDisclosure}
-                          split={swapState?.quote?.split ?? []}
-                          isLoading={swapState?.isQuoteLoading}
-                        />
-                      </div>
-                    }
-                  />
-                </div>
+                    return (
+                      <>
+                        <Disclosure.Button className="flex h-8 w-full items-center justify-between">
+                          <span className="body2 text-osmoverse-300">
+                            {t("swap.autoRouter")}
+                          </span>
+                          <div className="flex items-center gap-1 text-wosmongton-300">
+                            <span className="body2">
+                              {routes?.length}{" "}
+                              {routes?.length === 1 ? "route" : "routes"}
+                            </span>
+                            <Icon
+                              id="chevron-down"
+                              width={16}
+                              height={16}
+                              className={classNames("transition-transform", {
+                                "rotate-180": open,
+                              })}
+                            />
+                          </div>
+                        </Disclosure.Button>
+                        <Disclosure.Panel className="flex w-full flex-col gap-2">
+                          <RoutesTaken
+                            {...routesVisDisclosure}
+                            split={routes ?? []}
+                            isLoading={swapState?.isQuoteLoading}
+                          />
+                        </Disclosure.Panel>
+                      </>
+                    );
+                  }}
+                </Disclosure>
               </Disclosure.Panel>
             </div>
           </div>
