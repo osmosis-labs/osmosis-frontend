@@ -186,23 +186,32 @@ export const TradeDetails = ({
                   right={
                     <>
                       {swapState?.tokenInFeeAmountFiatValue && (
-                        <span>
-                          <span className="text-osmoverse-100">
-                            ~
-                            {formatPretty(
-                              swapState?.tokenInFeeAmountFiatValue ??
-                                new Dec(0),
-                              {
-                                maxDecimals: 2,
-                              }
-                            )}
-                          </span>
-                          <span className="text-osmoverse-500">
-                            {swapState?.quote?.swapFee
-                              ? ` (${swapState?.quote?.swapFee})`
-                              : ""}
-                          </span>
-                        </span>
+                        <>
+                          {swapState?.tokenInFeeAmountFiatValue
+                            .toDec()
+                            .gt(new Dec(0)) ? (
+                            <span>
+                              <span className="text-osmoverse-100">
+                                ~
+                                {formatPretty(
+                                  swapState?.tokenInFeeAmountFiatValue,
+                                  {
+                                    maxDecimals: 2,
+                                  }
+                                )}
+                              </span>
+                              <span className="text-osmoverse-500">
+                                {swapState?.quote?.swapFee
+                                  ? ` (${swapState?.quote?.swapFee})`
+                                  : ""}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="text-bullish-400">
+                              {t("transfer.free")}
+                            </span>
+                          )}
+                        </>
                       )}
                     </>
                   }
