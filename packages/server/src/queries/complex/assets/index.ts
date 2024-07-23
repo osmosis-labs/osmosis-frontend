@@ -171,6 +171,7 @@ function filterAssetList(
         0.3
       );
       assetListAssets = symbolOrNameMatches;
+      console.log("symbolOrNameMatches", symbolOrNameMatches);
     }
   }
 
