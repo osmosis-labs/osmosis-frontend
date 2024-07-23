@@ -271,30 +271,6 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: gasEstimate, isLoading: gasFeeLoading } = useEstimateTxFees({
-    chainId: accountStore.osmosisChainId,
-    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
-    enabled: !isMarket && !!encodedMsg && !!account?.address,
-  });
-
-  const gasAmountFiat = useMemo(() => {
-    if (isMarket) {
-      return marketState.networkFee?.gasUsdValueToPay;
-    }
-    return gasEstimate?.gasUsdValueToPay;
-  }, [
-    isMarket,
-    marketState.networkFee?.gasUsdValueToPay,
-    gasEstimate?.gasUsdValueToPay,
-  ]);
-
-  const isGasLoading = useMemo(() => {
-    if (isMarket) {
-      return marketState.isLoadingNetworkFee;
-    }
-    return gasFeeLoading;
-  }, [isMarket, marketState.isLoadingNetworkFee, gasFeeLoading]);
-
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -518,6 +494,31 @@ export const usePlaceLimit = ({
     paymentTokenValue,
     orderbookError,
   ]);
+
+  const { data: gasEstimate, isLoading: gasFeeLoading } = useEstimateTxFees({
+    chainId: accountStore.osmosisChainId,
+    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
+    enabled:
+      !isMarket && !!encodedMsg && !!account?.address && !insufficientFunds,
+  });
+
+  const gasAmountFiat = useMemo(() => {
+    if (isMarket) {
+      return marketState.networkFee?.gasUsdValueToPay;
+    }
+    return gasEstimate?.gasUsdValueToPay;
+  }, [
+    isMarket,
+    marketState.networkFee?.gasUsdValueToPay,
+    gasEstimate?.gasUsdValueToPay,
+  ]);
+
+  const isGasLoading = useMemo(() => {
+    if (isMarket) {
+      return marketState.isLoadingNetworkFee;
+    }
+    return gasFeeLoading;
+  }, [isMarket, marketState.isLoadingNetworkFee, gasFeeLoading]);
 
   return {
     baseAsset,
