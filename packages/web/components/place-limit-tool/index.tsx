@@ -73,6 +73,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const { onOpenWalletSelect } = useWalletSelect();
 
+    const slippageConfig = useSlippageConfig();
+
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
@@ -81,9 +83,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       quoteDenom: quote,
       type,
       page,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
-
-    const slippageConfig = useSlippageConfig();
 
     // Adjust price to base price if the type changes to "market"
     useEffect(() => {
