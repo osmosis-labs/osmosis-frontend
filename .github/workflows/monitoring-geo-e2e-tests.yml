@@ -1,4 +1,4 @@
-name: Synthetic Geo Monitoring E2E tests
+name: Synthetic Geo Monitoring Frontend tests
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"include\":[{ \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, { \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"test-proxy\":\"true\", \"include\":[{ \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"true\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"false\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
     timeout-minutes: 15
@@ -27,8 +27,7 @@ jobs:
       matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     steps:
       - name: Echo IP
-        run: |
-          curl -L "https://ipinfo.io" -s
+        run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -52,7 +51,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
           PRIVATE_KEY: ${{secrets.TEST_PRIVATE_KEY}}
-          USE_TEST_PROXY: "true"
+          USE_TEST_PROXY: ${{ matrix.test-proxy }}
         run: |
           cd packages/web
           npx playwright test select pools transactions
@@ -76,8 +75,7 @@ jobs:
       matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     steps:
       - name: Echo IP
-        run: |
-          curl -L "https://ipinfo.io" -s
+        run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -101,7 +99,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
-          USE_TEST_PROXY: "true"
+          USE_TEST_PROXY: ${{ matrix.test-proxy }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -112,6 +110,41 @@ jobs:
         with:
           name: ${{ matrix.env }}-swap-test-results
           path: packages/web/playwright-report
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Synthetic Monitoring Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Synthetic Monitoring Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   delete-deployments:
     runs-on: ubuntu-latest
