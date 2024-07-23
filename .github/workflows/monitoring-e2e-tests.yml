@@ -23,7 +23,7 @@ jobs:
       name: prod_swap_test
     steps:
       - name: Echo IP
-        run: curl https://api.ipify.org
+        run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -175,7 +175,7 @@ jobs:
       name: prod_swap_test
     steps:
       - name: Echo IP
-        run: curl https://api.ipify.org
+        run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
