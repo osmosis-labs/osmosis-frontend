@@ -16,6 +16,7 @@ import { SkeletonLoader } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
+import { Skeleton } from "~/components/ui/skeleton";
 import {
   useDisclosure,
   UseDisclosureReturn,
@@ -97,19 +98,27 @@ export const TradeDetails = ({
                 disabled={isInAmountEmpty}
               >
                 <SkeletonLoader isLoaded={Boolean(inPrice)}>
-                  <span
-                    className={classNames("body2 text-osmoverse-300", {
-                      "animate-pulse": inPriceFetching,
-                    })}
+                  <GenericDisclaimer
+                    title="What is expected rate?"
+                    body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
                   >
-                    {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                    {inPrice &&
-                      formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                        maxDecimals: inPrice
-                          ? 2
-                          : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
+                    <span
+                      className={classNames("body2 text-osmoverse-300", {
+                        "animate-pulse": inPriceFetching,
                       })}
-                  </span>
+                    >
+                      {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
+                      {inPrice &&
+                        formatPretty(inPrice ?? inPrice ?? new Dec(0), {
+                          maxDecimals: inPrice
+                            ? 2
+                            : Math.min(
+                                swapState?.toAsset?.coinDecimals ?? 8,
+                                8
+                              ),
+                        })}
+                    </span>
+                  </GenericDisclaimer>
                 </SkeletonLoader>
                 <GenericDisclaimer
                   title="High price impact"
@@ -135,26 +144,14 @@ export const TradeDetails = ({
               </Disclosure.Button>
               <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
                 <RecapRow
-                  left={t("limitOrders.expectedRate")}
-                  right={
-                    <span>
-                      1 {swapState?.fromAsset?.coinDenom} ≈{" "}
-                      {swapState?.toAsset
-                        ? formatPretty(
-                            swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
-                            {
-                              maxDecimals: Math.min(
-                                swapState.toAsset.coinDecimals,
-                                8
-                              ),
-                            }
-                          )
-                        : "0"}
-                    </span>
+                  left={
+                    <GenericDisclaimer
+                      title="What is price impact?"
+                      body="This is the difference in value between what you pay and what you receive. Positive numbers mean the asset you’re buying is worth more, while negative numbers mean the asset you’re selling is worth more."
+                    >
+                      {t("assets.transfer.priceImpact")}
+                    </GenericDisclaimer>
                   }
-                />
-                <RecapRow
-                  left={t("assets.transfer.priceImpact")}
                   right={
                     <GenericDisclaimer
                       title="High price impact"
@@ -182,7 +179,14 @@ export const TradeDetails = ({
                   }
                 />
                 <RecapRow
-                  left={`${t("pools.aprBreakdown.swapFees")}`}
+                  left={
+                    <GenericDisclaimer
+                      title="What are swap fees?"
+                      body="This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
+                    >
+                      {t("pools.aprBreakdown.swapFees")}
+                    </GenericDisclaimer>
+                  }
                   right={
                     <>
                       {swapState?.tokenInFeeAmountFiatValue && (
@@ -216,6 +220,46 @@ export const TradeDetails = ({
                     </>
                   }
                 />
+                <RecapRow
+                  left={
+                    <GenericDisclaimer
+                      title="What are trade fees?"
+                      body={
+                        <span>
+                          This is the fee charged by the Osmosis protocol at the
+                          time of trade execution in order to reward liquidity
+                          providers and maintain the network. <br />
+                          <br /> Trade fees for limit orders are currently free.
+                          <br />
+                          <br />
+                          Network fees are additional to every transaction.
+                        </span>
+                      }
+                    >
+                      Additional network fees
+                    </GenericDisclaimer>
+                  }
+                  right={
+                    swapState && (
+                      <>
+                        {!swapState.isLoadingNetworkFee ? (
+                          <span className="inline-flex items-center gap-1 text-osmoverse-100">
+                            <Icon id="gas" width={16} height={16} />~
+                            {swapState.networkFee?.gasUsdValueToPay &&
+                              formatPretty(
+                                swapState.networkFee?.gasUsdValueToPay,
+                                {
+                                  maxDecimals: 2,
+                                }
+                              )}
+                          </span>
+                        ) : (
+                          <Skeleton className="h-5 w-16" />
+                        )}
+                      </>
+                    )
+                  }
+                />
                 <Disclosure>
                   {({ open }) => {
                     const routes = swapState?.quote?.split;
@@ -223,9 +267,27 @@ export const TradeDetails = ({
                     return (
                       <>
                         <Disclosure.Button className="flex h-8 w-full items-center justify-between">
-                          <span className="body2 text-osmoverse-300">
-                            {t("swap.autoRouter")}
-                          </span>
+                          <GenericDisclaimer
+                            title="What is a trade route?"
+                            body={
+                              <>
+                                If there’s no direct market between the assets
+                                you’re trading, Osmosis will try to make the
+                                trade happen by making a series of trades with
+                                other assets to get the best price at any given
+                                time.
+                                <br />
+                                <br />
+                                For optimal efficiency based on available
+                                liquidity, sometimes trades will be split into
+                                multiple routes with different assets.
+                              </>
+                            }
+                          >
+                            <span className="body2 text-osmoverse-300">
+                              {t("swap.autoRouter")}
+                            </span>
+                          </GenericDisclaimer>
                           <div className="flex items-center gap-1 text-wosmongton-300">
                             <span className="body2">
                               {routes?.length}{" "}
