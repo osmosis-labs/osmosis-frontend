@@ -3266,6 +3266,14 @@ describe("SquidBridgeProvider", () => {
           decimals: 18,
         },
         {
+          chainId: 1,
+          chainType: "evm",
+          chainName: "Ethereum",
+          denom: "ETH",
+          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          decimals: 18,
+        },
+        {
           chainId: "agoric-3",
           chainType: "cosmos",
           chainName: "agoric",
@@ -3341,14 +3349,6 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address:
             "ibc/E3AB0DFDE9E782262B770C32DF94AC2A92B93DC4825376D6F6C874D3C877864E",
-          decimals: 18,
-        },
-        {
-          chainId: 1,
-          chainType: "evm",
-          chainName: "Ethereum",
-          denom: "ETH",
-          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           decimals: 18,
         },
         {

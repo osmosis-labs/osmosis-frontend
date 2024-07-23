@@ -158,7 +158,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className="sticky top-0 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3"
+          className="sticky top-28 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3 md:top-24"
         >
           <SearchBox
             ref={searchBoxRef}

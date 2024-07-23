@@ -1,5 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  BaseAccount,
+  BaseAccountTypeStr,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -8,6 +10,7 @@ import {
   queryFeeTokens,
   queryFeeTokenSpotPrice,
   sendTxSimulate,
+  VestingAccount,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
 import { ApiClientError } from "@osmosis-labs/utils";
@@ -148,12 +151,13 @@ export async function generateCosmosUnsignedTx({
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // get needed account and message data for a valid tx
-  const sequence = await queryBaseAccount({
+  const account = await queryBaseAccount({
     chainId,
     chainList,
     bech32Address,
-  }).then(({ account }) => Number(account.sequence));
-  if (isNaN(sequence)) throw new Error("Invalid sequence number: " + sequence);
+  });
+
+  const sequence: number = parseSeqeunceFromAccount(account);
 
   // create placeholder transaction document
   const rawUnsignedTx = TxRaw.encode({
@@ -186,6 +190,31 @@ export async function generateCosmosUnsignedTx({
     rawUnsignedTx,
     unsignedTx: Buffer.from(rawUnsignedTx).toString("base64"),
   };
+}
+
+// Parses the sequence number from the account object.
+// The structure of the account object is different for base and vesting accounts.
+// Therefore, we need to check the type of the account object to parse the sequence number.
+function parseSeqeunceFromAccount(account: any) {
+  let sequence: number = 0;
+  if (account.account["@type"] === BaseAccountTypeStr) {
+    const base_acc = account as BaseAccount;
+    sequence = Number(base_acc.account.sequence);
+  } else {
+    // We assume that if not a base account, it's a vesting account.
+    const vesting_acc = account as VestingAccount;
+    sequence = Number(
+      vesting_acc.account.base_vesting_account.base_account.sequence
+    );
+  }
+
+  if (Number.isNaN(sequence)) {
+    console.error(account);
+    throw new Error(
+      "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
+    );
+  }
+  return sequence;
 }
 
 /**
