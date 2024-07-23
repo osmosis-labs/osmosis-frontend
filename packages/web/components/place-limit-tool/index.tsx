@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
@@ -49,7 +50,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       tab: parseAsString,
       to: parseAsString,
     });
-
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
     if (from === quote) {
@@ -65,7 +65,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [tab]
     );
 
-    const { onOpenWalletSelect } = useWalletSelect();
+    const { onOpenWalletSelect, isLoading: isWalletLoading } =
+      useWalletSelect();
 
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
@@ -233,7 +234,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 />
               )}
             </>
-            {!account?.isWalletConnected ? (
+            {account?.walletStatus !== WalletStatus.Connected &&
+            !isWalletLoading ? (
               <Button
                 onClick={() =>
                   onOpenWalletSelect({
@@ -250,7 +252,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </Button>
             ) : (
               <>
-                {hasFunds ? (
+                {hasFunds || isWalletLoading ? (
                   <Button
                     disabled={
                       Boolean(swapState.error) ||
@@ -261,12 +263,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                             ?.toDec()
                             .isZero())) ||
                       !swapState.isBalancesFetched ||
-                      swapState.isMakerFeeLoading
+                      swapState.isMakerFeeLoading ||
+                      isWalletLoading
                     }
                     isLoading={
-                      !swapState.isBalancesFetched ||
-                      (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                      isMarketLoading
+                      !swapState.isMarket && swapState.isMakerFeeLoading
                     }
                     loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                     onClick={() => setReviewOpen(true)}
