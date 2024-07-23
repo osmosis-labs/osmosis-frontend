@@ -1,4 +1,4 @@
-name: Synthetic Geo Monitoring
+name: Synthetic Geo Monitoring E2E tests
 
 on:
   workflow_dispatch:
@@ -100,7 +100,7 @@ jobs:
           TEST_PROXY: ${{ matrix.server-url }}
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY_S }}
+          PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
           USE_TEST_PROXY: "true"
         run: |
           cd packages/web
