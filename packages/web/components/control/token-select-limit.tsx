@@ -38,6 +38,7 @@ export interface TokenSelectLimitProps {
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
   orderDirection: OrderDirection;
+  isLoadingAssets?: boolean;
 }
 
 export const TokenSelectLimit: FunctionComponent<
@@ -53,6 +54,7 @@ export const TokenSelectLimit: FunctionComponent<
     baseBalance,
     disabled,
     orderDirection,
+    isLoadingAssets,
   }) => {
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
@@ -119,7 +121,8 @@ export const TokenSelectLimit: FunctionComponent<
               setIsSelectOpen(!isSelectOpen);
             }
           }}
-          className="grid grid-cols-[auto_140px] items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5 hover:bg-osmoverse-825"
+          disabled={isLoadingAssets}
+          className="grid grid-cols-[auto_140px] items-center justify-between rounded-t-2xl bg-osmoverse-850 py-3 px-5 hover:bg-osmoverse-825 disabled:pointer-events-none"
         >
           {baseAsset && (
             <div
@@ -162,7 +165,7 @@ export const TokenSelectLimit: FunctionComponent<
                 {t("addLiquidity.available").toLowerCase()}
               </div>
             )}
-            {tokenSelectionAvailable && (
+            {tokenSelectionAvailable && !isLoadingAssets && (
               <div className="ml-2 flex h-6 w-6 items-center justify-center">
                 <Icon
                   id="chevron-down"

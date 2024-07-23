@@ -184,6 +184,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               onTokenSelect={setBase}
               disabled={false}
               orderDirection={orderDirection}
+              isLoadingAssets={swapState.marketState.isLoadingSelectAssets}
             />
             {type === "limit" && (
               <LimitPriceSelector
