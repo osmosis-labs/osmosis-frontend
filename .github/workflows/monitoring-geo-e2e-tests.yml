@@ -15,7 +15,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"test-proxy\":\"use\", \"include\":[{ \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":[{\"test-proxy\":\"use\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
     timeout-minutes: 15
