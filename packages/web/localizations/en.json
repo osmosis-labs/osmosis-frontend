@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Connect wallet",
+  "switchNetwork": "Switch network",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
@@ -514,7 +515,8 @@
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
-      "changeButton": "Edit settings"
+      "changeButton": "Edit settings",
+      "ledgerComingSoon": "Ledger hardware wallet support coming soon."
     },
     "floatingBanner": {
       "newPill": "New",

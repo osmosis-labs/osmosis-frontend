@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "ウォレットを接続する",
+  "switchNetwork": "ネットワークを切り替える",
   "errors": {
     "calculatingShareOutAmount": "金額の計算に問題があります",
     "depositNoBalance": "預ける資産がありません",
@@ -514,7 +515,8 @@
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
       "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
-      "changeButton": "編集の設定"
+      "changeButton": "編集の設定",
+      "ledgerComingSoon": "Ledger ハードウェア ウォレットのサポートがまもなく開始されます。"
     },
     "floatingBanner": {
       "newPill": "新しい",

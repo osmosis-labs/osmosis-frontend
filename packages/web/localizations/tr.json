@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Cüzdanı bağla",
+  "switchNetwork": "Ağı değiştir",
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
@@ -514,7 +515,8 @@
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
       "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
-      "changeButton": "Ayarları düzenle"
+      "changeButton": "Ayarları düzenle",
+      "ledgerComingSoon": "Ledger donanım cüzdanı desteği çok yakında."
     },
     "floatingBanner": {
       "newPill": "Yeni",

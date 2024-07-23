@@ -17,6 +17,7 @@ jobs:
 
   frontend-e2e-tests:
     name: production-swap
+    timeout-minutes: 15
     runs-on: macos-latest
     environment:
       name: prod_swap_test

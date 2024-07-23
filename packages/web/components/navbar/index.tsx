@@ -258,10 +258,10 @@ export const NavBar: FunctionComponent<
                 ({ className, ...rest }, index) => (
                   <Button
                     size="md"
-                    className={`w-48 1.5lg:w-fit ${className ?? ""}`}
+                    {...rest}
+                    className={classNames("w-48 1.5lg:w-fit", className)}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
                   </Button>

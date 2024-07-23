@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Wallet verbinden",
+  "switchNetwork": "Netzwerk wechseln",
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
@@ -514,7 +515,8 @@
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
       "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
-      "changeButton": "Einstellungen bearbeiten"
+      "changeButton": "Einstellungen bearbeiten",
+      "ledgerComingSoon": "Unterstützung für Ledger-Hardware-Wallets in Kürze verfügbar."
     },
     "floatingBanner": {
       "newPill": "Neu",

@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "連接錢包",
+  "switchNetwork": "交換網絡",
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你沒有資產存入",
@@ -514,7 +515,8 @@
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
       "defaultParameters": "預設為 1 小時，損失保護限額為 5,000 美元。",
-      "changeButton": "編輯設定"
+      "changeButton": "編輯設定",
+      "ledgerComingSoon": "Ledger 硬體錢包支援即將推出。"
     },
     "floatingBanner": {
       "newPill": "新的",
