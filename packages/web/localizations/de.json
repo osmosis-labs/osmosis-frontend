@@ -675,7 +675,7 @@
       "total": "Gesamter effektiver Jahreszins",
       "explainer": {
         "title": "Wie werden effektive Jahreszinsen berechnet?",
-        "subtitle": "Alle effektiven Jahreszinsen sind Schätzungen, die auf den letzten 7 Tagen basieren. Da Handelsvolumen und Preis schwanken, ändert sich der effektive Jahreszins entsprechend. Der angezeigte Bereich basiert auf Folgendem.<inlang-LineFeed>\nDie Untergrenze bezieht sich auf konservative Positionen im gesamten Bereich. Dies kann zu einem extrem niedrigen effektiven Jahreszins führen, da die Liquidität auf alle Trades verteilt ist. Die Obergrenze wird für eine Position mit einer Konzentration von 30 % um den Spotpreis berechnet. Bedenken Sie, dass eine Position keinen Gewinn mehr bringt, wenn sie außerhalb des Bereichs liegt."
+        "subtitle": "Alle effektiven Jahreszinsen sind Schätzungen, die auf den letzten 7 Tagen basieren. Da Handelsvolumen und Preis schwanken, ändert sich der effektive Jahreszins entsprechend. Der angezeigte Bereich basiert auf Folgendem.<inlang-LineFeed>\nBei aufgeladenen Pools bezieht sich die Untergrenze auf konservative Positionen im gesamten Bereich. Dies kann zu einem extrem niedrigen effektiven Jahreszins führen, da die Liquidität auf alle Trades verteilt ist. Die Obergrenze wird für eine Position mit einer Konzentration von 30 % um den Spotpreis berechnet. Bedenken Sie, dass eine Position keinen Gewinn mehr bringt, wenn sie außerhalb des Bereichs liegt."
       }
     }
   },

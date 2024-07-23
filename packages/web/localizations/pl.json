@@ -675,7 +675,7 @@
       "total": "Całkowita RRSO",
       "explainer": {
         "title": "Jak obliczane są RRSO?",
-        "subtitle": "Wszystkie RRSO są szacunkami opartymi na ostatnich 7 dniach. W miarę wahań wolumenu handlu i ceny RRSO odpowiednio się zmieni. Wyświetlany zakres opiera się na poniższych informacjach.<inlang-LineFeed>\nDolna granica odnosi się do konserwatywnych pozycji o pełnym zakresie. Może to skutkować wyjątkowo niskim RRSO, ponieważ płynność jest rozłożona na wszystkie transakcje. Górna granica jest obliczana dla pozycji z 30% koncentracją wokół ceny spot. Pamiętaj, że pozycja nie będzie już przynosić zysków, jeśli wyjdzie poza zakres."
+        "subtitle": "Wszystkie RRSO są szacunkami opartymi na ostatnich 7 dniach. W miarę wahań wolumenu handlu i ceny RRSO odpowiednio się zmieni. Wyświetlany zakres opiera się na poniższych informacjach.<inlang-LineFeed>\nW przypadku basenów z doładowaniem dolna granica odnosi się do konserwatywnych pozycji o pełnym zakresie. Może to skutkować wyjątkowo niskim RRSO, ponieważ płynność jest rozłożona na wszystkie transakcje. Górna granica jest obliczana dla pozycji z 30% koncentracją wokół ceny spot. Pamiętaj, że pozycja nie będzie już przynosić zysków, jeśli wyjdzie poza zakres."
       }
     }
   },

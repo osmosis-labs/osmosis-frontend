@@ -675,7 +675,7 @@
       "total": "TAEG total",
       "explainer": {
         "title": "Como as TAEG são calculadas?",
-        "subtitle": "Todas as APRs são estimativas baseadas nos últimos 7 dias. À medida que o volume de negociação e o preço flutuam, a TAEG mudará de acordo. O intervalo exibido é baseado no seguinte.<inlang-LineFeed>\nO limite inferior faz referência a posições conservadoras de faixa completa. Isto pode resultar numa TAEG extremamente baixa, uma vez que a liquidez é distribuída por todas as negociações. O limite superior é calculado para uma posição com concentração de 30% em torno do preço à vista. Tenha em mente que uma posição não será mais lucrativa se sair do intervalo."
+        "subtitle": "Todas as APRs são estimativas baseadas nos últimos 7 dias. À medida que o volume de negociação e o preço flutuam, a TAEG mudará de acordo. O intervalo exibido é baseado no seguinte.<inlang-LineFeed>\nPara pools sobrealimentados, o limite inferior faz referência a posições conservadoras de faixa completa. Isto pode resultar numa TAEG extremamente baixa, uma vez que a liquidez é distribuída por todas as negociações. O limite superior é calculado para uma posição com concentração de 30% em torno do preço à vista. Tenha em mente que uma posição não será mais lucrativa se sair do intervalo."
       }
     }
   },

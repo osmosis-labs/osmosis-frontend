@@ -675,7 +675,7 @@
       "total": "Toplam Nisan",
       "explainer": {
         "title": "APR'ler nasıl hesaplanır?",
-        "subtitle": "Tüm APR'ler son 7 güne dayalı tahminlerdir. Ticaret hacmi ve fiyat dalgalandıkça APR de buna göre değişecektir. Görüntülenen aralık aşağıdakilere dayanmaktadır.<inlang-LineFeed>\nAlt sınır ihtiyatlı, tam aralıklı konumlara atıfta bulunur. Bu, likiditenin tüm işlemlere yayılması nedeniyle son derece düşük bir APR ile sonuçlanabilir. Üst sınır, spot fiyatın etrafında %30 yoğunlaşan bir pozisyon için hesaplanır. Bir pozisyonun menzil dışına çıkması durumunda artık kazanç sağlamayacağını unutmayın."
+        "subtitle": "Tüm APR'ler son 7 güne dayalı tahminlerdir. Ticaret hacmi ve fiyat dalgalandıkça APR de buna göre değişecektir. Görüntülenen aralık aşağıdakilere dayanmaktadır.<inlang-LineFeed>\nSüper şarjlı havuzlar için alt sınır, ihtiyatlı, tam aralıklı konumlara atıfta bulunur. Bu, likiditenin tüm işlemlere yayılması nedeniyle son derece düşük bir APR ile sonuçlanabilir. Üst sınır, spot fiyatın etrafında %30 yoğunlaşan bir pozisyon için hesaplanır. Bir pozisyonun menzil dışına çıkması durumunda artık kazanç sağlamayacağını unutmayın."
       }
     }
   },
