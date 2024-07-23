@@ -246,6 +246,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     </p>
                   )}
                   {asset.amount &&
+                    (shouldShowUnverifiedAssets || asset.isVerified) &&
                     asset.usdValue &&
                     asset.amount.toDec().isPositive() && (
                       <div className="flex flex-col text-right">
