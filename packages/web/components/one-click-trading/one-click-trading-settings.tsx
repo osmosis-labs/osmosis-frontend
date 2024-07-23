@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
@@ -405,23 +405,38 @@ export const OneClickTradingSettings = ({
                     </div>
                   )}
 
-                {isOneClickTradingEnabled &&
-                  (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
-                    <SkeletonLoader
-                      className="h-5 self-center"
-                      isLoaded={!isLoadingEstimateRemoveTx}
-                    >
-                      <p className="text-center text-caption font-caption text-osmoverse-300">
-                        {t("oneClickTrading.settings.feeToDisable")} ~
-                        {estimateRemoveTxData?.gasAmount.toString() ??
-                          "0.000000 OSMO"}{" "}
-                        (
-                        {estimateRemoveTxData?.gasUsdValueToPay.toString() ??
-                          "(< $0.00)"}
-                        )
-                      </p>
-                    </SkeletonLoader>
-                  )}
+                <div className="flex flex-col gap-2">
+                  {isOneClickTradingEnabled &&
+                    (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
+                      <SkeletonLoader
+                        className="h-5 self-center"
+                        isLoaded={!isLoadingEstimateRemoveTx}
+                      >
+                        <p className="text-center text-caption font-caption text-osmoverse-300">
+                          {t("oneClickTrading.settings.feeToDisable")} ~
+                          {estimateRemoveTxData?.gasAmount.toString() ??
+                            "0.000000 OSMO"}{" "}
+                          (
+                          {estimateRemoveTxData?.gasUsdValueToPay ? (
+                            <>
+                              {estimateRemoveTxData.gasUsdValueToPay
+                                .toDec()
+                                .lte(new Dec(0.001))
+                                ? `< ${estimateRemoveTxData.gasUsdValueToPay.symbol}0.001`
+                                : estimateRemoveTxData.gasUsdValueToPay.toString()}
+                            </>
+                          ) : (
+                            "(< $0.00)"
+                          )}
+                          )
+                        </p>
+                      </SkeletonLoader>
+                    )}
+
+                  <p className="px-8 text-center text-caption text-osmoverse-300">
+                    {t("oneClickTrading.introduction.ledgerComingSoon")}
+                  </p>
+                </div>
               </div>
             </Screen>
 

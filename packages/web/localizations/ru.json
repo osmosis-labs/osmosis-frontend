@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Подключить кошелек",
+  "switchNetwork": "Переключить сеть",
   "errors": {
     "calculatingShareOutAmount": "Проблема с расчетом суммы",
     "depositNoBalance": "У вас нет активов для депозита",
@@ -514,7 +515,8 @@
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
       "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
-      "changeButton": "Изменить настройки"
+      "changeButton": "Изменить настройки",
+      "ledgerComingSoon": "Скоро появится поддержка аппаратного кошелька Ledger."
     },
     "floatingBanner": {
       "newPill": "Новый",

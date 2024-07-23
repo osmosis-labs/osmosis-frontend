@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Conectar carteira",
+  "switchNetwork": "Trocar de rede",
   "errors": {
     "calculatingShareOutAmount": "Problema ao calcular o valor",
     "depositNoBalance": "Você não tem ativos para depositar",
@@ -514,7 +515,8 @@
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
-      "changeButton": "Editar Configurações"
+      "changeButton": "Editar Configurações",
+      "ledgerComingSoon": "Suporte para carteira de hardware Ledger em breve."
     },
     "floatingBanner": {
       "newPill": "Novo",

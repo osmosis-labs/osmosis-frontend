@@ -1,11 +1,11 @@
 import { makeObservable, observable, runInAction } from "mobx";
 import { ReactNode } from "react";
+import { ButtonHTMLAttributes } from "react";
 
 export type CallToAction = {
   label: string;
-  onClick: () => void;
-  className?: string;
-};
+} & ButtonHTMLAttributes<HTMLButtonElement>;
+
 export class NavBarStore {
   @observable
   protected _title: ReactNode | undefined;

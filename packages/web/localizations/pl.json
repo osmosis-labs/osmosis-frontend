@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Połącz portfel",
+  "switchNetwork": "Przełącz sieć",
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "depositNoBalance": "Nie masz środków do wpłaty",
@@ -514,7 +515,8 @@
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
       "defaultParameters": "Ustawienia domyślne są ustawione na 1 godzinę z limitem ochrony przed stratą w wysokości 5000 USD.",
-      "changeButton": "Edytuj ustawienia"
+      "changeButton": "Edytuj ustawienia",
+      "ledgerComingSoon": "Obsługa portfela sprzętowego Ledger już wkrótce."
     },
     "floatingBanner": {
       "newPill": "Nowy",
