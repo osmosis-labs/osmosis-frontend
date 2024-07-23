@@ -39,7 +39,6 @@ interface TradeDetailsProps {
 
 export const TradeDetails = ({
   swapState,
-  inDenom,
   inPrice,
   inPriceFetching,
 }: Partial<TradeDetailsProps>) => {
