@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Conectar carteira",
+  "switchNetwork": "Trocar de rede",
   "errors": {
     "calculatingShareOutAmount": "Problema ao calcular o valor",
     "depositNoBalance": "Você não tem ativos para depositar",

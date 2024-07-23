@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "Connect wallet",
+  "switchNetwork": "Switch network",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",

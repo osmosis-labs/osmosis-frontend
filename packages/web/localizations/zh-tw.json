@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "連接錢包",
+  "switchNetwork": "交換網絡",
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你沒有資產存入",

@@ -7,6 +7,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
+import { IntPretty } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
 import { getShortAddress, isNil, noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -254,64 +255,57 @@ export const AmountScreen = observer(
     const hasMoreThanOneChainType =
       !isNil(firstSupportedCosmosChain) && !isNil(firstSupportedEvmChain);
 
-    const checkChainAndConnectWallet = useCallback(
-      (chainParam?: BridgeChainWithDisplayInfo) => {
-        const chain =
-          chainParam ?? (direction === "deposit" ? fromChain : toChain);
+    const checkChainAndConnectWallet = useCallback(() => {
+      const chain = direction === "deposit" ? fromChain : toChain;
 
-        if (!chain || !isNil(manualToAddress)) return;
-        if (chain.chainType === "evm") {
-          if (
-            (isEvmWalletConnected &&
-              evmWalletCurrentChainId === chain.chainId) ||
-            isConnecting
-          ) {
-            return;
-          }
-
-          if (
-            isEvmWalletConnected &&
-            evmWalletCurrentChainId !== chain.chainId
-          ) {
-            switchEvmChain({
-              chainId: chain.chainId as EthereumChainIds,
-            });
-          } else {
-            onOpenBridgeWalletSelect();
-          }
-        } else if (chain.chainType === "cosmos") {
-          const account = accountStore.getWallet(chain.chainId);
-          const accountRepo = accountStore.getWalletRepo(chain.chainId);
-
-          if (
-            // If the account is already connected
-            !!account?.address
-          ) {
-            return;
-          }
-
-          accountRepo?.connect(osmosisAccount?.walletName).catch(() => {
-            if (supportedChains.length > 1) {
-              setIsNetworkSelectVisible(true);
-            }
-          });
+      if (!chain || !isNil(manualToAddress)) return;
+      if (chain.chainType === "evm") {
+        if (
+          (isEvmWalletConnected && evmWalletCurrentChainId === chain.chainId) ||
+          isConnecting
+        ) {
+          return;
         }
-      },
-      [
-        accountStore,
-        direction,
-        evmWalletCurrentChainId,
-        fromChain,
-        isConnecting,
-        isEvmWalletConnected,
-        manualToAddress,
-        onOpenBridgeWalletSelect,
-        osmosisAccount?.walletName,
-        supportedChains.length,
-        switchEvmChain,
-        toChain,
-      ]
-    );
+
+        if (isEvmWalletConnected && evmWalletCurrentChainId !== chain.chainId) {
+          switchEvmChain({
+            chainId: chain.chainId as EthereumChainIds,
+          });
+        } else {
+          onOpenBridgeWalletSelect();
+        }
+      } else if (chain.chainType === "cosmos") {
+        const account = accountStore.getWallet(chain.chainId);
+        const accountRepo = accountStore.getWalletRepo(chain.chainId);
+
+        if (
+          // If the account is already connected
+          account?.isWalletConnected
+        ) {
+          return;
+        }
+
+        accountRepo?.connect(osmosisAccount?.walletName).catch((error) => {
+          console.error("Failed to connect Osmosis account:", error);
+          if (supportedChains.length > 1) {
+            setIsNetworkSelectVisible(true);
+          }
+        });
+      }
+    }, [
+      accountStore,
+      direction,
+      evmWalletCurrentChainId,
+      fromChain,
+      isConnecting,
+      isEvmWalletConnected,
+      manualToAddress,
+      onOpenBridgeWalletSelect,
+      osmosisAccount?.walletName,
+      supportedChains.length,
+      switchEvmChain,
+      toChain,
+    ]);
 
     const {
       accountActionButton: connectWalletButton,
@@ -322,9 +316,7 @@ export const AmountScreen = observer(
       },
       noop,
       undefined,
-      () => {
-        checkChainAndConnectWallet();
-      }
+      checkChainAndConnectWallet
     );
 
     const supportedSourceAssets: SupportedAsset[] | undefined = useMemo(() => {
@@ -535,10 +527,8 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
-        checkChainAndConnectWallet(firstChain);
       }
     }, [
-      checkChainAndConnectWallet,
       direction,
       fromChain,
       setFromChain,
@@ -547,6 +537,38 @@ export const AmountScreen = observer(
       toChain,
       osmosisWalletConnected,
     ]);
+
+    const onChangeCryptoInput = useCallback(
+      (amount: string) => {
+        if (isNil(fromAsset?.decimals)) return;
+        setCryptoAmount(
+          amount.endsWith(".") || amount.endsWith("0") || amount === ""
+            ? amount
+            : new IntPretty(amount)
+                .locale(false)
+                .trim(true)
+                .maxDecimals(fromAsset.decimals)
+                .toString()
+        );
+      },
+      [fromAsset?.decimals, setCryptoAmount]
+    );
+
+    const onChangeFiatInput = useCallback(
+      (amount: string) => {
+        if (isNil(assetInOsmosisPrice?.fiatCurrency.maxDecimals)) return;
+        setFiatAmount(
+          amount.endsWith(".") || amount.endsWith("0") || amount === ""
+            ? amount
+            : new IntPretty(amount)
+                .locale(false)
+                .trim(true)
+                .maxDecimals(assetInOsmosisPrice.fiatCurrency.maxDecimals)
+                .toString()
+        );
+      },
+      [assetInOsmosisPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+    );
 
     if (
       isLoadingCanonicalAssetPrice ||
@@ -573,7 +595,7 @@ export const AmountScreen = observer(
     };
 
     return (
-      <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:p-2">
+      <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
         <div className="mb-6 flex items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
           <span>
             {direction === "deposit"
@@ -615,8 +637,6 @@ export const AmountScreen = observer(
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
-                if (osmosisWalletConnected)
-                  checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   setManualToAddress(undefined);
                   resetInput();
@@ -653,8 +673,6 @@ export const AmountScreen = observer(
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
-                if (osmosisWalletConnected)
-                  checkChainAndConnectWallet(nextChain);
                 if (fromChain?.chainId !== nextChain.chainId) {
                   setManualToAddress(undefined);
                   resetInput();
@@ -693,8 +711,8 @@ export const AmountScreen = observer(
                *  Only once we get the best quote, we can modify the input amount
                *  to account for gas then restart the quote search process. */
               canSetMax={!quote.isLoadingAnyBridgeQuote}
-              onChangeFiatInput={setFiatAmount}
-              onChangeCryptoInput={setCryptoAmount}
+              onChangeFiatInput={onChangeFiatInput}
+              onChangeCryptoInput={onChangeCryptoInput}
               setCurrentUnit={setInputUnit}
               transferGasChain={fromChain}
             />
@@ -931,7 +949,6 @@ export const AmountScreen = observer(
                         <>
                           {Object.keys(fromAsset.supportedVariants).map(
                             (variantCoinMinimalDenom, index) => {
-                              // TODO: HANDLE WITHDRAW CASE
                               const asset = assetsInOsmosis.find(
                                 (asset) =>
                                   asset.coinMinimalDenom ===
@@ -965,8 +982,7 @@ export const AmountScreen = observer(
                                   <button
                                     className={classNames(
                                       "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
-                                      isSelected && "bg-osmoverse-700",
-                                      !isSelected && "bg-osmoverse-800"
+                                      isSelected && "bg-osmoverse-700"
                                     )}
                                     onClick={onClick}
                                   >
@@ -1083,17 +1099,21 @@ export const AmountScreen = observer(
                 connectWalletButton
               ) : !isWalletNeededConnected || quote.isWrongEvmChainSelected ? (
                 <Button
-                  onClick={() => {
-                    checkChainAndConnectWallet();
-                  }}
+                  onClick={() => checkChainAndConnectWallet()}
                   className="w-full"
                 >
                   <h6 className="flex items-center gap-3">
-                    <Icon
-                      id="wallet"
-                      className="text-white h-[24px] w-[24px]"
-                    />
-                    {t("connectWallet")}
+                    {quote.isWrongEvmChainSelected ? (
+                      t("switchNetwork")
+                    ) : (
+                      <>
+                        <Icon
+                          id="wallet"
+                          className="text-white h-[24px] w-[24px]"
+                        />
+                        {t("connectWallet")}
+                      </>
+                    )}
                   </h6>
                 </Button>
               ) : (
@@ -1240,21 +1260,19 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
           height={12}
         />
       </button>
-      {!isNil(chains) && !isNil(onSelectChain) && (
-        <BridgeNetworkSelectModal
-          isOpen={isNetworkSelectVisible}
-          chains={chains}
-          onSelectChain={async (chain) => {
-            onSelectChain(chain);
-            setIsNetworkSelectVisible(false);
-          }}
-          onRequestClose={() => setIsNetworkSelectVisible(false)}
-          direction={direction}
-          toChain={toChain}
-          initialManualAddress={initialManualAddress}
-          onConfirmManualAddress={onConfirmManualAddress}
-        />
-      )}
+      <BridgeNetworkSelectModal
+        isOpen={isNetworkSelectVisible}
+        chains={chains}
+        onSelectChain={async (chain) => {
+          onSelectChain(chain);
+          setIsNetworkSelectVisible(false);
+        }}
+        onRequestClose={() => setIsNetworkSelectVisible(false)}
+        direction={direction}
+        toChain={toChain}
+        initialManualAddress={initialManualAddress}
+        onConfirmManualAddress={onConfirmManualAddress}
+      />
     </>
   );
 };
