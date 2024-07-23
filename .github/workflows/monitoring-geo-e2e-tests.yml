@@ -13,7 +13,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"include\":[{ \"base-url\":\"https://app.osmosis.zone\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production\"}, { \"base-url\":\"https://stage.osmosis.zone\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"staging\"}]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":[{ \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, { \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
     timeout-minutes: 15
@@ -45,7 +45,7 @@ jobs:
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests on ${{ matrix.env }}
         env:
-          BASE_URL: ${{ matrix.base-url }}
+          BASE_URL: "https://app.osmosis.zone"
           TEST_PROXY: ${{ matrix.server-url }}
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
