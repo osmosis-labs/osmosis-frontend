@@ -1,7 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { Fragment, useEffect, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { EventName, SpriteIconId } from "~/config";
@@ -23,6 +23,7 @@ export const TRADE_TYPES = ["market", "limit"] as const;
 export const OrderTypeSelector = () => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [type, setType] = useQueryState(
     "type",
@@ -71,6 +72,13 @@ export const OrderTypeSelector = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      logEvent([EventName.LimitOrder.typeSelectorOpened]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMenuOpen]);
+
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
       {
@@ -108,13 +116,25 @@ export const OrderTypeSelector = () => {
 
   return (
     <Menu as="div" className="relative inline-block">
-      <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4 hover:bg-osmoverse-700">
-        <p className="font-semibold text-wosmongton-200">
-          {type === "market" ? t("limitOrders.market") : t("limitOrders.limit")}
-        </p>
-        <div className="flex h-6 w-6 items-center justify-center">
-          <Icon id="chevron-down" className="h-[7px] w-3 text-wosmongton-200" />
-        </div>
+      <Menu.Button as={Fragment}>
+        {({ active }) => {
+          setIsMenuOpen(active);
+          return (
+            <button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4 hover:bg-osmoverse-700">
+              <p className="font-semibold text-wosmongton-200">
+                {type === "market"
+                  ? t("limitOrders.market")
+                  : t("limitOrders.limit")}
+              </p>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-down"
+                  className="h-[7px] w-3 text-wosmongton-200"
+                />
+              </div>
+            </button>
+          );
+        }}
       </Menu.Button>
       <Transition
         as={Fragment}
