@@ -1,6 +1,6 @@
 import { StdFee } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { Currency } from "@keplr-wallet/types";
+import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
@@ -8,6 +8,7 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import * as OsmosisMath from "@osmosis-labs/math";
+import { maxTick, minTick } from "@osmosis-labs/math";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import { BondStatus } from "@osmosis-labs/types";
 import deepmerge from "deepmerge";
@@ -741,6 +742,63 @@ export class OsmosisAccountImpl {
           }
         }
         onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendCreateConcentratedLiquidityInitialFullRangePositionMsg(
+    poolId: string,
+    memo: string = "",
+    base: { token: AppCurrency; amount: string },
+    quote: { token: AppCurrency; amount: string },
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    let token_min_amount0 = "0";
+    let token_min_amount1 = "0";
+
+    const slippageMultiplier = new Dec(1).sub(new Dec(15).quo(new Dec(100)));
+
+    token_min_amount0 = base
+      ? new Dec(base.amount).mul(slippageMultiplier).truncate().toString()
+      : token_min_amount0;
+
+    token_min_amount1 = quote
+      ? new Dec(quote.amount).mul(slippageMultiplier).truncate().toString()
+      : token_min_amount1;
+
+    const sortedCoins = [base, quote]
+      .sort((a, b) =>
+        a?.token.coinMinimalDenom.localeCompare(b?.token.coinMinimalDenom)
+      )
+      .map(({ token, amount }) => ({
+        denom: token.coinMinimalDenom,
+        amount: new Dec(amount)
+          .mul(DecUtils.getTenExponentNInPrecisionRange(token.coinDecimals))
+          .truncate()
+          .toString(),
+      }));
+
+    const msg = this.msgOpts.clCreatePosition.messageComposer({
+      poolId: BigInt(poolId),
+      lowerTick: BigInt(minTick.toString()),
+      upperTick: BigInt(maxTick.toString()),
+      sender: this.address,
+      tokenMinAmount0: token_min_amount0,
+      tokenMinAmount1: token_min_amount1,
+      tokensProvided: sortedCoins,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "clCreatePosition",
+      [msg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          onFulfill?.(tx);
+        }
       }
     );
   }
