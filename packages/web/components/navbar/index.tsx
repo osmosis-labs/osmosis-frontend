@@ -63,13 +63,12 @@ import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
   {
-    title: string;
     backElementClassNames?: string;
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
 > = observer(
-  ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
+  ({ className, backElementClassNames, menus, secondaryMenuItems }) => {
     const {
       navBarStore,
       chainStore: {
