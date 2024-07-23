@@ -261,6 +261,7 @@ export const EventName = {
     claimOrdersStarted: "Limit Order: Claim all orders started",
     claimOrdersCompleted: "Limit Order: Claim all orders completed",
     claimOrdersFailed: "Limit Order: Claim all orders failed",
+    typeSelectorOpened: "Limit Order: Type selector open",
     pageViewed: "Limit Order: Order page viewed",
   },
 };
