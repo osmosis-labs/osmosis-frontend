@@ -914,6 +914,7 @@
     "to": "에게",
     "max": "맥스",
     "available": "사용 가능",
+    "connectTo": "{network} 에 연결",
     "transferWith": "다음으로 환승",
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",

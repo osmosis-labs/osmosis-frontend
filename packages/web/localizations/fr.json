@@ -914,6 +914,7 @@
     "to": "Vers",
     "max": "Max.",
     "available": "disponible",
+    "connectTo": "Connectez-vous à {network}",
     "transferWith": "Transfert avec",
     "transferTo": "Transférer à",
     "receiveAsset": "Recevoir l'actif",

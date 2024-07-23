@@ -914,6 +914,7 @@
     "to": "{network}へ",
     "max": "マックス",
     "available": "利用可能",
+    "connectTo": "{network}に接続します",
     "transferWith": "転送",
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",

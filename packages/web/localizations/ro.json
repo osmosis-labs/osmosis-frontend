@@ -914,6 +914,7 @@
     "to": "Către",
     "max": "Max",
     "available": "disponibil",
+    "connectTo": "Conectați-vă la {network}",
     "transferWith": "Transfer cu",
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",

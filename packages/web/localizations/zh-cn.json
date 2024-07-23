@@ -914,6 +914,7 @@
     "to": "到",
     "max": "最大限度",
     "available": "可用的",
+    "connectTo": "连接到{network}",
     "transferWith": "转让",
     "transferTo": "传送到",
     "receiveAsset": "接收资产",

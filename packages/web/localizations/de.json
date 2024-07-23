@@ -914,6 +914,7 @@
     "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
+    "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",

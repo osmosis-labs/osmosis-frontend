@@ -157,7 +157,7 @@ export async function generateCosmosUnsignedTx({
     bech32Address,
   });
 
-  const sequence: number = parseSeqeunceFromAccount(account);
+  const sequence: number = parseSequenceFromAccount(account);
 
   // create placeholder transaction document
   const rawUnsignedTx = TxRaw.encode({
@@ -195,7 +195,7 @@ export async function generateCosmosUnsignedTx({
 // Parses the sequence number from the account object.
 // The structure of the account object is different for base and vesting accounts.
 // Therefore, we need to check the type of the account object to parse the sequence number.
-function parseSeqeunceFromAccount(account: any) {
+function parseSequenceFromAccount(account: any) {
   let sequence: number = 0;
   if (account.account["@type"] === BaseAccountTypeStr) {
     const base_acc = account as BaseAccount;

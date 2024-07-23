@@ -914,6 +914,7 @@
     "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
+    "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",

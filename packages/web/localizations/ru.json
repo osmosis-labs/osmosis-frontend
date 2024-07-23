@@ -914,6 +914,7 @@
     "to": "Чтобы",
     "max": "Макс",
     "available": "доступный",
+    "connectTo": "Подключитесь к {network}",
     "transferWith": "Трансфер с",
     "transferTo": "Перевести",
     "receiveAsset": "Получить актив",
