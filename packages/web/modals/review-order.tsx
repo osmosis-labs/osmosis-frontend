@@ -3,7 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
@@ -12,6 +12,7 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { EventName } from "~/config/analytics-events";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
@@ -57,16 +58,25 @@ export function ReviewOrder({
   // const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
+  const [isEditingSlippage, setIsEditingSlippage] = useState(false);
+  let isManualSlippageTooHigh = useMemo(
+    () => +manualSlippage >= 1,
+    [manualSlippage]
+  );
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
       if (value.length > 3) return;
 
-      if (value == "") {
+      if (value === "") {
         setManualSlippage("");
         slippageConfig?.setManualSlippage(
           slippageConfig?.defaultManualSlippage
         );
+        return;
+      }
+
+      if (!isValidNumericalRawInput(value)) {
         return;
       }
 
@@ -265,59 +275,102 @@ export function ReviewOrder({
                 right={
                   <span className="text-osmoverse-100">
                     {orderType === "limit"
-                      ? t("limitOrders.limitOrder.title")
-                      : t("limitOrders.marketOrder.title")}
+                      ? t("limitOrders.limit")
+                      : t("limitOrders.market")}
                   </span>
                 }
               />
               {slippageConfig && orderType === "market" && (
-                <RecapRow
-                  left={t("swap.settings.slippage")}
-                  right={
-                    <div className="flex items-center justify-end">
-                      <div
-                        className={classNames(
-                          "flex w-fit items-center justify-center overflow-hidden rounded-3xl py-1.5 px-2 text-center transition-colors hover:bg-osmoverse-825",
-                          {
-                            "bg-osmoverse-825":
-                              slippageConfig?.isManualSlippage,
-                          }
-                        )}
-                      >
-                        <AutosizeInput
-                          type="number"
-                          minWidth={30}
-                          placeholder={
-                            slippageConfig?.defaultManualSlippage + "%"
-                          }
-                          className="w-fit bg-transparent px-0"
-                          inputClassName="!bg-transparent text-center placeholder:text-wosmongton-300 transition-all"
-                          value={manualSlippage}
-                          onFocus={() =>
-                            slippageConfig?.setIsManualSlippage(true)
-                          }
-                          // autoFocus={slippageConfig?.isManualSlippage}
-                          onChange={(e) => {
-                            handleManualSlippageChange(e.target.value);
-
-                            logEvent([
-                              EventName.Swap.slippageToleranceSet,
+                <div className="flex flex-col gap-3">
+                  <RecapRow
+                    left={t("swap.settings.slippage")}
+                    right={
+                      <div className="flex items-center justify-end">
+                        <div
+                          className={classNames(
+                            "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all",
+                            {
+                              "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2":
+                                isEditingSlippage,
+                            }
+                          )}
+                        >
+                          <AutosizeInput
+                            type="text"
+                            minWidth={30}
+                            placeholder={
+                              slippageConfig?.defaultManualSlippage + "%"
+                            }
+                            className="w-fit bg-transparent px-0"
+                            inputClassName={classNames(
+                              "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
                               {
-                                fromToken: swapState?.fromAsset?.coinDenom,
-                                toToken: swapState?.toAsset?.coinDenom,
-                                // isOnHome: page === "Swap Page",
-                                isOnHome: true,
-                                percentage: slippageConfig?.slippage.toString(),
-                                page: "Swap Page",
-                              },
-                            ]);
-                          }}
-                        />
-                        {manualSlippage !== "" && <span>%</span>}
+                                "text-rust-400": isManualSlippageTooHigh,
+                              }
+                            )}
+                            value={manualSlippage}
+                            onFocus={() => {
+                              slippageConfig?.setIsManualSlippage(true);
+                              setIsEditingSlippage(true);
+                            }}
+                            onBlur={() => {
+                              if (isManualSlippageTooHigh) {
+                                handleManualSlippageChange(
+                                  (+manualSlippage).toString().split("")[0]
+                                );
+                              }
+                              setIsEditingSlippage(false);
+                            }}
+                            // autoFocus={slippageConfig?.isManualSlippage}
+                            onChange={(e) => {
+                              handleManualSlippageChange(e.target.value);
+
+                              logEvent([
+                                EventName.Swap.slippageToleranceSet,
+                                {
+                                  fromToken: swapState?.fromAsset?.coinDenom,
+                                  toToken: swapState?.toAsset?.coinDenom,
+                                  // isOnHome: page === "Swap Page",
+                                  isOnHome: true,
+                                  percentage:
+                                    slippageConfig?.slippage.toString(),
+                                  page: "Swap Page",
+                                },
+                              ]);
+                            }}
+                          />
+                          {manualSlippage !== "" && (
+                            <span
+                              className={classNames({
+                                "text-rust-400": isManualSlippageTooHigh,
+                              })}
+                            >
+                              %
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    }
+                  />
+                  {isManualSlippageTooHigh && (
+                    <div className="flex items-start gap-3 rounded-xl border border-solid border-rust-500 p-5">
+                      <Icon
+                        id="alert-triangle"
+                        width={20}
+                        height={20}
+                        className="text-rust-400"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="caption">
+                          Your trade may result in significant loss of value
+                        </span>
+                        <span className="caption text-osmoverse-300">
+                          A lower slippage tolerance is recommended.
+                        </span>
                       </div>
                     </div>
-                  }
-                />
+                  )}
+                </div>
               )}
               {orderType === "market" && (
                 <hr className="my-2 text-osmoverse-700" />
