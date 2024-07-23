@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
     "openOrders": "Offene Aufträge",
     "invalidPrice": "Ungültiger Preis",
-    "unavailable": "Nicht verfügbar für {denom}"
+    "unavailable": "Nicht verfügbar für {denom}",
+    "findingBestPrice": "Den besten Preis finden"
   },
   "orderHistory": {
     "orders": "Aufträge",

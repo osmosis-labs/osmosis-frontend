@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "別の資産に交換する",
     "openOrders": "オープン注文",
     "invalidPrice": "無効な価格",
-    "unavailable": "{denom}では利用できません"
+    "unavailable": "{denom}では利用できません",
+    "findingBestPrice": "最良の価格を見つける"
   },
   "orderHistory": {
     "orders": "注文",

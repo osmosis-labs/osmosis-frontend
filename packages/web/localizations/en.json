@@ -834,7 +834,7 @@
     "priceImpact": "Market Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
-    "showDetails": "Show Details",
+    "showDetails": "Show details",
     "hideDetails": "Hide",
     "continueAnyway": "Continue Anyway",
     "warning": {
@@ -1244,14 +1244,14 @@
     },
     "enterAnAmountTo": "Enter an amount to",
     "sell": "Sell",
-    "insufficientFunds": "Insufficient Funds",
-    "addFunds": "Add Funds",
+    "insufficientFunds": "Insufficient balance",
+    "addFunds": "Add funds",
     "watchOut": "Watch out! Whale incoming",
     "selectAnAssetTo": {
       "buy": "Select an asset to buy",
       "sell": "Select an asset to sell"
     },
-    "payWith": "Pay With",
+    "payWith": "Pay with",
     "receive": "Receive",
     "swapFromAnotherAsset": "Swap from another asset",
     "connectYourWallet": "Connect your wallet",
@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "Swap to another asset",
     "openOrders": "Open orders",
     "invalidPrice": "Invalid price",
-    "unavailable": "Unavailable for {denom}"
+    "unavailable": "Unavailable for {denom}",
+    "findingBestPrice": "Finding the best price"
   },
   "orderHistory": {
     "orders": "Orders",

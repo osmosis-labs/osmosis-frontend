@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "转换为其他资产",
     "openOrders": "未结订单",
     "invalidPrice": "价格无效",
-    "unavailable": "不适用于{denom}"
+    "unavailable": "不适用于{denom}",
+    "findingBestPrice": "寻找最佳价格"
   },
   "orderHistory": {
     "orders": "命令",

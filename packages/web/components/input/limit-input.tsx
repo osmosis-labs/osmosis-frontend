@@ -6,9 +6,9 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
-import { Spinner } from "~/components/loaders";
 import { useWindowSize } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface LimitInputProps {
@@ -24,6 +24,7 @@ export interface LimitInputProps {
   expectedOutput?: Dec;
   expectedOutputLoading: boolean;
   insufficientFunds?: boolean;
+  setInputRef: (input: HTMLInputElement | null) => void;
 }
 
 const calcScale = (numChars: number, isMobile: boolean): string => {
@@ -57,8 +58,7 @@ export enum FocusedInput {
   TOKEN = "token",
 }
 
-const nonFocusedClasses =
-  "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
+const nonFocusedClasses = "top-[45%] text-osmoverse-300 cursor-pointer body1";
 const focusedClasses = "top-[0%] font-h3 font-normal";
 
 const transformAmount = (value: string, decimalCount = 18) => {
@@ -73,8 +73,8 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
   const decimals = countDecimals(updatedValue);
   return decimals > decimalCount
-    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
-    : updatedValue;
+    ? parseFloat(updatedValue).toFixed(decimalCount).toString().trim()
+    : updatedValue.trim();
 };
 
 export const LimitInput: FC<LimitInputProps> = ({
@@ -89,11 +89,9 @@ export const LimitInput: FC<LimitInputProps> = ({
   expectedOutputLoading,
   quoteBalance,
   baseBalance,
-  insufficientFunds,
+  setInputRef,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
-  // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
   const [focused, setFocused] = useState<FocusedInput>(
@@ -116,65 +114,6 @@ export const LimitInput: FC<LimitInputProps> = ({
     }
   }, [tab, type]);
 
-  // const setFiatAmountSafe = useCallback(
-  //   (value?: string) => {
-  //     if (!value) {
-  //       setMarketAmount("");
-  //       return setFiatAmount("");
-  //     }
-
-  //     const updatedValue = transformAmount(value, 6);
-
-  //     if (
-  //       !isValidNumericalRawInput(updatedValue) ||
-  //       updatedValue.length > 26 ||
-  //       (updatedValue.length > 0 && updatedValue.startsWith("-"))
-  //     ) {
-  //       return;
-  //     }
-
-  //     const isFocused = focused === FocusedInput.FIAT;
-
-  //     // Hacky solution to deal with rounding
-  //     // TODO: Investigate a way to improve this
-  //     if (tab === "buy") {
-  //       setMarketAmount(new Dec(updatedValue).quo(quoteAssetPrice).toString());
-  //     }
-  //     setFiatAmount(
-  //       parseFloat(updatedValue) !== 0 && !isFocused
-  //         ? trimPlaceholderZeros(updatedValue)
-  //         : updatedValue
-  //     );
-  //   },
-  //   [focused, setFiatAmount, tab, setMarketAmount, quoteAssetPrice]
-  // );
-
-  // const setTokenAmountSafe = useCallback(
-  //   (value?: string) => {
-  //     if (!value) {
-  //       return onChange("");
-  //     }
-
-  //     const updatedValue = transformAmount(value, baseAsset?.coinDecimals);
-
-  //     if (
-  //       !isValidNumericalRawInput(updatedValue) ||
-  //       updatedValue.length > 26 ||
-  //       (updatedValue.length > 0 && updatedValue.startsWith("-"))
-  //     ) {
-  //       return;
-  //     }
-
-  //     const isFocused = focused === FocusedInput.TOKEN;
-  //     onChange(
-  //       parseFloat(updatedValue) !== 0 && !isFocused
-  //         ? trimPlaceholderZeros(updatedValue)
-  //         : updatedValue
-  //     );
-  //   },
-  //   [onChange, focused, baseAsset?.coinDecimals]
-  // );
-
   const setAmountSafe = useCallback(
     (type: "fiat" | "token", value?: string) => {
       const update = type === "fiat" ? setFiatAmount : onChange;
@@ -188,8 +127,8 @@ export const LimitInput: FC<LimitInputProps> = ({
 
       const updatedValue = transformAmount(
         value,
-        type === "fiat" ? 6 : baseAsset?.coinDecimals
-      ).trim();
+        type === "fiat" ? 2 : baseAsset?.coinDecimals
+      );
 
       if (
         !isValidNumericalRawInput(updatedValue) ||
@@ -226,12 +165,15 @@ export const LimitInput: FC<LimitInputProps> = ({
 
   const toggleMax = useCallback(() => {
     if (tab === "buy") {
-      return setAmountSafe("fiat", Number(quoteBalance)?.toString() ?? "");
+      return setFiatAmount(
+        trimPlaceholderZeros(Number(quoteBalance)?.toString()) ?? ""
+      );
     }
 
     return setAmountSafe("token", Number(baseBalance)?.toString() ?? "");
   }, [tab, baseBalance, setAmountSafe, quoteBalance]);
 
+  // Update token amount when fiat amount changes
   useEffect(() => {
     if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
       setAmountSafe("fiat", "");
@@ -244,7 +186,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
     const fiatValue = value ? price.mul(value) : undefined;
 
-    setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+    setFiatAmount(fiatValue ? trimPlaceholderZeros(fiatValue.toString()) : "");
   }, [
     price,
     tokenAmount,
@@ -255,6 +197,7 @@ export const LimitInput: FC<LimitInputProps> = ({
     setAmountSafe,
   ]);
 
+  // Update fiat amount when token amount changes
   useEffect(() => {
     if (focused !== FocusedInput.FIAT || !price) return;
 
@@ -263,50 +206,73 @@ export const LimitInput: FC<LimitInputProps> = ({
     setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
   }, [price, fiatAmount, setAmountSafe, focused]);
 
+  const isSubOneCent = useMemo(() => {
+    return type === "limit" || tab === "buy"
+      ? fiatAmount.length > 0 &&
+          new Dec(fiatAmount).lt(new Dec(0.01)) &&
+          !new Dec(fiatAmount).isZero()
+      : tab === "sell" &&
+          !!expectedOutput &&
+          expectedOutput.lt(new Dec(0.01)) &&
+          !expectedOutput.isZero();
+  }, [fiatAmount, expectedOutput, type, tab]);
+
+  const fiatInputValue = useMemo(() => {
+    // Displaying expected output
+    if (type === "market" && tab === "sell") {
+      // Display 0.01 if amount is sub 1c
+      const value = isSubOneCent ? new Dec(0.01) : expectedOutput ?? new Dec(0);
+      // Trim placeholder 0s to stop showing $0.00
+      return trimPlaceholderZeros(
+        formatPretty(value, getPriceExtendedFormatOptions(value))
+      );
+    }
+
+    return isSubOneCent ? "0.01" : fiatAmount;
+  }, [expectedOutput, isSubOneCent, type, tab, fiatAmount]);
+
+  const tokenInputValue = useMemo(() => {
+    // Displaying expected output
+    if (type === "market" && tab === "buy") {
+      return trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString());
+    }
+
+    return tokenAmount;
+  }, [expectedOutput, type, tab, tokenAmount]);
+
   return (
-    <div className="relative h-[108px]">
+    <div className="relative h-[124px]">
       {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
-        <AutoInput
-          key={inputType}
-          type={inputType}
-          baseAsset={baseAsset}
-          focused={focused}
-          swapFocus={swapFocus}
-          amount={
-            inputType === "fiat"
-              ? type === "market" && tab === "sell"
-                ? trimPlaceholderZeros(
-                    (expectedOutput ?? new Dec(0)).toString()
-                  )
-                : fiatAmount
-              : type === "market" && tab === "buy"
-              ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
-              : tokenAmount
-          }
-          setter={(v) =>
-            inputType === "fiat"
-              ? setAmountSafe("fiat", v)
-              : setAmountSafe("token", v)
-          }
-          disableSwitching={disableSwitching}
-          loading={
-            inputType === "fiat"
-              ? tab === "sell" && type === "market" && expectedOutputLoading
-              : tab === "buy" && type === "market" && expectedOutputLoading
-          }
-        />
+        <>
+          <AutoInput
+            key={inputType}
+            type={inputType}
+            baseAsset={baseAsset}
+            focused={focused}
+            swapFocus={swapFocus}
+            amount={inputType === "fiat" ? fiatInputValue : tokenInputValue}
+            setter={(v) =>
+              inputType === "fiat"
+                ? setAmountSafe("fiat", v)
+                : setAmountSafe("token", v)
+            }
+            disableSwitching={disableSwitching}
+            loading={
+              inputType === "fiat"
+                ? tab === "sell" && type === "market" && expectedOutputLoading
+                : tab === "buy" && type === "market" && expectedOutputLoading
+            }
+            setInputRef={setInputRef}
+            isSubOneCent={inputType === "fiat" && isSubOneCent}
+          />
+        </>
       ))}
       <button
-        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 opacity-50 transition-opacity hover:opacity-100"
+        className="absolute right-4 top-3 flex items-center justify-center rounded-5xl border border-osmoverse-700 bg-osmoverse-1000 py-1.5 px-3 transition-opacity disabled:opacity-50"
         onClick={toggleMax}
+        disabled={tab === "buy" ? !quoteBalance : !baseBalance}
       >
-        <span
-          className={classNames("body2 text-wosmongton-200", {
-            "text-rust-300": insufficientFunds,
-          })}
-        >
-          Max
-        </span>
+        <span className={classNames("body2 text-wosmongton-200")}>Max</span>
       </button>
     </div>
   );
@@ -319,6 +285,8 @@ type AutoInputProps = {
   amount: string;
   type: "fiat" | "token";
   loading: boolean;
+  setInputRef: (input: HTMLInputElement | null) => void;
+  isSubOneCent: boolean;
 } & Omit<
   LimitInputProps,
   | "onChange"
@@ -339,6 +307,8 @@ function AutoInput({
   type,
   disableSwitching,
   loading,
+  isSubOneCent,
+  setInputRef,
 }: AutoInputProps) {
   const { isMobile } = useWindowSize();
   const currentTypeEnum = useMemo(
@@ -360,6 +330,7 @@ function AutoInput({
     () => calcScale(amount.length, isMobile),
     [amount, isMobile]
   );
+
   return (
     <div
       className={classNames(
@@ -380,69 +351,69 @@ function AutoInput({
           : undefined
       }
     >
-      {loading ? (
-        <div className="flex items-center justify-center text-osmoverse-300 opacity-50 ">
-          <Spinner className="mr-4" /> Estimating...{" "}
-        </div>
-      ) : (
-        <label className="flex w-full shrink grow items-center justify-center">
-          {disableSwitching && !isFocused && <span>~</span>}
-          {type === "fiat" && (
+      <label
+        className={classNames(
+          "flex w-full shrink grow items-center justify-center",
+          { "animate-pulse": !isFocused && loading }
+        )}
+      >
+        {disableSwitching && !isFocused && <span>~</span>}
+        {type === "fiat" && (
+          <>
+            {isSubOneCent && <span>{"<"}</span>}
             <span className={classNames({ "font-normal": !isFocused })}>$</span>
-          )}
-          <AutosizeInput
-            disabled={!isFocused}
-            type="text"
-            placeholder="0"
-            value={amount}
-            inputClassName={classNames(
-              "bg-transparent !m-0 !p-0 text-h3 font-h3 text-center placeholder:text-white-disabled focus:outline-none max-w-[700px]",
-              { "cursor-pointer font-normal": !isFocused }
-            )}
-            onChange={(e) => setter(e.target.value)}
-            onClick={!isFocused ? swapFocus : undefined}
-            extraWidth={
-              isFocused
-                ? type === "fiat"
-                  ? 0
-                  : 4
-                : type === "fiat"
-                ? 0
-                : undefined
+          </>
+        )}
+        <AutosizeInput
+          disabled={!isFocused}
+          type="text"
+          placeholder="0"
+          value={amount}
+          inputRef={(input) => {
+            if (isFocused) {
+              setInputRef(input);
             }
-          />
-          {type === "token" && (
-            <span
-              className={classNames("text-wosmongton-200", {
-                "opacity-60": focused === currentTypeEnum,
-                "font-normal": !isFocused,
-              })}
-            >
-              {baseAsset && baseAsset.coinDenom}
-            </span>
+          }}
+          inputClassName={classNames(
+            "bg-transparent !m-0 !p-0 text-h3 font-h3 text-left focus:outline-none max-w-[700px] placeholder:text-osmoverse-500 h-[72px]",
+            {
+              "font-normal placeholder:text-osmoverse-300 font-body1 text-center":
+                !isFocused,
+              "cursor-pointer": !isFocused && !disableSwitching,
+            }
           )}
-          {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
-        </label>
-      )}
+          onChange={(e) => setter(e.target.value)}
+          onClick={!isFocused ? swapFocus : undefined}
+          extraWidth={
+            isFocused
+              ? type === "fiat"
+                ? 0
+                : 4
+              : type === "fiat"
+              ? 0
+              : undefined
+          }
+        />
+        {type === "token" && (
+          <span
+            className={classNames("ml-1 text-wosmongton-200", {
+              "opacity-60": focused === currentTypeEnum,
+              "font-normal text-osmoverse-300": !isFocused,
+            })}
+          >
+            {baseAsset && baseAsset.coinDenom}
+          </span>
+        )}
+        {!disableSwitching && focused === oppositeTypeEnum && <SwapArrows />}
+      </label>
     </div>
   );
 }
 
 function SwapArrows() {
   return (
-    <div className="ml-1 flex h-12 w-14 items-center">
-      <Icon
-        id="arrow-right"
-        className="h-full w-auto rotate-90 text-wosmongton-200"
-        width={16}
-        height={24}
-      />
-      <Icon
-        id="arrow-right"
-        className="-ml-1 h-full w-auto -rotate-90 text-wosmongton-200"
-        width={16}
-        height={24}
-      />
+    <div className="ml-3 flex h-[64px] w-[64px] items-center justify-center rounded-full border-[1px] border-osmoverse-700 p-2">
+      <Icon id="switch" width={40} height={40} />
     </div>
   );
 }
