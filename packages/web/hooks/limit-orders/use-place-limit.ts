@@ -132,11 +132,7 @@ export const usePlaceLimit = ({
       return baseTokenAmount;
     }
 
-    const price = isMarket
-      ? orderDirection === "bid"
-        ? priceState.askSpotPrice
-        : priceState.bidSpotPrice
-      : priceState.price;
+    const price = priceState.price;
     // Determine the outgoing fiat amount the user wants to buy
     const outgoingFiatValue = mulPrice(
       baseTokenAmount,
@@ -159,8 +155,6 @@ export const usePlaceLimit = ({
     quoteAsset,
     priceState.price,
     isMarket,
-    priceState.askSpotPrice,
-    priceState.bidSpotPrice,
     marketState.inAmountInput.amount,
   ]);
 
@@ -511,7 +505,6 @@ const useLimitPrice = ({
     data: assetPrice,
     isLoading: loadingSpotPrice,
     isRefetching: isSpotPriceRefetching,
-    refetch: refetchSpotPrice,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
@@ -642,8 +635,7 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
-    refetchSpotPrice();
-  }, [refetchSpotPrice]);
+  }, []);
 
   // const setPercentAdjusted = useCallback(
   //   (percentAdjusted: string) => {

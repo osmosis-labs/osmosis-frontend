@@ -8,7 +8,10 @@ export const priceFormatter = (price: number) => {
   const minimumDecimals = 2;
   const maxDecimals = Math.max(getDecimalCount(price), minimumDecimals);
 
-  if (price < 0) {
+  /**
+   * Exclude negative and small values
+   */
+  if (price < 0 || price < 10e-17) {
     return "";
   }
 

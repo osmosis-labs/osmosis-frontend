@@ -367,6 +367,7 @@
     }
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",
+  "switchNetwork": "નેટવર્ક સ્વિચ કરો",
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
@@ -514,7 +515,8 @@
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
-      "changeButton": "સેટિંગ્સ સંપાદિત કરો"
+      "changeButton": "સેટિંગ્સ સંપાદિત કરો",
+      "ledgerComingSoon": "લેજર હાર્ડવેર વૉલેટ સપોર્ટ ટૂંક સમયમાં આવી રહ્યું છે."
     },
     "floatingBanner": {
       "newPill": "નવી",
