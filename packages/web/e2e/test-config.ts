@@ -18,7 +18,8 @@ export class TestConfig {
   }
 
   getBrowserExtensionConfig(headless: boolean, pathToExtension: string) {
-    const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "true";
+    // GitHub Actions matrix does not understand true
+    const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "use";
     const viewport = { width: 1440, height: 1280 };
     const args = [
       "--headless=new",
