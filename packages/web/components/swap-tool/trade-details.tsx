@@ -7,8 +7,9 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -23,7 +24,7 @@ import {
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { RecapRow } from "~/modals/review-limit-order";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
@@ -45,6 +46,8 @@ export const TradeDetails = ({
   const { t } = useTranslation();
 
   const routesVisDisclosure = useDisclosure();
+
+  const [outAsBase, setOutAsBase] = useState(true);
 
   const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
@@ -92,6 +95,7 @@ export const TradeDetails = ({
               >
                 <SkeletonLoader isLoaded={Boolean(inPrice)}>
                   <span
+                    onClick={() => setOutAsBase(!outAsBase)}
                     className={classNames(
                       "body2 text-osmoverse-300 transition-opacity",
                       {
@@ -100,13 +104,9 @@ export const TradeDetails = ({
                       }
                     )}
                   >
-                    {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                    {inPrice &&
-                      formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                        maxDecimals: inPrice
-                          ? 2
-                          : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
-                      })}
+                    {swapState && inPrice
+                      ? ExpectedRate(swapState, inPrice, outAsBase)
+                      : ""}
                   </span>
                 </SkeletonLoader>
                 <span
@@ -156,20 +156,9 @@ export const TradeDetails = ({
                 <RecapRow
                   left={t("limitOrders.expectedRate")}
                   right={
-                    <span>
-                      1 {swapState?.fromAsset?.coinDenom} ≈{" "}
-                      {swapState?.toAsset
-                        ? formatPretty(
-                            swapState.inBaseOutQuoteSpotPrice ?? new Dec(0),
-                            {
-                              maxDecimals: Math.min(
-                                swapState.toAsset.coinDecimals,
-                                8
-                              ),
-                            }
-                          )
-                        : "0"}
-                    </span>
+                    swapState &&
+                    inPrice &&
+                    ExpectedRate(swapState, inPrice, true)
                   }
                 />
                 <RecapRow
@@ -254,6 +243,105 @@ export function Closer({
   }, [close, isInAmountEmpty]);
 
   return <></>;
+}
+
+export function ExpectedRate(
+  swapState: ReturnType<typeof useSwap>,
+  inPrice: CoinPretty | PricePretty,
+  outAsBase: boolean
+) {
+  var baseAsset;
+  var quoteAsset;
+  var inQuoteAssetPrice;
+  var inFiatPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+
+  if (outAsBase) {
+    baseAsset = swapState.toAsset?.coinDenom;
+    quoteAsset = swapState.fromAsset?.coinDenom;
+
+    inQuoteAssetPrice = new Dec(1).quo(inPrice.toDec());
+
+    if (
+      swapState?.tokenOutFiatValue &&
+      swapState?.quote?.amount?.toDec().gt(new Dec(0))
+    ) {
+      inFiatPrice = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec())
+      );
+    } else {
+      if (swapState.inAmountInput?.price) {
+        inFiatPrice = swapState.inAmountInput?.price?.quo(inPrice.toDec());
+      }
+    }
+  } else {
+    baseAsset = swapState.fromAsset?.coinDenom;
+    quoteAsset = swapState.toAsset?.coinDenom;
+
+    inQuoteAssetPrice = inPrice.toDec();
+
+    if (
+      swapState.tokenOutFiatValue &&
+      swapState.inAmountInput?.amount?.toDec().gt(new Dec(0))
+    ) {
+      inFiatPrice = swapState.tokenOutFiatValue.quo(
+        swapState.inAmountInput.amount.toDec()
+      );
+    } else {
+      inFiatPrice =
+        swapState.inAmountInput.price ??
+        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+    }
+  }
+
+  return (
+    <span>
+      1 {baseAsset} ≈{" "}
+      {formatPretty(inQuoteAssetPrice, {
+        minimumSignificantDigits: 6,
+        maximumSignificantDigits: 6,
+        maxDecimals: 10,
+        notation: "standard",
+      })}{" "}
+      {quoteAsset} (
+      {formatPretty(inFiatPrice, {
+        ...getPriceExtendedFormatOptions(inFiatPrice.toDec()),
+      })}
+      )
+    </span>
+  );
+
+  // return (
+  //   <span>
+  //     1 {swapState?.toAsset?.coinDenom} ≈{" "}
+  //     {swapState?.toAsset && inPrice
+  //       ? formatPretty(new Dec(1).quo(inPrice.toDec()), {
+  //           maxDecimals: Math.min(swapState.toAsset.coinDecimals, 8),
+  //         })
+  //       : "0"}{" "}
+  //     {swapState?.fromAsset?.coinDenom} (
+  //     {swapState?.tokenOutFiatValue &&
+  //     swapState?.quote?.amount?.toDec().gt(new Dec(0))
+  //       ? formatPretty(
+  //           swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec()),
+  //           {
+  //             ...getPriceExtendedFormatOptions(
+  //               swapState.tokenOutFiatValue
+  //                 .quo(swapState.quote.amount.toDec())
+  //                 .toDec()
+  //             ),
+  //           }
+  //         )
+  //       : inPrice && swapState?.inAmountInput?.price
+  //       ? formatPretty(swapState.inAmountInput.price.quo(inPrice.toDec()), {
+  //           ...getPriceExtendedFormatOptions(
+  //             swapState.inAmountInput.price.quo(inPrice.toDec()).toDec()
+  //           ),
+  //         })
+  //       : ""}
+  //     )
+  //   </span>
+  // );
 }
 
 type Split =
