@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "Başka bir varlığa geç",
     "openOrders": "Açık siparişler",
     "invalidPrice": "Geçersiz fiyat",
-    "unavailable": "{denom} için kullanılamıyor"
+    "unavailable": "{denom} için kullanılamıyor",
+    "findingBestPrice": "En iyi fiyatı bulma"
   },
   "orderHistory": {
     "orders": "Emirler",

@@ -1287,7 +1287,8 @@
     "swapToAnotherAsset": "Schimbați cu un alt activ",
     "openOrders": "Comenzi deschise",
     "invalidPrice": "Preț nevalid",
-    "unavailable": "Indisponibil pentru {denom}"
+    "unavailable": "Indisponibil pentru {denom}",
+    "findingBestPrice": "Găsirea celui mai bun preț"
   },
   "orderHistory": {
     "orders": "Comenzi",
