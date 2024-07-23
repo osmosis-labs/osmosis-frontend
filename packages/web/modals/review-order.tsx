@@ -56,8 +56,6 @@ export function ReviewOrder({
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
-  const [_, setIsSendingTx] = useState(false);
-
   const [manualSlippage, setManualSlippage] = useState("");
 
   const handleManualSlippageChange = useCallback(
@@ -398,11 +396,8 @@ export function ReviewOrder({
             </div> */}
             <div className="flex w-full justify-between gap-3 pt-3">
               <Button
-                onClick={() => {
-                  setIsSendingTx(true);
-                  confirmAction();
-                  setIsSendingTx(false);
-                }}
+                mode="primary"
+                onClick={confirmAction}
                 disabled={isConfirmationDisabled}
                 className="body2 !rounded-2xl"
               >

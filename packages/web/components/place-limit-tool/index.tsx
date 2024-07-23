@@ -54,6 +54,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       tab: parseAsString,
       to: parseAsString,
     });
+    const [isSendingTx, setIsSendingTx] = useState(false);
 
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
@@ -317,13 +318,15 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <ReviewOrder
           title="Review trade"
           confirmAction={async () => {
+            setIsSendingTx(true);
             await swapState.placeLimit();
             swapState.reset();
             setReviewOpen(false);
+            setIsSendingTx(false);
           }}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
-          isConfirmationDisabled={false}
+          isConfirmationDisabled={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
           swapState={swapState.marketState}
