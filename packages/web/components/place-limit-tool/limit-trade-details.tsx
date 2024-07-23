@@ -3,6 +3,7 @@ import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import React, { FC, memo, useMemo } from "react";
 
+import { Icon } from "~/components/assets/icon";
 import { RecapRow } from "~/components/ui/recap-row";
 import { useTranslation } from "~/hooks";
 import { PlaceLimitState } from "~/hooks/limit-orders";
@@ -47,6 +48,7 @@ export const LimitTradeDetails: FC<LimitTradeDetailsProps> = memo(
                 "opacity-50": isInAmountEmpty,
               })}
             >
+              <Icon id="gas" width={16} height={16} />
               ~${totalFees}
             </span>
           }
