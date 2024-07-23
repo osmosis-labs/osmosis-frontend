@@ -15,6 +15,7 @@ import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
+import { RecapRow } from "~/components/ui/recap-row";
 import {
   useDisclosure,
   UseDisclosureReturn,
@@ -23,7 +24,6 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
-import { RecapRow } from "~/modals/review-limit-order";
 import { formatPretty } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 

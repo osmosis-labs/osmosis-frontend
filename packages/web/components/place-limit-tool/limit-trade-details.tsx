@@ -3,9 +3,9 @@ import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import React, { FC, memo, useMemo } from "react";
 
+import { RecapRow } from "~/components/ui/recap-row";
 import { useTranslation } from "~/hooks";
 import { PlaceLimitState } from "~/hooks/limit-orders";
-import { RecapRow } from "~/modals/review-limit-order";
 import { formatPretty } from "~/utils/formatter";
 
 interface LimitTradeDetailsProps {

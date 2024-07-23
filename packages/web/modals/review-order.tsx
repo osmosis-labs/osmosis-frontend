@@ -8,12 +8,12 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { EventName } from "~/config/analytics-events";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
-import { RecapRow } from "~/modals/review-limit-order";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 interface ReviewOrderProps {
@@ -291,7 +291,7 @@ export function ReviewOrder({
                             slippageConfig?.defaultManualSlippage + "%"
                           }
                           className="w-fit bg-transparent px-0"
-                          inputClassName="!bg-transparent text-center placeholder:text-osmoverse-300 w-[30px] transition-all"
+                          inputClassName="!bg-transparent text-center placeholder:text-wosmongton-300 transition-all"
                           value={manualSlippage}
                           onFocus={() =>
                             slippageConfig?.setIsManualSlippage(true)
