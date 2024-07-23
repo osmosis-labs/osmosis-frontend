@@ -1,7 +1,8 @@
 import { Transition } from "@headlessui/react";
 import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { memo, PropsWithChildren, useState } from "react";
+import { useQueryState } from "nuqs";
+import { memo, PropsWithChildren, useEffect, useState } from "react";
 import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -36,15 +37,37 @@ export const ImmersiveBridgeFlow = ({
 }: PropsWithChildren<BridgeFlowProvider>) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState<ImmersiveBridgeScreen>(
     ImmersiveBridgeScreen.Asset
   );
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit");
-  const { logEvent } = useAmplitudeAnalytics();
+  const [direction, setDirection] = useQueryState<
+    "deposit" | "withdraw" | null
+  >("transferDirection", {
+    history: "replace",
+    parse: (value) => (value === "withdraw" ? "withdraw" : "deposit"),
+  });
+  const [selectedAssetDenom, setSelectedAssetDenom] = useQueryState<
+    string | null
+  >("transferAsset", {
+    defaultValue: null,
+    history: "replace",
+    parse: (value) => {
+      if (typeof value === "string") return value;
+      return null;
+    },
+  });
 
-  const [selectedAssetDenom, setSelectedAssetDenom] = useState<string>();
+  useEffect(() => {
+    if (!isNil(direction) && !isVisible) setIsVisible(true);
+    if (isNil(direction) && isVisible) setDirection("deposit"); // default direction
+    if (!isNil(selectedAssetDenom) && !isVisible) {
+      setIsVisible(true);
+      setStep(ImmersiveBridgeScreen.Amount);
+    }
+  }, [direction, selectedAssetDenom, isVisible, setDirection]);
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
@@ -62,6 +85,8 @@ export const ImmersiveBridgeFlow = ({
 
   const onClose = () => {
     setIsVisible(false);
+    setDirection(null);
+    setSelectedAssetDenom(null);
   };
 
   const onOpen = (direction: BridgeTransactionDirection) => {
@@ -123,12 +148,12 @@ export const ImmersiveBridgeFlow = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
             afterLeave={() => {
-              setSelectedAssetDenom(undefined);
+              setSelectedAssetDenom(null);
               setStep(ImmersiveBridgeScreen.Asset);
             }}
           >
             <div className="flex-1 overflow-y-auto">
-              <div className="sticky top-0 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
+              <div className="sticky top-0 z-[999] mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
                 {step === ImmersiveBridgeScreen.Asset ? (
                   <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
                 ) : (
@@ -181,23 +206,26 @@ export const ImmersiveBridgeFlow = ({
               <div className="w-full flex-1">
                 <div className="mx-auto max-w-lg md:px-4">
                   <Screen screenName={ImmersiveBridgeScreen.Asset}>
-                    {({ setCurrentScreen }) => (
-                      <AssetSelectScreen
-                        type={direction}
-                        onSelectAsset={(asset) => {
-                          setCurrentScreen(ImmersiveBridgeScreen.Amount);
-                          setSelectedAssetDenom(asset.coinDenom);
-                        }}
+                    {({ setCurrentScreen }) =>
+                      direction ? (
+                        <AssetSelectScreen
+                          type={direction}
+                          onSelectAsset={(asset) => {
+                            setCurrentScreen(ImmersiveBridgeScreen.Amount);
+                            setSelectedAssetDenom(asset.coinDenom);
+                          }}
+                        />
+                      ) : null
+                    }
+                  </Screen>
+                  {currentScreen !== ImmersiveBridgeScreen.Asset &&
+                    direction && (
+                      <AmountAndReviewScreen
+                        direction={direction}
+                        onClose={onClose}
+                        selectedAssetDenom={selectedAssetDenom}
                       />
                     )}
-                  </Screen>
-                  {currentScreen !== ImmersiveBridgeScreen.Asset && (
-                    <AmountAndReviewScreen
-                      direction={direction}
-                      onClose={onClose}
-                      selectedAssetDenom={selectedAssetDenom}
-                    />
-                  )}
                 </div>
               </div>
             </div>
