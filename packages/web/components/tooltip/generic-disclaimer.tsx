@@ -23,6 +23,7 @@ export function GenericDisclaimer({
         </div>
       }
       className="text-wosmongton-300"
+      enablePropagation
     >
       <div className="w full">{children}</div>
     </Tooltip>
