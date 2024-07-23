@@ -27,7 +27,6 @@ jobs:
       - name: Echo IP
         run: |
           curl -L "https://ipinfo.io" -s
-          curl -x "http://osmo:tlnyproxy88@138.68.112.16:8888" "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
@@ -51,6 +50,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
           PRIVATE_KEY: ${{secrets.TEST_PRIVATE_KEY}}
+          USE_TEST_PROXY: "true"
         run: |
           cd packages/web
           npx playwright test select pools transactions
