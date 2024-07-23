@@ -675,6 +675,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <ReviewOrder
+          title="Swap"
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
           swapState={swapState}
