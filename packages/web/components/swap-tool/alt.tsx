@@ -34,7 +34,7 @@ import {
 import { useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
-import { ReviewSwapModal } from "~/modals/review-swap";
+import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
@@ -674,7 +674,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isFetchingNextPageAssets={swapState.isFetchingNextPageAssets}
           isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
-        <ReviewSwapModal
+        <ReviewOrder
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
           swapState={swapState}
