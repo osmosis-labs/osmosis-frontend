@@ -4,6 +4,12 @@ export class TestConfig {
     const username = process.env.TEST_PROXY_USERNAME;
     const password = process.env.TEST_PROXY_PASSWORD;
 
+    if (!username || !password) {
+      throw new Error(
+        "Proxy username or password is not set in environment variables."
+      );
+    }
+
     return {
       server: server,
       username: username,
@@ -13,12 +19,13 @@ export class TestConfig {
 
   getBrowserExtensionConfig(headless: boolean, pathToExtension: string) {
     const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "true";
-
+    const viewport = { width: 1440, height: 1280 };
     const args = [
       "--headless=new",
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ];
+
     if (USE_PROXY) {
       console.info(
         "Get Test Proxy configuration for server: " +
@@ -28,14 +35,14 @@ export class TestConfig {
         headless: headless,
         args: args,
         proxy: this.getProxyConfig(),
-        viewport: { width: 1440, height: 1280 },
+        viewport: viewport,
         slowMo: 300,
       };
     } else {
       return {
         headless: headless,
         args: args,
-        viewport: { width: 1440, height: 1280 },
+        viewport: viewport,
         slowMo: 300,
       };
     }
@@ -43,6 +50,7 @@ export class TestConfig {
 
   getBrowserConfig(headless: boolean) {
     const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "true";
+    const viewport = { width: 1440, height: 1280 };
     if (USE_PROXY) {
       console.info(
         "Get Test Proxy configuration for server: " +
@@ -51,13 +59,13 @@ export class TestConfig {
       return {
         headless: headless,
         proxy: this.getProxyConfig(),
-        viewport: { width: 1440, height: 1280 },
+        viewport: viewport,
         slowMo: 300,
       };
     } else {
       return {
         headless: headless,
-        viewport: { width: 1440, height: 1280 },
+        viewport: viewport,
         slowMo: 300,
       };
     }
