@@ -54,19 +54,19 @@ export const TradeDetails = ({
     [swapState?.inAmountInput.error]
   );
 
-  const isLoading = useMemo(
-    () =>
-      (swapState?.isLoadingNetworkFee ||
-        swapState?.isQuoteLoading ||
-        swapState?.inAmountInput.isTyping) &&
-      !Boolean(swapState.error),
-    [
-      swapState?.inAmountInput.isTyping,
-      swapState?.isLoadingNetworkFee,
-      swapState?.isQuoteLoading,
-      swapState?.error,
-    ]
-  );
+  // const isLoading = useMemo(
+  //   () =>
+  //     (swapState?.isLoadingNetworkFee ||
+  //       swapState?.isQuoteLoading ||
+  //       swapState?.inAmountInput.isTyping) &&
+  //     !Boolean(swapState.error),
+  //   [
+  //     swapState?.inAmountInput.isTyping,
+  //     swapState?.isLoadingNetworkFee,
+  //     swapState?.isQuoteLoading,
+  //     swapState?.error,
+  //   ]
+  // );
 
   const priceImpact = useMemo(
     () => swapState?.quote?.priceImpactTokenOut,
