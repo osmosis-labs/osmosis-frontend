@@ -158,7 +158,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className="sticky top-0 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3"
+          className="sticky top-28 z-[1000] w-full flex-shrink-0 bg-osmoverse-900 py-3 md:top-24"
         >
           <SearchBox
             ref={searchBoxRef}
@@ -187,7 +187,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                 <button
                   key={asset.coinMinimalDenom}
                   className={classNames(
-                    "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0",
+                    "flex items-center justify-between rounded-2xl px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-1",
                     {
                       "bg-osmoverse-700/50": keyboardSelectedIndex === index,
                     }
