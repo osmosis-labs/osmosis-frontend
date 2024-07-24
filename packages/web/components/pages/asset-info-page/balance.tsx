@@ -17,7 +17,7 @@ import { api } from "~/utils/trpc";
 export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { chainStore, accountStore } = useStore();
   const { bridgeAsset } = useBridge();
-  const { asset: asset } = useAssetInfo();
+  const { asset } = useAssetInfo();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
 

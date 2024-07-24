@@ -9,19 +9,30 @@ export function truncate(str: string, num = 8) {
   return str.slice(0, num) + "...";
 }
 
+/**
+ * Shorten a string with truncation in the middle.
+ * Example: `ibc/EA...25DC5`
+ */
 export function shorten(
-  address: string,
-  opts?: { prefixLength?: number; suffixLength?: number }
+  string: string,
+  opts?: { prefixLength?: number; suffixLength?: number; delim?: string }
 ) {
-  if (!address) return "";
-  return (
-    address.substring(0, opts?.prefixLength ?? 6) +
-    "..." +
-    address.substring(
-      address.length - (opts?.suffixLength ?? 5),
-      address.length
-    )
+  if (!string) return "";
+  if (string.length <= (opts?.prefixLength ?? 6) + (opts?.suffixLength ?? 5)) {
+    return string;
+  }
+
+  const prefix = string.substring(0, opts?.prefixLength ?? 6);
+  const suffix = string.substring(
+    string.length - (opts?.suffixLength ?? 5),
+    string.length
   );
+
+  if (!prefix || !suffix) {
+    return string;
+  }
+
+  return prefix + (opts?.delim ?? "...") + suffix;
 }
 
 export const formatICNSName = (name?: string, maxLength = 28) => {
