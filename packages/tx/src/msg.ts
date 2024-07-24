@@ -1,7 +1,6 @@
 import { cosmwasm, ibc } from "@osmosis-labs/proto-codecs";
 
 interface AccountMsgOpt {
-  shareCoinDecimals?: number;
   /**
    * In cases where fee estimation isn't supported, gas can be included as a fallback option.
    * This proves particularly beneficial for accounts like CosmosAccount that depend on external chains.
