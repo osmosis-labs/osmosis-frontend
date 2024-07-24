@@ -29,6 +29,10 @@ export const MainLayout = observer(
     const showFixedLogo = !smallVerticalScreen && !isMobile;
     const showBlockLogo = smallVerticalScreen && !isMobile;
 
+    const selectedMenuItem = menus.find(
+      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    );
+
     return (
       <React.Fragment>
         {showFixedLogo && (
@@ -58,6 +62,7 @@ export const MainLayout = observer(
           className="ml-sidebar md:ml-0"
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
+          title={selectedMenuItem?.label ?? ""}
         />
         <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
           {children}
