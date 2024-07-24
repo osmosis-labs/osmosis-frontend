@@ -39,6 +39,7 @@ export function useWindowSize(
     isLargeDesktop: false,
     isExtraLargeDesktop: false,
   });
+
   useEffect(() => {
     function handleResize() {
       setWindowSize({

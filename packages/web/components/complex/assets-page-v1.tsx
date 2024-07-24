@@ -44,7 +44,7 @@ const TransactionsLink = () => {
 
 export const AssetsPageV1: FunctionComponent = observer(() => {
   const { isMobile } = useWindowSize();
-  const { assetsStore } = useStore();
+  const { assetsStore, accountStore } = useStore();
   const {
     nativeBalances,
     ibcBalances,
@@ -54,17 +54,23 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const { t } = useTranslation();
   const { startBridge, bridgeAsset } = useBridge();
 
+  const isWalletConnected = Boolean(
+    accountStore.getWallet(accountStore.osmosisChainId)?.isWalletConnected
+  );
+
   // set nav bar ctas
   useNavBar({
     ctas: [
       {
         label: t("assets.table.depositButton"),
+        disabled: !isWalletConnected,
         onClick: () => {
           startBridge({ direction: "deposit" });
         },
       },
       {
         label: t("assets.table.withdrawButton"),
+        disabled: !isWalletConnected,
         onClick: () => {
           startBridge({ direction: "withdraw" });
         },

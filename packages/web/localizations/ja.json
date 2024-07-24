@@ -408,6 +408,9 @@
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
     "noData": "データなし",
     "noOrderbook": "ペアの注文書はありません"
+    "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
+    "startAgain": "再開する"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -514,7 +517,8 @@
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
       "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
-      "changeButton": "編集の設定"
+      "changeButton": "編集の設定",
+      "ledgerComingSoon": "Ledger ハードウェア ウォレットのサポートがまもなく開始されます。"
     },
     "floatingBanner": {
       "newPill": "新しい",
@@ -913,6 +917,7 @@
     "to": "{network}へ",
     "max": "マックス",
     "available": "利用可能",
+    "connectTo": "{network}に接続します",
     "transferWith": "転送",
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",

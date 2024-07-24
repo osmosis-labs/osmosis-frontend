@@ -408,6 +408,9 @@
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
     "noData": "اطلاعاتی وجود ندارد",
     "noOrderbook": "بدون دفترچه سفارش برای جفت"
+    "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
+    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
+    "startAgain": "دوباره شروع کن"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -514,7 +517,8 @@
       "learnMore": "بیشتر بدانید",
       "startTradingButton": "شروع تجارت با 1 کلیک",
       "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
-      "changeButton": "ویرایش تنظیمات"
+      "changeButton": "ویرایش تنظیمات",
+      "ledgerComingSoon": "پشتیبانی کیف پول سخت افزاری لجر به زودی."
     },
     "floatingBanner": {
       "newPill": "جدید",
@@ -913,6 +917,7 @@
     "to": "برای",
     "max": "حداکثر",
     "available": "در دسترس",
+    "connectTo": "اتصال به {network}",
     "transferWith": "انتقال با",
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",

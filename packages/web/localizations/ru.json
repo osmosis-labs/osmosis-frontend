@@ -408,6 +408,9 @@
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
     "noData": "Нет данных",
     "noOrderbook": "Нет книги заказов для пары"
+    "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
+    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
+    "startAgain": "Начать заново"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -514,7 +517,8 @@
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
       "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
-      "changeButton": "Изменить настройки"
+      "changeButton": "Изменить настройки",
+      "ledgerComingSoon": "Скоро появится поддержка аппаратного кошелька Ledger."
     },
     "floatingBanner": {
       "newPill": "Новый",
@@ -913,6 +917,7 @@
     "to": "Чтобы",
     "max": "Макс",
     "available": "доступный",
+    "connectTo": "Подключитесь к {network}",
     "transferWith": "Трансфер с",
     "transferTo": "Перевести",
     "receiveAsset": "Получить актив",

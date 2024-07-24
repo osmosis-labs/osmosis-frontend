@@ -408,6 +408,9 @@
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
     "noData": "Keine Daten",
     "noOrderbook": "Kein Orderbuch für Paar"
+    "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
+    "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
+    "startAgain": "Fang nochmal an"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -514,7 +517,8 @@
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
       "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
-      "changeButton": "Einstellungen bearbeiten"
+      "changeButton": "Einstellungen bearbeiten",
+      "ledgerComingSoon": "Unterstützung für Ledger-Hardware-Wallets in Kürze verfügbar."
     },
     "floatingBanner": {
       "newPill": "Neu",
@@ -913,6 +917,7 @@
     "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
+    "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",

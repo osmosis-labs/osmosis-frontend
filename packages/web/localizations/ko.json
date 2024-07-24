@@ -408,6 +408,9 @@
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
     "noData": "데이터 없음",
     "noOrderbook": "페어 주문서 없음"
+    "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
+    "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
+    "startAgain": "다시 시작"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -514,7 +517,8 @@
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
       "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
-      "changeButton": "설정 수정"
+      "changeButton": "설정 수정",
+      "ledgerComingSoon": "Ledger 하드웨어 지갑이 곧 지원될 예정입니다."
     },
     "floatingBanner": {
       "newPill": "새로운",
@@ -913,6 +917,7 @@
     "to": "에게",
     "max": "맥스",
     "available": "사용 가능",
+    "connectTo": "{network} 에 연결",
     "transferWith": "다음으로 환승",
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",

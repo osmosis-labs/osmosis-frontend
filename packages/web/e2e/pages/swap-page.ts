@@ -125,7 +125,7 @@ export class SwapPage extends BasePage {
       await this.page.waitForTimeout(1000);
       await this.page.getByPlaceholder("Search").fill(from);
       const fromLocator = this.page.locator(
-        "//div/button[@data-token-id]//h6[.='" + from + "']"
+        "//div/button[@data-testid]//h6[.='" + from + "']"
       );
       await fromLocator.click();
     }
@@ -136,7 +136,7 @@ export class SwapPage extends BasePage {
       await this.page.waitForTimeout(1000);
       await this.page.getByPlaceholder("Search").fill(to);
       const toLocator = this.page.locator(
-        "//div/button[@data-token-id]//h6[.='" + to + "']"
+        "//div/button[@data-testid]//h6[.='" + to + "']"
       );
       await toLocator.click();
     }

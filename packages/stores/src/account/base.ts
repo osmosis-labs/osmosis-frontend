@@ -887,6 +887,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("One click trading info is not available");
     }
 
+    if (memo === "") {
+      // If the memo is empty, set it to "1CT" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "1CT";
+    } else {
+      // Otherwise, tack on "1CT" to the end of the memo.
+      memo += " \n1CT";
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -1271,6 +1280,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             oneClickTradingInfo: await this.getOneClickTradingInfo(),
           })
         : undefined;
+
+      apiClient("/api/transaction-scan", {
+        data: {
+          chainId: wallet.chainId,
+          messages: encodedMessages.map(encodeAnyBase64),
+          nonCriticalExtensionOptions:
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
+          bech32Address: wallet.address,
+        },
+      });
 
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {

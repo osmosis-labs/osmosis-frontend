@@ -408,6 +408,9 @@
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
     "noData": "Brak danych",
     "noOrderbook": "Brak księgi zamówień dla pary"
+    "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
+    "startAgain": "Zacznij jeszcze raz"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -514,7 +517,8 @@
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
       "defaultParameters": "Ustawienia domyślne są ustawione na 1 godzinę z limitem ochrony przed stratą w wysokości 5000 USD.",
-      "changeButton": "Edytuj ustawienia"
+      "changeButton": "Edytuj ustawienia",
+      "ledgerComingSoon": "Obsługa portfela sprzętowego Ledger już wkrótce."
     },
     "floatingBanner": {
       "newPill": "Nowy",
@@ -913,6 +917,7 @@
     "to": "Do",
     "max": "Maks",
     "available": "dostępny",
+    "connectTo": "Połącz się z {network}",
     "transferWith": "Przenieś z",
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",

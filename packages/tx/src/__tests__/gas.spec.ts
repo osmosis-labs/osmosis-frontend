@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  BaseAccountTypeStr,
   queryBalances,
   queryBaseAccount,
   queryFeesBaseDenom,
@@ -39,7 +40,45 @@ describe("simulateCosmosTxBody", () => {
 
   it("should return gasUsed on successful simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
+    (sendTxSimulate as jest.Mock).mockResolvedValue({
+      gas_info: { gas_used: "200000" },
+    } as Awaited<ReturnType<typeof sendTxSimulate>>);
+
+    const result = await simulateCosmosTxBody({
+      chainId,
+      chainList,
+      body: { messages: encodedMessages },
+      bech32Address,
+    });
+
+    expect(queryBaseAccount).toBeCalledWith({
+      chainId,
+      chainList,
+      bech32Address,
+    });
+    expect(sendTxSimulate).toBeCalledWith({
+      chainId,
+      chainList,
+      txBytes: expect.any(String),
+    });
+    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
+  });
+
+  it("should return gasUsed on successful vesting simulation", async () => {
+    (queryBaseAccount as jest.Mock).mockResolvedValue({
+      account: {
+        "@type": "non-base-type-assummed-vesting",
+        base_vesting_account: {
+          base_account: {
+            sequence: "1",
+          },
+        },
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
@@ -78,7 +117,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw an error if sequence number is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "invalid" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "invalid",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
@@ -93,7 +135,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw SimulateNotAvailableError if chain does not support tx simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
@@ -114,7 +159,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw an error if gas used is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "invalid" },
@@ -132,7 +180,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should forward ApiClientError message if code is present", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
@@ -153,7 +204,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should re-throw any other sendTxSimulate error object", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     });
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 

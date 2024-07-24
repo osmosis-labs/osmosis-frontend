@@ -408,6 +408,9 @@
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
     "noData": "No data",
     "noOrderbook": "No Orderbook for Pair"
+    "uhOhSomethingWentWrong": "Uh oh, something went wrong",
+    "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
+    "startAgain": "Start again"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -514,7 +517,8 @@
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
-      "changeButton": "Edit settings"
+      "changeButton": "Edit settings",
+      "ledgerComingSoon": "Ledger hardware wallet support coming soon."
     },
     "floatingBanner": {
       "newPill": "New",
@@ -913,6 +917,7 @@
     "to": "To",
     "max": "Max",
     "available": "available",
+    "connectTo": "Connect to {network}",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",

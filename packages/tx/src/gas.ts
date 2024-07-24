@@ -1,5 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  BaseAccount,
+  BaseAccountTypeStr,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -8,6 +10,7 @@ import {
   queryFeeTokens,
   queryFeeTokenSpotPrice,
   sendTxSimulate,
+  VestingAccount,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
 import { ApiClientError } from "@osmosis-labs/utils";
@@ -133,13 +136,7 @@ export async function estimateGasFee({
 
 export class SimulateNotAvailableError extends Error {}
 
-/**
- * Attempts to estimate gas amount of the given messages in a tx via a POST to the
- * specified chain.
- *
- * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
- */
-export async function simulateCosmosTxBody({
+export async function generateCosmosUnsignedTx({
   chainId,
   chainList,
   body,
@@ -149,25 +146,21 @@ export async function simulateCosmosTxBody({
   chainList: ChainWithFeatures[];
   body: SimBody;
   bech32Address: string;
-}): Promise<{
-  gasUsed: number;
-  /** Coins that left the account at the given address.
-   *  Useful for subtracting from amount input if it gas tokens are included. */
-  coinsSpent: { denom: string; amount: string }[];
-}> {
+}) {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // get needed account and message data for a valid tx
-  const sequence = await queryBaseAccount({
+  const account = await queryBaseAccount({
     chainId,
     chainList,
     bech32Address,
-  }).then(({ account }) => Number(account.sequence));
-  if (isNaN(sequence)) throw new Error("Invalid sequence number: " + sequence);
+  });
+
+  const sequence: number = parseSequenceFromAccount(account);
 
   // create placeholder transaction document
-  const unsignedTx = TxRaw.encode({
+  const rawUnsignedTx = TxRaw.encode({
     bodyBytes: TxBody.encode(TxBody.fromPartial(body)).finish(),
     authInfoBytes: AuthInfo.encode({
       signerInfos: [
@@ -193,13 +186,73 @@ export async function simulateCosmosTxBody({
     signatures: [new Uint8Array(64)],
   }).finish();
 
+  return {
+    rawUnsignedTx,
+    unsignedTx: Buffer.from(rawUnsignedTx).toString("base64"),
+  };
+}
+
+// Parses the sequence number from the account object.
+// The structure of the account object is different for base and vesting accounts.
+// Therefore, we need to check the type of the account object to parse the sequence number.
+function parseSequenceFromAccount(account: any) {
+  let sequence: number = 0;
+  if (account.account["@type"] === BaseAccountTypeStr) {
+    const base_acc = account as BaseAccount;
+    sequence = Number(base_acc.account.sequence);
+  } else {
+    // We assume that if not a base account, it's a vesting account.
+    const vesting_acc = account as VestingAccount;
+    sequence = Number(
+      vesting_acc.account.base_vesting_account.base_account.sequence
+    );
+  }
+
+  if (Number.isNaN(sequence)) {
+    console.error(account);
+    throw new Error(
+      "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
+    );
+  }
+  return sequence;
+}
+
+/**
+ * Attempts to estimate gas amount of the given messages in a tx via a POST to the
+ * specified chain.
+ *
+ * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
+ */
+export async function simulateCosmosTxBody({
+  chainId,
+  chainList,
+  body,
+  bech32Address,
+}: {
+  chainId: string;
+  chainList: ChainWithFeatures[];
+  body: SimBody;
+  bech32Address: string;
+}): Promise<{
+  gasUsed: number;
+  /** Coins that left the account at the given address.
+   *  Useful for subtracting from amount input if it gas tokens are included. */
+  coinsSpent: { denom: string; amount: string }[];
+}> {
+  const { unsignedTx } = await generateCosmosUnsignedTx({
+    chainId,
+    chainList,
+    body,
+    bech32Address,
+  });
+
   // Include custom error handling to catch specific error scenarios.
   try {
     // Try to send simulate query to chain if available
     const simulation = await sendTxSimulate({
       chainId,
       chainList,
-      txBytes: Buffer.from(unsignedTx).toString("base64"),
+      txBytes: unsignedTx,
     });
     const gasUsed = Number(simulation.gas_info?.gas_used ?? NaN);
     if (isNaN(gasUsed)) throw new Error("Gas used is missing or NaN");
@@ -362,7 +415,7 @@ export async function getGasFeeAmount({
     );
 
     /**
-     * Following last comment, we now store a the subtractive coin that can be used in the transaction,
+     * Following last comment, we now store a the subtractive coin that can be used in the transaction
      * as long as it's subtracted from the input.
      */
     if (isBalanceNeededForTx) {

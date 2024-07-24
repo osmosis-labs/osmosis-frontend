@@ -408,6 +408,9 @@
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
     "noData": "Pas de données",
     "noOrderbook": "Pas de carnet de commandes pour la paire"
+    "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
+    "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
+    "startAgain": "Recommencer"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -514,7 +517,8 @@
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
       "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
-      "changeButton": "Modifier les paramètres"
+      "changeButton": "Modifier les paramètres",
+      "ledgerComingSoon": "La prise en charge du portefeuille matériel Ledger sera bientôt disponible."
     },
     "floatingBanner": {
       "newPill": "Nouveau",
@@ -913,6 +917,7 @@
     "to": "Vers",
     "max": "Max.",
     "available": "disponible",
+    "connectTo": "Connectez-vous à {network}",
     "transferWith": "Transfert avec",
     "transferTo": "Transférer à",
     "receiveAsset": "Recevoir l'actif",
