@@ -101,8 +101,11 @@ export const TokenSelectLimit: FunctionComponent<
     );
 
     const showBaseBalance = useMemo(
-      () => orderDirection === "ask" && isWalletConnected,
-      [isWalletConnected, orderDirection]
+      () =>
+        orderDirection === "ask" &&
+        isWalletConnected &&
+        !baseFiatBalance.toDec().isZero(),
+      [isWalletConnected, orderDirection, baseFiatBalance]
     );
     const showQuoteBalance = useMemo(
       () => orderDirection === "bid",
