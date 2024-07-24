@@ -28,7 +28,10 @@ jest.mock("viem", () => ({
   http: jest.fn(),
 }));
 
-jest.mock("@osmosis-labs/tx");
+jest.mock("@osmosis-labs/tx", () => ({
+  ...jest.requireActual("@osmosis-labs/tx"),
+  estimateGasFee: jest.fn(),
+}));
 
 jest.mock("@cosmjs/proto-signing", () => ({
   ...jest.requireActual("@cosmjs/proto-signing"),
