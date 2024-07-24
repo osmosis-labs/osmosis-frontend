@@ -1,28 +1,76 @@
-import type {
-  WormholeConnectConfig,
-  WormholeConnectPartialTheme,
-} from "@wormhole-foundation/wormhole-connect";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
-const WormholeConnect = dynamic(
-  () =>
-    import("@wormhole-foundation/wormhole-connect").then((mod) => mod.default),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Spinner />
-      </div>
-    ),
-  }
-);
+type PaletteColor = {
+  50: string;
+  100: string;
+  200: string;
+  300: string;
+  400: string;
+  500: string;
+  600: string;
+  700: string;
+  800: string;
+  900: string;
+  A100: string;
+  A200: string;
+  A400: string;
+  A700: string;
+};
+
+type WormholeConnectPartialTheme = {
+  mode?: "light" | "dark";
+  primary?: PaletteColor;
+  secondary?: PaletteColor;
+  divider?: string;
+  background?: {
+    default: string;
+  };
+  text?: {
+    primary: string;
+    secondary: string;
+  };
+  error?: PaletteColor;
+  info?: PaletteColor;
+  success?: PaletteColor;
+  warning?: PaletteColor;
+  button?: {
+    primary: string;
+    primaryText: string;
+    disabled: string;
+    disabledText: string;
+    action: string;
+    actionText: string;
+    hover: string;
+  };
+  options?: {
+    hover: string;
+    select: string;
+  };
+  card?: {
+    background: string;
+    elevation: string;
+    secondary: string;
+  };
+  popover?: {
+    background: string;
+    elevation: string;
+    secondary: string;
+  };
+  modal?: {
+    background: string;
+  };
+  font?: {
+    primary: string;
+    header: string;
+  };
+  logo?: string;
+};
 
 const customTheme: WormholeConnectPartialTheme = {
   mode: "dark",
@@ -63,8 +111,138 @@ const customTheme: WormholeConnectPartialTheme = {
   },
 };
 
+const MAINNET_CHAINS = {
+  solana: 1,
+  ethereum: 2,
+  bsc: 4,
+  polygon: 5,
+  avalanche: 6,
+  fantom: 10,
+  klaytn: 13,
+  celo: 14,
+  moonbeam: 16,
+  injective: 19,
+  sui: 21,
+  aptos: 22,
+  arbitrum: 23,
+  optimism: 24,
+  base: 30,
+  sei: 32,
+  scroll: 34,
+  blast: 36,
+  xlayer: 37,
+  wormchain: 3104,
+  osmosis: 20,
+  cosmoshub: 4000,
+  evmos: 4001,
+  kujira: 4002,
+} as const;
+const DEVNET_CHAINS = {
+  ethereum: 2,
+  terra2: 18,
+  osmosis: 20,
+  wormchain: 3104,
+} as const;
+const TESTNET_CHAINS = {
+  solana: 1,
+  bsc: 4,
+  fuji: 6,
+  fantom: 10,
+  klaytn: 13,
+  alfajores: 14,
+  moonbasealpha: 16,
+  injective: 19,
+  sui: 21,
+  aptos: 22,
+  sei: 32,
+  scroll: 34,
+  blast: 36,
+  xlayer: 37,
+  wormchain: 3104,
+  osmosis: 20,
+  cosmoshub: 4000,
+  evmos: 4001,
+  kujira: 4002,
+  sepolia: 10002,
+  arbitrum_sepolia: 10003,
+  base_sepolia: 10004,
+  optimism_sepolia: 10005,
+} as const;
+
+type DevnetChainName = keyof typeof DEVNET_CHAINS;
+type MainnetChainName = keyof typeof MAINNET_CHAINS;
+type TestnetChainName = keyof typeof TESTNET_CHAINS;
+
+type ChainName = MainnetChainName | TestnetChainName | DevnetChainName;
+type Network = "mainnet" | "testnet" | "devnet";
+type ChainResourceMap = {
+  [chain in ChainName]?: string;
+};
+type TokenConfig = {
+  key: string;
+  symbol: string;
+  nativeChain: ChainName;
+  icon: string;
+  tokenId?: {
+    chain: ChainName;
+    address: string;
+  };
+  coinGeckoId: string;
+  color?: string;
+  decimals: DecimalsMap;
+  wrappedAsset?: string;
+  displayName?: string;
+  foreignAssets?: {
+    [chainName in ChainName]?: {
+      address: string;
+      decimals: number;
+    };
+  };
+};
+type TokensConfig = { [key: string]: TokenConfig };
+enum Context {
+  ETH = "Ethereum",
+  TERRA = "Terra",
+  XPLA = "XPLA",
+  SOLANA = "Solana",
+  ALGORAND = "Algorand",
+  NEAR = "Near",
+  APTOS = "Aptos",
+  SUI = "Sui",
+  SEI = "Sei",
+  COSMOS = "Cosmos",
+  OTHER = "OTHER",
+}
+
+type DecimalsMap = Partial<Record<Context, number>> & {
+  default: number;
+};
+
+interface WormholeConnectConfig {
+  network?: Network; // New name for this, consistent with SDKv2
+
+  // External resources
+  rpcs?: ChainResourceMap;
+
+  // White lists
+  networks?: ChainName[]; // TODO REMOVE; DEPRECATED
+
+  tokens?: string[];
+
+  // Custom tokens
+  tokensConfig?: TokensConfig;
+
+  bridgeDefaults?: {
+    fromNetwork?: ChainName;
+    toNetwork?: ChainName;
+    token?: string;
+    requiredNetwork?: ChainName;
+  };
+}
+
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
 
@@ -176,24 +354,57 @@ const Wormhole: FunctionComponent = () => {
   };
 
   let bridgeDefaults = {
-    fromNetwork: "solana",
-    toNetwork: "osmosis",
+    fromNetwork: "solana" as ChainName,
+    toNetwork: "osmosis" as ChainName,
     token: "W",
-    requiredNetwork: "osmosis",
+    requiredNetwork: "osmosis" as ChainName,
   };
 
   if (fromNetwork) {
-    bridgeDefaults.fromNetwork = fromNetwork;
+    bridgeDefaults.fromNetwork = fromNetwork as ChainName;
   }
   if (toNetwork) {
-    bridgeDefaults.toNetwork = toNetwork;
+    bridgeDefaults.toNetwork = toNetwork as ChainName;
   }
   if (token) {
     bridgeDefaults.token = token;
   }
   config.bridgeDefaults = bridgeDefaults;
 
-  return <WormholeConnect config={config} theme={customTheme} />;
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src =
+      "https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.16/dist/main.js";
+    script.defer = true;
+    script.onload = () => setScriptLoaded(true);
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  return (
+    <>
+      {!scriptLoaded && (
+        <div className="flex h-screen w-full items-center justify-center">
+          <Spinner />
+        </div>
+      )}
+      <div
+        id="wormhole-connect"
+        data-config={JSON.stringify(config)}
+        data-theme={JSON.stringify(customTheme)}
+        style={{ display: scriptLoaded ? "block" : "none" }}
+      ></div>
+
+      <link
+        rel="stylesheet"
+        href="https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.16/dist/main.css"
+      />
+    </>
+  );
 };
 
 export default Wormhole;
