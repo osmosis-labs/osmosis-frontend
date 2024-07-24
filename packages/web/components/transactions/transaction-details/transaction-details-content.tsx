@@ -1,5 +1,5 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
-import { getShortAddress } from "@osmosis-labs/utils";
+import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
@@ -201,7 +201,7 @@ export const TransactionDetailsContent = ({
             <div>{t("transactions.transactionHash")}</div>
             <CopyIconButton
               valueToCopy={transaction.hash}
-              label={getShortAddress(transaction.hash)}
+              label={shorten(transaction.hash)}
             />
           </div>
         </div>
