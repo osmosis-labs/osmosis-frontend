@@ -143,9 +143,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const buttonText = useMemo(() => {
       if (
         swapState.error &&
-        swapState.error !== "errors.zeroAmount" &&
-        swapState.error !== "errors.emptyAmount" &&
-        swapState.error !== "limitOrders.insufficientFunds"
+        !(
+          swapState.error === "errors.zeroAmount" ||
+          swapState.error === "errors.emptyAmount" ||
+          swapState.error === "limitOrders.insufficientFunds"
+        )
       ) {
         return t(swapState.error);
       } else {
@@ -166,6 +168,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         input.focus();
       }
     }, [input]);
+
     return (
       <>
         <div className="flex flex-col gap-3">
