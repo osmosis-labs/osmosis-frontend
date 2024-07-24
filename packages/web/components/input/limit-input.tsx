@@ -93,19 +93,13 @@ export const LimitInput: FC<LimitInputProps> = ({
   setInputMode,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
-  // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
-  // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
-  // const [focused, setFocused] = useState<FocusedInput>(
-  //   tab === "buy" ? "fiat" : "token"
-  // );
   const focused = inputMode;
-  const setFocused = setInputMode;
 
   const swapFocus = useCallback(() => {
-    setFocused((p) => (p === "fiat" ? "token" : "fiat"));
-  }, []);
+    setInputMode(inputMode === "fiat" ? "token" : "fiat");
+  }, [inputMode, setInputMode]);
 
   // Swap focus every time the tab changes
   useEffect(() => swapFocus(), [swapFocus, tab]);
@@ -113,8 +107,9 @@ export const LimitInput: FC<LimitInputProps> = ({
   // Set focus to Fiat / Token on type/tab change
   useEffect(() => {
     if (type === "market") {
-      setFocused(tab === "buy" ? "fiat" : "token");
+      setInputMode(tab === "buy" ? "fiat" : "token");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, type]);
 
   // const setFiatAmountSafe = useCallback(
