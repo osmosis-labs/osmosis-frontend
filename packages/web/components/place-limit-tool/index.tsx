@@ -188,13 +188,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 onChange={swapState.inAmountInput.setAmount}
                 baseAsset={swapState.baseAsset!}
                 tokenAmount={swapState.inAmountInput.inputAmount}
-                price={
-                  type === "market"
-                    ? orderDirection === "bid"
-                      ? swapState.priceState.askSpotPrice!
-                      : swapState.priceState.bidSpotPrice!
-                    : swapState.priceState.price
-                }
+                price={swapState.priceState.price}
                 disableSwitching={type === "market"}
                 setMarketAmount={swapState.marketState.inAmountInput.setAmount}
                 quoteAssetPrice={swapState.quoteAssetPrice.toDec()}

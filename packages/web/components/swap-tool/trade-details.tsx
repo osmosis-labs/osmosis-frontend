@@ -7,6 +7,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { useEffect, useMemo } from "react";
 import { useMeasure } from "react-use";
@@ -23,7 +24,7 @@ import {
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 import { RecapRow } from "~/modals/review-limit-order";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
@@ -102,11 +103,9 @@ export const TradeDetails = ({
                   >
                     {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
                     {inPrice &&
-                      formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                        maxDecimals: inPrice
-                          ? 2
-                          : Math.min(swapState?.toAsset?.coinDecimals ?? 8, 8),
-                      })}
+                      formatFiatPrice(
+                        new PricePretty(DEFAULT_VS_CURRENCY, inPrice.toDec())
+                      )}
                   </span>
                 </SkeletonLoader>
                 <span

@@ -17,7 +17,7 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 import type { SwapAsset } from "~/hooks/use-swap";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice } from "~/utils/formatter";
 
 export interface TokenSelectLimitProps {
   dropdownOpen?: boolean;
@@ -158,7 +158,7 @@ export const TokenSelectLimit: FunctionComponent<
           <div className="flex h-6 items-center justify-center">
             {showBaseBalance && (
               <div className="flex text-body1 text-osmoverse-300">
-                {formatPretty(baseFiatBalance)}{" "}
+                {formatFiatPrice(baseFiatBalance)}{" "}
                 {t("addLiquidity.available").toLowerCase()}
               </div>
             )}

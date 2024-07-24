@@ -16,7 +16,7 @@ import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 interface PriceSelectorProps {
@@ -114,7 +114,6 @@ export const PriceSelector = memo(
         select: (data) =>
           data.items
             .map((walletAsset) => {
-              console.log(walletAsset.coinDenom);
               if (!VALID_QUOTES.includes(walletAsset.coinDenom)) {
                 return undefined;
               }
@@ -231,11 +230,14 @@ export const PriceSelector = memo(
                   <div className="flex items-center gap-1">
                     {showQuoteBalance &&
                       quoteAssetWithBalance &&
-                      quoteAssetWithBalance.usdValue && (
+                      quoteAssetWithBalance.amount && (
                         <span className="body2 inline-flex text-osmoverse-300">
-                          {formatPretty(quoteAssetWithBalance.usdValue, {
-                            minimumFractionDigits: 5,
-                          })}{" "}
+                          {formatFiatPrice(
+                            new PricePretty(
+                              DEFAULT_VS_CURRENCY,
+                              quoteAssetWithBalance.amount.toDec()
+                            )
+                          )}{" "}
                           {t("pool.available").toLowerCase()}
                         </span>
                       )}
@@ -478,12 +480,8 @@ const SelectableQuotes = observer(
                           "text-white-full": availableBalance.gt(new Dec(0)),
                         })}
                       >
-                        {formatPretty(
-                          new PricePretty(
-                            DEFAULT_VS_CURRENCY,
-                            availableBalance
-                          ),
-                          getPriceExtendedFormatOptions(availableBalance)
+                        {formatFiatPrice(
+                          new PricePretty(DEFAULT_VS_CURRENCY, availableBalance)
                         )}
                       </span>
                       <span className="body2 font-light">

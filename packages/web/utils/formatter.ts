@@ -6,12 +6,14 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
 import {
   getDecimalCount,
   getNumberMagnitude,
   toScientificNotation,
+  trimPlaceholderZeros,
 } from "~/utils/number";
 
 type CustomFormatOpts = {
@@ -354,3 +356,19 @@ export const compressZeros = (
     decimalDigits: otherDigits,
   };
 };
+
+/**
+ * Formats a fiat price using `getPriceExtendedFormatOptions` and displays `<0.01` if the price is less than $0.01.
+ */
+export function formatFiatPrice(price: PricePretty) {
+  if (!price.toDec().isZero() && price.toDec().lt(new Dec(0.01))) {
+    return `<${trimPlaceholderZeros(
+      formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0.01)), {
+        ...getPriceExtendedFormatOptions(new Dec(0.01)),
+      })
+    )}`;
+  }
+  return formatPretty(price.maxDecimals(2).trim(true), {
+    ...getPriceExtendedFormatOptions(price.toDec()),
+  });
+}

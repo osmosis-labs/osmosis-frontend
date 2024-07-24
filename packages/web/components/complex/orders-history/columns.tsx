@@ -9,7 +9,7 @@ import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<DisplayableLimitOrder>();
 
@@ -140,11 +140,7 @@ export const tableColumns = [
           <p className="body2 text-osmoverse-300">
             {baseAsset?.symbol} · Limit
           </p>
-          <p>
-            {formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price), {
-              ...getPriceExtendedFormatOptions(price),
-            })}
-          </p>
+          <p>{formatFiatPrice(new PricePretty(DEFAULT_VS_CURRENCY, price))}</p>
         </div>
       );
     },

@@ -229,7 +229,7 @@ export const LimitInput: FC<LimitInputProps> = ({
       return setAmountSafe("fiat", Number(quoteBalance)?.toString() ?? "");
     }
 
-    return setAmountSafe("token", Number(baseBalance)?.toString() ?? "");
+    return setAmountSafe("token", baseBalance?.toString() ?? "");
   }, [tab, baseBalance, setAmountSafe, quoteBalance]);
 
   useEffect(() => {
