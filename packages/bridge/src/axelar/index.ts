@@ -5,7 +5,7 @@ import type {
 import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { cosmosMsgOpts, estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -40,7 +40,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 
