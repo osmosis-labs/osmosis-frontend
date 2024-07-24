@@ -377,6 +377,13 @@ const Wormhole: FunctionComponent = () => {
     script.src =
       "https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.16/dist/main.js";
     script.defer = true;
+    /**
+     * On version bumps make sure to update the hash.
+     * @see https://www.srihash.org/ - to compute it
+     */
+    script.integrity =
+      "sha384-RolM9SJlJRj0Qi9rYuG5ge7kxPsT4iyrxKLPN4EMnoe5R//1mFRYrlz6L09eyXAT";
+    script.crossOrigin = "anonymous";
     script.onload = () => setScriptLoaded(true);
     document.body.appendChild(script);
 
@@ -398,10 +405,15 @@ const Wormhole: FunctionComponent = () => {
         data-theme={JSON.stringify(customTheme)}
         style={{ display: scriptLoaded ? "block" : "none" }}
       ></div>
-
+      {/**
+       * On version bumps make sure to update the hash.
+       * @see https://www.srihash.org/ - to compute it
+       */}
       <link
         rel="stylesheet"
         href="https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.16/dist/main.css"
+        integrity="sha384-BTkX2AhTeIfxDRFsJbLtR26TQ9QKKpi7EMe807JdfQQBTAkUT9a2mSGwf/5CJ4bF"
+        crossOrigin="anonymous"
       />
     </>
   );
