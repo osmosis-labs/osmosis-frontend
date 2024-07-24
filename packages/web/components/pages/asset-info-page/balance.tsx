@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
@@ -13,14 +14,10 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-interface YourBalanceProps {
-  className?: string;
-}
-
-export const YourBalance = observer(({ className }: YourBalanceProps) => {
+export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { chainStore, accountStore } = useStore();
   const { bridgeAsset } = useBridge();
-  const { token } = useAssetInfo();
+  const { asset: asset } = useAssetInfo();
   const { t } = useTranslation();
 
   const osmosisChainId = chainStore.osmosis.chainId;
@@ -28,7 +25,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
 
   const { data, isLoading } = api.edge.assets.getUserBridgeAsset.useQuery(
     {
-      findMinDenomOrSymbol: token.coinDenom,
+      findMinDenomOrSymbol: asset.coinDenom,
       userOsmoAddress: account?.address,
     },
     { enabled: Boolean(account?.address) }
@@ -61,7 +58,7 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
-          {data?.amount ? formatPretty(data.amount) : `0 ${token.coinDenom}`}{" "}
+          {data?.amount ? formatPretty(data.amount) : `0 ${asset.coinDenom}`}{" "}
           {t("tokenInfos.onOsmosis")}
         </p>
       </SkeletonLoader>
@@ -72,11 +69,10 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           className="flex flex-1 items-center"
           onClick={() =>
             bridgeAsset({
-              anyDenom: token.coinMinimalDenom,
+              anyDenom: asset.coinMinimalDenom,
               direction: "deposit",
             })
           }
-          disabled={!data?.transferMethods.length}
         >
           <Icon className="mr-2" id="deposit" height={16} width={16} />
           {t("assets.historyTable.colums.deposit")}
@@ -87,11 +83,11 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
           variant="secondary"
           onClick={() =>
             bridgeAsset({
-              anyDenom: token.coinMinimalDenom,
+              anyDenom: asset.coinMinimalDenom,
               direction: "withdraw",
             })
           }
-          disabled={!data?.amount || !data?.transferMethods.length}
+          disabled={!data?.amount}
         >
           <Icon className="mr-2" id="withdraw" height={16} width={16} />
           {t("assets.historyTable.colums.withdraw")}
