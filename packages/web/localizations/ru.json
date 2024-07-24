@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Подключить кошелек",
-  "switchNetwork": "Переключить сеть",
   "errors": {
     "calculatingShareOutAmount": "Проблема с расчетом суммы",
     "depositNoBalance": "У вас нет активов для депозита",
@@ -407,7 +406,10 @@
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
-    "noData": "Нет данных"
+    "noData": "Нет данных",
+    "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
+    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
+    "startAgain": "Начать заново"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -912,6 +914,7 @@
     "to": "Чтобы",
     "max": "Макс",
     "available": "доступный",
+    "connectTo": "Подключитесь к {network}",
     "transferWith": "Трансфер с",
     "transferTo": "Перевести",
     "receiveAsset": "Получить актив",

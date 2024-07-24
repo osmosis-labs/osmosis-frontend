@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Connect wallet",
-  "switchNetwork": "Switch network",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
@@ -407,7 +406,10 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "uhOhSomethingWentWrong": "Uh oh, something went wrong",
+    "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
+    "startAgain": "Start again"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -912,6 +914,7 @@
     "to": "To",
     "max": "Max",
     "available": "available",
+    "connectTo": "Connect to {network}",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",

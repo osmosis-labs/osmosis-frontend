@@ -91,6 +91,7 @@ export const AmountAndReviewScreen = observer(
           enabled: !isNil(selectedAssetDenom),
           cacheTime: 10 * 60 * 1000, // 10 minutes
           staleTime: 10 * 60 * 1000, // 10 minutes
+          useErrorBoundary: true,
         }
       );
 
@@ -109,18 +110,15 @@ export const AmountAndReviewScreen = observer(
       const assetSupportedBridges = new Set<Bridge>();
 
       if (direction === "deposit" && fromAsset) {
-        Object.values(fromAsset.supportedVariants)
-          .flat()
-          .forEach((provider) => assetSupportedBridges.add(provider));
+        const providers = Object.values(fromAsset.supportedVariants).flat();
+        providers.forEach((provider) => assetSupportedBridges.add(provider));
       } else if (direction === "withdraw" && fromAsset && toAsset) {
-        // withdraw
-        counterpartySupportedAssetsByChainId[toAsset.chainId].forEach(
-          (asset) => {
-            asset.supportedVariants[fromAsset.address]?.forEach((provider) => {
-              assetSupportedBridges.add(provider);
-            });
-          }
-        );
+        const counterpartyAssets =
+          counterpartySupportedAssetsByChainId[toAsset.chainId];
+        counterpartyAssets.forEach((asset) => {
+          const providers = asset.supportedVariants[fromAsset.address] || [];
+          providers.forEach((provider) => assetSupportedBridges.add(provider));
+        });
       }
 
       return Array.from(assetSupportedBridges).filter(
@@ -159,14 +157,19 @@ export const AmountAndReviewScreen = observer(
       inputAmount: cryptoAmount,
       bridges: quoteBridges,
       onTransfer: () => {
+        // Ensures user queries are reset for other chains txs, since
+        // only cosmos txs reset queries from root store
+        if (
+          fromChain?.chainType !== "cosmos" ||
+          toChain?.chainType !== "cosmos"
+        ) {
+          refetchUserQueries(apiUtils);
+        }
+
         setToAsset(undefined);
         setFromAsset(undefined);
         setCryptoAmount("0");
         setFiatAmount("0");
-
-        // redundantly ensures user queries are reset for EVM txs, since
-        // only cosmos txs reset queries from root store
-        refetchUserQueries(apiUtils);
       },
     });
 

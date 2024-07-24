@@ -42,7 +42,8 @@ describe("simulateCosmosTxBody", () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: {
         "@type": BaseAccountTypeStr,
-        sequence: "1" },
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
@@ -73,11 +74,11 @@ describe("simulateCosmosTxBody", () => {
       account: {
         "@type": "non-base-type-assummed-vesting",
         base_vesting_account: {
-            base_account: {
-        sequence: "1"
-            }
-        }
-    },
+          base_account: {
+            sequence: "1",
+          },
+        },
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
@@ -118,7 +119,8 @@ describe("simulateCosmosTxBody", () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: {
         "@type": BaseAccountTypeStr,
-        sequence: "invalid" },
+        sequence: "invalid",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
@@ -204,7 +206,8 @@ describe("simulateCosmosTxBody", () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
       account: {
         "@type": BaseAccountTypeStr,
-        sequence: "1" },
+        sequence: "1",
+      },
     });
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 

@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "اتصال کیف پول",
-  "switchNetwork": "سوئیچ شبکه",
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
     "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
@@ -407,7 +406,10 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد"
+    "noData": "اطلاعاتی وجود ندارد",
+    "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
+    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
+    "startAgain": "دوباره شروع کن"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -912,6 +914,7 @@
     "to": "برای",
     "max": "حداکثر",
     "available": "در دسترس",
+    "connectTo": "اتصال به {network}",
     "transferWith": "انتقال با",
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",

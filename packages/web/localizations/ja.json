@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "ウォレットを接続する",
-  "switchNetwork": "ネットワークを切り替える",
   "errors": {
     "calculatingShareOutAmount": "金額の計算に問題があります",
     "depositNoBalance": "預ける資産がありません",
@@ -407,7 +406,10 @@
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
-    "noData": "データなし"
+    "noData": "データなし",
+    "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
+    "startAgain": "再開する"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
@@ -912,6 +914,7 @@
     "to": "{network}へ",
     "max": "マックス",
     "available": "利用可能",
+    "connectTo": "{network}に接続します",
     "transferWith": "転送",
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",
