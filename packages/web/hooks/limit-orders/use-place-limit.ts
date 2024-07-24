@@ -525,8 +525,8 @@ const useLimitPrice = ({
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (price: string) => {
-      if (countDecimals(price) > 2) {
-        price = parseFloat(price).toFixed(2).toString();
+      if (countDecimals(price) > 4) {
+        return;
       }
 
       const newPrice = new Dec(price.length > 0 ? price : "0");

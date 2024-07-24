@@ -94,7 +94,7 @@ export const tableColumns = [
             <div className="inline-flex items-center gap-2">
               <span className="subtitle1 font-bold">
                 {order_direction === "bid" ? "Buy" : "Sell"}{" "}
-                {formatPretty(
+                {formatFiatPrice(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
                     order_direction === "bid"
@@ -140,7 +140,9 @@ export const tableColumns = [
           <p className="body2 text-osmoverse-300">
             {baseAsset?.symbol} · Limit
           </p>
-          <p>{formatFiatPrice(new PricePretty(DEFAULT_VS_CURRENCY, price))}</p>
+          <p>
+            {formatFiatPrice(new PricePretty(DEFAULT_VS_CURRENCY, price), 4)}
+          </p>
         </div>
       );
     },

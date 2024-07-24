@@ -7,9 +7,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo } from "react";
+import React, { Fragment, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { SkeletonLoader } from "~/components/loaders";
 import { Disableable } from "~/components/types";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useDisclosure, useTranslation } from "~/hooks";
@@ -53,7 +54,7 @@ function sortByAmount(
     : 1;
 }
 
-export const PriceSelector = memo(
+export const PriceSelector = observer(
   ({
     tokenSelectionAvailable,
     disabled,
@@ -77,7 +78,8 @@ export const PriceSelector = memo(
       parseAsBoolean.withDefault(false)
     );
 
-    const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
+    const { selectableQuoteDenoms, isLoading: denomsLoading } =
+      useOrderbookSelectableDenoms();
 
     const quoteAsset = useMemo(
       () =>
@@ -107,44 +109,45 @@ export const PriceSelector = memo(
       []
     );
 
-    const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
-      { userOsmoAddress: wallet?.address },
-      {
-        enabled: !!wallet?.address,
-        select: (data) =>
-          data.items
-            .map((walletAsset) => {
-              if (!VALID_QUOTES.includes(walletAsset.coinDenom)) {
-                return undefined;
-              }
+    const { data: userQuotes, isLoading: balancesLoading } =
+      api.edge.assets.getUserAssets.useQuery(
+        { userOsmoAddress: wallet?.address },
+        {
+          enabled: !!wallet?.address,
+          select: (data) =>
+            data.items
+              .map((walletAsset) => {
+                if (!VALID_QUOTES.includes(walletAsset.coinDenom)) {
+                  return undefined;
+                }
 
-              const asset = getAssetFromAssetList({
-                assetLists: AssetLists,
-                symbol: walletAsset.coinDenom,
-              });
+                const asset = getAssetFromAssetList({
+                  assetLists: AssetLists,
+                  symbol: walletAsset.coinDenom,
+                });
 
-              // Extrapolate the rawAsset and return the amount and usdValue
-              const returnAsset: AssetWithBalance = {
-                ...asset!.rawAsset,
-                amount: walletAsset.amount,
-              };
+                // Extrapolate the rawAsset and return the amount and usdValue
+                const returnAsset: AssetWithBalance = {
+                  ...asset!.rawAsset,
+                  amount: walletAsset.amount,
+                };
 
-              // In the future, we might want to pass every coin instead of just stables.
-              return asset?.rawAsset.categories.includes("stablecoin")
-                ? returnAsset
-                : undefined;
-            })
-            .filter(Boolean)
-            .toSorted(sortByAmount)
-            .toSorted((assetA) => {
-              const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
-                (asset) => asset.coinDenom === assetA?.symbol
-              );
+                // In the future, we might want to pass every coin instead of just stables.
+                return asset?.rawAsset.categories.includes("stablecoin")
+                  ? returnAsset
+                  : undefined;
+              })
+              .filter(Boolean)
+              .toSorted(sortByAmount)
+              .toSorted((assetA) => {
+                const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
+                  (asset) => asset.coinDenom === assetA?.symbol
+                );
 
-              return isAssetAAvailable ? -1 : 1;
-            }) as AssetWithBalance[],
-      }
-    );
+                return isAssetAAvailable ? -1 : 1;
+              }) as AssetWithBalance[],
+        }
+      );
 
     const userQuotesWithoutBalances = useMemo(
       () =>
@@ -189,7 +192,10 @@ export const PriceSelector = memo(
         <Menu as="div" className="relative inline-block">
           {({ open }) => (
             <>
-              <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+              <Menu.Button
+                className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start"
+                disabled={denomsLoading}
+              >
                 <div className="flex w-full items-center justify-between">
                   {quoteAsset && (
                     <div
@@ -243,15 +249,17 @@ export const PriceSelector = memo(
                         </span>
                       )}
                     <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="chevron-down"
-                        className={classNames(
-                          "h-[7px] w-3 text-osmoverse-300 transition-transform",
-                          {
-                            "rotate-180": open,
-                          }
-                        )}
-                      />
+                      {!denomsLoading && (
+                        <Icon
+                          id="chevron-down"
+                          className={classNames(
+                            "h-[7px] w-3 text-osmoverse-300 transition-transform",
+                            {
+                              "rotate-180": open,
+                            }
+                          )}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -270,6 +278,7 @@ export const PriceSelector = memo(
                     <SelectableQuotes
                       selectableQuotes={selectableQuotes}
                       userQuotes={userQuotes}
+                      balancesLoading={balancesLoading}
                     />
                   </div>
                   <div className="flex flex-col px-5 py-2">
@@ -402,9 +411,11 @@ const SelectableQuotes = observer(
   ({
     selectableQuotes = [],
     userQuotes = [],
+    balancesLoading,
   }: {
     selectableQuotes?: AssetWithBalance[];
     userQuotes?: AssetWithBalance[];
+    balancesLoading: boolean;
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
@@ -475,20 +486,25 @@ const SelectableQuotes = observer(
                   availableBalance &&
                   !availableBalance.isZero() &&
                   !isDisabled && (
-                    <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                      <span
-                        className={classNames({
-                          "text-white-full": availableBalance.gt(new Dec(0)),
-                        })}
-                      >
-                        {formatFiatPrice(
-                          new PricePretty(DEFAULT_VS_CURRENCY, availableBalance)
-                        )}
-                      </span>
-                      <span className="body2 font-light">
-                        {t("pool.available").toLowerCase()}
-                      </span>
-                    </p>
+                    <SkeletonLoader isLoaded={!balancesLoading}>
+                      <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                        <span
+                          className={classNames({
+                            "text-white-full": availableBalance.gt(new Dec(0)),
+                          })}
+                        >
+                          {formatFiatPrice(
+                            new PricePretty(
+                              DEFAULT_VS_CURRENCY,
+                              availableBalance
+                            )
+                          )}
+                        </span>
+                        <span className="body2 font-light">
+                          {t("pool.available").toLowerCase()}
+                        </span>
+                      </p>
+                    </SkeletonLoader>
                   )
                 )}
                 <Icon
