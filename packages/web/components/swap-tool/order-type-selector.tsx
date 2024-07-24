@@ -36,8 +36,11 @@ export const OrderTypeSelector = () => {
   );
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
-  const { selectableBaseAssets, selectableQuoteDenoms } =
-    useOrderbookSelectableDenoms();
+  const {
+    selectableBaseAssets,
+    selectableQuoteDenoms,
+    isLoading: isLoadingAssets,
+  } = useOrderbookSelectableDenoms();
 
   const hasOrderbook = useMemo(
     () => selectableBaseAssets.some((asset) => asset.coinDenom === base),
@@ -49,7 +52,7 @@ export const OrderTypeSelector = () => {
   }, [base, selectableQuoteDenoms]);
 
   useEffect(() => {
-    if (type === "limit" && !hasOrderbook) {
+    if (type === "limit" && !hasOrderbook && !isLoadingAssets) {
       setType("market");
     } else if (
       type === "limit" &&
@@ -58,7 +61,15 @@ export const OrderTypeSelector = () => {
     ) {
       setQuote(selectableQuotes[0].coinDenom);
     }
-  }, [hasOrderbook, setType, type, selectableQuotes, setQuote, quote]);
+  }, [
+    hasOrderbook,
+    setType,
+    type,
+    selectableQuotes,
+    setQuote,
+    quote,
+    isLoadingAssets,
+  ]);
 
   useEffect(() => {
     switch (type) {
@@ -118,7 +129,7 @@ export const OrderTypeSelector = () => {
     <Menu as="div" className="relative inline-block">
       <Menu.Button as={Fragment}>
         {({ active }) => {
-          setIsMenuOpen(active);
+          if (isMenuOpen !== active) setIsMenuOpen(active);
           return (
             <button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4 hover:bg-osmoverse-700">
               <p className="font-semibold text-wosmongton-200">

@@ -40,7 +40,7 @@ export const useOrderbooks = (): {
 export const useOrderbookSelectableDenoms = () => {
   const { orderbooks, isLoading } = useOrderbooks();
 
-  const { data: selectableAssetPages } =
+  const { data: selectableAssetPages, isLoading: areAssetsLoading } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
       {},
       {
@@ -127,7 +127,7 @@ export const useOrderbookSelectableDenoms = () => {
     selectableBaseDenoms,
     selectableQuoteDenoms,
     selectableBaseAssets,
-    isLoading,
+    isLoading: areAssetsLoading || isLoading,
   };
 };
 
