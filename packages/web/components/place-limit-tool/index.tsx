@@ -33,6 +33,13 @@ export interface PlaceLimitToolProps {
 
 const WHALE_MESSAGE_THRESHOLD = 100;
 
+// Certain errors we do not wish to show on the button
+const NON_DISPLAY_ERRORS = [
+  "errors.zeroAmount",
+  "errors.emptyAmount",
+  "limitOrders.insufficientFunds",
+];
+
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
     const [input, setInput] = useState<HTMLInputElement | null>(null);
@@ -141,14 +148,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     };
 
     const buttonText = useMemo(() => {
-      if (
-        swapState.error &&
-        !(
-          swapState.error === "errors.zeroAmount" ||
-          swapState.error === "errors.emptyAmount" ||
-          swapState.error === "limitOrders.insufficientFunds"
-        )
-      ) {
+      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
         return t(swapState.error);
       } else {
         return orderDirection === "bid"
