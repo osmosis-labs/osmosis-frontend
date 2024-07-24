@@ -28,10 +28,6 @@ export function shorten(
     string.length
   );
 
-  if (!prefix || !suffix) {
-    return string;
-  }
-
   return prefix + (opts?.delim ?? "...") + suffix;
 }
 

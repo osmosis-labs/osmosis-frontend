@@ -1,3 +1,9 @@
+// Polyfill for TextEncoder and TextDecoder
+import { TextDecoder, TextEncoder } from "util";
+
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;
+
 import { shorten } from "../string";
 
 describe("shorten", () => {
