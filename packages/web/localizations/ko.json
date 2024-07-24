@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "지갑 연결하기",
-  "switchNetwork": "네트워크 전환",
   "errors": {
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "depositNoBalance": "입금할 자산이 없습니다",
@@ -409,6 +408,9 @@
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
     "noData": "데이터 없음",
     "noOrderbook": "페어 주문서 없음"
+    "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
+    "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
+    "startAgain": "다시 시작"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -915,6 +917,7 @@
     "to": "에게",
     "max": "맥스",
     "available": "사용 가능",
+    "connectTo": "{network} 에 연결",
     "transferWith": "다음으로 환승",
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",

@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Connecter le portefeuille",
-  "switchNetwork": "Changer de réseau",
   "errors": {
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
@@ -409,6 +408,9 @@
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
     "noData": "Pas de données",
     "noOrderbook": "Pas de carnet de commandes pour la paire"
+    "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
+    "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
+    "startAgain": "Recommencer"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -915,6 +917,7 @@
     "to": "Vers",
     "max": "Max.",
     "available": "disponible",
+    "connectTo": "Connectez-vous à {network}",
     "transferWith": "Transfert avec",
     "transferTo": "Transférer à",
     "receiveAsset": "Recevoir l'actif",

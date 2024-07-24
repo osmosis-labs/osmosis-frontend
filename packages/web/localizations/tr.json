@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Cüzdanı bağla",
-  "switchNetwork": "Ağı değiştir",
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
@@ -409,6 +408,9 @@
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
     "noData": "Veri yok",
     "noOrderbook": "Çift için Sipariş Defteri Yok"
+    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
+    "startAgain": "Tekrar başla"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -915,6 +917,7 @@
     "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
+    "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",

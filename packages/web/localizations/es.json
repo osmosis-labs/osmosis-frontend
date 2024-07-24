@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Conectar billetera",
-  "switchNetwork": "Cambiar de red",
   "errors": {
     "calculatingShareOutAmount": "Problema calculando la cantidad de salida",
     "depositNoBalance": "No tienes activos para depositar",
@@ -409,6 +408,9 @@
     "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
     "noData": "Sin datos",
     "noOrderbook": "Sin libro de pedidos para el par"
+    "uhOhSomethingWentWrong": "Oh oh algo salió mal",
+    "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Por favor, inténtelo de nuevo más tarde.",
+    "startAgain": "Empezar de nuevo"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -915,6 +917,7 @@
     "to": "A",
     "max": "máx.",
     "available": "disponible",
+    "connectTo": "Conéctese a {network}",
     "transferWith": "Transferir con",
     "transferTo": "Transferir a",
     "receiveAsset": "Recibir activo",

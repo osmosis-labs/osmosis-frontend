@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Połącz portfel",
-  "switchNetwork": "Przełącz sieć",
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "depositNoBalance": "Nie masz środków do wpłaty",
@@ -409,6 +408,9 @@
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
     "noData": "Brak danych",
     "noOrderbook": "Brak księgi zamówień dla pary"
+    "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
+    "startAgain": "Zacznij jeszcze raz"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -915,6 +917,7 @@
     "to": "Do",
     "max": "Maks",
     "available": "dostępny",
+    "connectTo": "Połącz się z {network}",
     "transferWith": "Przenieś z",
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",

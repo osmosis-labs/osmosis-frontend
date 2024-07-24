@@ -55,6 +55,8 @@ export const BridgeNetworkSelectModal: FunctionComponent<
     "prettyName",
   ]);
 
+  const showSwitchingNetworkState = isEvmWalletConnected && isSwitchingEvmChain;
+
   return (
     <ModalBase
       title={
@@ -62,12 +64,14 @@ export const BridgeNetworkSelectModal: FunctionComponent<
           {t("transfer.bridgeNetworkSelect.title")}
         </div>
       }
-      className="min-h-[80vh] !max-w-lg"
+      className={classNames("!max-w-lg", {
+        "min-h-[80vh]": !showSwitchingNetworkState,
+      })}
       {...modalProps}
       onAfterClose={() => setQuery("")}
     >
       <div className="animate-[fadeIn_0.25s]">
-        {isEvmWalletConnected && isSwitchingEvmChain && (
+        {showSwitchingNetworkState && (
           <div className="flex items-center justify-center pt-12">
             <SwitchingNetworkState
               walletLogo={connector?.icon}
