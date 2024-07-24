@@ -1,6 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { formatICNSName, getShortAddress } from "@osmosis-labs/utils";
+import { formatICNSName, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -220,7 +220,7 @@ export const ProfileModal: FunctionComponent<
                 <p className="subtitle1" title={props?.icnsName}>
                   {Boolean(props.icnsName)
                     ? formatICNSName(props.icnsName, width < 768 ? 32 : 48)
-                    : getShortAddress(address)}
+                    : shorten(address)}
                 </p>
               </div>
 
@@ -343,7 +343,7 @@ export const ProfileModal: FunctionComponent<
                       <p>Cosmos</p>
                       <div className="flex items-center gap-2">
                         <p title={address} className="text-osmoverse-100">
-                          {getShortAddress(address)}
+                          {shorten(address)}
                         </p>
                         <button
                           title="Copy"
@@ -413,7 +413,7 @@ export const ProfileModal: FunctionComponent<
                               title={address}
                               className="subtitle1 text-osmoverse-300"
                             >
-                              {getShortAddress(address, { prefixLength: 10 })}
+                              {shorten(address, { prefixLength: 10 })}
                             </p>
                             <button
                               className="flex h-9 w-9 items-center justify-center"

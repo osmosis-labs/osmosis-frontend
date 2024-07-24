@@ -1,5 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { getShortAddress } from "@osmosis-labs/utils";
+import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -104,7 +104,7 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
                   defaultIcon="code"
                   value={asset.coinMinimalDenom}
                 >
-                  {getShortAddress(asset.coinMinimalDenom)}
+                  {shorten(asset.coinMinimalDenom)}
                 </ClipboardButton>
               ) : (
                 false

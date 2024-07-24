@@ -2,14 +2,14 @@ import * as cosmjsEncoding from "@cosmjs/encoding";
 import * as viem from "viem";
 
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
-export function truncateString(str: string, num = 8) {
+export function truncate(str: string, num = 8) {
   if (str.length <= num) {
     return str;
   }
   return str.slice(0, num) + "...";
 }
 
-export function getShortAddress(
+export function shorten(
   address: string,
   opts?: { prefixLength?: number; suffixLength?: number }
 ) {
