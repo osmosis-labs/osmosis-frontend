@@ -161,7 +161,8 @@ export const PriceSelector = memo(
     const defaultQuotesWithBalances = useMemo(
       () =>
         userQuotes?.filter(
-          ({ amount }) => amount?.toDec().gt(new Dec(0)) ?? false
+          ({ amount, symbol }) =>
+            amount?.toDec().gt(new Dec(0)) ?? UI_DEFAULT_QUOTES.includes(symbol)
         ) ?? [],
       [userQuotes]
     );
