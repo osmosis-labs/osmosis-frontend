@@ -28,6 +28,20 @@ type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
 const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
+const VALID_QUOTES = [
+  ...UI_DEFAULT_QUOTES,
+  // "USDC.sol.axl",
+  // "USDC.eth.grv",
+  // "USDC.eth.wh",
+  // "USDC.matic.axl",
+  // "USDC.avax.axl",
+  // "USDT.sol.axl",
+  // "USDT.eth.grv",
+  // "USDT.eth.wh",
+  // "USDT.matic.axl",
+  // "USDT.avax.axl",
+];
+
 function sortByAmount(
   assetA?: MaybeUserAssetCoin,
   assetB?: MaybeUserAssetCoin
@@ -100,6 +114,11 @@ export const PriceSelector = memo(
         select: (data) =>
           data.items
             .map((walletAsset) => {
+              console.log(walletAsset.coinDenom);
+              if (!VALID_QUOTES.includes(walletAsset.coinDenom)) {
+                return undefined;
+              }
+
               const asset = getAssetFromAssetList({
                 assetLists: AssetLists,
                 symbol: walletAsset.coinDenom,
@@ -110,6 +129,7 @@ export const PriceSelector = memo(
                 ...asset!.rawAsset,
                 amount: walletAsset.amount,
               };
+
               // In the future, we might want to pass every coin instead of just stables.
               return asset?.rawAsset.categories.includes("stablecoin")
                 ? returnAsset
