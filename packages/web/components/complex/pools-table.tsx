@@ -445,7 +445,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       className={classNames(
-                        "transition-colors duration-200 ease-in-out",
+                        "transition-colors duration-200 ease-in-out xs:px-2",
                         isPreviousData && isFetching && "cursor-progress"
                       )}
                       key={cell.id}
@@ -635,9 +635,11 @@ export const AprBreakdownCell: PoolCellComponent = ({
         {aprBreakdown?.total?.lower &&
         aprBreakdown?.total?.upper?.maxDecimals(1).toString() ===
           aprBreakdown?.total?.lower.maxDecimals(1).toString() ? (
-          <p>{aprBreakdown?.total?.upper?.maxDecimals(1).toString()}</p>
+          <p className="xs:text-xs">
+            {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+          </p>
         ) : (
-          <p>
+          <p className="xs:text-xs">
             {aprBreakdown?.total?.lower?.maxDecimals(1).toString()} -{" "}
             {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
           </p>
