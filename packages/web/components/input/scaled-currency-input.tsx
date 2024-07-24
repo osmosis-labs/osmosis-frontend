@@ -66,7 +66,7 @@ export function ScaledCurrencyInput({
     >
       <div
         ref={wrapperRef}
-        className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center"
+        className="flex-start relative mx-auto flex w-full flex-1 origin-center cursor-text justify-center text-center"
       >
         <div className="flex items-baseline justify-center">
           {fiatSymbol ? (
