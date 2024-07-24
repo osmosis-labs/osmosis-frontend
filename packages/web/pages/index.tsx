@@ -8,12 +8,7 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import {
-  useAmplitudeAnalytics,
-  useFeatureFlags,
-  useNavBar,
-  useTranslation,
-} from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags, useNavBar } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -33,13 +28,11 @@ const HomeNew = () => {
   // const [previousTrade, setPreviousTrade] =
   //   useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
-  const { t } = useTranslation();
-
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
-  useNavBar({ title: t("limitOrders.trade") });
+  useNavBar({ title: " " });
 
   return (
     <main className="relative flex h-full overflow-auto bg-osmoverse-900 pb-2 pt-8">

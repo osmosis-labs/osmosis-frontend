@@ -17,7 +17,6 @@ import {
   Fragment,
   FunctionComponent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -33,8 +32,7 @@ import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -182,11 +180,6 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
-    const isTradePage = useMemo(
-      () => title === "Trade" && navBarStore.title === "Trade",
-      [title, navBarStore.title]
-    );
-
     return (
       <>
         <div
@@ -194,7 +187,7 @@ export const NavBar: FunctionComponent<
             "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
             className,
             {
-              "shadow-md": !isTradePage,
+              "shadow-md": router.pathname !== "/",
             }
           )}
         >
@@ -264,7 +257,7 @@ export const NavBar: FunctionComponent<
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
             <h4 className="md:text-h6 md:font-h6">
-              {!isTradePage && (navBarStore.title || title)}
+              {navBarStore.title || title}
             </h4>
             <div className="flex items-center gap-3 lg:gap-1">
               {navBarStore.callToActionButtons.map(
