@@ -118,6 +118,17 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     );
   }, [orderDirection, t]);
 
+  const roundedPercentAdjusted = useMemo(() => {
+    return trimPlaceholderZeros(
+      swapState.priceState.percentAdjusted
+        .mul(new Dec(10000))
+        .abs()
+        .roundDec()
+        .quo(new Dec(100))
+        .toString()
+    );
+  }, [swapState.priceState.percentAdjusted]);
+
   return (
     <div className="flex w-full flex-col items-start justify-start rounded-2xl bg-osmoverse-1000 py-3 px-5">
       <label
@@ -204,12 +215,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 extraWidth={0}
                 inputClassName="bg-transparent text-white-full"
                 value={swapState.priceState.manualPercentAdjusted}
-                placeholder={trimPlaceholderZeros(
-                  swapState.priceState.percentAdjusted
-                    .mul(new Dec(100))
-                    .abs()
-                    .toString()
-                )}
+                placeholder={roundedPercentAdjusted}
                 inputRef={setInput}
                 onChange={(e) =>
                   swapState.priceState.setPercentAdjusted(
