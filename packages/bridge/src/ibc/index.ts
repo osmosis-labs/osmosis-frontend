@@ -1,7 +1,11 @@
 import { Registry } from "@cosmjs/proto-signing";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
-import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
+import {
+  calcAverageBlockTimeMs,
+  cosmosMsgOpts,
+  estimateGasFee,
+} from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeQuoteError } from "../errors";
@@ -17,7 +21,6 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
 
 export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
@@ -63,6 +66,21 @@ export class IbcBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: IbcBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
     });
     const gasFee = txSimulation.amount[0];
     const gasAsset = this.getGasAsset(fromChainId, gasFee.denom);
@@ -124,7 +142,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       ];
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           IbcBridgeProvider.ID,
           "failed to get supported assets:",

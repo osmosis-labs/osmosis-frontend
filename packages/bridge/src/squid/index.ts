@@ -7,6 +7,7 @@ import {
   type TransactionRequest,
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -43,8 +44,8 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
+import { getSquidErrors } from "./error";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
@@ -119,6 +120,26 @@ export class SquidBridgeProvider implements BridgeProvider {
           headers: {
             "x-integrator-id": this.integratorId,
           },
+        }).catch((e) => {
+          if (e instanceof ApiClientError) {
+            const errMsgs = getSquidErrors(e);
+
+            if (
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
+                  "The input amount is not high enough to cover the bridge fee"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "InsufficientAmountError",
+                message: e.message,
+              });
+            }
+          }
+
+          throw e;
         });
 
         const {
@@ -273,11 +294,14 @@ export class SquidBridgeProvider implements BridgeProvider {
       for (const counterparty of assetListAsset?.counterparty ?? []) {
         // check if supported by squid
         if (!("chainId" in counterparty)) continue;
+        const address =
+          "address" in counterparty
+            ? counterparty.address
+            : counterparty.sourceDenom;
         if (
           !tokens.some(
             (t) =>
-              t.address.toLowerCase() ===
-                counterparty.sourceDenom.toLowerCase() &&
+              t.address.toLowerCase() === address.toLowerCase() &&
               t.chainId === counterparty.chainId
           )
         )
@@ -286,10 +310,10 @@ export class SquidBridgeProvider implements BridgeProvider {
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
 
-          foundVariants.setAsset(c.chainId, c.sourceDenom, {
+          foundVariants.setAsset(c.chainId, address, {
             chainId: c.chainId,
             chainType: "cosmos",
-            address: c.sourceDenom,
+            address: address,
             denom: c.symbol,
             decimals: c.decimals,
           });
@@ -297,10 +321,10 @@ export class SquidBridgeProvider implements BridgeProvider {
         if (counterparty.chainType === "evm") {
           const c = counterparty as EVMCounterparty;
 
-          foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+          foundVariants.setAsset(c.chainId.toString(), address, {
             chainId: c.chainId,
             chainType: "evm",
-            address: c.sourceDenom,
+            address: address,
             denom: c.symbol,
             decimals: c.decimals,
           });
@@ -349,7 +373,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           SquidBridgeProvider.ID,
           "failed to get supported assets:",
@@ -375,9 +399,9 @@ export class SquidBridgeProvider implements BridgeProvider {
   }): Promise<EvmBridgeTransactionRequest> {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
-    const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-      return String(chainId) === String(fromChain.chainId);
-    });
+    const squidFromChain = (await this.getChains()).find(
+      ({ chainId }) => String(chainId) === String(fromChain.chainId)
+    );
 
     if (!squidFromChain) {
       throw new BridgeQuoteError({

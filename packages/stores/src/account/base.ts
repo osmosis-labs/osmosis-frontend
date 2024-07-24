@@ -887,6 +887,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("One click trading info is not available");
     }
 
+    if (memo === "") {
+      // If the memo is empty, set it to "1CT" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "1CT";
+    } else {
+      // Otherwise, tack on "1CT" to the end of the memo.
+      memo += " \n1CT";
+    }
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -1272,6 +1281,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           })
         : undefined;
 
+      apiClient("/api/transaction-scan", {
+        data: {
+          chainId: wallet.chainId,
+          messages: encodedMessages.map(encodeAnyBase64),
+          nonCriticalExtensionOptions:
+            nonCriticalExtensionOptions?.map(encodeAnyBase64),
+          bech32Address: wallet.address,
+        },
+      }).catch((e) => {
+        console.error("API transaction scan error", e);
+      });
+
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
@@ -1280,6 +1301,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
           gasMultiplier: GasMultiplier,
+        } satisfies {
+          chainId: string;
+          messages: { typeUrl: string; value: string }[];
+          nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
+          bech32Address: string;
+          onlyDefaultFeeDenom?: boolean;
+          gasMultiplier: number;
         },
       });
 

@@ -74,6 +74,12 @@
       <circle cx="8.5" cy="4" r="1" fill="#090524" />
       <rect x="7.5" y="6" width="2" height="6" fill="#090524" />
     </symbol>
+
+    <symbol viewBox="0 0 17 16" id="info-uncolored">
+      <rect x="0.5" width="16" height="16" rx="8" fill="currentColor" />
+      <circle cx="8.5" cy="4" r="1" fill="#090524" />
+      <rect x="7.5" y="6" width="2" height="6" fill="#090524" />
+    </symbol>
     <symbol viewBox="0 0 30 30" id="hamburger">
       <path
         d="M3.75 15H26.25"
@@ -1254,6 +1260,11 @@
       />
     </symbol>
 
+    <symbol id="close-button-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 6L18 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    
     <symbol
       id="stopwatch"
       width="16"
@@ -1266,6 +1277,7 @@
         fill="currentColor"
       />
     </symbol>
+  
     <symbol id="generate-stars" viewBox="0 0 24 24" fill="none">
       <path
         fill-rule="evenodd"

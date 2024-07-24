@@ -406,7 +406,10 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados"
+    "noData": "Sem dados",
+    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
+    "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
+    "startAgain": "Comece de novo"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
+      "insufficientFunds": "Fundos OSMO insuficientes para negociação em 1 clique",
+      "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
       "networkFeeTooHigh": "Taxa de rede muito alta",
       "startANewSession": "Iniciar uma nova sessão",
       "approveManually": "Aprovar manualmente em {walletName}",
@@ -511,7 +516,8 @@
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
-      "changeButton": "Editar Configurações"
+      "changeButton": "Editar Configurações",
+      "ledgerComingSoon": "Suporte para carteira de hardware Ledger em breve."
     },
     "floatingBanner": {
       "newPill": "Novo",
@@ -906,6 +912,7 @@
     "to": "Para",
     "max": "Máx.",
     "available": "disponível",
+    "connectTo": "Conecte-se a {network}",
     "transferWith": "Transferir com",
     "transferTo": "Transferir para",
     "receiveAsset": "Receber ativo",

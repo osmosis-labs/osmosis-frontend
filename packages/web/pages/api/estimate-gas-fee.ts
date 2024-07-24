@@ -3,6 +3,7 @@ import {
   estimateGasFee,
   SimulateNotAvailableError,
 } from "@osmosis-labs/tx";
+import { ApiClientError } from "@osmosis-labs/utils";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -38,8 +39,7 @@ export default async function handler(
     messages: { typeUrl: string; value: string }[];
     nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
     bech32Address: string;
-    excludedFeeMinimalDenoms?: string[];
-    onlyDefaultFeeDenom: boolean;
+    onlyDefaultFeeDenom?: boolean;
     gasMultiplier: number;
   };
 
@@ -58,8 +58,17 @@ export default async function handler(
     });
     return res.status(200).json(gasFee);
   } catch (e) {
-    if (e instanceof SimulateNotAvailableError) {
-      return res.status(400).json({ message: e.message });
+    const error = e as Error | SimulateNotAvailableError | ApiClientError;
+    if (error instanceof SimulateNotAvailableError) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    /**
+     * It's a cosmos node error. Forward data as 200 to the client.
+     */
+    if (error instanceof ApiClientError && error.data?.code) {
+      console.log("errorr!", error);
+      return res.status(500).json(error.data);
     }
 
     return res.status(500).json({ error: e instanceof Error ? e.message : e });

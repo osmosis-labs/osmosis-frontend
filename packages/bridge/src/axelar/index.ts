@@ -5,7 +5,7 @@ import type {
 import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { cosmosMsgOpts, estimateGasFee } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -40,7 +40,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 
@@ -170,7 +169,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           ) {
             throw new BridgeQuoteError({
               bridgeId: AxelarBridgeProvider.ID,
-              errorType: "UnsupportedQuoteError",
+              errorType: "InsufficientAmountError",
               message: `Negative output amount ${new IntPretty(
                 expectedOutputAmount
               ).trim(true)} for asset in: ${new IntPretty(fromAmount).trim(
@@ -345,7 +344,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.error(
           AxelarBridgeProvider.ID,
           "failed to get supported assets:",
@@ -413,6 +412,21 @@ export class AxelarBridgeProvider implements BridgeProvider {
           ],
         },
         bech32Address: params.fromAddress,
+      }).catch((e) => {
+        if (
+          e instanceof Error &&
+          e.message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: AxelarBridgeProvider.ID,
+            errorType: "InsufficientAmountError",
+            message: e.message,
+          });
+        }
+
+        throw e;
       });
 
       const gasFee = txSimulation.amount[0];

@@ -102,7 +102,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
     ) ?? assetsInOsmosis?.[0];
 
   return (
-    <div className="flex w-full flex-col gap-1 p-4 md:p-2">
+    <div className="flex w-full flex-col gap-1 p-4 md:py-2 md:px-0">
       <div className="pb-6 text-center text-h5 font-h5 1.5lg:pb-3 md:text-h6 md:font-h6">
         {t(
           direction === "withdraw"

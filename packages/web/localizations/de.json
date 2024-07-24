@@ -406,7 +406,10 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
+    "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
+    "startAgain": "Fang nochmal an"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
+      "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
+      "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
       "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
@@ -511,7 +516,8 @@
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
       "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
-      "changeButton": "Einstellungen bearbeiten"
+      "changeButton": "Einstellungen bearbeiten",
+      "ledgerComingSoon": "Unterstützung für Ledger-Hardware-Wallets in Kürze verfügbar."
     },
     "floatingBanner": {
       "newPill": "Neu",
@@ -906,6 +912,7 @@
     "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
+    "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",

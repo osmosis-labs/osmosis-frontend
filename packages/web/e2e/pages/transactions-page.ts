@@ -15,24 +15,30 @@ export class TransactionsPage extends BasePage {
     this.closeTransactionBtn = page.getByLabel("Close").nth(1);
   }
 
+  async open() {
+    await this.page.goto("/transactions");
+    return this;
+  }
+
   async viewTransactionByNumber(number: number) {
     await this.transactionRow.nth(number).click();
     await this.page.waitForTimeout(1000);
   }
 
   async viewBySwapAmount(amount: any) {
-    // Transactions need some time to get loaded, wait for 20 seconds.
-    await this.page.waitForTimeout(20000);
+    // Transactions need some time to get loaded, wait for 30 seconds.
+    await this.page.waitForTimeout(30000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
     let isTransactionVisible = await this.page
       .locator(loc)
       .isVisible({ timeout: 3000 });
     if (!isTransactionVisible) {
-      await this.page.waitForTimeout(20000);
+      await this.page.waitForTimeout(30000);
       await this.page.reload();
     }
-    await this.page.locator(loc).click();
+    await this.page.waitForTimeout(1000);
+    await this.page.locator(loc).click({ timeout: 3000 });
   }
 
   async closeTransaction() {

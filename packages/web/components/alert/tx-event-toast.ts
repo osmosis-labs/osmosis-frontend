@@ -14,7 +14,6 @@ import { prettifyTxError } from "./prettify";
 const txTimeoutHeightReachedErrorCode = 30;
 
 const BROADCASTING_TOAST_ID = "broadcast";
-export const BROADCASTING_FAILED_TOAST_ID = "broadcast-failed";
 
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
@@ -33,10 +32,7 @@ export function toastOnBroadcastFailed(
         captionTranslationKey:
           prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
-      ToastType.ERROR,
-      {
-        toastId: BROADCASTING_FAILED_TOAST_ID,
-      }
+      ToastType.ERROR
     );
   };
 }

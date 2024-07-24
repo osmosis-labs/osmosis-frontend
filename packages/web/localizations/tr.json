@@ -406,7 +406,10 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok"
+    "noData": "Veri yok",
+    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
+    "startAgain": "Tekrar başla"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
+      "insufficientFunds": "Tek Tıklamayla Ticaret için yetersiz OSMO fonu",
+      "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
       "startANewSession": "Yeni bir oturum başlat",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
@@ -511,7 +516,8 @@
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
       "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
-      "changeButton": "Ayarları düzenle"
+      "changeButton": "Ayarları düzenle",
+      "ledgerComingSoon": "Ledger donanım cüzdanı desteği çok yakında."
     },
     "floatingBanner": {
       "newPill": "Yeni",
@@ -906,6 +912,7 @@
     "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
+    "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",

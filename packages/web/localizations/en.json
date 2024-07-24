@@ -406,7 +406,10 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "uhOhSomethingWentWrong": "Uh oh, something went wrong",
+    "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
+    "startAgain": "Start again"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
+      "insufficientFunds": "Insufficient OSMO funds for 1-Click Trading",
+      "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
       "networkFeeTooHigh": "Network fee too high",
       "startANewSession": "Start a new session",
       "approveManually": "Approve manually in {walletName}",
@@ -511,7 +516,8 @@
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
-      "changeButton": "Edit settings"
+      "changeButton": "Edit settings",
+      "ledgerComingSoon": "Ledger hardware wallet support coming soon."
     },
     "floatingBanner": {
       "newPill": "New",
@@ -906,6 +912,7 @@
     "to": "To",
     "max": "Max",
     "available": "available",
+    "connectTo": "Connect to {network}",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",

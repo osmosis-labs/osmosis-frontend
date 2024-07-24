@@ -406,7 +406,10 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
-    "noData": "沒有數據"
+    "noData": "沒有數據",
+    "uhOhSomethingWentWrong": "呃哦，出了點問題",
+    "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
+    "startAgain": "重新開始"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "currentlyUnavailable": "一鍵交易目前無法使用",
+      "insufficientFunds": "OSMO 資金不足，無法進行一鍵交易",
+      "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
       "networkFeeTooHigh": "網路費太高",
       "startANewSession": "開始新會話",
       "approveManually": "在{walletName}中手動核准",
@@ -511,7 +516,8 @@
       "learnMore": "了解更多",
       "startTradingButton": "開始一鍵交易",
       "defaultParameters": "預設為 1 小時，損失保護限額為 5,000 美元。",
-      "changeButton": "編輯設定"
+      "changeButton": "編輯設定",
+      "ledgerComingSoon": "Ledger 硬體錢包支援即將推出。"
     },
     "floatingBanner": {
       "newPill": "新的",
@@ -906,6 +912,7 @@
     "to": "到",
     "max": "最大限度",
     "available": "可用的",
+    "connectTo": "連接到{network}",
     "transferWith": "轉移與",
     "transferTo": "傳送到",
     "receiveAsset": "接收資產",

@@ -1,4 +1,5 @@
 import { CoinPretty } from "@keplr-wallet/unit";
+import type { Bridge } from "@osmosis-labs/bridge";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
@@ -14,7 +15,10 @@ import { AmountScreen } from "./amount-screen";
 import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
 import { QuotableBridge, useBridgeQuotes } from "./use-bridge-quotes";
-import { SupportedAsset } from "./use-bridges-supported-assets";
+import {
+  SupportedAsset,
+  useBridgesSupportedAssets,
+} from "./use-bridges-supported-assets";
 
 export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
 
@@ -38,8 +42,8 @@ export const AmountAndReviewScreen = observer(
     const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
     const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
-    const [cryptoAmount, setCryptoAmount] = useState<string>("0");
-    const [fiatAmount, setFiatAmount] = useState<string>("0");
+    const [cryptoAmount, setCryptoAmount] = useState<string>("");
+    const [fiatAmount, setFiatAmount] = useState<string>("");
 
     const [manualToAddress, setManualToAddress] = useState<string>();
 
@@ -78,17 +82,49 @@ export const AmountAndReviewScreen = observer(
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
 
+    const { data: assetsInOsmosis } =
+      api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+        {
+          findMinDenomOrSymbol: selectedAssetDenom ?? "",
+        },
+        {
+          enabled: !isNil(selectedAssetDenom),
+          cacheTime: 10 * 60 * 1000, // 10 minutes
+          staleTime: 10 * 60 * 1000, // 10 minutes
+          useErrorBoundary: true,
+        }
+      );
+
+    const supportedAssets = useBridgesSupportedAssets({
+      assets: assetsInOsmosis,
+      chain: {
+        chainId: accountStore.osmosisChainId,
+        chainType: "cosmos",
+      },
+    });
+    const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
+      supportedAssets;
+
     /** Filter for bridges that currently support quoting. */
     const quoteBridges = useMemo(() => {
-      const assetSupportedBridges =
-        (direction === "deposit"
-          ? fromAsset?.supportedVariants[toAsset?.address ?? ""]
-          : toAsset?.supportedVariants[fromAsset?.address ?? ""]) ?? [];
+      const assetSupportedBridges = new Set<Bridge>();
 
-      return assetSupportedBridges.filter(
+      if (direction === "deposit" && fromAsset) {
+        const providers = Object.values(fromAsset.supportedVariants).flat();
+        providers.forEach((provider) => assetSupportedBridges.add(provider));
+      } else if (direction === "withdraw" && fromAsset && toAsset) {
+        const counterpartyAssets =
+          counterpartySupportedAssetsByChainId[toAsset.chainId];
+        counterpartyAssets.forEach((asset) => {
+          const providers = asset.supportedVariants[fromAsset.address] || [];
+          providers.forEach((provider) => assetSupportedBridges.add(provider));
+        });
+      }
+
+      return Array.from(assetSupportedBridges).filter(
         (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
       ) as QuotableBridge[];
-    }, [direction, fromAsset, toAsset]);
+    }, [direction, fromAsset, toAsset, counterpartySupportedAssetsByChainId]);
 
     const quote = useBridgeQuotes({
       toAddress,
@@ -121,14 +157,19 @@ export const AmountAndReviewScreen = observer(
       inputAmount: cryptoAmount,
       bridges: quoteBridges,
       onTransfer: () => {
+        // Ensures user queries are reset for other chains txs, since
+        // only cosmos txs reset queries from root store
+        if (
+          fromChain?.chainType !== "cosmos" ||
+          toChain?.chainType !== "cosmos"
+        ) {
+          refetchUserQueries(apiUtils);
+        }
+
         setToAsset(undefined);
         setFromAsset(undefined);
         setCryptoAmount("0");
         setFiatAmount("0");
-
-        // redundantly ensures user queries are reset for EVM txs, since
-        // only cosmos txs reset queries from root store
-        refetchUserQueries(apiUtils);
       },
     });
 
@@ -141,6 +182,8 @@ export const AmountAndReviewScreen = observer(
             <AmountScreen
               direction={direction}
               selectedDenom={selectedAssetDenom!}
+              assetsInOsmosis={assetsInOsmosis}
+              bridgesSupportedAssets={supportedAssets}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}

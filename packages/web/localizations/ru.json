@@ -406,7 +406,10 @@
     "invalidAmounts": "Неверная сумма(ы)",
     "txTimedOutError": "Время транзакции истекло. Пожалуйста, повторите попытку.",
     "insufficientFee": "Недостаточно средств для оплаты комиссий за транзакции. Пожалуйста, добавьте средства, чтобы продолжить.",
-    "noData": "Нет данных"
+    "noData": "Нет данных",
+    "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
+    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
+    "startAgain": "Начать заново"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
@@ -496,6 +499,8 @@
       "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
+      "insufficientFunds": "Недостаточно средств OSMO для торговли в 1 клик",
+      "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
       "startANewSession": "Начать новый сеанс",
       "approveManually": "Утвердить вручную в {walletName}",
@@ -511,7 +516,8 @@
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
       "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
-      "changeButton": "Изменить настройки"
+      "changeButton": "Изменить настройки",
+      "ledgerComingSoon": "Скоро появится поддержка аппаратного кошелька Ledger."
     },
     "floatingBanner": {
       "newPill": "Новый",
@@ -906,6 +912,7 @@
     "to": "Чтобы",
     "max": "Макс",
     "available": "доступный",
+    "connectTo": "Подключитесь к {network}",
     "transferWith": "Трансфер с",
     "transferTo": "Перевести",
     "receiveAsset": "Получить актив",

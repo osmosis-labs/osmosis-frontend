@@ -31,19 +31,9 @@ export class PortfolioPage extends BasePage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async hideZeroBalances() {
-    await this.hideZeros.click();
-    await this.page.waitForTimeout(1000);
-  }
-
-  async viewMoreBalances() {
-    await this.viewMore.click();
-    await this.page.waitForTimeout(1000);
-  }
-
   async getBalanceFor(token: string) {
     const bal = this.page
-      .locator(`//tbody/tr//a[@href="/assets/${token}"]`)
+      .locator(`//tbody/tr//a[contains(@href, "/assets/${token}")]`)
       .nth(1);
     let tokenBalance: string = await bal.innerText();
     console.log(`Balance for ${token}: ${tokenBalance}`);
@@ -54,5 +44,21 @@ export class PortfolioPage extends BasePage {
     await this.viewTransactions.click();
     await this.page.waitForTimeout(1000);
     return new TransactionsPage(this.page);
+  }
+
+  async hideZeroBalances() {
+    const isVisible = await this.hideZeros.isVisible({ timeout: 2000 });
+    if (isVisible) {
+      await this.hideZeros.click();
+      await this.page.waitForTimeout(1000);
+    }
+  }
+
+  async viewMoreBalances() {
+    const isVisible = await this.viewMore.isVisible({ timeout: 2000 });
+    if (isVisible) {
+      await this.viewMore.click();
+      await this.page.waitForTimeout(1000);
+    }
   }
 }
