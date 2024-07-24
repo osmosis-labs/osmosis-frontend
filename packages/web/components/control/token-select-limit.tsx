@@ -38,6 +38,12 @@ export interface TokenSelectLimitProps {
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
   orderDirection: OrderDirection;
+  fetchNextPageAssets?: () => void;
+  assetQueryInput?: string;
+  setAssetQueryInput?: (input: string) => void;
+  isLoadingSelectAssets?: boolean;
+  isFetchingNextPageAssets?: boolean;
+  hasNextPageAssets?: boolean;
 }
 
 export const TokenSelectLimit: FunctionComponent<
@@ -53,6 +59,9 @@ export const TokenSelectLimit: FunctionComponent<
     baseBalance,
     disabled,
     orderDirection,
+    fetchNextPageAssets,
+    assetQueryInput,
+    setAssetQueryInput,
   }) => {
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
@@ -191,6 +200,9 @@ export const TokenSelectLimit: FunctionComponent<
           onSelect={onSelect}
           showSearchBox
           selectableAssets={preSortedTokens}
+          fetchNextPageAssets={fetchNextPageAssets}
+          assetQueryInput={assetQueryInput}
+          setAssetQueryInput={setAssetQueryInput}
         />
       </div>
     );

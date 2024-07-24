@@ -168,6 +168,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               onTokenSelect={setBase}
               disabled={false}
               orderDirection={orderDirection}
+              setAssetQueryInput={swapState.marketState.setAssetsQueryInput}
+              assetQueryInput={swapState.marketState.assetsQueryInput}
+              fetchNextPageAssets={swapState.marketState.fetchNextPageAssets}
+              hasNextPageAssets={swapState.marketState.hasNextPageAssets}
+              isFetchingNextPageAssets={
+                swapState.marketState.isFetchingNextPageAssets
+              }
+              isLoadingSelectAssets={
+                swapState.marketState.isLoadingSelectAssets
+              }
             />
             {type === "limit" && (
               <LimitPriceSelector

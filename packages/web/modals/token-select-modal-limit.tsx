@@ -301,10 +301,14 @@ export const TokenSelectModalLimit: FunctionComponent<{
                 <div className="px-8" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center gap-3 rounded-5xl bg-osmoverse-800 py-4 px-5">
                     <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="search"
-                        className="h-5 w-5 text-wosmongton-200"
-                      />
+                      {isLoadingSelectAssets || isFetchingNextPageAssets ? (
+                        <Spinner className="h-5 w-5 text-wosmongton-200" />
+                      ) : (
+                        <Icon
+                          id="search"
+                          className="h-5 w-5 text-wosmongton-200"
+                        />
+                      )}
                     </div>
                     <input
                       autoFocus
