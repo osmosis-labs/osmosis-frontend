@@ -121,10 +121,6 @@ export const CryptoFiatInput: FunctionComponent<{
       let nextValue = value;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
-      if (nextValue === ".") {
-        nextValue = "0.";
-      }
-
       if (type === "fiat") {
         // Update the crypto amount based on the fiat amount
         const priceInFiat = assetPrice.toDec();
