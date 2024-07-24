@@ -108,6 +108,7 @@ export const AmountScreen = observer(
     bridgesSupportedAssets: {
       supportedAssetsByChainId: counterpartySupportedAssetsByChainId,
       supportedChains,
+      isLoading: isLoadingSupportedAssets,
     },
 
     fromChain,
@@ -209,9 +210,14 @@ export const AmountScreen = observer(
         ? evmAddress
         : toCosmosCounterpartyAccount?.address;
 
-    const { data: osmosisChain } = api.edge.chains.getChain.useQuery({
-      findChainNameOrId: accountStore.osmosisChainId,
-    });
+    const { data: osmosisChain } = api.edge.chains.getChain.useQuery(
+      {
+        findChainNameOrId: accountStore.osmosisChainId,
+      },
+      {
+        useErrorBoundary: true,
+      }
+    );
 
     const canonicalAsset = assetsInOsmosis?.[0];
 
@@ -572,7 +578,7 @@ export const AmountScreen = observer(
 
     if (
       isLoadingCanonicalAssetPrice ||
-      isNil(supportedSourceAssets) ||
+      isLoadingSupportedAssets ||
       !assetsInOsmosis ||
       !canonicalAsset ||
       !assetInOsmosisPrice ||
@@ -582,6 +588,13 @@ export const AmountScreen = observer(
       !fromAsset
     ) {
       return <AmountScreenSkeletonLoader />;
+    }
+
+    /**
+     * This will trigger an error boundary
+     */
+    if (!supportedSourceAssets) {
+      throw new Error("Supported source assets are not defined");
     }
 
     const resetAssets = () => {
@@ -1096,24 +1109,19 @@ export const AmountScreen = observer(
 
             <div className="flex flex-col items-center gap-4">
               {!osmosisWalletConnected ? (
-                connectWalletButton
+                <>{connectWalletButton}</>
               ) : !isWalletNeededConnected || quote.isWrongEvmChainSelected ? (
                 <Button
                   onClick={() => checkChainAndConnectWallet()}
                   className="w-full"
                 >
                   <h6 className="flex items-center gap-3">
-                    {quote.isWrongEvmChainSelected ? (
-                      t("switchNetwork")
-                    ) : (
-                      <>
-                        <Icon
-                          id="wallet"
-                          className="text-white h-[24px] w-[24px]"
-                        />
-                        {t("connectWallet")}
-                      </>
-                    )}
+                    {t("transfer.connectTo", {
+                      network:
+                        direction === "deposit"
+                          ? fromChain.prettyName
+                          : toChain.prettyName,
+                    })}
                   </h6>
                 </Button>
               ) : (

@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "Wallet verbinden",
-  "switchNetwork": "Netzwerk wechseln",
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
@@ -407,7 +406,10 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
+    "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
+    "startAgain": "Fang nochmal an"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -912,6 +914,7 @@
     "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
+    "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",

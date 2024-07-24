@@ -367,7 +367,6 @@
     }
   },
   "connectWallet": "連接錢包",
-  "switchNetwork": "交換網絡",
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你冇資產存入喎",
@@ -407,7 +406,10 @@
     "invalidAmounts": "金額無效",
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
-    "noData": "沒有數據"
+    "noData": "沒有數據",
+    "uhOhSomethingWentWrong": "呃哦，出了點問題",
+    "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
+    "startAgain": "重新開始"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -912,6 +914,7 @@
     "to": "到",
     "max": "最大限度",
     "available": "可用的",
+    "connectTo": "連接到{network}",
     "transferWith": "轉移與",
     "transferTo": "傳送到",
     "receiveAsset": "接收資產",

@@ -218,6 +218,9 @@ export const CryptoFiatInput: FunctionComponent<{
                   input: classNames({
                     "text-rust-300": isInsufficientBal || isInsufficientFee,
                   }),
+                  ticker: classNames({
+                    "text-rust-300": isInsufficientBal || isInsufficientFee,
+                  }),
                 }}
                 value={fiatInputRaw}
                 onChange={(value) => {
