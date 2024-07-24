@@ -102,7 +102,8 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [inputMode, setInputMode]);
 
   // Swap focus every time the tab changes
-  useEffect(() => swapFocus(), [swapFocus, tab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => swapFocus(), [tab]);
 
   // Set focus to Fiat / Token on type/tab change
   useEffect(() => {
