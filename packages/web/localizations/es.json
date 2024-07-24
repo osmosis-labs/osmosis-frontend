@@ -407,7 +407,7 @@
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
     "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
     "noData": "Sin datos",
-    "noOrderbook": "Sin libro de pedidos para el par"
+    "noOrderbook": "Sin libro de pedidos para el par",
     "uhOhSomethingWentWrong": "Oh oh algo salió mal",
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Por favor, inténtelo de nuevo más tarde.",
     "startAgain": "Empezar de nuevo"
