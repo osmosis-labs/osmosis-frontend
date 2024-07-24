@@ -1,11 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import {
-  CoinPretty,
-  Dec,
-  IntPretty,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
@@ -32,15 +26,14 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
-  inDenom?: string;
-  inPrice?: CoinPretty | PricePretty;
   inPriceFetching?: boolean;
+  treatAsStable?: string;
 }
 
 export const TradeDetails = ({
   swapState,
-  inPrice,
   inPriceFetching,
+  treatAsStable,
 }: Partial<TradeDetailsProps>) => {
   const { t } = useTranslation();
 
@@ -86,13 +79,14 @@ export const TradeDetails = ({
           >
             <div ref={details} className="flex w-full flex-col">
               <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-              <Disclosure.Button
+              <span
                 className={classNames(
                   "relative flex w-full items-center justify-between py-3.5 transition-opacity"
                 )}
-                disabled={isInAmountEmpty}
               >
-                <SkeletonLoader isLoaded={Boolean(inPrice)}>
+                <SkeletonLoader
+                  isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
+                >
                   <span
                     onClick={() => setOutAsBase(!outAsBase)}
                     className={classNames(
@@ -103,8 +97,8 @@ export const TradeDetails = ({
                       }
                     )}
                   >
-                    {swapState && inPrice
-                      ? ExpectedRate(swapState, inPrice, outAsBase)
+                    {swapState?.inBaseOutQuoteSpotPrice
+                      ? ExpectedRate(swapState, outAsBase, treatAsStable)
                       : ""}
                   </span>
                 </SkeletonLoader>
@@ -116,48 +110,57 @@ export const TradeDetails = ({
                 >
                   {t("limitOrders.tradeDetails")}
                 </span>
-                <div
+                <Disclosure.Button
                   className={classNames(
-                    "absolute right-0 flex items-center gap-2 transition-opacity",
-                    { "opacity-0": !isLoading }
+                    "relative flex items-end justify-between transition-opacity"
                   )}
+                  disabled={isInAmountEmpty}
                 >
-                  <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                  <span className="body2 text-osmoverse-400">
-                    {t("limitOrders.estimatingFees")}
-                  </span>
-                </div>
-                <div
-                  className={classNames(
-                    "flex items-center gap-2 transition-all",
-                    {
-                      "opacity-0": isInAmountEmpty || isLoading,
-                    }
-                  )}
-                >
-                  <span className="body2 text-osmoverse-300">
-                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                  </span>
-                  <Icon
-                    id="chevron-down"
-                    width={16}
-                    height={16}
+                  <div
                     className={classNames(
-                      "text-osmoverse-300 transition-transform",
+                      "absolute right-0 flex items-end gap-2 transition-opacity",
+                      { "opacity-0": !isLoading }
+                    )}
+                  >
+                    <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                    <span className="body2 text-osmoverse-400">
+                      {t("limitOrders.estimatingFees")}
+                    </span>
+                  </div>
+                  <div
+                    className={classNames(
+                      "flex items-center gap-2 transition-all",
                       {
-                        "rotate-180": open,
+                        "opacity-0": isInAmountEmpty || isLoading,
                       }
                     )}
-                  />
-                </div>
-              </Disclosure.Button>
+                  >
+                    <span className="body2 text-osmoverse-300">
+                      {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                    </span>
+                    <Icon
+                      id="chevron-down"
+                      width={16}
+                      height={16}
+                      className={classNames(
+                        "text-osmoverse-300 transition-transform",
+                        {
+                          "rotate-180": open,
+                        }
+                      )}
+                    />
+                  </div>
+                </Disclosure.Button>
+              </span>
               <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
                 <RecapRow
                   left={t("limitOrders.expectedRate")}
                   right={
-                    swapState &&
-                    inPrice &&
-                    ExpectedRate(swapState, inPrice, true)
+                    swapState?.inBaseOutQuoteSpotPrice && (
+                      <span onClick={() => setOutAsBase(!outAsBase)}>
+                        {ExpectedRate(swapState, outAsBase, treatAsStable)}
+                      </span>
+                    )
                   }
                 />
                 <RecapRow
@@ -246,19 +249,50 @@ export function Closer({
 
 export function ExpectedRate(
   swapState: ReturnType<typeof useSwap>,
-  inPrice: CoinPretty | PricePretty,
-  outAsBase: boolean
+  outAsBase: boolean,
+  treatAsStable: string | undefined = undefined
 ) {
+  var inBaseOutQuoteSpotPrice =
+    swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(0);
+
   var baseAsset;
   var quoteAsset;
   var inQuoteAssetPrice;
   var inFiatPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
 
+  if (treatAsStable && treatAsStable == "in") {
+    baseAsset = swapState.toAsset?.coinDenom;
+    inQuoteAssetPrice = new Dec(1).quo(inBaseOutQuoteSpotPrice);
+
+    return (
+      <span>
+        1 {baseAsset} ≈{" $"}
+        {formatPretty(inQuoteAssetPrice, {
+          ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
+        })}{" "}
+      </span>
+    );
+  }
+
+  if (treatAsStable && treatAsStable == "out") {
+    baseAsset = swapState.fromAsset?.coinDenom;
+    inQuoteAssetPrice = inBaseOutQuoteSpotPrice;
+
+    return (
+      <span>
+        1 {baseAsset} ≈{" $"}
+        {formatPretty(inQuoteAssetPrice, {
+          ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
+        })}{" "}
+      </span>
+    );
+  }
+
   if (outAsBase) {
     baseAsset = swapState.toAsset?.coinDenom;
     quoteAsset = swapState.fromAsset?.coinDenom;
 
-    inQuoteAssetPrice = new Dec(1).quo(inPrice.toDec());
+    inQuoteAssetPrice = new Dec(1).quo(inBaseOutQuoteSpotPrice);
 
     if (
       swapState?.tokenOutFiatValue &&
@@ -270,14 +304,16 @@ export function ExpectedRate(
       );
     } else {
       if (swapState.inAmountInput?.price) {
-        inFiatPrice = swapState.inAmountInput?.price?.quo(inPrice.toDec());
+        inFiatPrice = swapState.inAmountInput?.price?.quo(
+          inBaseOutQuoteSpotPrice
+        );
       }
     }
   } else {
     baseAsset = swapState.fromAsset?.coinDenom;
     quoteAsset = swapState.toAsset?.coinDenom;
 
-    inQuoteAssetPrice = inPrice.toDec();
+    inQuoteAssetPrice = inBaseOutQuoteSpotPrice;
 
     if (
       swapState.tokenOutFiatValue &&
@@ -309,38 +345,6 @@ export function ExpectedRate(
       )
     </span>
   );
-
-  // return (
-  //   <span>
-  //     1 {swapState?.toAsset?.coinDenom} ≈{" "}
-  //     {swapState?.toAsset && inPrice
-  //       ? formatPretty(new Dec(1).quo(inPrice.toDec()), {
-  //           maxDecimals: Math.min(swapState.toAsset.coinDecimals, 8),
-  //         })
-  //       : "0"}{" "}
-  //     {swapState?.fromAsset?.coinDenom} (
-  //     {swapState?.tokenOutFiatValue &&
-  //     swapState?.quote?.amount?.toDec().gt(new Dec(0))
-  //       ? formatPretty(
-  //           swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec()),
-  //           {
-  //             ...getPriceExtendedFormatOptions(
-  //               swapState.tokenOutFiatValue
-  //                 .quo(swapState.quote.amount.toDec())
-  //                 .toDec()
-  //             ),
-  //           }
-  //         )
-  //       : inPrice && swapState?.inAmountInput?.price
-  //       ? formatPretty(swapState.inAmountInput.price.quo(inPrice.toDec()), {
-  //           ...getPriceExtendedFormatOptions(
-  //             swapState.inAmountInput.price.quo(inPrice.toDec()).toDec()
-  //           ),
-  //         })
-  //       : ""}
-  //     )
-  //   </span>
-  // );
 }
 
 type Split =
