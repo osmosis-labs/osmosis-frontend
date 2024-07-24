@@ -33,6 +33,7 @@ const WHALE_MESSAGE_THRESHOLD = 100;
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
+    const [inputMode, setInputMode] = useState<"fiat" | "token">("token");
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -178,6 +179,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               isLoadingSelectAssets={
                 swapState.marketState.isLoadingSelectAssets
               }
+              baseBalanceDisplayFormat={inputMode}
             />
             {type === "limit" && (
               <LimitPriceSelector
@@ -211,6 +213,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 quoteBalance={swapState.quoteTokenBalance?.toDec()}
                 baseBalance={swapState.baseTokenBalance?.toDec()}
                 insufficientFunds={swapState.insufficientFunds}
+                inputMode={inputMode}
+                setInputMode={setInputMode}
               />
             </div>
           </div>

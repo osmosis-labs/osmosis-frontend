@@ -24,6 +24,8 @@ export interface LimitInputProps {
   expectedOutput?: Dec;
   expectedOutputLoading: boolean;
   insufficientFunds?: boolean;
+  inputMode: "fiat" | "token";
+  setInputMode: (mode: "fiat" | "token") => void;
 }
 
 const calcScale = (numChars: number, isMobile: boolean): string => {
@@ -52,10 +54,7 @@ const calcScale = (numChars: number, isMobile: boolean): string => {
   return "1";
 };
 
-export enum FocusedInput {
-  FIAT = "fiat",
-  TOKEN = "token",
-}
+export type FocusedInput = "fiat" | "token";
 
 const nonFocusedClasses =
   "top-[45%] text-wosmongton-200 hover:cursor-pointer select-none";
@@ -90,20 +89,22 @@ export const LimitInput: FC<LimitInputProps> = ({
   quoteBalance,
   baseBalance,
   insufficientFunds,
+  inputMode,
+  setInputMode,
 }) => {
   const [fiatAmount, setFiatAmount] = useState<string>("");
   // const [nonMaxAmount, setNonMaxAmount] = useState<string>("");
   // const [max, setMax] = useState<boolean>(false);
   const [tab] = useQueryState("tab", { defaultValue: "buy" });
   const [type] = useQueryState("type", { defaultValue: "market" });
-  const [focused, setFocused] = useState<FocusedInput>(
-    tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN
-  );
+  // const [focused, setFocused] = useState<FocusedInput>(
+  //   tab === "buy" ? "fiat" : "token"
+  // );
+  const focused = inputMode;
+  const setFocused = setInputMode;
 
   const swapFocus = useCallback(() => {
-    setFocused((p) =>
-      p === FocusedInput.FIAT ? FocusedInput.TOKEN : FocusedInput.FIAT
-    );
+    setFocused((p) => (p === "fiat" ? "token" : "fiat"));
   }, []);
 
   // Swap focus every time the tab changes
@@ -112,7 +113,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   // Set focus to Fiat / Token on type/tab change
   useEffect(() => {
     if (type === "market") {
-      setFocused(tab === "buy" ? FocusedInput.FIAT : FocusedInput.TOKEN);
+      setFocused(tab === "buy" ? "fiat" : "token");
     }
   }, [tab, type]);
 
@@ -133,7 +134,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   //       return;
   //     }
 
-  //     const isFocused = focused === FocusedInput.FIAT;
+  //     const isFocused = focused === "fiat";
 
   //     // Hacky solution to deal with rounding
   //     // TODO: Investigate a way to improve this
@@ -165,7 +166,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   //       return;
   //     }
 
-  //     const isFocused = focused === FocusedInput.TOKEN;
+  //     const isFocused = focused === "token";
   //     onChange(
   //       parseFloat(updatedValue) !== 0 && !isFocused
   //         ? trimPlaceholderZeros(updatedValue)
@@ -199,8 +200,7 @@ export const LimitInput: FC<LimitInputProps> = ({
         return;
       }
 
-      const isFocused =
-        focused === FocusedInput[type === "fiat" ? "FIAT" : "TOKEN"];
+      const isFocused = focused === type;
 
       // Hacky solution to deal with rounding
       // TODO: Investigate a way to improve this
@@ -233,13 +233,13 @@ export const LimitInput: FC<LimitInputProps> = ({
   }, [tab, baseBalance, setAmountSafe, quoteBalance]);
 
   useEffect(() => {
-    if (tokenAmount.length === 0 && focused === FocusedInput.FIAT) {
+    if (tokenAmount.length === 0 && focused === "fiat") {
       setAmountSafe("fiat", "");
       if (tab === "buy") {
         setMarketAmount("");
       }
     }
-    if (focused !== FocusedInput.TOKEN || !price) return;
+    if (focused !== "token" || !price) return;
 
     const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
     const fiatValue = value ? price.mul(value) : undefined;
@@ -256,7 +256,7 @@ export const LimitInput: FC<LimitInputProps> = ({
   ]);
 
   useEffect(() => {
-    if (focused !== FocusedInput.FIAT || !price) return;
+    if (focused !== "fiat" || !price) return;
 
     const value = fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
     const tokenValue = value ? new Dec(value).quo(price) : undefined;
@@ -265,10 +265,10 @@ export const LimitInput: FC<LimitInputProps> = ({
 
   return (
     <div className="relative h-[108px]">
-      {(["fiat", "token"] as ("fiat" | "token")[]).map((inputType) => (
+      {["fiat", "token"].map((inputType) => (
         <AutoInput
           key={inputType}
-          type={inputType}
+          type={inputType as "fiat" | "token"}
           baseAsset={baseAsset}
           focused={focused}
           swapFocus={swapFocus}
@@ -328,6 +328,8 @@ type AutoInputProps = {
   | "quoteAssetPrice"
   | "expectedOutput"
   | "expectedOutputLoading"
+  | "inputMode"
+  | "setInputMode"
 >;
 
 function AutoInput({
@@ -342,7 +344,7 @@ function AutoInput({
 }: AutoInputProps) {
   const { isMobile } = useWindowSize();
   const currentTypeEnum = useMemo(
-    () => (type === "fiat" ? FocusedInput.FIAT : FocusedInput.TOKEN),
+    () => (type === "fiat" ? "fiat" : "token"),
     [type]
   );
 
@@ -352,7 +354,7 @@ function AutoInput({
   );
 
   const oppositeTypeEnum = useMemo(
-    () => (type === "fiat" ? FocusedInput.TOKEN : FocusedInput.FIAT),
+    () => (type === "fiat" ? "token" : "fiat"),
     [type]
   );
 

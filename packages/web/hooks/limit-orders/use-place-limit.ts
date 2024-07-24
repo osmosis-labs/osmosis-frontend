@@ -331,26 +331,34 @@ export const usePlaceLimit = ({
     feeUsdValue,
   ]);
 
-  const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
+  const { data: balances, isLoading: isBalancesLoading } =
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
         enabled: !!account?.address,
         select: (balances) =>
-          balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-            ?.coin,
+          balances.filter(
+            ({ denom }) =>
+              denom === baseAsset?.coinMinimalDenom ||
+              denom === quoteAsset?.coinMinimalDenom
+          ),
+        refetchInterval: 10000,
       }
     );
-  const { data: quoteTokenBalance, isLoading: isQuoteTokenBalanceLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
-      {
-        enabled: !!account?.address,
-        select: (balances) =>
-          balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-            ?.coin,
-      }
-    );
+
+  const quoteTokenBalance = useMemo(() => {
+    if (!balances) return;
+
+    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
+      ?.coin;
+  }, [balances, quoteAsset]);
+
+  const baseTokenBalance = useMemo(() => {
+    if (!balances) return;
+
+    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
+      ?.coin;
+  }, [balances, baseAsset]);
 
   const insufficientFunds =
     orderDirection === "bid"
@@ -459,8 +467,7 @@ export const usePlaceLimit = ({
     placeLimit,
     baseTokenBalance,
     quoteTokenBalance,
-    isBalancesFetched:
-      !isBaseTokenBalanceLoading && !isQuoteTokenBalanceLoading,
+    isBalancesFetched: !isBalancesLoading,
     insufficientFunds,
     paymentFiatValue,
     makerFee,

@@ -31,16 +31,21 @@ const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
 const VALID_QUOTES = [
   ...UI_DEFAULT_QUOTES,
-  // "USDC.sol.axl",
-  // "USDC.eth.grv",
-  // "USDC.eth.wh",
-  // "USDC.matic.axl",
-  // "USDC.avax.axl",
-  // "USDT.sol.axl",
-  // "USDT.eth.grv",
-  // "USDT.eth.wh",
-  // "USDT.matic.axl",
-  // "USDT.avax.axl",
+  "USDC.sol.axl",
+  "USDC.sol.wh",
+  "USDC.eth.grv",
+  "USDC.eth.wh",
+  "USDC.matic.axl",
+  "USDC.avax.axl",
+  "USDC.eth.axl",
+  "USDT.sol.axl",
+  "USDT.eth.grv",
+  "USDT.eth.wh",
+  "USDT.matic.axl",
+  "USDT.avax.axl",
+  "USDT.kava",
+  "USDT.eth.pica",
+  "USDT.sol.pica",
 ];
 
 function sortByAmount(
@@ -117,7 +122,11 @@ export const PriceSelector = observer(
           select: (data) =>
             data.items
               .map((walletAsset) => {
-                if (!VALID_QUOTES.includes(walletAsset.coinDenom)) {
+                if (
+                  !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
+                    walletAsset.coinDenom
+                  )
+                ) {
                   return undefined;
                 }
 
@@ -171,10 +180,20 @@ export const PriceSelector = observer(
     );
 
     const selectableQuotes = useMemo(() => {
+      if (!wallet?.address) {
+        return defaultQuotes;
+      }
+
       return tab === "sell"
         ? userQuotesWithoutBalances
         : defaultQuotesWithBalances;
-    }, [defaultQuotesWithBalances, tab, userQuotesWithoutBalances]);
+    }, [
+      defaultQuotesWithBalances,
+      tab,
+      userQuotesWithoutBalances,
+      defaultQuotes,
+      wallet,
+    ]);
 
     const quoteAssetWithBalance = useMemo(
       () => userQuotes?.find(({ symbol }) => symbol === quote),
