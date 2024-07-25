@@ -42,6 +42,7 @@ export async function getPortfolioOverTime({
         value: d.usd,
       }));
 
+      // potentially remove this for 1h charts
       // merge data with the same date / take an average of values per date
       const chartData = Object.values(
         mappedData?.reduce((acc, d) => {
