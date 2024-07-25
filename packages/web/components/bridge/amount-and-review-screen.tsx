@@ -270,6 +270,11 @@ export const AmountAndReviewScreen = observer(
                             ? fromWalletName
                             : toWalletName;
 
+                        const networkName =
+                          direction === "deposit"
+                            ? fromChain.chainName
+                            : toChain.chainName;
+
                         logEvent([
                           EventName.DepositWithdraw.started,
                           {
@@ -278,6 +283,7 @@ export const AmountAndReviewScreen = observer(
                             bridgeProviderName: q.provider.id,
                             hasMultipleVariants: variants.length > 1,
                             isRecommendedVariant,
+                            network: networkName,
                             transferDirection: direction,
                             valueUsd: Number(
                               q.input.fiatValue.toDec().toString()
