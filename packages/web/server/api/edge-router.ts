@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   earnRouter,
   poolsRouter,
+  portfolioRouter,
   stakingRouter,
   transactionsRouter,
 } from "@osmosis-labs/trpc";
@@ -16,4 +17,5 @@ export const edgeRouter = createTRPCRouter({
   earn: earnRouter,
   transactions: transactionsRouter,
   chains: chainsRouter,
+  portfolio: portfolioRouter,
 });

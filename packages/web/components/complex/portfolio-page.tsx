@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
+import { HistoricalChart } from "~/components/chart/historical-chart";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -79,6 +80,10 @@ export const PortfolioPage: FunctionComponent = () => {
         />
       </section>
 
+      <section>
+        <HistoricalPortfolioChart />
+      </section>
+
       <section className="w-full py-3">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <Tab.Group>
@@ -136,6 +141,36 @@ export const PortfolioPage: FunctionComponent = () => {
         )}
       </section>
     </main>
+  );
+};
+
+const HistoricalPortfolioChart = () => {
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+  console.log("Wallet address: ", wallet?.address);
+
+  const { data, isFetched } = api.edge.portfolio.getPortfolioOverTime.useQuery(
+    {
+      address: wallet?.address ?? "",
+      range: "1mo",
+    },
+    {
+      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+    }
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      {!isFetched ? (
+        "...loading"
+      ) : (
+        <div className="h-[400px] w-full xl:h-[476px]">
+          My Chart
+          <HistoricalChart data={data} />
+        </div>
+      )}
+    </div>
   );
 };
 
