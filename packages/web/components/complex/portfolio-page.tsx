@@ -8,7 +8,10 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
-import { HistoricalChart } from "~/components/chart/historical-chart";
+import {
+  HistoricalChart,
+  HistoricalChartSkeleton,
+} from "~/components/chart/historical-chart";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -149,8 +152,6 @@ const HistoricalPortfolioChart = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  console.log("Wallet address: ", wallet?.address);
-
   const { data, isFetched } = api.edge.portfolio.getPortfolioOverTime.useQuery(
     {
       address: wallet?.address ?? "",
@@ -163,14 +164,13 @@ const HistoricalPortfolioChart = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {!isFetched ? (
-        "...loading"
-      ) : (
-        <div className="h-[400px] w-full xl:h-[476px]">
-          My Chart
+      <div className="h-[400px] w-full xl:h-[476px]">
+        {!isFetched ? (
+          <HistoricalChartSkeleton />
+        ) : (
           <HistoricalChart data={data as AreaData<Time>[]} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
