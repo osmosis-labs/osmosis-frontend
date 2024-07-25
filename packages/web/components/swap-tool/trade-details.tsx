@@ -97,9 +97,8 @@ export const TradeDetails = ({
                       }
                     )}
                   >
-                    {swapState?.inBaseOutQuoteSpotPrice
-                      ? ExpectedRate(swapState, outAsBase, treatAsStable)
-                      : ""}
+                    {swapState?.inBaseOutQuoteSpotPrice &&
+                      ExpectedRate(swapState, outAsBase, treatAsStable)}
                   </span>
                 </SkeletonLoader>
                 <span
