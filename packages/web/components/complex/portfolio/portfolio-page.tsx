@@ -1,13 +1,18 @@
 import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { PriceChange } from "~/components/assets/price";
+import { DataPoint } from "~/components/complex/portfolio/portfolio-page-types";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
+import { useFormatDate } from "~/components/transactions/transaction-utils";
 import {
   useDimension,
   useTranslation,
@@ -35,7 +40,7 @@ export const PortfolioPage: FunctionComponent = () => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const { data: totalValue, isFetched: isTotalValueFetched } =
+  const { data: totalValueData, isFetched: isTotalValueFetched } =
     api.edge.assets.getUserAssetsTotal.useQuery(
       {
         userOsmoAddress: wallet?.address ?? "",
@@ -52,7 +57,7 @@ export const PortfolioPage: FunctionComponent = () => {
         },
       }
     );
-  const userHasNoAssets = totalValue && totalValue.toDec().isZero();
+  const userHasNoAssets = totalValueData && totalValueData.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -71,17 +76,65 @@ export const PortfolioPage: FunctionComponent = () => {
     [bridgeAsset]
   );
 
+  const address = wallet?.address ?? "";
+
+  const [dataPoint, setDataPoint] = useState<DataPoint>({
+    time: "0", // TODO set initial time
+    value: 0,
+  });
+
+  const [range, setRange] = useState<Range>("1mo");
+
+  const {
+    data: portfolioOverTimeData,
+    isFetched: portfolioOverTimeDataIsFetched,
+  } = api.edge.portfolio.getPortfolioOverTime.useQuery(
+    {
+      address,
+      range,
+    },
+    {
+      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+    }
+  );
+
+  const firstValue = portfolioOverTimeData?.[1].value;
+
+  const firstValueWithFallback = !firstValue ? 1 : firstValue; // handle first value being 0 or undefined
+
+  const difference = (dataPoint?.value ?? 0) - firstValueWithFallback;
+
+  const percentage = (difference / firstValueWithFallback) * 100;
+
+  const percentageRatePretty = new RatePretty(new Dec(percentage));
+
+  const formatDate = useFormatDate();
+
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
-          totalValue={totalValue}
+          totalValue={totalValueData}
           isTotalValueFetched={isTotalValueFetched}
+          portfolioPerformance={
+            <PortfolioPerformance
+              value={difference}
+              percentage={percentageRatePretty}
+              date={formatDate(dataPoint.time as string)}
+            />
+          }
         />
       </section>
 
       <section>
-        <PortfolioHistoricalChart />
+        <PortfolioHistoricalChart
+          data={portfolioOverTimeData}
+          isFetched={portfolioOverTimeDataIsFetched}
+          dataPoint={dataPoint}
+          setDataPoint={setDataPoint}
+          range={range}
+          setRange={setRange}
+        />
       </section>
 
       <section className="w-full py-3">
@@ -144,25 +197,29 @@ export const PortfolioPage: FunctionComponent = () => {
   );
 };
 
-const PortfolioValue: FunctionComponent<{
-  value: string;
-  percentage: string;
+const PortfolioPerformance: FunctionComponent<{
+  value: number;
+  percentage: RatePretty;
   date?: string;
 }> = ({ value, percentage, date }) => {
   return (
     <div className="body1 md:caption flex text-bullish-400">
-      <Icon id="triangle" className="h-6 w-6" height={24} width={24} />
-      <span>
+      <PriceChange className="ml-2" priceChange={percentage} />
+      {/* <span>
         {value} {percentage}
-      </span>
+      </span> */}
       <span className="ml-2 text-osmoverse-400">{date}</span>
     </div>
   );
 };
 
 const AssetsOverview: FunctionComponent<
-  { totalValue?: PricePretty; isTotalValueFetched?: boolean } & CustomClasses
-> = observer(({ totalValue, isTotalValueFetched }) => {
+  {
+    totalValue?: PricePretty;
+    isTotalValueFetched?: boolean;
+    portfolioPerformance: React.ReactNode;
+  } & CustomClasses
+> = observer(({ totalValue, isTotalValueFetched, portfolioPerformance }) => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
@@ -191,11 +248,7 @@ const AssetsOverview: FunctionComponent<
                 <h3>{totalValue?.toString()}</h3>
               )}
             </SkeletonLoader>
-            <PortfolioValue
-              value="$123,456 "
-              percentage="(3.5%)"
-              date="Today"
-            />
+            {portfolioPerformance}
           </div>
           <div className="flex items-center gap-3 py-3">
             <Button
