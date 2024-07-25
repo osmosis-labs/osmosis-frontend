@@ -258,7 +258,10 @@ export const AmountAndReviewScreen = observer(
 
                         /** If there's multiple variants, it's only recommended if
                          * the selected variant is the first one in the sorted list.
-                         * If there's not multiple variants, it automatiaclly is recommended.
+                         * If there's not multiple variants, it automatically is recommended.
+                         * This allows us to more easily isolate transfers where
+                         * the user optend out of the default flow by selecting
+                         * an unconventional/alt variant.
                          */
                         const isRecommendedVariant =
                           variants.length > 1
