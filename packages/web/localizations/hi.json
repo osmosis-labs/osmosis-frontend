@@ -407,7 +407,10 @@
     "txTimedOutError": "लेन-देन का समय समाप्त हो गया. कृपया फिर से कोशिश करें।",
     "insufficientFee": "लेन-देन शुल्क के लिए अपर्याप्त शेष. कृपया जारी रखने के लिए धनराशि जोड़ें।",
     "noData": "कोई डेटा नहीं",
-    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं"
+    "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं",
+    "uhOhSomethingWentWrong": "ओह ओह, कुछ ग़लत हो गया",
+    "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
+    "startAgain": "फिर से शुरू करें"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
@@ -514,7 +517,8 @@
       "learnMore": "और अधिक जानें",
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
-      "changeButton": "विन्यास बदलें"
+      "changeButton": "विन्यास बदलें",
+      "ledgerComingSoon": "लेजर हार्डवेयर वॉलेट समर्थन जल्द ही आ रहा है।"
     },
     "floatingBanner": {
       "newPill": "नया",
@@ -913,6 +917,7 @@
     "to": "को",
     "max": "अधिकतम",
     "available": "उपलब्ध",
+    "connectTo": "{network} से कनेक्ट करें",
     "transferWith": "साथ स्थानांतरित करें",
     "transferTo": "के लिए स्थानांतरण",
     "receiveAsset": "संपत्ति प्राप्त करें",

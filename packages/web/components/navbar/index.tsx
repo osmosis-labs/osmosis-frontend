@@ -4,8 +4,8 @@ import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
   formatICNSName,
   getDeepValue,
-  getShortAddress,
   noop,
+  shorten,
 } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -262,10 +262,10 @@ export const NavBar: FunctionComponent<
                 ({ className, ...rest }, index) => (
                   <Button
                     size="md"
-                    className={`w-48 1.5lg:w-fit ${className ?? ""}`}
+                    {...rest}
+                    className={classNames("w-48 1.5lg:w-fit", className)}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
                   </Button>
@@ -506,7 +506,7 @@ const WalletInfo: FunctionComponent<
                 <span className="body2 font-bold leading-4" title={icnsName}>
                   {Boolean(icnsName)
                     ? formatICNSName(icnsName)
-                    : getShortAddress(wallet?.address!)}
+                    : shorten(wallet?.address!)}
                 </span>
                 <span className="caption font-medium tracking-wider text-osmoverse-200">
                   {userOsmoAsset?.amount

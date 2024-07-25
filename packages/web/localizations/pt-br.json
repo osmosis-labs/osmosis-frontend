@@ -407,7 +407,10 @@
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
     "noData": "Sem dados",
-    "noOrderbook": "Sem carteira de pedidos para par"
+    "noOrderbook": "Sem carteira de pedidos para par",
+    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
+    "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
+    "startAgain": "Comece de novo"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -514,7 +517,8 @@
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
-      "changeButton": "Editar Configurações"
+      "changeButton": "Editar Configurações",
+      "ledgerComingSoon": "Suporte para carteira de hardware Ledger em breve."
     },
     "floatingBanner": {
       "newPill": "Novo",
@@ -913,6 +917,7 @@
     "to": "Para",
     "max": "Máx.",
     "available": "disponível",
+    "connectTo": "Conecte-se a {network}",
     "transferWith": "Transferir com",
     "transferTo": "Transferir para",
     "receiveAsset": "Receber ativo",

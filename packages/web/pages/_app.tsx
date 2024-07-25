@@ -22,11 +22,11 @@ import {
   useEffect,
   useMemo,
 } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
 import { Icon } from "~/components/assets";
-import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
@@ -80,22 +80,22 @@ function MyApp({ Component, pageProps }: AppProps) {
       >
         <StoreProvider>
           <WalletSelectProvider>
-            <BridgeProvider>
-              <SEO />
-              <IbcNotifier />
-              <ToastContainer
-                toastStyle={{
-                  backgroundColor: "#2d2755",
-                }}
-                transition={Bounce}
-                newestOnTop
-              />
-              <MainLayoutWrapper>
-                <ErrorBoundary fallback={<ErrorFallback />}>
+            <ErrorBoundary fallback={<ErrorFallback />}>
+              <BridgeProvider>
+                <SEO />
+                <IbcNotifier />
+                <ToastContainer
+                  toastStyle={{
+                    backgroundColor: "#2d2755",
+                  }}
+                  transition={Bounce}
+                  newestOnTop
+                />
+                <MainLayoutWrapper>
                   {Component && <Component {...pageProps} />}
-                </ErrorBoundary>
-              </MainLayoutWrapper>
-            </BridgeProvider>
+                </MainLayoutWrapper>
+              </BridgeProvider>
+            </ErrorBoundary>
           </WalletSelectProvider>
         </StoreProvider>
       </MultiLanguageProvider>

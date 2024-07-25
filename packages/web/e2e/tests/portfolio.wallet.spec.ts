@@ -3,6 +3,7 @@ import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
 
+import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
@@ -21,16 +22,10 @@ test.describe("Test Portfolio feature", () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
     console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: [
-        "--headless=new",
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-      viewport: { width: 1440, height: 1280 },
-      slowMo: 300,
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
+    );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
@@ -49,6 +44,8 @@ test.describe("Test Portfolio feature", () => {
     portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
+    await portfolioPage.hideZeroBalances();
+    await portfolioPage.viewMoreBalances();
   });
 
   test.afterAll(async () => {

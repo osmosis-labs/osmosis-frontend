@@ -1,0 +1,178 @@
+name: Synthetic Geo Monitoring Frontend tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
+  push:
+    branches: [FE-777]
+
+jobs:
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          echo "matrix={\"include\":[{\"test-proxy\":\"use\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
+
+  fe-quote-tests:
+    timeout-minutes: 15
+    name: ${{ matrix.env }}-fe-quote-tests
+    needs: setup-matrix
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    steps:
+      - name: Echo IP
+        run: curl -L "https://ipinfo.io" -s
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests on ${{ matrix.env }}
+        env:
+          BASE_URL: "https://app.osmosis.zone"
+          TEST_PROXY: ${{ matrix.server-url }}
+          TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
+          TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
+          PRIVATE_KEY: ${{secrets.TEST_PRIVATE_KEY}}
+          USE_TEST_PROXY: ${{ matrix.test-proxy }}
+        run: |
+          cd packages/web
+          npx playwright test select pools transactions
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.env }}-quote-test-results
+          path: packages/web/playwright-report
+
+  fe-swap-tests:
+    timeout-minutes: 15
+    name: ${{ matrix.env }}-fe-swap-tests
+    needs: setup-matrix
+    runs-on: macos-latest
+    environment:
+      name: prod_swap_test
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+    steps:
+      - name: Echo IP
+        run: curl -L "https://ipinfo.io" -s
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests on ${{ matrix.env }}
+        env:
+          BASE_URL: "https://app.osmosis.zone"
+          TEST_PROXY: ${{ matrix.server-url }}
+          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
+          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
+          PRIVATE_KEY_S: ${{ secrets.PRIVATE_KEY_S }}
+          USE_TEST_PROXY: ${{ matrix.test-proxy }}
+        run: |
+          cd packages/web
+          npx playwright test -g "Test Swap Stables feature"
+      - name: upload test results
+        if: always()
+        id: e2e-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.env }}-swap-test-results
+          path: packages/web/playwright-report
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Synthetic Monitoring Tests Failure Alert 🚨",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Synthetic Monitoring Tests Failure"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  delete-deployments:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [fe-quote-tests, fe-swap-tests]
+    steps:
+      - name: Delete Previous deployments
+        uses: actions/github-script@v7
+        with:
+          debug: true
+          script: |
+            const deployments = await github.rest.repos.listDeployments({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               sha: context.sha
+             });
+             await Promise.all(
+               deployments.data.map(async (deployment) => {
+                 await github.rest.repos.createDeploymentStatus({ 
+                   owner: context.repo.owner, 
+                   repo: context.repo.repo, 
+                   deployment_id: deployment.id, 
+                   state: 'inactive' 
+                 });
+                 return github.rest.repos.deleteDeployment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: deployment.id
+                });
+               })
+             );

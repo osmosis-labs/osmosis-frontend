@@ -1,7 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { ChartUnavailable } from "~/components/chart";
 import {
@@ -29,7 +29,7 @@ import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
-export const TokenChart = observer(() => {
+export const AssetPriceChart: FunctionComponent = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
   const data = useMemo(
@@ -44,7 +44,7 @@ export const TokenChart = observer(() => {
 
   return (
     <section className="relative flex flex-col justify-between gap-3">
-      {assetInfoConfig.mode === "simple" ? <TokenChartHeader /> : null}
+      {assetInfoConfig.mode === "simple" ? <ChartHeader /> : null}
 
       <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.mode === "advanced" ? (
@@ -82,12 +82,12 @@ export const TokenChart = observer(() => {
         )}
       </div>
 
-      <TokenChartFooter />
+      <ChartFooter />
     </section>
   );
 });
 
-export const TokenChartFooter = observer(() => {
+const ChartFooter: FunctionComponent = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { advancedChart } = useFeatureFlags();
   const { t } = useTranslation();
@@ -166,7 +166,7 @@ export const TokenChartFooter = observer(() => {
   );
 });
 
-export const TokenChartHeader = observer(() => {
+const ChartHeader = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
 
   const { data: marketAsset, isLoading } =

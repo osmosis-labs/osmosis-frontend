@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -55,7 +55,7 @@ export const AssetBreakdownChart: FunctionComponent<{
                 className="subtitle1 md:body2 text-osmoverse-400"
                 title={amount.currency.coinDenom}
               >
-                {truncateString(amount.currency.coinDenom, isMobile ? 6 : 12)}:{" "}
+                {truncate(amount.currency.coinDenom, isMobile ? 6 : 12)}:{" "}
                 {assetPercentages[index].toString()}%
               </span>
             </div>

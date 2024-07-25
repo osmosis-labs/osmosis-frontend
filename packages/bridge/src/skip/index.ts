@@ -5,7 +5,12 @@ import {
   ibcProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
-import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
+import {
+  calcAverageBlockTimeMs,
+  cosmosMsgOpts,
+  cosmwasmMsgOpts,
+  estimateGasFee,
+} from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -43,7 +48,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
@@ -138,6 +142,17 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "cannot transfer across cctp after route demands swap"
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "NoQuotesError",
+                  message: msg,
+                });
+              }
+              if (
+                msg.includes(
+                  "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
                 )
               ) {
                 throw new BridgeQuoteError({
@@ -281,10 +296,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       for (const counterparty of counterparties) {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
+        const address =
+          "address" in counterparty
+            ? counterparty.address
+            : counterparty.sourceDenom;
         if (
           !assets[counterparty.chainId]?.assets.some(
-            (a) =>
-              a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
+            (a) => a.denom.toLowerCase() === address.toLowerCase()
           )
         )
           continue;
@@ -295,13 +313,13 @@ export class SkipBridgeProvider implements BridgeProvider {
           // check if supported by skip
           if (
             assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+              (a) => a.denom.toLowerCase() === address.toLowerCase()
             )
           ) {
-            foundVariants.setAsset(c.chainId, c.sourceDenom, {
+            foundVariants.setAsset(c.chainId, address, {
               chainId: c.chainId,
               chainType: "cosmos",
-              address: c.sourceDenom,
+              address: address,
               denom: c.symbol,
               decimals: c.decimals,
             });
@@ -313,13 +331,13 @@ export class SkipBridgeProvider implements BridgeProvider {
           // check if supported by skip
           if (
             assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
+              (a) => a.denom.toLowerCase() === address.toLowerCase()
             )
           ) {
-            foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
+            foundVariants.setAsset(c.chainId.toString(), address, {
               chainId: c.chainId,
               chainType: "evm",
-              address: c.sourceDenom,
+              address: address,
               denom: c.symbol,
               decimals: c.decimals,
             });

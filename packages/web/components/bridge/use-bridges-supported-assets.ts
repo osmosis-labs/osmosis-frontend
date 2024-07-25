@@ -71,6 +71,15 @@ export const useBridgesSupportedAssets = ({
     [supportedAssetsResults]
   );
 
+  const isLoading = useMemo(
+    () =>
+      supportedAssetsResults.some(
+        (data): data is NonNullable<Required<typeof data>> =>
+          !isNil(data) && data.isLoading
+      ),
+    [supportedAssetsResults]
+  );
+
   /**
    * Aggregate supported assets from all successful queries.
    * This would be an object with chain id as key and an array of supported assets as value.
@@ -204,5 +213,5 @@ export const useBridgesSupportedAssets = ({
     );
   }, [successfulQueries]);
 
-  return { supportedAssetsByChainId, supportedChains };
+  return { supportedAssetsByChainId, supportedChains, isLoading };
 };

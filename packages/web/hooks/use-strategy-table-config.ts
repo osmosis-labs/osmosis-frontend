@@ -38,7 +38,7 @@ export const useStrategyTableConfig = (
     getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility: {
-        balance: showBalance,
+        totalBalance: showBalance,
         depositAssets: !isMobile,
         provider: false,
         holdsTokens: false,

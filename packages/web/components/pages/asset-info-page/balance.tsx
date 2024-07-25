@@ -5,30 +5,28 @@ import { observer } from "mobx-react-lite";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-interface YourBalanceProps {
-  className?: string;
-}
-
-export const YourBalance = observer(({ className }: YourBalanceProps) => {
+export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { chainStore, accountStore } = useStore();
   const { bridgeAsset } = useBridge();
-  const { token } = useAssetInfo();
+  const { asset } = useAssetInfo();
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
 
   const { data, isLoading } = api.edge.assets.getUserBridgeAsset.useQuery(
     {
-      findMinDenomOrSymbol: token.coinDenom,
+      findMinDenomOrSymbol: asset.coinDenom,
       userOsmoAddress: account?.address,
     },
     { enabled: Boolean(account?.address) }
@@ -37,6 +35,13 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
   if (!account?.isWalletConnected) {
     return null;
   }
+
+  const transferEnabled = featureFlags.newDepositWithdrawFlow
+    ? // new flow supports native assets, but it shouldn't be common to transfer them
+      true
+    : // the old flow doesn't support native assets, so if there's no transfer methods it's assumed it
+      // can't be transferred since it's natively issued on Osmosis
+      Boolean(data?.transferMethods.length);
 
   return (
     <section
@@ -61,42 +66,43 @@ export const YourBalance = observer(({ className }: YourBalanceProps) => {
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
-          {data?.amount ? formatPretty(data.amount) : `0 ${token.coinDenom}`}{" "}
+          {data?.amount ? formatPretty(data.amount) : `0 ${asset.coinDenom}`}{" "}
           {t("tokenInfos.onOsmosis")}
         </p>
       </SkeletonLoader>
 
-      <div className="flex gap-3">
-        <Button
-          size="lg-full"
-          className="flex flex-1 items-center"
-          onClick={() =>
-            bridgeAsset({
-              anyDenom: token.coinMinimalDenom,
-              direction: "deposit",
-            })
-          }
-          disabled={!data?.transferMethods.length}
-        >
-          <Icon className="mr-2" id="deposit" height={16} width={16} />
-          {t("assets.historyTable.colums.deposit")}
-        </Button>
-        <Button
-          size="lg-full"
-          className="flex flex-1 items-center"
-          variant="secondary"
-          onClick={() =>
-            bridgeAsset({
-              anyDenom: token.coinMinimalDenom,
-              direction: "withdraw",
-            })
-          }
-          disabled={!data?.amount || !data?.transferMethods.length}
-        >
-          <Icon className="mr-2" id="withdraw" height={16} width={16} />
-          {t("assets.historyTable.colums.withdraw")}
-        </Button>
-      </div>
+      {transferEnabled && (
+        <div className="flex gap-3">
+          <Button
+            size="lg-full"
+            className="flex flex-1 items-center"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: asset.coinMinimalDenom,
+                direction: "deposit",
+              })
+            }
+          >
+            <Icon className="mr-2" id="deposit" height={16} width={16} />
+            {t("assets.historyTable.colums.deposit")}
+          </Button>
+          <Button
+            size="lg-full"
+            className="flex flex-1 items-center"
+            variant="secondary"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: asset.coinMinimalDenom,
+                direction: "withdraw",
+              })
+            }
+            disabled={!data?.amount}
+          >
+            <Icon className="mr-2" id="withdraw" height={16} width={16} />
+            {t("assets.historyTable.colums.withdraw")}
+          </Button>
+        </div>
+      )}
     </section>
   );
 });

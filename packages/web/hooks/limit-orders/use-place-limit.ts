@@ -134,23 +134,14 @@ export const usePlaceLimit = ({
       return baseTokenAmount;
     }
 
-    const price = isMarket
-      ? orderDirection === "bid"
-        ? priceState.askSpotPrice
-        : priceState.bidSpotPrice
-      : priceState.price;
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue = mulPrice(
-      baseTokenAmount,
-      new PricePretty(DEFAULT_VS_CURRENCY, price ?? new Dec(1)),
-      DEFAULT_VS_CURRENCY
-    );
+    const outgoingFiatValue =
+      marketState.inAmountInput.amount?.toDec() ?? new Dec(0);
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
     const quoteTokenAmount = outgoingFiatValue!
-      .quo(quoteAssetPrice ?? new Dec(1))
-      .toDec()
+      .quo(quoteAssetPrice.toDec() ?? new Dec(1))
       .mul(new Dec(Math.pow(10, quoteAsset!.coinDecimals)));
     return new CoinPretty(quoteAsset!, quoteTokenAmount);
   }, [
@@ -159,10 +150,7 @@ export const usePlaceLimit = ({
     orderDirection,
     inAmountInput.amount,
     quoteAsset,
-    priceState.price,
     isMarket,
-    priceState.askSpotPrice,
-    priceState.bidSpotPrice,
     marketState.inAmountInput.amount,
   ]);
 
@@ -580,7 +568,6 @@ const useLimitPrice = ({
     data: assetPrice,
     isLoading: loadingSpotPrice,
     isRefetching: isSpotPriceRefetching,
-    refetch: refetchSpotPrice,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
