@@ -18,44 +18,62 @@ import { getDecimalCount } from "~/utils/number";
 
 import { Chart } from "./light-weight-charts/chart";
 
-const getSeriesOpt = (
-  lineColor = theme.colors.wosmongton[300],
-  topColor = theme.colors.osmoverse[700],
-  bottomColor = theme.colors.osmoverse[850],
-  crosshairMarkerBorderColor = theme.colors.osmoverse[900]
-): DeepPartial<AreaSeriesOptions> => ({
-  lineColor,
-  lineWidth: 2,
-  lineType: LineType.Curved,
-  topColor,
-  bottomColor,
-  priceLineVisible: false,
-  lastValueVisible: false,
-  priceScaleId: "right",
-  crosshairMarkerBorderWidth: 4,
-  crosshairMarkerBorderColor,
-  crosshairMarkerRadius: 4,
-  priceFormat: {
-    type: "custom",
-    formatter: priceFormatter,
-    minMove: 0.0000000001,
-  },
-});
+const getSeriesOpt = (config: Config): DeepPartial<AreaSeriesOptions> => {
+  let lineColor, topColor, bottomColor, crosshairMarkerBorderColor;
+
+  switch (config) {
+    case "bullish":
+      lineColor = theme.colors.bullish[500];
+      topColor = `${theme.colors.bullish[500]}33`; // 20% opacity
+      bottomColor = `${theme.colors.bullish[500]}00`; // 0% opacity
+      crosshairMarkerBorderColor = theme.colors.bullish[500];
+      break;
+    case "bearish":
+      lineColor = theme.colors.rust[500];
+      topColor = `${theme.colors.rust[500]}33`; // 20% opacity
+      bottomColor = `${theme.colors.rust[500]}00`; // 0% opacity
+      crosshairMarkerBorderColor = theme.colors.rust[500];
+      break;
+    case "neutral":
+    default:
+      lineColor = theme.colors.wosmongton[300];
+      topColor = theme.colors.osmoverse[700];
+      bottomColor = theme.colors.osmoverse[850];
+      crosshairMarkerBorderColor = theme.colors.osmoverse[900];
+      break;
+  }
+
+  return {
+    lineColor,
+    lineWidth: 2,
+    lineType: LineType.Curved,
+    topColor,
+    bottomColor,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    priceScaleId: "right",
+    crosshairMarkerBorderWidth: 4,
+    crosshairMarkerBorderColor,
+    crosshairMarkerRadius: 4,
+    priceFormat: {
+      type: "custom",
+      formatter: priceFormatter,
+      minMove: 0.0000000001,
+    },
+  };
+};
+
+type Config = "bullish" | "bearish" | "neutral";
 
 interface HistoricalChartProps {
   data: AreaData<Time>[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
-  colorConfig?: {
-    lineColor?: string;
-    topColor?: string;
-    bottomColor?: string;
-    crosshairMarkerBorderColor?: string;
-  };
+  config: Config;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
-  const { data = [], onPointerHover, onPointerOut, colorConfig } = props;
+  const { data = [], onPointerHover, onPointerOut, config = "neutral" } = props;
 
   return (
     <Chart
@@ -64,12 +82,7 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
         {
           type: "Area",
           options: {
-            ...getSeriesOpt(
-              colorConfig?.lineColor,
-              colorConfig?.topColor,
-              colorConfig?.bottomColor,
-              colorConfig?.crosshairMarkerBorderColor
-            ),
+            ...getSeriesOpt(config),
             autoscaleInfoProvider: () => {
               const values = data
                 .map((entry) => entry.value)

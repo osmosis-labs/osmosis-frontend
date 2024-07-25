@@ -9,7 +9,6 @@ import {
 } from "~/components/chart/historical-chart";
 import { DataPoint } from "~/components/complex/portfolio/portfolio-page-types";
 import { IconButton } from "~/components/ui/button";
-import { theme } from "~/tailwind.config";
 
 import { PortfolioHistoricalRangeButtonGroup } from "./portfolio-historical-range-button-group";
 
@@ -28,25 +27,18 @@ export const PortfolioHistoricalChart = ({
   setRange: (range: Range) => void;
   percentage: number;
 }) => {
-  const percentageDec = new Dec(percentage);
-  const isBullish = percentageDec.isPositive();
-  const isBearish = percentageDec.isNegative();
-
-  const colorConfig = isBullish
-    ? {
-        lineColor: theme.colors.bullish[500],
-        topColor: `${theme.colors.bullish[500]}33`, // 20% opacity
-        bottomColor: `${theme.colors.bullish[500]}00`, // 0% opacity
-        crosshairMarkerBorderColor: theme.colors.bullish[500],
-      }
-    : isBearish
-    ? {
-        lineColor: theme.colors.rust[500],
-        topColor: `${theme.colors.rust[500]}33`, // 20% opacity
-        bottomColor: `${theme.colors.rust[500]}00`, // 0% opacity
-        crosshairMarkerBorderColor: theme.colors.rust[500],
-      }
-    : undefined;
+  const getChartConfig = (
+    percentage: number
+  ): "bullish" | "bearish" | "neutral" => {
+    const percentageDec = new Dec(percentage);
+    if (percentageDec.isPositive()) {
+      return "bullish";
+    } else if (percentageDec.isNegative()) {
+      return "bearish";
+    } else {
+      return "neutral";
+    }
+  };
 
   return (
     <section className="relative flex flex-col justify-between gap-3">
@@ -57,7 +49,7 @@ export const PortfolioHistoricalChart = ({
           <HistoricalChart
             data={data as AreaData<Time>[]}
             onPointerHover={(value, time) => setDataPoint({ value, time })}
-            colorConfig={colorConfig}
+            config={getChartConfig(percentage)}
           />
         )}
       </div>
