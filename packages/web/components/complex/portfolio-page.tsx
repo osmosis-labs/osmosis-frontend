@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -167,7 +168,7 @@ const HistoricalPortfolioChart = () => {
       ) : (
         <div className="h-[400px] w-full xl:h-[476px]">
           My Chart
-          <HistoricalChart data={data} />
+          <HistoricalChart data={data as AreaData<Time>[]} />
         </div>
       )}
     </div>
