@@ -24,7 +24,15 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
   constructor(
     protected readonly chainList: Chain[],
-    protected readonly assetLists: AssetList[]
+    protected readonly assetLists: AssetList[],
+    /**
+     * The maximum time to wait for any known resolution from status and/or websocket connections.
+     * This is not related to the block height IBC timeout on chain, but rather is a catch all
+     * fallback to prevent indefinite waiting when there's some unforseen issue
+     * getting conclusive statuses from chain(s).
+     * Default: 60 seconds.
+     */
+    protected readonly connectionTimeoutMs = 60 * 1000
   ) {}
 
   async trackTxStatus(serializedParamsOrHash: string): Promise<void> {
@@ -103,7 +111,9 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     serializedParamsOrHash: string;
   }): Promise<void> {
     const destBlockSubscriber = this.getBlockSubscriber(destChainId);
-    const subscriptions: Promise<"timeout" | "received">[] = [];
+    const subscriptions: Promise<
+      "timeout" | "received" | "connection-error"
+    >[] = [];
     let timeoutUnsubscriber: (() => void) | undefined;
 
     // poll for timeout
@@ -137,6 +147,13 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
+    // assume unkonwn connection error, either to status or websocket endpoint(s), if a basic IBC transfer takes longer than 1 minute
+    subscriptions.push(
+      new Promise<"connection-error">((resolve) => {
+        setTimeout(() => resolve("connection-error"), this.connectionTimeoutMs);
+      })
+    );
+
     const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
     const receivedPromise = packetReceivedTracer
       .traceTx({
@@ -159,8 +176,11 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
     // If the TxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
     // But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
-    if (result === "received") {
-      return this.pushNewStatus(serializedParamsOrHash, "success");
+    switch (result) {
+      case "received":
+        return this.pushNewStatus(serializedParamsOrHash, "success");
+      case "connection-error":
+        return this.pushNewStatus(serializedParamsOrHash, "connection-error");
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.

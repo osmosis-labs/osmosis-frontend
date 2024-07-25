@@ -37,7 +37,10 @@ jest.mock("viem", () => ({
   keccak256: jest.fn().mockReturnValue("0xabcdef"),
 }));
 
-jest.mock("@osmosis-labs/tx");
+jest.mock("@osmosis-labs/tx", () => ({
+  ...jest.requireActual("@osmosis-labs/tx"),
+  estimateGasFee: jest.fn(),
+}));
 
 jest.mock("@cosmjs/proto-signing", () => ({
   ...jest.requireActual("@cosmjs/proto-signing"),

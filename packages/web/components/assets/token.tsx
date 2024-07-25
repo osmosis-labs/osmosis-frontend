@@ -1,4 +1,4 @@
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -31,9 +31,9 @@ export const Token: FunctionComponent<
       )}
       <div className="flex flex-col place-content-center text-left">
         {isMobile ? (
-          <h6>{truncateString(justCoinDenom)}</h6>
+          <h6>{truncate(justCoinDenom)}</h6>
         ) : (
-          <h5>{truncateString(justCoinDenom)}</h5>
+          <h5>{truncate(justCoinDenom)}</h5>
         )}
         {networkName && !isMobile && (
           <span className="subtitle2 text-osmoverse-400">{networkName}</span>

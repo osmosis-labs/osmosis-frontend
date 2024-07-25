@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClientOnly } from "~/components/client-only";
@@ -7,11 +8,11 @@ import { Button } from "~/components/ui/button";
 import { useTranslation, useUserWatchlist } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 
-export const TokenNavigation = observer(() => {
+export const AssetNavigation: FunctionComponent = observer(() => {
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { token, title } = useAssetInfo();
+  const { asset: token, title } = useAssetInfo();
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
