@@ -123,7 +123,7 @@ export const TradeDetails = ({
                   >
                     <Spinner className="!h-6 !w-6 text-wosmongton-500" />
                     <span className="body2 text-osmoverse-400">
-                      {t("limitOrders.estimatingFees")}
+                      {t("limitOrders.estimating")}
                     </span>
                   </div>
                   <div
