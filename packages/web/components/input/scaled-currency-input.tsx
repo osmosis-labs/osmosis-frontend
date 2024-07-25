@@ -102,7 +102,8 @@ export function ScaledCurrencyInput({
                 fontSize: "inherit",
               }}
               onChange={(e) => {
-                const nextValue = e.target.value;
+                let nextValue = e.target.value;
+                if (nextValue === ".") nextValue = "0.";
                 if (nextValue !== "" && !isNumeric(nextValue)) return;
                 setInputValue(nextValue);
               }}
