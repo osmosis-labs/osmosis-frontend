@@ -1,17 +1,12 @@
 import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
-import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
-import {
-  HistoricalChart,
-  HistoricalChartSkeleton,
-} from "~/components/chart/historical-chart";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -23,14 +18,15 @@ import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-import { CreditCardIcon } from "../assets/credit-card-icon";
-import { Spinner } from "../loaders";
-import { SkeletonLoader } from "../loaders/skeleton-loader";
-import { RecentTransfers } from "../transactions/recent-transfers";
-import { CustomClasses } from "../types";
-import { Button } from "../ui/button";
-import { MyPoolsCardsGrid } from "./my-pools-card-grid";
-import { MyPositionsSection } from "./my-positions-section";
+import { CreditCardIcon } from "../../assets/credit-card-icon";
+import { Spinner } from "../../loaders";
+import { SkeletonLoader } from "../../loaders/skeleton-loader";
+import { RecentTransfers } from "../../transactions/recent-transfers";
+import { CustomClasses } from "../../types";
+import { Button } from "../../ui/button";
+import { MyPoolsCardsGrid } from "../my-pools-card-grid";
+import { MyPositionsSection } from "../my-positions-section";
+import { PortfolioHistoricalChart } from "./portfolio-historical-chart";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -85,7 +81,7 @@ export const PortfolioPage: FunctionComponent = () => {
       </section>
 
       <section>
-        <HistoricalPortfolioChart />
+        <PortfolioHistoricalChart />
       </section>
 
       <section className="w-full py-3">
@@ -148,29 +144,18 @@ export const PortfolioPage: FunctionComponent = () => {
   );
 };
 
-const HistoricalPortfolioChart = () => {
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-
-  const { data, isFetched } = api.edge.portfolio.getPortfolioOverTime.useQuery(
-    {
-      address: wallet?.address ?? "",
-      range: "1mo",
-    },
-    {
-      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-    }
-  );
-
+const PortfolioValue: FunctionComponent<{
+  value: string;
+  percentage: string;
+  date?: string;
+}> = ({ value, percentage, date }) => {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="h-[400px] w-full xl:h-[476px]">
-        {!isFetched ? (
-          <HistoricalChartSkeleton />
-        ) : (
-          <HistoricalChart data={data as AreaData<Time>[]} />
-        )}
-      </div>
+    <div className="body1 md:caption flex text-bullish-400">
+      <Icon id="triangle" className="h-6 w-6" height={24} width={24} />
+      <span>
+        {value} {percentage}
+      </span>
+      <span className="ml-2 text-osmoverse-400">{date}</span>
     </div>
   );
 };
@@ -195,6 +180,7 @@ const AssetsOverview: FunctionComponent<
             <span className="body1 md:caption text-osmoverse-300">
               {t("assets.totalBalance")}
             </span>
+
             <SkeletonLoader
               className={classNames(isTotalValueFetched ? null : "h-14 w-48")}
               isLoaded={isTotalValueFetched}
@@ -205,6 +191,11 @@ const AssetsOverview: FunctionComponent<
                 <h3>{totalValue?.toString()}</h3>
               )}
             </SkeletonLoader>
+            <PortfolioValue
+              value="$123,456 "
+              percentage="(3.5%)"
+              date="Today"
+            />
           </div>
           <div className="flex items-center gap-3 py-3">
             <Button
