@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
@@ -16,7 +16,7 @@ export const PriceChange: FunctionComponent<
   {
     priceChange: RatePretty;
     overrideTextClasses?: string;
-    value?: RatePretty;
+    value?: PricePretty;
   } & CustomClasses
 > = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
   const isBullish = priceChange.toDec().isPositive();

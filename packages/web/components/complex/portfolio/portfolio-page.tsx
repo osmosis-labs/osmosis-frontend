@@ -136,10 +136,10 @@ export const PortfolioPage: FunctionComponent = () => {
         <PortfolioHistoricalChart
           data={portfolioOverTimeData}
           isFetched={portfolioOverTimeDataIsFetched}
-          dataPoint={dataPoint}
           setDataPoint={setDataPoint}
           range={range}
           setRange={setRange}
+          percentage={percentage}
         />
       </section>
 

@@ -18,33 +18,44 @@ import { getDecimalCount } from "~/utils/number";
 
 import { Chart } from "./light-weight-charts/chart";
 
-const seriesOpt: DeepPartial<AreaSeriesOptions> = {
-  lineColor: theme.colors.wosmongton[300],
+const getSeriesOpt = (
+  lineColor = theme.colors.wosmongton[300],
+  topColor = theme.colors.osmoverse[700],
+  bottomColor = theme.colors.osmoverse[850],
+  crosshairMarkerBorderColor = theme.colors.osmoverse[900]
+): DeepPartial<AreaSeriesOptions> => ({
+  lineColor,
   lineWidth: 2,
   lineType: LineType.Curved,
-  topColor: theme.colors.osmoverse[700],
-  bottomColor: theme.colors.osmoverse[850],
+  topColor,
+  bottomColor,
   priceLineVisible: false,
   lastValueVisible: false,
   priceScaleId: "right",
   crosshairMarkerBorderWidth: 4,
-  crosshairMarkerBorderColor: theme.colors.osmoverse[900],
+  crosshairMarkerBorderColor,
   crosshairMarkerRadius: 4,
   priceFormat: {
     type: "custom",
     formatter: priceFormatter,
     minMove: 0.0000000001,
   },
-};
+});
 
 interface HistoricalChartProps {
   data: AreaData<Time>[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
+  colorConfig?: {
+    lineColor?: string;
+    topColor?: string;
+    bottomColor?: string;
+    crosshairMarkerBorderColor?: string;
+  };
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
-  const { data = [], onPointerHover, onPointerOut } = props;
+  const { data = [], onPointerHover, onPointerOut, colorConfig } = props;
 
   return (
     <Chart
@@ -53,7 +64,12 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
         {
           type: "Area",
           options: {
-            ...seriesOpt,
+            ...getSeriesOpt(
+              colorConfig?.lineColor,
+              colorConfig?.topColor,
+              colorConfig?.bottomColor,
+              colorConfig?.crosshairMarkerBorderColor
+            ),
             autoscaleInfoProvider: () => {
               const values = data
                 .map((entry) => entry.value)
