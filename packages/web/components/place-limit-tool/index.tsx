@@ -1,5 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -223,13 +222,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {swapState.isMarket && (
                 <TradeDetails
                   swapState={swapState.marketState}
-                  inDenom={swapState.baseAsset?.coinDenom}
-                  inPrice={
-                    new PricePretty(
-                      DEFAULT_VS_CURRENCY,
-                      swapState.priceState.spotPrice
-                    )
-                  }
+                  treatAsStable={orderDirection === "bid" ? "in" : "out"}
                 />
               )}
             </>
