@@ -187,7 +187,8 @@ export const ExpandDetailsControlContent: FunctionComponent<{
       <div className="flex items-center gap-2 md:gap-1">
         {!open && totalFees && (
           <span className="subtitle1 md:body2">
-            ~{totalFees.toString()} {t("transfer.fees")}
+            ~ {totalFees.inequalitySymbol(false).toString()}{" "}
+            {t("transfer.fees")}
           </span>
         )}
         {(warnUserOfPriceImpact || warnUserOfSlippage) && (
