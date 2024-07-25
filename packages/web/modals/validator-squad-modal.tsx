@@ -5,7 +5,7 @@ import {
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { normalizeUrl, truncateString } from "@osmosis-labs/utils";
+import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -203,7 +203,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       const getFormattedWebsite = useCallback((website: string) => {
         const displayUrl = normalizeUrl(website);
-        const truncatedDisplayUrl = truncateString(displayUrl, 30);
+        const truncatedDisplayUrl = truncate(displayUrl, 30);
         return truncatedDisplayUrl;
       }, []);
 

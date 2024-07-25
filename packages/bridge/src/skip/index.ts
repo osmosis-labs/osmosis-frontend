@@ -5,7 +5,12 @@ import {
   ibcProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
-import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
+import {
+  calcAverageBlockTimeMs,
+  cosmosMsgOpts,
+  cosmwasmMsgOpts,
+  estimateGasFee,
+} from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -43,7 +48,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
