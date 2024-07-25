@@ -445,7 +445,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       className={classNames(
-                        "transition-colors duration-200 ease-in-out xs:px-2",
+                        "transition-colors duration-200 ease-in-out xs:px-1",
                         isPreviousData && isFetching && "cursor-progress"
                       )}
                       key={cell.id}
