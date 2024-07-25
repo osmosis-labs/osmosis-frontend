@@ -13,6 +13,7 @@ import {
 import { IbcBridgeProvider } from "../index";
 
 jest.mock("@osmosis-labs/tx", () => ({
+  ...jest.requireActual("@osmosis-labs/tx"),
   estimateGasFee: jest.fn(),
 }));
 

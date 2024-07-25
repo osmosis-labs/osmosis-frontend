@@ -1,7 +1,11 @@
 import { Registry } from "@cosmjs/proto-signing";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
-import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
+import {
+  calcAverageBlockTimeMs,
+  cosmosMsgOpts,
+  estimateGasFee,
+} from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeQuoteError } from "../errors";
@@ -17,7 +21,6 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
 
 export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
