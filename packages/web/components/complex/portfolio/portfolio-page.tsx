@@ -104,7 +104,7 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const difference = (dataPoint?.value ?? 0) - firstValueWithFallback;
 
-  const percentage = (difference / firstValueWithFallback) * 100;
+  const percentage = difference / firstValueWithFallback;
 
   const percentageRatePretty = new RatePretty(new Dec(percentage));
 
