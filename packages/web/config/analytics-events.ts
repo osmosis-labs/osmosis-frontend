@@ -52,7 +52,7 @@ export type EventProperties = {
   completed: boolean;
   quoteTimeMilliseconds: number;
   amountDefault: AmountDefault;
-  amount: string;
+  amount: number;
   amountUSD: string | undefined;
   type: string;
   router: string;
@@ -64,6 +64,12 @@ export type EventProperties = {
   source: string;
   spendLimit: number;
   sessionPeriod: string;
+  network: string;
+  bridgeProviderName: string;
+  hasMultipleVariants: boolean;
+  isRecommendedVariant: boolean;
+  walletName: string;
+  transferDirection: "deposit" | "withdraw";
 };
 
 export type UserProperties = {
@@ -244,5 +250,13 @@ export const EventName = {
     endSession: "1CT: End session",
     enableOneClickTrading: "1CT: Enable 1-Click Trading",
     accessed: "1CT: Accessed",
+  },
+  DepositWithdraw: {
+    assetSelected: "DepositWithdraw: Asset selected",
+    networkSelected: "DepositWithdraw: Network selected",
+    providerSelected: "DepositWithdraw: Provider selected",
+    variantSelected: "DepositWithdraw: Variant selected",
+    started: "DepositWithdraw: Started",
+    walletSelected: "DepositWithdraw: Wallet selected",
   },
 };

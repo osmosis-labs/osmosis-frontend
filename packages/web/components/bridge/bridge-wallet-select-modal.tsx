@@ -20,8 +20,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
+import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import {
   useDisconnectEvmWallet,
   useEvmWalletAccount,
@@ -89,6 +90,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const cosmosAccount = cosmosChain
       ? accountStore.getWallet(accountStore.osmosisChainId)
@@ -343,23 +345,24 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                               .toLowerCase()
                               .includes(search.toLowerCase());
                           })
-                          .map((wallet) => {
-                            return (
-                              <WalletButton
-                                key={wallet.id}
-                                onClick={() =>
-                                  onConnectWallet({
-                                    walletType: "evm",
-                                    wallet,
-                                    chainId:
-                                      evmChain.chainId as EthereumChainIds,
-                                  })
-                                }
-                                name={wallet.name}
-                                icon={wallet.icon}
-                              />
-                            );
-                          })}
+                          .map((wallet) => (
+                            <WalletButton
+                              key={wallet.id}
+                              onClick={() => {
+                                onConnectWallet({
+                                  walletType: "evm",
+                                  wallet,
+                                  chainId: evmChain.chainId as EthereumChainIds,
+                                });
+                                logEvent([
+                                  EventName.DepositWithdraw.walletSelected,
+                                  { walletName: wallet.name },
+                                ]);
+                              }}
+                              name={wallet.name}
+                              icon={wallet.icon}
+                            />
+                          ))}
                       </div>
                     </div>
                   )}

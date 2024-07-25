@@ -6,6 +6,8 @@ import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen } from "~/components/screen-manager";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
@@ -36,6 +38,7 @@ export const AmountAndReviewScreen = observer(
   }: AmountAndConfirmationScreenProps) => {
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -81,6 +84,15 @@ export const AmountAndReviewScreen = observer(
       toChain?.chainType === "evm"
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
+
+    const fromWalletName =
+      fromChain?.chainType === "evm"
+        ? evmConnector?.name
+        : fromChainCosmosAccount?.walletInfo.name;
+    const toWalletName =
+      toChain?.chainType === "evm"
+        ? evmConnector?.name
+        : toChainCosmosAccount?.walletInfo.name;
 
     const { data: assetsInOsmosis } =
       api.edge.assets.getCanonicalAssetWithVariants.useQuery(
@@ -229,6 +241,52 @@ export const AmountAndReviewScreen = observer(
                     quote={quote}
                     onCancel={goBack}
                     onConfirm={() => {
+                      const q = quote.selectedQuote?.quote;
+
+                      if (q) {
+                        const variants =
+                          direction === "deposit"
+                            ? Object.keys(fromAsset.supportedVariants)
+                            : counterpartySupportedAssetsByChainId[
+                                toAsset.chainId
+                              ].map(({ address }) => address);
+
+                        const selectedVariant =
+                          direction === "deposit"
+                            ? toAsset.address
+                            : fromAsset.address;
+
+                        /** If there's multiple variants, it's only recommended if
+                         * the selected variant is the first one in the sorted list.
+                         * If there's not multiple variants, it automatiaclly is recommended.
+                         */
+                        const isRecommendedVariant =
+                          variants.length > 1
+                            ? selectedVariant === variants[0]
+                            : true;
+
+                        const walletName =
+                          direction === "deposit"
+                            ? fromWalletName
+                            : toWalletName;
+
+                        logEvent([
+                          EventName.DepositWithdraw.started,
+                          {
+                            amount: Number(q.input.amount.toDec().toString()),
+                            tokenName: q.input.amount.denom,
+                            bridgeProviderName: q.provider.id,
+                            hasMultipleVariants: variants.length > 1,
+                            isRecommendedVariant,
+                            transferDirection: direction,
+                            valueUsd: Number(
+                              q.input.fiatValue.toDec().toString()
+                            ),
+                            walletName,
+                          },
+                        ]);
+                      }
+
                       quote.onTransfer().catch(noop);
                     }}
                     isManualAddress={!isNil(manualToAddress)}
