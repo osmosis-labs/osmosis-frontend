@@ -26,7 +26,7 @@ import { api } from "~/utils/trpc";
  */
 export function useAmountInput({
   currency,
-  inputDebounceMs = 500,
+  inputDebounceMs = 200,
   gasAmount,
 }: {
   currency: Currency | undefined;
@@ -202,10 +202,7 @@ export function useAmountInput({
   return {
     inputAmount: inputAmountWithFraction,
     debouncedInAmount,
-    isTyping:
-      debouncedInAmount && amount
-        ? !amount.toDec().equals(debouncedInAmount.toDec())
-        : false,
+    isTyping: debouncedInAmount?.toString() !== amount?.toString(),
     amount,
     balance,
     fiatValue,

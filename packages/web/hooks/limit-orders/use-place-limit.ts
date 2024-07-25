@@ -483,11 +483,28 @@ export const usePlaceLimit = ({
     orderbookError,
   ]);
 
+  const shouldEstimateLimitGas = useMemo(() => {
+    return (
+      !isMarket &&
+      !!encodedMsg &&
+      !!account?.address &&
+      !insufficientFunds &&
+      !inAmountInput.isTyping &&
+      !marketState.inAmountInput.isTyping
+    );
+  }, [
+    isMarket,
+    encodedMsg,
+    account?.address,
+    insufficientFunds,
+    inAmountInput.isTyping,
+    marketState.inAmountInput.isTyping,
+  ]);
+
   const { data: gasEstimate, isLoading: gasFeeLoading } = useEstimateTxFees({
     chainId: accountStore.osmosisChainId,
     messages: encodedMsg && !isMarket ? [encodedMsg] : [],
-    enabled:
-      !isMarket && !!encodedMsg && !!account?.address && !insufficientFunds,
+    enabled: shouldEstimateLimitGas,
   });
 
   const gasAmountFiat = useMemo(() => {
