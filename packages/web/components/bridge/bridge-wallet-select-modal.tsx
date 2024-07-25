@@ -153,6 +153,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     });
 
     useEffect(() => {
+      // Adjust modal height when connecting to a wallet or switching chain to prevent misalignment.
       if (
         !isNil(connectingWagmiVariables?.connector) ||
         (isEvmWalletConnected && isSwitchingChain)
