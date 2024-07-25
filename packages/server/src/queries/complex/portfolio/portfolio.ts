@@ -8,7 +8,7 @@ export type Range = "1d" | "7d" | "1mo" | "1y" | "all";
 
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-interface GetPortfolioOverTimeResponse {
+export interface ChartPortfolioOverTimeResponse {
   time: string;
   value: number;
 }
@@ -19,7 +19,7 @@ export async function getPortfolioOverTime({
 }: {
   address: string;
   range: Range;
-}): Promise<GetPortfolioOverTimeResponse[]> {
+}): Promise<ChartPortfolioOverTimeResponse[]> {
   return await cachified({
     cache: transactionsCache,
     ttl: 1000 * 60, // 60 seconds
@@ -51,7 +51,7 @@ export async function getPortfolioOverTime({
             acc[d.time] = { ...d };
           }
           return acc;
-        }, {} as Record<string, GetPortfolioOverTimeResponse>) || {}
+        }, {} as Record<string, ChartPortfolioOverTimeResponse>) || {}
       );
 
       return chartData;

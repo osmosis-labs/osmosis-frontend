@@ -1,4 +1,5 @@
 import { getPortfolioOverTime } from "@osmosis-labs/server";
+import { ChartPortfolioOverTimeResponse } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -11,11 +12,15 @@ export const portfolioRouter = createTRPCRouter({
         range: z.enum(["1d", "7d", "1mo", "1y", "all"]),
       })
     )
-    .query(async ({ input: { address, range } }) => {
-      const res = await getPortfolioOverTime({
-        address,
-        range,
-      });
-      return res;
-    }),
+    .query(
+      async ({
+        input: { address, range },
+      }): Promise<ChartPortfolioOverTimeResponse[]> => {
+        const res = await getPortfolioOverTime({
+          address,
+          range,
+        });
+        return res;
+      }
+    ),
 });
