@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -110,6 +111,11 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const formatDate = useFormatDate();
 
+  const differenceRatePretty = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(difference)
+  );
+
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
@@ -118,7 +124,7 @@ export const PortfolioPage: FunctionComponent = () => {
           isTotalValueFetched={isTotalValueFetched}
           portfolioPerformance={
             <PortfolioPerformance
-              value={difference}
+              value={differenceRatePretty}
               percentage={percentageRatePretty}
               date={formatDate(dataPoint.time as string)}
             />
@@ -198,16 +204,13 @@ export const PortfolioPage: FunctionComponent = () => {
 };
 
 const PortfolioPerformance: FunctionComponent<{
-  value: number;
+  value: PricePretty;
   percentage: RatePretty;
   date?: string;
 }> = ({ value, percentage, date }) => {
   return (
     <div className="body1 md:caption flex text-bullish-400">
-      <PriceChange className="ml-2" priceChange={percentage} />
-      {/* <span>
-        {value} {percentage}
-      </span> */}
+      <PriceChange className="ml-2" priceChange={percentage} value={value} />
       <span className="ml-2 text-osmoverse-400">{date}</span>
     </div>
   );
