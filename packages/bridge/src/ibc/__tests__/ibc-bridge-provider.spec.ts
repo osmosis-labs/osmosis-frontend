@@ -1,9 +1,12 @@
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { rest } from "msw";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
+import { server } from "../../__tests__/msw";
 import { BridgeQuoteError } from "../../errors";
 import {
   BridgeProviderContext,
@@ -11,6 +14,7 @@ import {
   GetBridgeQuoteParams,
 } from "../../interface";
 import { IbcBridgeProvider } from "../index";
+import { MockGeneratedChains } from "./mock-chains"; // Ensure this import is correct
 
 jest.mock("@osmosis-labs/tx", () => ({
   ...jest.requireActual("@osmosis-labs/tx"),
@@ -18,6 +22,7 @@ jest.mock("@osmosis-labs/tx", () => ({
 }));
 
 jest.mock("@osmosis-labs/server", () => ({
+  ...jest.requireActual("@osmosis-labs/server"),
   queryRPCStatus: jest.fn().mockResolvedValue({
     jsonrpc: "2.0",
     id: 1,
@@ -127,6 +132,13 @@ describe("IbcBridgeProvider", () => {
   let provider: IbcBridgeProvider;
 
   beforeEach(() => {
+    server.use(
+      rest.get(
+        "https://raw.githubusercontent.com/osmosis-labs/assetlists/main/osmosis-1/generated/frontend/chainlist.json",
+        (_req, res, ctx) =>
+          res(ctx.json({ zone: "osmosis", chains: MockGeneratedChains }))
+      )
+    );
     provider = new IbcBridgeProvider(mockContext);
     jest.clearAllMocks();
   });
