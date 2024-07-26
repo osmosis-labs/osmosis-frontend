@@ -128,6 +128,12 @@ export const ImmersiveBridgeFlow = ({
           onOpen(direction);
           setStep(ImmersiveBridgeScreen.Amount);
           setSelectedAssetDenom(anyDenom);
+          logEvent([
+            EventName.DepositWithdraw.assetSelected,
+            {
+              tokenName: anyDenom,
+            },
+          ]);
         },
         fiatRamp: ({
           fiatRampKey,
@@ -235,11 +241,17 @@ export const ImmersiveBridgeFlow = ({
                               direction ? (
                                 <AssetSelectScreen
                                   type={direction}
-                                  onSelectAsset={(asset) => {
+                                  onSelectAsset={({ coinDenom }) => {
                                     setCurrentScreen(
                                       ImmersiveBridgeScreen.Amount
                                     );
-                                    setSelectedAssetDenom(asset.coinDenom);
+                                    setSelectedAssetDenom(coinDenom);
+                                    logEvent([
+                                      EventName.DepositWithdraw.assetSelected,
+                                      {
+                                        tokenName: coinDenom,
+                                      },
+                                    ]);
                                   }}
                                 />
                               ) : null

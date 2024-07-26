@@ -166,7 +166,7 @@ export const Staking: React.FC = observer(() => {
     : "edit";
 
   const amountDefault = getAmountDefault(stakeTabAmountConfig.fraction);
-  const amount = stakeTabAmountConfig.amount || "0";
+  const amount = Number(stakeTabAmountConfig.amount || "0");
   const amountUSD = priceStore
     .calculatePrice(
       new CoinPretty(osmo, stakeTabAmountConfig.getAmountPrimitive().amount)

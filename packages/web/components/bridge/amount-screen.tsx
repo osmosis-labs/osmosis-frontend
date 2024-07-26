@@ -31,8 +31,10 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
+  useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useDisclosure,
   useTranslation,
@@ -137,6 +139,7 @@ export const AmountScreen = observer(
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
     const { t } = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const {
       selectedQuote,
@@ -654,6 +657,10 @@ export const AmountScreen = observer(
                   setManualToAddress(undefined);
                   resetInput();
                 }
+                logEvent([
+                  EventName.DepositWithdraw.networkSelected,
+                  { network: nextChain.prettyName },
+                ]);
               }}
               readonly={
                 direction === "withdraw" || supportedChains.length === 1
@@ -690,6 +697,10 @@ export const AmountScreen = observer(
                   setManualToAddress(undefined);
                   resetInput();
                 }
+                logEvent([
+                  EventName.DepositWithdraw.networkSelected,
+                  { network: nextChain.prettyName },
+                ]);
               }}
               readonly={direction === "deposit" || supportedChains.length === 1}
               isNetworkSelectVisible={
@@ -969,6 +980,9 @@ export const AmountScreen = observer(
                               )!;
 
                               const onClick = () => {
+                                logEvent([
+                                  EventName.DepositWithdraw.variantSelected,
+                                ]);
                                 setToAsset({
                                   chainType: "cosmos",
                                   address: asset.coinMinimalDenom,
