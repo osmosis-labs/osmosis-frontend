@@ -114,6 +114,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         address: gasAsset?.address ?? gasFee.denom,
         denom: gasAsset?.denom ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
+        coinGeckoId: gasAsset?.coinGeckoId,
         amount: gasFee.amount,
       },
       transactionRequest: signDoc,
@@ -216,6 +217,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         address: feeCurrency.chainSuggestionDenom,
         denom: feeCurrency.coinDenom,
         decimals: feeCurrency.coinDecimals,
+        coinGeckoId: feeCurrency.coinGeckoId,
       };
     }
   }

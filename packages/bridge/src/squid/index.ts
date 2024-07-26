@@ -298,14 +298,13 @@ export class SquidBridgeProvider implements BridgeProvider {
           "address" in counterparty
             ? counterparty.address
             : counterparty.sourceDenom;
-        if (
-          !tokens.some(
-            (t) =>
-              t.address.toLowerCase() === address.toLowerCase() &&
-              t.chainId === counterparty.chainId
-          )
-        )
-          continue;
+
+        const squidToken = tokens.find(
+          (t) =>
+            t.address.toLowerCase() === address.toLowerCase() &&
+            t.chainId === counterparty.chainId
+        );
+        if (!squidToken) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -316,6 +315,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: address,
             denom: c.symbol,
             decimals: c.decimals,
+            coinGeckoId: squidToken.coingeckoId,
           });
         }
         if (counterparty.chainType === "evm") {
@@ -327,6 +327,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: address,
             denom: c.symbol,
             decimals: c.decimals,
+            coinGeckoId: squidToken.coingeckoId,
           });
         }
       }
@@ -367,6 +368,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           denom: variant.symbol,
           address: variant.address,
           decimals: variant.decimals,
+          coinGeckoId: variant.coingeckoId,
         });
       }
 

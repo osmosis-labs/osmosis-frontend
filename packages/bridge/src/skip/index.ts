@@ -173,6 +173,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         let transferFee: BridgeCoin & { chainId: number | string } = {
           ...fromAsset,
+          coinGeckoId: sourceAsset.coingecko_id,
           amount: "0",
           chainId: fromChain.chainId,
         };
@@ -192,6 +193,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                   ? NativeEVMTokenConstantAddress
                   : feeAsset.token_contract!,
               decimals: feeAsset.decimals ?? 6,
+              coinGeckoId: feeAsset.coingecko_id,
             };
           }
         }
@@ -224,11 +226,13 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            coinGeckoId: sourceAsset.coingecko_id,
             ...fromAsset,
             amount: fromAmount,
           },
           expectedOutput: {
             amount: route.amount_out,
+            coinGeckoId: destinationAsset.coingecko_id,
             ...toAsset,
             priceImpact: "0",
           },
@@ -294,12 +298,10 @@ export class SkipBridgeProvider implements BridgeProvider {
           "address" in counterparty
             ? counterparty.address
             : counterparty.sourceDenom;
-        if (
-          !assets[counterparty.chainId]?.assets.some(
-            (a) => a.denom.toLowerCase() === address.toLowerCase()
-          )
-        )
-          continue;
+        const skipCounterparty = assets[counterparty.chainId]?.assets.find(
+          (a) => a.denom.toLowerCase() === address.toLowerCase()
+        );
+        if (!skipCounterparty) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -316,6 +318,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: address,
               denom: c.symbol,
               decimals: c.decimals,
+              coinGeckoId: skipCounterparty.coingecko_id,
             });
           }
         }
@@ -334,6 +337,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: address,
               denom: c.symbol,
               decimals: c.decimals,
+              coinGeckoId: skipCounterparty.coingecko_id,
             });
           }
         }
@@ -379,6 +383,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
             decimals: sharedOriginAsset.decimals ?? asset.decimals,
+            coinGeckoId: sharedOriginAsset.coingecko_id,
           }
         );
       }
@@ -791,10 +796,12 @@ export class SkipBridgeProvider implements BridgeProvider {
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
         address: gasAsset?.denom ?? gasFee.denom,
+        coinGeckoId: gasAsset?.coingecko_id,
       };
     }
   }
 
+  /** @returns 0 gas if state overrides fail. */
   async estimateEvmGasWithStateOverrides(
     provider: ReturnType<typeof createPublicClient>,
     params: GetBridgeQuoteParams,

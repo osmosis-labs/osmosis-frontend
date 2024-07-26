@@ -313,6 +313,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           denom: addressAsset.symbol,
           address: assetAddress,
           decimals: axelarSourceAsset.decimals,
+          coinGeckoId: axelarSourceAsset.coingecko_id,
         }
       );
 
@@ -337,6 +338,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             denom: axelarChain.native_token.symbol,
             address: NativeEVMTokenConstantAddress,
             decimals: axelarChain.native_token.decimals,
+            coinGeckoId: axelarSourceAsset.coingecko_id,
           }
         );
       }
@@ -448,6 +450,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
         address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        coinGeckoId: gasAsset?.coingeckoId,
       };
     }
   }

@@ -132,6 +132,7 @@ describe("SkipBridgeProvider", () => {
       input: {
         amount: "10000000000000000000",
         denom: "ETH",
+        coinGeckoId: "axlweth",
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
@@ -139,6 +140,7 @@ describe("SkipBridgeProvider", () => {
       expectedOutput: {
         amount: "9992274579512577377",
         denom: "WETH",
+        coinGeckoId: "weth",
         address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         decimals: 18,
         priceImpact: "0",
@@ -152,6 +154,7 @@ describe("SkipBridgeProvider", () => {
       transferFee: {
         amount: "7725420487422623",
         denom: "WETH",
+        coinGeckoId: undefined,
         chainId: 1,
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
@@ -182,6 +185,7 @@ describe("SkipBridgeProvider", () => {
       estimatedGasFee: {
         amount: "1232",
         denom: "OSMO",
+        coinGeckoId: "osmosis",
         decimals: 6,
         address: "uosmo",
       },
@@ -227,12 +231,14 @@ describe("SkipBridgeProvider", () => {
       input: {
         amount: "10000000000000000000",
         denom: "WETH",
+        coinGeckoId: "weth",
         address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         decimals: 18,
       },
       expectedOutput: {
         amount: "10000000000000000000",
         denom: "ETH",
+        coinGeckoId: "axlweth",
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
@@ -248,6 +254,7 @@ describe("SkipBridgeProvider", () => {
         amount: "73924361079993",
         denom: "ETH",
         chainId: 1,
+        coinGeckoId: undefined,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },
@@ -574,6 +581,7 @@ describe("SkipBridgeProvider", () => {
           address: "uusdc",
           chainId: "noble-1",
           chainType: "cosmos",
+          coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
         },
@@ -581,6 +589,7 @@ describe("SkipBridgeProvider", () => {
           address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
           chainId: 1,
           chainType: "evm",
+          coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
         },
@@ -589,6 +598,7 @@ describe("SkipBridgeProvider", () => {
             "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
           chainId: "agoric-3",
           chainType: "cosmos",
+          coinGeckoId: "usd-coin",
           denom: "USDC",
           decimals: 6,
         },
@@ -597,6 +607,7 @@ describe("SkipBridgeProvider", () => {
             "ibc/43897B9739BD63E3A08A88191999C632E052724AB96BD4C74AE31375C991F48D",
           chainId: "archway-1",
           chainType: "cosmos",
+          coinGeckoId: "usd-coin",
           denom: "USDC",
           decimals: 6,
         },
@@ -622,6 +633,7 @@ describe("SkipBridgeProvider", () => {
         address: "uusdc",
         chainId: "noble-1",
         chainType: "cosmos",
+        coinGeckoId: "usd-coin",
         decimals: 6,
         denom: "USDC",
       });
@@ -646,6 +658,7 @@ describe("SkipBridgeProvider", () => {
         address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         chainId: 1,
         chainType: "evm",
+        coinGeckoId: "usd-coin",
         decimals: 6,
         denom: "USDC",
       });
