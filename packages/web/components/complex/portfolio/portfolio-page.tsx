@@ -3,36 +3,28 @@ import { PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { PriceChange } from "~/components/assets/price";
-import { DataPoint } from "~/components/complex/portfolio/portfolio-page-types";
+import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
+import { PortfolioHistoricalChart } from "~/components/complex/portfolio/historical-chart";
+import { DataPoint } from "~/components/complex/portfolio/types";
+import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
+import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
+import { RecentTransfers } from "~/components/transactions/recent-transfers";
 import { useFormatDate } from "~/components/transactions/transaction-utils";
-import {
-  useDimension,
-  useTranslation,
-  useWalletSelect,
-  useWindowSize,
-} from "~/hooks";
+import { Button } from "~/components/ui/button";
+import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-import { CreditCardIcon } from "../../assets/credit-card-icon";
-import { Spinner } from "../../loaders";
-import { SkeletonLoader } from "../../loaders/skeleton-loader";
-import { RecentTransfers } from "../../transactions/recent-transfers";
-import { CustomClasses } from "../../types";
-import { Button } from "../../ui/button";
-import { MyPoolsCardsGrid } from "../my-pools-card-grid";
-import { MyPositionsSection } from "../my-positions-section";
-import { PortfolioHistoricalChart } from "./portfolio-historical-chart";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -88,7 +80,7 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const {
     data: portfolioOverTimeData,
-    isFetched: portfolioOverTimeDataIsFetched,
+    isFetched: isPortfolioOverTimeDataIsFetched,
   } = api.edge.portfolio.getPortfolioOverTime.useQuery(
     {
       address,
@@ -99,7 +91,7 @@ export const PortfolioPage: FunctionComponent = () => {
     }
   );
 
-  const firstValue = portfolioOverTimeData?.[1].value;
+  const firstValue = portfolioOverTimeData?.[1]?.value;
 
   const firstValueWithFallback = !firstValue ? 1 : firstValue; // handle first value being 0 or undefined
 
@@ -122,6 +114,7 @@ export const PortfolioPage: FunctionComponent = () => {
         <AssetsOverview
           totalValue={totalValueData}
           isTotalValueFetched={isTotalValueFetched}
+          isPortfolioOverTimeDataIsFetched={isPortfolioOverTimeDataIsFetched}
           portfolioPerformance={
             <PortfolioPerformance
               value={differenceRatePretty}
@@ -135,7 +128,7 @@ export const PortfolioPage: FunctionComponent = () => {
       <section>
         <PortfolioHistoricalChart
           data={portfolioOverTimeData}
-          isFetched={portfolioOverTimeDataIsFetched}
+          isFetched={isPortfolioOverTimeDataIsFetched}
           setDataPoint={setDataPoint}
           range={range}
           setRange={setRange}
@@ -215,84 +208,6 @@ const PortfolioPerformance: FunctionComponent<{
     </div>
   );
 };
-
-const AssetsOverview: FunctionComponent<
-  {
-    totalValue?: PricePretty;
-    isTotalValueFetched?: boolean;
-    portfolioPerformance: React.ReactNode;
-  } & CustomClasses
-> = observer(({ totalValue, isTotalValueFetched, portfolioPerformance }) => {
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const { t } = useTranslation();
-  const { startBridge, fiatRampSelection } = useBridge();
-  const { isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize();
-
-  if (isWalletLoading) return null;
-
-  return (
-    <div className="flex w-full flex-col gap-4">
-      {wallet && wallet.isWalletConnected && wallet.address ? (
-        <>
-          <div className="flex flex-col gap-2">
-            <span className="body1 md:caption text-osmoverse-300">
-              {t("assets.totalBalance")}
-            </span>
-
-            <SkeletonLoader
-              className={classNames(isTotalValueFetched ? null : "h-14 w-48")}
-              isLoaded={isTotalValueFetched}
-            >
-              {isMobile ? (
-                <h5>{totalValue?.toString()}</h5>
-              ) : (
-                <h3>{totalValue?.toString()}</h3>
-              )}
-            </SkeletonLoader>
-            {portfolioPerformance}
-          </div>
-          <div className="flex items-center gap-3 py-3">
-            <Button
-              className="flex items-center gap-2 !rounded-full"
-              onClick={() => startBridge({ direction: "deposit" })}
-            >
-              <Icon id="deposit" className=" h-4 w-4" height={16} width={16} />
-              <div className="subtitle1">{t("assets.table.depositButton")}</div>
-            </Button>
-            <Button
-              className="group flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
-              onClick={fiatRampSelection}
-            >
-              <CreditCardIcon
-                isAnimated
-                classes={{
-                  backCard: "group-hover:stroke-[2]",
-                  frontCard:
-                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-                }}
-              />
-              <span className="subtitle1">{t("portfolio.buy")}</span>
-            </Button>
-            <Button
-              className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
-              onClick={() => startBridge({ direction: "withdraw" })}
-              disabled={totalValue && totalValue.toDec().isZero()}
-            >
-              <Icon id="withdraw" height={16} width={16} />
-              <div className="subtitle1">
-                {t("assets.table.withdrawButton")}
-              </div>
-            </Button>
-          </div>
-        </>
-      ) : (
-        <GetStartedWithOsmosis />
-      )}
-    </div>
-  );
-});
 
 const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
   address,
@@ -399,44 +314,6 @@ const UserZeroBalanceTableSplash: FunctionComponent = () => {
     </div>
   );
 };
-
-const GetStartedWithOsmosis: FunctionComponent = () => {
-  const { chainStore } = useStore();
-  const { t } = useTranslation();
-
-  const { onOpenWalletSelect } = useWalletSelect();
-
-  return (
-    <div className="flex max-w-sm flex-col gap-8">
-      <p className="body1 text-osmoverse-400">{t("portfolio.connectWallet")}</p>
-      <Button
-        className="flex !h-11 w-fit items-center gap-2 !rounded-full !py-1"
-        onClick={() => {
-          onOpenWalletSelect({
-            walletOptions: [
-              { walletType: "cosmos", chainId: chainStore.osmosis.chainId },
-            ],
-          });
-        }}
-      >
-        {t("connectWallet")}
-      </Button>
-    </div>
-  );
-};
-
-const WalletDisconnectedSplash: FunctionComponent = () => (
-  <div className="relative w-full">
-    <Image alt="home" src="/images/chart.png" fill />
-    <Image
-      className="relative top-10 mx-auto"
-      alt="home"
-      src="/images/osmosis-home-fg-coins.svg"
-      width={624}
-      height={298}
-    />
-  </div>
-);
 
 function useUserPositionsData(address: string | undefined) {
   const { data: positions, isLoading: isLoadingUserPositions } =

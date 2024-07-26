@@ -7,10 +7,9 @@ import {
   HistoricalChart,
   HistoricalChartSkeleton,
 } from "~/components/chart/historical-chart";
-import { DataPoint } from "~/components/complex/portfolio/portfolio-page-types";
+import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
+import { DataPoint } from "~/components/complex/portfolio/types";
 import { IconButton } from "~/components/ui/button";
-
-import { PortfolioHistoricalRangeButtonGroup } from "./portfolio-historical-range-button-group";
 
 export const PortfolioHistoricalChart = ({
   data,
