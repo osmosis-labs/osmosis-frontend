@@ -2,7 +2,11 @@ import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
+import {
+  ChartPortfolioOverTimeResponse,
+  Range,
+} from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
+import { AreaData, Time } from "lightweight-charts";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useState } from "react";
@@ -25,6 +29,39 @@ import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+const calculatePortfolioPerformance = (
+  data: ChartPortfolioOverTimeResponse[] | undefined,
+  dataPoint: DataPoint
+): {
+  selectedPercentageRatePretty: RatePretty;
+  selectedDifferencePricePretty: PricePretty;
+  totalPriceChange: number;
+} => {
+  const openingPrice = data?.[0]?.value;
+  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
+  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
+  const selectedPercentage = selectedDifference / openingPriceWithFallback;
+  const selectedPercentageRatePretty = new RatePretty(
+    new Dec(selectedPercentage)
+  );
+
+  const selectedDifferencePricePretty = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(selectedDifference)
+  );
+
+  const closingPrice = data?.[data.length - 1]?.value;
+  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
+
+  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
+
+  return {
+    selectedPercentageRatePretty,
+    selectedDifferencePricePretty,
+    totalPriceChange,
+  };
+};
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -90,23 +127,13 @@ export const PortfolioPage: FunctionComponent = () => {
       enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
     }
   );
-
-  const firstValue = portfolioOverTimeData?.[1]?.value;
-
-  const firstValueWithFallback = !firstValue ? 1 : firstValue; // handle first value being 0 or undefined
-
-  const difference = (dataPoint?.value ?? 0) - firstValueWithFallback;
-
-  const percentage = difference / firstValueWithFallback;
-
-  const percentageRatePretty = new RatePretty(new Dec(percentage));
-
   const formatDate = useFormatDate();
 
-  const differenceRatePretty = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(difference)
-  );
+  const {
+    selectedDifferencePricePretty,
+    selectedPercentageRatePretty,
+    totalPriceChange,
+  } = calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
 
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
@@ -117,8 +144,8 @@ export const PortfolioPage: FunctionComponent = () => {
           isPortfolioOverTimeDataIsFetched={isPortfolioOverTimeDataIsFetched}
           portfolioPerformance={
             <PortfolioPerformance
-              value={differenceRatePretty}
-              percentage={percentageRatePretty}
+              value={selectedDifferencePricePretty}
+              percentage={selectedPercentageRatePretty}
               date={formatDate(dataPoint.time as string)}
             />
           }
@@ -127,12 +154,12 @@ export const PortfolioPage: FunctionComponent = () => {
 
       <section>
         <PortfolioHistoricalChart
-          data={portfolioOverTimeData}
+          data={portfolioOverTimeData as AreaData<Time>[]}
           isFetched={isPortfolioOverTimeDataIsFetched}
           setDataPoint={setDataPoint}
           range={range}
           setRange={setRange}
-          percentage={percentage}
+          totalPriceChange={totalPriceChange}
         />
       </section>
 

@@ -11,34 +11,34 @@ import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfo
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { IconButton } from "~/components/ui/button";
 
+const getChartStyle = (
+  difference: number
+): "bullish" | "bearish" | "neutral" => {
+  const percentageDec = new Dec(difference);
+  if (percentageDec.isPositive()) {
+    return "bullish";
+  } else if (percentageDec.isNegative()) {
+    return "bearish";
+  } else {
+    return "neutral";
+  }
+};
+
 export const PortfolioHistoricalChart = ({
   data,
   isFetched,
   setDataPoint,
   range,
   setRange,
-  percentage,
+  totalPriceChange,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
   setDataPoint: (point: DataPoint) => void;
   range: Range;
   setRange: (range: Range) => void;
-  percentage: number;
+  totalPriceChange: number;
 }) => {
-  const getChartConfig = (
-    percentage: number
-  ): "bullish" | "bearish" | "neutral" => {
-    const percentageDec = new Dec(percentage);
-    if (percentageDec.isPositive()) {
-      return "bullish";
-    } else if (percentageDec.isNegative()) {
-      return "bearish";
-    } else {
-      return "neutral";
-    }
-  };
-
   return (
     <section className="relative flex flex-col justify-between gap-3">
       <div className="h-[400px] w-full xl:h-[476px]">
@@ -48,7 +48,7 @@ export const PortfolioHistoricalChart = ({
           <HistoricalChart
             data={data as AreaData<Time>[]}
             onPointerHover={(value, time) => setDataPoint({ value, time })}
-            config={getChartConfig(percentage)}
+            style={getChartStyle(totalPriceChange)}
           />
         )}
       </div>

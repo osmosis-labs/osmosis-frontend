@@ -18,7 +18,7 @@ import { getDecimalCount } from "~/utils/number";
 
 import { Chart } from "./light-weight-charts/chart";
 
-const getSeriesOpt = (config: Config): DeepPartial<AreaSeriesOptions> => {
+const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
   let lineColor, topColor, bottomColor, crosshairMarkerBorderColor;
 
   switch (config) {
@@ -63,17 +63,17 @@ const getSeriesOpt = (config: Config): DeepPartial<AreaSeriesOptions> => {
   };
 };
 
-type Config = "bullish" | "bearish" | "neutral";
+type Style = "bullish" | "bearish" | "neutral";
 
 interface HistoricalChartProps {
   data: AreaData<Time>[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
-  config: Config;
+  style?: Style;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
-  const { data = [], onPointerHover, onPointerOut, config = "neutral" } = props;
+  const { data = [], onPointerHover, onPointerOut, style = "neutral" } = props;
 
   return (
     <Chart
@@ -82,7 +82,7 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
         {
           type: "Area",
           options: {
-            ...getSeriesOpt(config),
+            ...getSeriesOpt(style),
             autoscaleInfoProvider: () => {
               const values = data
                 .map((entry) => entry.value)
