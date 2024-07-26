@@ -1,3 +1,4 @@
+import { DecUtils } from "@keplr-wallet/unit";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, PropsWithChildren } from "react";
@@ -174,6 +175,11 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   showRemainingTime = false,
 }) => {
   const totalFees = selectedQuote.quote.totalFeeFiatValue;
+  const showTotalFeeIneqSymbol = totalFees
+    ? totalFees
+        .toDec()
+        .lt(DecUtils.getTenExponentN(totalFees.fiatCurrency.maxDecimals))
+    : false;
 
   return (
     <div className="flex items-center gap-2 md:gap-1">
@@ -187,7 +193,8 @@ export const ExpandDetailsControlContent: FunctionComponent<{
       <div className="flex items-center gap-2 md:gap-1">
         {!open && totalFees && (
           <span className="subtitle1 md:body2">
-            ~ {totalFees.inequalitySymbol(false).toString()}{" "}
+            {!showTotalFeeIneqSymbol && "~"}{" "}
+            {totalFees.inequalitySymbol(showTotalFeeIneqSymbol).toString()}{" "}
             {t("transfer.fees")}
           </span>
         )}
