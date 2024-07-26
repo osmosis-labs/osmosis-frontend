@@ -917,6 +917,7 @@
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",
     "transfer": "انتقال {denom}",
+    "changeNetworkInWallet": "تغییر شبکه در کیف پول",
     "receive": "دریافت {denom}",
     "selectDepositWallet": "کیف پول سپرده را انتخاب کنید",
     "selectWithdrawWallet": "برداشت کیف پول را انتخاب کنید",

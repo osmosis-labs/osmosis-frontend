@@ -917,6 +917,7 @@
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",
     "transfer": "{denom} 전송",
+    "changeNetworkInWallet": "지갑에서 네트워크 변경",
     "receive": "{denom} 수신",
     "selectDepositWallet": "예금 지갑 선택",
     "selectWithdrawWallet": "지갑 출금 선택",

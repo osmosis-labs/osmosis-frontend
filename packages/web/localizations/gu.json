@@ -917,6 +917,7 @@
     "transferTo": "પર ટ્રાન્સફર કરો",
     "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
     "transfer": "ટ્રાન્સફર {denom}",
+    "changeNetworkInWallet": "વૉલેટમાં નેટવર્ક બદલો",
     "receive": "{denom} મેળવો",
     "selectDepositWallet": "ડિપોઝિટ વૉલેટ પસંદ કરો",
     "selectWithdrawWallet": "પાકીટ ઉપાડવાનું પસંદ કરો",

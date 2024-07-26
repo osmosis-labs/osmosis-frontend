@@ -917,6 +917,7 @@
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",
     "transfer": "Przelew {denom}",
+    "changeNetworkInWallet": "Zmień sieć w portfelu",
     "receive": "Odbierz {denom}",
     "selectDepositWallet": "Wybierz portfel depozytowy",
     "selectWithdrawWallet": "Wybierz opcję wypłaty portfela",

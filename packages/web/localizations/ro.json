@@ -917,6 +917,7 @@
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",
     "transfer": "Transferați {denom}",
+    "changeNetworkInWallet": "Schimbați rețeaua în portofel",
     "receive": "Primiți {denom}",
     "selectDepositWallet": "Selectați portofelul de depozit",
     "selectWithdrawWallet": "Selectați Retrage portofel",

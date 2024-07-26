@@ -917,6 +917,7 @@
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",
     "transfer": "転送{denom}",
+    "changeNetworkInWallet": "ウォレットのネットワークを変更する",
     "receive": "{denom}受け取る",
     "selectDepositWallet": "入金ウォレットを選択",
     "selectWithdrawWallet": "引き出しウォレットを選択",

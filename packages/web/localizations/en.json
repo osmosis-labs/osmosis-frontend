@@ -917,6 +917,7 @@
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",
     "transfer": "Transfer {denom}",
+    "changeNetworkInWallet": "Change network in wallet",
     "receive": "Receive {denom}",
     "selectDepositWallet": "Select deposit wallet",
     "selectWithdrawWallet": "Select withdraw wallet",

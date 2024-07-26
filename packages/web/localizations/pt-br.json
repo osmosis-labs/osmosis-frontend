@@ -917,6 +917,7 @@
     "transferTo": "Transferir para",
     "receiveAsset": "Receber ativo",
     "transfer": "Transferir {denom}",
+    "changeNetworkInWallet": "Alterar rede na carteira",
     "receive": "Receba {denom}",
     "selectDepositWallet": "Selecione carteira de depósito",
     "selectWithdrawWallet": "Selecione retirar carteira",

@@ -917,6 +917,7 @@
     "transferTo": "传送到",
     "receiveAsset": "接收资产",
     "transfer": "转移{denom}",
+    "changeNetworkInWallet": "更改钱包中的网络",
     "receive": "接收{denom}",
     "selectDepositWallet": "选择存款钱包",
     "selectWithdrawWallet": "选择提现钱包",

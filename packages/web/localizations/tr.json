@@ -917,6 +917,7 @@
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",
     "transfer": "{denom}",
+    "changeNetworkInWallet": "M-cüzdandaki ağı değiştir",
     "receive": "{denom}",
     "selectDepositWallet": "Para yatırma cüzdanını seçin",
     "selectWithdrawWallet": "Cüzdan çekmeyi seçin",
