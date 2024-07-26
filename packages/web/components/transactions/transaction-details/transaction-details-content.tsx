@@ -67,6 +67,16 @@ export const TransactionDetailsContent = ({
     );
   }, [conversion.numerator, conversion.denominator]);
 
+  // if USDC, toggle conversion - temporary until stablecoin logic is implemented
+  useEffect(() => {
+    if (
+      conversion.numerator.denom !== "USDC" &&
+      conversion.denominator.denom === "USDC"
+    ) {
+      toggleConversion();
+    }
+  });
+
   const { logEvent } = useAmplitudeAnalytics();
 
   const status = transaction.code === 0 ? "success" : "failed";
