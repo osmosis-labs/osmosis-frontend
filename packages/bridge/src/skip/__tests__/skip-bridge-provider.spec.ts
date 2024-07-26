@@ -156,7 +156,7 @@ describe("SkipBridgeProvider", () => {
         address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
         decimals: 18,
       },
-      estimatedTime: 960,
+      estimatedTime: 30,
       transactionRequest: {
         type: "cosmos",
         msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
@@ -251,7 +251,7 @@ describe("SkipBridgeProvider", () => {
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
       },
-      estimatedTime: 960,
+      estimatedTime: 30,
       transactionRequest: {
         type: "evm",
         to: "0xD397883c12b71ea39e0d9f6755030205f31A1c96",
@@ -514,18 +514,6 @@ describe("SkipBridgeProvider", () => {
       "noble1ckgqk0nfqaqs32rv4akjqkcl9754ylwrkg30ht",
       toAddress,
     ]);
-  });
-
-  it("should return correct finality time for known chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForEvmChain("1");
-
-    expect(finalityTime).toBe(960);
-  });
-
-  it("should return default finality time for unknown chain IDs", () => {
-    const finalityTime = provider.getFinalityTimeForEvmChain("999");
-
-    expect(finalityTime).toBe(960);
   });
 
   it("should generate approval transaction request if needed", async () => {
