@@ -9,7 +9,7 @@ export type Range = "1d" | "7d" | "1mo" | "1y" | "all";
 const transactionsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export interface ChartPortfolioOverTimeResponse {
-  time: string;
+  time: number;
   value: number;
 }
 
@@ -38,24 +38,12 @@ export async function getPortfolioOverTime({
 
       // map data to time and value for chart
       const mappedData = sortedData.map((d) => ({
-        time: d.timestamp.split(" ")[0],
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#get_the_number_of_seconds_since_the_ecmascript_epoch
+        time: Math.floor(new Date(d.timestamp).getTime() / 1000), // convert to seconds
         value: d.usd,
       }));
 
-      // potentially remove this for 1h charts
-      // merge data with the same date / take an average of values per date
-      const chartData = Object.values(
-        mappedData?.reduce((acc, d) => {
-          if (acc[d.time]) {
-            acc[d.time].value = (acc[d.time].value + d.value) / 2;
-          } else {
-            acc[d.time] = { ...d };
-          }
-          return acc;
-        }, {} as Record<string, ChartPortfolioOverTimeResponse>) || {}
-      );
-
-      return chartData;
+      return mappedData;
     },
   });
 }
