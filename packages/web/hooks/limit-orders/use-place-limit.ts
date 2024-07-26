@@ -33,6 +33,7 @@ export interface UsePlaceLimitParams {
   quoteDenom: string;
   type: "limit" | "market";
   page: EventPage;
+  maxSlippage?: Dec;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -49,6 +50,7 @@ export const usePlaceLimit = ({
   useOtherCurrencies = true,
   type,
   page,
+  maxSlippage,
 }: UsePlaceLimitParams) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -78,8 +80,7 @@ export const usePlaceLimit = ({
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
     useOtherCurrencies,
-    // forceSwapInPoolId: poolId,
-    maxSlippage: new Dec(0.1),
+    maxSlippage,
   });
 
   const quoteAsset = swapAssets.toAsset;

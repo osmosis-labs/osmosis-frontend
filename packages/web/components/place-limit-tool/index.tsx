@@ -1,4 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -18,10 +19,15 @@ import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
-import { useDisclosure, useTranslation, useWalletSelect } from "~/hooks";
+import {
+  useDisclosure,
+  useSlippageConfig,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
 import { usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
-import { ReviewLimitOrderModal } from "~/modals/review-limit-order";
+import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
 
 export interface PlaceLimitToolProps {
@@ -48,6 +54,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       tab: parseAsString,
       to: parseAsString,
     });
+    const [isSendingTx, setIsSendingTx] = useState(false);
 
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
@@ -66,6 +73,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const { onOpenWalletSelect } = useWalletSelect();
 
+    const slippageConfig = useSlippageConfig();
+
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
@@ -74,6 +83,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       quoteDenom: quote,
       type,
       page,
+      maxSlippage: slippageConfig.slippage.toDec(),
     });
 
     // Adjust price to base price if the type changes to "market"
@@ -149,6 +159,37 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
       );
     }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
+
+    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
+      // Compute ratio of 1 - slippage
+      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+
+      // Compute out amount less slippage
+      const outAmountLessSlippage =
+        swapState.marketState.quote && swapState.marketState.toAsset
+          ? new IntPretty(
+              swapState.marketState.quote.amount.toDec().mul(oneMinusSlippage)
+            )
+          : undefined;
+
+      // Compute out fiat amount less slippage
+      const outFiatAmountLessSlippage = swapState.marketState.tokenOutFiatValue
+        ? new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            swapState.marketState.tokenOutFiatValue
+              ?.toDec()
+              .mul(oneMinusSlippage)
+          )
+        : undefined;
+
+      return { outAmountLessSlippage, outFiatAmountLessSlippage };
+    }, [
+      slippageConfig.slippage,
+      swapState.marketState.quote,
+      swapState.marketState.toAsset,
+      swapState.marketState.tokenOutFiatValue,
+    ]);
+
     return (
       <>
         <div className="flex flex-col gap-3">
@@ -273,14 +314,44 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 )}
               </>
             )}
+            <>
+              {swapState.isMarket ? (
+                <TradeDetails
+                  swapState={swapState.marketState}
+                  // inDenom={swapState.baseAsset?.coinDenom}
+                  // inPrice={
+                  //   new PricePretty(
+                  //     DEFAULT_VS_CURRENCY,
+                  //     swapState.priceState.spotPrice
+                  //   )
+                  // }
+                />
+              ) : (
+                <LimitTradeDetails swapState={swapState} />
+              )}
+            </>
           </div>
         </div>
-        <ReviewLimitOrderModal
-          placeLimitState={swapState}
-          orderDirection={orderDirection}
+        <ReviewOrder
+          title="Review trade"
+          confirmAction={async () => {
+            setIsSendingTx(true);
+            await swapState.placeLimit();
+            swapState.reset();
+            setReviewOpen(false);
+            setIsSendingTx(false);
+          }}
+          outAmountLessSlippage={outAmountLessSlippage}
+          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          isConfirmationDisabled={isSendingTx}
           isOpen={reviewOpen}
-          makerFee={swapState.makerFee}
-          onRequestClose={() => setReviewOpen(false)}
+          onClose={() => setReviewOpen(false)}
+          swapState={swapState.marketState}
+          orderType={type}
+          percentAdjusted={swapState.priceState.percentAdjusted}
+          limitPriceFiat={swapState.priceState.priceFiat}
+          baseDenom={swapState.baseAsset?.coinDenom}
+          slippageConfig={slippageConfig}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
