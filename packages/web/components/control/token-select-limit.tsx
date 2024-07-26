@@ -173,8 +173,8 @@ export const TokenSelectLimit: FunctionComponent<
           </div>
         </button>
         <PriceSelector
-          showQuoteBalance={showQuoteBalance}
-          tokenSelectionAvailable={tokenSelectionAvailable}
+          // showQuoteBalance={showQuoteBalance}
+          // tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
         />
         <TokenSelectModalLimit

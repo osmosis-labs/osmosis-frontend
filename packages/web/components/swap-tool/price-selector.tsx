@@ -19,10 +19,7 @@ import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-interface PriceSelectorProps {
-  tokenSelectionAvailable: boolean;
-  showQuoteBalance: boolean;
-}
+interface PriceSelectorProps {}
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
@@ -40,11 +37,7 @@ function sortByAmount(
 }
 
 export const PriceSelector = memo(
-  ({
-    tokenSelectionAvailable,
-    disabled,
-    showQuoteBalance,
-  }: PriceSelectorProps & Disableable) => {
+  ({ disabled }: PriceSelectorProps & Disableable) => {
     const { t } = useTranslation();
 
     const [tab, setTab] = useQueryState("tab");
@@ -153,11 +146,6 @@ export const PriceSelector = memo(
         : defaultQuotesWithBalances;
     }, [defaultQuotesWithBalances, tab, userQuotesWithoutBalances]);
 
-    const quoteAssetWithBalance = useMemo(
-      () => userQuotes?.find(({ symbol }) => symbol === quote),
-      [quote, userQuotes]
-    );
-
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
@@ -169,17 +157,18 @@ export const PriceSelector = memo(
         <Menu as="div" className="relative inline-block">
           {({ open }) => (
             <>
-              <Menu.Button className="flex w-full items-center justify-between rounded-b-2xl border-t border-t-osmoverse-700 bg-osmoverse-850 p-5 md:justify-start">
+              <Menu.Button
+                className="flex items-center justify-between"
+                disabled={disabled || selectableQuotes.length === 0}
+              >
                 <div className="flex w-full items-center justify-between">
                   {quoteAsset && (
                     <div
                       className={classNames(
-                        "flex items-center gap-2 transition-opacity",
-                        tokenSelectionAvailable
-                          ? "cursor-pointer"
-                          : "cursor-default",
+                        "flex items-center gap-1 transition-opacity",
                         {
-                          "opacity-40": disabled,
+                          "pointer-events-none opacity-40":
+                            disabled || selectableQuotes.length === 0,
                         }
                       )}
                     >
@@ -188,49 +177,37 @@ export const PriceSelector = memo(
                           ? t("limitOrders.payWith")
                           : t("limitOrders.receive")}
                       </span>
-                      {quoteAsset.logoURIs && (
-                        <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                          <Image
-                            src={
-                              quoteAsset.logoURIs.svg ||
-                              quoteAsset.logoURIs.png ||
-                              ""
+                      <div className="flex items-center gap-2 py-1 pl-1 pr-3">
+                        {quoteAsset.logoURIs && (
+                          <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
+                            <Image
+                              src={
+                                quoteAsset.logoURIs.svg ||
+                                quoteAsset.logoURIs.png ||
+                                ""
+                              }
+                              alt={`${quoteAsset.symbol} icon`}
+                              width={24}
+                              height={24}
+                              priority
+                            />
+                          </div>
+                        )}
+                        <span className="md:caption body2 text-left">
+                          {quoteAsset.symbol}
+                        </span>
+                        <Icon
+                          id="chevron-down"
+                          className={classNames(
+                            "h-[7px] w-3 text-wosmongton-200 transition-transform",
+                            {
+                              "rotate-180": open,
                             }
-                            alt={`${quoteAsset.symbol} icon`}
-                            width={24}
-                            height={24}
-                            priority
-                          />
-                        </div>
-                      )}
-                      <span className="md:caption body2 w-32 truncate text-left">
-                        {quoteAsset.symbol}
-                      </span>
+                          )}
+                        />
+                      </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-1">
-                    {showQuoteBalance &&
-                      quoteAssetWithBalance &&
-                      quoteAssetWithBalance.usdValue && (
-                        <span className="body2 inline-flex text-osmoverse-300">
-                          {formatPretty(quoteAssetWithBalance.usdValue, {
-                            minimumFractionDigits: 5,
-                          })}{" "}
-                          {t("pool.available").toLowerCase()}
-                        </span>
-                      )}
-                    <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="chevron-down"
-                        className={classNames(
-                          "h-[7px] w-3 text-osmoverse-300 transition-transform",
-                          {
-                            "rotate-180": open,
-                          }
-                        )}
-                      />
-                    </div>
-                  </div>
                 </div>
               </Menu.Button>
               <Transition
@@ -242,7 +219,7 @@ export const PriceSelector = memo(
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute left-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+                <Menu.Items className="absolute right-0 z-50 flex w-[384px] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
                   <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
                     <SelectableQuotes
                       selectableQuotes={selectableQuotes}

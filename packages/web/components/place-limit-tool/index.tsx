@@ -18,6 +18,7 @@ import {
 import { Icon } from "~/components/assets/icon";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
@@ -358,7 +359,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </div>
             </div>
             <div className="flex w-full items-center justify-between pb-4">
-              <span className="body2 h-5 transition-opacity">
+              <span className="body2 h-5 text-osmoverse-300 transition-opacity">
                 {focused === "token" && <span>$</span>}
                 {trimPlaceholderZeros(
                   (
@@ -379,6 +380,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   </span>
                 )}
               </span>
+              <PriceSelector />
             </div>
           </div>
           <div
