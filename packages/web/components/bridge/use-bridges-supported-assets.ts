@@ -195,7 +195,7 @@ export const useBridgesSupportedAssets = ({
         "providerName"
       >[]
     >;
-  }, [successfulQueries, isLoading]);
+  }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
     return Array.from(
