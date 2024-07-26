@@ -1,7 +1,11 @@
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { MinimalAsset } from "@osmosis-labs/types";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { useRouter } from "next/router";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
@@ -11,15 +15,13 @@ import {
   useState,
 } from "react";
 
-import { TokenSelectLimit } from "~/components/control/token-select-limit";
-import { LimitInput } from "~/components/input/limit-input";
+import { Icon } from "~/components/assets/icon";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
-import { LimitTradeDetails } from "~/components/place-limit-tool/limit-trade-details";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
-import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
-import { EventPage } from "~/config";
+import { EventName, EventPage } from "~/config";
 import {
+  useAmplitudeAnalytics,
   useDisclosure,
   useSlippageConfig,
   useTranslation,
@@ -28,13 +30,30 @@ import {
 import { usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
+import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
 }
 
-const WHALE_MESSAGE_THRESHOLD = 100;
+const transformAmount = (value: string, decimalCount = 18) => {
+  let updatedValue = value;
+  if (value.endsWith(".") && value.length === 1) {
+    updatedValue = value + "0";
+  }
+
+  if (value.startsWith(".")) {
+    updatedValue = "0" + value;
+  }
+
+  const decimals = countDecimals(updatedValue);
+  return decimals > decimalCount
+    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
+    : updatedValue;
+};
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
@@ -110,24 +129,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [swapState.baseTokenBalance, swapState.quoteTokenBalance, tab]
     );
 
-    const getInputWidgetLabel = () => {
-      switch (true) {
-        case swapState.insufficientFunds:
-          return t("limitOrders.insufficientFunds");
-        case +swapState.inAmountInput.inputAmount > WHALE_MESSAGE_THRESHOLD:
-          return t("limitOrders.watchOut");
-        default:
-          return (
-            <>
-              {t("limitOrders.enterAnAmountTo")}{" "}
-              {orderDirection === "bid"
-                ? t("portfolio.buy").toLowerCase()
-                : t("limitOrders.sell").toLowerCase()}
-            </>
-          );
-      }
-    };
-
     const buttonText = useMemo(() => {
       if (swapState.error) {
         return t(swapState.error);
@@ -190,16 +191,95 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.tokenOutFiatValue,
     ]);
 
+    const [focused, setFocused] = useState<"fiat" | "token">(
+      tab === "buy" ? "fiat" : "token"
+    );
+
+    const [fiatAmount, setFiatAmount] = useState<string>("");
+
+    const setAmountSafe = useCallback(
+      (type: "fiat" | "token", value?: string) => {
+        const update =
+          type === "fiat" ? setFiatAmount : swapState.inAmountInput.setAmount;
+        const setMarketAmount = swapState.marketState.inAmountInput.setAmount;
+
+        if (!value?.trim()) {
+          if (type === "fiat") {
+            setMarketAmount("");
+          }
+          return update("");
+        }
+
+        const updatedValue = transformAmount(
+          value,
+          type === "fiat" ? 6 : swapState.baseAsset?.coinDecimals
+        ).trim();
+
+        if (
+          !isValidNumericalRawInput(updatedValue) ||
+          updatedValue.length > 26 ||
+          (updatedValue.length > 0 && updatedValue.startsWith("-"))
+        ) {
+          return;
+        }
+
+        const isFocused = focused === type;
+
+        // Hacky solution to deal with rounding
+        // TODO: Investigate a way to improve this
+        if (type === "fiat" && tab === "buy") {
+          setMarketAmount(
+            new Dec(updatedValue)
+              .quo(swapState.quoteAssetPrice.toDec())
+              .toString()
+          );
+        }
+
+        update(
+          parseFloat(updatedValue) !== 0 && !isFocused
+            ? trimPlaceholderZeros(updatedValue)
+            : updatedValue
+        );
+      },
+      [
+        focused,
+        swapState.baseAsset?.coinDecimals,
+        swapState.inAmountInput.setAmount,
+        swapState.marketState.inAmountInput.setAmount,
+        swapState.quoteAssetPrice,
+        tab,
+      ]
+    );
+
+    const expectedOutput = useMemo(
+      () => swapState.marketState.quote?.amount.toDec(),
+      [swapState.marketState.quote?.amount]
+    );
+
+    const toggleMax = useCallback(() => {
+      if (tab === "buy") {
+        return setAmountSafe(
+          "fiat",
+          swapState.quoteTokenBalance?.toDec().toString() ?? ""
+        );
+      }
+
+      return setAmountSafe(
+        "token",
+        swapState.baseTokenBalance?.toDec().toString() ?? ""
+      );
+    }, [
+      tab,
+      setAmountSafe,
+      swapState.baseTokenBalance,
+      swapState.quoteTokenBalance,
+    ]);
+
     return (
       <>
         <div className="flex flex-col gap-3">
-          <div
-            className={classNames("flex gap-3", {
-              "flex-col": !fromAssetsPage,
-              "flex-col-reverse": fromAssetsPage,
-            })}
-          >
-            <TokenSelectLimit
+          <div className="flex flex-col">
+            {/* <TokenSelectLimit
               selectableAssets={selectableBaseAssets}
               baseAsset={swapState.baseAsset!}
               quoteAsset={swapState.quoteAsset!}
@@ -208,46 +288,97 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               onTokenSelect={setBase}
               disabled={false}
               orderDirection={orderDirection}
-            />
+            /> */}
             {type === "limit" && (
               <LimitPriceSelector
                 swapState={swapState}
                 orderDirection={orderDirection}
               />
             )}
-            <div className="relative flex flex-col rounded-2xl bg-osmoverse-1000">
-              <p
+            <div className="flex w-full items-center justify-between pt-3">
+              <span className="body2 text-osmoverse-300">
+                {t("limitOrders.enterAnAmountTo")}{" "}
+                {orderDirection === "bid"
+                  ? t("portfolio.buy").toLowerCase()
+                  : t("limitOrders.sell").toLowerCase()}
+              </span>
+              <div
                 className={classNames(
-                  "body2 p-4 text-center text-osmoverse-400",
-                  { "text-rust-300": swapState.insufficientFunds }
+                  "flex items-center gap-2 transition-opacity",
+                  { "opacity-0": !hasFunds }
                 )}
               >
-                {getInputWidgetLabel()}
-              </p>
-              <LimitInput
-                onChange={swapState.inAmountInput.setAmount}
-                baseAsset={swapState.baseAsset!}
-                tokenAmount={swapState.inAmountInput.inputAmount}
-                price={
-                  type === "market"
-                    ? orderDirection === "bid"
-                      ? swapState.priceState.askSpotPrice!
-                      : swapState.priceState.bidSpotPrice!
-                    : swapState.priceState.price
-                }
-                disableSwitching={type === "market"}
-                setMarketAmount={swapState.marketState.inAmountInput.setAmount}
-                quoteAssetPrice={swapState.quoteAssetPrice.toDec()}
-                expectedOutput={swapState.marketState.quote?.amount.toDec()}
-                expectedOutputLoading={
-                  swapState.marketState.inAmountInput.isTyping ||
-                  swapState.marketState.isQuoteLoading ||
-                  !!swapState.marketState.isLoadingNetworkFee
-                }
-                quoteBalance={swapState.quoteTokenBalance?.toDec()}
-                baseBalance={swapState.baseTokenBalance?.toDec()}
-                insufficientFunds={swapState.insufficientFunds}
-              />
+                <span>
+                  {tab === "buy"
+                    ? swapState.quoteAsset?.usdValue &&
+                      formatPretty(swapState.quoteAsset?.usdValue)
+                    : swapState.baseTokenBalance &&
+                      formatPretty(swapState.baseTokenBalance)}{" "}
+                  {t("pool.available").toLowerCase()}
+                </span>
+                <button
+                  type="button"
+                  className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
+                  onClick={toggleMax}
+                >
+                  <span className="body2 text-wosmongton-300">Max</span>
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center">
+                {focused === "fiat" && <h3>$</h3>}
+                <input
+                  className="w-full bg-transparent text-h3 font-h3"
+                  placeholder="0"
+                  onChange={(e) => setAmountSafe(focused, e.target.value)}
+                  value={
+                    focused === "fiat"
+                      ? type === "market" && tab === "sell"
+                        ? trimPlaceholderZeros(
+                            (expectedOutput ?? new Dec(0)).toString()
+                          )
+                        : fiatAmount
+                      : type === "market" && tab === "buy"
+                      ? trimPlaceholderZeros(
+                          (expectedOutput ?? new Dec(0)).toString()
+                        )
+                      : swapState.inAmountInput.inputAmount
+                  }
+                />
+              </div>
+              <div className="flex pl-3">
+                <TokenSelect
+                  onSelect={setBase}
+                  selectableAssets={selectableBaseAssets}
+                  orderDirection={orderDirection}
+                  selectedCoinDenom={swapState.baseAsset?.coinDenom}
+                  selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
+                />
+              </div>
+            </div>
+            <div className="flex w-full items-center justify-between pb-4">
+              <span className="body2 h-5 transition-opacity">
+                {focused === "token" && <span>$</span>}
+                {trimPlaceholderZeros(
+                  (
+                    swapState.marketState.quote?.amount.hideDenom(true) ??
+                    new Dec(0)
+                  ).toString()
+                )}{" "}
+                {focused === "fiat" && (
+                  <span>{swapState.baseAsset?.coinDenom}</span>
+                )}{" "}
+                {swapState.marketState.quote?.priceImpactTokenOut && (
+                  <span className="text-osmoverse-500">
+                    &#40;-
+                    {formatPretty(
+                      swapState.marketState.quote?.priceImpactTokenOut
+                    )}
+                    &#41;
+                  </span>
+                )}
+              </span>
             </div>
           </div>
           <div
@@ -256,7 +387,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               "flex-col-reverse": fromAssetsPage,
             })}
           >
-            <>
+            {/* <>
               {!swapState.isMarket && (
                 <LimitTradeDetails swapState={swapState} />
               )}
@@ -266,7 +397,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   treatAsStable={orderDirection === "bid" ? "in" : "out"}
                 />
               )}
-            </>
+            </> */}
             {!account?.isWalletConnected ? (
               <Button
                 onClick={() =>
@@ -314,7 +445,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 )}
               </>
             )}
-            <>
+            {/* <>
               {swapState.isMarket ? (
                 <TradeDetails
                   swapState={swapState.marketState}
@@ -329,7 +460,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               ) : (
                 <LimitTradeDetails swapState={swapState} />
               )}
-            </>
+            </> */}
           </div>
         </div>
         <ReviewOrder
@@ -369,3 +500,109 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
   }
 );
+
+interface TokenSelectProps {
+  selectableAssets: (MinimalAsset | undefined)[];
+  selectedCoinImageUrl?: string;
+  selectedCoinDenom?: string;
+  orderDirection?: string;
+  onSelect: (denom: string) => void;
+}
+
+function TokenSelect({
+  selectableAssets,
+  selectedCoinImageUrl,
+  selectedCoinDenom,
+  orderDirection,
+  onSelect: onOriginalSelect,
+}: TokenSelectProps) {
+  const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const {
+    isOpen: isSelectOpen,
+    onOpen: openSelect,
+    onClose: closeSelect,
+  } = useDisclosure();
+
+  const router = useRouter();
+
+  const onSelect = (tokenDenom: string) => {
+    logEvent([
+      EventName.Swap.dropdownAssetSelected,
+      {
+        tokenName: tokenDenom,
+        isOnHome: router.pathname === "/",
+        page: "Swap Page",
+      },
+    ]);
+    onOriginalSelect(tokenDenom);
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        className="flex items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (selectableAssets.length > 0) {
+            openSelect();
+          }
+        }}
+      >
+        <div className="flex items-center gap-3">
+          {selectedCoinImageUrl && (
+            <Image
+              src={selectedCoinImageUrl}
+              alt={`${selectedCoinDenom} image`}
+              width={40}
+              height={40}
+              className="h-10 min-w-10 rounded-full"
+            />
+          )}
+          <h5>{selectedCoinDenom}</h5>
+        </div>
+        <div className="flex h-6 w-6 items-center justify-center">
+          <Icon
+            id="chevron-down"
+            width={16}
+            height={16}
+            className="text-osmoverse-400"
+          />
+        </div>
+      </button>
+      <TokenSelectModalLimit
+        headerTitle={
+          orderDirection === "ask"
+            ? t("limitOrders.selectAnAssetTo.sell")
+            : t("limitOrders.selectAnAssetTo.buy")
+        }
+        isOpen={isSelectOpen}
+        onClose={closeSelect}
+        onSelect={onSelect}
+        showSearchBox
+        selectableAssets={selectableAssets}
+      />
+    </>
+  );
+}
+
+// function SwapArrows() {
+//   return (
+//     <div className="ml-1 flex h-12 w-14 items-center">
+//       <Icon
+//         id="arrow-right"
+//         className="h-full w-auto rotate-90 text-wosmongton-200"
+//         width={16}
+//         height={24}
+//       />
+//       <Icon
+//         id="arrow-right"
+//         className="-ml-1 h-full w-auto -rotate-90 text-wosmongton-200"
+//         width={16}
+//         height={24}
+//       />
+//     </div>
+//   );
+// }

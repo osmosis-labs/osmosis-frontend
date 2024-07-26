@@ -101,9 +101,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return <PlaceLimitTool page={page} />;
+                return <PlaceLimitTool key="tool-buy" page={page} />;
               case SwapToolTab.SELL:
-                return <PlaceLimitTool page={page} />;
+                return <PlaceLimitTool key="tool-sell" page={page} />;
               case SwapToolTab.SWAP:
               default:
                 return (
