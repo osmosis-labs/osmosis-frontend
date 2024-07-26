@@ -86,6 +86,7 @@ export const AssetsOverview: FunctionComponent<
   const {
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
+    error,
   } = api.edge.portfolio.getPortfolioOverTime.useQuery(
     {
       address,
@@ -173,6 +174,7 @@ export const AssetsOverview: FunctionComponent<
               </div>
             </Button>
           </div>
+
           <PortfolioHistoricalChart
             data={portfolioOverTimeData as AreaData<Time>[]}
             isFetched={isPortfolioOverTimeDataIsFetched}
@@ -180,6 +182,7 @@ export const AssetsOverview: FunctionComponent<
             range={range}
             setRange={setRange}
             totalPriceChange={totalPriceChange}
+            error={error}
           />
         </>
       ) : (

@@ -10,6 +10,7 @@ import {
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { IconButton } from "~/components/ui/button";
+import { useTranslation } from "~/hooks";
 
 const getChartStyle = (
   difference: number
@@ -31,6 +32,7 @@ export const PortfolioHistoricalChart = ({
   range,
   setRange,
   totalPriceChange,
+  error,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
@@ -38,11 +40,18 @@ export const PortfolioHistoricalChart = ({
   range: Range;
   setRange: (range: Range) => void;
   totalPriceChange: number;
+  error: unknown;
 }) => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative flex flex-col justify-between">
       <div className="h-[400px] w-full xl:h-[476px]">
-        {!isFetched ? (
+        {error ? (
+          <div className="error-message flex h-full items-center justify-center">
+            {t("errors.generic")}
+          </div>
+        ) : !isFetched ? (
           <HistoricalChartSkeleton />
         ) : (
           <HistoricalChart
