@@ -40,7 +40,7 @@ export const PortfolioHistoricalChart = ({
   totalPriceChange: number;
 }) => {
   return (
-    <section className="relative flex flex-col justify-between gap-3">
+    <section className="relative flex flex-col justify-between">
       <div className="h-[400px] w-full xl:h-[476px]">
         {!isFetched ? (
           <HistoricalChartSkeleton />
@@ -52,7 +52,7 @@ export const PortfolioHistoricalChart = ({
           />
         )}
       </div>
-      <div className="flex justify-between">
+      <div className="my-3 flex justify-between">
         <PortfolioHistoricalRangeButtonGroup
           priceRange={range}
           setPriceRange={setRange}

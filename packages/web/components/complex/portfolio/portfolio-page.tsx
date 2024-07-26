@@ -1,15 +1,9 @@
 import { Tab } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
-  ChartPortfolioOverTimeResponse,
-  Range,
-} from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
-import { AreaData, Time } from "lightweight-charts";
+import { RatePretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -17,51 +11,15 @@ import { PriceChange } from "~/components/assets/price";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
-import { PortfolioHistoricalChart } from "~/components/complex/portfolio/historical-chart";
-import { DataPoint } from "~/components/complex/portfolio/types";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { RecentTransfers } from "~/components/transactions/recent-transfers";
-import { useFormatDate } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-const calculatePortfolioPerformance = (
-  data: ChartPortfolioOverTimeResponse[] | undefined,
-  dataPoint: DataPoint
-): {
-  selectedPercentageRatePretty: RatePretty;
-  selectedDifferencePricePretty: PricePretty;
-  totalPriceChange: number;
-} => {
-  const openingPrice = data?.[0]?.value;
-  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
-  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
-  const selectedPercentage = selectedDifference / openingPriceWithFallback;
-  const selectedPercentageRatePretty = new RatePretty(
-    new Dec(selectedPercentage)
-  );
-
-  const selectedDifferencePricePretty = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(selectedDifference)
-  );
-
-  const closingPrice = data?.[data.length - 1]?.value;
-  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
-
-  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
-
-  return {
-    selectedPercentageRatePretty,
-    selectedDifferencePricePretty,
-    totalPriceChange,
-  };
-};
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -108,58 +66,12 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const address = wallet?.address ?? "";
 
-  const [dataPoint, setDataPoint] = useState<DataPoint>({
-    time: "0", // TODO set initial time
-    value: 0,
-  });
-
-  const [range, setRange] = useState<Range>("1mo");
-
-  const {
-    data: portfolioOverTimeData,
-    isFetched: isPortfolioOverTimeDataIsFetched,
-  } = api.edge.portfolio.getPortfolioOverTime.useQuery(
-    {
-      address,
-      range,
-    },
-    {
-      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-    }
-  );
-  const formatDate = useFormatDate();
-
-  const {
-    selectedDifferencePricePretty,
-    selectedPercentageRatePretty,
-    totalPriceChange,
-  } = calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
-
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={totalValueData}
           isTotalValueFetched={isTotalValueFetched}
-          isPortfolioOverTimeDataIsFetched={isPortfolioOverTimeDataIsFetched}
-          portfolioPerformance={
-            <PortfolioPerformance
-              value={selectedDifferencePricePretty}
-              percentage={selectedPercentageRatePretty}
-              date={formatDate(dataPoint.time as string)}
-            />
-          }
-        />
-      </section>
-
-      <section>
-        <PortfolioHistoricalChart
-          data={portfolioOverTimeData as AreaData<Time>[]}
-          isFetched={isPortfolioOverTimeDataIsFetched}
-          setDataPoint={setDataPoint}
-          range={range}
-          setRange={setRange}
-          totalPriceChange={totalPriceChange}
         />
       </section>
 
