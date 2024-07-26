@@ -19,8 +19,6 @@ export async function queryPortfolioOverTime({
   url.searchParams.append("address", address);
   url.searchParams.append("range", range);
 
-  console.log("url", url.toString());
-
   const headers = {
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
   };
