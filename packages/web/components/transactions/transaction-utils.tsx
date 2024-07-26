@@ -34,7 +34,6 @@ export const useFormatDate = () => {
   const { t } = useTranslation();
 
   const formatDate = (dateString: string) => {
-    console.log("datestring", dateString);
     const date = dayjs(dateString);
     if (date.isToday()) return t("date.earlierToday");
     if (date.isYesterday()) return t("date.yesterday");
