@@ -116,12 +116,6 @@ export const useBridgesSupportedAssets = ({
       Record<string, Set<Bridge>>
     > = {};
 
-    // Since the chains are sorted, wait for all providers to return before
-    // generating a result
-    if (isLoading) {
-      return {};
-    }
-
     type AssetsByChainId =
       RouterOutputs["bridgeTransfer"]["getSupportedAssetsByBridge"]["supportedAssets"]["assetsByChainId"];
 
