@@ -12,7 +12,7 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation, useWindowKeyActions, useWindowSize } from "~/hooks";
+import { useTranslation, useWindowKeyActions } from "~/hooks";
 import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
@@ -38,7 +38,6 @@ export const ImmersiveBridgeFlow = ({
   children,
 }: PropsWithChildren<BridgeFlowProvider>) => {
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
 
   const [isVisible, setIsVisible] = useState(false);
