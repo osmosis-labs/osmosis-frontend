@@ -89,6 +89,7 @@ import {
   AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
+  getPublicKeyTypeUrl,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
@@ -900,6 +901,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
 
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
+
     const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
       messages,
       memo,
@@ -1007,6 +1017,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
+
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const msgs = messages.map((msg) => {
@@ -1135,6 +1154,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
+
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
 
     if (memo === "") {
       // If the memo is empty, set it to "FE" so we know it originated from the frontend for
