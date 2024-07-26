@@ -145,7 +145,7 @@ export const AmountScreen = observer(
       selectedQuote,
       buttonErrorMessage,
       buttonText,
-      isLoadingBridgeQuote,
+      isLoadingAnyBridgeQuote,
       isLoadingBridgeTransaction,
       isInsufficientBal,
       isInsufficientFee,
@@ -1096,7 +1096,7 @@ export const AmountScreen = observer(
               </Menu>
             )}
 
-            {isLoadingBridgeQuote && (
+            {isLoadingAnyBridgeQuote && (
               <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Spinner className="text-wosmongton-500" />
@@ -1110,7 +1110,7 @@ export const AmountScreen = observer(
               </div>
             )}
 
-            {!isLoadingBridgeQuote && !isNil(selectedQuote) && (
+            {!isLoadingAnyBridgeQuote && !isNil(selectedQuote) && (
               <TransferDetails
                 quote={
                   quote as BridgeQuote & {
@@ -1143,7 +1143,7 @@ export const AmountScreen = observer(
                   <Button
                     disabled={
                       !isNil(buttonErrorMessage) ||
-                      isLoadingBridgeQuote ||
+                      isLoadingAnyBridgeQuote ||
                       isLoadingBridgeTransaction ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||

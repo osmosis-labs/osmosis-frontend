@@ -678,7 +678,7 @@ export const useBridgeQuotes = ({
     !isLoadingAnyBridgeQuote;
 
   let buttonText: string;
-  if (buttonErrorMessage) {
+  if (buttonErrorMessage && !isLoadingAnyBridgeQuote) {
     buttonText = buttonErrorMessage;
   } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
