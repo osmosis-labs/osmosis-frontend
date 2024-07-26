@@ -529,7 +529,9 @@ export async function getGasPriceByFeeDenom({
   const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
-  return { gasPrice: new Dec(feeToken.average_gas_price ?? defaultGasPrice) };
+  // use high gas price to be on safe side that it will be enough
+  // to cover fees
+  return { gasPrice: new Dec(feeToken.high_gas_price ?? defaultGasPrice) };
 }
 
 /**
@@ -577,8 +579,10 @@ export async function getDefaultGasPrice({
     // registry
 
     feeDenom = chain.fees.fee_tokens[0].denom;
+    // use high gas price to be on safe side that it will be enough
+    // to cover fees
     gasPrice = new Dec(
-      chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice
+      chain.fees.fee_tokens[0].high_gas_price || defaultGasPrice
     );
   }
 
