@@ -43,7 +43,6 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
 import { SubscriptDecimal } from "../chart";
-import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import { Spinner } from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -487,7 +486,6 @@ export const AssetsInfoTable: FunctionComponent<{
         placeholder={t("assets.table.search")}
         debounce={500}
       />
-      <BalancesMoved ref={bannerRef} className="my-3" />
       <table
         className={classNames(
           "mt-3",
