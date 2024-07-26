@@ -669,13 +669,13 @@ export const useBridgeQuotes = ({
   const isDepositReady =
     isDeposit &&
     isFromWalletConnected &&
-    !isLoadingBridgeQuote &&
     !isTxPending &&
     !isLoadingBridgeTransaction;
   const userCanAdvance =
     (isDepositReady || isWithdrawReady) &&
     !isInsufficientFee &&
-    !isInsufficientBal;
+    !isInsufficientBal &&
+    !isLoadingAnyBridgeQuote;
 
   let buttonText: string;
   if (buttonErrorMessage) {
