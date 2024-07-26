@@ -77,7 +77,7 @@ export const AssetsOverview: FunctionComponent<
   const address = wallet?.address ?? "";
 
   const [dataPoint, setDataPoint] = useState<DataPoint>({
-    time: "0", // TODO set initial time
+    time: dayjs().unix() as Time,
     value: 0,
   });
 
