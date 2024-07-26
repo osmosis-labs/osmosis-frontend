@@ -42,7 +42,7 @@ const HomeNew = () => {
   useNavBar({ title: t("limitOrders.trade") });
 
   return (
-    <main className="relative flex h-full overflow-auto bg-osmoverse-900 pb-2 pt-8">
+    <main className="relative flex h-full overflow-auto bg-osmoverse-1000 pb-2 pt-8">
       {/* <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"

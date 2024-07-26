@@ -73,12 +73,12 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     }, [tab]);
     return (
       <ClientOnly>
-        <div className="relative flex flex-col gap-3 md:gap-3 md:px-3 md:pb-4 md:pt-4">
+        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-4">
           <div className="flex w-full items-center justify-between">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">
               {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
-              {wallet?.isWalletConnected && (
+              {/* {wallet?.isWalletConnected && (
                 <Link
                   href={"/transactions?tab=orders&fromPage=swap"}
                   className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
@@ -95,7 +95,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                     </div>
                   )}
                 </Link>
-              )}
+              )} */}
             </div>
           </div>
           {useMemo(() => {

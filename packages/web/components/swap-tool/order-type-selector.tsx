@@ -1,10 +1,8 @@
-import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { Fragment, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
-import { Icon } from "~/components/assets";
-import { EventName, SpriteIconId } from "~/config";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
@@ -12,8 +10,6 @@ interface UITradeType {
   // id: "market" | "limit" | "recurring";
   id: "market" | "limit";
   title: string;
-  description: string;
-  icon: SpriteIconId;
   disabled: boolean;
 }
 
@@ -75,25 +71,12 @@ export const OrderTypeSelector = () => {
     () => [
       {
         id: "market",
-        title: t("limitOrders.marketOrder.title"),
-        description:
-          tab === "buy"
-            ? t("limitOrders.marketOrder.description.buy")
-            : t("limitOrders.marketOrder.description.sell"),
-        icon: "exchange",
+        title: t("limitOrders.market"),
         disabled: false,
       },
       {
         id: "limit",
-        title: t("limitOrders.limitOrder.title"),
-        description: !hasOrderbook
-          ? t("limitOrders.limitOrder.description.disabled", {
-              denom: base,
-            })
-          : tab === "buy"
-          ? t("limitOrders.limitOrder.description.buy", { denom: base })
-          : t("limitOrders.limitOrder.description.sell", { denom: base }),
-        icon: "trade",
+        title: t("limitOrders.limit"),
         disabled: !hasOrderbook,
       },
       // {
@@ -103,11 +86,43 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, hasOrderbook, t, tab]
+    [hasOrderbook, t]
   );
 
   return (
-    <Menu as="div" className="relative inline-block">
+    <div className="flex w-max items-center rounded-3xl border border-osmoverse-700">
+      {uiTradeTypes.map(({ disabled, id, title }) => {
+        const isSelected = type === id;
+
+        return (
+          <button
+            key={`order-type-selecto-${id}`}
+            onClick={() => setType(id)}
+            className={classNames(
+              "rounded-3xl px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
+              {
+                "hover:bg-osmoverse-850": !isSelected,
+                "bg-osmoverse-700": isSelected,
+              }
+            )}
+            disabled={disabled}
+          >
+            <p
+              className={classNames("font-semibold", {
+                "text-wosmongton-100": !isSelected,
+              })}
+            >
+              {title}
+            </p>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+{
+  /* <Menu as="div" className="relative inline-block">
       <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4">
         <p className="font-semibold text-wosmongton-200">
           {type === "market" ? t("limitOrders.market") : t("limitOrders.limit")}
@@ -173,6 +188,5 @@ export const OrderTypeSelector = () => {
           </div>
         </Menu.Items>
       </Transition>
-    </Menu>
-  );
-};
+    </Menu> */
+}
