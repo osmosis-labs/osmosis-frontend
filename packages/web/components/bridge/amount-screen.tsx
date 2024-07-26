@@ -851,6 +851,7 @@ export const AmountScreen = observer(
                   ? chain
                   : firstSupportedCosmosChain;
               })()}
+              fromChain={fromChain}
               toChain={toChain}
               initialManualAddress={manualToAddress}
               onConfirmManualAddress={(address) => {
