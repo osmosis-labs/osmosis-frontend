@@ -200,6 +200,16 @@ function parseSequenceFromAccount(account: any) {
   if (account.account["@type"] === BaseAccountTypeStr) {
     const base_acc = account as BaseAccount;
     sequence = Number(base_acc.account.sequence);
+  } else if ("base_account" in account.account) {
+    // some chains return a non-standard account object that includes a base_account object
+    // Example: injective
+    const baseAcc = account.account.base_account as {
+      address: string;
+      pub_key: string | null;
+      account_number: string;
+      sequence: string;
+    };
+    sequence = Number(baseAcc.sequence);
   } else {
     // We assume that if not a base account, it's a vesting account.
     const vesting_acc = account as VestingAccount;
