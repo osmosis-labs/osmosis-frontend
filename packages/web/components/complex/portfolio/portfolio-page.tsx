@@ -1,13 +1,10 @@
 import { Tab } from "@headlessui/react";
-import { PricePretty } from "@keplr-wallet/unit";
-import { RatePretty } from "@keplr-wallet/unit";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { PriceChange } from "~/components/assets/price";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -132,19 +129,6 @@ export const PortfolioPage: FunctionComponent = () => {
         )}
       </section>
     </main>
-  );
-};
-
-const PortfolioPerformance: FunctionComponent<{
-  value: PricePretty;
-  percentage: RatePretty;
-  date?: string;
-}> = ({ value, percentage, date }) => {
-  return (
-    <div className="body1 md:caption flex text-bullish-400">
-      <PriceChange className="ml-2" priceChange={percentage} value={value} />
-      <span className="ml-2 text-osmoverse-400">{date}</span>
-    </div>
   );
 };
 

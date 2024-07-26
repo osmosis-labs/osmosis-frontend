@@ -5,14 +5,18 @@ import { FunctionComponent } from "react";
 import { PriceChange } from "~/components/assets/price";
 
 export const PortfolioPerformance: FunctionComponent<{
-  value: PricePretty;
-  percentage: RatePretty;
-  date?: string;
-}> = ({ value, percentage, date }) => {
+  selectedDifference: PricePretty;
+  selectedPercentage: RatePretty;
+  formattedDate?: string;
+}> = ({ selectedDifference, selectedPercentage, formattedDate }) => {
   return (
     <div className="body1 md:caption flex text-bullish-400">
-      <PriceChange className="ml-2" priceChange={percentage} value={value} />
-      <span className="ml-2 text-osmoverse-400">{date}</span>
+      <PriceChange
+        className="ml-2"
+        priceChange={selectedPercentage}
+        value={selectedDifference}
+      />
+      <span className="ml-2 text-osmoverse-400">{formattedDate}</span>
     </div>
   );
 };

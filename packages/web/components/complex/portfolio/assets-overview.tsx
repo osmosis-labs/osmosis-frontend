@@ -6,6 +6,7 @@ import {
   Range,
 } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
@@ -101,6 +102,10 @@ export const AssetsOverview: FunctionComponent<
     totalPriceChange,
   } = calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
 
+  const formattedDate = formatDate(
+    dayjs.unix(dataPoint.time as number).format("YYYY-MM-DD")
+  );
+
   if (isWalletLoading) return null;
 
   return (
@@ -129,9 +134,9 @@ export const AssetsOverview: FunctionComponent<
               isLoaded={isPortfolioOverTimeDataIsFetched}
             >
               <PortfolioPerformance
-                value={selectedDifferencePricePretty}
-                percentage={selectedPercentageRatePretty}
-                date={formatDate(dataPoint.time as string)}
+                selectedDifference={selectedDifferencePricePretty}
+                selectedPercentage={selectedPercentageRatePretty}
+                formattedDate={formattedDate}
               />
             </SkeletonLoader>
           </div>
