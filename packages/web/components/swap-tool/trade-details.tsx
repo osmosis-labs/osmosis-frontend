@@ -1,14 +1,9 @@
 import { Disclosure } from "@headlessui/react";
-import {
-  CoinPretty,
-  Dec,
-  IntPretty,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets/icon";
@@ -25,7 +20,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
-import { formatPretty } from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 interface TradeDetailsProps {
@@ -33,20 +28,20 @@ interface TradeDetailsProps {
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   outAmountLessSlippage?: IntPretty;
   outFiatAmountLessSlippage?: PricePretty;
-  inDenom?: string;
-  inPrice?: CoinPretty | PricePretty;
   inPriceFetching?: boolean;
+  treatAsStable?: string;
 }
 
 export const TradeDetails = ({
   swapState,
-  inDenom,
-  inPrice,
   inPriceFetching,
+  treatAsStable,
 }: Partial<TradeDetailsProps>) => {
   const { t } = useTranslation();
 
   const routesVisDisclosure = useDisclosure();
+
+  const [outAsBase, setOutAsBase] = useState(true);
 
   const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
@@ -91,57 +86,45 @@ export const TradeDetails = ({
           >
             <div ref={details} className="flex w-full flex-col">
               <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-              <Disclosure.Button
-                className={classNames(
-                  "relative flex w-full items-center justify-between py-3.5 transition-opacity"
-                )}
-                disabled={isInAmountEmpty}
+              <SkeletonLoader
+                isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
               >
-                <SkeletonLoader isLoaded={Boolean(inPrice)}>
-                  <GenericDisclaimer
-                    title="What is expected rate?"
-                    body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
-                  >
-                    <span
-                      className={classNames("body2 text-osmoverse-300", {
-                        "animate-pulse": inPriceFetching,
-                      })}
-                    >
-                      {inDenom} {t("assets.table.price").toLowerCase()} ≈{" "}
-                      {inPrice &&
-                        formatPretty(inPrice ?? inPrice ?? new Dec(0), {
-                          maxDecimals: inPrice
-                            ? 2
-                            : Math.min(
-                                swapState?.toAsset?.coinDecimals ?? 8,
-                                8
-                              ),
-                        })}
-                    </span>
-                  </GenericDisclaimer>
-                </SkeletonLoader>
                 <GenericDisclaimer
-                  title="High price impact"
-                  body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                  disabled={!isPriceImpactHigh}
+                  title="What is expected rate?"
+                  body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
                 >
-                  <div
-                    className={classNames(
-                      "flex items-center gap-2 transition-opacity",
-                      {
-                        "opacity-0": isInAmountEmpty,
-                      }
-                    )}
+                  <span
+                    onClick={() => setOutAsBase(!outAsBase)}
+                    className={classNames("body2 text-osmoverse-300", {
+                      "animate-pulse": inPriceFetching,
+                    })}
                   >
-                    {isPriceImpactHigh && (
-                      <Icon id="alert-circle-filled" width={16} height={16} />
-                    )}
-                    <span className="body2 text-wosmongton-300">
-                      {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                    </span>
-                  </div>
+                    {swapState?.inBaseOutQuoteSpotPrice &&
+                      ExpectedRate(swapState, outAsBase, treatAsStable)}
+                  </span>
                 </GenericDisclaimer>
-              </Disclosure.Button>
+              </SkeletonLoader>
+              <GenericDisclaimer
+                title="High price impact"
+                body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                disabled={!isPriceImpactHigh}
+              >
+                <div
+                  className={classNames(
+                    "flex items-center gap-2 transition-opacity",
+                    {
+                      "opacity-0": isInAmountEmpty,
+                    }
+                  )}
+                >
+                  {isPriceImpactHigh && (
+                    <Icon id="alert-circle-filled" width={16} height={16} />
+                  )}
+                  <span className="body2 text-wosmongton-300">
+                    {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                  </span>
+                </div>
+              </GenericDisclaimer>
               <Disclosure.Panel className="body2 flex flex-col gap-1 text-osmoverse-300">
                 <RecapRow
                   left={
@@ -337,6 +320,106 @@ export function Closer({
   }, [close, isInAmountEmpty]);
 
   return <></>;
+}
+
+export function ExpectedRate(
+  swapState: ReturnType<typeof useSwap>,
+  outAsBase: boolean,
+  treatAsStable: string | undefined = undefined
+) {
+  var inBaseOutQuoteSpotPrice =
+    swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(0);
+
+  var baseAsset;
+  var quoteAsset;
+  var inQuoteAssetPrice;
+  var inFiatPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+
+  if (treatAsStable && treatAsStable == "in") {
+    baseAsset = swapState.toAsset?.coinDenom;
+    inQuoteAssetPrice = new Dec(1).quo(inBaseOutQuoteSpotPrice);
+
+    return (
+      <span>
+        1 {baseAsset} ≈{" $"}
+        {formatPretty(inQuoteAssetPrice, {
+          ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
+        })}{" "}
+      </span>
+    );
+  }
+
+  if (treatAsStable && treatAsStable == "out") {
+    baseAsset = swapState.fromAsset?.coinDenom;
+    inQuoteAssetPrice = inBaseOutQuoteSpotPrice;
+
+    return (
+      <span>
+        1 {baseAsset} ≈{" $"}
+        {formatPretty(inQuoteAssetPrice, {
+          ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
+        })}{" "}
+      </span>
+    );
+  }
+
+  if (outAsBase) {
+    baseAsset = swapState.toAsset?.coinDenom;
+    quoteAsset = swapState.fromAsset?.coinDenom;
+
+    inQuoteAssetPrice = new Dec(1).quo(inBaseOutQuoteSpotPrice);
+
+    if (
+      swapState?.tokenOutFiatValue &&
+      swapState?.quote?.amount?.toDec().gt(new Dec(0))
+    ) {
+      inFiatPrice = new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec())
+      );
+    } else {
+      if (swapState.inAmountInput?.price) {
+        inFiatPrice = swapState.inAmountInput?.price?.quo(
+          inBaseOutQuoteSpotPrice
+        );
+      }
+    }
+  } else {
+    baseAsset = swapState.fromAsset?.coinDenom;
+    quoteAsset = swapState.toAsset?.coinDenom;
+
+    inQuoteAssetPrice = inBaseOutQuoteSpotPrice;
+
+    if (
+      swapState.tokenOutFiatValue &&
+      swapState.inAmountInput?.amount?.toDec().gt(new Dec(0))
+    ) {
+      inFiatPrice = swapState.tokenOutFiatValue.quo(
+        swapState.inAmountInput.amount.toDec()
+      );
+    } else {
+      inFiatPrice =
+        swapState.inAmountInput.price ??
+        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+    }
+  }
+
+  return (
+    <span>
+      1 {baseAsset} ≈{" "}
+      {formatPretty(inQuoteAssetPrice, {
+        minimumSignificantDigits: 6,
+        maximumSignificantDigits: 6,
+        maxDecimals: 10,
+        notation: "standard",
+      })}{" "}
+      {quoteAsset} (
+      {formatPretty(inFiatPrice, {
+        ...getPriceExtendedFormatOptions(inFiatPrice.toDec()),
+      })}
+      )
+    </span>
+  );
 }
 
 type Split =

@@ -407,7 +407,7 @@
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
     "noData": "Brak danych",
-    "noOrderbook": "Brak księgi zamówień dla pary"
+    "noOrderbook": "Brak księgi zamówień dla pary",
     "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
     "startAgain": "Zacznij jeszcze raz"

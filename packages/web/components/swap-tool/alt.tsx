@@ -334,49 +334,16 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             <div className="relative flex flex-col">
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full flex-col">
+                  <div className="body2 flex justify-between pb-1">
+                    <span className="pt-1.5 text-osmoverse-400">From</span>
+                  </div>
                   <div className="flex items-center justify-between">
-                    {swapState.fromAsset && (
-                      <div className="flex items-center gap-4 py-3">
-                        <Image
-                          src={swapState.fromAsset.coinImageUrl ?? ""}
-                          alt={`${swapState.fromAsset.coinDenom} icon`}
-                          width={48}
-                          height={48}
-                          className="h-12 w-12"
-                        />
-                        <button
-                          onClick={() =>
-                            showTokenSelectRecommendedTokens &&
-                            setOneTokenSelectOpen("from")
-                          }
-                          className={classNames("flex flex-col", {
-                            "pointer-events-none":
-                              !showTokenSelectRecommendedTokens,
-                          })}
-                        >
-                          <div className="flex items-center gap-1">
-                            <h5>{swapState.fromAsset.coinDenom}</h5>
-                            {showTokenSelectRecommendedTokens && (
-                              <div className="flex h-6 w-6 items-center justify-center">
-                                <Icon
-                                  id="chevron-down"
-                                  className="h-auto w-4.5 text-osmoverse-400"
-                                />
-                              </div>
-                            )}
-                          </div>
-                          <p className="whitespace-nowrap text-osmoverse-300">
-                            {swapState.fromAsset.coinName}
-                          </p>
-                        </button>
-                      </div>
-                    )}
-                    <div className="flex flex-col items-end py-2">
+                    <div className="flex flex-col py-2">
                       <input
                         ref={fromAmountInputEl}
                         type="text"
                         className={classNames(
-                          "w-full bg-transparent text-right text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                          "w-full bg-transparent text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
                           "text-h5 font-h5 md:font-subtitle1",
                           {
                             "text-rust-300": isUnsufficentBalance,
@@ -391,7 +358,45 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         }}
                         value={swapState.inAmountInput.inputAmount}
                       />
-                      <span
+                    </div>
+                    <div className="flex flex-col items-end py-2">
+                      {swapState.fromAsset && (
+                        <div className="flex items-center gap-4 py-3">
+                          <Image
+                            src={swapState.fromAsset.coinImageUrl ?? ""}
+                            alt={`${swapState.fromAsset.coinDenom} icon`}
+                            width={48}
+                            height={48}
+                            className="h-8 w-8"
+                          />
+                          <button
+                            onClick={() =>
+                              showTokenSelectRecommendedTokens &&
+                              setOneTokenSelectOpen("from")
+                            }
+                            className={classNames("flex flex-col", {
+                              "pointer-events-none":
+                                !showTokenSelectRecommendedTokens,
+                            })}
+                          >
+                            <div className="flex items-center gap-2">
+                              <h5>{swapState.fromAsset.coinDenom}</h5>
+                              {showTokenSelectRecommendedTokens && (
+                                <div className="flex h-6 w-6 items-center justify-center">
+                                  <Icon
+                                    id="chevron-down"
+                                    className="h-auto w-4.5 text-osmoverse-400"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* <span
                         className={classNames(
                           "body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity"
                         )}
@@ -408,50 +413,79 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                               }
                             )}`
                           : ""}
-                      </span>
-                    </div>
-                  </div>
-                  {account?.isWalletConnected && (
-                    <div className="body2 flex justify-between pb-1">
-                      <span className="pt-1.5 text-osmoverse-400">
-                        {formatPretty(
-                          swapState.inAmountInput.balance ?? new Dec(0)
-                        )}{" "}
-                        {t("pool.available").toLowerCase()}
-                      </span>
-                      {swapState.inAmountInput.balance &&
-                      swapState.inAmountInput.balance.toDec().gt(new Dec(0)) ? (
-                        <button
-                          disabled={
-                            !swapState.inAmountInput.balance ||
-                            swapState.inAmountInput.balance.toDec().isZero() ||
-                            swapState.inAmountInput.notEnoughBalanceForMax ||
-                            isLoadingMaxButton
-                          }
-                          onClick={() => swapState.inAmountInput.toggleMax()}
-                          className={classNames(
-                            "flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 bg-transparent py-1.5 px-3 text-wosmongton-200 transition-colors hover:bg-osmoverse-700 disabled:pointer-events-none disabled:opacity-50",
-                            {
-                              "text-rust-300": isUnsufficentBalance,
-                            }
-                          )}
-                        >
-                          {isLoadingMaxButton && (
-                            <Spinner className="h-2.5 w-2.5" />
-                          )}
-                          Max
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={openAddFundsModal}
-                          className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
-                        >
-                          {t("limitOrders.addFunds")}
-                        </button>
+                      </span> */}
+
+                  <div className="body2 flex justify-between pb-1">
+                    <span
+                      className={classNames(
+                        "md:caption whitespace-nowrap pt-1.5 text-osmoverse-400 transition-opacity"
                       )}
-                    </div>
-                  )}
+                    >
+                      {swapState.inAmountInput?.fiatValue
+                        ?.toDec()
+                        .gt(new Dec(0))
+                        ? `${formatPretty(swapState.inAmountInput?.fiatValue, {
+                            ...getPriceExtendedFormatOptions(
+                              swapState.inAmountInput?.fiatValue?.toDec()
+                            ),
+                          })}`
+                        : ""}
+                    </span>
+                    {account?.isWalletConnected && (
+                      <div className="body2 flex justify-between gap-2 pb-1">
+                        <span className="pt-1.5 text-osmoverse-400">
+                          {t("pool.available") +
+                            ": " +
+                            formatPretty(
+                              swapState.inAmountInput.balance?.toDec() ??
+                                new Dec(0),
+                              {
+                                minimumSignificantDigits: 6,
+                                maximumSignificantDigits: 6,
+                                maxDecimals: 10,
+                                notation: "standard",
+                              }
+                            ) +
+                            "  "}
+                        </span>
+                        {swapState.inAmountInput.balance &&
+                        swapState.inAmountInput.balance
+                          .toDec()
+                          .gt(new Dec(0)) ? (
+                          <button
+                            disabled={
+                              !swapState.inAmountInput.balance ||
+                              swapState.inAmountInput.balance
+                                .toDec()
+                                .isZero() ||
+                              swapState.inAmountInput.notEnoughBalanceForMax ||
+                              isLoadingMaxButton
+                            }
+                            onClick={() => swapState.inAmountInput.toggleMax()}
+                            className={classNames(
+                              "flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 bg-transparent py-1.5 px-3 text-wosmongton-200 transition-colors hover:bg-osmoverse-700 disabled:pointer-events-none disabled:opacity-50",
+                              {
+                                "text-rust-300": isUnsufficentBalance,
+                              }
+                            )}
+                          >
+                            {isLoadingMaxButton && (
+                              <Spinner className="h-2.5 w-2.5" />
+                            )}
+                            Max
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={openAddFundsModal}
+                            className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
+                          >
+                            {t("limitOrders.addFunds")}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="relative flex h-3 w-full">
@@ -472,70 +506,80 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </button>
               </div>
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
-                <div className="flex w-full items-center justify-between">
-                  {swapState.toAsset && (
-                    <div className="flex items-center gap-4 py-3">
-                      <Image
-                        src={swapState.toAsset.coinImageUrl ?? ""}
-                        alt={`${swapState.toAsset.coinDenom} icon`}
-                        width={48}
-                        height={48}
-                        className="h-12 w-12"
-                      />
-                      <button
-                        onClick={() =>
-                          showTokenSelectRecommendedTokens &&
-                          setOneTokenSelectOpen("to")
-                        }
-                        className={classNames("flex flex-col", {
-                          "pointer-events-none":
-                            !showTokenSelectRecommendedTokens,
-                        })}
+                <div className="flex w-full flex-col">
+                  <div className="body2 flex justify-between pb-1">
+                    <span className="pt-1.5 text-osmoverse-400">To</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col py-2">
+                      <h5
+                        className={classNames(
+                          "md:subtitle1 whitespace-nowrap transition-opacity",
+                          swapState.quote?.amount.toDec().isPositive() &&
+                            !swapState.inAmountInput.isTyping &&
+                            !swapState.isQuoteLoading
+                            ? "text-white-full"
+                            : "text-white-disabled",
+                          {
+                            "opacity-50":
+                              isSwapToolLoading ||
+                              !swapState.quote ||
+                              swapState.inAmountInput.isEmpty,
+                          }
+                        )}
                       >
-                        <div className="flex items-center gap-1">
-                          <h5>{swapState.toAsset.coinDenom}</h5>
-                          {showTokenSelectRecommendedTokens && (
-                            <div className="flex h-6 w-6 items-center justify-center">
-                              <Icon
-                                id="chevron-down"
-                                className="h-auto w-4.5 text-osmoverse-400"
-                              />
-                            </div>
-                          )}
-                        </div>
-                        <p className="whitespace-nowrap text-osmoverse-300">
-                          {swapState.toAsset.coinName}
-                        </p>
-                      </button>
+                        {swapState.quote?.amount
+                          ? formatPretty(swapState.quote.amount.toDec(), {
+                              minimumSignificantDigits: 6,
+                              maximumSignificantDigits: 6,
+                              maxDecimals: 10,
+                              notation: "standard",
+                            })
+                          : "0"}
+                      </h5>
                     </div>
-                  )}
-                  <div className="flex flex-col items-end py-2">
-                    <h5
+                    <div className="flex flex-col items-end py-2">
+                      {swapState.toAsset && (
+                        <div className="flex items-center gap-4 py-3">
+                          <Image
+                            src={swapState.toAsset.coinImageUrl ?? ""}
+                            alt={`${swapState.toAsset.coinDenom} icon`}
+                            width={40}
+                            height={40}
+                            className="h-8 w-8"
+                          />
+                          <button
+                            onClick={() =>
+                              showTokenSelectRecommendedTokens &&
+                              setOneTokenSelectOpen("to")
+                            }
+                            className={classNames("flex flex-col", {
+                              "pointer-events-none":
+                                !showTokenSelectRecommendedTokens,
+                            })}
+                          >
+                            <div className="flex items-center gap-2">
+                              <h5>{swapState.toAsset.coinDenom}</h5>
+                              {showTokenSelectRecommendedTokens && (
+                                <div className="flex h-6 w-6 items-center justify-center">
+                                  <Icon
+                                    id="chevron-down"
+                                    className="h-auto w-4.5 text-osmoverse-400"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="body2 flex justify-between pb-1">
+                    <span
                       className={classNames(
-                        "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                        swapState.quote?.amount.toDec().isPositive() &&
-                          !swapState.inAmountInput.isTyping &&
-                          !swapState.isQuoteLoading
-                          ? "text-white-full"
-                          : "text-white-disabled",
-                        {
-                          "opacity-50":
-                            isSwapToolLoading ||
-                            !swapState.quote ||
-                            swapState.inAmountInput.isEmpty,
-                        }
+                        "md:caption whitespace-nowrap pt-1.5 text-osmoverse-400 transition-opacity"
                       )}
                     >
-                      {swapState.quote?.amount
-                        ? formatPretty(swapState.quote.amount.toDec(), {
-                            minimumSignificantDigits: 6,
-                            maximumSignificantDigits: 6,
-                            maxDecimals: 10,
-                            notation: "standard",
-                          })
-                        : "0"}
-                    </h5>
-                    <span className="body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity">
                       {swapState.tokenOutFiatValue?.toDec().gt(new Dec(0)) ? (
                         <span>
                           {formatPretty(swapState.tokenOutFiatValue, {
@@ -564,8 +608,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               slippageConfig={slippageConfig}
               outAmountLessSlippage={outAmountLessSlippage}
               outFiatAmountLessSlippage={outFiatAmountLessSlippage}
-              inDenom={swapState.fromAsset?.coinDenom}
-              inPrice={swapState.inBaseOutQuoteSpotPrice}
             />
           </div>
           {!isNil(warningText) && (

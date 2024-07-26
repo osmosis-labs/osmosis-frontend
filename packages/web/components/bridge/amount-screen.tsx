@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { IntPretty } from "@keplr-wallet/unit";
 import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
-import { getShortAddress, isNil, noop } from "@osmosis-labs/utils";
+import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -860,7 +860,7 @@ export const AmountScreen = observer(
                             direction === "withdraw" &&
                             !isNil(manualToAddress)
                           ) {
-                            return getShortAddress(manualToAddress);
+                            return shorten(manualToAddress);
                           }
 
                           const chain =

@@ -1,5 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -218,7 +218,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     <span className="flex flex-col text-left">
                       <div className="flex items-center gap-1">
                         <span className="subtitle1 md:body2">
-                          {truncateString(asset.coinName, 22)}
+                          {truncate(asset.coinName, 22)}
                         </span>
                         {!asset.isVerified && shouldShowUnverifiedAssets && (
                           <Tooltip

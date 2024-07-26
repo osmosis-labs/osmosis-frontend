@@ -250,7 +250,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               />
             </div>
           </div>
-          <div className="flex flex-col gap-3">
+          <div
+            className={classNames("flex gap-3", {
+              "flex-col": !fromAssetsPage,
+              "flex-col-reverse": fromAssetsPage,
+            })}
+          >
+            <>
+              {!swapState.isMarket && (
+                <LimitTradeDetails swapState={swapState} />
+              )}
+              {swapState.isMarket && (
+                <TradeDetails
+                  swapState={swapState.marketState}
+                  treatAsStable={orderDirection === "bid" ? "in" : "out"}
+                />
+              )}
+            </>
             {!account?.isWalletConnected ? (
               <Button
                 onClick={() =>

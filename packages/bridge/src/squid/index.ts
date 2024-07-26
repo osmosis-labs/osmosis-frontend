@@ -7,6 +7,7 @@ import {
   type TransactionRequest,
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -43,7 +44,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { getSquidErrors } from "./error";
 

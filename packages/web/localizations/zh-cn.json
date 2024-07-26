@@ -407,7 +407,7 @@
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
     "noData": "没有数据",
-    "noOrderbook": "暂无订单簿"
+    "noOrderbook": "暂无订单簿",
     "uhOhSomethingWentWrong": "哦，出问题了",
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
     "startAgain": "重新开始"

@@ -407,7 +407,7 @@
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
     "noData": "Pas de données",
-    "noOrderbook": "Pas de carnet de commandes pour la paire"
+    "noOrderbook": "Pas de carnet de commandes pour la paire",
     "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
     "startAgain": "Recommencer"

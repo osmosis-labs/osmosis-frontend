@@ -407,7 +407,7 @@
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
     "noData": "データなし",
-    "noOrderbook": "ペアの注文書はありません"
+    "noOrderbook": "ペアの注文書はありません",
     "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"

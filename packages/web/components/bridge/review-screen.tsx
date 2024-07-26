@@ -4,7 +4,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { getShortAddress, isNil } from "@osmosis-labs/utils";
+import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent } from "react";
@@ -225,7 +225,7 @@ const AssetBox: FunctionComponent<{
             />
           )}
           <div className="text-wosmongton-200">
-            {getShortAddress(address, { prefixLength: 12 })}
+            {shorten(address, { prefixLength: 12 })}
           </div>
         </div>
       </div>
@@ -243,9 +243,7 @@ const AssetBox: FunctionComponent<{
       </div>
       <div className="flex items-center gap-2">
         <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
-        <div className="body1 text-wosmongton-200">
-          {getShortAddress(address)}
-        </div>
+        <div className="body1 text-wosmongton-200">{shorten(address)}</div>
       </div>
     </div>
   );
@@ -273,11 +271,11 @@ const AssetBox: FunctionComponent<{
         </div>
         <div className="text-right md:flex md:flex-col md:gap-1">
           <div className="subtitle1 md:body2">
-            {type === "to" && "~"} {value.toString()}
+            {type === "to" && "~"} {value.inequalitySymbol(false).toString()}
           </div>
           <div className="body1 md:caption text-osmoverse-300">
             {type === "to" && "~"}{" "}
-            {formatPretty(coin, {
+            {formatPretty(coin.inequalitySymbol(false), {
               maxDecimals: 10,
             })}
           </div>

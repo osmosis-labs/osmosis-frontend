@@ -168,7 +168,7 @@ export const BridgeProviderDropdown = ({
                           {expectedOutputFiat.toString()}
                         </p>
                         <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
-                          ~{totalFee} {t("transfer.fee")}
+                          ~ {totalFee} {t("transfer.fee")}
                         </p>
                       </div>
                     </button>
