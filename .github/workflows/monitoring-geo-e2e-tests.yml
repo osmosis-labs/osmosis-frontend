@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "*/20 * * * *"
-  push:
-    branches: [FE-777]
 
 jobs:
   setup-matrix:
