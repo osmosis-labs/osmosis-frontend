@@ -4,7 +4,6 @@ import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { memo, PropsWithChildren, useEffect, useState } from "react";
-import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ErrorBoundary } from "~/components/error/error-boundary";
@@ -83,8 +82,17 @@ export const ImmersiveBridgeFlow = ({
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
-  // `!isMobile`: body scroll is needed on mobile safari
-  useLockBodyScroll(isVisible && !isMobile);
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isVisible]);
 
   const onClose = () => {
     setIsVisible(false);
@@ -145,7 +153,7 @@ export const ImmersiveBridgeFlow = ({
             <Transition
               show={isVisible}
               as="div"
-              className="fixed inset-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
+              className="absolute top-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
               enter="transition-opacity duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -166,7 +174,7 @@ export const ImmersiveBridgeFlow = ({
                     onReset={resetQueries}
                   >
                     <div className="flex-1 overflow-y-auto">
-                      <div className="sticky top-0 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
+                      <div className="sticky top-0 z-50 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
                         {step === ImmersiveBridgeScreen.Asset ? (
                           <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
                         ) : (
