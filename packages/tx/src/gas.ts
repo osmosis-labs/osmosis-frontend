@@ -219,7 +219,6 @@ function parseSequenceFromAccount(account: any) {
   }
 
   if (Number.isNaN(sequence)) {
-    console.error(account);
     throw new Error(
       "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
     );
