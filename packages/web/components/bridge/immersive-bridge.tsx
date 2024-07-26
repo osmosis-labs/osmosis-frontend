@@ -158,7 +158,7 @@ export const ImmersiveBridgeFlow = ({
             <Transition
               show={isVisible}
               as="div"
-              className="absolute top-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
+              className="fixed inset-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
               enter="transition-opacity duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
