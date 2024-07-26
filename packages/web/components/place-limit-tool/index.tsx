@@ -318,13 +318,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               {swapState.isMarket ? (
                 <TradeDetails
                   swapState={swapState.marketState}
-                  inDenom={swapState.baseAsset?.coinDenom}
-                  inPrice={
-                    new PricePretty(
-                      DEFAULT_VS_CURRENCY,
-                      swapState.priceState.spotPrice
-                    )
-                  }
+                  // inDenom={swapState.baseAsset?.coinDenom}
+                  // inPrice={
+                  //   new PricePretty(
+                  //     DEFAULT_VS_CURRENCY,
+                  //     swapState.priceState.spotPrice
+                  //   )
+                  // }
                 />
               ) : (
                 <LimitTradeDetails swapState={swapState} />
