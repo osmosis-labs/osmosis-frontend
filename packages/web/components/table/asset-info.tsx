@@ -401,14 +401,9 @@ export const AssetsInfoTable: FunctionComponent<{
     useDimension<HTMLDivElement>();
   const [searchRef, { height: searchBoxHeight }] =
     useDimension<HTMLInputElement>();
-  const [bannerRef, { height: bannerHeight }] =
-    useDimension<HTMLAnchorElement>();
+
   const totalTopOffset =
-    highlightsHeight +
-    categoriesHeight +
-    searchBoxHeight +
-    bannerHeight +
-    tableTopPadding;
+    highlightsHeight + categoriesHeight + searchBoxHeight + tableTopPadding;
   const navBarOffset = Number(
     isMobile
       ? theme.extend.height["navbar-mobile"].replace("px", "")
