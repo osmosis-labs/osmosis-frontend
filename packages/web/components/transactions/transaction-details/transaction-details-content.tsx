@@ -70,8 +70,8 @@ export const TransactionDetailsContent = ({
   // if USDC, toggle conversion - temporary until stablecoin logic is implemented
   useEffect(() => {
     if (
-      conversion.numerator.denom !== "USDC" &&
-      conversion.denominator.denom === "USDC"
+      conversion.numerator.denom.includes("USDC") ||
+      conversion.denominator.denom.includes("USDC")
     ) {
       toggleConversion();
     }
