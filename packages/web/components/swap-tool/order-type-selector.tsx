@@ -29,7 +29,6 @@ export const OrderTypeSelector = () => {
     "quote",
     parseAsString.withDefault("USDC")
   );
-  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const { selectableBaseAssets, selectableQuoteDenoms } =
     useOrderbookSelectableDenoms();
