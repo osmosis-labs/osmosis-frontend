@@ -310,9 +310,7 @@
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    },
-    "balancesMovedTitle": "Looking for your balances?",
-    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
+    }
   },
   "portfolio": {
     "buy": "Buy",

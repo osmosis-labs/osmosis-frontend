@@ -13,6 +13,7 @@ export type BridgeContext = {
   startBridge: (params: { direction: BridgeTransactionDirection }) => void;
   /** Start bridging a specified asset of coinMinimalDenom or symbol/denom. */
   bridgeAsset: (params: {
+    /** Symol is preferred for improved quality of Amplitude data. */
     anyDenom: string;
     direction: BridgeTransactionDirection;
   }) => void;

@@ -271,11 +271,11 @@ const AssetBox: FunctionComponent<{
         </div>
         <div className="text-right md:flex md:flex-col md:gap-1">
           <div className="subtitle1 md:body2">
-            {type === "to" && "~"} {value.toString()}
+            {type === "to" && "~"} {value.inequalitySymbol(false).toString()}
           </div>
           <div className="body1 md:caption text-osmoverse-300">
             {type === "to" && "~"}{" "}
-            {formatPretty(coin, {
+            {formatPretty(coin.inequalitySymbol(false), {
               maxDecimals: 10,
             })}
           </div>
