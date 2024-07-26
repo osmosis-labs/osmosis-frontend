@@ -290,12 +290,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               disabled={false}
               orderDirection={orderDirection}
             /> */}
-            {type === "limit" && (
-              <LimitPriceSelector
-                swapState={swapState}
-                orderDirection={orderDirection}
-              />
-            )}
             <div className="flex w-full items-center justify-between pt-3">
               <span className="body2 text-osmoverse-300">
                 {t("limitOrders.enterAnAmountTo")}{" "}
@@ -382,6 +376,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </span>
               <PriceSelector />
             </div>
+            {type === "limit" && (
+              <LimitPriceSelector
+                swapState={swapState}
+                orderDirection={orderDirection}
+              />
+            )}
           </div>
           <div
             className={classNames("flex gap-3", {

@@ -5,14 +5,15 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
-import { Tooltip } from "~/components/tooltip";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { useTranslation } from "~/hooks";
+import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 const percentAdjustmentOptions = [
-  { value: new Dec(0.005), label: "0.5%" },
+  { value: new Dec(0), label: "Market", defaultValue: true },
   { value: new Dec(0.02), label: "2%" },
   { value: new Dec(0.05), label: "5%" },
   { value: new Dec(0.1), label: "10%" },
@@ -81,10 +82,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs())}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
-  const inputSuffix = useMemo(() => {
-    return inputMode === InputMode.Price
-      ? `= 1 ${swapState.baseAsset?.coinDenom}`
-      : priceState.percentAdjusted.isZero()
+  const percentageSuffix = useMemo(() => {
+    return priceState.percentAdjusted.isZero()
       ? `${
           orderDirection === "bid"
             ? t("limitOrders.below")
@@ -95,13 +94,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             ? t("limitOrders.below")
             : t("limitOrders.above")
         } ${t("limitOrders.currentPrice")}`;
-  }, [
-    inputMode,
-    swapState.baseAsset?.coinDenom,
-    t,
-    priceState.percentAdjusted,
-    orderDirection,
-  ]);
+  }, [t, priceState.percentAdjusted, orderDirection]);
 
   const TooltipContent = useMemo(() => {
     const translationId =
@@ -119,63 +112,63 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   }, [orderDirection, t]);
 
   return (
-    <div className="flex w-full flex-col items-start justify-start rounded-2xl bg-osmoverse-1000 py-3 px-5">
-      <label
-        className="inline-flex min-h-[32px] w-full items-center justify-between gap-1"
-        htmlFor="price-input"
+    <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
+      <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
+      {/**FIXME: button click disabled when tooltip open */}
+      <GenericDisclaimer
+        disabled={!swapState.priceState.isBeyondOppositePrice}
+        title={
+          <span className="caption">
+            {orderDirection === "bid"
+              ? t(`limitOrders.aboveMarket.title`)
+              : t(`limitOrders.belowMarket.title`)}
+          </span>
+        }
+        body={
+          <span className="text-caption text-osmoverse-300">
+            {orderDirection === "bid"
+              ? t(`limitOrders.aboveMarket.description`)
+              : t(`limitOrders.belowMarket.description`)}
+          </span>
+        }
       >
-        <span className="body2 text-osmoverse-300">
-          {t("limitOrders.whenDenomPriceIs", {
-            denom: swapState.baseAsset?.coinDenom ?? "",
-          })}{" "}
-        </span>
-        <div className="flex items-center justify-center">
-          <SkeletonLoader
-            isLoaded={priceState.spotPrice && !priceState.isLoading}
-          >
-            <div
-              className={classNames("flex items-center justify-center", {
-                "animate-pulse": swapState.priceState.isSpotPriceRefetching,
+        <button
+          type="button"
+          className="inline-flex min-h-[32px] w-full items-center gap-1"
+          onClick={swapInputMode}
+          disabled={priceState.isLoading || priceState.isBeyondOppositePrice}
+        >
+          <span className="body2 text-osmoverse-300">
+            {t("limitOrders.whenDenomPriceIs", {
+              denom: swapState.baseAsset?.coinDenom ?? "",
+            })}{" "}
+            <span
+              className={classNames("body2 text-wosmongton-300", {
+                "text-rust-400": swapState.priceState.isBeyondOppositePrice,
               })}
             >
-              {inputMode === InputMode.Price &&
-                !swapState.priceState.percentAdjusted.isZero() && (
-                  <Icon
-                    id="triangle-down"
-                    width={12}
-                    height={6}
-                    className={classNames("mr-1 scale-75", {
-                      "text-rust-400":
-                        swapState.priceState.isBeyondOppositePrice ||
-                        swapState.priceState.percentAdjusted.isNegative(),
-                      "rotate-180 text-bullish-400":
-                        swapState.priceState.percentAdjusted.isPositive(),
-                    })}
-                  />
-                )}
+              {priceLabel}
+            </span>{" "}
+            {inputMode === InputMode.Price && (
               <span
-                className={classNames("body2", {
+                className={classNames("body2 text-wosmongton-300", {
                   "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                  "text-osmoverse-300":
-                    !swapState.priceState.isBeyondOppositePrice,
                 })}
               >
-                {priceLabel}
+                {percentageSuffix}
               </span>
-            </div>
-          </SkeletonLoader>
-          {swapState.priceState.isBeyondOppositePrice && (
-            <span className="body2 ml-2 text-rust-400">
-              <Tooltip
-                content={TooltipContent}
-                rootClassNames="!bg-osmoverse-1000 border border-[#E4E1FB33] rounded-2xl"
-              >
-                <Icon id="alert-circle-filled" width={16} height={16} />
-              </Tooltip>
-            </span>
-          )}
-        </div>
-      </label>
+            )}
+          </span>
+          <Icon
+            id="switch"
+            className={classNames("text-wosmongton-300", {
+              "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+            })}
+            width={16}
+            height={16}
+          />
+        </button>
+      </GenericDisclaimer>
       <div className="flex w-full items-center justify-between">
         <div className="inline-flex items-end gap-1 py-3 text-h6 font-h6">
           <SkeletonLoader
@@ -183,24 +176,27 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           >
             {inputMode === InputMode.Price && <span>$</span>}
             {inputMode === InputMode.Price ? (
-              <AutosizeInput
-                id="price-input"
+              <input
                 type="text"
                 min={0}
-                extraWidth={0}
-                inputClassName="bg-transparent text-white-full"
-                value={swapState.priceState.orderPrice}
-                placeholder={formatPretty(
-                  swapState.priceState.price,
-                  getPriceExtendedFormatOptions(swapState.priceState.price)
-                )}
-                onChange={(e) => swapState.priceState.setPrice(e.target.value)}
-                inputRef={setInput}
+                className="bg-transparent text-white-full"
+                value={
+                  swapState.priceState.orderPrice === ""
+                    ? parseFloat(swapState.priceState.price.toString()).toFixed(
+                        2
+                      )
+                    : swapState.priceState.orderPrice
+                }
+                onChange={(e) => {
+                  const value = e.target.value.trim();
+                  if (!isValidNumericalRawInput(value) || value.length === 0)
+                    return swapState.priceState.setPrice("");
+                  swapState.priceState.setPrice(value);
+                }}
               />
             ) : (
               <AutosizeInput
-                id="price-input"
-                type="string"
+                type="text"
                 extraWidth={0}
                 inputClassName="bg-transparent text-white-full"
                 value={swapState.priceState.manualPercentAdjusted}
@@ -219,26 +215,18 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               />
             )}
             {inputMode === InputMode.Percentage && (
-              <span className="text-white-full">%</span>
+              <span className="inline-flex items-baseline gap-1">
+                <span className="text-white-full">%</span>
+                <span className="body2 text-osmoverse-500">
+                  {percentageSuffix}
+                </span>
+              </span>
             )}
           </SkeletonLoader>
-          {priceState.spotPrice && !priceState.isLoading && (
-            <span className="body2 text-osmoverse-400">{inputSuffix}</span>
-          )}
-        </div>
-
-        <div className="rounded-full border-[1px] border-osmoverse-700 text-wosmongton-300">
-          <button
-            onClick={swapInputMode}
-            disabled={priceState.isLoading || priceState.isBeyondOppositePrice}
-            className="flex h-8 w-8 items-center justify-center disabled:opacity-50"
-          >
-            <Icon id="switch" width={16} height={16} />
-          </button>
         </div>
       </div>
       <div className="flex w-full items-center justify-between gap-2 pt-3 pb-2">
-        {percentAdjustmentOptions.map(({ label, value }) => (
+        {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
             className="flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-700 px-3 py-1 disabled:opacity-50"
@@ -251,10 +239,26 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             }}
             disabled={!priceState.spotPrice || priceState.isLoading}
           >
-            <span className="body2 text-wosmongton-200">
-              {orderDirection === "bid" ? "-" : "+"}
-              {label}
-            </span>
+            {!defaultValue && (
+              <div className="flex h-4 w-4 items-center justify-center">
+                {orderDirection === "bid" ? (
+                  <Icon
+                    id="triangle-down"
+                    width={10}
+                    height={6}
+                    className="rotate-180 text-wosmongton-200 transition-transform"
+                  />
+                ) : (
+                  <Icon
+                    id="triangle-down"
+                    width={10}
+                    height={6}
+                    className="text-wosmongton-200 transition-transform"
+                  />
+                )}
+              </div>
+            )}
+            <span className="body2 text-wosmongton-200">{label}</span>
           </button>
         ))}
       </div>

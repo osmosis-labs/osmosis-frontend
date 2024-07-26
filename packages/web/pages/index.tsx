@@ -72,7 +72,7 @@ const HomeNew = () => {
         </svg>
       </div> */}
       <div className="flex h-auto w-full justify-center">
-        <div className="flex w-[35rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
+        <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {featureFlags.swapsAdBanner && <SwapAdsBanner />}
           <TradeTool page={"Swap Page"} />
         </div>
