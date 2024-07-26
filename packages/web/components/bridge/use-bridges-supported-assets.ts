@@ -116,6 +116,12 @@ export const useBridgesSupportedAssets = ({
       Record<string, Set<Bridge>>
     > = {};
 
+    // Since the chains are sorted, wait for all providers to return before
+    // generating a result
+    if (isLoading) {
+      return {};
+    }
+
     type AssetsByChainId =
       RouterOutputs["bridgeTransfer"]["getSupportedAssetsByBridge"]["supportedAssets"]["assetsByChainId"];
 
@@ -195,7 +201,7 @@ export const useBridgesSupportedAssets = ({
         "providerName"
       >[]
     >;
-  }, [successfulQueries]);
+  }, [successfulQueries, isLoading]);
 
   const supportedChains = useMemo(() => {
     return Array.from(
