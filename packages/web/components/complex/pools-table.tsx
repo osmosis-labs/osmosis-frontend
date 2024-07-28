@@ -639,9 +639,14 @@ export const AprBreakdownCell: PoolCellComponent = ({
             {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
           </p>
         ) : (
-          <p className="xs:text-xs">
-            {aprBreakdown?.total?.lower?.maxDecimals(1).toString()} -{" "}
-            {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+          <p className="xs:flex xs:flex-col xs:text-xs">
+            <label>
+              {aprBreakdown?.total?.lower?.maxDecimals(1).toString()}
+            </label>{" "}
+            -{" "}
+            <label>
+              {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+            </label>
           </p>
         )}
       </p>
