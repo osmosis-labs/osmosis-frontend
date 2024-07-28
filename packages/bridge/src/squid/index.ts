@@ -137,6 +137,19 @@ export class SquidBridgeProvider implements BridgeProvider {
                 message: e.message,
               });
             }
+            if (
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
+                  "No paths found, please choose a different token pair"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "NoQuotesError",
+                message: e.message,
+              });
+            }
           }
 
           throw e;
