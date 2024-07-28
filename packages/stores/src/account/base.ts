@@ -49,6 +49,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
+import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
   QuoteStdFee,
@@ -59,6 +60,7 @@ import type { AssetList, Chain } from "@osmosis-labs/types";
 import {
   apiClient,
   ApiClientError,
+  getChain,
   isNil,
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
@@ -101,9 +103,6 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
-
-// The value of zero represent that there is not timeout height set.
-const timeoutHeightDisabledStr = "0";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -1053,7 +1052,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         return res;
       }),
       memo: signed.memo,
-      timeoutHeight: BigInt(signDoc.timeout_height ?? timeoutHeightDisabledStr),
+      timeoutHeight: BigInt(signDoc.timeout_height ?? "0"),
     });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
@@ -1078,24 +1077,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   // If for any reason we fail to get the latest block height, we disable the timeout height by returning
   // a string value of 0.
   private async getTimeoutHeight(chainId: string): Promise<bigint> {
-    // Get status query.
-    const queryRPCStatus = this.queriesStore.get(chainId).cosmos.queryRPCStatus;
-
-    // Wait for the response.
-    const result = await queryRPCStatus.waitFreshResponse();
-
-    // Retrieve the latest block height. If not present, set it to 0.
-    const latestBlockHeight = result
-      ? result.data.result.sync_info.latest_block_height
-      : timeoutHeightDisabledStr;
-
-    // If for any reason we fail to get the latest block height, we disable the timeout height.
-    if (latestBlockHeight == timeoutHeightDisabledStr) {
-      return BigInt(timeoutHeightDisabledStr);
-    }
-
-    // Otherwise we compute the timeout height as given by latest block height + offset.
-    return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
+    const chain = getChain({ chainId, chainList: this.chains });
+    if (!chain) return BigInt("0");
+    const status = await queryRPCStatus({ restUrl: chain.apis.rpc[0].address });
+    return (
+      BigInt(status.result.sync_info.latest_block_height) +
+      NEXT_TX_TIMEOUT_HEIGHT_OFFSET
+    );
   }
 
   private async signDirect({
