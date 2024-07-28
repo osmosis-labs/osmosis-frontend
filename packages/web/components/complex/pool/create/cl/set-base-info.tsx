@@ -21,7 +21,7 @@ import React, { Fragment, useMemo, useState } from "react";
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { Spinner } from "~/components/loaders";
-import { AssetLists } from "~/config/mock-asset-lists";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useDisclosure, useFilteredData } from "~/hooks";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
