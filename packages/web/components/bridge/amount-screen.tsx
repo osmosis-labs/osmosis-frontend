@@ -955,16 +955,28 @@ export const AmountScreen = observer(
                             <span className="body1 md:body2 text-osmoverse-300">
                               {t("transfer.receiveAsset")}
                             </span>
-                            {/** Only show stars if recommended asset is selected */}
-                            {(direction === "deposit"
-                              ? toAsset.address ===
-                                Object.keys(fromAsset.supportedVariants)[0]
-                              : toAsset.address ===
-                                counterpartySupportedAssetsByChainId[
-                                  toAsset.chainId
-                                ].map(({ address }) => address)[0]) && (
-                              <Icon id="generate-stars" width={24} />
-                            )}
+                            {
+                              <Icon
+                                className={classNames(
+                                  "opacity-0 transition-opacity",
+                                  {
+                                    // Only show stars if recommended asset is selected
+                                    "opacity-100":
+                                      direction === "deposit"
+                                        ? toAsset.address ===
+                                          Object.keys(
+                                            fromAsset.supportedVariants
+                                          )[0]
+                                        : toAsset.address ===
+                                          counterpartySupportedAssetsByChainId[
+                                            toAsset.chainId
+                                          ].map(({ address }) => address)[0],
+                                  }
+                                )}
+                                id="generate-stars"
+                                width={24}
+                              />
+                            }
                           </div>
                         </Tooltip>
 
