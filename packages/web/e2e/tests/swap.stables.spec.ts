@@ -33,15 +33,19 @@ test.describe("Test Swap Stables feature", () => {
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
-    const page = context.pages()[1];
+    let page = context.pages()[1];
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
     await walletPage.setWalletNameAndPassword("Test Stables", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
+    // Wait for random timeout between 1 and 120 seconds, only monitoring tests
+    const randomWait = Math.floor(Math.random() * 120);
+    page = context.pages()[0];
+    await page.waitForTimeout(randomWait * 1000);
     // Switch to Application
-    swapPage = new SwapPage(context.pages()[0]);
+    swapPage = new SwapPage(page);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
