@@ -76,7 +76,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onClose: closeAddFundsModal,
       onOpen: openAddFundsModal,
     } = useDisclosure();
-    const fromAssetsPage = useMemo(() => page === "Token Info Page", [page]);
+
+    // const fromAssetsPage = useMemo(() => page === "Token Info Page", [page]);
+
     const [{ from, quote, tab, type }, set] = useQueryStates({
       from: parseAsString.withDefault("ATOM"),
       quote: parseAsString.withDefault("USDC"),
@@ -150,21 +152,21 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [orderDirection, swapState.error, t]);
 
-    const price = useMemo(
-      () =>
-        type === "market"
-          ? orderDirection === "bid"
-            ? swapState.priceState.askSpotPrice!
-            : swapState.priceState.bidSpotPrice!
-          : swapState.priceState.price,
-      [
-        orderDirection,
-        swapState.priceState.askSpotPrice,
-        swapState.priceState.bidSpotPrice,
-        swapState.priceState.price,
-        type,
-      ]
-    );
+    // const price = useMemo(
+    //   () =>
+    //     type === "market"
+    //       ? orderDirection === "bid"
+    //         ? swapState.priceState.askSpotPrice!
+    //         : swapState.priceState.bidSpotPrice!
+    //       : swapState.priceState.price,
+    //   [
+    //     orderDirection,
+    //     swapState.priceState.askSpotPrice,
+    //     swapState.priceState.bidSpotPrice,
+    //     swapState.priceState.price,
+    //     type,
+    //   ]
+    // );
 
     const tokenAmount = useMemo(
       () => swapState.inAmountInput.inputAmount,
