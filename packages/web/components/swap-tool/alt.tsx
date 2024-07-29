@@ -16,6 +16,15 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import {
+  AssetFieldset,
+  AssetFieldsetFooter,
+  AssetFieldsetHeader,
+  AssetFieldsetHeaderBalance,
+  AssetFieldsetHeaderLabel,
+  AssetFieldsetInput,
+  AssetFieldsetTokenSelector,
+} from "~/components/complex/asset-fieldset";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
@@ -332,6 +341,121 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         <div className="relative flex flex-col gap-6 overflow-hidden">
           <div className="flex flex-col gap-3">
             <div className="relative flex flex-col">
+              <AssetFieldset>
+                <AssetFieldsetHeader>
+                  <AssetFieldsetHeaderLabel>
+                    <span className="pt-1.5 text-osmoverse-400">From</span>
+                  </AssetFieldsetHeaderLabel>
+                  <AssetFieldsetHeaderBalance
+                    onMax={() => swapState.inAmountInput.toggleMax()}
+                    availableBalance={
+                      swapState.inAmountInput.balance &&
+                      formatPretty(
+                        swapState.inAmountInput.balance?.toDec() ?? new Dec(0),
+                        {
+                          minimumSignificantDigits: 6,
+                          maximumSignificantDigits: 6,
+                          maxDecimals: 10,
+                          notation: "standard",
+                        }
+                      )
+                    }
+                  />
+                </AssetFieldsetHeader>
+                <div className="flex items-center justify-between py-3">
+                  <AssetFieldsetInput
+                    inputValue={swapState.inAmountInput.inputAmount}
+                    onInputChange={(e) => {
+                      e.preventDefault();
+                      if (e.target.value.length <= (isMobile ? 19 : 26)) {
+                        swapState.inAmountInput.setAmount(e.target.value);
+                      }
+                    }}
+                  />
+                  <AssetFieldsetTokenSelector
+                    selectedCoinDenom={swapState.fromAsset?.coinDenom}
+                    selectedCoinImageUrl={swapState.fromAsset?.coinImageUrl}
+                    isModalExternal
+                    onSelectorClick={() =>
+                      showTokenSelectRecommendedTokens &&
+                      setOneTokenSelectOpen("from")
+                    }
+                  />
+                </div>
+                <AssetFieldsetFooter>
+                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                    {formatPretty(
+                      swapState.inAmountInput?.fiatValue ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                      swapState.inAmountInput?.fiatValue?.toDec() && {
+                        ...getPriceExtendedFormatOptions(
+                          swapState.inAmountInput?.fiatValue?.toDec()
+                        ),
+                      }
+                    )}
+                  </span>
+                </AssetFieldsetFooter>
+              </AssetFieldset>
+              <AssetFieldset>
+                <AssetFieldsetHeader>
+                  <AssetFieldsetHeaderLabel>
+                    <span className="pt-1.5 text-osmoverse-400">To</span>
+                  </AssetFieldsetHeaderLabel>
+                </AssetFieldsetHeader>
+                <div className="flex items-center justify-between py-3">
+                  <AssetFieldsetInput
+                    outputValue={
+                      <h3
+                        className={classNames(
+                          "whitespace-nowrap transition-opacity",
+                          swapState.quote?.amount.toDec().isPositive() &&
+                            !swapState.inAmountInput.isTyping &&
+                            !swapState.isQuoteLoading
+                            ? "text-white-full"
+                            : "text-white-disabled",
+                          {
+                            "opacity-50":
+                              isSwapToolLoading ||
+                              !swapState.quote ||
+                              swapState.inAmountInput.isEmpty,
+                          }
+                        )}
+                      >
+                        {swapState.quote?.amount
+                          ? formatPretty(swapState.quote.amount.toDec(), {
+                              minimumSignificantDigits: 6,
+                              maximumSignificantDigits: 6,
+                              maxDecimals: 10,
+                              notation: "standard",
+                            })
+                          : "0"}
+                      </h3>
+                    }
+                  />
+                  <AssetFieldsetTokenSelector
+                    selectedCoinDenom={swapState.toAsset?.coinDenom}
+                    selectedCoinImageUrl={swapState.toAsset?.coinImageUrl}
+                    isModalExternal
+                    onSelectorClick={() =>
+                      showTokenSelectRecommendedTokens &&
+                      setOneTokenSelectOpen("to")
+                    }
+                  />
+                </div>
+                <AssetFieldsetFooter>
+                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                    {formatPretty(
+                      swapState.inAmountInput?.fiatValue ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                      swapState.inAmountInput?.fiatValue?.toDec() && {
+                        ...getPriceExtendedFormatOptions(
+                          swapState.inAmountInput?.fiatValue?.toDec()
+                        ),
+                      }
+                    )}
+                  </span>
+                </AssetFieldsetFooter>
+              </AssetFieldset>
               <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full flex-col">
                   <div className="body2 flex justify-between pb-1">

@@ -1,11 +1,8 @@
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { MinimalAsset } from "@osmosis-labs/types";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { useRouter } from "next/router";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
@@ -30,9 +27,8 @@ import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage } from "~/config";
+import { EventPage } from "~/config";
 import {
-  useAmplitudeAnalytics,
   useDisclosure,
   useSlippageConfig,
   useTranslation,
@@ -41,7 +37,6 @@ import {
 import { usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
-import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -387,15 +382,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 }
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
-              <AssetFieldsetTokenSelector>
-                <TokenSelect
-                  onSelect={setBase}
-                  selectableAssets={selectableBaseAssets}
-                  orderDirection={orderDirection}
-                  selectedCoinDenom={swapState.baseAsset?.coinDenom}
-                  selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
-                />
-              </AssetFieldsetTokenSelector>
+              <AssetFieldsetTokenSelector
+                onSelect={setBase}
+                selectableAssets={selectableBaseAssets}
+                orderDirection={orderDirection}
+                selectedCoinDenom={swapState.baseAsset?.coinDenom}
+                selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
+                fetchNextPageAssets={swapState.marketState.fetchNextPageAssets}
+                hasNextPageAssets={swapState.marketState.hasNextPageAssets}
+                isFetchingNextPageAssets={
+                  swapState.marketState.isFetchingNextPageAssets
+                }
+              />
             </div>
             <AssetFieldsetFooter>
               <button
@@ -552,93 +550,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
   }
 );
-
-interface TokenSelectProps {
-  selectableAssets: (MinimalAsset | undefined)[];
-  selectedCoinImageUrl?: string;
-  selectedCoinDenom?: string;
-  orderDirection?: string;
-  onSelect: (denom: string) => void;
-}
-
-function TokenSelect({
-  selectableAssets,
-  selectedCoinImageUrl,
-  selectedCoinDenom,
-  orderDirection,
-  onSelect: onOriginalSelect,
-}: TokenSelectProps) {
-  const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
-
-  const {
-    isOpen: isSelectOpen,
-    onOpen: openSelect,
-    onClose: closeSelect,
-  } = useDisclosure();
-
-  const router = useRouter();
-
-  const onSelect = (tokenDenom: string) => {
-    logEvent([
-      EventName.Swap.dropdownAssetSelected,
-      {
-        tokenName: tokenDenom,
-        isOnHome: router.pathname === "/",
-        page: "Swap Page",
-      },
-    ]);
-    onOriginalSelect(tokenDenom);
-  };
-
-  return (
-    <>
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (selectableAssets.length > 0) {
-            openSelect();
-          }
-        }}
-      >
-        <div className="flex items-center gap-3">
-          {selectedCoinImageUrl && (
-            <Image
-              src={selectedCoinImageUrl}
-              alt={`${selectedCoinDenom} image`}
-              width={40}
-              height={40}
-              className="h-10 min-w-10 rounded-full"
-            />
-          )}
-          <h5>{selectedCoinDenom}</h5>
-        </div>
-        <div className="flex h-6 w-6 items-center justify-center">
-          <Icon
-            id="chevron-down"
-            width={16}
-            height={16}
-            className="text-osmoverse-400"
-          />
-        </div>
-      </button>
-      <TokenSelectModalLimit
-        headerTitle={
-          orderDirection === "ask"
-            ? t("limitOrders.selectAnAssetTo.sell")
-            : t("limitOrders.selectAnAssetTo.buy")
-        }
-        isOpen={isSelectOpen}
-        onClose={closeSelect}
-        onSelect={onSelect}
-        showSearchBox
-        selectableAssets={selectableAssets}
-      />
-    </>
-  );
-}
 
 // function SwapArrows() {
 //   return (
