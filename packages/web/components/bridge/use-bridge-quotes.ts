@@ -587,13 +587,10 @@ export const useBridgeQuotes = ({
     const transactionRequest = selectedQuote?.transactionRequest;
     const quote = selectedQuote?.quote;
 
-    console.log(selectedQuote);
-
     if (!transactionRequest || !quote) {
       console.error("No quote or transaction to use for transfer");
       return;
     }
-    // console.log(transactionRequest?.gasFee);
 
     const tx =
       transactionRequest.type === "evm"
@@ -655,11 +652,12 @@ export const useBridgeQuotes = ({
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
   const isDepositReady = isDeposit && isFromWalletConnected;
+  const isWithdrawReady = direction === "withdraw";
   const userCanAdvance =
-    isDepositReady &&
+    (isDepositReady || isWithdrawReady) &&
     !isInsufficientFee &&
     !isInsufficientBal &&
-    !isLoadingAnyBridgeQuote &&
+    !isLoadingBridgeQuote &&
     !isTxPending &&
     Boolean(selectedQuote);
 

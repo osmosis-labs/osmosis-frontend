@@ -419,8 +419,8 @@ export async function getGasFeeAmount({
      * then we are missing balance to pay for the transaction. In this case,
      * we need to find an alternative token or subtract this amount from the input.
      */
-    const isBalanceNeededForTx = new Dec(spentAmount).gt(
-      new Dec(amount).sub(new Dec(feeAmount))
+    const isBalanceNeededForTx = new Int(spentAmount).gt(
+      new Int(amount).sub(new Int(feeAmount))
     );
 
     /**

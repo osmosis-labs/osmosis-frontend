@@ -831,8 +831,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const forceSignDirect = isAuthenticatorMsg;
 
-    console.log({ fee });
-
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
       ? this.signAmino({
