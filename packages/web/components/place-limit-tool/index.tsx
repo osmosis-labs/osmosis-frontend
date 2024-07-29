@@ -16,6 +16,15 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets/icon";
+import {
+  AssetFieldset,
+  AssetFieldsetFooter,
+  AssetFieldsetHeader,
+  AssetFieldsetHeaderBalance,
+  AssetFieldsetHeaderLabel,
+  AssetFieldsetInput,
+  AssetFieldsetTokenSelector,
+} from "~/components/complex/asset-fieldset";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
@@ -336,44 +345,32 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     return (
       <>
         <div className="flex flex-col">
-          <div className="flex w-full items-center justify-between pt-3">
-            <span className="body2 text-osmoverse-300">
-              {t("limitOrders.enterAnAmountTo")}{" "}
-              {orderDirection === "bid"
-                ? t("portfolio.buy").toLowerCase()
-                : t("limitOrders.sell").toLowerCase()}
-            </span>
-            <div
-              className={classNames(
-                "flex items-center gap-2 transition-opacity",
-                { "opacity-0": !hasFunds }
-              )}
-            >
-              <span>
-                {tab === "buy"
-                  ? swapState.quoteAsset?.usdValue &&
-                    formatPretty(swapState.quoteAsset?.usdValue)
-                  : swapState.baseTokenBalance &&
-                    formatPretty(swapState.baseTokenBalance)}{" "}
-                {t("pool.available").toLowerCase()}
-              </span>
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
-                onClick={toggleMax}
-              >
-                <span className="body2 text-wosmongton-300">Max</span>
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between py-3">
-            <div className="flex items-center">
-              {focused === "fiat" && <h3>$</h3>}
-              <input
-                className="w-full bg-transparent text-h3 font-h3"
-                placeholder="0"
-                onChange={(e) => setAmountSafe(focused, e.target.value)}
-                value={
+          <AssetFieldset>
+            <AssetFieldsetHeader>
+              <AssetFieldsetHeaderLabel>
+                <span className="body2 text-osmoverse-300">
+                  {t("limitOrders.enterAnAmountTo")}{" "}
+                  {orderDirection === "bid"
+                    ? t("portfolio.buy").toLowerCase()
+                    : t("limitOrders.sell").toLowerCase()}
+                </span>
+              </AssetFieldsetHeaderLabel>
+              <AssetFieldsetHeaderBalance
+                className={classNames({ "opacity-0": !hasFunds })}
+                availableBalance={
+                  tab === "buy"
+                    ? swapState.quoteAsset?.usdValue &&
+                      formatPretty(swapState.quoteAsset?.usdValue)
+                    : swapState.baseTokenBalance &&
+                      formatPretty(swapState.baseTokenBalance)
+                }
+                onMax={toggleMax}
+              />
+            </AssetFieldsetHeader>
+            <div className="flex items-center justify-between py-3">
+              <AssetFieldsetInput
+                inputPrefix={focused === "fiat" && <h3>$</h3>}
+                inputValue={
                   focused === "fiat"
                     ? type === "market" && tab === "sell"
                       ? trimPlaceholderZeros(
@@ -386,69 +383,71 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       )
                     : tokenAmount
                 }
+                onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
-            </div>
-            <div className="flex pl-3">
-              <TokenSelect
-                onSelect={setBase}
-                selectableAssets={selectableBaseAssets}
-                orderDirection={orderDirection}
-                selectedCoinDenom={swapState.baseAsset?.coinDenom}
-                selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
-              />
-            </div>
-          </div>
-          <div className="flex w-full items-center justify-between pb-4">
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
-              disabled={type === "market"}
-              onClick={() => {
-                setFocused((p) => (p === "fiat" ? "token" : "fiat"));
-              }}
-            >
-              {type === "limit" && (
-                <Icon
-                  id="switch"
-                  width={16}
-                  height={16}
-                  className="text-wosmongton-300"
+              <AssetFieldsetTokenSelector>
+                <TokenSelect
+                  onSelect={setBase}
+                  selectableAssets={selectableBaseAssets}
+                  orderDirection={orderDirection}
+                  selectedCoinDenom={swapState.baseAsset?.coinDenom}
+                  selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
                 />
-              )}
-              <span
-                className={classNames("body2 h-5 transition-opacity", {
-                  "text-osmoverse-300": type === "market",
-                  "text-wosmongton-300": type === "limit",
-                })}
+              </AssetFieldsetTokenSelector>
+            </div>
+            <AssetFieldsetFooter>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
+                disabled={type === "market"}
+                onClick={() => {
+                  setFocused((p) => (p === "fiat" ? "token" : "fiat"));
+                }}
               >
-                {focused === "token" && <span>$</span>}
-                {trimPlaceholderZeros(
-                  (
-                    (type === "limit"
-                      ? focused === "fiat"
-                        ? swapState.inAmountInput.amount?.hideDenom(true)
-                        : +fiatAmount
-                      : swapState.marketState.quote?.amount.hideDenom(true)) ??
-                    new Dec(0)
-                  ).toString()
-                )}{" "}
-                {focused === "fiat" && (
-                  <span>{swapState.baseAsset?.coinDenom}</span>
-                )}{" "}
-                {type === "market" &&
-                  swapState.marketState.quote?.priceImpactTokenOut && (
-                    <span className="text-osmoverse-500">
-                      &#40;-
-                      {formatPretty(
-                        swapState.marketState.quote?.priceImpactTokenOut
-                      )}
-                      &#41;
-                    </span>
-                  )}
-              </span>
-            </button>
-            <PriceSelector />
-          </div>
+                {type === "limit" && (
+                  <Icon
+                    id="switch"
+                    width={16}
+                    height={16}
+                    className="text-wosmongton-300"
+                  />
+                )}
+                <span
+                  className={classNames("body2 h-5 transition-opacity", {
+                    "text-osmoverse-300": type === "market",
+                    "text-wosmongton-300": type === "limit",
+                  })}
+                >
+                  {focused === "token" && <span>$</span>}
+                  {trimPlaceholderZeros(
+                    (
+                      (type === "limit"
+                        ? focused === "fiat"
+                          ? swapState.inAmountInput.amount?.hideDenom(true)
+                          : +fiatAmount
+                        : swapState.marketState.quote?.amount.hideDenom(
+                            true
+                          )) ?? new Dec(0)
+                    ).toString()
+                  )}{" "}
+                  {focused === "fiat" && (
+                    <span>{swapState.baseAsset?.coinDenom}</span>
+                  )}{" "}
+                  {type === "market" &&
+                    swapState.marketState.quote?.priceImpactTokenOut && (
+                      <span className="text-osmoverse-500">
+                        &#40;-
+                        {formatPretty(
+                          swapState.marketState.quote?.priceImpactTokenOut
+                        )}
+                        &#41;
+                      </span>
+                    )}
+                </span>
+              </button>
+              <PriceSelector />
+            </AssetFieldsetFooter>
+          </AssetFieldset>
           {type === "limit" && (
             <LimitPriceSelector
               swapState={swapState}
