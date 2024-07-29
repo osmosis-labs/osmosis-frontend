@@ -20,7 +20,7 @@ export async function queryPortfolioOverTime({
   url.searchParams.append("range", range);
 
   const headers = {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+    Authorization: `Bearer ${process.env.NUMIA_API_KEY}`,
   };
 
   return apiClient<PortfolioOverTimeResponse[]>(url.toString(), { headers });
