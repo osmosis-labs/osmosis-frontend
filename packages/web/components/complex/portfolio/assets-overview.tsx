@@ -12,20 +12,19 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GetStartedWithOsmosis } from "~/components/complex/portfolio/get-started-with-osmosis";
 import { PortfolioHistoricalChart } from "~/components/complex/portfolio/historical-chart";
+import { PortfolioPerformance } from "~/components/complex/portfolio/performance";
 import { DataPoint } from "~/components/complex/portfolio/types";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useFormatDate } from "~/components/transactions/transaction-utils";
+import { CustomClasses } from "~/components/types";
+import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-import { CreditCardIcon } from "../../assets/credit-card-icon";
-import { SkeletonLoader } from "../../loaders/skeleton-loader";
-import { CustomClasses } from "../../types";
-import { Button } from "../../ui/button";
-import { PortfolioPerformance } from "./performance";
 
 const calculatePortfolioPerformance = (
   data: ChartPortfolioOverTimeResponse[] | undefined,
@@ -109,6 +108,10 @@ export const AssetsOverview: FunctionComponent<
 
   if (isWalletLoading) return null;
 
+  const totalDisplayValue =
+    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value)) ||
+    totalValue?.toString();
+
   return (
     <div className="flex w-full flex-col gap-4">
       {wallet && wallet.isWalletConnected && wallet.address ? (
@@ -123,9 +126,9 @@ export const AssetsOverview: FunctionComponent<
               isLoaded={isTotalValueFetched}
             >
               {isMobile ? (
-                <h5>{totalValue?.toString()}</h5>
+                <h5>{totalDisplayValue?.toString()}</h5>
               ) : (
-                <h3>{totalValue?.toString()}</h3>
+                <h3>{totalDisplayValue?.toString()}</h3>
               )}
             </SkeletonLoader>
             <SkeletonLoader
