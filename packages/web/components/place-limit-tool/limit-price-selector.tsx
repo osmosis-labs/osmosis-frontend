@@ -114,7 +114,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   return (
     <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
       <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
-      {/**FIXME: button click disabled when tooltip open */}
       <GenericDisclaimer
         disabled={!swapState.priceState.isBeyondOppositePrice}
         title={
@@ -136,7 +135,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           type="button"
           className="inline-flex min-h-[32px] w-full items-center gap-1"
           onClick={swapInputMode}
-          disabled={priceState.isLoading || priceState.isBeyondOppositePrice}
+          disabled={priceState.isLoading}
         >
           <span className="body2 text-osmoverse-300">
             {t("limitOrders.whenDenomPriceIs", {
