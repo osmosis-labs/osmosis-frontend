@@ -146,7 +146,6 @@ export const AmountScreen = observer(
       buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
-      isLoadingBridgeTransaction,
       isInsufficientBal,
       isInsufficientFee,
       warnUserOfPriceImpact,
@@ -1188,7 +1187,6 @@ export const AmountScreen = observer(
                     disabled={
                       !isNil(buttonErrorMessage) ||
                       isLoadingBridgeQuote ||
-                      isLoadingBridgeTransaction ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
                       isNil(selectedQuote) ||
