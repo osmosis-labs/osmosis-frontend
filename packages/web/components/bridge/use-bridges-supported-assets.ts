@@ -214,6 +214,7 @@ export const useBridgesSupportedAssets = ({
           .sort((a, b) => {
             // focus on evm chains to be picked first
             if (a.chainType === "evm" && b.chainType !== "evm") return -1;
+            if (a.chainType === "solana" && b.chainType !== "solana") return -1;
             return 0;
           })
           .map((chain) => [chain.chainId, chain])
