@@ -96,25 +96,24 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         } ${t("limitOrders.currentPrice")}`;
   }, [t, priceState.percentAdjusted, orderDirection]);
 
-  const TooltipContent = useMemo(() => {
-    const translationId =
-      orderDirection === "bid"
-        ? "limitOrders.aboveMarket"
-        : "limitOrders.belowMarket";
-    return (
-      <div>
-        <div className="text-caption">{t(`${translationId}.title`)}</div>
-        <span className="text-caption text-osmoverse-300">
-          {t(`${translationId}.description`)}
-        </span>
-      </div>
-    );
-  }, [orderDirection, t]);
+  // const TooltipContent = useMemo(() => {
+  //   const translationId =
+  //     orderDirection === "bid"
+  //       ? "limitOrders.aboveMarket"
+  //       : "limitOrders.belowMarket";
+  //   return (
+  //     <div>
+  //       <div className="text-caption">{t(`${translationId}.title`)}</div>
+  //       <span className="text-caption text-osmoverse-300">
+  //         {t(`${translationId}.description`)}
+  //       </span>
+  //     </div>
+  //   );
+  // }, [orderDirection, t]);
 
   return (
     <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
       <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
-      {/**FIXME: button click disabled when tooltip open */}
       <GenericDisclaimer
         disabled={!swapState.priceState.isBeyondOppositePrice}
         title={
@@ -136,7 +135,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           type="button"
           className="inline-flex min-h-[32px] w-full items-center gap-1"
           onClick={swapInputMode}
-          disabled={priceState.isLoading || priceState.isBeyondOppositePrice}
+          disabled={priceState.isLoading}
         >
           <span className="body2 text-osmoverse-300">
             {t("limitOrders.whenDenomPriceIs", {
@@ -149,15 +148,16 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             >
               {priceLabel}
             </span>{" "}
-            {inputMode === InputMode.Price && (
-              <span
-                className={classNames("body2 text-wosmongton-300", {
-                  "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                })}
-              >
-                {percentageSuffix}
-              </span>
-            )}
+            {inputMode === InputMode.Price &&
+              +swapState.priceState.manualPercentAdjusted > 0 && (
+                <span
+                  className={classNames("body2 text-wosmongton-300", {
+                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                  })}
+                >
+                  {percentageSuffix}
+                </span>
+              )}
           </span>
           <Icon
             id="switch"
@@ -241,7 +241,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           >
             {!defaultValue && (
               <div className="flex h-4 w-4 items-center justify-center">
-                {orderDirection === "bid" ? (
+                {orderDirection === "ask" ? (
                   <Icon
                     id="triangle-down"
                     width={10}
