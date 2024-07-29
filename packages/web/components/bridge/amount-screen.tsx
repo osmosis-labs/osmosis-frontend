@@ -1245,6 +1245,7 @@ export const AmountScreen = observer(
             direction={direction}
             toChain={toChain}
             toAsset={toAsset}
+            canonicalAssetDenom={canonicalAsset.coinDenom}
             fromChain={fromChain}
             fromAsset={fromAsset}
             toAddress={toAddress}

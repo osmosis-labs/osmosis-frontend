@@ -16,6 +16,7 @@ interface MoreBridgeOptionsProps {
   direction: "deposit" | "withdraw";
   fromAsset: BridgeAsset;
   toAsset: BridgeAsset;
+  canonicalAssetDenom?: string;
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
   toAddress: string | undefined;
@@ -141,6 +142,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   direction,
   toChain,
   toAsset,
+  canonicalAssetDenom,
   fromChain,
   fromAsset,
   toAddress,
@@ -235,8 +237,8 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
             ? "transfer.moreBridgeOptions.descriptionDeposit"
             : "transfer.moreBridgeOptions.descriptionWithdraw",
           {
-            asset: fromAsset?.denom ?? "",
-            chain: toChain?.chainName ?? "",
+            asset: canonicalAssetDenom ?? fromAsset?.denom ?? "",
+            chain: toChain?.prettyName ?? "",
           }
         )}
       </p>
