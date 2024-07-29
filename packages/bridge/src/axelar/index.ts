@@ -227,7 +227,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       // Use of toLowerCase is advised due to registry (Axelar + others) differences
       // in casing of asset addresses. May be somewhat unsafe.
-
       const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
         Object.keys(addresses).some(
           (address) =>
@@ -303,6 +302,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
               chainId: axelarChain.chain_id as string,
               chainType: axelarChain.chain_type,
             };
+
+      if (chain.chainId === axelarChain.chain_id.toString()) return [];
 
       foundVariants.setAsset(
         axelarChain.chain_id.toString(),
