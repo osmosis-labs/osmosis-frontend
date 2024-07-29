@@ -140,6 +140,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [orderDirection, swapState.error, t]);
 
+    const price = useMemo(
+      () =>
+        type === "market"
+          ? orderDirection === "bid"
+            ? swapState.priceState.askSpotPrice!
+            : swapState.priceState.bidSpotPrice!
+          : swapState.priceState.price,
+      [
+        orderDirection,
+        swapState.priceState.askSpotPrice,
+        swapState.priceState.bidSpotPrice,
+        swapState.priceState.price,
+        type,
+      ]
+    );
+
+    const tokenAmount = useMemo(
+      () => swapState.inAmountInput.inputAmount,
+      [swapState.inAmountInput.inputAmount]
+    );
+
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
@@ -199,13 +220,15 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const [fiatAmount, setFiatAmount] = useState<string>("");
 
     const setAmountSafe = useCallback(
-      (type: "fiat" | "token", value?: string) => {
+      (amountType: "fiat" | "token", value?: string) => {
         const update =
-          type === "fiat" ? setFiatAmount : swapState.inAmountInput.setAmount;
+          amountType === "fiat"
+            ? setFiatAmount
+            : swapState.inAmountInput.setAmount;
         const setMarketAmount = swapState.marketState.inAmountInput.setAmount;
 
         if (!value?.trim()) {
-          if (type === "fiat") {
+          if (amountType === "fiat") {
             setMarketAmount("");
           }
           return update("");
@@ -213,7 +236,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
         const updatedValue = transformAmount(
           value,
-          type === "fiat" ? 6 : swapState.baseAsset?.coinDecimals
+          amountType === "fiat" ? 6 : swapState.baseAsset?.coinDecimals
         ).trim();
 
         if (
@@ -224,11 +247,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           return;
         }
 
-        const isFocused = focused === type;
+        const isFocused = focused === amountType;
 
         // Hacky solution to deal with rounding
         // TODO: Investigate a way to improve this
-        if (type === "fiat" && tab === "buy") {
+        if (amountType === "fiat" && tab === "buy") {
           setMarketAmount(
             new Dec(updatedValue)
               .quo(swapState.quoteAssetPrice.toDec())
@@ -236,21 +259,54 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           );
         }
 
-        update(
+        const formattedValue =
           parseFloat(updatedValue) !== 0 && !isFocused
             ? trimPlaceholderZeros(updatedValue)
-            : updatedValue
-        );
+            : updatedValue;
+
+        update(formattedValue);
       },
       [
         focused,
         swapState.baseAsset?.coinDecimals,
-        swapState.inAmountInput.setAmount,
+        swapState.inAmountInput,
         swapState.marketState.inAmountInput.setAmount,
         swapState.quoteAssetPrice,
         tab,
       ]
     );
+
+    // useEffect(() => {
+    //   if (tokenAmount.length === 0 && focused === "fiat") {
+    //     setAmountSafe("fiat", "");
+    //     if (tab === "buy") {
+    //       swapState.marketState.inAmountInput.setAmount("");
+    //     }
+    //   }
+
+    //   if (focused !== "token" || !price) return;
+
+    //   const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+    //   const fiatValue = value ? price.mul(value) : undefined;
+
+    //   setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+    // }, [
+    //   focused,
+    //   price,
+    //   setAmountSafe,
+    //   tokenAmount,
+    //   swapState.marketState.inAmountInput,
+    //   tab,
+    // ]);
+
+    // useEffect(() => {
+    //   if (focused !== "fiat" || !price) return;
+
+    //   const value =
+    //     fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+    //   const tokenValue = value ? new Dec(value).quo(price) : undefined;
+    //   setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
+    // }, [price, fiatAmount, setAmountSafe, focused]);
 
     const expectedOutput = useMemo(
       () => swapState.marketState.quote?.amount.toDec(),
@@ -280,16 +336,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       <>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col">
-            {/* <TokenSelectLimit
-              selectableAssets={selectableBaseAssets}
-              baseAsset={swapState.baseAsset!}
-              quoteAsset={swapState.quoteAsset!}
-              baseBalance={swapState.baseTokenBalance!}
-              quoteBalance={swapState.quoteTokenBalance!}
-              onTokenSelect={setBase}
-              disabled={false}
-              orderDirection={orderDirection}
-            /> */}
             <div className="flex w-full items-center justify-between pt-3">
               <span className="body2 text-osmoverse-300">
                 {t("limitOrders.enterAnAmountTo")}{" "}
@@ -338,7 +384,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       ? trimPlaceholderZeros(
                           (expectedOutput ?? new Dec(0)).toString()
                         )
-                      : swapState.inAmountInput.inputAmount
+                      : tokenAmount
                   }
                 />
               </div>
@@ -353,27 +399,42 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </div>
             </div>
             <div className="flex w-full items-center justify-between pb-4">
-              <span className="body2 h-5 text-osmoverse-300 transition-opacity">
-                {focused === "token" && <span>$</span>}
-                {trimPlaceholderZeros(
-                  (
-                    swapState.marketState.quote?.amount.hideDenom(true) ??
-                    new Dec(0)
-                  ).toString()
-                )}{" "}
-                {focused === "fiat" && (
-                  <span>{swapState.baseAsset?.coinDenom}</span>
-                )}{" "}
-                {swapState.marketState.quote?.priceImpactTokenOut && (
-                  <span className="text-osmoverse-500">
-                    &#40;-
-                    {formatPretty(
-                      swapState.marketState.quote?.priceImpactTokenOut
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
+                disabled={type === "market"}
+                onClick={() => {
+                  setFocused((p) => (p === "fiat" ? "token" : "fiat"));
+                }}
+              >
+                <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                  {focused === "token" && <span>$</span>}
+                  {trimPlaceholderZeros(
+                    (
+                      (type === "limit"
+                        ? focused === "fiat"
+                          ? swapState.inAmountInput.amount?.hideDenom(true)
+                          : +fiatAmount
+                        : swapState.marketState.quote?.amount.hideDenom(
+                            true
+                          )) ?? new Dec(0)
+                    ).toString()
+                  )}{" "}
+                  {focused === "fiat" && (
+                    <span>{swapState.baseAsset?.coinDenom}</span>
+                  )}{" "}
+                  {type === "market" &&
+                    swapState.marketState.quote?.priceImpactTokenOut && (
+                      <span className="text-osmoverse-500">
+                        &#40;-
+                        {formatPretty(
+                          swapState.marketState.quote?.priceImpactTokenOut
+                        )}
+                        &#41;
+                      </span>
                     )}
-                    &#41;
-                  </span>
-                )}
-              </span>
+                </span>
+              </button>
               <PriceSelector />
             </div>
             {type === "limit" && (
@@ -413,7 +474,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   })
                 }
               >
-                <h6 className="">{t("connectWallet")}</h6>
+                <h6>{t("connectWallet")}</h6>
               </Button>
             ) : (
               <>
