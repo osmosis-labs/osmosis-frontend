@@ -43,6 +43,7 @@ import { useStore } from "~/stores";
 interface BridgeWalletSelectProps {
   direction: BridgeTransactionDirection;
   toChain: BridgeChainWithDisplayInfo;
+  fromChain: BridgeChainWithDisplayInfo;
   cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
   evmChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "evm" }>;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -61,8 +62,12 @@ export const BridgeWalletSelectModal: FunctionComponent<
       title={
         <div className="md:subtitle1 mx-auto text-h6 font-h6">
           {props.direction === "deposit"
-            ? t("transfer.selectDepositWallet")
-            : t("transfer.selectWithdrawWallet")}
+            ? t("transfer.selectDepositWallet", {
+                network: props.fromChain.prettyName,
+              })
+            : t("transfer.selectWithdrawWallet", {
+                network: props.toChain.prettyName,
+              })}
         </div>
       }
       className={classNames("!max-w-lg", { "min-h-[50vh]": !removeMinHeight })}
@@ -246,132 +251,137 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                     />
                   )}
 
-                  <div className="flex w-full flex-col gap-2 md:gap-1">
-                    <div className="flex w-full items-center justify-between px-3 md:px-0">
-                      <p className="body1 md:body2 text-osmoverse-200">
-                        {t("walletSelect.yourConnectedWallets")}
-                      </p>
-                      <Button
-                        variant="link"
-                        onClick={() => setIsManaging(!isManaging)}
-                        className="!h-fit !px-0 !py-0 text-wosmongton-200"
-                      >
-                        {isManaging
-                          ? t("walletSelect.done")
-                          : t("walletSelect.manage")}
-                      </Button>
-                    </div>
-                    {/** Conditional wallet buttons */}
-                    <div className="flex flex-col">
-                      {(isEvmWalletConnected || !isNil(cosmosAccount)) && (
-                        <div className="flex w-full flex-col">
-                          {!isNil(cosmosAccount) && !isNil(cosmosChain) && (
-                            <WalletButton
-                              onClick={() => {
-                                onSelectChain(cosmosChain);
-                                onClose();
-                              }}
-                              name={
-                                isManaging
-                                  ? cosmosAccount.walletInfo.prettyName
-                                  : t("transfer.transferFrom", {
-                                      noun:
-                                        cosmosAccount?.walletInfo.prettyName ??
-                                        "",
-                                    })
-                              }
-                              icon={cosmosAccount.walletInfo.logo}
-                              suffix={
-                                isManaging ? (
-                                  <p className="body2 text-osmoverse-400">
-                                    {t("walletSelect.primaryWallet")}
-                                  </p>
-                                ) : undefined
-                              }
-                            />
-                          )}
-                          {isEvmWalletConnected && !isNil(evmChain) && (
-                            <WalletButton
-                              onClick={async () => {
-                                const shouldSwitchChain =
-                                  isEvmWalletConnected &&
-                                  currentEvmChainId !== evmChain.chainId;
+                  {isEvmWalletConnected && (
+                    <div className="flex w-full flex-col gap-2 md:gap-1">
+                      <div className="flex w-full items-center justify-between px-3 md:px-0">
+                        <p className="body1 md:body2 text-osmoverse-200">
+                          {t("walletSelect.yourConnectedWallets")}
+                        </p>
+                        {isEvmWalletConnected && !isNil(cosmosAccount) && (
+                          <Button
+                            variant="link"
+                            onClick={() => setIsManaging(!isManaging)}
+                            className="!h-fit !px-0 !py-0 text-wosmongton-200"
+                          >
+                            {isManaging
+                              ? t("walletSelect.done")
+                              : t("walletSelect.manage")}
+                          </Button>
+                        )}
+                      </div>
 
-                                if (shouldSwitchChain) {
-                                  try {
-                                    setIsSwitchingChain(true);
-                                    await switchChainAsync({
-                                      chainId:
-                                        evmChain.chainId as EthereumChainIds,
-                                    });
-                                  } catch {
-                                    setIsSwitchingChain(false);
-                                    return;
-                                  }
+                      {/** Conditional wallet buttons */}
+                      <div className="flex flex-col">
+                        {(isEvmWalletConnected || !isNil(cosmosAccount)) && (
+                          <div className="flex w-full flex-col">
+                            {!isNil(cosmosAccount) && !isNil(cosmosChain) && (
+                              <WalletButton
+                                onClick={() => {
+                                  onSelectChain(cosmosChain);
+                                  onClose();
+                                }}
+                                name={
+                                  isManaging
+                                    ? cosmosAccount.walletInfo.prettyName
+                                    : t("transfer.transferFrom", {
+                                        noun:
+                                          cosmosAccount?.walletInfo
+                                            .prettyName ?? "",
+                                      })
                                 }
-
-                                onSelectChain(evmChain);
-                                onClose();
-                              }}
-                              name={
-                                isManaging ? (
-                                  evmConnector?.name
-                                ) : (
-                                  <>
-                                    {" "}
-                                    {t("transfer.transferFrom", {
-                                      noun: evmConnector?.name ?? "",
-                                    })}
-                                  </>
-                                )
-                              }
-                              icon={evmConnector?.icon}
-                              suffix={
-                                isManaging ? (
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      disconnectEvmWallet();
-                                    }}
-                                  >
-                                    {t("walletSelect.disconnect")}
-                                  </Button>
-                                ) : undefined
-                              }
-                            />
-                          )}
-                        </div>
-                      )}
-                      {direction === "withdraw" && (
-                        <WalletButton
-                          onClick={() => {
-                            setCurrentScreen(
-                              WalletSelectScreens.SendToAnotherAddress
-                            );
-                          }}
-                          name={t("transfer.sendToAnotherAddress")}
-                          icon={
-                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-osmoverse-700">
-                              <Icon
-                                id="wallet"
-                                className="text-osmoverse-400"
+                                icon={cosmosAccount.walletInfo.logo}
+                                suffix={
+                                  isManaging ? (
+                                    <p className="body2 text-osmoverse-400">
+                                      {t("walletSelect.primaryWallet")}
+                                    </p>
+                                  ) : undefined
+                                }
                               />
-                            </div>
-                          }
-                          suffix={
-                            <Icon
-                              id="chevron-right"
-                              className="text-osmoverse-400"
-                              width={10}
-                              height={17}
-                            />
-                          }
-                        />
-                      )}
+                            )}
+                            {isEvmWalletConnected && !isNil(evmChain) && (
+                              <WalletButton
+                                onClick={async () => {
+                                  const shouldSwitchChain =
+                                    isEvmWalletConnected &&
+                                    currentEvmChainId !== evmChain.chainId;
+
+                                  if (shouldSwitchChain) {
+                                    try {
+                                      setIsSwitchingChain(true);
+                                      await switchChainAsync({
+                                        chainId:
+                                          evmChain.chainId as EthereumChainIds,
+                                      });
+                                    } catch {
+                                      setIsSwitchingChain(false);
+                                      return;
+                                    }
+                                  }
+
+                                  onSelectChain(evmChain);
+                                  onClose();
+                                }}
+                                name={
+                                  isManaging ? (
+                                    evmConnector?.name
+                                  ) : (
+                                    <>
+                                      {" "}
+                                      {t("transfer.transferFrom", {
+                                        noun: evmConnector?.name ?? "",
+                                      })}
+                                    </>
+                                  )
+                                }
+                                icon={evmConnector?.icon}
+                                suffix={
+                                  isManaging ? (
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        disconnectEvmWallet();
+                                      }}
+                                    >
+                                      {t("walletSelect.disconnect")}
+                                    </Button>
+                                  ) : undefined
+                                }
+                              />
+                            )}
+                          </div>
+                        )}
+                        {direction === "withdraw" && (
+                          <WalletButton
+                            onClick={() => {
+                              setCurrentScreen(
+                                WalletSelectScreens.SendToAnotherAddress
+                              );
+                            }}
+                            name={t("transfer.sendToAnotherAddress")}
+                            icon={
+                              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-osmoverse-700">
+                                <Icon
+                                  id="wallet"
+                                  className="text-osmoverse-400"
+                                />
+                              </div>
+                            }
+                            suffix={
+                              <Icon
+                                id="chevron-right"
+                                className="text-osmoverse-400"
+                                width={10}
+                                height={17}
+                              />
+                            }
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {showEvmWallets && (
                     <div className="flex h-full w-full flex-col gap-2 overflow-y-scroll md:gap-1">
