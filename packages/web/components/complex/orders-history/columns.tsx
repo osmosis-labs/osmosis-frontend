@@ -11,7 +11,9 @@ import { OrderProgressBar } from "~/components/complex/orders-history/cells/fill
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
-const columnHelper = createColumnHelper<DisplayableLimitOrder>();
+const columnHelper = createColumnHelper<
+  DisplayableLimitOrder & { refetch: () => Promise<any> }
+>();
 
 export const tableColumns = [
   columnHelper.display({

@@ -30,14 +30,22 @@ export const OrderHistory = observer(() => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { orders, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    useOrderbookAllActiveOrders({
-      userAddress: wallet?.address ?? "",
-      pageSize: 10,
-    });
+  const {
+    orders,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    refetch,
+  } = useOrderbookAllActiveOrders({
+    userAddress: wallet?.address ?? "",
+    pageSize: 10,
+  });
 
-  const table = useReactTable<DisplayableLimitOrder>({
-    data: orders,
+  const table = useReactTable<
+    DisplayableLimitOrder & { refetch: () => Promise<any> }
+  >({
+    data: orders.map((o) => ({ ...o, refetch })),
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });
