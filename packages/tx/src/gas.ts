@@ -200,6 +200,16 @@ function parseSequenceFromAccount(account: any) {
   if (account.account["@type"] === BaseAccountTypeStr) {
     const base_acc = account as BaseAccount;
     sequence = Number(base_acc.account.sequence);
+  } else if ("base_account" in account.account) {
+    // some chains return a non-standard account object that includes a base_account object
+    // Example: injective
+    const baseAcc = account.account.base_account as {
+      address: string;
+      pub_key: string | null;
+      account_number: string;
+      sequence: string;
+    };
+    sequence = Number(baseAcc.sequence);
   } else {
     // We assume that if not a base account, it's a vesting account.
     const vesting_acc = account as VestingAccount;
@@ -209,7 +219,6 @@ function parseSequenceFromAccount(account: any) {
   }
 
   if (Number.isNaN(sequence)) {
-    console.error(account);
     throw new Error(
       "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
     );
@@ -519,7 +528,9 @@ export async function getGasPriceByFeeDenom({
   const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
-  return { gasPrice: new Dec(feeToken.average_gas_price ?? defaultGasPrice) };
+  // use high gas price to be on safe side that it will be enough
+  // to cover fees
+  return { gasPrice: new Dec(feeToken.high_gas_price ?? defaultGasPrice) };
 }
 
 /**
@@ -567,8 +578,10 @@ export async function getDefaultGasPrice({
     // registry
 
     feeDenom = chain.fees.fee_tokens[0].denom;
+    // use high gas price to be on safe side that it will be enough
+    // to cover fees
     gasPrice = new Dec(
-      chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice
+      chain.fees.fee_tokens[0].high_gas_price || defaultGasPrice
     );
   }
 
