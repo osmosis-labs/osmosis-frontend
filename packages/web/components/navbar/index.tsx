@@ -487,14 +487,14 @@ const WalletInfo: FunctionComponent<
                   {profileStore.currentAvatar === "ammelia" ? (
                     <Image
                       alt="Wosmongton profile"
-                      src="/images/profile-ammelia.png"
+                      src="/images/profile-ammelia.svg"
                       height={32}
                       width={32}
                     />
                   ) : (
                     <Image
                       alt="Wosmongton profile"
-                      src="/images/profile-woz.png"
+                      src="/images/profile-woz.svg"
                       height={32}
                       width={32}
                     />
