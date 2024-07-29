@@ -7,9 +7,9 @@ import {
   getOrderbookMakerFee,
   getOrderbookPools,
   getOrderbookState,
+  MappedLimitOrder,
   maybeCachePaginatedItems,
 } from "@osmosis-labs/server";
-import { MappedLimitOrder } from "@osmosis-labs/server/build/queries/complex/orderbooks/types";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";

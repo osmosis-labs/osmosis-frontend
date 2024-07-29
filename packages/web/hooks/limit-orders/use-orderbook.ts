@@ -1,7 +1,10 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
-import { MappedLimitOrder } from "@osmosis-labs/trpc";
+import {
+  MappedLimitOrder,
+  MaybeUserAssetCoin,
+  Orderbook,
+} from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
