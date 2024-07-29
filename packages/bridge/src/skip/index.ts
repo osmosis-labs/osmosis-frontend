@@ -420,7 +420,21 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
     const quote = await this.getQuote(params);
-    return quote.transactionRequest!;
+    const transactionRequest = quote.transactionRequest!;
+    const estimatedGasFee = await this.estimateGasFee(
+      params,
+      transactionRequest
+    );
+    return transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+      ? {
+          ...transactionRequest,
+          gasFee: {
+            gas: estimatedGasFee.gas,
+            denom: estimatedGasFee.address,
+            amount: estimatedGasFee.amount,
+          },
+        }
+      : transactionRequest;
   }
 
   async createTransaction(

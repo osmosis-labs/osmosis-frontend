@@ -197,10 +197,44 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
     });
 
+    const txSimulation = await estimateGasFee({
+      chainId: params.fromChain.chainId as string,
+      chainList: this.ctx.chainList,
+      body: {
+        messages: [
+          this.protoRegistry.encodeAsAny({
+            typeUrl: typeUrl,
+            value: msg,
+          }),
+        ],
+      },
+      bech32Address: params.fromAddress,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: IbcBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
+    });
+
     return {
       type: "cosmos",
       msgTypeUrl: typeUrl,
       msg,
+      gasFee: {
+        gas: txSimulation.gas,
+        amount: txSimulation.amount[0].amount,
+        denom: txSimulation.amount[0].denom,
+      },
     };
   }
 

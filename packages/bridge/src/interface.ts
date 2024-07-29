@@ -382,7 +382,7 @@ export interface BridgeQuote {
   estimatedGasFee?: BridgeCoin;
 
   /** Sign doc. */
-  transactionRequest: BridgeTransactionRequest;
+  transactionRequest?: BridgeTransactionRequest;
 }
 
 export interface BridgeExternalUrl {

@@ -391,6 +391,29 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote]);
 
+  const bridgeTransaction =
+    api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
+      {
+        ...(quoteParams as Required<typeof quoteParams>),
+        fromAmount: inputAmount.toString(),
+        bridge: selectedBridgeProvider!,
+      },
+      {
+        /**
+         * If there is no transaction request data, fetch it.
+         */
+        enabled:
+          Boolean(selectedQuote) &&
+          Boolean(selectedBridgeProvider) &&
+          !selectedQuote?.transactionRequest &&
+          inputAmount.isPositive() &&
+          !isInsufficientBal &&
+          !isInsufficientFee &&
+          Object.values(quoteParams).every((param) => !isNil(param)),
+        refetchInterval: 30 * 1000, // 30 seconds
+      }
+    );
+
   useUnmount(() => {
     setSelectedBridgeProvider(null);
     setBridgeProviderControlledMode(false);
@@ -587,7 +610,9 @@ export const useBridgeQuotes = ({
   };
 
   const onTransfer = async () => {
-    const transactionRequest = selectedQuote?.transactionRequest;
+    const transactionRequest =
+      selectedQuote?.transactionRequest ??
+      bridgeTransaction.data?.transactionRequest;
     const quote = selectedQuote?.quote;
 
     if (!transactionRequest || !quote) {
@@ -632,6 +657,8 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
+  } else if (bridgeTransaction.error) {
+    buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
@@ -648,6 +675,8 @@ export const useBridgeQuotes = ({
   const isLoadingAnyBridgeQuote = quoteResults.some(
     (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
   );
+  const isLoadingBridgeTransaction =
+    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
   const isFromWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
@@ -661,6 +690,7 @@ export const useBridgeQuotes = ({
     !isInsufficientFee &&
     !isInsufficientBal &&
     !isLoadingBridgeQuote &&
+    !isLoadingBridgeTransaction &&
     !isTxPending &&
     Boolean(selectedQuote);
 

@@ -110,17 +110,6 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "wstETH.eth.axl": {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wsteth.ethereum,
-      ],
-    },
-  },
   SOL: {
     depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=SOL",
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",

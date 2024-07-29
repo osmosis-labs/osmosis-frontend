@@ -566,7 +566,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       };
 
       // Estimate gas fee & token if not provided
-      if (!fee) {
+      if (typeof fee === "undefined") {
         try {
           fee = await this.estimateFee({
             wallet,

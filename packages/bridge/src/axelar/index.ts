@@ -178,8 +178,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
             });
           }
 
-          const transactionData = await this.getTransactionData(params);
-
           return {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
             input: {
@@ -200,17 +198,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
               denom: fromAsset.denom ?? transferFeeRes.fee.denom,
             },
             estimatedGasFee,
-            transactionRequest:
-              transactionData.type === "cosmos" && estimatedGasFee?.gas
-                ? {
-                    ...transactionData,
-                    gasFee: {
-                      gas: estimatedGasFee.gas,
-                      amount: estimatedGasFee.amount,
-                      denom: estimatedGasFee.address,
-                    },
-                  }
-                : transactionData,
+            // Note: transactionRequest is missing here because deposit addresses can take 10+ seconds to generate
           };
         } catch (e) {
           if (typeof e === "string" && e.includes("not found")) {
@@ -478,7 +466,20 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (isEvmTransaction) {
       return await this.createEvmTransaction(params);
     } else {
-      return await this.createCosmosTransaction(params);
+      const transaction = await this.createCosmosTransaction(params);
+      const gasFee = await this.estimateGasCost(params);
+
+      return {
+        ...transaction,
+        gasFee:
+          gasFee && gasFee.gas
+            ? {
+                amount: gasFee.amount,
+                denom: gasFee.address,
+                gas: gasFee.gas,
+              }
+            : undefined,
+      };
     }
   }
 
