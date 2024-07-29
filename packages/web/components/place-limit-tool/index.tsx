@@ -407,7 +407,20 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
                 }}
               >
-                <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                {type === "limit" && (
+                  <Icon
+                    id="switch"
+                    width={16}
+                    height={16}
+                    className="text-wosmongton-300"
+                  />
+                )}
+                <span
+                  className={classNames("body2 h-5 transition-opacity", {
+                    "text-osmoverse-300": type === "market",
+                    "text-wosmongton-300": type === "limit",
+                  })}
+                >
                   {focused === "token" && <span>$</span>}
                   {trimPlaceholderZeros(
                     (
