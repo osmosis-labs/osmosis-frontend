@@ -9,6 +9,7 @@ import {
   getOrderbookState,
   MappedLimitOrder,
   maybeCachePaginatedItems,
+  OrderStatus,
 } from "@osmosis-labs/server";
 import { z } from "zod";
 
@@ -21,6 +22,14 @@ const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   })
 );
 
+const orderStatusOrder: Record<OrderStatus, number> = {
+  filled: 0,
+  open: 1,
+  partiallyFilled: 1,
+  fullyClaimed: 2,
+  cancelled: 2,
+};
+
 function defaultSortOrders(
   orderA: MappedLimitOrder,
   orderB: MappedLimitOrder
@@ -28,8 +37,11 @@ function defaultSortOrders(
   if (orderA.status === orderB.status) {
     return orderB.placed_at - orderA.placed_at;
   }
-  if (orderA.status === "filled") return -1;
-  if (orderB.status === "filled") return 1;
+  if (orderStatusOrder[orderA.status] < orderStatusOrder[orderB.status])
+    return -1;
+  if (orderStatusOrder[orderA.status] > orderStatusOrder[orderB.status])
+    return 1;
+
   return orderB.placed_at - orderA.placed_at;
 }
 

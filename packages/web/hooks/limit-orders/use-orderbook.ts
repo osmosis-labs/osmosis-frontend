@@ -286,6 +286,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching,
   } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
     {
       contractAddresses: addresses,
@@ -296,7 +297,7 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,
-      refetchInterval: 2000,
+      refetchInterval: 5000,
       enabled: !!userAddress && addresses.length > 0,
     }
   );
@@ -312,6 +313,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching,
   };
 };
 
@@ -328,6 +330,7 @@ export const useOrderbookClaimableOrders = ({
     data: orders,
     isLoading,
     isFetching,
+    refetch,
   } = api.edge.orderbooks.getClaimableOrders.useQuery(
     {
       contractAddresses: addresses,
@@ -335,6 +338,7 @@ export const useOrderbookClaimableOrders = ({
     },
     {
       enabled: !!userAddress && addresses.length > 0,
+      refetchInterval: 5000,
     }
   );
 
@@ -366,8 +370,9 @@ export const useOrderbookClaimableOrders = ({
 
     if (msgs.length > 0) {
       await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+      await refetch();
     }
-  }, [orders, account, addresses]);
+  }, [orders, account, addresses, refetch]);
 
   return {
     orders: orders ?? [],

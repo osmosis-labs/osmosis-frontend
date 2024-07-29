@@ -2,15 +2,10 @@ import { CellContext } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 
-import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
+import type { OrderCellData } from "~/components/complex/orders-history/columns";
 import { useStore } from "~/stores";
 
-export function ActionsCell({
-  row,
-}: CellContext<
-  DisplayableLimitOrder & { refetch: () => Promise<any> },
-  unknown
->) {
+export function ActionsCell({ row }: CellContext<OrderCellData, unknown>) {
   const component = (() => {
     switch (row.original.status) {
       case "open":
@@ -29,103 +24,96 @@ export function ActionsCell({
   return <div className="flex w-full justify-end">{component}</div>;
 }
 
-const ClaimAndCloseButton = observer(
-  ({
-    order,
-  }: {
-    order: DisplayableLimitOrder & { refetch: () => Promise<any> };
-  }) => {
-    const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+const ClaimAndCloseButton = observer(({ order }: { order: OrderCellData }) => {
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const [claiming, setClaiming] = useState(false);
 
-    const claimAndClose = useCallback(async () => {
-      if (!account) return;
-      const { tick_id, order_id, orderbookAddress } = order;
-      const claimMsg = {
-        msg: {
-          claim_limit: { order_id, tick_id },
-        },
-        contractAddress: orderbookAddress,
-        funds: [],
-      };
-      const cancelMsg = {
-        msg: { cancel_limit: { order_id, tick_id } },
-        contractAddress: orderbookAddress,
-        funds: [],
-      };
-      const msgs = [];
-      if (order.percentFilled > order.percentClaimed) {
-        msgs.push(claimMsg);
-      }
+  const claimAndClose = useCallback(async () => {
+    if (!account) return;
+    const { tick_id, order_id, orderbookAddress } = order;
+    const claimMsg = {
+      msg: {
+        claim_limit: { order_id, tick_id },
+      },
+      contractAddress: orderbookAddress,
+      funds: [],
+    };
+    const cancelMsg = {
+      msg: { cancel_limit: { order_id, tick_id } },
+      contractAddress: orderbookAddress,
+      funds: [],
+    };
+    const msgs = [];
+    if (order.percentFilled > order.percentClaimed) {
+      msgs.push(claimMsg);
+    }
 
-      msgs.push(cancelMsg);
+    msgs.push(cancelMsg);
 
-      try {
-        await account.cosmwasm.sendMultiExecuteContractMsg(
-          "executeWasm",
-          msgs,
-          undefined
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }, [account, order]);
+    try {
+      setClaiming(true);
+      await account.cosmwasm.sendMultiExecuteContractMsg(
+        "executeWasm",
+        msgs,
+        undefined
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setClaiming(false);
+    }
+  }, [account, order]);
 
-    return (
-      <button
-        className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
-        onClick={claimAndClose}
-      >
-        <span className="body2 text-wosmongton-200">Claim and close</span>
-      </button>
-    );
-  }
-);
+  return (
+    <button
+      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
+      onClick={claimAndClose}
+      disabled={claiming}
+    >
+      <span className="body2 text-wosmongton-200">Claim and close</span>
+    </button>
+  );
+});
 
-const CancelButton = observer(
-  ({
-    order,
-  }: {
-    order: DisplayableLimitOrder & { refetch: () => Promise<any> };
-  }) => {
-    const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const [cancelling, setCancelling] = useState(false);
+const CancelButton = observer(({ order }: { order: OrderCellData }) => {
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const [cancelling, setCancelling] = useState(false);
 
-    const cancel = useCallback(async () => {
-      if (!account) return;
-      const { tick_id, order_id, orderbookAddress } = order;
-      const claimMsg = {
-        msg: {
-          cancel_limit: { order_id, tick_id },
-        },
-        contractAddress: orderbookAddress,
-        funds: [],
-      };
+  const cancel = useCallback(async () => {
+    if (!account) return;
+    const { tick_id, order_id, orderbookAddress } = order;
+    const claimMsg = {
+      msg: {
+        cancel_limit: { order_id, tick_id },
+      },
+      contractAddress: orderbookAddress,
+      funds: [],
+    };
 
-      try {
-        setCancelling(true);
-        await account.cosmwasm.sendMultiExecuteContractMsg(
-          "executeWasm",
-          [claimMsg],
-          undefined
-        );
-        await order.refetch();
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setCancelling(false);
-      }
-    }, [account, order]);
+    try {
+      setCancelling(true);
+      await account.cosmwasm.sendMultiExecuteContractMsg(
+        "executeWasm",
+        [claimMsg],
+        undefined
+      );
+      await order.refetch();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCancelling(false);
+    }
+  }, [account, order]);
 
-    return (
-      <button
-        className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
-        onClick={cancel}
-        disabled={cancelling}
-      >
-        <span className="body2 text-wosmongton-200">Cancel</span>
-      </button>
-    );
-  }
-);
+  return (
+    <button
+      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
+      onClick={cancel}
+      disabled={cancelling}
+    >
+      <span className="body2 text-wosmongton-200">Cancel</span>
+    </button>
+  );
+});

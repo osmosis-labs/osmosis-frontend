@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -8,12 +8,14 @@ import Image from "next/image";
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
-import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
-const columnHelper = createColumnHelper<
-  DisplayableLimitOrder & { refetch: () => Promise<any> }
->();
+export type OrderCellData = MappedLimitOrder & {
+  isRefetching: boolean;
+  refetch: () => Promise<any>;
+};
+
+const columnHelper = createColumnHelper<OrderCellData>();
 
 export const tableColumns = [
   columnHelper.display({

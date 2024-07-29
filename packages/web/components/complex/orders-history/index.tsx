@@ -10,18 +10,18 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { tableColumns } from "~/components/complex/orders-history/columns";
+import {
+  OrderCellData,
+  tableColumns,
+} from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import {
-  DisplayableLimitOrder,
   useOrderbookAllActiveOrders,
   useOrderbookClaimableOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
-
-export type Order = ReturnType<typeof useOrderbookAllActiveOrders>["orders"][0];
 
 export const OrderHistory = observer(() => {
   const { logEvent } = useAmplitudeAnalytics({
@@ -37,21 +37,28 @@ export const OrderHistory = observer(() => {
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching,
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 10,
   });
 
-  const table = useReactTable<
-    DisplayableLimitOrder & { refetch: () => Promise<any> }
-  >({
-    data: orders.map((o) => ({ ...o, refetch })),
-    columns: tableColumns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
   const { claimAllOrders } = useOrderbookClaimableOrders({
     userAddress: wallet?.address ?? "",
+  });
+
+  const tableData: OrderCellData[] = useMemo(() => {
+    return orders.map((o) => ({
+      ...o,
+      isRefetching,
+      refetch,
+    }));
+  }, [orders, isRefetching, refetch]);
+
+  const table = useReactTable<OrderCellData>({
+    data: tableData,
+    columns: tableColumns,
+    getCoreRowModel: getCoreRowModel(),
   });
 
   const claimOrders = useCallback(async () => {
@@ -78,7 +85,7 @@ export const OrderHistory = observer(() => {
         .getRowModel()
         .rows.filter((row) => row.original.status === "filled"),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [table, orders]
+    [table, tableData]
   );
 
   const pendingOrders = useMemo(
@@ -92,7 +99,7 @@ export const OrderHistory = observer(() => {
         ),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [table, orders]
+    [table, tableData]
   );
   const pastOrders = useMemo(
     () =>
@@ -104,7 +111,7 @@ export const OrderHistory = observer(() => {
             row.original.status === "fullyClaimed"
         ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [table, orders]
+    [table, tableData]
   );
 
   const { rows } = table.getRowModel();
