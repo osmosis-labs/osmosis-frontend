@@ -391,29 +391,6 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote]);
 
-  const bridgeTransaction =
-    api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
-      {
-        ...(quoteParams as Required<typeof quoteParams>),
-        fromAmount: inputAmount.toString(),
-        bridge: selectedBridgeProvider!,
-      },
-      {
-        /**
-         * If there is no transaction request data, fetch it.
-         */
-        enabled:
-          Boolean(selectedQuote) &&
-          Boolean(selectedBridgeProvider) &&
-          !selectedQuote?.transactionRequest &&
-          inputAmount.isPositive() &&
-          !isInsufficientBal &&
-          !isInsufficientFee &&
-          Object.values(quoteParams).every((param) => !isNil(param)),
-        refetchInterval: 30 * 1000, // 30 seconds
-      }
-    );
-
   useUnmount(() => {
     setSelectedBridgeProvider(null);
     setBridgeProviderControlledMode(false);
@@ -559,7 +536,20 @@ export const useBridgeQuotes = ({
         },
       ],
       "",
-      undefined,
+      // Setting the fee from the transaction request
+      // ensures the user is using the same fee token & amount as seen in the quote.
+      // If not present, it will be estimated & the token will be chosen by our logic.
+      transactionRequest.gasFee
+        ? {
+            gas: transactionRequest.gasFee.gas,
+            amount: [
+              {
+                denom: transactionRequest.gasFee.denom,
+                amount: transactionRequest.gasFee.amount,
+              },
+            ],
+          }
+        : undefined,
       undefined,
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
@@ -594,12 +584,16 @@ export const useBridgeQuotes = ({
   };
 
   const onTransfer = async () => {
-    const transactionRequest =
-      selectedQuote?.transactionRequest ??
-      bridgeTransaction.data?.transactionRequest;
+    const transactionRequest = selectedQuote?.transactionRequest;
     const quote = selectedQuote?.quote;
 
-    if (!transactionRequest || !quote) return;
+    console.log(selectedQuote);
+
+    if (!transactionRequest || !quote) {
+      console.error("No quote or transaction to use for transfer");
+      return;
+    }
+    // console.log(transactionRequest?.gasFee);
 
     const tx =
       transactionRequest.type === "evm"
@@ -638,8 +632,6 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (bridgeTransaction.error) {
-    buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
@@ -656,26 +648,20 @@ export const useBridgeQuotes = ({
   const isLoadingAnyBridgeQuote = quoteResults.some(
     (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
   );
-  const isLoadingBridgeTransaction =
-    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady =
-    isWithdraw && !isTxPending && !isLoadingBridgeTransaction;
   const isFromWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
       : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
-  const isDepositReady =
-    isDeposit &&
-    isFromWalletConnected &&
-    !isTxPending &&
-    !isLoadingBridgeTransaction;
+  const isDepositReady = isDeposit && isFromWalletConnected;
   const userCanAdvance =
-    (isDepositReady || isWithdrawReady) &&
+    isDepositReady &&
     !isInsufficientFee &&
     !isInsufficientBal &&
-    !isLoadingAnyBridgeQuote;
+    !isLoadingAnyBridgeQuote &&
+    !isTxPending &&
+    Boolean(selectedQuote);
 
   let buttonText: string;
   if (buttonErrorMessage) {
@@ -728,7 +714,6 @@ export const useBridgeQuotes = ({
     refetchInterval,
     isLoadingBridgeQuote,
     isLoadingAnyBridgeQuote,
-    isLoadingBridgeTransaction,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
   };
 };

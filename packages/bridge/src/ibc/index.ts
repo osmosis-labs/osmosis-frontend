@@ -117,7 +117,14 @@ export class IbcBridgeProvider implements BridgeProvider {
         coinGeckoId: gasAsset?.coinGeckoId,
         amount: gasFee.amount,
       },
-      transactionRequest: signDoc,
+      transactionRequest: {
+        ...signDoc,
+        gasFee: {
+          gas: txSimulation.gas,
+          amount: gasFee.amount,
+          denom: gasFee.denom,
+        },
+      },
     };
   }
 

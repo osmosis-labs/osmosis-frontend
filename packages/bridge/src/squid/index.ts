@@ -272,6 +272,13 @@ export class SquidBridgeProvider implements BridgeProvider {
                 transactionRequest.data,
                 fromAddress,
                 { denom: fromAsset.address, amount: fromAmount }
+                // gasCosts.length === 1
+                //   ? {
+                //       gas: gasCosts[0].estimate,
+                //       denom: gasCosts[0].token.address,
+                //       amount: gasCosts[0].amount,
+                //     }
+                //   : undefined
               ),
         };
       },
@@ -488,6 +495,12 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromCoin: {
       denom: string;
       amount: string;
+    },
+    /** Gas fee from quote */
+    gasFee?: {
+      gas: string;
+      denom: string;
+      amount: string;
     }
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
@@ -541,6 +554,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           type: "cosmos",
           msgTypeUrl: typeUrl,
           msg,
+          gasFee,
         };
       } else if (parsedData.msgTypeUrl === WasmTransferType) {
         const cosmwasmData = parsedData as {
@@ -565,6 +579,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           type: "cosmos",
           msgTypeUrl: typeUrl,
           msg,
+          gasFee,
         };
       }
 

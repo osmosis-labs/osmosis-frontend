@@ -155,7 +155,7 @@ describe("IbcBridgeProvider", () => {
 
   it("should return a valid BridgeQuote", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [{ amount: "5000", denom: "uatom", isNeededForTx: true }],
+      amount: [{ amount: "5000", denom: "uatom", isSubtractiveFee: true }],
     });
 
     const quote: BridgeQuote = await provider.getQuote(mockAtomToOsmosis);
@@ -177,7 +177,7 @@ describe("IbcBridgeProvider", () => {
 
   it("should calculate the correct toAmount when gas fee is not needed for tx", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
-      amount: [{ amount: "5000", denom: "uatom", isNeededForTx: false }],
+      amount: [{ amount: "5000", denom: "uatom", isSubtractiveFee: false }],
     });
 
     const quote: BridgeQuote = await provider.getQuote(mockAtomToOsmosis);

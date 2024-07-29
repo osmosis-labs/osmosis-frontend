@@ -240,7 +240,17 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain,
           transferFee,
           estimatedTime: route.estimated_route_duration_seconds,
-          transactionRequest,
+          transactionRequest:
+            transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+              ? {
+                  ...transactionRequest,
+                  gasFee: {
+                    gas: estimatedGasFee.gas,
+                    denom: estimatedGasFee.address,
+                    amount: estimatedGasFee.amount,
+                  },
+                }
+              : transactionRequest,
           estimatedGasFee,
         };
       },
@@ -435,7 +445,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createCosmosTransaction(
     message: SkipMultiChainMsg
-  ): Promise<CosmosBridgeTransactionRequest> {
+  ): Promise<Omit<CosmosBridgeTransactionRequest, "gas">> {
     const messageData = JSON.parse(message.msg);
 
     if ("contract" in messageData) {
@@ -792,6 +802,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
+        gas: txSimulation.gas,
         amount: gasFee.amount,
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,

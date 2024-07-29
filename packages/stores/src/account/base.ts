@@ -565,10 +565,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      let usedFee: StdFee;
-      if (typeof fee === "undefined") {
+      // Estimate gas fee & token if not provided
+      if (!fee) {
         try {
-          usedFee = await this.estimateFee({
+          fee = await this.estimateFee({
             wallet,
             messages: msgs,
             signOptions: mergedSignOptions,
@@ -583,13 +583,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
           throw e;
         }
-      } else {
-        usedFee = fee;
       }
 
       const txRaw = await this.sign({
         wallet,
-        fee: usedFee,
+        fee,
         memo: memo || "",
         messages: msgs,
         signOptions: mergedSignOptions,
@@ -686,7 +684,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Refetch balances.
        * After sending tx, the balances have probably changed due to the fee.
        */
-      for (const feeAmount of usedFee.amount) {
+      for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
         const queries = this.queriesStore.get(chainNameOrId);
@@ -832,6 +830,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     const forceSignDirect = isAuthenticatorMsg;
+
+    console.log({ fee });
 
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
@@ -1309,7 +1309,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       }
 
-      // avoid returning isNeededForTx, a utility returned from the estimateGasFee function that is not used here
+      // avoid returning isSubtractiveFee, a utility returned from the estimateGasFee function that is not used here
       // Also, for now, only single-token fee payments are supported.
       return {
         gas: estimate.gas,

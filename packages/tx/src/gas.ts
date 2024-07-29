@@ -48,7 +48,7 @@ export type QuoteStdFee = {
      * Indicates that the simulated transaction spends the account's balance required for the fee.
      * Likely, the input spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[];
 };
 

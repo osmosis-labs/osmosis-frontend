@@ -178,6 +178,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
             });
           }
 
+          const transactionData = await this.getTransactionData(params);
+
           return {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
             input: {
@@ -198,6 +200,17 @@ export class AxelarBridgeProvider implements BridgeProvider {
               denom: fromAsset.denom ?? transferFeeRes.fee.denom,
             },
             estimatedGasFee,
+            transactionRequest:
+              transactionData.type === "cosmos" && estimatedGasFee?.gas
+                ? {
+                    ...transactionData,
+                    gasFee: {
+                      gas: estimatedGasFee.gas,
+                      amount: estimatedGasFee.amount,
+                      denom: estimatedGasFee.address,
+                    },
+                  }
+                : transactionData,
           };
         } catch (e) {
           if (typeof e === "string" && e.includes("not found")) {
@@ -359,7 +372,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async estimateGasCost(
     params: GetBridgeQuoteParams
-  ): Promise<BridgeCoin | undefined> {
+  ): Promise<(BridgeCoin & { gas?: string }) | undefined> {
     const transactionData = await this.getTransactionData({
       ...params,
       fromAmount: "0",
@@ -451,6 +464,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         decimals: gasAsset?.decimals ?? 0,
         address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
         coinGeckoId: gasAsset?.coingeckoId,
+        gas: txSimulation.gas,
       };
     }
   }
