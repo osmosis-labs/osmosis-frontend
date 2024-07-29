@@ -770,9 +770,7 @@ export const AmountScreen = observer(
               transferGasChain={fromChain}
             />
 
-            {(direction === "deposit"
-              ? !isNil(fromCosmosCounterpartyAccount)
-              : !isNil(toCosmosCounterpartyAccount)) && (
+            {isWalletNeededConnected && (
               <>
                 {isLoadingAssetsBalance && (
                   <div className="flex w-full items-center justify-center gap-3">
@@ -1402,7 +1400,7 @@ const TransferDetails: FunctionComponent<{
   const { t } = useTranslation();
   const successfulQuotes = quote?.successfulQuotes ?? [];
 
-  if (!isLoading && (successfulQuotes.length === 0 || !quote?.selectedQuote)) {
+  if (!isLoading && successfulQuotes.length === 0) {
     return null;
   }
 
