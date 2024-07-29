@@ -266,7 +266,12 @@ export const TradeDetails = ({
                     swapState && (
                       <>
                         {!swapState.isLoadingNetworkFee ? (
-                          <span className="inline-flex items-center gap-1 text-osmoverse-100">
+                          <span
+                            className={classNames(
+                              "inline-flex items-center gap-1 text-osmoverse-100",
+                              { "animate-pulse": isMakerFeeLoading }
+                            )}
+                          >
                             <Icon id="gas" width={16} height={16} />~
                             {type === "market"
                               ? swapState.networkFee?.gasUsdValueToPay &&

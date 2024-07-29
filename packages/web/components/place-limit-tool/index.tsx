@@ -504,6 +504,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           <TradeDetails
             swapState={swapState.marketState}
             type={type}
+            isMakerFeeLoading={swapState.isMakerFeeLoading}
+            makerFee={swapState.makerFee}
             // inDenom={swapState.baseAsset?.coinDenom}
             // inPrice={
             //   new PricePretty(
