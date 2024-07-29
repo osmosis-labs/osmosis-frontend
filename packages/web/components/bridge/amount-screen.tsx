@@ -560,15 +560,14 @@ export const AmountScreen = observer(
         checkChainAndConnectWallet(firstChain);
       }
     }, [
+      checkChainAndConnectWallet,
       direction,
       fromChain,
-      toChain,
-      supportedChains,
       isLoadingSupportedAssets,
-      osmosisWalletConnected,
       setFromChain,
       setToChain,
-      checkChainAndConnectWallet,
+      supportedChains,
+      toChain,
     ]);
 
     const onChangeCryptoInput = useCallback(

@@ -90,6 +90,32 @@ export function makeSignDocAmino(
   };
 }
 
+export function getPublicKeyTypeUrl({
+  chainId,
+  chainFeatures,
+}: {
+  chainId: string;
+  chainFeatures: string[];
+}) {
+  const chainIsInjective = chainId.startsWith("injective");
+  const chainIsStratos = chainId.startsWith("stratos");
+  const useEthereumSign = chainFeatures.includes("eth-key-sign");
+
+  if (!useEthereumSign) {
+    return "/cosmos.crypto.secp256k1.PubKey";
+  }
+
+  if (chainIsInjective) {
+    return "/injective.crypto.v1beta1.ethsecp256k1.PubKey";
+  }
+
+  if (chainIsStratos) {
+    return "/stratos.crypto.v1.ethsecp256k1.PubKey";
+  }
+
+  return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
+}
+
 export const DefaultGasPriceStep: {
   low: number;
   average: number;
