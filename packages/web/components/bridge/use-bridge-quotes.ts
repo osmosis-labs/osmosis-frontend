@@ -450,7 +450,7 @@ export const useBridgeQuotes = ({
   }, [isTxPending, onRequestClose, transferInitiated]);
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
-  const handleEvmTx = async (
+  const signAndBroadcastEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!isEvmWalletConnected || !evmAddress || !evmConnector)
@@ -541,7 +541,7 @@ export const useBridgeQuotes = ({
     }
   };
 
-  const handleCosmosTx = async (
+  const signAndBroadcastCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!fromChain || fromChain?.chainType !== "cosmos") {
@@ -622,8 +622,8 @@ export const useBridgeQuotes = ({
 
     const tx =
       transactionRequest.type === "evm"
-        ? handleEvmTx({ ...quote, transactionRequest })
-        : handleCosmosTx({ ...quote, transactionRequest });
+        ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
+        : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
 
     await tx.catch((e) => {
       console.error(transactionRequest.type, "transaction failed", e);

@@ -272,6 +272,8 @@ export class SquidBridgeProvider implements BridgeProvider {
                 transactionRequest.data,
                 fromAddress,
                 { denom: fromAsset.address, amount: fromAmount }
+                // TODO: uncomment when we're able to find a way to get gas limit from Squid
+                // or get it ourselves
                 // gasCosts.length === 1
                 //   ? {
                 //       gas: gasCosts[0].estimate,
