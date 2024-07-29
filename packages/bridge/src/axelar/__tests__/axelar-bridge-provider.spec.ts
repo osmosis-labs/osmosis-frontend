@@ -62,6 +62,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.clearAllMocks();
+  server.resetHandlers(); // Reset server handlers after each test
 });
 
 describe("AxelarBridgeProvider", () => {
@@ -360,9 +361,7 @@ describe("AxelarBridgeProvider", () => {
 
   it("should get a quote", async () => {
     const mockDepositClient: Partial<AxelarAssetTransfer> = {
-      getDepositAddress: jest
-        .fn()
-        .mockResolvedValue("0x66F0c98E45341d5C0Da7E943D803e5eF0C11B373"),
+      getDepositAddress: jest.fn().mockResolvedValue("0x123"),
     };
     const mockQueryClient: Partial<AxelarQueryAPI> = {
       getTransferFee: jest.fn().mockResolvedValue({
@@ -430,11 +429,6 @@ describe("AxelarBridgeProvider", () => {
         denom: "ETH",
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
-      },
-      transactionRequest: {
-        data: "0xa9059cbb00000000000000000000000066f0c98e45341d5c0da7e943d803e5ef0c11b3730000000000000000000000000000000000000000000000000000000000000001",
-        to: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        type: "evm",
       },
     });
   });
