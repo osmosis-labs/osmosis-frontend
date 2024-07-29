@@ -93,6 +93,15 @@ export const AssetsOverview: FunctionComponent<
     },
     {
       enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      onSuccess: (data) => {
+        if (data && data.length > 0) {
+          const lastItem = data[data.length - 1];
+          setDataPoint({
+            time: lastItem.time as Time,
+            value: lastItem.value,
+          });
+        }
+      },
     }
   );
 
