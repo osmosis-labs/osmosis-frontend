@@ -4,7 +4,6 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import {
   FunctionComponent,
@@ -25,7 +24,6 @@ import {
   AssetFieldsetInput,
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
-import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
@@ -351,19 +349,22 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     availableBalance={
                       swapState.inAmountInput.balance &&
                       formatPretty(
-                        swapState.inAmountInput.balance?.toDec() ?? new Dec(0),
-                        {
-                          minimumSignificantDigits: 6,
-                          maximumSignificantDigits: 6,
-                          maxDecimals: 10,
-                          notation: "standard",
-                        }
+                        swapState.inAmountInput.balance.toDec(),
+                        swapState.inAmountInput.balance.toDec().gt(new Dec(0))
+                          ? {
+                              minimumSignificantDigits: 6,
+                              maximumSignificantDigits: 6,
+                              maxDecimals: 10,
+                              notation: "standard",
+                            }
+                          : undefined
                       )
                     }
                   />
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
+                    ref={fromAmountInputEl}
                     inputValue={swapState.inAmountInput.inputAmount}
                     onInputChange={(e) => {
                       e.preventDefault();
@@ -396,6 +397,24 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   </span>
                 </AssetFieldsetFooter>
               </AssetFieldset>
+              <div className="relative flex w-full">
+                <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
+                <button
+                  className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
+                  onClick={() => {
+                    const out = swapState.quote?.amount
+                      ? formatPretty(swapState.quote.amount.toDec())
+                      : "";
+                    swapState.inAmountInput.setAmount(out);
+                    swapState.switchAssets();
+                  }}
+                >
+                  <Icon
+                    id="switch"
+                    className="h-6 w-6 text-wosmongton-200 transition-transform group-hover:rotate-180"
+                  />
+                </button>
+              </div>
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
@@ -444,19 +463,28 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
                 <AssetFieldsetFooter>
                   <span className="body2 h-5 text-osmoverse-300 transition-opacity">
-                    {formatPretty(
-                      swapState.inAmountInput?.fiatValue ??
-                        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-                      swapState.inAmountInput?.fiatValue?.toDec() && {
-                        ...getPriceExtendedFormatOptions(
-                          swapState.inAmountInput?.fiatValue?.toDec()
-                        ),
-                      }
+                    {swapState.tokenOutFiatValue?.toDec().gt(new Dec(0)) ? (
+                      <span>
+                        {formatPretty(swapState.tokenOutFiatValue, {
+                          ...getPriceExtendedFormatOptions(
+                            swapState.tokenOutFiatValue.toDec()
+                          ),
+                        })}
+                        <span
+                          className={
+                            showOutputDifferenceWarning
+                              ? "text-rust-400"
+                              : "text-osmoverse-600"
+                          }
+                        >{` (-${outputDifference})`}</span>
+                      </span>
+                    ) : (
+                      ""
                     )}
                   </span>
                 </AssetFieldsetFooter>
               </AssetFieldset>
-              <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
+              {/* <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
                 <div className="flex w-full flex-col">
                   <div className="body2 flex justify-between pb-1">
                     <span className="pt-1.5 text-osmoverse-400">From</span>
@@ -519,26 +547,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                     </div>
                   </div>
-
-                  {/* <span
-                        className={classNames(
-                          "body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity"
-                        )}
-                      >
-                        {swapState.inAmountInput?.fiatValue
-                          ?.toDec()
-                          .gt(new Dec(0))
-                          ? `${formatPretty(
-                              swapState.inAmountInput?.fiatValue,
-                              {
-                                ...getPriceExtendedFormatOptions(
-                                  swapState.inAmountInput?.fiatValue?.toDec()
-                                ),
-                              }
-                            )}`
-                          : ""}
-                      </span> */}
-
                   <div className="body2 flex justify-between pb-1">
                     <span
                       className={classNames(
@@ -725,9 +733,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     </span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <TradeDetails
+              type="market"
               swapState={swapState}
               slippageConfig={slippageConfig}
               outAmountLessSlippage={outAmountLessSlippage}

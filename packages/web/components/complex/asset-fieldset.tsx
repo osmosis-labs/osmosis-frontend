@@ -2,7 +2,12 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { ChangeEventHandler, PropsWithChildren, ReactNode } from "react";
+import {
+  ChangeEventHandler,
+  forwardRef,
+  PropsWithChildren,
+  ReactNode,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { EventName } from "~/config";
@@ -65,16 +70,15 @@ interface AssetFieldsetInputProps {
   outputValue?: ReactNode;
 }
 
-const AssetFieldsetInput = ({
-  inputPrefix,
-  inputValue,
-  onInputChange,
-  outputValue,
-}: AssetFieldsetInputProps) => (
+const AssetFieldsetInput = forwardRef<
+  HTMLInputElement,
+  AssetFieldsetInputProps
+>(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => (
   <div className="flex items-center">
     {inputPrefix}
     {outputValue || (
       <input
+        ref={ref}
         className="w-full bg-transparent text-h3 font-h3 placeholder:text-white-disabled placeholder:opacity-50"
         placeholder="0"
         onChange={onInputChange}
@@ -82,7 +86,7 @@ const AssetFieldsetInput = ({
       />
     )}
   </div>
-);
+));
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex w-full items-center justify-between pb-4">
