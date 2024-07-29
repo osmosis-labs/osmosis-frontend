@@ -16,7 +16,7 @@ jobs:
           echo "matrix={\"include\":[{\"test-proxy\":\"use\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
-    timeout-minutes: 15
+    timeout-minutes: 10
     name: ${{ matrix.env }}-fe-quote-tests
     needs: setup-matrix
     runs-on: macos-latest
@@ -62,7 +62,7 @@ jobs:
           path: packages/web/playwright-report
 
   fe-swap-tests:
-    timeout-minutes: 15
+    timeout-minutes: 10
     name: ${{ matrix.env }}-fe-swap-tests
     needs: setup-matrix
     runs-on: macos-latest
@@ -115,13 +115,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 Synthetic Monitoring Tests Failure Alert 🚨",
+              "text": "🚨 Synthetic Geo Monitoring Tests Failure Alert 🚨",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Synthetic Monitoring Tests Failure"
+                    "text": "Synthetic Geo Monitoring Tests Failure"
                   }
                 },
                 {
