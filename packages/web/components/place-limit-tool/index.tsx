@@ -455,17 +455,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               orderDirection={orderDirection}
             />
           )}
-          {/* <>
-              {!swapState.isMarket && (
-                <LimitTradeDetails swapState={swapState} />
-              )}
-              {swapState.isMarket && (
-                <TradeDetails
-                  swapState={swapState.marketState}
-                  treatAsStable={orderDirection === "bid" ? "in" : "out"}
-                />
-              )}
-            </> */}
           <div className="flex w-full flex-col py-3">
             {!account?.isWalletConnected ? (
               <Button
