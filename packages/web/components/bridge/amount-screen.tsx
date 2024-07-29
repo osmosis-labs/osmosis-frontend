@@ -520,7 +520,7 @@ export const AmountScreen = observer(
     useEffect(() => {
       const chain = direction === "deposit" ? toChain : fromChain;
       const setChain = direction === "deposit" ? setToChain : setFromChain;
-      if (isNil(chain) && !isNil(osmosisChain)) {
+      if (isNil(chain) && !isNil(osmosisChain) && !isLoadingSupportedAssets) {
         setChain({
           chainId: osmosisChain.chain_id,
           chainName: osmosisChain.chain_name,
@@ -531,7 +531,15 @@ export const AmountScreen = observer(
           bech32Prefix: osmosisChain.bech32_prefix,
         });
       }
-    }, [direction, fromChain, osmosisChain, setFromChain, setToChain, toChain]);
+    }, [
+      direction,
+      fromChain,
+      toChain,
+      osmosisChain,
+      isLoadingSupportedAssets,
+      setFromChain,
+      setToChain,
+    ]);
 
     /**
      * Set the initial chain based on the direction.
@@ -544,7 +552,8 @@ export const AmountScreen = observer(
       if (
         isNil(chain) &&
         !isNil(supportedChains) &&
-        supportedChains.length > 0
+        supportedChains.length > 0 &&
+        !isLoadingSupportedAssets
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
@@ -553,11 +562,12 @@ export const AmountScreen = observer(
     }, [
       direction,
       fromChain,
+      toChain,
+      supportedChains,
+      isLoadingSupportedAssets,
+      osmosisWalletConnected,
       setFromChain,
       setToChain,
-      supportedChains,
-      toChain,
-      osmosisWalletConnected,
       checkChainAndConnectWallet,
     ]);
 
