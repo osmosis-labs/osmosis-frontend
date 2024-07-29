@@ -19,6 +19,7 @@ import { Icon } from "~/components/assets/icon";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
+import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
@@ -334,136 +335,127 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     return (
       <>
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col">
-            <div className="flex w-full items-center justify-between pt-3">
-              <span className="body2 text-osmoverse-300">
-                {t("limitOrders.enterAnAmountTo")}{" "}
-                {orderDirection === "bid"
-                  ? t("portfolio.buy").toLowerCase()
-                  : t("limitOrders.sell").toLowerCase()}
+        <div className="flex flex-col">
+          <div className="flex w-full items-center justify-between pt-3">
+            <span className="body2 text-osmoverse-300">
+              {t("limitOrders.enterAnAmountTo")}{" "}
+              {orderDirection === "bid"
+                ? t("portfolio.buy").toLowerCase()
+                : t("limitOrders.sell").toLowerCase()}
+            </span>
+            <div
+              className={classNames(
+                "flex items-center gap-2 transition-opacity",
+                { "opacity-0": !hasFunds }
+              )}
+            >
+              <span>
+                {tab === "buy"
+                  ? swapState.quoteAsset?.usdValue &&
+                    formatPretty(swapState.quoteAsset?.usdValue)
+                  : swapState.baseTokenBalance &&
+                    formatPretty(swapState.baseTokenBalance)}{" "}
+                {t("pool.available").toLowerCase()}
               </span>
-              <div
-                className={classNames(
-                  "flex items-center gap-2 transition-opacity",
-                  { "opacity-0": !hasFunds }
-                )}
+              <button
+                type="button"
+                className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
+                onClick={toggleMax}
               >
-                <span>
-                  {tab === "buy"
-                    ? swapState.quoteAsset?.usdValue &&
-                      formatPretty(swapState.quoteAsset?.usdValue)
-                    : swapState.baseTokenBalance &&
-                      formatPretty(swapState.baseTokenBalance)}{" "}
-                  {t("pool.available").toLowerCase()}
-                </span>
-                <button
-                  type="button"
-                  className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
-                  onClick={toggleMax}
-                >
-                  <span className="body2 text-wosmongton-300">Max</span>
-                </button>
-              </div>
+                <span className="body2 text-wosmongton-300">Max</span>
+              </button>
             </div>
-            <div className="flex items-center justify-between py-3">
-              <div className="flex items-center">
-                {focused === "fiat" && <h3>$</h3>}
-                <input
-                  className="w-full bg-transparent text-h3 font-h3"
-                  placeholder="0"
-                  onChange={(e) => setAmountSafe(focused, e.target.value)}
-                  value={
-                    focused === "fiat"
-                      ? type === "market" && tab === "sell"
-                        ? trimPlaceholderZeros(
-                            (expectedOutput ?? new Dec(0)).toString()
-                          )
-                        : fiatAmount
-                      : type === "market" && tab === "buy"
+          </div>
+          <div className="flex items-center justify-between py-3">
+            <div className="flex items-center">
+              {focused === "fiat" && <h3>$</h3>}
+              <input
+                className="w-full bg-transparent text-h3 font-h3"
+                placeholder="0"
+                onChange={(e) => setAmountSafe(focused, e.target.value)}
+                value={
+                  focused === "fiat"
+                    ? type === "market" && tab === "sell"
                       ? trimPlaceholderZeros(
                           (expectedOutput ?? new Dec(0)).toString()
                         )
-                      : tokenAmount
-                  }
-                />
-              </div>
-              <div className="flex pl-3">
-                <TokenSelect
-                  onSelect={setBase}
-                  selectableAssets={selectableBaseAssets}
-                  orderDirection={orderDirection}
-                  selectedCoinDenom={swapState.baseAsset?.coinDenom}
-                  selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
-                />
-              </div>
-            </div>
-            <div className="flex w-full items-center justify-between pb-4">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
-                disabled={type === "market"}
-                onClick={() => {
-                  setFocused((p) => (p === "fiat" ? "token" : "fiat"));
-                }}
-              >
-                {type === "limit" && (
-                  <Icon
-                    id="switch"
-                    width={16}
-                    height={16}
-                    className="text-wosmongton-300"
-                  />
-                )}
-                <span
-                  className={classNames("body2 h-5 transition-opacity", {
-                    "text-osmoverse-300": type === "market",
-                    "text-wosmongton-300": type === "limit",
-                  })}
-                >
-                  {focused === "token" && <span>$</span>}
-                  {trimPlaceholderZeros(
-                    (
-                      (type === "limit"
-                        ? focused === "fiat"
-                          ? swapState.inAmountInput.amount?.hideDenom(true)
-                          : +fiatAmount
-                        : swapState.marketState.quote?.amount.hideDenom(
-                            true
-                          )) ?? new Dec(0)
-                    ).toString()
-                  )}{" "}
-                  {focused === "fiat" && (
-                    <span>{swapState.baseAsset?.coinDenom}</span>
-                  )}{" "}
-                  {type === "market" &&
-                    swapState.marketState.quote?.priceImpactTokenOut && (
-                      <span className="text-osmoverse-500">
-                        &#40;-
-                        {formatPretty(
-                          swapState.marketState.quote?.priceImpactTokenOut
-                        )}
-                        &#41;
-                      </span>
-                    )}
-                </span>
-              </button>
-              <PriceSelector />
-            </div>
-            {type === "limit" && (
-              <LimitPriceSelector
-                swapState={swapState}
-                orderDirection={orderDirection}
+                      : fiatAmount
+                    : type === "market" && tab === "buy"
+                    ? trimPlaceholderZeros(
+                        (expectedOutput ?? new Dec(0)).toString()
+                      )
+                    : tokenAmount
+                }
               />
-            )}
+            </div>
+            <div className="flex pl-3">
+              <TokenSelect
+                onSelect={setBase}
+                selectableAssets={selectableBaseAssets}
+                orderDirection={orderDirection}
+                selectedCoinDenom={swapState.baseAsset?.coinDenom}
+                selectedCoinImageUrl={swapState.baseAsset?.coinImageUrl}
+              />
+            </div>
           </div>
-          <div
-            className={classNames("flex gap-3", {
-              "flex-col": !fromAssetsPage,
-              "flex-col-reverse": fromAssetsPage,
-            })}
-          >
-            {/* <>
+          <div className="flex w-full items-center justify-between pb-4">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
+              disabled={type === "market"}
+              onClick={() => {
+                setFocused((p) => (p === "fiat" ? "token" : "fiat"));
+              }}
+            >
+              {type === "limit" && (
+                <Icon
+                  id="switch"
+                  width={16}
+                  height={16}
+                  className="text-wosmongton-300"
+                />
+              )}
+              <span
+                className={classNames("body2 h-5 transition-opacity", {
+                  "text-osmoverse-300": type === "market",
+                  "text-wosmongton-300": type === "limit",
+                })}
+              >
+                {focused === "token" && <span>$</span>}
+                {trimPlaceholderZeros(
+                  (
+                    (type === "limit"
+                      ? focused === "fiat"
+                        ? swapState.inAmountInput.amount?.hideDenom(true)
+                        : +fiatAmount
+                      : swapState.marketState.quote?.amount.hideDenom(true)) ??
+                    new Dec(0)
+                  ).toString()
+                )}{" "}
+                {focused === "fiat" && (
+                  <span>{swapState.baseAsset?.coinDenom}</span>
+                )}{" "}
+                {type === "market" &&
+                  swapState.marketState.quote?.priceImpactTokenOut && (
+                    <span className="text-osmoverse-500">
+                      &#40;-
+                      {formatPretty(
+                        swapState.marketState.quote?.priceImpactTokenOut
+                      )}
+                      &#41;
+                    </span>
+                  )}
+              </span>
+            </button>
+            <PriceSelector />
+          </div>
+          {type === "limit" && (
+            <LimitPriceSelector
+              swapState={swapState}
+              orderDirection={orderDirection}
+            />
+          )}
+          {/* <>
               {!swapState.isMarket && (
                 <LimitTradeDetails swapState={swapState} />
               )}
@@ -474,6 +466,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 />
               )}
             </> */}
+          <div className="flex w-full flex-col py-3">
             {!account?.isWalletConnected ? (
               <Button
                 onClick={() =>
@@ -489,55 +482,46 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               >
                 <h6>{t("connectWallet")}</h6>
               </Button>
+            ) : hasFunds ? (
+              <Button
+                disabled={
+                  Boolean(swapState.error) ||
+                  isMarketLoading ||
+                  (swapState.isMarket &&
+                    (swapState.marketState.inAmountInput.isEmpty ||
+                      swapState.marketState.inAmountInput.amount
+                        ?.toDec()
+                        .isZero())) ||
+                  !swapState.isBalancesFetched ||
+                  swapState.isMakerFeeLoading
+                }
+                isLoading={
+                  !swapState.isBalancesFetched ||
+                  (!swapState.isMarket && swapState.isMakerFeeLoading) ||
+                  isMarketLoading
+                }
+                loadingText={<h6>{t("assets.transfer.loading")}</h6>}
+                onClick={() => setReviewOpen(true)}
+              >
+                <h6>{buttonText}</h6>
+              </Button>
             ) : (
-              <>
-                {hasFunds ? (
-                  <Button
-                    disabled={
-                      Boolean(swapState.error) ||
-                      isMarketLoading ||
-                      (swapState.isMarket &&
-                        (swapState.marketState.inAmountInput.isEmpty ||
-                          swapState.marketState.inAmountInput.amount
-                            ?.toDec()
-                            .isZero())) ||
-                      !swapState.isBalancesFetched ||
-                      swapState.isMakerFeeLoading
-                    }
-                    isLoading={
-                      !swapState.isBalancesFetched ||
-                      (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                      isMarketLoading
-                    }
-                    loadingText={<h6>{t("assets.transfer.loading")}</h6>}
-                    onClick={() => setReviewOpen(true)}
-                  >
-                    <h6>{buttonText}</h6>
-                  </Button>
-                ) : (
-                  <Button onClick={openAddFundsModal}>
-                    <h6>{t("limitOrders.addFunds")}</h6>
-                  </Button>
-                )}
-              </>
+              <Button onClick={openAddFundsModal}>
+                <h6>{t("limitOrders.addFunds")}</h6>
+              </Button>
             )}
-            {/* <>
-              {swapState.isMarket ? (
-                <TradeDetails
-                  swapState={swapState.marketState}
-                  // inDenom={swapState.baseAsset?.coinDenom}
-                  // inPrice={
-                  //   new PricePretty(
-                  //     DEFAULT_VS_CURRENCY,
-                  //     swapState.priceState.spotPrice
-                  //   )
-                  // }
-                />
-              ) : (
-                <LimitTradeDetails swapState={swapState} />
-              )}
-            </> */}
           </div>
+          <TradeDetails
+            swapState={swapState.marketState}
+            type={type}
+            // inDenom={swapState.baseAsset?.coinDenom}
+            // inPrice={
+            //   new PricePretty(
+            //     DEFAULT_VS_CURRENCY,
+            //     swapState.priceState.spotPrice
+            //   )
+            // }
+          />
         </div>
         <ReviewOrder
           title="Review trade"
