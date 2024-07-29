@@ -96,20 +96,20 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         } ${t("limitOrders.currentPrice")}`;
   }, [t, priceState.percentAdjusted, orderDirection]);
 
-  const TooltipContent = useMemo(() => {
-    const translationId =
-      orderDirection === "bid"
-        ? "limitOrders.aboveMarket"
-        : "limitOrders.belowMarket";
-    return (
-      <div>
-        <div className="text-caption">{t(`${translationId}.title`)}</div>
-        <span className="text-caption text-osmoverse-300">
-          {t(`${translationId}.description`)}
-        </span>
-      </div>
-    );
-  }, [orderDirection, t]);
+  // const TooltipContent = useMemo(() => {
+  //   const translationId =
+  //     orderDirection === "bid"
+  //       ? "limitOrders.aboveMarket"
+  //       : "limitOrders.belowMarket";
+  //   return (
+  //     <div>
+  //       <div className="text-caption">{t(`${translationId}.title`)}</div>
+  //       <span className="text-caption text-osmoverse-300">
+  //         {t(`${translationId}.description`)}
+  //       </span>
+  //     </div>
+  //   );
+  // }, [orderDirection, t]);
 
   return (
     <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
@@ -241,7 +241,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           >
             {!defaultValue && (
               <div className="flex h-4 w-4 items-center justify-center">
-                {orderDirection === "bid" ? (
+                {orderDirection === "ask" ? (
                   <Icon
                     id="triangle-down"
                     width={10}
