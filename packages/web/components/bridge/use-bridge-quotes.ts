@@ -526,6 +526,7 @@ export const useBridgeQuotes = ({
     }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
+    const gasFee = transactionRequest.gasFee;
     return accountStore.signAndBroadcast(
       fromChain.chainId,
       transactionRequest.msgTypeUrl,
@@ -539,18 +540,20 @@ export const useBridgeQuotes = ({
       // Setting the fee from the transaction request
       // ensures the user is using the same fee token & amount as seen in the quote.
       // If not present, it will be estimated & the token will be chosen by our logic.
-      transactionRequest.gasFee
+      gasFee
         ? {
-            gas: transactionRequest.gasFee.gas,
+            gas: gasFee.gas,
             amount: [
               {
-                denom: transactionRequest.gasFee.denom,
-                amount: transactionRequest.gasFee.amount,
+                denom: gasFee.denom,
+                amount: gasFee.amount,
               },
             ],
           }
         : undefined,
-      undefined,
+      {
+        preferNoSetFee: Boolean(gasFee),
+      },
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
           const queries = queriesStore.get(fromChain.chainId);
