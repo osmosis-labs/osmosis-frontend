@@ -310,9 +310,7 @@
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    },
-    "balancesMovedTitle": "正在查找您的余额？",
-    "balancesMovedDescription": "前往投资组合页面，这是您的余额和更多信息的新家。"
+    }
   },
   "portfolio": {
     "buy": "买",

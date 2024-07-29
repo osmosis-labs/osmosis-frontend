@@ -310,9 +310,7 @@
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    },
-    "balancesMovedTitle": "Szukasz salda?",
-    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
+    }
   },
   "portfolio": {
     "buy": "Kupić",
