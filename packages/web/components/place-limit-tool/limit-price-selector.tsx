@@ -148,15 +148,16 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             >
               {priceLabel}
             </span>{" "}
-            {inputMode === InputMode.Price && (
-              <span
-                className={classNames("body2 text-wosmongton-300", {
-                  "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                })}
-              >
-                {percentageSuffix}
-              </span>
-            )}
+            {inputMode === InputMode.Price &&
+              +swapState.priceState.manualPercentAdjusted > 0 && (
+                <span
+                  className={classNames("body2 text-wosmongton-300", {
+                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                  })}
+                >
+                  {percentageSuffix}
+                </span>
+              )}
           </span>
           <Icon
             id="switch"
