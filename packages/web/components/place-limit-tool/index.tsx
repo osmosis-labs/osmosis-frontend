@@ -83,6 +83,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
     const [isSendingTx, setIsSendingTx] = useState(false);
 
+    const [focused, setFocused] = useState<"fiat" | "token">(
+      tab === "buy" ? "fiat" : "token"
+    );
+
+    const [fiatAmount, setFiatAmount] = useState<string>("");
+
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
     if (from === quote) {
@@ -123,6 +129,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [swapState.priceState, type]);
 
+    useEffect(() => {
+      if (type === "market" && focused === "token" && tab === "buy") {
+        setFocused("fiat");
+      }
+
+      if (type === "market" && focused === "fiat" && tab === "sell") {
+        setFocused("token");
+      }
+    }, [focused, tab, type]);
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     // const isSwapToolLoading = false;
@@ -146,22 +162,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           : t("limitOrders.sell");
       }
     }, [orderDirection, swapState.error, t]);
-
-    // const price = useMemo(
-    //   () =>
-    //     type === "market"
-    //       ? orderDirection === "bid"
-    //         ? swapState.priceState.askSpotPrice!
-    //         : swapState.priceState.bidSpotPrice!
-    //       : swapState.priceState.price,
-    //   [
-    //     orderDirection,
-    //     swapState.priceState.askSpotPrice,
-    //     swapState.priceState.bidSpotPrice,
-    //     swapState.priceState.price,
-    //     type,
-    //   ]
-    // );
 
     const tokenAmount = useMemo(
       () => swapState.inAmountInput.inputAmount,
@@ -220,12 +220,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.tokenOutFiatValue,
     ]);
 
-    const [focused, setFocused] = useState<"fiat" | "token">(
-      tab === "buy" ? "fiat" : "token"
-    );
-
-    const [fiatAmount, setFiatAmount] = useState<string>("");
-
     const setAmountSafe = useCallback(
       (amountType: "fiat" | "token", value?: string) => {
         const update =
@@ -243,7 +237,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
         const updatedValue = transformAmount(
           value,
-          amountType === "fiat" ? 6 : swapState.baseAsset?.coinDecimals
+          amountType === "fiat" ? 2 : swapState.baseAsset?.coinDecimals
         ).trim();
 
         if (
@@ -283,37 +277,34 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
-    // useEffect(() => {
-    //   if (tokenAmount.length === 0 && focused === "fiat") {
-    //     setAmountSafe("fiat", "");
-    //     if (tab === "buy") {
-    //       swapState.marketState.inAmountInput.setAmount("");
-    //     }
-    //   }
+    useEffect(() => {
+      if (focused !== "token" || !swapState.priceState.price) return;
 
-    //   if (focused !== "token" || !price) return;
+      const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+      const fiatValue = value
+        ? swapState.priceState.price.mul(value)
+        : undefined;
 
-    //   const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
-    //   const fiatValue = value ? price.mul(value) : undefined;
+      setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+    }, [
+      focused,
+      setAmountSafe,
+      swapState.priceState.price,
+      tokenAmount,
+      swapState.marketState.inAmountInput,
+      tab,
+    ]);
 
-    //   setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
-    // }, [
-    //   focused,
-    //   price,
-    //   setAmountSafe,
-    //   tokenAmount,
-    //   swapState.marketState.inAmountInput,
-    //   tab,
-    // ]);
+    useEffect(() => {
+      if (focused !== "fiat" || !swapState.priceState.price) return;
 
-    // useEffect(() => {
-    //   if (focused !== "fiat" || !price) return;
-
-    //   const value =
-    //     fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
-    //   const tokenValue = value ? new Dec(value).quo(price) : undefined;
-    //   setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
-    // }, [price, fiatAmount, setAmountSafe, focused]);
+      const value =
+        fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+      const tokenValue = value
+        ? new Dec(value).quo(swapState.priceState.price)
+        : undefined;
+      setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
+    }, [fiatAmount, setAmountSafe, focused, swapState.priceState.price]);
 
     const expectedOutput = useMemo(
       () => swapState.marketState.quote?.amount.toDec(),
@@ -322,21 +313,34 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
-        return setAmountSafe(
-          "fiat",
-          swapState.quoteTokenBalance?.toDec().toString() ?? ""
-        );
+        const amount =
+          focused === "fiat"
+            ? swapState.quoteTokenBalance?.toDec().toString()
+            : swapState.quoteTokenBalance
+                ?.toDec()
+                .quo(swapState.priceState.price)
+                .toString();
+
+        setAmountSafe(focused, amount);
+
+        return;
       }
 
-      return setAmountSafe(
-        "token",
-        swapState.baseTokenBalance?.toDec().toString() ?? ""
-      );
+      const amount =
+        focused === "token"
+          ? swapState.baseTokenBalance?.toDec().toString()
+          : swapState.baseTokenBalance
+              ?.toDec()
+              .mul(swapState.priceState.price)
+              .toString();
+      return setAmountSafe(focused, amount);
     }, [
       tab,
       setAmountSafe,
       swapState.baseTokenBalance,
       swapState.quoteTokenBalance,
+      focused,
+      swapState.priceState.price,
     ]);
 
     return (
