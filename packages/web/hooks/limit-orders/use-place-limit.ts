@@ -87,7 +87,6 @@ export const usePlaceLimit = ({
   const baseAsset = swapAssets.fromAsset;
 
   const priceState = useLimitPrice({
-    orderbookContractAddress,
     orderDirection,
     baseDenom: baseAsset?.coinMinimalDenom,
   });
@@ -480,22 +479,12 @@ const MIN_TICK_PRICE = 0.000000000001;
  * Also returns relevant spot price for each direction.
  */
 const useLimitPrice = ({
-  orderbookContractAddress,
   orderDirection,
   baseDenom,
 }: {
-  orderbookContractAddress: string;
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
-    {
-      osmoAddress: orderbookContractAddress,
-    },
-    {
-      enabled: !!orderbookContractAddress,
-    }
-  );
   const {
     data: assetPrice,
     isLoading: loadingSpotPrice,
@@ -504,7 +493,7 @@ const useLimitPrice = ({
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 10000, enabled: !!baseDenom }
+    { refetchInterval: 5000, enabled: !!baseDenom }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
@@ -518,11 +507,12 @@ const useLimitPrice = ({
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (price: string) => {
-      if (countDecimals(price) > 2) {
-        price = parseFloat(price).toFixed(2).toString();
+      if (countDecimals(price) > 4) {
+        return;
       }
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
+
       if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
         price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
       } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
@@ -531,7 +521,7 @@ const useLimitPrice = ({
 
       setOrderPrice(price);
 
-      if (price.length === 0) {
+      if (price.length === 0 || newPrice.isZero()) {
         setManualPercentAdjusted("");
       }
     },
@@ -554,7 +544,8 @@ const useLimitPrice = ({
         return;
 
       if (countDecimals(percentAdjusted) > 10) {
-        percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        // percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        return;
       }
 
       const split = percentAdjusted.split(".");
@@ -594,7 +585,7 @@ const useLimitPrice = ({
   // given the current direction of the order.
   // If the form is empty we default to a percentage relative to the spot price.
   const price = useMemo(() => {
-    if (orderPrice && orderPrice.length > 0) {
+    if (isValidInputPrice) {
       return new Dec(orderPrice);
     }
 
@@ -609,12 +600,18 @@ const useLimitPrice = ({
         : // Adjust positively for ask orders
           new Dec(1).add(new Dec(percent).quo(new Dec(100)));
 
-    return spotPrice.mul(percentAdjusted) ?? new Dec(1);
-  }, [orderPrice, spotPrice, manualPercentAdjusted, orderDirection]);
+    return spotPrice.mul(percentAdjusted);
+  }, [
+    orderPrice,
+    spotPrice,
+    manualPercentAdjusted,
+    orderDirection,
+    isValidInputPrice,
+  ]);
 
   // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
-    () => price.quo(spotPrice ?? new Dec(1)).sub(new Dec(1)),
+    () => price.quo(spotPrice).sub(new Dec(1)),
     [price, spotPrice]
   );
 
@@ -631,32 +628,6 @@ const useLimitPrice = ({
     setManualPercentAdjusted("");
     setOrderPrice("");
   }, []);
-
-  // const setPercentAdjusted = useCallback(
-  //   (percentAdjusted: string) => {
-  //     if (!percentAdjusted || percentAdjusted.length === 0) {
-  //       setManualPercentAdjusted("");
-  //     } else {
-  //       if (countDecimals(percentAdjusted) > 10) {
-  //         percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
-  //       }
-  //       if (
-  //         orderDirection === "bid" &&
-  //         new Dec(percentAdjusted).gte(new Dec(100))
-  //       ) {
-  //         return;
-  //       }
-
-  //       const split = percentAdjusted.split(".");
-  //       if (split[0].length > 9) {
-  //         return;
-  //       }
-
-  //       setManualPercentAdjusted(percentAdjusted);
-  //     }
-  //   },
-  //   [setManualPercentAdjusted, orderDirection]
-  // );
 
   useEffect(() => {
     reset();
@@ -675,13 +646,11 @@ const useLimitPrice = ({
     setPercentAdjusted: setManualPercentAdjustedSafe,
     _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
-    isLoading: isLoading || loadingSpotPrice,
+    isLoading: loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
-    bidSpotPrice: data?.bidSpotPrice,
-    askSpotPrice: data?.askSpotPrice,
     isSpotPriceRefetching,
   };
 };
