@@ -88,16 +88,16 @@ export const TradeDetails = ({
   }, [makerFee]);
 
   return (
-    <div className="flex w-full py-1">
+    <div className="flex w-full">
       <Disclosure>
         {({ open, close }) => (
           <div
-            className="flex w-full flex-col justify-center transition-all"
+            className="flex w-full flex-col transition-all"
             style={{
               height: open ? detailsHeight : 32,
             }}
           >
-            <div ref={details} className="flex h-8 w-full flex-col">
+            <div ref={details} className="flex w-full flex-col">
               <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
               <div className="flex h-8 w-full items-center justify-between">
                 <SkeletonLoader
