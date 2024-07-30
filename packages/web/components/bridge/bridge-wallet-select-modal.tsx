@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import {
   isCosmosAddressValid,
   isEvmAddressValid,
@@ -41,7 +40,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { useStore } from "~/stores";
 
 interface BridgeWalletSelectProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   toChain: BridgeChainWithDisplayInfo;
   fromChain: BridgeChainWithDisplayInfo;
   cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
@@ -99,6 +98,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     evmChain,
     onClose,
     onSelectChain,
+    fromChain,
     toChain,
     initialManualAddress,
     onConfirmManualAddress,
@@ -182,7 +182,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetEvmConnecting();
             }}
-            className="absolute top-7 left-4"
+            className="absolute left-8 top-6 md:left-4 md:top-7"
           />
           <EvmWalletState
             onRequestClose={onClose}
@@ -202,7 +202,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetSwitchEvmChainState();
             }}
-            className="absolute top-7 left-4"
+            className="absolute top-6 left-8 md:left-4 md:top-7"
           />
           <SwitchingNetworkState
             walletLogo={evmConnector?.icon}
@@ -213,6 +213,9 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     }
 
     const showEvmWallets = !isNil(evmChain) && !isNil(evmWallets);
+    const transferWithSameWallet = fromChain.chainType === toChain.chainType;
+
+    console.log({ fromChain, toChain });
 
     return (
       <ScreenManager defaultScreen={WalletSelectScreens.WalletSelect}>
@@ -220,7 +223,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
           <>
             <Screen screenName={WalletSelectScreens.SendToAnotherAddress}>
               <ScreenGoBackButton
-                className="absolute top-7 left-4"
+                className="absolute top-6 left-8 md:left-4 md:top-7"
                 onClick={() => {
                   setCurrentScreen(WalletSelectScreens.WalletSelect);
                 }}
@@ -283,11 +286,16 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                                 name={
                                   isManaging
                                     ? cosmosAccount.walletInfo.prettyName
-                                    : t("transfer.transferFrom", {
-                                        noun:
-                                          cosmosAccount?.walletInfo
-                                            .prettyName ?? "",
-                                      })
+                                    : t(
+                                        transferWithSameWallet
+                                          ? "transfer.transferWithNoun"
+                                          : "transfer.transferFrom",
+                                        {
+                                          noun:
+                                            cosmosAccount?.walletInfo
+                                              .prettyName ?? "",
+                                        }
+                                      )
                                 }
                                 icon={cosmosAccount.walletInfo.logo}
                                 suffix={
@@ -353,6 +361,16 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                             )}
                           </div>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {showEvmWallets && (
+                    <div className="flex h-full w-full flex-col gap-2 overflow-y-scroll md:gap-1">
+                      <p className="body1 md:body2 px-3 text-osmoverse-200 md:px-0">
+                        {t("walletSelect.otherWallets")}
+                      </p>
+                      <div className="flex flex-col">
                         {direction === "withdraw" && (
                           <WalletButton
                             onClick={() => {
@@ -379,16 +397,6 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                             }
                           />
                         )}
-                      </div>
-                    </div>
-                  )}
-
-                  {showEvmWallets && (
-                    <div className="flex h-full w-full flex-col gap-2 overflow-y-scroll md:gap-1">
-                      <p className="body1 md:body2 px-3 text-osmoverse-200 md:px-0">
-                        {t("walletSelect.otherWallets")}
-                      </p>
-                      <div className="flex flex-col">
                         {evmWallets
                           .filter((wallet) => {
                             if (wallet.id === evmConnector?.id) return false; // Don't show connected wallet
@@ -436,9 +444,8 @@ const WalletButton: React.FC<{
 }> = ({ onClick, icon, name, suffix }) => (
   <div
     className={classNames(
-      "flex w-full cursor-pointer items-center justify-between rounded-xl px-3 transition-colors hover:bg-osmoverse-700 active:bg-osmoverse-700/50 md:px-0",
+      "flex w-full cursor-pointer place-content-between items-center gap-2 rounded-xl px-3 transition-colors hover:bg-osmoverse-700 active:bg-osmoverse-700/50 md:px-0",
       "col-span-2 py-3 font-normal",
-      "sm:w-fit sm:flex-col",
       "disabled:opacity-70"
     )}
     onClick={onClick}
@@ -539,7 +546,10 @@ const SendToAnotherAddressForm: FunctionComponent<
           checked={isAcknowledged}
           onClick={() => setIsAcknowledged(!isAcknowledged)}
         />
-        <p className="body1 text-osmoverse-300">
+        <p
+          className="body1 cursor-pointer select-none text-osmoverse-300"
+          onClick={() => setIsAcknowledged(!isAcknowledged)}
+        >
           {t("transfer.acknowledgement")}
         </p>
       </div>
