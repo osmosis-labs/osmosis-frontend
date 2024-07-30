@@ -220,6 +220,13 @@ export const useBridgesSupportedAssets = ({
               b.chainType !== "evm"
             )
               return -1;
+            if (
+              a.chainType === "bitcoin" &&
+              b.chainType !== "bitcoin" &&
+              b.chainType !== "solana" &&
+              b.chainType !== "evm"
+            )
+              return -1;
             return 0;
           })
           .map((chain) => [chain.chainId, chain])
