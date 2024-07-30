@@ -207,8 +207,6 @@ export const CryptoFiatInput: FunctionComponent<{
     canSetMax,
   ]);
 
-  console.log(fiatInputRaw);
-
   return (
     <div className="relative flex flex-col items-center">
       <div className="flex h-36 w-full place-content-between items-center">
