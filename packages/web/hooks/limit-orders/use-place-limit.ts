@@ -87,7 +87,6 @@ export const usePlaceLimit = ({
   const baseAsset = swapAssets.fromAsset;
 
   const priceState = useLimitPrice({
-    orderbookContractAddress,
     orderDirection,
     baseDenom: baseAsset?.coinMinimalDenom,
   });
@@ -480,22 +479,12 @@ const MIN_TICK_PRICE = 0.000000000001;
  * Also returns relevant spot price for each direction.
  */
 const useLimitPrice = ({
-  orderbookContractAddress,
   orderDirection,
   baseDenom,
 }: {
-  orderbookContractAddress: string;
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
-    {
-      osmoAddress: orderbookContractAddress,
-    },
-    {
-      enabled: !!orderbookContractAddress,
-    }
-  );
   const {
     data: assetPrice,
     isLoading: loadingSpotPrice,
@@ -504,7 +493,7 @@ const useLimitPrice = ({
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 10000, enabled: !!baseDenom }
+    { refetchInterval: 5000, enabled: !!baseDenom }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
@@ -632,32 +621,6 @@ const useLimitPrice = ({
     setOrderPrice("");
   }, []);
 
-  // const setPercentAdjusted = useCallback(
-  //   (percentAdjusted: string) => {
-  //     if (!percentAdjusted || percentAdjusted.length === 0) {
-  //       setManualPercentAdjusted("");
-  //     } else {
-  //       if (countDecimals(percentAdjusted) > 10) {
-  //         percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
-  //       }
-  //       if (
-  //         orderDirection === "bid" &&
-  //         new Dec(percentAdjusted).gte(new Dec(100))
-  //       ) {
-  //         return;
-  //       }
-
-  //       const split = percentAdjusted.split(".");
-  //       if (split[0].length > 9) {
-  //         return;
-  //       }
-
-  //       setManualPercentAdjusted(percentAdjusted);
-  //     }
-  //   },
-  //   [setManualPercentAdjusted, orderDirection]
-  // );
-
   useEffect(() => {
     reset();
   }, [orderDirection, reset]);
@@ -675,13 +638,11 @@ const useLimitPrice = ({
     setPercentAdjusted: setManualPercentAdjustedSafe,
     _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
-    isLoading: isLoading || loadingSpotPrice,
+    isLoading: loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
-    bidSpotPrice: data?.bidSpotPrice,
-    askSpotPrice: data?.askSpotPrice,
     isSpotPriceRefetching,
   };
 };
