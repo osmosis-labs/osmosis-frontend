@@ -244,7 +244,6 @@
       "expectedOutput": "Erwartete Ausgabe",
       "expectedOutputInfo": "Abhängig vom genutzten Anbieter kann es aufgrund von Gebühren, Slippage und Preisauswirkungen zu einem geringeren Output kommen.",
       "priceImpact": "Preisauswirkungen",
-      "sending": "Senden...",
       "transferAnyway": "Übertragen Sie trotzdem"
     },
     "transferAssetSelect": {
