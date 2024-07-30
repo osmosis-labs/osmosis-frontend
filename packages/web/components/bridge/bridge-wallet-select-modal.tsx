@@ -538,7 +538,10 @@ const SendToAnotherAddressForm: FunctionComponent<
           checked={isAcknowledged}
           onClick={() => setIsAcknowledged(!isAcknowledged)}
         />
-        <p className="body1 text-osmoverse-300">
+        <p
+          className="body1 cursor-pointer select-none text-osmoverse-300"
+          onClick={() => setIsAcknowledged(!isAcknowledged)}
+        >
           {t("transfer.acknowledgement")}
         </p>
       </div>

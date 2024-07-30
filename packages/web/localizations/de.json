@@ -990,7 +990,7 @@
     "enterAddress": "Gib eine Adresse ein",
     "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",
-    "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
+    "acknowledgement": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere dieses, wenn ich eine falsche Empfängeradresse angebe oder versuche, das Geld über eine Börse abzuheben.",
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",

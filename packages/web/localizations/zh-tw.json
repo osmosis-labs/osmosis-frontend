@@ -990,7 +990,7 @@
     "enterAddress": "輸入地址",
     "sendToAnotherAddress": "發送到另一個地址",
     "invalidAddress": "無效的{chain}地址",
-    "acknowledgement": "我承認我對世界末日等負全部責任。",
+    "acknowledgement": "我承認並接受如果我提供不正確的收款人地址或嘗試提款到交易所，則存在資金損失的風險。",
     "done": "完畢",
     "transferFrom": "從{noun}轉移",
     "risks": "橋接伴隨著風險。",

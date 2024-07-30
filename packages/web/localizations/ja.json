@@ -990,7 +990,7 @@
     "enterAddress": "住所を入力してください",
     "sendToAnotherAddress": "別のアドレスに送信",
     "invalidAddress": "無効な{chain}アドレス",
-    "acknowledgement": "私は世界の終焉などについて全責任を負っていることを認めます。",
+    "acknowledgement": "間違った受取人アドレスを提供したり、取引所に引き出しを試みたりした場合に資金が失われるリスクを認識し、受け入れます。",
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "risks": "ブリッジングにはリスクが伴います。",

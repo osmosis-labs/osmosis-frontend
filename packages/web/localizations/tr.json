@@ -990,7 +990,7 @@
     "enterAddress": "Bir adres girin",
     "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",
-    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "acknowledgement": "Yanlış bir alıcı adresi verirsem veya bir borsaya çekilmeye çalışırsam fon kaybı riskini kabul ediyorum ve kabul ediyorum.",
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",

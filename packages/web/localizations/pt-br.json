@@ -990,7 +990,7 @@
     "enterAddress": "Insira um endereço",
     "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
-    "acknowledgement": "Reconheço que sou totalmente responsável pelo fim do mundo, etc.",
+    "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
     "done": "Feito",
     "transferFrom": "Transferir de {noun}",
     "risks": "Fazer uma ponte traz riscos.",

@@ -990,7 +990,7 @@
     "enterAddress": "Podaj adres",
     "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",
-    "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
+    "acknowledgement": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy lub próby wypłaty na giełdę.",
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",

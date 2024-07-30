@@ -990,7 +990,7 @@
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
-    "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
+    "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
     "risks": "Conducerea vine cu riscuri.",
