@@ -937,6 +937,8 @@
     "free": "Gratis",
     "cheapest": "Lo mas barato",
     "fastest": "Lo más rápido",
+    "toWithdraw": "para retirar",
+    "toDeposit": "Depositar",
     "stepLabels": {
       "asset": "Activo",
       "amount": "Cantidad",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",
-      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
-      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "Transferir desde {noun}",
     "risks": "La unión conlleva riesgos.",
     "learnMore": "Aprende más",
-    "externalTransferSplash": "Para transferir {denom} de {networkA} a {networkB} , utilice {service} .",
     "openNoun": "Abrir {noun}"
   },
   "unknownError": "Error desconocido",

@@ -937,6 +937,8 @@
     "free": "Gratuit",
     "cheapest": "Cele mai ieftine",
     "fastest": "Cel mai rapid",
+    "toWithdraw": "A retrage",
+    "toDeposit": "A depune",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "Transfer de la {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
     "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",

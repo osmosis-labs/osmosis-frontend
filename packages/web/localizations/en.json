@@ -937,6 +937,10 @@
     "free": "Free",
     "cheapest": "Cheapest",
     "fastest": "Fastest",
+    "toWithdraw": "To withdraw",
+    "toDeposit": "To deposit",
+    "singleProviderDescription": "from {fromChain} to {toChain}, please use {provider}.",
+    "multipleProviderDescription": "from {fromChain} to {toChain}, please use one of the following alternative providers.",
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
@@ -945,8 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
-      "descriptionDeposit": "Choose from the following alternative providers to deposit (aka “bridge”) your {asset} to {chain}.",
-      "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
+      "chooseAnAlternativeProviderDeposit": "Choose an alternative provider to deposit {asset} from {fromChain} to {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Choose an alternative provider to withdraw {asset} from {fromChain} to {toChain}",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
     },
@@ -995,7 +999,6 @@
     "transferFrom": "Transfer from {noun}",
     "risks": "Bridging comes with risks.",
     "learnMore": "Learn more",
-    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
     "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",

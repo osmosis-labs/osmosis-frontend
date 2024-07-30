@@ -937,6 +937,8 @@
     "free": "رایگان",
     "cheapest": "ارزان ترین",
     "fastest": "سریع ترین",
+    "toWithdraw": "برای برداشت",
+    "toDeposit": "برای واریز",
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
-      "descriptionDeposit": "از میان ارائه دهندگان جایگزین زیر برای واریز (معروف به \"پل\") {asset} خود را به {chain} .",
-      "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "انتقال از {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
     "learnMore": "بیشتر بدانید",
-    "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
     "openNoun": "باز کردن {noun}"
   },
   "unknownError": "خطای نا شناس",

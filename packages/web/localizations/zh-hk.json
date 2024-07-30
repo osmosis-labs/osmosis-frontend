@@ -937,6 +937,8 @@
     "free": "自由的",
     "cheapest": "最便宜",
     "fastest": "最快的",
+    "toWithdraw": "去取出",
+    "toDeposit": "存款",
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
-      "descriptionDeposit": "從以下替代提供者中進行選擇，將您的{asset}存入（也稱為「bridge」）到{chain} 。",
-      "descriptionWithdraw": "從以下替代提供者中進行選擇，將您的{asset}撤回（也稱為「bridge」）到{chain} 。",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "從{noun}轉移",
     "risks": "橋接伴隨著風險。",
     "learnMore": "了解更多",
-    "externalTransferSplash": "將{denom}從{networkA}傳送到{networkB} ，請使用{service} 。",
     "openNoun": "打開{noun}"
   },
   "unknownError": "未知錯誤",

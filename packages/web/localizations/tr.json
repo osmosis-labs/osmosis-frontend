@@ -937,6 +937,8 @@
     "free": "Özgür",
     "cheapest": "En ucuz",
     "fastest": "En hızlı",
+    "toWithdraw": "Çekilme",
+    "toDeposit": "Para yatırmak",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
-      "descriptionDeposit": "{asset} {chain} .",
-      "descriptionWithdraw": "{asset} {chain} .",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "{noun} kaynağından aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
-    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
     "openNoun": "{noun} açın"
   },
   "unknownError": "Bilinmeyen hata",

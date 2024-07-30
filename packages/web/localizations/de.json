@@ -937,6 +937,8 @@
     "free": "Frei",
     "cheapest": "Am billigsten",
     "fastest": "Am schnellsten",
+    "toWithdraw": "Zurückziehen",
+    "toDeposit": "Deponieren",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
@@ -945,8 +947,6 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
-      "descriptionDeposit": "Wählen Sie aus den folgenden alternativen Anbietern zum Einzahlen (auch „Brücken“) Ihres {asset} auf {chain} .",
-      "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
@@ -995,7 +995,6 @@
     "transferFrom": "Übertragung von {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
     "learnMore": "Erfahren Sie mehr",
-    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
     "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",
