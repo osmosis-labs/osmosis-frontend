@@ -391,7 +391,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     ? swapState.quoteAsset?.usdValue &&
                       formatPretty(swapState.quoteAsset?.usdValue)
                     : swapState.baseTokenBalance &&
-                      formatPretty(swapState.baseTokenBalance)
+                      formatPretty(swapState.baseTokenBalance.hideDenom(true))
                 }
                 onMax={toggleMax}
                 openAddFundsModal={openAddFundsModal}
