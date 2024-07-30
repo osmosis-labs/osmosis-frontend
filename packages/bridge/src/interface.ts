@@ -332,6 +332,11 @@ export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
   msgTypeUrl: string;
   msg: Record<string, any>;
+  gasFee?: {
+    gas: string;
+    denom: string;
+    amount: string;
+  };
 }
 
 interface QRCodeBridgeTransactionRequest {

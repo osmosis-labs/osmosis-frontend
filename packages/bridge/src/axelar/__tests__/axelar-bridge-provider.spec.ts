@@ -42,21 +42,19 @@ jest.mock("@cosmjs/proto-signing", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.post("https://api.axelarscan.io/deposit-address", (_req, res, ctx) => {
-      return res(ctx.json({ depositAddress: "0x123" }));
-    }),
+    rest.post("https://api.axelarscan.io/deposit-address", (_req, res, ctx) =>
+      res(ctx.json({ depositAddress: "0x123" }))
+    ),
     rest.get(
       "https://axelar-mainnet.s3.us-east-2.amazonaws.com/mainnet-asset-config.json",
-      (_req, res, ctx) => {
-        return res(ctx.json({}));
-      }
+      (_req, res, ctx) => res(ctx.json({}))
     ),
-    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) => {
-      return res(ctx.json(MockAxelarChains));
-    }),
-    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
-      return res(ctx.json(MockAxelarAssets));
-    })
+    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) =>
+      res(ctx.json(MockAxelarChains))
+    ),
+    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) =>
+      res(ctx.json(MockAxelarAssets))
+    )
   );
 });
 
