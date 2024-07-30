@@ -153,21 +153,24 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         </Link>
       </div>
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
+        {!quote.isTxPending && (
+          <Button
+            className="w-full md:h-12"
+            variant="secondary"
+            onClick={onCancel}
+            disabled={quote.isTxPending}
+          >
+            <div className="md:subtitle1 text-h6 font-h6">
+              {t("transfer.cancel")}
+            </div>
+          </Button>
+        )}
         <Button
-          className="w-full md:h-12"
-          variant="secondary"
-          onClick={onCancel}
-          disabled={quote.isTxPending}
-        >
-          <div className="md:subtitle1 text-h6 font-h6">
-            {t("transfer.cancel")}
-          </div>
-        </Button>
-        <Button
-          isLoading={quote.isTxPending || quote.isApprovingToken}
           className="w-full md:h-12"
           onClick={onConfirm}
-          disabled={!quote.userCanAdvance}
+          disabled={
+            !quote.userCanAdvance || quote.isTxPending || quote.isApprovingToken
+          }
         >
           <div className="md:subtitle1 text-h6 font-h6">
             {quote?.txButtonText ?? t("transfer.confirm")}

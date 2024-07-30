@@ -117,7 +117,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
               fromAmount as any
             ),
             this.estimateGasCost(params),
-          ]);
+          ]).catch((e) => {
+            throw new BridgeQuoteError({
+              bridgeId: AxelarBridgeProvider.ID,
+              errorType: "UnsupportedQuoteError",
+              message:
+                "Axelar Bridge doesn't support this quote:" + e.toString(),
+            });
+          });
 
           let transferLimitAmount: string | undefined;
           try {
@@ -825,7 +832,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     url.searchParams.set("destination", toChainId);
     // asset_denom denotes the selection of the from asset
     url.searchParams.set("asset_denom", toAssetId);
-    url.searchParams.set("destination_address", toAddress);
+    if (toAddress) url.searchParams.set("destination_address", toAddress);
 
     return { urlProviderName: "Satellite Money", url };
   }

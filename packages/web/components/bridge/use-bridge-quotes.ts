@@ -86,6 +86,7 @@ export const useBridgeQuotes = ({
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
   const { t } = useTranslation();
+  const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
 
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
@@ -515,6 +516,8 @@ export const useBridgeQuotes = ({
           : undefined,
       });
 
+      setIsBroadcastingTx(true);
+
       await waitForTransactionReceipt(publicClient, {
         hash: sendTxHash,
       });
@@ -538,6 +541,9 @@ export const useBridgeQuotes = ({
         walletName: evmConnector.name,
       });
       displayToast(toastContent, ToastType.ERROR);
+    } finally {
+      setIsApprovingToken(false);
+      setIsBroadcastingTx(false);
     }
   };
 
@@ -577,34 +583,38 @@ export const useBridgeQuotes = ({
       {
         preferNoSetFee: Boolean(gasFee),
       },
-      (tx: DeliverTxResponse) => {
-        if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(fromChain.chainId);
+      {
+        onBroadcastFailed: () => setIsBroadcastingTx(false),
+        onBroadcasted: () => setIsBroadcastingTx(true),
+        onFulfill: (tx: DeliverTxResponse) => {
+          if (tx.code == null || tx.code === 0) {
+            const queries = queriesStore.get(fromChain.chainId);
 
-          // After succeeding to send token, refresh the balance.
-          const queryBalance = queries.queryBalances
-            // If we get here destination address is defined
-            .getQueryBech32Address(toAddress!)
-            .balances.find((bal) => {
-              return (
-                bal.currency.coinMinimalDenom ===
-                availableBalance?.currency.coinMinimalDenom
-              );
+            // After succeeding to send token, refresh the balance.
+            const queryBalance = queries.queryBalances
+              // If we get here destination address is defined
+              .getQueryBech32Address(toAddress!)
+              .balances.find((bal) => {
+                return (
+                  bal.currency.coinMinimalDenom ===
+                  availableBalance?.currency.coinMinimalDenom
+                );
+              });
+
+            if (queryBalance) {
+              queryBalance.fetch();
+            }
+
+            trackTransferStatus(quote.provider.id, {
+              sendTxHash: tx.transactionHash,
+              fromChainId: quote.fromChain.chainId,
+              toChainId: quote.toChain.chainId,
             });
 
-          if (queryBalance) {
-            queryBalance.fetch();
+            onTransferProp?.();
+            setTransferInitiated(true);
           }
-
-          trackTransferStatus(quote.provider.id, {
-            sendTxHash: tx.transactionHash,
-            fromChainId: quote.fromChain.chainId,
-            toChainId: quote.toChain.chainId,
-          });
-
-          onTransferProp?.();
-          setTransferInitiated(true);
-        }
+        },
       }
     );
   };
@@ -709,8 +719,10 @@ export const useBridgeQuotes = ({
   let txButtonText: string | undefined;
   if (isApprovingToken) {
     txButtonText = t("assets.transfer.approving");
-  } else if (isTxPending) {
+  } else if (isBroadcastingTx) {
     txButtonText = t("assets.transfer.sending");
+  } else if (isTxPending) {
+    txButtonText = t("assets.transfer.approveInWallet");
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
