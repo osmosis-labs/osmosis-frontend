@@ -937,6 +937,10 @@
     "free": "Gratuit",
     "cheapest": "Cele mai ieftine",
     "fastest": "Cel mai rapid",
+    "toWithdraw": "A retrage",
+    "toDeposit": "A depune",
+    "singleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați {provider} .",
+    "multipleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
@@ -945,8 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
@@ -995,7 +999,6 @@
     "transferFrom": "Transfer de la {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
     "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",

@@ -937,6 +937,10 @@
     "free": "Gratuit",
     "cheapest": "Le moins cher",
     "fastest": "Le plus rapide",
+    "toWithdraw": "Se rétracter",
+    "toDeposit": "Déposer",
+    "singleProviderDescription": "de {fromChain} à {toChain} , veuillez utiliser {provider} .",
+    "multipleProviderDescription": "de {fromChain} à {toChain} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",
@@ -945,8 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Plus d'options de dépôt",
       "titleWithdraw": "Plus d'options de retrait",
-      "descriptionDeposit": "Choisissez parmi les fournisseurs alternatifs suivants pour déposer (alias « pont ») votre {asset} vers {chain} .",
-      "descriptionWithdraw": "Choisissez parmi les fournisseurs alternatifs suivants pour retirer (alias « pont ») votre {asset} vers {chain} .",
+      "chooseAnAlternativeProviderDeposit": "Choisissez un autre fournisseur pour déposer {asset} de {fromChain} à {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Choisissez un autre fournisseur pour retirer {asset} de {fromChain} à {toChain}",
       "depositWith": "Dépôt avec",
       "withdrawWith": "Retirer avec"
     },
@@ -995,7 +999,6 @@
     "transferFrom": "Transfert depuis {noun}",
     "risks": "Le rapprochement comporte des risques.",
     "learnMore": "Apprendre encore plus",
-    "externalTransferSplash": "Pour transférer {denom} de {networkA} vers {networkB} , veuillez utiliser {service} .",
     "openNoun": "Ouvrir {noun}"
   },
   "unknownError": "Erreur inconnue",
