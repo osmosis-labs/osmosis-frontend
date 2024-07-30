@@ -220,6 +220,7 @@
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
+      "approveInWallet": "Im Wallet genehmigen",
       "enterAddress": "{network} Adresse",
       "errors": {
         "insufficientBal": "Mangelhaftes Gleichgewicht",

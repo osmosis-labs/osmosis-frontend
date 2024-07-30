@@ -220,6 +220,7 @@
       "availableMobile": "उपलब्ध",
       "availableOn": "{network} पर उपलब्ध है",
       "approving": "अनुमोदन...",
+      "approveInWallet": "वॉलेट में स्वीकृति दें",
       "enterAddress": "{network} पता",
       "errors": {
         "insufficientBal": "अपर्याप्त शेषराशि",

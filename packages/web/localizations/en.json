@@ -220,6 +220,7 @@
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
       "approving": "Approving...",
+      "approveInWallet": "Approve in wallet",
       "enterAddress": "{network} address",
       "errors": {
         "insufficientBal": "Insufficient Balance",

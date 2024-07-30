@@ -220,6 +220,7 @@
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
+      "approveInWallet": "تایید در کیف پول",
       "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",

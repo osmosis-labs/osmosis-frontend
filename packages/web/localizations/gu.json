@@ -220,6 +220,7 @@
       "availableMobile": "ઉપલબ્ધ છે",
       "availableOn": "{network} પર ઉપલબ્ધ",
       "approving": "મંજૂર કરી રહ્યાં છીએ...",
+      "approveInWallet": "વૉલેટમાં મંજૂર કરો",
       "enterAddress": "{network} સરનામું",
       "errors": {
         "insufficientBal": "અપર્યાપ્ત બેલેન્સ",

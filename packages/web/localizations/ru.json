@@ -220,6 +220,7 @@
       "availableMobile": "Доступный",
       "availableOn": "Доступно в {network}",
       "approving": "Одобрение...",
+      "approveInWallet": "Одобрить в кошельке",
       "enterAddress": "{network} адрес",
       "errors": {
         "insufficientBal": "Недостаточный баланс",

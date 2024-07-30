@@ -220,6 +220,7 @@
       "availableMobile": "利用可能",
       "availableOn": "{network}で利用可能",
       "approving": "承認中...",
+      "approveInWallet": "ウォレットで承認",
       "enterAddress": "{network}アドレス",
       "errors": {
         "insufficientBal": "残高不足",

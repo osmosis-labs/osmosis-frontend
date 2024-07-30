@@ -220,6 +220,7 @@
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
+      "approveInWallet": "Zatwierdź w portfelu",
       "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",

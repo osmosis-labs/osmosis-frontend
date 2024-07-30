@@ -220,6 +220,7 @@
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
+      "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",

@@ -220,6 +220,7 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
+      "approveInWallet": "Aprobar en billetera",
       "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",

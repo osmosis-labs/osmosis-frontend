@@ -220,6 +220,7 @@
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
+      "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",

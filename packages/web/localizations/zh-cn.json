@@ -220,6 +220,7 @@
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
+      "approveInWallet": "在钱包中批准",
       "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",

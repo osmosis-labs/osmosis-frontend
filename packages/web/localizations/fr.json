@@ -220,6 +220,7 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
+      "approveInWallet": "Approuver dans le portefeuille",
       "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
