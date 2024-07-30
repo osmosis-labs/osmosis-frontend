@@ -967,7 +967,9 @@ export const AmountScreen = observer(
                                 {t("transfer.receiveAsset")}
                               </h1>
                               <p className="caption text-osmoverse-300">
-                                {t("transfer.receiveAssetDescription")}
+                                {direction === "deposit"
+                                  ? t("transfer.depositAssetDescription")
+                                  : t("transfer.withdrawAssetDescription")}
                               </p>
                             </div>
                           }
