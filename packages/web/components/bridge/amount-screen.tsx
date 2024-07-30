@@ -572,6 +572,11 @@ export const AmountScreen = observer(
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
         if (isNil(fromAsset?.decimals)) return;
+        // Prevent the user from entering more decimals than the asset supports
+        if (amount.toString().split(".")[1]?.length > fromAsset.decimals) {
+          return;
+        }
+
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
             ? amount
@@ -588,6 +593,14 @@ export const AmountScreen = observer(
     const onChangeFiatInput = useCallback(
       (amount: string) => {
         if (isNil(assetInOsmosisPrice?.fiatCurrency.maxDecimals)) return;
+        // Prevent the user from entering more decimals than fiat supports
+        if (
+          amount.toString().split(".")[1]?.length >
+          assetInOsmosisPrice.fiatCurrency.maxDecimals
+        ) {
+          return;
+        }
+
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
             ? amount
