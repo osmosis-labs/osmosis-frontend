@@ -360,6 +360,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.priceState.price,
     ]);
 
+    const inputValue = useMemo(
+      () =>
+        focused === "fiat"
+          ? type === "market" && tab === "sell"
+            ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
+            : fiatAmount
+          : type === "market" && tab === "buy"
+          ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
+          : tokenAmount,
+      [expectedOutput, fiatAmount, focused, tab, tokenAmount, type]
+    );
+
     return (
       <>
         <div className="flex flex-col">
@@ -388,20 +400,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </AssetFieldsetHeader>
             <div className="flex items-center justify-between py-3">
               <AssetFieldsetInput
-                inputPrefix={focused === "fiat" && <h3>$</h3>}
-                inputValue={
-                  focused === "fiat"
-                    ? type === "market" && tab === "sell"
-                      ? trimPlaceholderZeros(
-                          (expectedOutput ?? new Dec(0)).toString()
-                        )
-                      : fiatAmount
-                    : type === "market" && tab === "buy"
-                    ? trimPlaceholderZeros(
-                        (expectedOutput ?? new Dec(0)).toString()
-                      )
-                    : tokenAmount
+                inputPrefix={
+                  focused === "fiat" && (
+                    <h3
+                      className={classNames({
+                        "text-osmoverse-600": inputValue === "",
+                      })}
+                    >
+                      $
+                    </h3>
+                  )
                 }
+                inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
               <AssetFieldsetTokenSelector

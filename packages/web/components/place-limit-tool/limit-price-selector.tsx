@@ -171,12 +171,20 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           <SkeletonLoader
             isLoaded={priceState.spotPrice && !priceState.isLoading}
           >
-            {inputMode === InputMode.Price && <span>$</span>}
+            {inputMode === InputMode.Price && (
+              <span
+                className={classNames("transition-colors", {
+                  "text-osmoverse-600": swapState.priceState.orderPrice === "",
+                })}
+              >
+                $
+              </span>
+            )}
             {inputMode === InputMode.Price ? (
               <input
                 type="text"
                 min={0}
-                className="bg-transparent text-white-full"
+                className="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                 value={swapState.priceState.orderPrice}
                 placeholder={parseFloat(
                   swapState.priceState.price.toString()
@@ -192,7 +200,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               <AutosizeInput
                 type="text"
                 extraWidth={0}
-                inputClassName="bg-transparent text-white-full"
+                inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                 value={swapState.priceState.manualPercentAdjusted}
                 placeholder={trimPlaceholderZeros(
                   swapState.priceState.percentAdjusted
@@ -210,7 +218,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             )}
             {inputMode === InputMode.Percentage && (
               <span className="inline-flex items-baseline gap-1">
-                <span className="text-white-full">%</span>
+                <span
+                  className={classNames("text-white-full transition-colors", {
+                    "!text-osmoverse-600":
+                      swapState.priceState.manualPercentAdjusted === "",
+                  })}
+                >
+                  %
+                </span>
                 <span className="body2 text-osmoverse-500">
                   {percentageSuffix}
                 </span>

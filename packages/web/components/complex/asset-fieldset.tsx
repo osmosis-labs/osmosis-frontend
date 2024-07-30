@@ -102,7 +102,7 @@ const AssetFieldsetInput = forwardRef<
     {outputValue || (
       <input
         ref={ref}
-        className="w-full bg-transparent text-h3 font-h3 placeholder:text-white-disabled placeholder:opacity-50"
+        className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
         placeholder="0"
         onChange={onInputChange}
         value={inputValue}
