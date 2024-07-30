@@ -770,8 +770,12 @@ export const AmountScreen = observer(
             />
 
             {(direction === "deposit"
-              ? !isNil(fromCosmosCounterpartyAccount)
-              : !isNil(toCosmosCounterpartyAccount)) && (
+              ? fromChain.chainType === "cosmos"
+                ? !isNil(fromCosmosCounterpartyAccount)
+                : isEvmWalletConnected
+              : toChain.chainType === "cosmos"
+              ? !isNil(toCosmosCounterpartyAccount)
+              : isEvmWalletConnected) && (
               <>
                 {isLoadingAssetsBalance && (
                   <div className="flex w-full items-center justify-center gap-3">
