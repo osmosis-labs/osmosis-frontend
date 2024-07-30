@@ -16,14 +16,8 @@ export const AprDisclaimer: FunctionComponent = () => {
       <span className="subtitle1 text-osmoverse-100">
         {t("pools.aprBreakdown.explainer.title")}
       </span>
-      <p className="caption text-osmoverse-200">
-        {t("pools.aprBreakdown.explainer.p1")}
-      </p>
-      <p className="caption text-osmoverse-200">
-        {t("pools.aprBreakdown.explainer.p2")}
-      </p>
-      <p className="caption text-osmoverse-200">
-        {t("pools.aprBreakdown.explainer.p3")}
+      <p className="caption whitespace-pre-line text-osmoverse-200">
+        {t("pools.aprBreakdown.explainer.subtitle")}
       </p>
     </div>
   );

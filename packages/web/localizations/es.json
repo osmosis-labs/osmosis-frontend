@@ -679,9 +679,7 @@
       "total": "TAE total",
       "explainer": {
         "title": "¿Cómo se calculan las APR?",
-        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
-        "p2": "En grupos sobrealimentados, la mayoría de los usuarios recibirán recompensas más bajas. Esto se debe a posiciones más concentradas, que captan una mayor parte de los incentivos.",
-        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+        "subtitle": "Todas las APR son estimaciones basadas en los últimos 7 días. A medida que el volumen comercial y el precio fluctúen, la APR cambiará en consecuencia. El rango mostrado se basa en lo siguiente.<inlang-LineFeed>\nPara piscinas sobrealimentadas, el límite inferior hace referencia a posiciones conservadoras de rango completo. Esto puede resultar en una APR extremadamente baja ya que la liquidez se distribuye entre todas las operaciones. El límite superior se calcula para una posición con una concentración del 30% alrededor del precio spot. Tenga en cuenta que una posición ya no será rentable si se sale del rango."
       }
     }
   },

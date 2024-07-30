@@ -679,9 +679,7 @@
       "total": "DAE totală",
       "explainer": {
         "title": "Cum se calculează APR-urile?",
-        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
-        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
-        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+        "subtitle": "Toate APR sunt estimări bazate pe ultimele 7 zile. Pe măsură ce volumul comerțului și prețul fluctuează, DAE se va modifica în consecință. Intervalul afișat se bazează pe următoarele.<inlang-LineFeed>\nPentru piscinele supraalimentate, limita inferioară se referă la poziții conservatoare, de gamă completă. Acest lucru poate duce la o DAE extrem de scăzută, deoarece lichiditatea este răspândită în toate tranzacțiile. Limita superioară este calculată pentru o poziție cu o concentrație de 30% în jurul prețului spot. Rețineți că o poziție nu va mai câștiga dacă iese din interval."
       }
     }
   },
