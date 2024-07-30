@@ -70,7 +70,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     }, [tab]);
     return (
       <ClientOnly>
-        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-4">
+        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3">
           <div className="flex w-full items-center justify-between">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">

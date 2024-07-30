@@ -334,7 +334,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     return (
       <>
-        <div ref={containerRef} className="relative flex flex-col gap-6">
+        <div ref={containerRef} className="relative flex flex-col">
           <div className="flex flex-col gap-3">
             <div className="relative flex flex-col">
               <AssetFieldset>
@@ -501,13 +501,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </AssetFieldsetFooter>
               </AssetFieldset>
             </div>
-            <TradeDetails
-              type="market"
-              swapState={swapState}
-              slippageConfig={slippageConfig}
-              outAmountLessSlippage={outAmountLessSlippage}
-              outFiatAmountLessSlippage={outFiatAmountLessSlippage}
-            />
           </div>
           {!isNil(warningText) && (
             <div
@@ -520,46 +513,58 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             </div>
           )}
           {swapButton ?? (
-            <Button
-              disabled={
-                isSendingTx ||
-                isWalletLoading ||
-                (account?.walletStatus === WalletStatus.Connected &&
-                  (swapState.inAmountInput.isEmpty ||
-                    !Boolean(swapState.quote) ||
-                    Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
-              }
-              isLoading={
-                /**
-                 * While 1-Click is enabled, display a loading spinner when simulation
-                 * is in progress since we don't have a wallet to compute the fee for
-                 * us. We need the network fee to be calculated before we can proceed
-                 * with the trade.
-                 */
-                isOneClickTradingEnabled &&
-                swapState.isLoadingNetworkFee &&
-                !swapState.inAmountInput.isEmpty
-              }
-              loadingText={buttonText}
-              onClick={() => {
-                if (account?.walletStatus !== WalletStatus.Connected) {
-                  return onOpenWalletSelect({
-                    walletOptions: [{ walletType: "cosmos", chainId: chainId }],
-                  });
+            <div className="flex w-full pb-3">
+              <Button
+                disabled={
+                  isSendingTx ||
+                  isWalletLoading ||
+                  (account?.walletStatus === WalletStatus.Connected &&
+                    (swapState.inAmountInput.isEmpty ||
+                      !Boolean(swapState.quote) ||
+                      Boolean(swapState.error) ||
+                      account?.txTypeInProgress !== ""))
                 }
+                isLoading={
+                  /**
+                   * While 1-Click is enabled, display a loading spinner when simulation
+                   * is in progress since we don't have a wallet to compute the fee for
+                   * us. We need the network fee to be calculated before we can proceed
+                   * with the trade.
+                   */
+                  isOneClickTradingEnabled &&
+                  swapState.isLoadingNetworkFee &&
+                  !swapState.inAmountInput.isEmpty
+                }
+                loadingText={buttonText}
+                onClick={() => {
+                  if (account?.walletStatus !== WalletStatus.Connected) {
+                    return onOpenWalletSelect({
+                      walletOptions: [
+                        { walletType: "cosmos", chainId: chainId },
+                      ],
+                    });
+                  }
 
-                setShowSwapReviewModal(true);
-              }}
-            >
-              <h6>
-                {account?.walletStatus === WalletStatus.Connected ||
-                isSwapToolLoading
-                  ? buttonText
-                  : t("connectWallet")}
-              </h6>
-            </Button>
+                  setShowSwapReviewModal(true);
+                }}
+                className="w-full"
+              >
+                <h6>
+                  {account?.walletStatus === WalletStatus.Connected ||
+                  isSwapToolLoading
+                    ? buttonText
+                    : t("connectWallet")}
+                </h6>
+              </Button>
+            </div>
           )}
+          <TradeDetails
+            type="market"
+            swapState={swapState}
+            slippageConfig={slippageConfig}
+            outAmountLessSlippage={outAmountLessSlippage}
+            outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          />
         </div>
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.sell")}
