@@ -756,6 +756,18 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=polygon-weth-wei",
   },
+  TRX: {
+    depositUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt",
+    withdrawUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt&toToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  },
+  "USDT.trx": {
+    depositUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt",
+    withdrawUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt&toToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
