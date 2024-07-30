@@ -1062,7 +1062,7 @@ export const AmountScreen = observer(
                                 <MenuItem key={asset.coinDenom}>
                                   <button
                                     className={classNames(
-                                      "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                      "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
                                       isSelected && "bg-osmoverse-700"
                                     )}
                                     onClick={onClick}
@@ -1124,7 +1124,7 @@ export const AmountScreen = observer(
                               <MenuItem key={asset.denom}>
                                 <button
                                   className={classNames(
-                                    "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                    "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
                                     isSelected && "bg-osmoverse-700"
                                   )}
                                   onClick={onClick}
