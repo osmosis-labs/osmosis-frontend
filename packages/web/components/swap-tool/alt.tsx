@@ -322,15 +322,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [forceSwapInPoolId]
     );
 
-    const isUnsufficentBalance = useMemo(
-      () => swapState.error?.message === "Insufficient balance",
-      [swapState.error?.message]
-    );
+    // const isUnsufficentBalance = useMemo(
+    //   () => swapState.error?.message === "Insufficient balance",
+    //   [swapState.error?.message]
+    // );
 
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
-      onOpen: openAddFundsModal,
+      // onOpen: openAddFundsModal,
     } = useDisclosure();
 
     return (
