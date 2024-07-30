@@ -31,7 +31,6 @@ import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
-  useFeatureFlags,
   useOneClickTradingSession,
   useSlippageConfig,
   useTranslation,
@@ -81,7 +80,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
-    const featureFlags = useFeatureFlags();
+    // const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
@@ -280,21 +279,21 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       );
     }
 
-    const isLoadingMaxButton = useMemo(
-      () =>
-        featureFlags.swapToolSimulateFee &&
-        !isNil(account?.address) &&
-        !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-        !swapState.inAmountInput?.balance?.toDec().isZero() &&
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      [
-        account?.address,
-        featureFlags.swapToolSimulateFee,
-        swapState.inAmountInput?.balance,
-        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote,
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      ]
-    );
+    // const isLoadingMaxButton = useMemo(
+    //   () =>
+    //     featureFlags.swapToolSimulateFee &&
+    //     !isNil(account?.address) &&
+    //     !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
+    //     !swapState.inAmountInput?.balance?.toDec().isZero() &&
+    //     swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
+    //   [
+    //     account?.address,
+    //     featureFlags.swapToolSimulateFee,
+    //     swapState.inAmountInput?.balance,
+    //     swapState.inAmountInput.hasErrorWithCurrentBalanceQuote,
+    //     swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
+    //   ]
+    // );
 
     const isConfirmationDisabled = useMemo(() => {
       return (
@@ -323,15 +322,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [forceSwapInPoolId]
     );
 
-    const isUnsufficentBalance = useMemo(
-      () => swapState.error?.message === "Insufficient balance",
-      [swapState.error?.message]
-    );
+    // const isUnsufficentBalance = useMemo(
+    //   () => swapState.error?.message === "Insufficient balance",
+    //   [swapState.error?.message]
+    // );
 
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
-      onOpen: openAddFundsModal,
+      // onOpen: openAddFundsModal,
     } = useDisclosure();
 
     return (
