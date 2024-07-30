@@ -353,7 +353,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </span>
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
-                className={classNames({ "opacity-0": !hasFunds })}
                 availableBalance={
                   tab === "buy"
                     ? swapState.quoteAsset?.usdValue &&
@@ -362,6 +361,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       formatPretty(swapState.baseTokenBalance)
                 }
                 onMax={toggleMax}
+                openAddFundsModal={openAddFundsModal}
+                showAddFundsButton={!hasFunds}
               />
             </AssetFieldsetHeader>
             <div className="flex items-center justify-between py-3">

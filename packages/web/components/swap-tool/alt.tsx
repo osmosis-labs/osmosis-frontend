@@ -323,11 +323,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [forceSwapInPoolId]
     );
 
-    const isUnsufficentBalance = useMemo(
-      () => swapState.error?.message === "Insufficient balance",
-      [swapState.error?.message]
-    );
-
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
@@ -359,6 +354,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                             }
                           : undefined
                       )
+                    }
+                    showAddFundsButton={
+                      swapState.inAmountInput.balance &&
+                      swapState.inAmountInput.balance.toDec().isZero()
+                    }
+                    openAddFundsModal={openAddFundsModal}
+                    isLoadingMaxButton={isLoadingMaxButton}
+                    isMaxButtonDisabled={
+                      !swapState.inAmountInput.balance ||
+                      swapState.inAmountInput.balance.toDec().isZero() ||
+                      swapState.inAmountInput.notEnoughBalanceForMax ||
+                      isLoadingMaxButton
                     }
                   />
                 </AssetFieldsetHeader>
