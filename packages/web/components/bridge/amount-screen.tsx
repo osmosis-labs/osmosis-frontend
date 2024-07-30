@@ -8,6 +8,7 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { IntPretty } from "@keplr-wallet/unit";
+import { Bridge } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -80,6 +81,7 @@ interface AmountScreenProps {
 
   assetsInOsmosis: MinimalAsset[] | undefined;
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
+  supportedBridges: Bridge[];
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -116,6 +118,7 @@ export const AmountScreen = observer(
       supportedChains,
       isLoading: isLoadingSupportedAssets,
     },
+    supportedBridges,
 
     fromChain,
     setFromChain,
@@ -1267,14 +1270,7 @@ export const AmountScreen = observer(
                     fromChain={fromChain}
                     toChain={toChain}
                     toAddress={toAddress}
-                    bridges={Array.from(
-                      new Set(
-                        Object.values(
-                          (direction === "withdraw" ? toAsset : fromAsset)
-                            .supportedVariants
-                        ).flat()
-                      )
-                    )}
+                    bridges={supportedBridges}
                     onRequestClose={() => setAreMoreOptionsVisible(false)}
                   />
                 </Screen>
@@ -1290,14 +1286,7 @@ export const AmountScreen = observer(
             fromChain={fromChain}
             fromAsset={fromAsset}
             toAddress={toAddress}
-            bridges={Array.from(
-              new Set(
-                Object.values(
-                  (direction === "withdraw" ? toAsset : fromAsset)
-                    .supportedVariants
-                ).flat()
-              )
-            )}
+            bridges={supportedBridges}
             onDone={onClose}
           />
         )}

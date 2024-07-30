@@ -167,7 +167,6 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
           !!toAsset &&
           !!fromChain &&
           !!toChain &&
-          !!toAddress &&
           !!bridges.length,
 
         // skip batching so this query does not get

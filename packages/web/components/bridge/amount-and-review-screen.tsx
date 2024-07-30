@@ -130,13 +130,8 @@ export const AmountAndReviewScreen = observer(
     const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
       supportedAssets;
 
-    /**
-     * Filter for bridges that currently support quoting for the current to/from chain/asset selection.
-     * It's also important to only return bridges
-     * that support the current to/from assets by extracting the bridges
-     * from the supported bridges mapping.
-     */
-    const quoteBridges = useMemo(() => {
+    /** Filter for bridges for the current to/from chain/asset selection. */
+    const bridges = useMemo(() => {
       if (!fromAsset || !toAsset || !fromChain || !toChain) return [];
 
       const assetSupportedBridges = new Set<Bridge>();
@@ -157,9 +152,7 @@ export const AmountAndReviewScreen = observer(
           });
       }
 
-      return Array.from(assetSupportedBridges).filter(
-        (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
-      ) as QuotableBridge[];
+      return Array.from(assetSupportedBridges);
     }, [
       direction,
       fromAsset,
@@ -168,6 +161,19 @@ export const AmountAndReviewScreen = observer(
       toChain,
       counterpartySupportedAssetsByChainId,
     ]);
+    /**
+     * Only some bridges support quoting.
+     * It's also important to only return bridges
+     * that support the current to/from assets by extracting the bridges
+     * from the supported bridges mapping.
+     */
+    const quoteBridges = useMemo(
+      () =>
+        bridges.filter(
+          (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+        ) as QuotableBridge[],
+      [bridges]
+    );
 
     const quote = useBridgeQuotes({
       toAddress,
@@ -227,6 +233,7 @@ export const AmountAndReviewScreen = observer(
               selectedDenom={selectedAssetDenom!}
               assetsInOsmosis={assetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
+              supportedBridges={bridges}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}
