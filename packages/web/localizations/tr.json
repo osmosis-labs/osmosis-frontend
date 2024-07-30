@@ -994,6 +994,7 @@
     "acknowledgement": "Yanlış bir alıcı adresi verirsem veya bir borsaya çekilmeye çalışırsam fon kaybı riskini kabul ediyorum ve kabul ediyorum.",
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
+    "transferWithNoun": "{noun} ile aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
     "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",

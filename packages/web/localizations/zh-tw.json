@@ -994,6 +994,7 @@
     "acknowledgement": "我承認並接受如果我提供不正確的收款人地址或嘗試提款到交易所，則存在資金損失的風險。",
     "done": "完畢",
     "transferFrom": "從{noun}轉移",
+    "transferWithNoun": "使用{noun}進行傳輸",
     "risks": "橋接伴隨著風險。",
     "learnMore": "了解更多",
     "externalTransferSplash": "將{denom}從{networkA}傳送到{networkB} ，請使用{service} 。",

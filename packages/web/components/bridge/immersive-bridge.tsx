@@ -1,5 +1,4 @@
 import { Transition } from "@headlessui/react";
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
@@ -99,7 +98,7 @@ export const ImmersiveBridgeFlow = ({
     setSelectedAssetDenom(null);
   };
 
-  const onOpen = (direction: BridgeTransactionDirection) => {
+  const onOpen = (direction: "deposit" | "withdraw") => {
     setIsVisible(true);
     setDirection(direction);
   };
@@ -111,11 +110,7 @@ export const ImmersiveBridgeFlow = ({
   return (
     <Provider
       value={{
-        startBridge: ({
-          direction,
-        }: {
-          direction: BridgeTransactionDirection;
-        }) => {
+        startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
           onOpen(direction);
         },
         bridgeAsset: async ({
@@ -123,7 +118,7 @@ export const ImmersiveBridgeFlow = ({
           direction,
         }: {
           anyDenom: string;
-          direction: BridgeTransactionDirection;
+          direction: "deposit" | "withdraw";
         }) => {
           onOpen(direction);
           setStep(ImmersiveBridgeScreen.Amount);

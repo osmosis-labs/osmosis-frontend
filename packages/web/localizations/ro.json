@@ -994,6 +994,7 @@
     "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
+    "transferWithNoun": "Transferați cu {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
     "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",

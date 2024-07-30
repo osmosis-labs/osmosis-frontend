@@ -994,6 +994,7 @@
     "acknowledgement": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere dieses, wenn ich eine falsche Empfängeradresse angebe oder versuche, das Geld über eine Börse abzuheben.",
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
+    "transferWithNoun": "Übertragen mit {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
     "learnMore": "Erfahren Sie mehr",
     "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",

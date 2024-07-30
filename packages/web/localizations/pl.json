@@ -994,6 +994,7 @@
     "acknowledgement": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy lub próby wypłaty na giełdę.",
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
+    "transferWithNoun": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
     "externalTransferSplash": "Aby przenieść {denom} z {networkA} {networkB} , użyj {service} .",

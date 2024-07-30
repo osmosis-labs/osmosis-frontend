@@ -994,6 +994,7 @@
     "acknowledgement": "間違った受取人アドレスを提供したり、取引所に引き出しを試みたりした場合に資金が失われるリスクを認識し、受け入れます。",
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
+    "transferWithNoun": "{noun}で転送する",
     "risks": "ブリッジングにはリスクが伴います。",
     "learnMore": "もっと詳しく知る",
     "externalTransferSplash": "{denom} {networkA}から{networkB}に転送するには、 {service}を使用してください。",

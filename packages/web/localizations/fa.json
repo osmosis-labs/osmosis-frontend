@@ -994,6 +994,7 @@
     "acknowledgement": "در صورت ارائه آدرس گیرنده نادرست یا تلاش برای خروج از صرافی، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
     "done": "انجام شده",
     "transferFrom": "انتقال از {noun}",
+    "transferWithNoun": "انتقال با {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
     "learnMore": "بیشتر بدانید",
     "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",

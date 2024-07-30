@@ -994,6 +994,7 @@
     "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
     "done": "Feito",
     "transferFrom": "Transferir de {noun}",
+    "transferWithNoun": "Transferir com {noun}",
     "risks": "Fazer uma ponte traz riscos.",
     "learnMore": "Saber mais",
     "externalTransferSplash": "Para transferir {denom} de {networkA} para {networkB} , use {service} .",

@@ -994,6 +994,7 @@
     "acknowledgement": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address or try to withdraw to an exchange.",
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
+    "transferWithNoun": "Transfer with {noun}",
     "risks": "Bridging comes with risks.",
     "learnMore": "Learn more",
     "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",

@@ -8,7 +8,7 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { IntPretty } from "@keplr-wallet/unit";
-import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -873,7 +873,8 @@ export const AmountScreen = observer(
                       className="flex items-center justify-between"
                     >
                       <span className="body1 md:body2 text-osmoverse-300">
-                        {direction === "deposit"
+                        {direction === "deposit" ||
+                        fromChain.chainType === toChain.chainType
                           ? t("transfer.transferWith")
                           : t("transfer.transferTo")}
                       </span>
@@ -1306,7 +1307,7 @@ export const AmountScreen = observer(
 );
 
 interface ChainSelectorButtonProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   readonly: boolean;
   children: ReactNode;
   chainLogo: string | undefined;

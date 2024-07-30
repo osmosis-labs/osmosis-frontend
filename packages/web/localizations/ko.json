@@ -994,6 +994,7 @@
     "acknowledgement": "나는 잘못된 수취인 주소를 제공하거나 거래소로 출금을 시도할 경우 자금 손실의 위험을 인정하고 받아들입니다.",
     "done": "완료",
     "transferFrom": "{noun} 에서 전송",
+    "transferWithNoun": "{noun} 사용하여 전송",
     "risks": "브리징에는 위험이 따릅니다.",
     "learnMore": "더 알아보기",
     "externalTransferSplash": "{denom} {networkA} 에서 {networkB} , {service} 사용하세요.",

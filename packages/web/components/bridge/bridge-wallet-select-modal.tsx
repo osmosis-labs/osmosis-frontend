@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import {
   isCosmosAddressValid,
   isEvmAddressValid,
@@ -41,7 +40,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { useStore } from "~/stores";
 
 interface BridgeWalletSelectProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   toChain: BridgeChainWithDisplayInfo;
   fromChain: BridgeChainWithDisplayInfo;
   cosmosChain?: Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
@@ -99,6 +98,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     evmChain,
     onClose,
     onSelectChain,
+    fromChain,
     toChain,
     initialManualAddress,
     onConfirmManualAddress,
@@ -213,6 +213,9 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     }
 
     const showEvmWallets = !isNil(evmChain) && !isNil(evmWallets);
+    const transferWithSameWallet = fromChain.chainType === toChain.chainType;
+
+    console.log({ fromChain, toChain });
 
     return (
       <ScreenManager defaultScreen={WalletSelectScreens.WalletSelect}>
@@ -283,11 +286,16 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                                 name={
                                   isManaging
                                     ? cosmosAccount.walletInfo.prettyName
-                                    : t("transfer.transferFrom", {
-                                        noun:
-                                          cosmosAccount?.walletInfo
-                                            .prettyName ?? "",
-                                      })
+                                    : t(
+                                        transferWithSameWallet
+                                          ? "transfer.transferWithNoun"
+                                          : "transfer.transferFrom",
+                                        {
+                                          noun:
+                                            cosmosAccount?.walletInfo
+                                              .prettyName ?? "",
+                                        }
+                                      )
                                 }
                                 icon={cosmosAccount.walletInfo.logo}
                                 suffix={

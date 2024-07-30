@@ -994,6 +994,7 @@
     "acknowledgement": "Я осознаю и принимаю риски потери средств, если я укажу неверный адрес получателя или попытаюсь вывести на биржу.",
     "done": "Сделанный",
     "transferFrom": "Перенос из {noun}",
+    "transferWithNoun": "Передача с помощью {noun}",
     "risks": "Преодоление сопряжено с риском.",
     "learnMore": "Узнать больше",
     "externalTransferSplash": "Чтобы передать {denom} из {networkA} в {networkB} , используйте {service} .",
