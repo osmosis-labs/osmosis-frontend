@@ -150,7 +150,6 @@ export const AmountScreen = observer(
       buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
-      isLoadingBridgeTransaction,
       isInsufficientBal,
       isInsufficientFee,
       warnUserOfPriceImpact,
@@ -980,7 +979,26 @@ export const AmountScreen = observer(
                             <span className="body1 md:body2 text-osmoverse-300">
                               {t("transfer.receiveAsset")}
                             </span>
-                            <Icon id="generate-stars" width={24} />
+                            <Icon
+                              className={classNames(
+                                "opacity-0 transition-opacity",
+                                {
+                                  // Only show stars if recommended asset is selected
+                                  "opacity-100":
+                                    direction === "deposit"
+                                      ? toAsset.address ===
+                                        Object.keys(
+                                          fromAsset.supportedVariants
+                                        )[0]
+                                      : toAsset.address ===
+                                        counterpartySupportedAssetsByChainId[
+                                          toAsset.chainId
+                                        ].map(({ address }) => address)[0],
+                                }
+                              )}
+                              id="generate-stars"
+                              width={24}
+                            />
                           </div>
                         </Tooltip>
 
@@ -1035,7 +1053,7 @@ export const AmountScreen = observer(
                                 asset.coinMinimalDenom ===
                                   asset.variantGroupKey;
                               const isSelected =
-                                toAsset?.denom === asset.coinDenom;
+                                toAsset?.address === asset.coinMinimalDenom;
 
                               const isCanonicalAsset = index === 0;
 
@@ -1077,12 +1095,13 @@ export const AmountScreen = observer(
                         <>
                           {counterpartySupportedAssetsByChainId[
                             toAsset.chainId
-                          ].map((asset, index) => {
+                          ].map((asset, index, assets) => {
                             const onClick = () => {
                               setToAsset(asset);
                             };
 
-                            const isSelected = toAsset?.denom === asset.denom;
+                            const isSelected =
+                              toAsset?.address === asset.address;
 
                             const isCanonicalAsset = index === 0;
                             const representativeAsset =
@@ -1091,6 +1110,14 @@ export const AmountScreen = observer(
                                   a.coinMinimalDenom === asset.address ||
                                   asset.denom === a.coinDenom
                               ) ?? assetsInOsmosis[0];
+
+                            /**
+                             * If the denom/symbol is the same as the root variant,
+                             * there's no visible difference in the dropdown.
+                             * So if it's the same, we reveal the address as subtext.
+                             */
+                            const revealAddress =
+                              assets[0].denom === asset.denom;
 
                             return (
                               <MenuItem key={asset.denom}>
@@ -1113,11 +1140,15 @@ export const AmountScreen = observer(
                                     <p className="body1 md:body2">
                                       {t("transfer.withdrawAs")} {asset.denom}
                                     </p>
-                                    {isCanonicalAsset && (
+                                    {isCanonicalAsset ? (
                                       <p className="body2 text-osmoverse-300">
                                         {t("transfer.recommended")}
                                       </p>
-                                    )}
+                                    ) : revealAddress ? (
+                                      <p className="body2 text-osmoverse-300">
+                                        {asset.address}
+                                      </p>
+                                    ) : null}
                                   </div>
                                 </button>
                               </MenuItem>
@@ -1215,7 +1246,6 @@ export const AmountScreen = observer(
                     disabled={
                       !isNil(buttonErrorMessage) ||
                       isLoadingBridgeQuote ||
-                      isLoadingBridgeTransaction ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
                       isNil(selectedQuote) ||
@@ -1272,6 +1302,7 @@ export const AmountScreen = observer(
             direction={direction}
             toChain={toChain}
             toAsset={toAsset}
+            canonicalAssetDenom={canonicalAsset.coinDenom}
             fromChain={fromChain}
             fromAsset={fromAsset}
             toAddress={toAddress}

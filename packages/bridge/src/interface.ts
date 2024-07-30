@@ -198,6 +198,9 @@ export const bridgeAssetSchema = z.object({
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
+
+  /** CoinGecko ID for getting prices. */
+  coinGeckoId: z.string().optional(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
@@ -329,6 +332,11 @@ export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
   msgTypeUrl: string;
   msg: Record<string, any>;
+  gasFee?: {
+    gas: string;
+    denom: string;
+    amount: string;
+  };
 }
 
 interface QRCodeBridgeTransactionRequest {
@@ -349,11 +357,12 @@ export type BridgeCoin = {
   /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
   address: string;
   decimals: number;
+  coinGeckoId?: string;
 };
 
 export interface BridgeQuote {
-  input: Required<BridgeCoin>;
-  expectedOutput: Required<BridgeCoin> & {
+  input: BridgeCoin;
+  expectedOutput: BridgeCoin & {
     /** Percentage represented as string. E.g. 10.0, 95.0 */
     priceImpact: string;
   };

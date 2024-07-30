@@ -16,6 +16,7 @@ interface MoreBridgeOptionsProps {
   direction: "deposit" | "withdraw";
   fromAsset: BridgeAsset;
   toAsset: BridgeAsset;
+  canonicalAssetDenom?: string;
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
   toAddress: string | undefined;
@@ -141,6 +142,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   direction,
   toChain,
   toAsset,
+  canonicalAssetDenom,
   fromChain,
   fromAsset,
   toAddress,
@@ -235,8 +237,8 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
             ? "transfer.moreBridgeOptions.descriptionDeposit"
             : "transfer.moreBridgeOptions.descriptionWithdraw",
           {
-            asset: fromAsset?.denom ?? "",
-            chain: toChain?.chainName ?? "",
+            asset: canonicalAssetDenom ?? fromAsset?.denom ?? "",
+            chain: toChain?.prettyName ?? "",
           }
         )}
       </p>
@@ -256,7 +258,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
                   href={url.toString()}
                   target="_blank"
                   rel="noreferrer"
-                  className="subtitle1 md:caption flex items-center justify-between bg-transparent px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:px-2 md:py-2"
+                  className="subtitle1 md:caption flex items-center justify-between rounded-lg bg-transparent px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:px-2 md:py-2"
                 >
                   <div className="flex items-center gap-3">
                     <Image

@@ -199,6 +199,7 @@ export const ImmersiveBridgeFlow = ({
                                   Number(step) - 1
                                 ).toString() as ImmersiveBridgeScreen
                               );
+                              setSelectedAssetDenom(null);
                             }}
                           />
                         )}
@@ -209,7 +210,10 @@ export const ImmersiveBridgeFlow = ({
                               displayLabel: t("transfer.stepLabels.asset"),
                               onClick:
                                 step !== ImmersiveBridgeScreen.Asset
-                                  ? () => setStep(ImmersiveBridgeScreen.Asset)
+                                  ? () => {
+                                      setStep(ImmersiveBridgeScreen.Asset);
+                                      setSelectedAssetDenom(null);
+                                    }
                                   : undefined,
                             },
                             {
