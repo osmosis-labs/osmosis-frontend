@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import {
@@ -329,9 +330,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
+    const [containerRef, { width }] = useMeasure<HTMLDivElement>();
+
     return (
       <>
-        <div className="relative flex flex-col gap-6">
+        <div ref={containerRef} className="relative flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <div className="relative flex flex-col">
               <AssetFieldset>
@@ -405,7 +408,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </AssetFieldsetFooter>
               </AssetFieldset>
               <div className="relative flex w-full">
-                <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
+                <div
+                  className="absolute top-0 h-0.5 -translate-x-5 bg-[#3C356D4A]"
+                  style={{ width: width + 40 }}
+                />
                 <button
                   className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
                   onClick={() => {

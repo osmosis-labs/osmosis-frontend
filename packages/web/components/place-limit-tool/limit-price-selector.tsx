@@ -2,6 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
@@ -99,24 +100,17 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         } ${t("limitOrders.currentPrice")}`;
   }, [t, priceState.percentAdjusted, orderDirection]);
 
-  // const TooltipContent = useMemo(() => {
-  //   const translationId =
-  //     orderDirection === "bid"
-  //       ? "limitOrders.aboveMarket"
-  //       : "limitOrders.belowMarket";
-  //   return (
-  //     <div>
-  //       <div className="text-caption">{t(`${translationId}.title`)}</div>
-  //       <span className="text-caption text-osmoverse-300">
-  //         {t(`${translationId}.description`)}
-  //       </span>
-  //     </div>
-  //   );
-  // }, [orderDirection, t]);
+  const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
   return (
-    <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
-      <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
+    <div
+      ref={containerRef}
+      className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5"
+    >
+      <div
+        className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]"
+        style={{ width: width + 40 }}
+      />
       <GenericDisclaimer
         disabled={!swapState.priceState.isBeyondOppositePrice}
         title={
