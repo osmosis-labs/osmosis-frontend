@@ -220,6 +220,7 @@
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
+      "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
@@ -244,6 +245,7 @@
       "expectedOutput": "Rezultat așteptat",
       "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
+      "sending": "Se trimite...",
       "transferAnyway": "Transfer oricum"
     },
     "transferAssetSelect": {

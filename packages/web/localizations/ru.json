@@ -220,6 +220,7 @@
       "availableMobile": "Доступный",
       "availableOn": "Доступно в {network}",
       "approving": "Одобрение...",
+      "approveInWallet": "Одобрить в кошельке",
       "enterAddress": "{network} адрес",
       "errors": {
         "insufficientBal": "Недостаточный баланс",
@@ -244,6 +245,7 @@
       "expectedOutput": "Ожидаемый результат",
       "expectedOutputInfo": "В зависимости от используемого поставщика производительность может быть ниже в зависимости от комиссий, проскальзывания и влияния на цену.",
       "priceImpact": "Влияние на цену",
+      "sending": "Отправка...",
       "transferAnyway": "Перенос в любом случае"
     },
     "transferAssetSelect": {

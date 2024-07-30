@@ -220,6 +220,7 @@
       "availableMobile": "ઉપલબ્ધ છે",
       "availableOn": "{network} પર ઉપલબ્ધ",
       "approving": "મંજૂર કરી રહ્યાં છીએ...",
+      "approveInWallet": "વૉલેટમાં મંજૂર કરો",
       "enterAddress": "{network} સરનામું",
       "errors": {
         "insufficientBal": "અપર્યાપ્ત બેલેન્સ",
@@ -244,6 +245,7 @@
       "expectedOutput": "અપેક્ષિત આઉટપુટ",
       "expectedOutputInfo": "ઉપયોગમાં લેવાતા પ્રદાતાના આધારે, ફી, સ્લિપેજ અને કિંમતની અસર અનુસાર ઓછું આઉટપુટ હોઈ શકે છે.",
       "priceImpact": "ભાવની અસર",
+      "sending": "મોકલી રહ્યું છે...",
       "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો"
     },
     "transferAssetSelect": {

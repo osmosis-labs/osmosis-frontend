@@ -220,6 +220,7 @@
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
+      "approveInWallet": "Zatwierdź w portfelu",
       "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
@@ -244,6 +245,7 @@
       "expectedOutput": "Oczekiwany wynik",
       "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
+      "sending": "Wysyłanie...",
       "transferAnyway": "Transfer mimo wszystko"
     },
     "transferAssetSelect": {

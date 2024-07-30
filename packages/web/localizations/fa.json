@@ -220,6 +220,7 @@
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
+      "approveInWallet": "تایید در کیف پول",
       "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
@@ -244,6 +245,7 @@
       "expectedOutput": "خروجی مورد انتظار",
       "expectedOutputInfo": "بسته به ارائه دهنده مورد استفاده، ممکن است با توجه به هزینه ها، لغزش و تاثیر قیمت، خروجی کمتری وجود داشته باشد.",
       "priceImpact": "تاثیر قیمت",
+      "sending": "در حال ارسال...",
       "transferAnyway": "انتقال به هر حال"
     },
     "transferAssetSelect": {

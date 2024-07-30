@@ -220,6 +220,7 @@
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
+      "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
@@ -244,6 +245,7 @@
       "expectedOutput": "Beklenen çıktı",
       "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
       "priceImpact": "Fiyat Etkisi",
+      "sending": "Gönderiliyor...",
       "transferAnyway": "Yine de Aktar"
     },
     "transferAssetSelect": {

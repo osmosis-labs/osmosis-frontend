@@ -220,6 +220,7 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
+      "approveInWallet": "Approuver dans le portefeuille",
       "enterAddress": "Adresse {network}",
       "errors": {
         "insufficientBal": "Solde insuffisant",
@@ -244,6 +245,7 @@
       "expectedOutput": "Production attendue",
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
       "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {

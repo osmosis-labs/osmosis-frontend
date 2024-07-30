@@ -220,6 +220,7 @@
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
+      "approveInWallet": "在钱包中批准",
       "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",
@@ -244,6 +245,7 @@
       "expectedOutput": "预期输出",
       "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
       "priceImpact": "价格影响",
+      "sending": "正在发送...",
       "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {

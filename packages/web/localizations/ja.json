@@ -220,6 +220,7 @@
       "availableMobile": "利用可能",
       "availableOn": "{network}で利用可能",
       "approving": "承認中...",
+      "approveInWallet": "ウォレットで承認",
       "enterAddress": "{network}アドレス",
       "errors": {
         "insufficientBal": "残高不足",
@@ -244,6 +245,7 @@
       "expectedOutput": "期待される出力",
       "expectedOutputInfo": "使用するプロバイダーによっては、料金、スリッページ、価格への影響に応じて出力が低下する場合があります。",
       "priceImpact": "価格への影響",
+      "sending": "送信...",
       "transferAnyway": "とにかく転送"
     },
     "transferAssetSelect": {

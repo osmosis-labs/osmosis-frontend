@@ -220,6 +220,7 @@
       "availableMobile": "उपलब्ध",
       "availableOn": "{network} पर उपलब्ध है",
       "approving": "अनुमोदन...",
+      "approveInWallet": "वॉलेट में स्वीकृति दें",
       "enterAddress": "{network} पता",
       "errors": {
         "insufficientBal": "अपर्याप्त शेषराशि",
@@ -244,6 +245,7 @@
       "expectedOutput": "अपेक्षित उत्पादन",
       "expectedOutputInfo": "उपयोग किए गए प्रदाता के आधार पर, शुल्क, फिसलन और कीमत प्रभाव के अनुसार कम आउटपुट हो सकता है।",
       "priceImpact": "मूल्य प्रभाव",
+      "sending": "भेजना...",
       "transferAnyway": "फिर भी स्थानांतरण"
     },
     "transferAssetSelect": {
