@@ -182,7 +182,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetEvmConnecting();
             }}
-            className="absolute top-7 left-4"
+            className="absolute top-6 left-8"
           />
           <EvmWalletState
             onRequestClose={onClose}
@@ -202,7 +202,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetSwitchEvmChainState();
             }}
-            className="absolute top-7 left-4"
+            className="absolute top-6 left-8"
           />
           <SwitchingNetworkState
             walletLogo={evmConnector?.icon}
@@ -220,7 +220,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
           <>
             <Screen screenName={WalletSelectScreens.SendToAnotherAddress}>
               <ScreenGoBackButton
-                className="absolute top-7 left-4"
+                className="absolute top-6 left-8"
                 onClick={() => {
                   setCurrentScreen(WalletSelectScreens.WalletSelect);
                 }}

@@ -186,7 +186,6 @@ export const ImmersiveBridgeFlow = ({
                           <IconButton
                             aria-label="Go Back"
                             className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                            variant="secondary"
                             icon={
                               <Icon
                                 id="arrow-left-thin"
@@ -232,7 +231,6 @@ export const ImmersiveBridgeFlow = ({
                         <IconButton
                           aria-label="Close"
                           className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                          variant="secondary"
                           icon={<Icon id="close" className="md:h-4 md:w-4" />}
                           onClick={onClose}
                         />
