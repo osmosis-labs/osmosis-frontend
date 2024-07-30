@@ -48,7 +48,7 @@ export type ChainPool =
   | ChainConcentratedPool
   | ChainCosmwasmPool;
 
-export type PoolsResponse = {
+export type SqsPool = {
   /** Sidecar returns the same pool models as the node. */
   chain_model: ChainPool;
   balances: {
@@ -56,12 +56,15 @@ export type PoolsResponse = {
     amount: string;
   }[];
   spread_factor: string;
-}[];
+  /** Int: capitalization in USD. Will be `"0"` if liquidity_cap_error is present. */
+  liquidity_cap: string;
+  liquidity_cap_error: string;
+};
 
-export async function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
+export function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
   const url = new URL(
     poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools",
     SIDECAR_BASE_URL
   );
-  return await apiClient<PoolsResponse>(url.toString());
+  return apiClient<SqsPool[]>(url.toString());
 }
