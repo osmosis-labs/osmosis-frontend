@@ -37,7 +37,7 @@ const HomeNew = () => {
 
   return (
     <main className="relative flex h-full overflow-auto pb-2 pt-8">
-      <div className="fixed inset-0 h-full w-full bg-cover">
+      <div className="fixed inset-0 h-full w-full overflow-y-scroll bg-cover">
         <div className="relative h-full w-full xl:hidden">
           <Image
             src="/images/osmosis-home-bg-alt.svg"
