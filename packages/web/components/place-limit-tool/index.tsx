@@ -294,8 +294,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                           swapState.marketState.inAmountInput.amount
                             ?.toDec()
                             .isZero())) ||
-                      !swapState.isBalancesFetched ||
-                      swapState.isMakerFeeLoading
+                      !swapState.isBalancesFetched
                     }
                     isLoading={
                       !swapState.isBalancesFetched ||
