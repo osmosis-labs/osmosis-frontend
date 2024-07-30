@@ -195,6 +195,25 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   if (externalUrlsData?.externalUrls.length === 1) {
     const { url, logo, urlProviderName } = externalUrlsData.externalUrls[0];
 
+    const denom = canonicalAssetDenom ?? fromAsset.denom;
+    const translatedText = t(
+      direction === "deposit"
+        ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
+        : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
+      {
+        denom: canonicalAssetDenom ?? fromAsset.denom,
+        networkA: fromChain.prettyName,
+        networkB: toChain.prettyName,
+        service: urlProviderName,
+      }
+    );
+
+    /** Extract text that matches denom in translation and wrap in blue span. */
+    const wrappedText = translatedText.replace(
+      new RegExp(denom, "g"),
+      `<span class="text-wosmongton-300">${denom}</span>`
+    );
+
     return (
       <div className="flex w-full flex-col">
         <div className="flex w-full flex-col text-center">
@@ -206,19 +225,10 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
             width={64}
           />
 
-          <p className="body1 md:body2 py-6 px-8 text-osmoverse-300 md:p-0">
-            {t(
-              direction === "deposit"
-                ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
-                : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
-              {
-                denom: fromAsset.denom,
-                networkA: fromChain.prettyName,
-                networkB: toChain.prettyName,
-                service: urlProviderName,
-              }
-            )}
-          </p>
+          <p
+            className="body1 md:body2 py-6 px-8 text-osmoverse-300 md:p-0"
+            dangerouslySetInnerHTML={{ __html: wrappedText }}
+          />
         </div>
         <div className="flex flex-col gap-3 py-3">
           <Button asChild>
@@ -245,20 +255,30 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
     );
   }
 
+  const denom = canonicalAssetDenom ?? fromAsset.denom;
+  const translatedText = t(
+    direction === "deposit"
+      ? "transfer.moreBridgeOptions.descriptionDeposit"
+      : "transfer.moreBridgeOptions.descriptionWithdraw",
+    {
+      denom,
+      networkA: fromChain.prettyName,
+      networkB: toChain.prettyName,
+    }
+  );
+
+  /** Extract text that matches denom in translation and wrap in blue span. */
+  const wrappedText = translatedText.replace(
+    new RegExp(denom, "g"),
+    `<span class="text-wosmongton-300">${denom}</span>`
+  );
+
   return (
     <div>
-      <p className="body1 md:body2 py-4 px-8 text-center text-osmoverse-300 md:px-4 md:py-2">
-        {t(
-          direction === "deposit"
-            ? "transfer.moreBridgeOptions.descriptionDeposit"
-            : "transfer.moreBridgeOptions.descriptionWithdraw",
-          {
-            denom: fromAsset.denom,
-            networkA: fromChain.prettyName,
-            networkB: toChain.prettyName,
-          }
-        )}
-      </p>
+      <p
+        className="body1 md:body2 py-4 px-8 text-center text-osmoverse-300 md:px-4 md:py-2"
+        dangerouslySetInnerHTML={{ __html: wrappedText }}
+      />
       <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
         {isLoadingExternalUrls ? (
           <>
