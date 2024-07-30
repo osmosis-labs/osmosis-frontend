@@ -48,19 +48,21 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     if (input) input.focus();
   }, [inputMode, input]);
 
+  // Adjust the percentage adjusted when the spot price changes and user is inputting a price
   useEffect(() => {
     if (
       priceState.spotPrice &&
       priceState.orderPrice.length > 0 &&
       inputMode === InputMode.Price
     ) {
-      const percentAdjusted = new Dec(priceState.orderPrice)
+      const manualPrice = new Dec(priceState.orderPrice);
+      const percentAdjusted = manualPrice
         .quo(priceState.spotPrice)
         .sub(new Dec(1))
         .mul(new Dec(100));
 
       priceState._setPercentAdjustedUnsafe(
-        percentAdjusted.isZero()
+        percentAdjusted.isZero() || manualPrice.isZero()
           ? ""
           : formatPretty(percentAdjusted.abs(), {
               maxDecimals: 2,
@@ -77,6 +79,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
       );
     }
+
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs())}%`;
@@ -180,13 +183,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 type="text"
                 min={0}
                 className="bg-transparent text-white-full"
-                value={
-                  swapState.priceState.orderPrice === ""
-                    ? parseFloat(swapState.priceState.price.toString()).toFixed(
-                        2
-                      )
-                    : swapState.priceState.orderPrice
-                }
+                value={swapState.priceState.orderPrice}
+                placeholder={parseFloat(
+                  swapState.priceState.price.toString()
+                ).toFixed(4)}
                 onChange={(e) => {
                   const value = e.target.value.trim();
                   if (!isValidNumericalRawInput(value) || value.length === 0)
