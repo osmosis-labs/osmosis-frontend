@@ -112,7 +112,7 @@ const AssetFieldsetInput = forwardRef<
 ));
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
-  <div className="flex w-full items-center justify-between pb-4">
+  <div className="flex h-12 w-full items-center justify-between pb-4">
     {children}
   </div>
 );
