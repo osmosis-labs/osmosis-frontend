@@ -141,10 +141,18 @@ export const PriceSelector = memo(
     );
 
     const selectableQuotes = useMemo(() => {
-      return tab === "sell"
-        ? userQuotesWithoutBalances
-        : defaultQuotesWithBalances;
-    }, [defaultQuotesWithBalances, tab, userQuotesWithoutBalances]);
+      return wallet?.isWalletConnected
+        ? tab === "sell"
+          ? userQuotesWithoutBalances
+          : defaultQuotesWithBalances
+        : defaultQuotes;
+    }, [
+      defaultQuotes,
+      defaultQuotesWithBalances,
+      tab,
+      userQuotesWithoutBalances,
+      wallet?.isWalletConnected,
+    ]);
 
     const {
       isOpen: isAddFundsModalOpen,
@@ -157,19 +165,12 @@ export const PriceSelector = memo(
         <Menu as="div" className="relative inline-block">
           {({ open }) => (
             <>
-              <Menu.Button
-                className="flex items-center justify-between"
-                disabled={disabled || selectableQuotes.length === 0}
-              >
+              <Menu.Button className="flex items-center justify-between">
                 <div className="flex w-full items-center justify-between">
                   {quoteAsset && (
                     <div
                       className={classNames(
-                        "flex items-center gap-1 transition-opacity",
-                        {
-                          "pointer-events-none opacity-40":
-                            disabled || selectableQuotes.length === 0,
-                        }
+                        "flex items-center gap-1 transition-opacity"
                       )}
                     >
                       <span className="body2 text-osmoverse-300">
