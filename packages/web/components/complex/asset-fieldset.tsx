@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
@@ -31,10 +32,18 @@ const AssetFieldsetHeaderBalance = ({
   onMax,
   availableBalance,
   className,
+  showAddFundsButton,
+  openAddFundsModal,
+  isMaxButtonDisabled,
+  isLoadingMaxButton,
 }: {
   onMax?: () => void;
   availableBalance?: ReactNode;
   className?: string;
+  showAddFundsButton?: boolean;
+  openAddFundsModal?: () => void;
+  isMaxButtonDisabled?: boolean;
+  isLoadingMaxButton?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -45,19 +54,33 @@ const AssetFieldsetHeaderBalance = ({
         className
       )}
     >
-      {availableBalance && (
-        <span className="body2 text-osmoverse-300">
-          {availableBalance} {t("pool.available").toLowerCase()}
-        </span>
-      )}
-      {onMax && (
+      {showAddFundsButton ? (
         <button
           type="button"
-          className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
-          onClick={onMax}
+          onClick={openAddFundsModal}
+          className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
         >
-          <span className="body2 text-wosmongton-300">Max</span>
+          {t("limitOrders.addFunds")}
         </button>
+      ) : (
+        <>
+          <span className="body2 text-osmoverse-300">
+            {availableBalance} {t("pool.available").toLowerCase()}
+          </span>
+          {onMax && (
+            <button
+              type="button"
+              className="flex items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1.5 px-3 disabled:pointer-events-none disabled:opacity-50"
+              onClick={onMax}
+              disabled={isMaxButtonDisabled}
+            >
+              {isLoadingMaxButton && (
+                <Spinner className="h-2.5 w-2.5 text-wosmongton-300" />
+              )}
+              <span className="body2 text-wosmongton-300">Max</span>
+            </button>
+          )}
+        </>
       )}
     </div>
   );
