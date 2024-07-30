@@ -756,6 +756,10 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=polygon-weth-wei",
   },
+  UM: {
+    depositUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
+    withdrawUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
+  },
 };
 
 export const IBCAdditionalData: AdditionalData = IS_TESTNET
