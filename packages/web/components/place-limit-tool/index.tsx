@@ -228,6 +228,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             : swapState.inAmountInput.setAmount;
         const setMarketAmount = swapState.marketState.inAmountInput.setAmount;
 
+        // If value is empty clear values
         if (!value?.trim()) {
           if (amountType === "fiat") {
             setMarketAmount("");
@@ -277,6 +278,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
+    // Adjusts the token value when the user updates the fiat value
     useEffect(() => {
       if (focused !== "token" || !swapState.priceState.price) return;
 
@@ -295,6 +297,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       tab,
     ]);
 
+    // Adjusts the token value when the user updates the fiat value
     useEffect(() => {
       if (focused !== "fiat" || !swapState.priceState.price) return;
 
@@ -313,6 +316,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
+        // Tab is buy so use quote amount
+
+        // Determine amount based on current input
         const amount =
           focused === "fiat"
             ? swapState.quoteTokenBalance?.toDec().toString()
@@ -326,6 +332,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return;
       }
 
+      // Tab must be sell so we use base amount
+
+      // Determine amount based on current input
       const amount =
         focused === "token"
           ? swapState.baseTokenBalance?.toDec().toString()
@@ -484,8 +493,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                       swapState.marketState.inAmountInput.amount
                         ?.toDec()
                         .isZero())) ||
-                  !swapState.isBalancesFetched ||
-                  swapState.isMakerFeeLoading
+                  !swapState.isBalancesFetched
                 }
                 isLoading={
                   !swapState.isBalancesFetched ||
