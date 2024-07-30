@@ -148,7 +148,7 @@ export const AmountAndReviewScreen = observer(
         const counterpartyAssets =
           counterpartySupportedAssetsByChainId[toAsset.chainId];
         counterpartyAssets
-          .filter(({ address }) => address === toAsset.address)
+          ?.filter(({ address }) => address === toAsset.address)
           .forEach((asset) => {
             const providers = asset.supportedVariants[fromAsset.address] ?? [];
             providers.forEach((provider) =>

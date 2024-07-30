@@ -353,6 +353,16 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                             )}
                           </div>
                         )}
+                      </div>
+                    </div>
+                  )}
+
+                  {showEvmWallets && (
+                    <div className="flex h-full w-full flex-col gap-2 overflow-y-scroll md:gap-1">
+                      <p className="body1 md:body2 px-3 text-osmoverse-200 md:px-0">
+                        {t("walletSelect.otherWallets")}
+                      </p>
+                      <div className="flex flex-col">
                         {direction === "withdraw" && (
                           <WalletButton
                             onClick={() => {
@@ -379,16 +389,6 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                             }
                           />
                         )}
-                      </div>
-                    </div>
-                  )}
-
-                  {showEvmWallets && (
-                    <div className="flex h-full w-full flex-col gap-2 overflow-y-scroll md:gap-1">
-                      <p className="body1 md:body2 px-3 text-osmoverse-200 md:px-0">
-                        {t("walletSelect.otherWallets")}
-                      </p>
-                      <div className="flex flex-col">
                         {evmWallets
                           .filter((wallet) => {
                             if (wallet.id === evmConnector?.id) return false; // Don't show connected wallet
