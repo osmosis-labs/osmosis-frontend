@@ -280,21 +280,21 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       );
     }
 
-    const isLoadingMaxButton = useMemo(
-      () =>
-        featureFlags.swapToolSimulateFee &&
-        !isNil(account?.address) &&
-        !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-        !swapState.inAmountInput?.balance?.toDec().isZero() &&
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      [
-        account?.address,
-        featureFlags.swapToolSimulateFee,
-        swapState.inAmountInput?.balance,
-        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote,
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      ]
-    );
+    // const isLoadingMaxButton = useMemo(
+    //   () =>
+    //     featureFlags.swapToolSimulateFee &&
+    //     !isNil(account?.address) &&
+    //     !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
+    //     !swapState.inAmountInput?.balance?.toDec().isZero() &&
+    //     swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
+    //   [
+    //     account?.address,
+    //     featureFlags.swapToolSimulateFee,
+    //     swapState.inAmountInput?.balance,
+    //     swapState.inAmountInput.hasErrorWithCurrentBalanceQuote,
+    //     swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
+    //   ]
+    // );
 
     const isConfirmationDisabled = useMemo(() => {
       return (
