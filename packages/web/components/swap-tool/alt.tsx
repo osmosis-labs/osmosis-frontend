@@ -331,7 +331,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     return (
       <>
-        <div className="relative flex flex-col gap-6 overflow-hidden">
+        <div className="relative flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <div className="relative flex flex-col">
               <AssetFieldset>
