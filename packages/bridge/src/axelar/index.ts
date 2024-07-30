@@ -117,7 +117,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
               fromAmount as any
             ),
             this.estimateGasCost(params),
-          ]);
+          ]).catch((e) => {
+            throw new BridgeQuoteError({
+              bridgeId: AxelarBridgeProvider.ID,
+              errorType: "UnsupportedQuoteError",
+              message:
+                "Axelar Bridge doesn't support this quote:" + e.toString(),
+            });
+          });
 
           let transferLimitAmount: string | undefined;
           try {

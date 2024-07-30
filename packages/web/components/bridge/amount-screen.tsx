@@ -1249,10 +1249,8 @@ export const AmountScreen = observer(
                   <Button
                     disabled={
                       !isNil(buttonErrorMessage) ||
-                      isLoadingBridgeQuote ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
-                      isNil(selectedQuote) ||
                       !quote.userCanAdvance
                     }
                     className="w-full md:h-12"
