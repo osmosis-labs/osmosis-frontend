@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
-      "descriptionDeposit": "Wählen Sie aus den folgenden alternativen Anbietern zum Einzahlen (auch „Brücken“) Ihres {asset} auf {chain} .",
-      "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
+      "singleDescriptionDeposit": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
+      "singleDescriptionWithdraw": "Um {denom} von {networkA} nach {networkB} , verwenden Sie bitte {service} .",
+      "descriptionDeposit": "Um {denom} von {networkA} nach {networkB} einzuzahlen, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
+      "descriptionWithdraw": "Um {denom} von {networkA} nach {networkB} abzuheben, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "Übertragen mit {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
     "learnMore": "Erfahren Sie mehr",
-    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
     "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",

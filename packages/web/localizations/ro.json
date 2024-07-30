@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "descriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "Transferați cu {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
     "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",

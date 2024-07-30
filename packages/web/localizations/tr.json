@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
-      "descriptionDeposit": "{asset} {chain} .",
-      "descriptionWithdraw": "{asset} {chain} .",
+      "singleDescriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "descriptionWithdraw": "{denom} öğesini {networkA} öğesinden {networkB} çekmek için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "{noun} ile aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
-    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
     "openNoun": "{noun} açın"
   },
   "unknownError": "Bilinmeyen hata",

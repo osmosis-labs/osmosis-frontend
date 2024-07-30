@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
-      "descriptionDeposit": "Choose from the following alternative providers to deposit (aka “bridge”) your {asset} to {chain}.",
-      "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
+      "singleDescriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use {service}.",
+      "singleDescriptionWithdraw": "To withdraw {denom} from {networkA} to {networkB}, please use {service}.",
+      "descriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use one of the following alternative providers.",
+      "descriptionWithdraw": "To withdraw {denom} from {networkA} to {networkB}, please use one of the following alternative providers.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "Transfer with {noun}",
     "risks": "Bridging comes with risks.",
     "learnMore": "Learn more",
-    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
     "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",

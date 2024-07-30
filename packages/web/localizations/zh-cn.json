@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",
-      "descriptionDeposit": "从以下备选提供商中进行选择，将您的{asset}存入（又称“桥接”）到{chain} 。",
-      "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
+      "singleDescriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用{service} 。",
+      "singleDescriptionWithdraw": "要将{denom}从{networkA}撤回到{networkB} ，请使用{service} 。",
+      "descriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用以下备选提供商之一。",
+      "descriptionWithdraw": "要将{denom}从{networkA}撤回至{networkB} ，请使用以下备选提供商之一。",
       "depositWith": "存款",
       "withdrawWith": "提款"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "使用{noun}进行传输",
     "risks": "桥接伴随着风险。",
     "learnMore": "了解更多",
-    "externalTransferSplash": "要将{denom}从{networkA}转移到{networkB} ，请使用{service} 。",
     "openNoun": "打开{noun}"
   },
   "unknownError": "未知错误",

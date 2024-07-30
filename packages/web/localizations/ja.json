@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
-      "descriptionDeposit": "次の代替プロバイダーから選択して{asset}を{chain} 。",
-      "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
+      "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
+      "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
+      "descriptionWithdraw": "{denom}を{networkA}から{networkB}に引き出すには、次の代替プロバイダーのいずれかを使用してください。",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "{noun}で転送する",
     "risks": "ブリッジングにはリスクが伴います。",
     "learnMore": "もっと詳しく知る",
-    "externalTransferSplash": "{denom} {networkA}から{networkB}に転送するには、 {service}を使用してください。",
     "openNoun": "{noun}を開く"
   },
   "unknownError": "不明なエラー",

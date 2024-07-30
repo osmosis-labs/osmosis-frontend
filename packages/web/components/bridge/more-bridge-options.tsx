@@ -195,12 +195,17 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
           />
 
           <p className="body1 md:body2 py-6 px-8 text-osmoverse-300 md:p-0">
-            {t("transfer.externalTransferSplash", {
-              denom: fromAsset.denom,
-              networkA: fromChain.prettyName,
-              networkB: toChain.prettyName,
-              service: urlProviderName,
-            })}
+            {t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
+                : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
+              {
+                denom: fromAsset.denom,
+                networkA: fromChain.prettyName,
+                networkB: toChain.prettyName,
+                service: urlProviderName,
+              }
+            )}
           </p>
         </div>
         <div className="flex flex-col gap-3 py-3">
@@ -230,14 +235,15 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
 
   return (
     <div>
-      <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
+      <p className="body1 md:body2 py-4 px-8 text-center text-osmoverse-300 md:px-4 md:py-2">
         {t(
           direction === "deposit"
             ? "transfer.moreBridgeOptions.descriptionDeposit"
             : "transfer.moreBridgeOptions.descriptionWithdraw",
           {
-            asset: canonicalAssetDenom ?? fromAsset?.denom ?? "",
-            chain: toChain?.prettyName ?? "",
+            denom: fromAsset.denom,
+            networkA: fromChain.prettyName,
+            networkB: toChain.prettyName,
           }
         )}
       </p>

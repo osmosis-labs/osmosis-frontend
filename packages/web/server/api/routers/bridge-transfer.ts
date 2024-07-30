@@ -592,7 +592,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             urlToAdd &&
             !externalUrls.some(
               ({ urlProviderName, url }) =>
-                urlProviderName === urlToAdd.urlProviderName &&
+                urlProviderName === urlToAdd.urlProviderName ||
                 url.host === urlToAdd.url.host
             )
           ) {

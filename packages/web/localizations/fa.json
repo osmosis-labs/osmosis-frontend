@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
-      "descriptionDeposit": "از میان ارائه دهندگان جایگزین زیر برای واریز (معروف به \"پل\") {asset} خود را به {chain} .",
-      "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
+      "singleDescriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+      "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+      "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
+      "descriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "انتقال با {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
     "learnMore": "بیشتر بدانید",
-    "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
     "openNoun": "باز کردن {noun}"
   },
   "unknownError": "خطای نا شناس",

@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
-      "descriptionDeposit": "अपने {asset} को {chain} में जमा करने (उर्फ “ब्रिज”) के लिए निम्नलिखित वैकल्पिक प्रदाताओं में से चुनें।",
-      "descriptionWithdraw": "अपने {asset} को {chain} वापस लेने (उर्फ “ब्रिज”) के लिए निम्नलिखित वैकल्पिक प्रदाताओं में से चुनें।",
+      "singleDescriptionDeposit": "{denom} {networkA} से {networkB} में जमा करने के लिए, कृपया {service} उपयोग करें।",
+      "singleDescriptionWithdraw": "{denom} {networkA} से {networkB} में वापस लाने के लिए, कृपया {service} उपयोग करें।",
+      "descriptionDeposit": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
+      "descriptionWithdraw": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "{noun} के साथ स्थानांतरण करें",
     "risks": "पुल बनाने में जोखिम भी शामिल है।",
     "learnMore": "और अधिक जानें",
-    "externalTransferSplash": "{denom} {networkA} से {networkB} में स्थानांतरित करने के लिए, कृपया {service} उपयोग करें।",
     "openNoun": "{noun} खोलें"
   },
   "unknownError": "अज्ञात त्रुटि",

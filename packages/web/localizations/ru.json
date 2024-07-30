@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
-      "descriptionDeposit": "Выберите одного из следующих альтернативных поставщиков для внесения (так называемого «моста») вашего {asset} в {chain} .",
-      "descriptionWithdraw": "Выберите одного из следующих альтернативных поставщиков для вывода (так называемого «моста») вашего {asset} в {chain} .",
+      "singleDescriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} , используйте {service} .",
+      "singleDescriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} , используйте {service} .",
+      "descriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
+      "descriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "Передача с помощью {noun}",
     "risks": "Преодоление сопряжено с риском.",
     "learnMore": "Узнать больше",
-    "externalTransferSplash": "Чтобы передать {denom} из {networkA} в {networkB} , используйте {service} .",
     "openNoun": "Открыть {noun}"
   },
   "unknownError": "Неизвестная ошибка",

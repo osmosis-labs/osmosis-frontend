@@ -946,8 +946,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",
-      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
-      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
+      "singleDescriptionDeposit": "Para depositar {denom} desde {networkA} a {networkB} , utilice {service} .",
+      "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} a {networkB} , utilice {service} .",
+      "descriptionDeposit": "Para depositar {denom} desde {networkA} a {networkB} , utilice uno de los siguientes proveedores alternativos.",
+      "descriptionWithdraw": "Para retirar {denom} de {networkA} a {networkB} , utilice uno de los siguientes proveedores alternativos.",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con"
     },
@@ -997,7 +999,6 @@
     "transferWithNoun": "Transferir con {noun}",
     "risks": "La unión conlleva riesgos.",
     "learnMore": "Aprende más",
-    "externalTransferSplash": "Para transferir {denom} de {networkA} a {networkB} , utilice {service} .",
     "openNoun": "Abrir {noun}"
   },
   "unknownError": "Error desconocido",
