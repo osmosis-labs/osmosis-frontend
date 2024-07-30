@@ -182,7 +182,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetEvmConnecting();
             }}
-            className="absolute top-6 left-8"
+            className="absolute left-8 top-6 md:left-4 md:top-7"
           />
           <EvmWalletState
             onRequestClose={onClose}
@@ -202,7 +202,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
             onClick={() => {
               resetSwitchEvmChainState();
             }}
-            className="absolute top-6 left-8"
+            className="absolute top-6 left-8 md:left-4 md:top-7"
           />
           <SwitchingNetworkState
             walletLogo={evmConnector?.icon}
@@ -220,7 +220,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
           <>
             <Screen screenName={WalletSelectScreens.SendToAnotherAddress}>
               <ScreenGoBackButton
-                className="absolute top-6 left-8"
+                className="absolute top-6 left-8 md:left-4 md:top-7"
                 onClick={() => {
                   setCurrentScreen(WalletSelectScreens.WalletSelect);
                 }}
@@ -436,9 +436,8 @@ const WalletButton: React.FC<{
 }> = ({ onClick, icon, name, suffix }) => (
   <div
     className={classNames(
-      "flex w-full cursor-pointer items-center justify-between rounded-xl px-3 transition-colors hover:bg-osmoverse-700 active:bg-osmoverse-700/50 md:px-0",
+      "flex w-full cursor-pointer place-content-between items-center gap-2 rounded-xl px-3 transition-colors hover:bg-osmoverse-700 active:bg-osmoverse-700/50 md:px-0",
       "col-span-2 py-3 font-normal",
-      "sm:w-fit sm:flex-col",
       "disabled:opacity-70"
     )}
     onClick={onClick}
