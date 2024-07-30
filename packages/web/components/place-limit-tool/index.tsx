@@ -45,6 +45,14 @@ export interface PlaceLimitToolProps {
   page: EventPage;
 }
 
+const fixDecimalCount = (value: string, decimalCount = 18) => {
+  const split = value.split(".");
+  const result =
+    split[0] +
+    (decimalCount > 0 ? "." + split[1].substring(0, decimalCount) : "");
+  return result;
+};
+
 const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
@@ -57,7 +65,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
   const decimals = countDecimals(updatedValue);
   return decimals > decimalCount
-    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
+    ? fixDecimalCount(updatedValue, decimalCount)
     : updatedValue;
 };
 
@@ -498,7 +506,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isLoading={
                   !swapState.isBalancesFetched ||
                   (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                  isMarketLoading
+                  (isMarketLoading &&
+                    !swapState.marketState.isSpotPriceQuoteLoading)
                 }
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
