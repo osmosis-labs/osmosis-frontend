@@ -361,8 +361,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       )
                     }
                     showAddFundsButton={
-                      swapState.inAmountInput.balance &&
-                      swapState.inAmountInput.balance.toDec().isZero()
+                      !account?.isWalletConnected ||
+                      (swapState.inAmountInput.balance &&
+                        swapState.inAmountInput.balance.toDec().isZero())
                     }
                     openAddFundsModal={openAddFundsModal}
                     isLoadingMaxButton={isLoadingMaxButton}
