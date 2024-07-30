@@ -938,10 +938,6 @@
     "free": "Бесплатно",
     "cheapest": "Самый дешевый",
     "fastest": "Самый быстрый",
-    "toWithdraw": "Чтобы вывести",
-    "toDeposit": "Внести",
-    "singleProviderDescription": "от {fromChain} до {toChain} , используйте {provider} .",
-    "multipleProviderDescription": "от {fromChain} до {toChain} , используйте одного из следующих альтернативных поставщиков.",
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",

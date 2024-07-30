@@ -938,10 +938,6 @@
     "free": "Özgür",
     "cheapest": "En ucuz",
     "fastest": "En hızlı",
-    "toWithdraw": "Çekilme",
-    "toDeposit": "Para yatırmak",
-    "singleProviderDescription": "{fromChain} ile {toChain} arasında lütfen {provider} kullanın {provider} .",
-    "multipleProviderDescription": "{fromChain} ile {toChain} arasında, lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",

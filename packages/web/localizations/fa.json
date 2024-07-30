@@ -938,10 +938,6 @@
     "free": "رایگان",
     "cheapest": "ارزان ترین",
     "fastest": "سریع ترین",
-    "toWithdraw": "برای برداشت",
-    "toDeposit": "برای واریز",
-    "singleProviderDescription": "از {fromChain} تا {toChain} ، لطفاً از {provider} استفاده کنید. {provider} .",
-    "multipleProviderDescription": "از {fromChain} تا {toChain} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",

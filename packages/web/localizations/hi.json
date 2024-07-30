@@ -938,10 +938,6 @@
     "free": "मुक्त",
     "cheapest": "सबसे सस्ता",
     "fastest": "सबसे तेजी से",
-    "toWithdraw": "वापस लेना",
-    "toDeposit": "जमा करने के लिए",
-    "singleProviderDescription": "{fromChain} से {toChain} तक, कृपया {provider} का उपयोग करें।",
-    "multipleProviderDescription": "{fromChain} से {toChain} तक, कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",

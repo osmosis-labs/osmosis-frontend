@@ -938,10 +938,6 @@
     "free": "無料",
     "cheapest": "最も安い",
     "fastest": "最速",
-    "toWithdraw": "撤退する",
-    "toDeposit": "預け入れる",
-    "singleProviderDescription": "{fromChain}から{toChain}へは、 {provider}を使用してください。",
-    "multipleProviderDescription": "{fromChain}から{toChain}へは、次のいずれかの代替プロバイダーを使用してください。",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
