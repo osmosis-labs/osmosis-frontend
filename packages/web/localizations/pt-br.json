@@ -939,6 +939,8 @@
     "fastest": "O mais rápido",
     "toWithdraw": "Sacar",
     "toDeposit": "Depositar",
+    "singleProviderDescription": "de {fromChain} para {toChain} , use {provider} .",
+    "multipleProviderDescription": "de {fromChain} para {toChain} , use um dos seguintes provedores alternativos.",
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",
       "titleWithdraw": "Mais opções de retirada",
+      "chooseAnAlternativeProviderDeposit": "Escolha um provedor alternativo para depositar {asset} de {fromChain} para {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Escolha um provedor alternativo para retirar {asset} de {fromChain} para {toChain}",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
     },

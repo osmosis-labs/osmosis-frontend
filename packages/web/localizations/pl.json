@@ -939,6 +939,8 @@
     "fastest": "Najszybszy",
     "toWithdraw": "Wycofać się",
     "toDeposit": "Złożyć depozyt",
+    "singleProviderDescription": "z {fromChain} do {toChain} , użyj {provider} .",
+    "multipleProviderDescription": "od {fromChain} do {toChain} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
+      "chooseAnAlternativeProviderDeposit": "Wybierz alternatywnego dostawcę, aby wpłacić {asset} z {fromChain} do {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Wybierz alternatywnego dostawcę, aby wycofać {asset} z {fromChain} do {toChain}",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
     },

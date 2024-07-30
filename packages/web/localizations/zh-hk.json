@@ -939,6 +939,8 @@
     "fastest": "最快的",
     "toWithdraw": "去取出",
     "toDeposit": "存款",
+    "singleProviderDescription": "從{fromChain}到{toChain} ，請使用{provider} .",
+    "multipleProviderDescription": "從{fromChain}到{toChain} ，請使用下列替代提供者之一。",
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
+      "chooseAnAlternativeProviderDeposit": "選擇一個替代提供者將{asset}從{fromChain}存入{toChain}",
+      "chooseAnAlternativeProviderWithdraw": "選擇替代提供者將{asset}從{fromChain}撤回到{toChain}",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
     },

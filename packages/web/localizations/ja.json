@@ -939,6 +939,8 @@
     "fastest": "最速",
     "toWithdraw": "撤退する",
     "toDeposit": "預け入れる",
+    "singleProviderDescription": "{fromChain}から{toChain}へは、 {provider}を使用してください。",
+    "multipleProviderDescription": "{fromChain}から{toChain}へは、次のいずれかの代替プロバイダーを使用してください。",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
     },

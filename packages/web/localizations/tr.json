@@ -939,6 +939,8 @@
     "fastest": "En hızlı",
     "toWithdraw": "Çekilme",
     "toDeposit": "Para yatırmak",
+    "singleProviderDescription": "{fromChain} ile {toChain} arasında lütfen {provider} kullanın {provider} .",
+    "multipleProviderDescription": "{fromChain} ile {toChain} arasında, lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
+      "chooseAnAlternativeProviderDeposit": "{asset} yi {fromChain} den {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} yi {fromChain} den {toChain}",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },

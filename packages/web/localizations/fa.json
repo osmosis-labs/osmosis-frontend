@@ -939,6 +939,8 @@
     "fastest": "سریع ترین",
     "toWithdraw": "برای برداشت",
     "toDeposit": "برای واریز",
+    "singleProviderDescription": "از {fromChain} تا {toChain} ، لطفاً از {provider} استفاده کنید. {provider} .",
+    "multipleProviderDescription": "از {fromChain} تا {toChain} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
+      "chooseAnAlternativeProviderDeposit": "یک ارائه‌دهنده جایگزین برای واریز {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },

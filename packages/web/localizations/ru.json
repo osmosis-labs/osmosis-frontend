@@ -939,6 +939,8 @@
     "fastest": "Самый быстрый",
     "toWithdraw": "Чтобы вывести",
     "toDeposit": "Внести",
+    "singleProviderDescription": "от {fromChain} до {toChain} , используйте {provider} .",
+    "multipleProviderDescription": "от {fromChain} до {toChain} , используйте одного из следующих альтернативных поставщиков.",
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
+      "chooseAnAlternativeProviderDeposit": "Выберите альтернативного поставщика для внесения {asset} из {fromChain} в {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Выберите альтернативного поставщика для вывода {asset} из {fromChain} в {toChain}",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
     },

@@ -939,6 +939,8 @@
     "fastest": "Cel mai rapid",
     "toWithdraw": "A retrage",
     "toDeposit": "A depune",
+    "singleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați {provider} .",
+    "multipleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
+      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },

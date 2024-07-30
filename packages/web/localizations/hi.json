@@ -939,6 +939,8 @@
     "fastest": "सबसे तेजी से",
     "toWithdraw": "वापस लेना",
     "toDeposit": "जमा करने के लिए",
+    "singleProviderDescription": "{fromChain} से {toChain} तक, कृपया {provider} का उपयोग करें।",
+    "multipleProviderDescription": "{fromChain} से {toChain} तक, कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} से {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} से {toChain}",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
     },

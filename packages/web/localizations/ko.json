@@ -939,6 +939,8 @@
     "fastest": "가장 빠른",
     "toWithdraw": "철수하다",
     "toDeposit": "입금하기",
+    "singleProviderDescription": "{fromChain} 에서 {toChain} 까지, {provider} 사용하세요. {provider} .",
+    "multipleProviderDescription": "{fromChain} 에서 {toChain} 까지, 다음 대체 공급자 중 하나를 사용하세요.",
     "stepLabels": {
       "asset": "유산",
       "amount": "양",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
       "titleWithdraw": "더 많은 인출 옵션",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} 로 {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} \"asset\"}을(를 {toChain} 로 철회하려면 대체 공급자를 선택하세요. {toChain}",
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출"
     },

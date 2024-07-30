@@ -939,6 +939,8 @@
     "fastest": "Am schnellsten",
     "toWithdraw": "Zurückziehen",
     "toDeposit": "Deponieren",
+    "singleProviderDescription": "von {fromChain} bis {toChain} , verwenden Sie bitte {provider} .",
+    "multipleProviderDescription": "von {fromChain} nach {toChain} , verwenden Sie bitte einen der folgenden alternativen Anbieter.",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
@@ -947,6 +949,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
+      "chooseAnAlternativeProviderDeposit": "Wählen Sie einen alternativen Anbieter zum Einzahlen {asset} von {fromChain} nach {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Wählen Sie einen alternativen Anbieter zum Abheben {asset} von {fromChain} nach {toChain}",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
