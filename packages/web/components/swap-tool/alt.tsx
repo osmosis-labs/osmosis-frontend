@@ -340,7 +340,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
-                    <span className="pt-1.5 text-osmoverse-400">From</span>
+                    <span className="body2 py-1.5 text-osmoverse-400">
+                      From
+                    </span>
                   </AssetFieldsetHeaderLabel>
                   <AssetFieldsetHeaderBalance
                     onMax={() => swapState.inAmountInput.toggleMax()}
@@ -431,7 +433,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
-                    <span className="pt-1.5 text-osmoverse-400">To</span>
+                    <span className="body2 py-1.5 text-osmoverse-400">To</span>
                   </AssetFieldsetHeaderLabel>
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
