@@ -31,7 +31,6 @@ import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
-  useFeatureFlags,
   useOneClickTradingSession,
   useSlippageConfig,
   useTranslation,
@@ -81,7 +80,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
-    const featureFlags = useFeatureFlags();
+    // const featureFlags = useFeatureFlags();
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
