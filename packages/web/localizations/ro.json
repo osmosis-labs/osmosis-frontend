@@ -938,6 +938,10 @@
     "free": "Gratuit",
     "cheapest": "Cele mai ieftine",
     "fastest": "Cel mai rapid",
+    "toWithdraw": "A retrage",
+    "toDeposit": "A depune",
+    "singleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați {provider} .",
+    "multipleProviderDescription": "de la {fromChain} la {toChain} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",

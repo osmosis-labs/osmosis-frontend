@@ -938,6 +938,10 @@
     "free": "무료",
     "cheapest": "가장 저렴",
     "fastest": "가장 빠른",
+    "toWithdraw": "철수하다",
+    "toDeposit": "입금하기",
+    "singleProviderDescription": "{fromChain} 에서 {toChain} 까지, {provider} 사용하세요. {provider} .",
+    "multipleProviderDescription": "{fromChain} 에서 {toChain} 까지, 다음 대체 공급자 중 하나를 사용하세요.",
     "stepLabels": {
       "asset": "유산",
       "amount": "양",

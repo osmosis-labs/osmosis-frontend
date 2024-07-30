@@ -938,6 +938,10 @@
     "free": "મફત",
     "cheapest": "સૌથી સસ્તું",
     "fastest": "સૌથી ઝડપી",
+    "toWithdraw": "પાછું લેવું",
+    "toDeposit": "જમા કરાવવું",
+    "singleProviderDescription": "{fromChain} થી {toChain} સુધી , કૃપા કરીને {provider} ઉપયોગ કરો {provider} .",
+    "multipleProviderDescription": "{fromChain} થી {toChain} સુધી , કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",

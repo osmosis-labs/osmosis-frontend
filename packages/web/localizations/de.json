@@ -938,6 +938,10 @@
     "free": "Frei",
     "cheapest": "Am billigsten",
     "fastest": "Am schnellsten",
+    "toWithdraw": "Zurückziehen",
+    "toDeposit": "Deponieren",
+    "singleProviderDescription": "von {fromChain} bis {toChain} , verwenden Sie bitte {provider} .",
+    "multipleProviderDescription": "von {fromChain} nach {toChain} , verwenden Sie bitte einen der folgenden alternativen Anbieter.",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",

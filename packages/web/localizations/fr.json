@@ -938,6 +938,10 @@
     "free": "Gratuit",
     "cheapest": "Le moins cher",
     "fastest": "Le plus rapide",
+    "toWithdraw": "Se rétracter",
+    "toDeposit": "Déposer",
+    "singleProviderDescription": "de {fromChain} à {toChain} , veuillez utiliser {provider} .",
+    "multipleProviderDescription": "de {fromChain} à {toChain} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",

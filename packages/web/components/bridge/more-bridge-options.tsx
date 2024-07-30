@@ -83,11 +83,12 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
         {t(
           direction === "deposit"
-            ? "transfer.moreBridgeOptions.descriptionDeposit"
-            : "transfer.moreBridgeOptions.descriptionWithdraw",
+            ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
+            : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
           {
             asset: fromAsset?.denom ?? "",
-            chain: toChain?.chainName ?? "",
+            fromChain: fromChain?.chainName ?? "",
+            toChain: toChain?.chainName ?? "",
           }
         )}
       </p>
@@ -131,6 +132,17 @@ export const MoreBridgeOptionsModal: FunctionComponent<
             )}
           </>
         )}
+      </div>
+
+      <div className="caption pb-3 pt-5 text-center text-osmoverse-400">
+        {t("transfer.risks")}{" "}
+        <Link
+          href="/disclaimer#providers-and-bridge-disclaimer"
+          target="_blank"
+          className="mx-auto text-xs font-semibold text-wosmongton-300 hover:text-rust-200"
+        >
+          {t("transfer.learnMore")}
+        </Link>
       </div>
     </ModalBase>
   );
@@ -265,13 +277,15 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
                   rel="noreferrer"
                   className="subtitle1 md:caption flex items-center justify-between rounded-lg bg-transparent px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:px-2 md:py-2"
                 >
-                  <div className="flex items-center gap-3">
-                    <Image
-                      alt={`${providerName} logo`}
-                      src={logo}
-                      width={44}
-                      height={42}
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-[42px] w-[44px] items-center">
+                      <Image
+                        alt={`${providerName} logo`}
+                        src={logo}
+                        width={44}
+                        height={42}
+                      />
+                    </div>
                     <span>
                       {t(
                         direction === "deposit"
@@ -289,7 +303,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         )}
       </div>
 
-      <div className="caption pt-6 text-center text-osmoverse-400 md:pt-4">
+      <div className="caption py-3 text-center text-osmoverse-400">
         {t("transfer.risks")}{" "}
         <Link
           href="/disclaimer#providers-and-bridge-disclaimer"
@@ -300,7 +314,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         </Link>
       </div>
 
-      <Button className="mt-3 w-full" variant="secondary" onClick={onDone}>
+      <Button className="w-full" variant="secondary" onClick={onDone}>
         <div className="md:body1 text-h6 font-h6">{t("transfer.done")}</div>
       </Button>
     </div>

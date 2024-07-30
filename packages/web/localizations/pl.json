@@ -938,6 +938,10 @@
     "free": "Bezpłatny",
     "cheapest": "Najtańszy",
     "fastest": "Najszybszy",
+    "toWithdraw": "Wycofać się",
+    "toDeposit": "Złożyć depozyt",
+    "singleProviderDescription": "z {fromChain} do {toChain} , użyj {provider} .",
+    "multipleProviderDescription": "od {fromChain} do {toChain} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",

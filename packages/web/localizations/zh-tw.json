@@ -938,6 +938,10 @@
     "free": "自由的",
     "cheapest": "最便宜",
     "fastest": "最快的",
+    "toWithdraw": "去取出",
+    "toDeposit": "存款",
+    "singleProviderDescription": "從{fromChain}到{toChain} ，請使用{provider} .",
+    "multipleProviderDescription": "從{fromChain}到{toChain} ，請使用下列替代提供者之一。",
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",
