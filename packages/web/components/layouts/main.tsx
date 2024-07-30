@@ -40,7 +40,7 @@ export const MainLayout = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-900 px-2 py-6 md:hidden">
+        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden px-2 py-6 md:hidden">
           {showBlockLogo && (
             <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
               <OsmosisFullLogo onClick={() => router.push("/")} />
@@ -64,7 +64,7 @@ export const MainLayout = observer(
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
+        <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
       </React.Fragment>

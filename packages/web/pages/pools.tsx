@@ -9,11 +9,11 @@ import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
+  useTranslation,
 } from "~/hooks";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -121,7 +121,7 @@ const Pools: NextPage = observer(function () {
   }, [createPoolConfig, account]);
 
   return (
-    <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+    <main className="m-auto max-w-container px-8 md:px-3">
       <NextSeo
         title={t("seo.pools.title")}
         description={t("seo.pools.description")}

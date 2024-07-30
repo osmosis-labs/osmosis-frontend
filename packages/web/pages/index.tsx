@@ -91,7 +91,7 @@ const HomeV1 = () => {
   });
 
   return (
-    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+    <main className="relative flex h-full items-center overflow-auto py-2">
       <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"

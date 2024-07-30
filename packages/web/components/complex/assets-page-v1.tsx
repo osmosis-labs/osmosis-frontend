@@ -11,11 +11,11 @@ import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { Button, ShowMoreButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
   useNavBar,
+  useTranslation,
   useWindowSize,
 } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
@@ -98,7 +98,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const flags = useFeatureFlags();
 
   return (
-    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-20 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-col gap-3">
         <AssetsOverview />
         {flags.transactionsPage && <TransactionsLink />}
