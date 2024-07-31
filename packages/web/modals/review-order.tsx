@@ -88,6 +88,31 @@ export function ReviewOrder({
     parseAsString.withDefault("market")
   );
 
+  const initialOutput = useMemo(
+    () => outAmountLessSlippage ?? new IntPretty(0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const { diffGteSlippage, restart } = useMemo(
+    () => {
+      let originalValue = initialOutput;
+      return {
+        diffGteSlippage: slippageConfig
+          ? originalValue
+              .sub(outAmountLessSlippage ?? new IntPretty(0))
+              .toDec()
+              .gte(slippageConfig?.slippage.toDec())
+          : false,
+        restart: () => {
+          originalValue = outAmountLessSlippage ?? new IntPretty(0);
+        },
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [outAmountLessSlippage, slippageConfig]
+  );
+
   const handleManualSlippageChange = useCallback(
     (value: string) => {
       if (value.length > 3) return;
@@ -131,7 +156,11 @@ export function ReviewOrder({
             <Icon id="thin-x" className="text-wosmongton-200" />
           </button>
         </div>
-        <div className="flex flex-col px-8 pb-8">
+        <div
+          className={classNames("flex flex-col px-8", {
+            "pb-8": !diffGteSlippage,
+          })}
+        >
           {orderType === "limit" && (
             <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
@@ -466,18 +495,42 @@ export function ReviewOrder({
                 <a className="text-wosmongton-300">Learn more</a>
               </span>
             </div> */}
-            <div className="flex w-full justify-between gap-3 pt-3">
+            {!diffGteSlippage && (
+              <div className="flex w-full justify-between gap-3 pt-3">
+                <Button
+                  mode="primary"
+                  onClick={confirmAction}
+                  disabled={isConfirmationDisabled}
+                  className="body2 !rounded-2xl"
+                >
+                  <h6>{t("limitOrders.confirm")}</h6>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        {diffGteSlippage && (
+          <div className="flex w-full px-5 pb-8">
+            <div className="flex w-full items-center justify-between gap-3 rounded-2xl bg-osmoverse-800 p-3">
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="alert-triangle"
+                  className="text-ammelia-400"
+                  width={20}
+                  height={17}
+                />
+              </div>
+              <span className="subtitle1 w-full">Quote updated</span>
               <Button
                 mode="primary"
-                onClick={confirmAction}
-                disabled={isConfirmationDisabled}
-                className="body2 !rounded-2xl"
+                onClick={() => restart}
+                className="body2 w-fit !rounded-2xl"
               >
-                <h6>{t("limitOrders.confirm")}</h6>
+                <h6>Accept</h6>
               </Button>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </ModalBase>
   );
