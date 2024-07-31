@@ -79,7 +79,7 @@ export function ReviewOrder({
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   let isManualSlippageTooHigh = useMemo(
-    () => +manualSlippage >= 1,
+    () => +manualSlippage > 1,
     [manualSlippage]
   );
 
