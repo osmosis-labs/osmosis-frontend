@@ -425,14 +425,7 @@ export function ReviewOrder({
                     {!isGasLoading && gasAmount ? (
                       <span className="inline-flex items-center gap-1 text-osmoverse-100">
                         <Icon id="gas" width={16} height={16} />
-                        {gasAmount && (
-                          <>
-                            ~
-                            {formatPretty(gasAmount, {
-                              maxDecimals: 2,
-                            })}
-                          </>
-                        )}
+                        {gasAmount.toString()}
                       </span>
                     ) : (
                       <Skeleton className="h-5 w-16" />
