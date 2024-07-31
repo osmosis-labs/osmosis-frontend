@@ -281,15 +281,10 @@ export const TradeDetails = ({
                               { "animate-pulse": isMakerFeeLoading }
                             )}
                           >
-                            <Icon id="gas" width={16} height={16} />~
+                            <Icon id="gas" width={16} height={16} />
                             {type === "market"
                               ? swapState.networkFee?.gasUsdValueToPay &&
-                                formatPretty(
-                                  swapState.networkFee?.gasUsdValueToPay,
-                                  {
-                                    maxDecimals: 2,
-                                  }
-                                )
+                                swapState.networkFee?.gasUsdValueToPay.toString()
                               : limitTotalFees}
                           </span>
                         ) : (
