@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use {service} .",
       "descriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
       "descriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
+      "chooseAnAlternativeProviderDeposit": "Escolha um provedor alternativo para depositar {asset} de {fromChain} para {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Escolha um provedor alternativo para retirar {asset} de {fromChain} para {toChain}",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
     },

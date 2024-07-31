@@ -159,6 +159,8 @@ export const CryptoFiatInput: FunctionComponent<{
         );
       }
 
+      console.log(nextValue);
+
       type === "fiat"
         ? setFiatInputRaw(nextValue)
         : setCryptoInputRaw(nextValue);
@@ -242,8 +244,16 @@ export const CryptoFiatInput: FunctionComponent<{
                 }}
                 value={fiatInputRaw}
                 onChange={(value) => {
-                  onInput("fiat")(value);
                   setIsMax(false);
+
+                  // Prevent the user from entering more decimals than fiat supports
+                  if (
+                    value.split(".")[1]?.length >
+                    assetPrice.fiatCurrency.maxDecimals
+                  ) {
+                    return;
+                  }
+                  onInput("fiat")(value);
                 }}
               />
             ) : (
@@ -291,8 +301,15 @@ export const CryptoFiatInput: FunctionComponent<{
                 }}
                 value={cryptoInputRaw}
                 onChange={(value) => {
-                  onInput("crypto")(value);
                   setIsMax(false);
+                  // Prevent the user from entering more decimals than the asset supports
+                  if (
+                    value.toString().split(".")[1]?.length >
+                    assetWithBalance.decimals
+                  ) {
+                    return;
+                  }
+                  onInput("crypto")(value);
                 }}
               />
             ) : (
@@ -349,7 +366,7 @@ export const CryptoFiatInput: FunctionComponent<{
               "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
                 "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
-                "!border-ammelia-500": hasSubtractedAmount,
+                "border !border-ammelia-500": hasSubtractedAmount,
                 "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
                   !isMax,
               }

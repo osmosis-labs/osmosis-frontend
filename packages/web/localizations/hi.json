@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "{denom} {networkA} से {networkB} में वापस लाने के लिए, कृपया {service} उपयोग करें।",
       "descriptionDeposit": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
       "descriptionWithdraw": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} से {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} से {toChain}",
       "depositWith": "जमा करें",
       "withdrawWith": "साथ वापस लें"
     },
