@@ -910,6 +910,7 @@
     "from": "De",
     "to": "A",
     "max": "máx.",
+    "pendingApproval": "Aprobación pendiente",
     "available": "disponible",
     "connectTo": "Conéctese a {network}",
     "transferWith": "Transferir con",

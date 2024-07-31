@@ -161,6 +161,7 @@ export const AmountScreen = observer(
 
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
     const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
+    const [pendingChainApproval, setPendingChainApproval] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const {
@@ -306,12 +307,17 @@ export const AmountScreen = observer(
             return;
           }
 
-          accountRepo?.connect(osmosisAccount?.walletName).catch((error) => {
-            console.error("Failed to connect Osmosis account:", error);
-            if (supportedChains.length > 1) {
-              setIsNetworkSelectVisible(true);
-            }
-          });
+          setPendingChainApproval(true);
+
+          accountRepo
+            ?.connect(osmosisAccount?.walletName)
+            .catch((error) => {
+              console.error("Failed to connect Osmosis account:", error);
+              if (supportedChains.length > 1) {
+                setIsNetworkSelectVisible(true);
+              }
+            })
+            .finally(() => setPendingChainApproval(false));
         }
       },
       [
@@ -1181,7 +1187,7 @@ export const AmountScreen = observer(
             <div className="flex flex-col items-center gap-4">
               <ScreenManager
                 currentScreen={(function () {
-                  if (!osmosisWalletConnected) {
+                  if (!osmosisWalletConnected && !pendingChainApproval) {
                     return "no-osmo-wallet";
                   }
 
@@ -1220,14 +1226,17 @@ export const AmountScreen = observer(
                   <Button
                     onClick={() => checkChainAndConnectWallet()}
                     className="w-full"
+                    disabled={pendingChainApproval}
                   >
                     <h6 className="flex items-center gap-3">
-                      {t("transfer.connectTo", {
-                        network:
-                          direction === "deposit"
-                            ? fromChain.prettyName
-                            : toChain.prettyName,
-                      })}
+                      {pendingChainApproval
+                        ? t("transfer.pendingApproval")
+                        : t("transfer.connectTo", {
+                            network:
+                              direction === "deposit"
+                                ? fromChain.prettyName
+                                : toChain.prettyName,
+                          })}
                     </h6>
                   </Button>
                 </Screen>

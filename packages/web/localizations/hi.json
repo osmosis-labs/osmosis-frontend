@@ -910,6 +910,7 @@
     "from": "से",
     "to": "को",
     "max": "अधिकतम",
+    "pendingApproval": "लंबित अनुमोदन",
     "available": "उपलब्ध",
     "connectTo": "{network} से कनेक्ट करें",
     "transferWith": "साथ स्थानांतरित करें",

@@ -910,6 +910,7 @@
     "from": "{network}から",
     "to": "{network}へ",
     "max": "マックス",
+    "pendingApproval": "承認待ちの",
     "available": "利用可能",
     "connectTo": "{network}に接続します",
     "transferWith": "転送",

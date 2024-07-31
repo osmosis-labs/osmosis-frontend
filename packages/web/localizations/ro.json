@@ -910,6 +910,7 @@
     "from": "De la",
     "to": "Către",
     "max": "Max",
+    "pendingApproval": "Aprobare in asteptare",
     "available": "disponibil",
     "connectTo": "Conectați-vă la {network}",
     "transferWith": "Transfer cu",

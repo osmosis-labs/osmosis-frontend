@@ -910,6 +910,7 @@
     "from": "From",
     "to": "To",
     "max": "Max",
+    "pendingApproval": "Pending approval",
     "available": "available",
     "connectTo": "Connect to {network}",
     "transferWith": "Transfer with",

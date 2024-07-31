@@ -910,6 +910,7 @@
     "from": "从",
     "to": "到",
     "max": "最大限度",
+    "pendingApproval": "等待批准",
     "available": "可用的",
     "connectTo": "连接到{network}",
     "transferWith": "转让",

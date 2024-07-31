@@ -910,6 +910,7 @@
     "from": "에서",
     "to": "에게",
     "max": "맥스",
+    "pendingApproval": "승인 대기 중",
     "available": "사용 가능",
     "connectTo": "{network} 에 연결",
     "transferWith": "다음으로 환승",
