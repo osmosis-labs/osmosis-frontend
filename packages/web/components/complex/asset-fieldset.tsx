@@ -8,12 +8,18 @@ import {
   forwardRef,
   PropsWithChildren,
   ReactNode,
+  useMemo,
 } from "react";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 
@@ -95,6 +101,32 @@ const AssetFieldsetHeaderBalance = observer(
   }
 );
 
+const calcScale = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      }
+    : {
+        8: "1",
+        12: "0.90",
+        18: "0.90",
+        100: "0.48",
+      };
+
+  console.log(numChars);
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "1";
+};
+
 interface AssetFieldsetInputProps {
   inputPrefix?: ReactNode;
   onInputChange?: ChangeEventHandler<HTMLInputElement>;
@@ -105,20 +137,36 @@ interface AssetFieldsetInputProps {
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => (
-  <div className="flex items-center">
-    {inputPrefix}
-    {outputValue || (
-      <input
-        ref={ref}
-        className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
-        placeholder="0"
-        onChange={onInputChange}
-        value={inputValue}
-      />
-    )}
-  </div>
-));
+>(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
+  const { isMobile } = useWindowSize();
+
+  const scale = useMemo(
+    () => calcScale((inputValue ?? "").length, isMobile),
+    [inputValue, isMobile]
+  );
+
+  return (
+    <div className="flex items-center overflow-visible">
+      {inputPrefix}
+      {outputValue || (
+        <div
+          className="transiiton-all w-full origin-left overflow-visible"
+          style={{
+            transform: `scale(${scale})`,
+          }}
+        >
+          <input
+            ref={ref}
+            className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
+            placeholder="0"
+            onChange={onInputChange}
+            value={inputValue}
+          />
+        </div>
+      )}
+    </div>
+  );
+});
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex h-12 w-full items-center justify-between pb-4">
