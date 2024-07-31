@@ -72,8 +72,7 @@ export const PriceSelector = observer(() => {
     parseAsBoolean.withDefault(false)
   );
 
-  const { selectableQuoteDenoms, isLoading: denomsLoading } =
-    useOrderbookSelectableDenoms();
+  const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
   const quoteAsset = useMemo(
     () =>
@@ -195,10 +194,7 @@ export const PriceSelector = observer(() => {
       <Menu as="div" className="relative inline-block">
         {({ open }) => (
           <>
-            <Menu.Button
-              className="flex items-center justify-between"
-              disabled={denomsLoading}
-            >
+            <Menu.Button className="flex items-center justify-between">
               <div className="flex w-full items-center justify-between">
                 {quoteAsset && (
                   <div
