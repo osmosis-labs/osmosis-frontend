@@ -111,15 +111,9 @@ export function ReviewOrder({
           {orderType === "limit" && (
             <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center">
-                  {limitOrderDirection === "bid" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
+                <div className="flex h-10 min-w-10 items-center justify-center">
+                  {percentAdjusted?.isNegative() ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
                         fillRule="evenodd"
                         clipRule="evenodd"
