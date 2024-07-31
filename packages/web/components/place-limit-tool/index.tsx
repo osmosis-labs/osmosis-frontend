@@ -387,7 +387,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           swapState.marketState.inAmountInput.isEmpty ||
           swapState.marketState.inAmountInput.amount?.toDec().isZero() ||
           isMarketLoading ||
-          swapState.marketState.error
+          Boolean(swapState.marketState.error)
         );
       }
 
