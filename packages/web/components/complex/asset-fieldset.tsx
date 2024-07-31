@@ -88,7 +88,7 @@ const AssetFieldsetHeaderBalance = observer(
                   disabled={isMaxButtonDisabled}
                 >
                   {isLoadingMaxButton && (
-                    <Spinner className="h-2.5 w-2.5 text-wosmongton-300" />
+                    <Spinner className="!h-2.5 !w-2.5 text-wosmongton-300" />
                   )}
                   <span className="body2 text-wosmongton-300">Max</span>
                 </button>
