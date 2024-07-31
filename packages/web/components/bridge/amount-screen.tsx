@@ -575,6 +575,7 @@ export const AmountScreen = observer(
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
         if (isNil(fromAsset?.decimals)) return;
+
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
             ? amount
@@ -591,6 +592,7 @@ export const AmountScreen = observer(
     const onChangeFiatInput = useCallback(
       (amount: string) => {
         if (isNil(assetInOsmosisPrice?.fiatCurrency.maxDecimals)) return;
+
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
             ? amount

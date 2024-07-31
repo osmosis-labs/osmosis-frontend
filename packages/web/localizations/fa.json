@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
       "descriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
+      "chooseAnAlternativeProviderDeposit": "یک ارائه‌دهنده جایگزین برای واریز {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },

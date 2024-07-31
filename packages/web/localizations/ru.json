@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} , используйте {service} .",
       "descriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
       "descriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
+      "chooseAnAlternativeProviderDeposit": "Выберите альтернативного поставщика для внесения {asset} из {fromChain} в {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Выберите альтернативного поставщика для вывода {asset} из {fromChain} в {toChain}",
       "depositWith": "Депозит с",
       "withdrawWith": "Вывод средств с помощью"
     },

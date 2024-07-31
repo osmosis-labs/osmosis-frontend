@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
       "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
       "descriptionWithdraw": "{denom} öğesini {networkA} öğesinden {networkB} çekmek için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "chooseAnAlternativeProviderDeposit": "{asset} yi {fromChain} den {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} yi {fromChain} den {toChain}",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },

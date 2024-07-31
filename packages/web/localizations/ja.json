@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
       "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
       "descriptionWithdraw": "{denom}を{networkA}から{networkB}に引き出すには、次の代替プロバイダーのいずれかを使用してください。",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
     },

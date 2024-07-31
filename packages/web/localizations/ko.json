@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "{denom} 을 {networkA} 에서 {networkB} , {service} 사용하세요.",
       "descriptionDeposit": "{denom} 을 {networkA} 에서 {networkB} , 다음 대체 공급자 중 하나를 사용하세요.",
       "descriptionWithdraw": "{denom} 을 {networkA} 에서 {networkB} , 다음 대체 공급자 중 하나를 사용하세요.",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} 로 {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} \"asset\"}을(를 {toChain} 로 철회하려면 대체 공급자를 선택하세요. {toChain}",
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출"
     },

@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "要将{denom}从{networkA}撤回到{networkB} ，请使用{service} 。",
       "descriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用以下备选提供商之一。",
       "descriptionWithdraw": "要将{denom}从{networkA}撤回至{networkB} ，请使用以下备选提供商之一。",
+      "chooseAnAlternativeProviderDeposit": "选择替代提供商将{asset}从{fromChain}存入{toChain}",
+      "chooseAnAlternativeProviderWithdraw": "选择替代提供商将{asset}从{fromChain}提取到{toChain}",
       "depositWith": "存款",
       "withdrawWith": "提款"
     },

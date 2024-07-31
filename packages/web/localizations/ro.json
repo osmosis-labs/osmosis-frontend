@@ -951,6 +951,8 @@
       "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
       "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
       "descriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
