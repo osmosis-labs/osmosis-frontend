@@ -104,7 +104,7 @@ export const OrderTypeSelector = () => {
             <button
               onClick={() => setType(id)}
               className={classNames(
-                "rounded-3xl px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
+                "rounded-[22px] px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
                 {
                   "hover:bg-osmoverse-850": !isSelected,
                   "bg-osmoverse-700": isSelected,
