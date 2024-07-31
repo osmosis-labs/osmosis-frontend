@@ -77,6 +77,7 @@ export async function estimateGasFee({
   bech32Address,
   gasMultiplier = 1.5,
   onlyDefaultFeeDenom,
+  fallbackGasLimit,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -88,6 +89,11 @@ export async function estimateGasFee({
    *  Default: `1.5` */
   gasMultiplier?: number;
 
+  /**
+   * If tx simulation fails for some reason, this can be provided as a fallback gas limit.
+   */
+  fallbackGasLimit?: number;
+
   sendCoin?: { denom: string; amount: string };
 
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
@@ -98,6 +104,15 @@ export async function estimateGasFee({
     chainList,
     body,
     bech32Address,
+  }).catch((e) => {
+    if (fallbackGasLimit) {
+      console.warn(
+        "Using fallback gas limit: Error",
+        e instanceof Error ? e.message : e
+      );
+      return { gasUsed: fallbackGasLimit, coinsSpent: [] };
+    }
+    throw e;
   });
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
