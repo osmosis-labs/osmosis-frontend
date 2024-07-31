@@ -165,7 +165,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           />
         </button>
       </GenericDisclaimer>
-      <div className="flex w-full items-center justify-between">
+      <label className="flex w-full items-center justify-between">
         <div className="inline-flex items-end gap-1 py-3 text-h6 font-h6">
           <SkeletonLoader
             isLoaded={priceState.spotPrice && !priceState.isLoading}
@@ -230,7 +230,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             )}
           </SkeletonLoader>
         </div>
-      </div>
+      </label>
       <div className="flex w-full items-center justify-between gap-2 pt-3 pb-2">
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button

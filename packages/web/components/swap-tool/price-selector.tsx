@@ -389,7 +389,7 @@ const SelectableQuotes = observer(
               className={classNames(
                 "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
                 {
-                  "bg-osmoverse-700": active || isSelected,
+                  "bg-osmoverse-700": active,
                   "opacity-50": isDisabled,
                 }
               )}
