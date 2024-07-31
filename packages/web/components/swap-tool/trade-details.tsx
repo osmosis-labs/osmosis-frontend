@@ -62,8 +62,10 @@ export const TradeDetails = ({
 
   const isLoading = useMemo(
     () =>
-      (isGasLoading || swapState?.isQuoteLoading) && !Boolean(swapState?.error),
-    [isGasLoading, swapState?.isQuoteLoading, swapState?.error]
+      type === "market" &&
+      swapState?.isQuoteLoading &&
+      !Boolean(swapState?.error),
+    [swapState?.isQuoteLoading, swapState?.error, type]
   );
 
   const priceImpact = useMemo(

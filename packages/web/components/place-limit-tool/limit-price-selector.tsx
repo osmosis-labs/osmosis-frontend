@@ -235,7 +235,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
-            className="flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-700 px-3 py-1 disabled:opacity-50"
+            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-[#3E386A] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               priceState.setPrice("");
@@ -252,19 +252,19 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                     id="triangle-down"
                     width={10}
                     height={6}
-                    className="rotate-180 text-wosmongton-200 transition-transform"
+                    className="rotate-180  transition-transform"
                   />
                 ) : (
                   <Icon
                     id="triangle-down"
                     width={10}
                     height={6}
-                    className="text-wosmongton-200 transition-transform"
+                    className="transition-transform"
                   />
                 )}
               </div>
             )}
-            <span className="body2 text-wosmongton-200">{label}</span>
+            <span className="body2">{label}</span>
           </button>
         ))}
       </div>

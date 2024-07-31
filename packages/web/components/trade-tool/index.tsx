@@ -37,10 +37,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    // const { count } = useOrderbookClaimableOrders({
-    //   userAddress: wallet?.address ?? "",
-    // });
-
     const { orders } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
       pageSize: 100,
@@ -117,7 +113,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         {wallet?.isWalletConnected && openOrders.length > 0 && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
-            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-[#3E386A8A] bg-osmoverse-1000 py-2 px-4"
+            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-[#3E386A8A] bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center">
@@ -125,10 +121,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   id="history-uncolored"
                   width={24}
                   height={24}
-                  className="text-osmoverse-500"
+                  className="text-osmoverse-400"
                 />
               </div>
-              <span className="subtitle1 text-osmoverse-200">
+              <span className="subtitle1 text-osmoverse-300">
                 Order history
               </span>
             </div>
@@ -137,9 +133,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
               <div className="flex h-6 w-6 items-center justify-center">
                 <Icon
                   id="chevron-right"
-                  width={10}
-                  height={17}
-                  className="text-wosmongton-200"
+                  width={7}
+                  height={12}
+                  className="text-osmoverse-400"
                 />
               </div>
             </div>
