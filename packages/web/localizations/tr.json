@@ -220,6 +220,7 @@
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
+      "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
@@ -310,9 +311,7 @@
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    },
-    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
-    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
+    }
   },
   "portfolio": {
     "buy": "Satın almak",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Cüzdanı bağla",
-  "switchNetwork": "Ağı değiştir",
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok"
+    "noData": "Veri yok",
+    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
+    "startAgain": "Tekrar başla"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -679,9 +680,7 @@
       "total": "Toplam Nisan",
       "explainer": {
         "title": "APR'ler nasıl hesaplanır?",
-        "p1": "Tüm APR'ler tahmindir. Havuzdaki likiditenin ortalama APR'si alınarak hesaplanır.",
-        "p2": "Süper şarjlı havuzlarda çoğu kullanıcı daha düşük ödüller alacaktır. Bunun nedeni daha yoğun olan ve daha fazla teşviki yakalayan pozisyonlardır.",
-        "p3": "Tahminleri ihtiyatlı tutmak için tüm APR'ler 3 faktörüne bölünür."
+        "subtitle": "Tüm APR'ler son 7 güne dayalı tahminlerdir. Ticaret hacmi ve fiyat dalgalandıkça APR de buna göre değişecektir. Görüntülenen aralık aşağıdakilere dayanmaktadır.<inlang-LineFeed>\nSüper şarjlı havuzlar için alt sınır, ihtiyatlı, tam aralıklı konumlara atıfta bulunur. Bu, likiditenin tüm işlemlere yayılması nedeniyle son derece düşük bir APR ile sonuçlanabilir. Üst sınır, spot fiyatın etrafında %30 yoğunlaşan bir pozisyon için hesaplanır. Bir pozisyonun menzil dışına çıkması durumunda artık kazanç sağlamayacağını unutmayın."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "için",
     "max": "Maksimum",
     "available": "mevcut",
+    "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",
     "transfer": "{denom}",
+    "changeNetworkInWallet": "M-cüzdandaki ağı değiştir",
     "receive": "{denom}",
-    "selectDepositWallet": "Para yatırma cüzdanını seçin",
-    "selectWithdrawWallet": "Cüzdan çekmeyi seçin",
-    "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
+    "selectDepositWallet": "{network} cüzdanını seçin",
+    "selectWithdrawWallet": "{network} cüzdanını seçin",
+    "depositAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
+    "withdrawAssetDescription": "Belirli varlıkları çekerken, hedef ağda varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",
     "reviewDeposit": "Ödemeyi inceleyin",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
-      "descriptionDeposit": "{asset} {chain} .",
-      "descriptionWithdraw": "{asset} {chain} .",
+      "singleDescriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "descriptionWithdraw": "{denom} öğesini {networkA} öğesinden {networkB} çekmek için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Bir adres girin",
     "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",
-    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "acknowledgement": "Yanlış bir alıcı adresi verirsem veya bir borsaya çekilmeye çalışırsam fon kaybı riskini kabul ediyorum ve kabul ediyorum.",
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
+    "transferWithNoun": "{noun} ile aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
-    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
     "openNoun": "{noun} açın"
   },
   "unknownError": "Bilinmeyen hata",

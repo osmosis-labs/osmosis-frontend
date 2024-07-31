@@ -66,13 +66,17 @@ export function ScaledCurrencyInput({
     >
       <div
         ref={wrapperRef}
-        className="flex-start relative mx-auto flex w-full flex-1 origin-center justify-center text-center"
+        className="flex-start relative mx-auto flex w-full flex-1 origin-center cursor-text justify-center text-center"
       >
         <div className="flex items-baseline justify-center">
           {fiatSymbol ? (
             <span
               ref={tickerRef}
-              className={classNames("self-center", classes?.ticker)}
+              className={classNames(
+                "self-center",
+                !inputValue && "text-osmoverse-500",
+                classes?.ticker
+              )}
             >
               {fiatSymbol}
             </span>
@@ -88,7 +92,7 @@ export function ScaledCurrencyInput({
             <input
               ref={inputRef}
               className={classNames(
-                "absolute m-0 h-full w-full bg-transparent p-0 placeholder-inherit outline-0",
+                "absolute m-0 h-full w-full bg-transparent p-0 placeholder-osmoverse-500 outline-0",
                 classes?.input
               )}
               placeholder="0"
@@ -98,7 +102,8 @@ export function ScaledCurrencyInput({
                 fontSize: "inherit",
               }}
               onChange={(e) => {
-                const nextValue = e.target.value;
+                let nextValue = e.target.value;
+                if (nextValue === ".") nextValue = "0.";
                 if (nextValue !== "" && !isNumeric(nextValue)) return;
                 setInputValue(nextValue);
               }}
@@ -109,7 +114,7 @@ export function ScaledCurrencyInput({
             <span
               ref={tickerRef}
               className={classNames(
-                "self-center pl-1 opacity-60",
+                "self-center pl-1 text-osmoverse-500",
                 classes?.ticker
               )}
             >

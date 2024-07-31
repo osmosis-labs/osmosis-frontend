@@ -26,16 +26,16 @@ export class BasePage {
     await this.page.waitForTimeout(1000);
     // Handle Pop-up page ->
     const newPage = await pagePromise;
-    await newPage.waitForLoadState();
+    await newPage.waitForLoadState("load", { timeout: 10000 });
     const pageTitle = await newPage.title();
     console.log("Title of the new page: " + pageTitle);
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
     const wallet = this.page.locator("//button/div/span[@title]");
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(4000);
     // Verify that wallet modal loaded correctly
-    const isWalletVisible = await wallet.isVisible();
+    const isWalletVisible = await wallet.isVisible({ timeout: 5000 });
     expect(isWalletVisible).toBeTruthy();
     console.log("Wallet is connected.");
   }

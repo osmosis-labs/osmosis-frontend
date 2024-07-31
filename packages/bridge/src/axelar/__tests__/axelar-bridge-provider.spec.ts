@@ -28,7 +28,10 @@ jest.mock("viem", () => ({
   http: jest.fn(),
 }));
 
-jest.mock("@osmosis-labs/tx");
+jest.mock("@osmosis-labs/tx", () => ({
+  ...jest.requireActual("@osmosis-labs/tx"),
+  estimateGasFee: jest.fn(),
+}));
 
 jest.mock("@cosmjs/proto-signing", () => ({
   ...jest.requireActual("@cosmjs/proto-signing"),
@@ -39,21 +42,19 @@ jest.mock("@cosmjs/proto-signing", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.post("https://api.axelarscan.io/deposit-address", (_req, res, ctx) => {
-      return res(ctx.json({ depositAddress: "0x123" }));
-    }),
+    rest.post("https://api.axelarscan.io/deposit-address", (_req, res, ctx) =>
+      res(ctx.json({ depositAddress: "0x123" }))
+    ),
     rest.get(
       "https://axelar-mainnet.s3.us-east-2.amazonaws.com/mainnet-asset-config.json",
-      (_req, res, ctx) => {
-        return res(ctx.json({}));
-      }
+      (_req, res, ctx) => res(ctx.json({}))
     ),
-    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) => {
-      return res(ctx.json(MockAxelarChains));
-    }),
-    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) => {
-      return res(ctx.json(MockAxelarAssets));
-    })
+    rest.get("https://api.axelarscan.io/api/getChains", (_req, res, ctx) =>
+      res(ctx.json(MockAxelarChains))
+    ),
+    rest.get("https://api.axelarscan.io/api/getAssets", (_req, res, ctx) =>
+      res(ctx.json(MockAxelarAssets))
+    )
   );
 });
 
@@ -522,6 +523,7 @@ describe("AxelarBridgeProvider", () => {
           chainId: 1,
           chainName: "Ethereum",
           chainType: "evm",
+          coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
         },
@@ -548,6 +550,7 @@ describe("AxelarBridgeProvider", () => {
           chainId: 1,
           chainName: "Ethereum",
           chainType: "evm",
+          coinGeckoId: "weth",
           decimals: 18,
           denom: "WETH",
         },
@@ -557,6 +560,7 @@ describe("AxelarBridgeProvider", () => {
           chainId: 1,
           chainName: "Ethereum",
           chainType: "evm",
+          coinGeckoId: "weth",
           decimals: 18,
           denom: "ETH",
         },

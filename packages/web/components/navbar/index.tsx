@@ -4,8 +4,8 @@ import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
   formatICNSName,
   getDeepValue,
-  getShortAddress,
   noop,
+  shorten,
 } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -487,14 +487,14 @@ const WalletInfo: FunctionComponent<
                   {profileStore.currentAvatar === "ammelia" ? (
                     <Image
                       alt="Wosmongton profile"
-                      src="/images/profile-ammelia.png"
+                      src="/images/profile-ammelia.svg"
                       height={32}
                       width={32}
                     />
                   ) : (
                     <Image
                       alt="Wosmongton profile"
-                      src="/images/profile-woz.png"
+                      src="/images/profile-woz.svg"
                       height={32}
                       width={32}
                     />
@@ -506,7 +506,7 @@ const WalletInfo: FunctionComponent<
                 <span className="body2 font-bold leading-4" title={icnsName}>
                   {Boolean(icnsName)
                     ? formatICNSName(icnsName)
-                    : getShortAddress(wallet?.address!)}
+                    : shorten(wallet?.address!)}
                 </span>
                 <span className="caption font-medium tracking-wider text-osmoverse-200">
                   {userOsmoAsset?.amount

@@ -7,6 +7,7 @@ import {
   type TransactionRequest,
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
+import { cosmosMsgOpts, cosmwasmMsgOpts } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -43,7 +44,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { getSquidErrors } from "./error";
 
@@ -134,6 +134,19 @@ export class SquidBridgeProvider implements BridgeProvider {
               throw new BridgeQuoteError({
                 bridgeId: SquidBridgeProvider.ID,
                 errorType: "InsufficientAmountError",
+                message: e.message,
+              });
+            }
+            if (
+              errMsgs.errors.some(({ message }) =>
+                message.includes(
+                  "No paths found, please choose a different token pair"
+                )
+              )
+            ) {
+              throw new BridgeQuoteError({
+                bridgeId: SquidBridgeProvider.ID,
+                errorType: "NoQuotesError",
                 message: e.message,
               });
             }
@@ -259,6 +272,15 @@ export class SquidBridgeProvider implements BridgeProvider {
                 transactionRequest.data,
                 fromAddress,
                 { denom: fromAsset.address, amount: fromAmount }
+                // TODO: uncomment when we're able to find a way to get gas limit from Squid
+                // or get it ourselves
+                // gasCosts.length === 1
+                //   ? {
+                //       gas: gasCosts[0].estimate,
+                //       denom: gasCosts[0].token.address,
+                //       amount: gasCosts[0].amount,
+                //     }
+                //   : undefined
               ),
         };
       },
@@ -298,14 +320,13 @@ export class SquidBridgeProvider implements BridgeProvider {
           "address" in counterparty
             ? counterparty.address
             : counterparty.sourceDenom;
-        if (
-          !tokens.some(
-            (t) =>
-              t.address.toLowerCase() === address.toLowerCase() &&
-              t.chainId === counterparty.chainId
-          )
-        )
-          continue;
+
+        const squidToken = tokens.find(
+          (t) =>
+            t.address.toLowerCase() === address.toLowerCase() &&
+            t.chainId === counterparty.chainId
+        );
+        if (!squidToken) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -316,6 +337,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: address,
             denom: c.symbol,
             decimals: c.decimals,
+            coinGeckoId: squidToken.coingeckoId,
           });
         }
         if (counterparty.chainType === "evm") {
@@ -327,6 +349,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             address: address,
             denom: c.symbol,
             decimals: c.decimals,
+            coinGeckoId: squidToken.coingeckoId,
           });
         }
       }
@@ -367,6 +390,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           denom: variant.symbol,
           address: variant.address,
           decimals: variant.decimals,
+          coinGeckoId: variant.coingeckoId,
         });
       }
 
@@ -473,6 +497,12 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromCoin: {
       denom: string;
       amount: string;
+    },
+    /** Gas fee from quote */
+    gasFee?: {
+      gas: string;
+      denom: string;
+      amount: string;
     }
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
@@ -526,6 +556,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           type: "cosmos",
           msgTypeUrl: typeUrl,
           msg,
+          gasFee,
         };
       } else if (parsedData.msgTypeUrl === WasmTransferType) {
         const cosmwasmData = parsedData as {
@@ -550,6 +581,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           type: "cosmos",
           msgTypeUrl: typeUrl,
           msg,
+          gasFee,
         };
       }
 

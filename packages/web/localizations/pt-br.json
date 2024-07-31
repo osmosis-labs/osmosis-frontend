@@ -220,6 +220,7 @@
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
+      "approveInWallet": "Aprovar na carteira",
       "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
@@ -310,9 +311,7 @@
       "new": "Novo",
       "topGainers": "Principais ganhadores",
       "upcoming": "Por vir"
-    },
-    "balancesMovedTitle": "Procurando seus saldos?",
-    "balancesMovedDescription": "Acesse a página do Portfólio, a nova página para seus saldos e muito mais."
+    }
   },
   "portfolio": {
     "buy": "Comprar",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Conectar carteira",
-  "switchNetwork": "Trocar de rede",
   "errors": {
     "calculatingShareOutAmount": "Problema ao calcular o valor",
     "depositNoBalance": "Você não tem ativos para depositar",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Quantidade(s) inválida(s)",
     "txTimedOutError": "A transação expirou. Por favor tente novamente.",
     "insufficientFee": "Saldo insuficiente para taxas de transação. Adicione fundos para continuar.",
-    "noData": "Sem dados"
+    "noData": "Sem dados",
+    "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
+    "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
+    "startAgain": "Comece de novo"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -679,9 +680,7 @@
       "total": "TAEG total",
       "explainer": {
         "title": "Como as TAEG são calculadas?",
-        "p1": "Todas as APRs são estimativas. Eles são calculados tomando a TAEG média de liquidez no pool.",
-        "p2": "Em pools superalimentados, a maioria dos usuários receberá recompensas mais baixas. Isso se deve a posições mais concentradas, que captam mais incentivos.",
-        "p3": "Para manter as estimativas conservadoras, todas as APRs são divididas pelo fator 3."
+        "subtitle": "Todas as APRs são estimativas baseadas nos últimos 7 dias. À medida que o volume de negociação e o preço flutuam, a TAEG mudará de acordo. O intervalo exibido é baseado no seguinte.<inlang-LineFeed>\nPara pools sobrealimentados, o limite inferior faz referência a posições conservadoras de faixa completa. Isto pode resultar numa TAEG extremamente baixa, uma vez que a liquidez é distribuída por todas as negociações. O limite superior é calculado para uma posição com concentração de 30% em torno do preço à vista. Tenha em mente que uma posição não será mais lucrativa se sair do intervalo."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "Para",
     "max": "Máx.",
     "available": "disponível",
+    "connectTo": "Conecte-se a {network}",
     "transferWith": "Transferir com",
     "transferTo": "Transferir para",
     "receiveAsset": "Receber ativo",
     "transfer": "Transferir {denom}",
+    "changeNetworkInWallet": "Alterar rede na carteira",
     "receive": "Receba {denom}",
-    "selectDepositWallet": "Selecione carteira de depósito",
-    "selectWithdrawWallet": "Selecione retirar carteira",
-    "receiveAssetDescription": "Ao depositar determinados ativos, você pode escolher qual versão do ativo deseja receber no Osmosis.",
+    "selectDepositWallet": "Selecione a carteira {network}",
+    "selectWithdrawWallet": "Selecione a carteira {network}",
+    "depositAssetDescription": "Ao depositar determinados ativos, você pode escolher qual versão do ativo deseja receber no Osmosis.",
+    "withdrawAssetDescription": "Ao retirar determinados ativos, você pode escolher qual versão do ativo deseja receber na rede de destino.",
     "estimatingTime": "Estimando tempo",
     "calculatingFees": "Calculando taxas",
     "reviewDeposit": "Rever depósito",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",
       "titleWithdraw": "Mais opções de retirada",
-      "descriptionDeposit": "Escolha um dos seguintes provedores alternativos para depositar (também conhecido como “ponte”) seu {asset} para {chain} .",
-      "descriptionWithdraw": "Escolha um dos seguintes provedores alternativos para retirar (também conhecido como “ponte”) seu {asset} para {chain} .",
+      "singleDescriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use {service} .",
+      "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use {service} .",
+      "descriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
+      "descriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Insira um endereço",
     "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
-    "acknowledgement": "Reconheço que sou totalmente responsável pelo fim do mundo, etc.",
+    "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
     "done": "Feito",
     "transferFrom": "Transferir de {noun}",
+    "transferWithNoun": "Transferir com {noun}",
     "risks": "Fazer uma ponte traz riscos.",
     "learnMore": "Saber mais",
-    "externalTransferSplash": "Para transferir {denom} de {networkA} para {networkB} , use {service} .",
     "openNoun": "Abra {noun}"
   },
   "unknownError": "Erro desconhecido",

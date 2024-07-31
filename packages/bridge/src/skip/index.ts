@@ -4,8 +4,11 @@ import {
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
-import { queryRPCStatus } from "@osmosis-labs/server";
-import { calcAverageBlockTimeMs, estimateGasFee } from "@osmosis-labs/tx";
+import {
+  cosmosMsgOpts,
+  cosmwasmMsgOpts,
+  estimateGasFee,
+} from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -43,7 +46,6 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "../msg";
 import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./queries";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
@@ -171,6 +173,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         let transferFee: BridgeCoin & { chainId: number | string } = {
           ...fromAsset,
+          coinGeckoId: sourceAsset.coingecko_id,
           amount: "0",
           chainId: fromChain.chainId,
         };
@@ -190,6 +193,7 @@ export class SkipBridgeProvider implements BridgeProvider {
                   ? NativeEVMTokenConstantAddress
                   : feeAsset.token_contract!,
               decimals: feeAsset.decimals ?? 6,
+              coinGeckoId: feeAsset.coingecko_id,
             };
           }
         }
@@ -215,10 +219,6 @@ export class SkipBridgeProvider implements BridgeProvider {
           throw new Error("Failed to create transaction");
         }
 
-        const estimatedTime = await this.estimateTotalTransferTime(
-          route.chain_ids
-        );
-
         const estimatedGasFee = await this.estimateGasFee(
           params,
           transactionRequest
@@ -226,19 +226,31 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         return {
           input: {
+            coinGeckoId: sourceAsset.coingecko_id,
             ...fromAsset,
             amount: fromAmount,
           },
           expectedOutput: {
             amount: route.amount_out,
+            coinGeckoId: destinationAsset.coingecko_id,
             ...toAsset,
             priceImpact: "0",
           },
           fromChain,
           toChain,
           transferFee,
-          estimatedTime,
-          transactionRequest,
+          estimatedTime: route.estimated_route_duration_seconds,
+          transactionRequest:
+            transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+              ? {
+                  ...transactionRequest,
+                  gasFee: {
+                    gas: estimatedGasFee.gas,
+                    denom: estimatedGasFee.address,
+                    amount: estimatedGasFee.amount,
+                  },
+                }
+              : transactionRequest,
           estimatedGasFee,
         };
       },
@@ -296,12 +308,10 @@ export class SkipBridgeProvider implements BridgeProvider {
           "address" in counterparty
             ? counterparty.address
             : counterparty.sourceDenom;
-        if (
-          !assets[counterparty.chainId]?.assets.some(
-            (a) => a.denom.toLowerCase() === address.toLowerCase()
-          )
-        )
-          continue;
+        const skipCounterparty = assets[counterparty.chainId]?.assets.find(
+          (a) => a.denom.toLowerCase() === address.toLowerCase()
+        );
+        if (!skipCounterparty) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
@@ -318,6 +328,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: address,
               denom: c.symbol,
               decimals: c.decimals,
+              coinGeckoId: skipCounterparty.coingecko_id,
             });
           }
         }
@@ -336,6 +347,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               address: address,
               denom: c.symbol,
               decimals: c.decimals,
+              coinGeckoId: skipCounterparty.coingecko_id,
             });
           }
         }
@@ -381,6 +393,7 @@ export class SkipBridgeProvider implements BridgeProvider {
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
             decimals: sharedOriginAsset.decimals ?? asset.decimals,
+            coinGeckoId: sharedOriginAsset.coingecko_id,
           }
         );
       }
@@ -407,7 +420,21 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
     const quote = await this.getQuote(params);
-    return quote.transactionRequest!;
+    const transactionRequest = quote.transactionRequest!;
+    const estimatedGasFee = await this.estimateGasFee(
+      params,
+      transactionRequest
+    );
+    return transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+      ? {
+          ...transactionRequest,
+          gasFee: {
+            gas: estimatedGasFee.gas,
+            denom: estimatedGasFee.address,
+            amount: estimatedGasFee.amount,
+          },
+        }
+      : transactionRequest;
   }
 
   async createTransaction(
@@ -432,7 +459,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createCosmosTransaction(
     message: SkipMultiChainMsg
-  ): Promise<CosmosBridgeTransactionRequest> {
+  ): Promise<Omit<CosmosBridgeTransactionRequest, "gas">> {
     const messageData = JSON.parse(message.msg);
 
     if ("contract" in messageData) {
@@ -708,117 +735,6 @@ export class SkipBridgeProvider implements BridgeProvider {
     return addressList;
   }
 
-  /**
-   * Sums the total transfer time of each hop between chains
-   * @returns total transfer time in seconds
-   */
-  async estimateTotalTransferTime(chainIds: string[]): Promise<number> {
-    if (chainIds.length < 2) {
-      throw new Error(
-        "At least two chain IDs are required to estimate transfer time."
-      );
-    }
-
-    let totalTransferTime = 0;
-
-    for (let i = 0; i < chainIds.length - 1; i++) {
-      const fromChainId = chainIds[i];
-      const toChainId = chainIds[i + 1];
-      const transferTime = await this.estimateTransferTime(
-        fromChainId,
-        toChainId
-      );
-      totalTransferTime += transferTime;
-    }
-
-    return totalTransferTime;
-  }
-
-  /**
-   * Estimates the transfer time for IBC transfers in seconds.
-   * Looks at the average block time of the two chains.
-   * @returns transfer time in seconds
-   */
-  async estimateTransferTime(
-    fromChainId: string,
-    toChainId: string
-  ): Promise<number> {
-    const fromCosmosChain = this.ctx.chainList.find(
-      (c) => c.chain_id === fromChainId
-    );
-    const toCosmosChain = this.ctx.chainList.find(
-      (c) => c.chain_id === toChainId
-    );
-
-    const fromCosmosRpc = fromCosmosChain?.apis.rpc[0]?.address;
-    const toCosmosRpc = toCosmosChain?.apis.rpc[0]?.address;
-
-    const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
-      fromCosmosChain
-        ? fromCosmosRpc
-          ? queryRPCStatus({ restUrl: fromCosmosRpc }).then(
-              calcAverageBlockTimeMs
-            )
-          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
-        : this.getFinalityTimeForEvmChain(fromChainId) * 1000,
-      toCosmosChain
-        ? toCosmosRpc
-          ? queryRPCStatus({ restUrl: toCosmosRpc }).then(
-              calcAverageBlockTimeMs
-            )
-          : 7.5 * 1000 // Fallback time for cosmos chain in case RPC not provided
-        : this.getFinalityTimeForEvmChain(toChainId) * 1000,
-    ]);
-
-    // IBC transfer, since there were 2 rpcs in chain list
-    if (fromCosmosChain && toCosmosChain) {
-      // convert to seconds
-      return Math.floor(
-        // initiating tx
-        (fromBlockTimeMs +
-          // lockup tx
-          toBlockTimeMs +
-          // timeout ack tx
-          fromBlockTimeMs) /
-          1000
-      );
-    } else {
-      return Math.floor(Math.max(fromBlockTimeMs, toBlockTimeMs) / 1000);
-    }
-  }
-
-  /** @returns finality time in seconds */
-  getFinalityTimeForEvmChain(chainID: string) {
-    switch (chainID) {
-      case "1":
-        return 960;
-      case "43114":
-        return 3;
-      case "137":
-        return 300;
-      case "56":
-        return 46;
-      case "250":
-        return 3;
-      case "10":
-        return 1800;
-      case "59144":
-        return 4860;
-      case "314":
-        return 3120;
-      case "1284":
-        return 25;
-      case "42220":
-        return 12;
-      case "42161":
-        return 1140;
-      case "8453":
-        return 1440;
-      default:
-        return 960;
-    }
-  }
-
   async estimateGasFee(
     params: GetBridgeQuoteParams,
     txData: BridgeTransactionRequest
@@ -900,14 +816,17 @@ export class SkipBridgeProvider implements BridgeProvider {
       const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
+        gas: txSimulation.gas,
         amount: gasFee.amount,
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
         address: gasAsset?.denom ?? gasFee.denom,
+        coinGeckoId: gasAsset?.coingecko_id,
       };
     }
   }
 
+  /** @returns 0 gas if state overrides fail. */
   async estimateEvmGasWithStateOverrides(
     provider: ReturnType<typeof createPublicClient>,
     params: GetBridgeQuoteParams,

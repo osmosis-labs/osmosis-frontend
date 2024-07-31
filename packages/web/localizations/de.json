@@ -220,6 +220,7 @@
       "availableMobile": "Verfügbar",
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
+      "approveInWallet": "Im Wallet genehmigen",
       "enterAddress": "{network} Adresse",
       "errors": {
         "insufficientBal": "Mangelhaftes Gleichgewicht",
@@ -310,9 +311,7 @@
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    },
-    "balancesMovedTitle": "Suchen Sie nach Ihren Guthaben?",
-    "balancesMovedDescription": "Gehen Sie zur Portfolio-Seite, dem neuen Zuhause für Ihre Guthaben und mehr."
+    }
   },
   "portfolio": {
     "buy": "Kaufen",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Wallet verbinden",
-  "switchNetwork": "Netzwerk wechseln",
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Ungültige(r) Betrag(e)",
     "txTimedOutError": "Zeitüberschreitung bei der Transaktion. Bitte erneut versuchen.",
     "insufficientFee": "Unzureichendes Guthaben für Transaktionsgebühren. Bitte fügen Sie Geld hinzu, um fortzufahren.",
-    "noData": "Keine Daten"
+    "noData": "Keine Daten",
+    "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
+    "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
+    "startAgain": "Fang nochmal an"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
@@ -679,9 +680,7 @@
       "total": "Gesamter effektiver Jahreszins",
       "explainer": {
         "title": "Wie werden effektive Jahreszinsen berechnet?",
-        "p1": "Alle effektiven Jahreszinsen sind Schätzungen. Sie werden anhand des durchschnittlichen effektiven Jahreszinses für die Liquidität im Pool berechnet.",
-        "p2": "In Supercharged-Pools erhalten die meisten Benutzer geringere Belohnungen. Dies ist auf konzentriertere Positionen zurückzuführen, die mehr Anreize nutzen.",
-        "p3": "Um die Schätzungen konservativ zu halten, werden alle effektiven Jahreszinsen durch den Faktor 3 dividiert."
+        "subtitle": "Alle effektiven Jahreszinsen sind Schätzungen, die auf den letzten 7 Tagen basieren. Da Handelsvolumen und Preis schwanken, ändert sich der effektive Jahreszins entsprechend. Der angezeigte Bereich basiert auf Folgendem.<inlang-LineFeed>\nBei aufgeladenen Pools bezieht sich die Untergrenze auf konservative Positionen im gesamten Bereich. Dies kann zu einem extrem niedrigen effektiven Jahreszins führen, da die Liquidität auf alle Trades verteilt ist. Die Obergrenze wird für eine Position mit einer Konzentration von 30 % um den Spotpreis berechnet. Bedenken Sie, dass eine Position keinen Gewinn mehr bringt, wenn sie außerhalb des Bereichs liegt."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "Zu {network}",
     "max": "Max",
     "available": "verfügbar",
+    "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
     "transferTo": "Übertragen nach",
     "receiveAsset": "Anlagegut erhalten",
     "transfer": "Übertragen {denom}",
+    "changeNetworkInWallet": "Netzwerk im Wallet ändern",
     "receive": "Empfangen Sie {denom}",
-    "selectDepositWallet": "Einzahlungs-Wallet auswählen",
-    "selectWithdrawWallet": "Wählen Sie eine Auszahlungs-Wallet aus",
-    "receiveAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
+    "selectDepositWallet": "Wählen Sie die Brieftasche {network}",
+    "selectWithdrawWallet": "Wählen Sie die Brieftasche {network}",
+    "depositAssetDescription": "Wenn Sie bestimmte Vermögenswerte hinterlegen, können Sie auf Osmosis auswählen, welche Version des Vermögenswerts Sie erhalten möchten.",
+    "withdrawAssetDescription": "Wenn Sie bestimmte Assets abheben, können Sie auswählen, welche Version des Assets Sie im Zielnetzwerk erhalten möchten.",
     "estimatingTime": "Zeit schätzen",
     "calculatingFees": "Gebührenberechnung",
     "reviewDeposit": "Anzahlung überprüfen",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
-      "descriptionDeposit": "Wählen Sie aus den folgenden alternativen Anbietern zum Einzahlen (auch „Brücken“) Ihres {asset} auf {chain} .",
-      "descriptionWithdraw": "Wählen Sie aus den folgenden alternativen Anbietern zum Abheben (auch „Brückenübertragen“) Ihres {asset} auf {chain} .",
+      "singleDescriptionDeposit": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
+      "singleDescriptionWithdraw": "Um {denom} von {networkA} nach {networkB} , verwenden Sie bitte {service} .",
+      "descriptionDeposit": "Um {denom} von {networkA} nach {networkB} einzuzahlen, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
+      "descriptionWithdraw": "Um {denom} von {networkA} nach {networkB} abzuheben, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Gib eine Adresse ein",
     "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",
-    "acknowledgement": "Ich erkenne an, dass ich die volle Verantwortung für den Weltuntergang usw. trage.",
+    "acknowledgement": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere dieses, wenn ich eine falsche Empfängeradresse angebe oder versuche, das Geld über eine Börse abzuheben.",
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
+    "transferWithNoun": "Übertragen mit {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
     "learnMore": "Erfahren Sie mehr",
-    "externalTransferSplash": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
     "openNoun": "Öffnen Sie {noun}"
   },
   "unknownError": "Unbekannter Fehler",

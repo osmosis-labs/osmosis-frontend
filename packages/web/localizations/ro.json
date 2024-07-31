@@ -220,6 +220,7 @@
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
+      "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
@@ -310,9 +311,7 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    },
-    "balancesMovedTitle": "Îți cauți soldurile?",
-    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
+    }
   },
   "portfolio": {
     "buy": "Cumpără",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Conecteaza Portofel",
-  "switchNetwork": "Schimbați rețeaua",
   "errors": {
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
-    "noData": "Nu există date"
+    "noData": "Nu există date",
+    "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
+    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
+    "startAgain": "Incepe din nou"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -679,9 +680,7 @@
       "total": "DAE totală",
       "explainer": {
         "title": "Cum se calculează APR-urile?",
-        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
-        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
-        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+        "subtitle": "Toate APR sunt estimări bazate pe ultimele 7 zile. Pe măsură ce volumul comerțului și prețul fluctuează, DAE se va modifica în consecință. Intervalul afișat se bazează pe următoarele.<inlang-LineFeed>\nPentru piscinele supraalimentate, limita inferioară se referă la poziții conservatoare, de gamă completă. Acest lucru poate duce la o DAE extrem de scăzută, deoarece lichiditatea este răspândită în toate tranzacțiile. Limita superioară este calculată pentru o poziție cu o concentrație de 30% în jurul prețului spot. Rețineți că o poziție nu va mai câștiga dacă iese din interval."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "Către",
     "max": "Max",
     "available": "disponibil",
+    "connectTo": "Conectați-vă la {network}",
     "transferWith": "Transfer cu",
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",
     "transfer": "Transferați {denom}",
+    "changeNetworkInWallet": "Schimbați rețeaua în portofel",
     "receive": "Primiți {denom}",
-    "selectDepositWallet": "Selectați portofelul de depozit",
-    "selectWithdrawWallet": "Selectați Retrage portofel",
-    "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "selectDepositWallet": "Selectați portofelul {network}",
+    "selectWithdrawWallet": "Selectați portofelul {network}",
+    "depositAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "withdrawAssetDescription": "Când retrageți anumite active, puteți alege ce versiune a activului doriți să primiți în rețeaua de destinație.",
     "estimatingTime": "Estimarea timpului",
     "calculatingFees": "Calcularea taxelor",
     "reviewDeposit": "Verificați depozitul",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "descriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
-    "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
+    "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
+    "transferWithNoun": "Transferați cu {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
     "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",

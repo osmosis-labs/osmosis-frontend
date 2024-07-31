@@ -220,6 +220,7 @@
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
+      "approveInWallet": "在钱包中批准",
       "enterAddress": "{network}地址",
       "errors": {
         "insufficientBal": "余额不足",
@@ -310,9 +311,7 @@
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    },
-    "balancesMovedTitle": "正在查找您的余额？",
-    "balancesMovedDescription": "前往投资组合页面，这是您的余额和更多信息的新家。"
+    }
   },
   "portfolio": {
     "buy": "买",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "连接钱包",
-  "switchNetwork": "切换网络",
   "errors": {
     "calculatingShareOutAmount": "计算金额溢出",
     "depositNoBalance": "您没有可以存入的资产",
@@ -407,7 +405,10 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
-    "noData": "没有数据"
+    "noData": "没有数据",
+    "uhOhSomethingWentWrong": "哦，出问题了",
+    "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
+    "startAgain": "重新开始"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
@@ -679,9 +680,7 @@
       "total": "总年利率",
       "explainer": {
         "title": "年利率是如何计算的？",
-        "p1": "所有年利率均为估计值。它们是通过池中流动性的平均年利率来计算的。",
-        "p2": "在超级矿池中，大多数用户将获得较低的奖励。这是因为职位更加集中，能够获得更多的激励。",
-        "p3": "为了保持估计保守，所有年利率均除以 3。"
+        "subtitle": "所有 APR 均基于过去 7 天的估算值。随着交易量和价格波动，APR 也会相应变化。显示的范围基于以下内容。<inlang-LineFeed><inlang-LineFeed>对于增压池，下限参考保守的全范围头寸。这可能导致极低的 APR，因为流动性分散在所有交易中。上限是针对现货价格集中度为 30% 的头寸计算的。请记住，如果头寸超出范围，它将不再盈利。"
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "到",
     "max": "最大限度",
     "available": "可用的",
+    "connectTo": "连接到{network}",
     "transferWith": "转让",
     "transferTo": "传送到",
     "receiveAsset": "接收资产",
     "transfer": "转移{denom}",
+    "changeNetworkInWallet": "更改钱包中的网络",
     "receive": "接收{denom}",
-    "selectDepositWallet": "选择存款钱包",
-    "selectWithdrawWallet": "选择提现钱包",
-    "receiveAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
+    "selectDepositWallet": "选择{network}钱包",
+    "selectWithdrawWallet": "选择{network}钱包",
+    "depositAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
+    "withdrawAssetDescription": "当你提取某些资产时，你可以选择要在目标网络上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
     "calculatingFees": "计算费用",
     "reviewDeposit": "审核存款",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",
-      "descriptionDeposit": "从以下备选提供商中进行选择，将您的{asset}存入（又称“桥接”）到{chain} 。",
-      "descriptionWithdraw": "从以下备选提供商中进行选择，将您的{asset}提取（又称为“桥接”）到{chain} 。",
+      "singleDescriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用{service} 。",
+      "singleDescriptionWithdraw": "要将{denom}从{networkA}撤回到{networkB} ，请使用{service} 。",
+      "descriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用以下备选提供商之一。",
+      "descriptionWithdraw": "要将{denom}从{networkA}撤回至{networkB} ，请使用以下备选提供商之一。",
       "depositWith": "存款",
       "withdrawWith": "提款"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "输入地址",
     "sendToAnotherAddress": "发送到另一个地址",
     "invalidAddress": "无效的{chain}地址",
-    "acknowledgement": "我承认我对世界末日等负有全部责任。",
+    "acknowledgement": "如果我提供了错误的收款地址或尝试提取到交易所，我承认并接受资金损失的风险。",
     "done": "完毕",
     "transferFrom": "从{noun}转移",
+    "transferWithNoun": "使用{noun}进行传输",
     "risks": "桥接伴随着风险。",
     "learnMore": "了解更多",
-    "externalTransferSplash": "要将{denom}从{networkA}转移到{networkB} ，请使用{service} 。",
     "openNoun": "打开{noun}"
   },
   "unknownError": "未知错误",

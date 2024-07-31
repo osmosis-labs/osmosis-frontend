@@ -1,5 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -216,31 +216,37 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                       alt={`${asset.coinDenom} asset image`}
                     />
                     <span className="flex flex-col text-left">
-                      <span className="subtitle1 md:body2">
-                        {truncateString(asset.coinName, 22)}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="subtitle1 md:body2">
+                          {truncate(asset.coinName, 22)}
+                        </span>
+                        {!asset.isVerified && shouldShowUnverifiedAssets && (
+                          <Tooltip
+                            content={t(
+                              "components.selectToken.unverifiedAsset"
+                            )}
+                          >
+                            <Icon
+                              id="alert-triangle"
+                              className="h-4 w-4 text-osmoverse-400"
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+
                       <span className="body2 md:caption text-osmoverse-300">
                         {asset.coinDenom}
                       </span>
                     </span>
                   </div>
-                  {!asset.isVerified && shouldShowUnverifiedAssets && (
-                    <Tooltip
-                      content={t("components.selectToken.unverifiedAsset")}
-                    >
-                      <Icon
-                        id="alert-triangle"
-                        className="h-5 w-5 text-osmoverse-400"
-                      />
-                    </Tooltip>
-                  )}
+
                   {!shouldShowUnverifiedAssets && !asset.isVerified && (
                     <p className="caption whitespace-nowrap text-wosmongton-200">
                       {t("components.selectToken.clickToActivate")}
                     </p>
                   )}
                   {asset.amount &&
-                    asset.isVerified &&
+                    (shouldShowUnverifiedAssets || asset.isVerified) &&
                     asset.usdValue &&
                     asset.amount.toDec().isPositive() && (
                       <div className="flex flex-col text-right">

@@ -110,17 +110,6 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "wstETH.eth.axl": {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wsteth.ethereum,
-      ],
-    },
-  },
   SOL: {
     depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=SOL",
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
@@ -766,6 +755,10 @@ const MainnetIBCAdditionalData: Partial<
       "https://satellite.money/?source=polygon&destination=osmosis&asset_denom=polygon-weth-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=polygon-weth-wei",
+  },
+  UM: {
+    depositUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
+    withdrawUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
   },
 };
 

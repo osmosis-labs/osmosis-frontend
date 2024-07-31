@@ -220,6 +220,7 @@
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
+      "approveInWallet": "Zatwierdź w portfelu",
       "enterAddress": "Adres {network}",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
@@ -310,9 +311,7 @@
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    },
-    "balancesMovedTitle": "Szukasz salda?",
-    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
+    }
   },
   "portfolio": {
     "buy": "Kupić",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Połącz portfel",
-  "switchNetwork": "Przełącz sieć",
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "depositNoBalance": "Nie masz środków do wpłaty",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
-    "noData": "Brak danych"
+    "noData": "Brak danych",
+    "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
+    "startAgain": "Zacznij jeszcze raz"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -679,9 +680,7 @@
       "total": "Całkowita RRSO",
       "explainer": {
         "title": "Jak obliczane są RRSO?",
-        "p1": "Wszystkie RRSO mają charakter szacunkowy. Oblicza się je, biorąc średnią stopę procentową APR dla płynności w puli.",
-        "p2": "W pulach z doładowaniem większość użytkowników otrzyma niższe nagrody. Dzieje się tak ze względu na bardziej skoncentrowane stanowiska, które przyciągają więcej zachęt.",
-        "p3": "Aby zachować ostrożne szacunki, wszystkie RRSO dzieli się przez współczynnik 3."
+        "subtitle": "Wszystkie RRSO są szacunkami opartymi na ostatnich 7 dniach. W miarę wahań wolumenu handlu i ceny RRSO odpowiednio się zmieni. Wyświetlany zakres opiera się na poniższych informacjach.<inlang-LineFeed>\nW przypadku basenów z doładowaniem dolna granica odnosi się do konserwatywnych pozycji o pełnym zakresie. Może to skutkować wyjątkowo niskim RRSO, ponieważ płynność jest rozłożona na wszystkie transakcje. Górna granica jest obliczana dla pozycji z 30% koncentracją wokół ceny spot. Pamiętaj, że pozycja nie będzie już przynosić zysków, jeśli wyjdzie poza zakres."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "Do",
     "max": "Maks",
     "available": "dostępny",
+    "connectTo": "Połącz się z {network}",
     "transferWith": "Przenieś z",
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",
     "transfer": "Przelew {denom}",
+    "changeNetworkInWallet": "Zmień sieć w portfelu",
     "receive": "Odbierz {denom}",
-    "selectDepositWallet": "Wybierz portfel depozytowy",
-    "selectWithdrawWallet": "Wybierz opcję wypłaty portfela",
-    "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
+    "selectDepositWallet": "Wybierz portfel {network}",
+    "selectWithdrawWallet": "Wybierz portfel {network}",
+    "depositAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
+    "withdrawAssetDescription": "Wycofując określone zasoby, możesz wybrać wersję, którą chcesz otrzymać w sieci docelowej.",
     "estimatingTime": "Szacowanie czasu",
     "calculatingFees": "Obliczanie opłat",
     "reviewDeposit": "Sprawdź depozyt",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
-      "descriptionDeposit": "Wybierz spośród następujących alternatywnych dostawców, aby zdeponować (inaczej „bridge”) swój {asset} na {chain} .",
-      "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
+      "singleDescriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , użyj {service} .",
+      "singleDescriptionWithdraw": "Aby wycofać {denom} z {networkA} {networkB} , użyj {service} .",
+      "descriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
+      "descriptionWithdraw": "Aby wycofać {denom} z {networkA} {networkB} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Podaj adres",
     "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",
-    "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
+    "acknowledgement": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy lub próby wypłaty na giełdę.",
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
+    "transferWithNoun": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
-    "externalTransferSplash": "Aby przenieść {denom} z {networkA} {networkB} , użyj {service} .",
     "openNoun": "Otwórz {noun}"
   },
   "unknownError": "Nieznany błąd",

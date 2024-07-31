@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { PropsWithChildren, Provider } from "react";
 
 import { ImmersiveBridgeFlow } from "~/components/bridge/immersive-bridge";
@@ -10,11 +9,12 @@ import { useFeatureFlags } from "./use-feature-flags";
 
 export type BridgeContext = {
   /** Start bridging without knowing the asset to bridge yet. */
-  startBridge: (params: { direction: BridgeTransactionDirection }) => void;
+  startBridge: (params: { direction: "deposit" | "withdraw" }) => void;
   /** Start bridging a specified asset of coinMinimalDenom or symbol/denom. */
   bridgeAsset: (params: {
+    /** Symol is preferred for improved quality of Amplitude data. */
     anyDenom: string;
-    direction: BridgeTransactionDirection;
+    direction: "deposit" | "withdraw";
   }) => void;
   /** Open a specified fiat on ramp given a specific fiat ramp key and asset key. */
   fiatRamp: (params: { fiatRampKey: FiatRampKey; assetKey: string }) => void;

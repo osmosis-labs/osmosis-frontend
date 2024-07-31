@@ -220,6 +220,7 @@
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
+      "approveInWallet": "지갑에서 승인",
       "enterAddress": "{network} 주소",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
@@ -244,7 +245,7 @@
       "expectedOutput": "예상 출력",
       "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
-      "sending": "전송중...",
+      "sending": "배상...",
       "transferAnyway": "무시하고 전송"
     },
     "transferAssetSelect": {
@@ -310,9 +311,7 @@
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    },
-    "balancesMovedTitle": "잔액을 찾고 계십니까?",
-    "balancesMovedDescription": "귀하의 저울 등을 위한 새로운 홈인 포트폴리오 페이지로 이동하십시오."
+    }
   },
   "portfolio": {
     "buy": "구입하다",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "지갑 연결하기",
-  "switchNetwork": "네트워크 전환",
   "errors": {
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "depositNoBalance": "입금할 자산이 없습니다",
@@ -407,7 +405,10 @@
     "invalidAmounts": "잘못된 금액",
     "txTimedOutError": "거래 시간이 초과되었습니다. 다시 시도해 주세요.",
     "insufficientFee": "거래 수수료 잔액이 부족합니다. 계속하려면 자금을 추가하세요.",
-    "noData": "데이터 없음"
+    "noData": "데이터 없음",
+    "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
+    "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
+    "startAgain": "다시 시작"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -679,9 +680,7 @@
       "total": "총 연이율",
       "explainer": {
         "title": "APR은 어떻게 계산되나요?",
-        "p1": "모든 APR은 추정치입니다. 이는 풀의 유동성에 대한 평균 APR을 취하여 계산됩니다.",
-        "p2": "슈퍼차지 풀에서는 대부분의 사용자가 더 낮은 보상을 받게 됩니다. 이는 더 많은 인센티브를 포착하는 더 집중된 위치 때문입니다.",
-        "p3": "추정치를 보수적으로 유지하기 위해 모든 APR을 3배로 나눕니다."
+        "subtitle": "모든 APR은 지난 7일을 기준으로 한 추정치입니다. 거래량과 가격이 변동함에 따라 APR도 이에 따라 변경됩니다. 표시되는 범위는 다음을 기준으로 합니다.<inlang-LineFeed>\n과급 풀의 경우 하한은 보수적인 전체 범위 위치를 참조합니다. 유동성이 모든 거래에 분산되므로 이로 인해 APR이 극도로 낮아질 수 있습니다. 상한은 현물 가격에 30% 집중된 포지션에 대해 계산됩니다. 범위를 벗어나면 포지션이 더 이상 획득되지 않는다는 점을 명심하세요."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "에게",
     "max": "맥스",
     "available": "사용 가능",
+    "connectTo": "{network} 에 연결",
     "transferWith": "다음으로 환승",
     "transferTo": "로 전송",
     "receiveAsset": "자산 수령",
     "transfer": "{denom} 전송",
+    "changeNetworkInWallet": "지갑에서 네트워크 변경",
     "receive": "{denom} 수신",
-    "selectDepositWallet": "예금 지갑 선택",
-    "selectWithdrawWallet": "지갑 출금 선택",
-    "receiveAssetDescription": "특정 자산을 입금할 때 Osmosis에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
+    "selectDepositWallet": "{network} 지갑을 선택하세요.",
+    "selectWithdrawWallet": "{network} 지갑을 선택하세요.",
+    "depositAssetDescription": "특정 자산을 입금할 때 Osmosis에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
+    "withdrawAssetDescription": "특정 자산을 인출할 때 대상 네트워크에서 받고 싶은 자산 버전을 선택할 수 있습니다.",
     "estimatingTime": "추정 시간",
     "calculatingFees": "수수료 계산",
     "reviewDeposit": "입금 검토",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
       "titleWithdraw": "더 많은 인출 옵션",
-      "descriptionDeposit": "귀하의 {asset} {chain} 에 입금(일명 \"브리지\")하려면 다음 대체 제공업체 중에서 선택하세요. .",
-      "descriptionWithdraw": "귀하의 {asset} {chain} 으로 철회(일명 \"브리지\")하려면 다음 대체 제공자 중에서 선택하세요. .",
+      "singleDescriptionDeposit": "{denom} 을 {networkA} 에서 {networkB} , {service} 사용하세요.",
+      "singleDescriptionWithdraw": "{denom} 을 {networkA} 에서 {networkB} , {service} 사용하세요.",
+      "descriptionDeposit": "{denom} 을 {networkA} 에서 {networkB} , 다음 대체 공급자 중 하나를 사용하세요.",
+      "descriptionWithdraw": "{denom} 을 {networkA} 에서 {networkB} , 다음 대체 공급자 중 하나를 사용하세요.",
       "depositWith": "다음으로 입금",
       "withdrawWith": "다음으로 인출"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "주소를 입력하세요",
     "sendToAnotherAddress": "다른 주소로 보내기",
     "invalidAddress": "잘못된 {chain} 주소",
-    "acknowledgement": "월드 엔딩 등에 대한 모든 책임은 본인에게 있음을 인정합니다.",
+    "acknowledgement": "나는 잘못된 수취인 주소를 제공하거나 거래소로 출금을 시도할 경우 자금 손실의 위험을 인정하고 받아들입니다.",
     "done": "완료",
     "transferFrom": "{noun} 에서 전송",
+    "transferWithNoun": "{noun} 사용하여 전송",
     "risks": "브리징에는 위험이 따릅니다.",
     "learnMore": "더 알아보기",
-    "externalTransferSplash": "{denom} {networkA} 에서 {networkB} , {service} 사용하세요.",
     "openNoun": "{noun} 열기"
   },
   "unknownError": "알 수 없는 에러",

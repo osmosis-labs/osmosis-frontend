@@ -220,6 +220,7 @@
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
       "approving": "تایید...",
+      "approveInWallet": "تایید در کیف پول",
       "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
@@ -310,9 +311,7 @@
       "new": "جدید",
       "topGainers": "برترین برندگان",
       "upcoming": "آینده"
-    },
-    "balancesMovedTitle": "به دنبال تعادل خود هستید؟",
-    "balancesMovedDescription": "به صفحه نمونه کارها بروید، خانه جدید موجودی های خود و موارد دیگر."
+    }
   },
   "portfolio": {
     "buy": "خرید کنید",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "اتصال کیف پول",
-  "switchNetwork": "سوئیچ شبکه",
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
     "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
@@ -407,7 +405,10 @@
     "invalidAmounts": "مقدار(های) نامعتبر",
     "txTimedOutError": "زمان معامله تمام شد. لطفا دوباره امتحان کنید.",
     "insufficientFee": "موجودی ناکافی برای کارمزد تراکنش لطفاً برای ادامه بودجه اضافه کنید.",
-    "noData": "اطلاعاتی وجود ندارد"
+    "noData": "اطلاعاتی وجود ندارد",
+    "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
+    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
+    "startAgain": "دوباره شروع کن"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -679,9 +680,7 @@
       "total": "کل آوریل",
       "explainer": {
         "title": "APR چگونه محاسبه می شود؟",
-        "p1": "همه APR ها تخمینی هستند. آنها با گرفتن میانگین APR برای نقدینگی در استخر محاسبه می شوند.",
-        "p2": "در استخرهای سوپرشارژ، بیشتر کاربران پاداش کمتری دریافت خواهند کرد. این به دلیل موقعیت هایی است که تمرکز بیشتری دارند و انگیزه های بیشتری را به خود اختصاص می دهند.",
-        "p3": "به منظور محافظه‌کاری تخمین‌ها، همه APR بر ضریب 3 تقسیم می‌شوند."
+        "subtitle": "همه APR ها بر اساس 7 روز گذشته تخمین زده می شوند. با نوسانات حجم معاملات و قیمت، APR نیز بر این اساس تغییر خواهد کرد. محدوده نمایش داده شده بر اساس موارد زیر است.<inlang-LineFeed>\nبرای استخرهای سوپرشارژر، کران پایین به موقعیت های محافظه کارانه و با برد کامل اشاره دارد. این ممکن است منجر به APR بسیار پایین شود زیرا نقدینگی در تمام معاملات پخش می شود. کران بالایی برای موقعیتی با غلظت 30 درصد حول قیمت نقدی محاسبه می شود. به خاطر داشته باشید، اگر یک موقعیت از محدوده خارج شود، دیگر کسب درآمد نخواهد کرد."
       }
     }
   },
@@ -912,14 +911,17 @@
     "to": "برای",
     "max": "حداکثر",
     "available": "در دسترس",
+    "connectTo": "اتصال به {network}",
     "transferWith": "انتقال با",
     "transferTo": "انتقال به",
     "receiveAsset": "دریافت دارایی",
     "transfer": "انتقال {denom}",
+    "changeNetworkInWallet": "تغییر شبکه در کیف پول",
     "receive": "دریافت {denom}",
-    "selectDepositWallet": "کیف پول سپرده را انتخاب کنید",
-    "selectWithdrawWallet": "برداشت کیف پول را انتخاب کنید",
-    "receiveAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
+    "selectDepositWallet": "کیف پول {network} انتخاب کنید",
+    "selectWithdrawWallet": "کیف پول {network} انتخاب کنید",
+    "depositAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
+    "withdrawAssetDescription": "هنگامی که دارایی های خاصی را برداشت می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در شبکه مقصد دریافت کنید.",
     "estimatingTime": "تخمین زمان",
     "calculatingFees": "محاسبه هزینه ها",
     "reviewDeposit": "بررسی سپرده",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
-      "descriptionDeposit": "از میان ارائه دهندگان جایگزین زیر برای واریز (معروف به \"پل\") {asset} خود را به {chain} .",
-      "descriptionWithdraw": "از میان ارائه‌دهندگان جایگزین زیر {asset} خود را به {chain} .",
+      "singleDescriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+      "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
+      "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
+      "descriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "آدرسی را وارد کنید",
     "sendToAnotherAddress": "به آدرس دیگری ارسال کنید",
     "invalidAddress": "آدرس {chain} نامعتبر است",
-    "acknowledgement": "من تصدیق می کنم که مسئولیت کامل پایان جهان و غیره را بر عهده دارم.",
+    "acknowledgement": "در صورت ارائه آدرس گیرنده نادرست یا تلاش برای خروج از صرافی، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
     "done": "انجام شده",
     "transferFrom": "انتقال از {noun}",
+    "transferWithNoun": "انتقال با {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
     "learnMore": "بیشتر بدانید",
-    "externalTransferSplash": "برای انتقال {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
     "openNoun": "باز کردن {noun}"
   },
   "unknownError": "خطای نا شناس",

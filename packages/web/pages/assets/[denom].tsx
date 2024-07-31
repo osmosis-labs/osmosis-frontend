@@ -16,20 +16,20 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
-import { useEffect, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { LinkButton } from "~/components/buttons/link-button";
-import { TokenChart } from "~/components/pages/asset-info-page/token-chart";
+import { AssetBalance } from "~/components/pages/asset-info-page/balance";
+import { AssetPriceChart } from "~/components/pages/asset-info-page/chart";
 import {
-  TokenDetails,
-  TokenStats,
-} from "~/components/pages/asset-info-page/token-details";
-import { TokenNavigation } from "~/components/pages/asset-info-page/token-navigation";
-import { TokenPools } from "~/components/pages/asset-info-page/token-pools";
-import { TwitterSection } from "~/components/pages/asset-info-page/twitter-section";
-import { YourBalance } from "~/components/pages/asset-info-page/your-balance";
+  AssetDetails,
+  AssetStats,
+} from "~/components/pages/asset-info-page/details";
+import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
+import { AssetPools } from "~/components/pages/asset-info-page/pools";
+import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -40,112 +40,59 @@ import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { trpcHelpers } from "~/utils/helpers";
 
-type AssetInfoPageProps = InferGetStaticPropsType<typeof getStaticProps>;
+type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-const AssetInfoPage = observer((props: AssetInfoPageProps) => {
-  const featureFlags = useFeatureFlags();
-  const router = useRouter();
+const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
+  (props) => {
+    const featureFlags = useFeatureFlags();
+    const router = useRouter();
 
-  const { token } = useAssetInfo();
+    const { asset: token } = useAssetInfo();
 
-  useEffect(() => {
-    if (
-      (typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo) ||
-      !token
-    ) {
-      router.push("/assets");
-    }
-  }, [featureFlags.tokenInfo, router, token]);
+    useEffect(() => {
+      if (
+        (typeof featureFlags.tokenInfo !== "undefined" &&
+          !featureFlags.tokenInfo) ||
+        !token
+      ) {
+        router.push("/assets");
+      }
+    }, [featureFlags.tokenInfo, router, token]);
 
-  return <AssetInfoView {...props} />;
-});
-
-const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
-  const { t } = useTranslation();
-  const router = useRouter();
-
-  const { title, details, coinGeckoId, token } = useAssetInfo();
-
-  if (!token) {
-    return null;
+    return <AssetInfoView {...props} />;
   }
+);
 
-  const assetInfoConfig = useAssetInfoConfig(
-    token.coinDenom,
-    token.coinMinimalDenom,
-    coinGeckoId
-  );
+const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
+  ({ tweets }) => {
+    const { t } = useTranslation();
+    const router = useRouter();
 
-  useAmplitudeAnalytics({
-    onLoadEvent: [
-      EventName.TokenInfo.pageViewed,
-      { tokenName: router.query.denom as string },
-    ],
-  });
+    const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
 
-  const [ref] = useQueryState("ref");
-
-  useNavBar({
-    title: (
-      <LinkButton
-        className="mr-auto md:invisible"
-        icon={
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-            className="text-osmoverse-200"
-          />
-        }
-        label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
-        ariaLabel={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
-        href={ref === "portfolio" ? "/portfolio" : "/assets"}
-      />
-    ),
-    ctas: [],
-  });
-
-  useUnmount(() => {
-    if (process.env.NODE_ENV === "production") {
-      assetInfoConfig.dispose();
+    if (!asset) {
+      return null;
     }
-  });
 
-  const contextValue = useMemo(
-    () => ({
-      assetInfoConfig,
-    }),
-    [assetInfoConfig]
-  );
+    const assetInfoConfig = useAssetInfoConfig(
+      asset.coinDenom,
+      asset.coinMinimalDenom,
+      coinGeckoId
+    );
 
-  const SwapTool_ = (
-    <SwapTool
-      fixedWidth
-      useQueryParams={false}
-      useOtherCurrencies={true}
-      initialSendTokenDenom={token.coinDenom === "USDC" ? "OSMO" : "USDC"}
-      initialOutTokenDenom={token.coinDenom}
-      page="Token Info Page"
-    />
-  );
+    useAmplitudeAnalytics({
+      onLoadEvent: [
+        EventName.TokenInfo.pageViewed,
+        { tokenName: router.query.denom as string },
+      ],
+    });
 
-  return (
-    <AssetInfoViewProvider value={contextValue}>
-      <Script
-        src="/tradingview/charting_library.standalone.js"
-        strategy="afterInteractive"
-      />
-      <NextSeo
-        title={`${
-          title ? `${title} (${token.coinDenom})` : token.coinDenom
-        } | Osmosis`}
-        description={details?.description}
-      />
-      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
+    const [ref] = useQueryState("ref");
+
+    useNavBar({
+      title: (
         <LinkButton
-          className="mr-auto hidden md:flex"
+          className="mr-auto md:invisible"
           icon={
             <Image
               alt="left"
@@ -155,54 +102,113 @@ const AssetInfoView = observer(({ tweets }: AssetInfoPageProps) => {
               className="text-osmoverse-200"
             />
           }
-          label={t("menu.assets")}
-          ariaLabel={t("menu.assets")}
-          href="/assets"
+          label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+          ariaLabel={
+            ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")
+          }
+          href={ref === "portfolio" ? "/portfolio" : "/assets"}
         />
-        <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-10">
-          <div className="flex flex-col gap-12 sm:gap-10">
-            <div className="flex flex-col gap-5">
-              <TokenNavigation />
-              <TokenChart />
-            </div>
-            <YourBalance className="hidden xl:block" />
-            <TokenDetails token={token} />
-            <TokenStats className="hidden xl:flex" />
-            <TokenPools denom={token.coinDenom} />
-            <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
-              <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                {SwapTool_}
-              </div>
-            </div>
-            {token.isAlloyed && token.contract ? (
-              <AlloyedAssetsSection
-                className="hidden xl:block"
-                title={title ?? token.coinDenom}
-                denom={token.coinDenom}
-                contractAddress={token.contract}
-              />
-            ) : null}
-            <TwitterSection tweets={tweets} />
-          </div>
+      ),
+      ctas: [],
+    });
 
-          <div className="flex flex-col gap-11 sm:gap-10">
-            <div className="xl:hidden">{SwapTool_}</div>
-            <YourBalance className="xl:hidden" />
-            <TokenStats className="xl:hidden" />
-            {token.isAlloyed && token.contract ? (
-              <AlloyedAssetsSection
-                className="xl:hidden"
-                title={title ?? token.coinDenom}
-                denom={token.coinDenom}
-                contractAddress={token.contract}
+    useUnmount(() => {
+      if (process.env.NODE_ENV === "production") {
+        assetInfoConfig.dispose();
+      }
+    });
+
+    const contextValue = useMemo(
+      () => ({
+        assetInfoConfig,
+      }),
+      [assetInfoConfig]
+    );
+
+    const SwapTool_ = (
+      <SwapTool
+        fixedWidth
+        useQueryParams={false}
+        useOtherCurrencies={true}
+        initialSendTokenDenom={asset.coinDenom === "USDC" ? "OSMO" : "USDC"}
+        initialOutTokenDenom={asset.coinDenom}
+        page="Token Info Page"
+      />
+    );
+
+    return (
+      <AssetInfoViewProvider value={contextValue}>
+        <Script
+          src="/tradingview/charting_library.standalone.js"
+          strategy="afterInteractive"
+        />
+        <NextSeo
+          title={`${
+            title ? `${title} (${asset.coinDenom})` : asset.coinDenom
+          } | Osmosis`}
+          description={details?.description}
+        />
+        <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
+          <LinkButton
+            className="mr-auto hidden md:flex"
+            icon={
+              <Image
+                alt="left"
+                src="/icons/arrow-left.svg"
+                width={24}
+                height={24}
+                className="text-osmoverse-200"
               />
-            ) : null}
+            }
+            label={t("menu.assets")}
+            ariaLabel={t("menu.assets")}
+            href="/assets"
+          />
+          <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-10">
+            <div className="flex flex-col gap-12 sm:gap-10">
+              <div className="flex flex-col gap-5">
+                <AssetNavigation />
+                <AssetPriceChart />
+              </div>
+              <AssetBalance className="hidden xl:block" />
+              <AssetDetails />
+              <AssetStats className="hidden xl:flex" />
+              <AssetPools denom={asset.coinDenom} />
+              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
+                  {SwapTool_}
+                </div>
+              </div>
+              {asset.isAlloyed && asset.contract ? (
+                <AlloyedAssetsSection
+                  className="hidden xl:block"
+                  title={title ?? asset.coinDenom}
+                  denom={asset.coinDenom}
+                  contractAddress={asset.contract}
+                />
+              ) : null}
+              <TwitterSection tweets={tweets} />
+            </div>
+
+            <div className="flex flex-col gap-11 sm:gap-10">
+              <div className="xl:hidden">{SwapTool_}</div>
+              <AssetBalance className="xl:hidden" />
+              <AssetStats className="xl:hidden" />
+              {asset.isAlloyed && asset.contract ? (
+                <AlloyedAssetsSection
+                  className="xl:hidden"
+                  title={title ?? asset.coinDenom}
+                  denom={asset.coinDenom}
+                  contractAddress={asset.contract}
+                />
+              ) : null}
+            </div>
           </div>
-        </div>
-      </main>
-    </AssetInfoViewProvider>
-  );
-});
+        </main>
+      </AssetInfoViewProvider>
+    );
+  }
+);
 
 export default AssetInfoPage;
 
@@ -213,8 +219,6 @@ const TOP_VOLUME_ASSETS_COUNT = 50;
  * Prerender important denoms. See function body for what we consider "important".
  */
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
-  let paths: { params: { denom: string } }[] = [];
-
   const assets = AssetLists.flatMap((list) => list.assets);
   const activeCoinGeckoIds = await getActiveCoingeckoCoins();
 
@@ -243,14 +247,15 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
     0,
     TOP_VOLUME_ASSETS_COUNT
   );
+
   /**
    * Add cache for all available currencies
    */
-  paths = topVolumeAssets.map((asset) => ({
+  const paths = topVolumeAssets.map((asset) => ({
     params: {
       denom: asset.symbol,
     },
-  }));
+  })) as { params: { denom: string } }[];
 
   return { paths, fallback: "blocking" };
 };

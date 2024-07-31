@@ -86,6 +86,7 @@ export const useBridgeQuotes = ({
   const { sendTransactionAsync, isLoading: isEthTxPending } =
     useSendEvmTransaction();
   const { t } = useTranslation();
+  const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
 
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
@@ -450,7 +451,7 @@ export const useBridgeQuotes = ({
   }, [isTxPending, onRequestClose, transferInitiated]);
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
-  const handleEvmTx = async (
+  const signAndBroadcastEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!isEvmWalletConnected || !evmAddress || !evmConnector)
@@ -515,6 +516,8 @@ export const useBridgeQuotes = ({
           : undefined,
       });
 
+      setIsBroadcastingTx(true);
+
       await waitForTransactionReceipt(publicClient, {
         hash: sendTxHash,
       });
@@ -538,10 +541,13 @@ export const useBridgeQuotes = ({
         walletName: evmConnector.name,
       });
       displayToast(toastContent, ToastType.ERROR);
+    } finally {
+      setIsApprovingToken(false);
+      setIsBroadcastingTx(false);
     }
   };
 
-  const handleCosmosTx = async (
+  const signAndBroadcastCosmosTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
     if (!fromChain || fromChain?.chainType !== "cosmos") {
@@ -549,6 +555,7 @@ export const useBridgeQuotes = ({
     }
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
+    const gasFee = transactionRequest.gasFee;
     return accountStore.signAndBroadcast(
       fromChain.chainId,
       transactionRequest.msgTypeUrl,
@@ -559,36 +566,55 @@ export const useBridgeQuotes = ({
         },
       ],
       "",
-      undefined,
-      undefined,
-      (tx: DeliverTxResponse) => {
-        if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(fromChain.chainId);
+      // Setting the fee from the transaction request
+      // ensures the user is using the same fee token & amount as seen in the quote.
+      // If not present, it will be estimated & the token will be chosen by our logic.
+      gasFee
+        ? {
+            gas: gasFee.gas,
+            amount: [
+              {
+                denom: gasFee.denom,
+                amount: gasFee.amount,
+              },
+            ],
+          }
+        : undefined,
+      {
+        preferNoSetFee: Boolean(gasFee),
+      },
+      {
+        onBroadcastFailed: () => setIsBroadcastingTx(false),
+        onBroadcasted: () => setIsBroadcastingTx(true),
+        onFulfill: (tx: DeliverTxResponse) => {
+          if (tx.code == null || tx.code === 0) {
+            const queries = queriesStore.get(fromChain.chainId);
 
-          // After succeeding to send token, refresh the balance.
-          const queryBalance = queries.queryBalances
-            // If we get here destination address is defined
-            .getQueryBech32Address(toAddress!)
-            .balances.find((bal) => {
-              return (
-                bal.currency.coinMinimalDenom ===
-                availableBalance?.currency.coinMinimalDenom
-              );
+            // After succeeding to send token, refresh the balance.
+            const queryBalance = queries.queryBalances
+              // If we get here destination address is defined
+              .getQueryBech32Address(toAddress!)
+              .balances.find((bal) => {
+                return (
+                  bal.currency.coinMinimalDenom ===
+                  availableBalance?.currency.coinMinimalDenom
+                );
+              });
+
+            if (queryBalance) {
+              queryBalance.fetch();
+            }
+
+            trackTransferStatus(quote.provider.id, {
+              sendTxHash: tx.transactionHash,
+              fromChainId: quote.fromChain.chainId,
+              toChainId: quote.toChain.chainId,
             });
 
-          if (queryBalance) {
-            queryBalance.fetch();
+            onTransferProp?.();
+            setTransferInitiated(true);
           }
-
-          trackTransferStatus(quote.provider.id, {
-            sendTxHash: tx.transactionHash,
-            fromChainId: quote.fromChain.chainId,
-            toChainId: quote.toChain.chainId,
-          });
-
-          onTransferProp?.();
-          setTransferInitiated(true);
-        }
+        },
       }
     );
   };
@@ -599,12 +625,15 @@ export const useBridgeQuotes = ({
       bridgeTransaction.data?.transactionRequest;
     const quote = selectedQuote?.quote;
 
-    if (!transactionRequest || !quote) return;
+    if (!transactionRequest || !quote) {
+      console.error("No quote or transaction to use for transfer");
+      return;
+    }
 
     const tx =
       transactionRequest.type === "evm"
-        ? handleEvmTx({ ...quote, transactionRequest })
-        : handleCosmosTx({ ...quote, transactionRequest });
+        ? signAndBroadcastEvmTx({ ...quote, transactionRequest })
+        : signAndBroadcastCosmosTx({ ...quote, transactionRequest });
 
     await tx.catch((e) => {
       console.error(transactionRequest.type, "transaction failed", e);
@@ -658,24 +687,22 @@ export const useBridgeQuotes = ({
   );
   const isLoadingBridgeTransaction =
     bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
-  const isWithdrawReady =
-    isWithdraw && !isTxPending && !isLoadingBridgeTransaction;
   const isFromWalletConnected =
     fromChain?.chainType === "evm"
       ? isEvmWalletConnected
       : fromChain?.chainType === "cosmos"
       ? accountStore.getWallet(fromChain.chainId)?.isWalletConnected ?? false
       : false;
-  const isDepositReady =
-    isDeposit &&
-    isFromWalletConnected &&
-    !isLoadingBridgeQuote &&
-    !isTxPending &&
-    !isLoadingBridgeTransaction;
+  const isDepositReady = isDeposit && isFromWalletConnected;
+  const isWithdrawReady = direction === "withdraw";
   const userCanAdvance =
     (isDepositReady || isWithdrawReady) &&
     !isInsufficientFee &&
-    !isInsufficientBal;
+    !isInsufficientBal &&
+    !isLoadingBridgeQuote &&
+    !isLoadingBridgeTransaction &&
+    !isTxPending &&
+    Boolean(selectedQuote);
 
   let buttonText: string;
   if (buttonErrorMessage) {
@@ -692,8 +719,10 @@ export const useBridgeQuotes = ({
   let txButtonText: string | undefined;
   if (isApprovingToken) {
     txButtonText = t("assets.transfer.approving");
-  } else if (isTxPending) {
+  } else if (isBroadcastingTx) {
     txButtonText = t("assets.transfer.sending");
+  } else if (isTxPending) {
+    txButtonText = t("assets.transfer.approveInWallet");
   }
 
   if (selectedQuote && !selectedQuote.expectedOutput) {
@@ -728,7 +757,6 @@ export const useBridgeQuotes = ({
     refetchInterval,
     isLoadingBridgeQuote,
     isLoadingAnyBridgeQuote,
-    isLoadingBridgeTransaction,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
   };
 };

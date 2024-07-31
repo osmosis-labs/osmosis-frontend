@@ -220,6 +220,7 @@
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
       "approving": "Approving...",
+      "approveInWallet": "Approve in wallet",
       "enterAddress": "{network} address",
       "errors": {
         "insufficientBal": "Insufficient Balance",
@@ -310,9 +311,7 @@
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    },
-    "balancesMovedTitle": "Looking for your balances?",
-    "balancesMovedDescription": "Head over to the Portfolio page, the new home for your balances and more."
+    }
   },
   "portfolio": {
     "buy": "Buy",
@@ -367,7 +366,6 @@
     }
   },
   "connectWallet": "Connect wallet",
-  "switchNetwork": "Switch network",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
@@ -407,7 +405,10 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
-    "noData": "No data"
+    "noData": "No data",
+    "uhOhSomethingWentWrong": "Uh oh, something went wrong",
+    "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
+    "startAgain": "Start again"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -679,9 +680,7 @@
       "total": "Total APR",
       "explainer": {
         "title": "How are APRs calculated?",
-        "p1": "All APRs are estimates. They are calculated by taking the average APR for liquidity in the pool.",
-        "p2": "In supercharged pools, most users will receive lower rewards. This is due to positions that are more concentrated, which capture more of the incentives.",
-        "p3": "In order to keep estimates conservative, all APRs are divided by factor of 3."
+        "subtitle": "All APRs are estimates based on the past 7 days. As trade volume and price fluctuate, the APR will change accordingly. The displayed range is based on the following.\n\nFor supercharged pools, the lower bound references conservative, full-range positions. This may result in an extremely low APR as liquidity is spread across all trades. The upper bound is calculated for a position with a 30% concentration around the spot price. Bear in mind, a position will no longer earn if it goes out of range."
       }
     }
   },
@@ -883,7 +882,7 @@
     "scanThis": "Scan this on your phone to download",
     "mobileWallets": "Mobile Wallets",
     "installedWallets": "Installed Wallets",
-    "otherWallets": "Other Wallets",
+    "otherWallets": "Other wallets",
     "searchWallets": "Search wallets",
     "step1Title": "What are wallets?",
     "step1Content": "Wallets are used to send, receive, and access all your digital assets like OSMO and ATOM.",
@@ -912,14 +911,17 @@
     "to": "To",
     "max": "Max",
     "available": "available",
+    "connectTo": "Connect to {network}",
     "transferWith": "Transfer with",
     "transferTo": "Transfer to",
     "receiveAsset": "Receive asset",
     "transfer": "Transfer {denom}",
+    "changeNetworkInWallet": "Change network in wallet",
     "receive": "Receive {denom}",
-    "selectDepositWallet": "Select deposit wallet",
-    "selectWithdrawWallet": "Select withdraw wallet",
-    "receiveAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
+    "selectDepositWallet": "Select {network} wallet",
+    "selectWithdrawWallet": "Select {network} wallet",
+    "depositAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
+    "withdrawAssetDescription": "When you withdraw certain assets, you can choose which version of the asset you want to receive on the destination network.",
     "estimatingTime": "Estimating time",
     "calculatingFees": "Calculating fees",
     "reviewDeposit": "Review deposit",
@@ -945,8 +947,10 @@
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
-      "descriptionDeposit": "Choose from the following alternative providers to deposit (aka “bridge”) your {asset} to {chain}.",
-      "descriptionWithdraw": "Choose from the following alternative providers to withdraw (aka “bridge”) your {asset} to {chain}.",
+      "singleDescriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use {service}.",
+      "singleDescriptionWithdraw": "To withdraw {denom} from {networkA} to {networkB}, please use {service}.",
+      "descriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use one of the following alternative providers.",
+      "descriptionWithdraw": "To withdraw {denom} from {networkA} to {networkB}, please use one of the following alternative providers.",
       "depositWith": "Deposit with",
       "withdrawWith": "Withdraw with"
     },
@@ -990,12 +994,12 @@
     "enterAddress": "Enter an address",
     "sendToAnotherAddress": "Send to another address",
     "invalidAddress": "Invalid {chain} address",
-    "acknowledgement": "I acknowledge that I am fully responsible for the world ending etc.",
+    "acknowledgement": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address or try to withdraw to an exchange.",
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
+    "transferWithNoun": "Transfer with {noun}",
     "risks": "Bridging comes with risks.",
     "learnMore": "Learn more",
-    "externalTransferSplash": "To transfer {denom} from {networkA} to {networkB}, please use {service}.",
     "openNoun": "Open {noun}"
   },
   "unknownError": "Unknown error",

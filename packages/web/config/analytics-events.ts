@@ -52,7 +52,7 @@ export type EventProperties = {
   completed: boolean;
   quoteTimeMilliseconds: number;
   amountDefault: AmountDefault;
-  amount: string;
+  amount: number;
   amountUSD: string | undefined;
   type: string;
   router: string;
@@ -64,6 +64,12 @@ export type EventProperties = {
   source: string;
   spendLimit: number;
   sessionPeriod: string;
+  network: string;
+  bridgeProviderName: string;
+  hasMultipleVariants: boolean;
+  isRecommendedVariant: boolean;
+  walletName: string;
+  transferDirection: "deposit" | "withdraw";
 };
 
 export type UserProperties = {
@@ -112,22 +118,11 @@ export const EventName = {
   // Events in Pools page
   Pools: {
     pageViewed: "Pools: Page viewed",
-    createNewPoolClicked: "Pools: Create new pool clicked",
     myPoolsCardClicked: "Pools: My pools card clicked",
-    superfluidPoolsCardClicked: "Pools: Superfluid pools card clicked",
-    allPoolsListFiltered: "Pools: All pools list filtered",
-    allPoolsListSorted: "Pools: All pools list sorted",
-    incentivizedPoolsItemClicked: "Pools: Incentivized pools item clicked",
-    allPoolsItemClicked: "Pools: All pools item clicked",
-    externalIncentivePoolsListSorted:
-      "Pools: External incentive pools list sorted",
-    externalIncentivePoolsItemClicked:
-      "Pools: External incentive pools item clicked",
   },
   // Events in Pool detail page
   PoolDetail: {
     pageViewed: "Pool detail: Page viewed",
-    swapTokensClicked: "Pool detail: Swap tokens clicked",
     bondSharesClicked: "Pool detail: Bond Shares clicked",
     unbondAllStarted: "Pool detail: Unbond all started",
     unbondAllCompleted: "Pool detail: Unbond all completed",
@@ -142,7 +137,6 @@ export const EventName = {
     superfluidStakeStarted: "Liquidity bonding: Superfluid stake started",
     superfluidStakeCompleted: "Liquidity bonding: Superfluid stake completed",
     cardDetailsExpanded: "Pool detail: Card details expanded",
-    earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
     goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
     unbondClicked: "Pool detail: Unbond clicked",
     showHidePoolDetails: "Pool detail: Show/Hide pool details",
@@ -179,19 +173,15 @@ export const EventName = {
   // Events in CL
   ConcentratedLiquidity: {
     strategyPicked: "CL Create a position: Strategy picked",
-    introClosed: "CL Intro modal: closed",
     claimAllRewardsClicked: "CL: Claim All Rewards clicked",
     claimAllRewardsCompleted: "CL: Claim All Rewards completed",
     collectRewardsClicked: "CL: Collect rewards clicked",
     collectRewardsCompleted: "CL: Collect rewards completed",
-    learnMoreCtaClicked: "CL: Learn more CTA clicked",
     addLiquidityCompleted: "CL Create a position: Add liquidity completed",
     addLiquidityStarted: "CL Create a position: Add liquidity started",
     addMoreLiquidityStarted: "CL : Add more liquidity started",
     addMoreLiquidityCompleted: "CL : Add more liquidity completed",
-    introModalViewed: "CL Intro modal: viewed",
     createPositionCtaClicked: "CL Tutorial: Create position CTA clicked",
-    learnMoreFinished: "CL: Learn more finished",
     positionDetailsExpanded: "CL: Position details expanded",
     removeLiquidityClicked: "CL: Remove liquidity clicked",
     removeLiquidityCompleted: "CL: Remove liquidity completed",
@@ -223,8 +213,6 @@ export const EventName = {
   },
   TokenInfo: {
     pageViewed: "Token Info: Page view",
-    assetClicked: "Token Info: Asset clicked",
-    cardClicked: "Token Info: Card clicked",
     viewMoreClicked: "Token Info: View more clicked",
     socialPostClicked: "Token Info: Social post clicked",
   },
@@ -232,7 +220,6 @@ export const EventName = {
     pageViewed: "Earn Page: Page viewed",
     rewardsClaimStarted: "Earn Page: Rewards claim started",
     joinStrategyClicked: "Earn Page: Join strategy clicked",
-    joinStrategyCompleted: "Earn Page: Join strategy completed",
   },
   TransactionsPage: {
     pageViewed: "Transactions: Page viewed",
@@ -248,5 +235,13 @@ export const EventName = {
     endSession: "1CT: End session",
     enableOneClickTrading: "1CT: Enable 1-Click Trading",
     accessed: "1CT: Accessed",
+  },
+  DepositWithdraw: {
+    assetSelected: "DepositWithdraw: Asset selected",
+    networkSelected: "DepositWithdraw: Network selected",
+    providerSelected: "DepositWithdraw: Provider selected",
+    variantSelected: "DepositWithdraw: Variant selected",
+    started: "DepositWithdraw: Started",
+    walletSelected: "DepositWithdraw: Wallet selected",
   },
 };

@@ -4,7 +4,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { getShortAddress, isNil } from "@osmosis-labs/utils";
+import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent } from "react";
@@ -153,21 +153,24 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         </Link>
       </div>
       <div className="flex w-full items-center gap-3 py-3 md:py-2">
+        {!quote.isTxPending && (
+          <Button
+            className="w-full md:h-12"
+            variant="secondary"
+            onClick={onCancel}
+            disabled={quote.isTxPending}
+          >
+            <div className="md:subtitle1 text-h6 font-h6">
+              {t("transfer.cancel")}
+            </div>
+          </Button>
+        )}
         <Button
-          className="w-full md:h-12"
-          variant="secondary"
-          onClick={onCancel}
-          disabled={quote.isTxPending}
-        >
-          <div className="md:subtitle1 text-h6 font-h6">
-            {t("transfer.cancel")}
-          </div>
-        </Button>
-        <Button
-          isLoading={quote.isTxPending || quote.isApprovingToken}
           className="w-full md:h-12"
           onClick={onConfirm}
-          disabled={!quote.userCanAdvance}
+          disabled={
+            !quote.userCanAdvance || quote.isTxPending || quote.isApprovingToken
+          }
         >
           <div className="md:subtitle1 text-h6 font-h6">
             {quote?.txButtonText ?? t("transfer.confirm")}
@@ -225,7 +228,7 @@ const AssetBox: FunctionComponent<{
             />
           )}
           <div className="text-wosmongton-200">
-            {getShortAddress(address, { prefixLength: 12 })}
+            {shorten(address, { prefixLength: 12 })}
           </div>
         </div>
       </div>
@@ -243,9 +246,7 @@ const AssetBox: FunctionComponent<{
       </div>
       <div className="flex items-center gap-2">
         <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
-        <div className="body1 text-wosmongton-200">
-          {getShortAddress(address)}
-        </div>
+        <div className="body1 text-wosmongton-200">{shorten(address)}</div>
       </div>
     </div>
   );
@@ -273,11 +274,11 @@ const AssetBox: FunctionComponent<{
         </div>
         <div className="text-right md:flex md:flex-col md:gap-1">
           <div className="subtitle1 md:body2">
-            {type === "to" && "~"} {value.toString()}
+            {type === "to" && "~"} {value.inequalitySymbol(false).toString()}
           </div>
           <div className="body1 md:caption text-osmoverse-300">
             {type === "to" && "~"}{" "}
-            {formatPretty(coin, {
+            {formatPretty(coin.inequalitySymbol(false), {
               maxDecimals: 10,
             })}
           </div>
