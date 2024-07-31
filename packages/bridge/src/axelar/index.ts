@@ -424,6 +424,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
+      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&

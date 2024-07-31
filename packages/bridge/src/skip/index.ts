@@ -459,7 +459,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createCosmosTransaction(
     message: SkipMultiChainMsg
-  ): Promise<Omit<CosmosBridgeTransactionRequest, "gas">> {
+  ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
 
     if ("contract" in messageData) {
@@ -487,6 +487,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg,
+        fallbackGasLimit: cosmwasmMsgOpts.executeWasm.gas,
       };
     } else {
       // is an ibc transfer
@@ -514,6 +515,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg: value,
+        fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
       };
     }
   }
@@ -737,7 +739,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async estimateGasFee(
     params: GetBridgeQuoteParams,
-    txData: BridgeTransactionRequest
+    txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
     if (txData.type === "evm") {
       const evmChain = Object.values(EthereumChainInfo).find(
@@ -792,6 +794,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           ],
         },
         bech32Address: params.fromAddress,
+        fallbackGasLimit: txData.fallbackGasLimit,
       }).catch((e) => {
         if (
           e instanceof Error &&
