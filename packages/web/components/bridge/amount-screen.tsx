@@ -8,7 +8,8 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { IntPretty } from "@keplr-wallet/unit";
-import { BridgeTransactionDirection, MinimalAsset } from "@osmosis-labs/types";
+import { Bridge } from "@osmosis-labs/bridge";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -80,6 +81,7 @@ interface AmountScreenProps {
 
   assetsInOsmosis: MinimalAsset[] | undefined;
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
+  supportedBridges: Bridge[];
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -116,6 +118,7 @@ export const AmountScreen = observer(
       supportedChains,
       isLoading: isLoadingSupportedAssets,
     },
+    supportedBridges,
 
     fromChain,
     setFromChain,
@@ -886,7 +889,8 @@ export const AmountScreen = observer(
                       className="flex items-center justify-between"
                     >
                       <span className="body1 md:body2 text-osmoverse-300">
-                        {direction === "deposit"
+                        {direction === "deposit" ||
+                        fromChain.chainType === toChain.chainType
                           ? t("transfer.transferWith")
                           : t("transfer.transferTo")}
                       </span>
@@ -980,7 +984,9 @@ export const AmountScreen = observer(
                                 {t("transfer.receiveAsset")}
                               </h1>
                               <p className="caption text-osmoverse-300">
-                                {t("transfer.receiveAssetDescription")}
+                                {direction === "deposit"
+                                  ? t("transfer.depositAssetDescription")
+                                  : t("transfer.withdrawAssetDescription")}
                               </p>
                             </div>
                           }
@@ -1072,7 +1078,7 @@ export const AmountScreen = observer(
                                 <MenuItem key={asset.coinDenom}>
                                   <button
                                     className={classNames(
-                                      "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                      "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
                                       isSelected && "bg-osmoverse-700"
                                     )}
                                     onClick={onClick}
@@ -1134,7 +1140,7 @@ export const AmountScreen = observer(
                               <MenuItem key={asset.denom}>
                                 <button
                                   className={classNames(
-                                    "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-800",
+                                    "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
                                     isSelected && "bg-osmoverse-700"
                                   )}
                                   onClick={onClick}
@@ -1241,10 +1247,8 @@ export const AmountScreen = observer(
                   <Button
                     disabled={
                       !isNil(buttonErrorMessage) ||
-                      isLoadingBridgeQuote ||
                       cryptoAmount === "" ||
                       cryptoAmount === "0" ||
-                      isNil(selectedQuote) ||
                       !quote.userCanAdvance
                     }
                     className="w-full md:h-12"
@@ -1279,14 +1283,7 @@ export const AmountScreen = observer(
                     fromChain={fromChain}
                     toChain={toChain}
                     toAddress={toAddress}
-                    bridges={Array.from(
-                      new Set(
-                        Object.values(
-                          (direction === "withdraw" ? toAsset : fromAsset)
-                            .supportedVariants
-                        ).flat()
-                      )
-                    )}
+                    bridges={supportedBridges}
                     onRequestClose={() => setAreMoreOptionsVisible(false)}
                   />
                 </Screen>
@@ -1302,14 +1299,7 @@ export const AmountScreen = observer(
             fromChain={fromChain}
             fromAsset={fromAsset}
             toAddress={toAddress}
-            bridges={Array.from(
-              new Set(
-                Object.values(
-                  (direction === "withdraw" ? toAsset : fromAsset)
-                    .supportedVariants
-                ).flat()
-              )
-            )}
+            bridges={supportedBridges}
             onDone={onClose}
           />
         )}
@@ -1319,7 +1309,7 @@ export const AmountScreen = observer(
 );
 
 interface ChainSelectorButtonProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   readonly: boolean;
   children: ReactNode;
   chainLogo: string | undefined;
