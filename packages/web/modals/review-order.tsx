@@ -365,7 +365,10 @@ export function ReviewOrder({
                               setIsEditingSlippage(true);
                             }}
                             onBlur={() => {
-                              if (isManualSlippageTooHigh) {
+                              if (
+                                isManualSlippageTooHigh &&
+                                +manualSlippage > 50
+                              ) {
                                 handleManualSlippageChange(
                                   (+manualSlippage).toString().split("")[0]
                                 );
