@@ -69,6 +69,13 @@ const transformAmount = (value: string, decimalCount = 18) => {
     : updatedValue;
 };
 
+// Certain errors we do not wish to show on the button
+const NON_DISPLAY_ERRORS = [
+  "errors.zeroAmount",
+  "errors.emptyAmount",
+  "limitOrders.insufficientFunds",
+];
+
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
@@ -160,16 +167,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           .gt(new Dec(0)),
       [swapState.baseTokenBalance, swapState.quoteTokenBalance, tab]
     );
-
-    const buttonText = useMemo(() => {
-      if (swapState.error) {
-        return t(swapState.error);
-      } else {
-        return orderDirection === "bid"
-          ? t("portfolio.buy")
-          : t("limitOrders.sell");
-      }
-    }, [orderDirection, swapState.error, t]);
 
     const tokenAmount = useMemo(
       () => swapState.inAmountInput.inputAmount,
@@ -370,6 +367,39 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [expectedOutput, fiatAmount, focused, tab, tokenAmount, type]
     );
 
+    const buttonText = useMemo(() => {
+      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        return t(swapState.error);
+      } else {
+        return orderDirection === "bid"
+          ? t("portfolio.buy")
+          : t("limitOrders.sell");
+      }
+    }, [orderDirection, swapState.error, t]);
+
+    const isButtonDisabled = useMemo(() => {
+      if (swapState.isMarket) {
+        return (
+          swapState.marketState.inAmountInput.isEmpty ||
+          swapState.marketState.inAmountInput.amount?.toDec().isZero() ||
+          isMarketLoading
+        );
+      }
+
+      return Boolean(swapState.error) || !swapState.isBalancesFetched;
+    }, [
+      swapState.error,
+      swapState.isBalancesFetched,
+      swapState.isMarket,
+      swapState.marketState.inAmountInput.amount,
+      swapState.marketState.inAmountInput.isEmpty,
+      isMarketLoading,
+    ]);
+
+    const isButtonLoading = useMemo(() => {
+      return !swapState.isBalancesFetched;
+    }, [swapState.isBalancesFetched]);
+
     return (
       <>
         <div className="flex flex-col">
@@ -510,22 +540,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </Button>
             ) : hasFunds ? (
               <Button
-                disabled={
-                  Boolean(swapState.error) ||
-                  isMarketLoading ||
-                  (swapState.isMarket &&
-                    (swapState.marketState.inAmountInput.isEmpty ||
-                      swapState.marketState.inAmountInput.amount
-                        ?.toDec()
-                        .isZero())) ||
-                  !swapState.isBalancesFetched
-                }
-                isLoading={
-                  !swapState.isBalancesFetched ||
-                  (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                  (isMarketLoading &&
-                    !swapState.marketState.isSpotPriceQuoteLoading)
-                }
+                disabled={isButtonDisabled}
+                isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
               >
