@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import {
@@ -286,14 +287,29 @@ export const OrderHistory = observer(() => {
                           <span className="caption">{filledOrders.length}</span>
                         </div>
                       </div>
-                      <div className="flex h-12 w-12 items-center justify-center">
-                        <Icon
-                          id="question"
-                          className="h-6 w-6 text-wosmongton-200"
-                          width={24}
-                          height={24}
-                        />
-                      </div>
+                      <GenericDisclaimer
+                        title="What is order claiming?"
+                        body={
+                          <>
+                            In the majority of cases, when a limit order is
+                            filled, funds are automatically added to your
+                            balance. However in some rare cases, funds must be
+                            manually claimed from the filled order. <br />
+                            <br /> This claiming process involves approving a
+                            single transaction in your wallet for all unclaimed
+                            filled orders which incurs a nominal network fee.
+                          </>
+                        }
+                      >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+                          <Icon
+                            id="question"
+                            className="h-6 w-6 text-wosmongton-200"
+                            width={24}
+                            height={24}
+                          />
+                        </div>
+                      </GenericDisclaimer>
                     </div>
                     <button
                       className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4"
