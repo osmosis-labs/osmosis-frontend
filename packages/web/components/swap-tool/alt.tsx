@@ -397,7 +397,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 </div>
                 <AssetFieldsetFooter>
-                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                  <span
+                    className={classNames(
+                      "body2 h-5 text-osmoverse-300 transition-all",
+                      {
+                        "!text-osmoverse-600":
+                          !swapState.inAmountInput?.fiatValue,
+                      }
+                    )}
+                  >
                     {formatPretty(
                       swapState.inAmountInput?.fiatValue ??
                         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
@@ -447,12 +455,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                             !swapState.inAmountInput.isTyping &&
                             !swapState.isQuoteLoading
                             ? "text-white-full"
-                            : "text-white-disabled",
+                            : "text-osmoverse-600",
                           {
-                            "opacity-50":
-                              isSwapToolLoading ||
-                              !swapState.quote ||
-                              swapState.inAmountInput.isEmpty,
+                            "opacity-50": isSwapToolLoading,
                           }
                         )}
                       >
@@ -478,20 +483,40 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 </div>
                 <AssetFieldsetFooter>
-                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
-                    {swapState.tokenOutFiatValue?.toDec().gt(new Dec(0)) ? (
+                  <span
+                    className={classNames(
+                      "body2 h-5 text-osmoverse-300 transition-all",
+                      {
+                        "!text-osmoverse-600": swapState.tokenOutFiatValue
+                          ?.toDec()
+                          .isZero(),
+                      }
+                    )}
+                  >
+                    {swapState.tokenOutFiatValue ? (
                       <span>
-                        {formatPretty(swapState.tokenOutFiatValue, {
-                          ...getPriceExtendedFormatOptions(
-                            swapState.tokenOutFiatValue.toDec()
-                          ),
-                        })}
+                        {formatPretty(
+                          swapState.tokenOutFiatValue,
+                          swapState.tokenOutFiatValue?.toDec().gt(new Dec(0))
+                            ? {
+                                ...getPriceExtendedFormatOptions(
+                                  swapState.tokenOutFiatValue.toDec()
+                                ),
+                              }
+                            : undefined
+                        )}
                         <span
-                          className={
-                            showOutputDifferenceWarning
-                              ? "text-rust-400"
-                              : "text-osmoverse-600"
-                          }
+                          className={classNames(
+                            "opacity-0 transition-opacity",
+                            {
+                              "opacity-100": swapState.tokenOutFiatValue
+                                ?.toDec()
+                                .gt(new Dec(0)),
+                              "text-rust-400": showOutputDifferenceWarning,
+                              "text-osmoverse-600":
+                                !showOutputDifferenceWarning,
+                            }
+                          )}
                         >{` (-${outputDifference})`}</span>
                       </span>
                     ) : (

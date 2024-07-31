@@ -219,12 +219,21 @@ export const TradeDetails = ({
                               .gt(new Dec(0)) ? (
                               <span>
                                 <span className="text-osmoverse-100">
-                                  ~
-                                  {formatPretty(
-                                    swapState?.tokenInFeeAmountFiatValue,
-                                    {
-                                      maxDecimals: 2,
-                                    }
+                                  {swapState?.tokenInFeeAmountFiatValue
+                                    .toDec()
+                                    .lte(new Dec(0.01)) ? (
+                                    <>&lt;$0.01</>
+                                  ) : (
+                                    <>
+                                      ~
+                                      {formatPretty(
+                                        swapState?.tokenInFeeAmountFiatValue,
+                                        {
+                                          maxDecimals: 3,
+                                          maximumSignificantDigits: 4,
+                                        }
+                                      )}
+                                    </>
                                   )}
                                 </span>
                                 <span className="text-osmoverse-500">
