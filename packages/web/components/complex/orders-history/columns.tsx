@@ -19,7 +19,22 @@ export const tableColumns = [
     header: () => {
       return <small className="body2">Order</small>;
     },
+    cell: ({
+      row: {
+        original: { order_direction },
+      },
+    }) => {
+      return (
+        <small className="subtitle1">
+          {order_direction === "bid" ? "Buy" : "Sell"}
+        </small>
+      );
+    },
+  }),
+  columnHelper.display({
+    id: "amount",
     size: 400,
+    header: () => <small className="body2">Amount</small>,
     cell: ({
       row: {
         original: {
@@ -28,11 +43,6 @@ export const tableColumns = [
           baseAsset,
           placed_quantity,
           output,
-          // quantity,
-          // tick_id,
-          // percentFilled,
-          // if 100 -> order filled
-          // an order is claimable when percent filled is gt percent claimed
         },
       },
     }) => {
@@ -42,17 +52,6 @@ export const tableColumns = [
         "";
       return (
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800">
-            <Icon
-              id="exchange"
-              className={classNames("h-6 w-6", {
-                "text-bullish-400": order_direction === "bid",
-                "text-rust-400": order_direction === "ask",
-              })}
-              width={24}
-              height={24}
-            />
-          </div>
           <div className="flex flex-col gap-1">
             <p
               className={classNames(
@@ -92,8 +91,7 @@ export const tableColumns = [
               </span>
             </p>
             <div className="inline-flex items-center gap-2">
-              <span className="subtitle1 font-bold">
-                {order_direction === "bid" ? "Buy" : "Sell"}{" "}
+              <span>
                 {formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
@@ -118,7 +116,7 @@ export const tableColumns = [
                 height={20}
                 className="h-5 w-5"
               />
-              <span className="subtitle1">{baseAsset?.symbol}</span>
+              <span>{baseAsset?.symbol}</span>
             </div>
           </div>
         </div>
@@ -176,7 +174,7 @@ export const tableColumns = [
       return <small className="body2">Status</small>;
     },
     cell: ({ row: { original: order } }) => {
-      const { status } = order;
+      const { status, placed_at } = order;
       const statusString = (() => {
         switch (status) {
           case "open":
@@ -195,6 +193,12 @@ export const tableColumns = [
           case "open":
           case "partiallyFilled":
             return <OrderProgressBar order={order} />;
+          case "cancelled":
+            return (
+              <span className="body2 text-osmoverse-300">
+                {dayjs(new Date()).diff(dayjs(placed_at), "d")}d ago
+              </span>
+            );
           default:
             return;
         }
@@ -204,7 +208,7 @@ export const tableColumns = [
         <div className="flex flex-col gap-1">
           {statusComponent}
           <span
-            className={classNames("caption", {
+            className={classNames({
               "text-bullish-400":
                 status === "filled" || status === "fullyClaimed",
               "text-osmoverse-300":
