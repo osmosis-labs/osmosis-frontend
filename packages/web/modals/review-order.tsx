@@ -141,17 +141,19 @@ export function ReviewOrder({
                 {percentAdjusted && (
                   <div className="flex items-center">
                     <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="triangle-down"
-                        width={11}
-                        height={6}
-                        className={classNames({
-                          "rotate-180 text-bullish-400":
-                            percentAdjusted.isPositive(),
-                          "rotate-0 text-rust-500":
-                            percentAdjusted.isNegative(),
-                        })}
-                      />
+                      {!percentAdjusted.isZero() && (
+                        <Icon
+                          id="triangle-down"
+                          width={11}
+                          height={6}
+                          className={classNames({
+                            "rotate-180 text-bullish-400":
+                              percentAdjusted.isPositive(),
+                            "rotate-0 text-rust-500":
+                              percentAdjusted.isNegative(),
+                          })}
+                        />
+                      )}
                     </div>
                     <span>
                       {formatPretty(percentAdjusted.mul(new Dec(100)).abs())}%
