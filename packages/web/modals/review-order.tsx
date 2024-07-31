@@ -78,8 +78,13 @@ export function ReviewOrder({
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
-  let isManualSlippageTooHigh = useMemo(
+  const isManualSlippageTooHigh = useMemo(
     () => +manualSlippage > 1,
+    [manualSlippage]
+  );
+
+  const isManualSlippageTooLow = useMemo(
+    () => manualSlippage !== "" && +manualSlippage < 0.1,
     [manualSlippage]
   );
 
@@ -407,19 +412,45 @@ export function ReviewOrder({
                     }
                   />
                   {isManualSlippageTooHigh && (
-                    <div className="flex items-start gap-3 rounded-xl border border-solid border-rust-500 p-5">
+                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                       <Icon
                         id="alert-triangle"
-                        width={20}
-                        height={20}
+                        width={24}
+                        height={24}
                         className="text-rust-400"
                       />
                       <div className="flex flex-col gap-1">
-                        <span className="caption">
+                        <span className="body2">
                           Your trade may result in significant loss of value
                         </span>
-                        <span className="caption text-osmoverse-300">
+                        <span className="body2 text-osmoverse-300">
                           A lower slippage tolerance is recommended.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {isManualSlippageTooLow && (
+                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-[#3E386A8A] p-5">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 6.20101 17.799 1.5 12 1.5C6.20101 1.5 1.5 6.20101 1.5 12C1.5 17.799 6.20101 22.5 12 22.5ZM12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24ZM13.5 7.49976C13.5 8.32818 12.8284 8.99976 12 8.99976C11.1716 8.99976 10.5 8.32818 10.5 7.49976C10.5 6.67133 11.1716 5.99976 12 5.99976C12.8284 5.99976 13.5 6.67133 13.5 7.49976ZM11.25 10.4998C10.8358 10.4998 10.5 10.8355 10.5 11.2498V17.2498C10.5 17.664 10.8358 17.9998 11.25 17.9998H12.75C13.1642 17.9998 13.5 17.664 13.5 17.2498V11.2498C13.5 10.8355 13.1642 10.4998 12.75 10.4998H11.25Z"
+                          fill="#736CA3"
+                        />
+                      </svg>
+                      <div className="flex flex-col gap-1">
+                        <span className="body2">
+                          Your trade may not be executed
+                        </span>
+                        <span className="body2 text-osmoverse-300">
+                          Try a higher maximum slippage tolerance.
                         </span>
                       </div>
                     </div>
