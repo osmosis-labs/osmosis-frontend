@@ -522,8 +522,13 @@ export const usePlaceLimit = ({
     if (isMarket) {
       return marketState.isLoadingNetworkFee;
     }
-    return gasFeeLoading;
-  }, [isMarket, marketState.isLoadingNetworkFee, gasFeeLoading]);
+    return gasFeeLoading && shouldEstimateLimitGas;
+  }, [
+    isMarket,
+    marketState.isLoadingNetworkFee,
+    gasFeeLoading,
+    shouldEstimateLimitGas,
+  ]);
 
   return {
     baseAsset,

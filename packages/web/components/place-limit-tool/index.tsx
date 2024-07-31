@@ -542,13 +542,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             type={type}
             isMakerFeeLoading={swapState.isMakerFeeLoading}
             makerFee={swapState.makerFee}
-            // inDenom={swapState.baseAsset?.coinDenom}
-            // inPrice={
-            //   new PricePretty(
-            //     DEFAULT_VS_CURRENCY,
-            //     swapState.priceState.spotPrice
-            //   )
-            // }
+            gasAmount={swapState.gas.gasAmountFiat}
+            isGasLoading={swapState.gas.isLoading}
           />
         </div>
         <ReviewOrder
@@ -571,6 +566,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           limitPriceFiat={swapState.priceState.priceFiat}
           baseDenom={swapState.baseAsset?.coinDenom}
           slippageConfig={slippageConfig}
+          gasAmount={swapState.gas.gasAmountFiat}
+          isGasLoading={swapState.gas.isLoading}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
