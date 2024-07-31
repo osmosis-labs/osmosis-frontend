@@ -61,10 +61,20 @@ export type SqsPool = {
   liquidity_cap_error: string;
 };
 
-export function queryPools({ poolIds }: { poolIds?: string[] } = {}) {
-  const url = new URL(
-    poolIds ? `/pools?IDs=${poolIds.join(",")}` : "/pools",
-    SIDECAR_BASE_URL
-  );
+export function queryPools({
+  poolIds,
+  minLiquidityCap,
+}: { poolIds?: string[]; minLiquidityCap?: string } = {}) {
+  const url = new URL("/pools", SIDECAR_BASE_URL);
+  const params = new URLSearchParams();
+
+  if (poolIds) {
+    params.append("IDs", poolIds.join(","));
+  }
+  if (minLiquidityCap) {
+    params.append("min_liquidity_cap", minLiquidityCap);
+  }
+
+  url.search = params.toString();
   return apiClient<SqsPool[]>(url.toString());
 }

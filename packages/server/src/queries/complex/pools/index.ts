@@ -33,6 +33,7 @@ export type PoolProvider = (params: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
+  minLiquidityUsd?: number;
 }) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
@@ -77,7 +78,11 @@ export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
-  let pools = await poolProvider({ ...params, poolIds: params?.poolIds });
+  let pools = await poolProvider({
+    ...params,
+    poolIds: params?.poolIds,
+    minLiquidityUsd: params?.minLiquidityUsd,
+  });
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>

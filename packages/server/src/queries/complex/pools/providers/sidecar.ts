@@ -21,18 +21,23 @@ const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 export function getPoolsFromSidecar({
   assetLists,
   poolIds,
+  minLiquidityUsd,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
+  minLiquidityUsd?: number;
 }): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
+    key:
+      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+      minLiquidityUsd,
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
-        () => queryPools({ poolIds }),
+        () =>
+          queryPools({ poolIds, minLiquidityCap: minLiquidityUsd?.toString() }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
