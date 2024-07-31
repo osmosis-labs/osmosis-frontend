@@ -110,21 +110,16 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const poolsPromise = getPools({
-              ...ctx,
-              search,
-              minLiquidityUsd,
-              types,
-              denoms,
-            });
-            const incentivesPromise = getCachedPoolIncentivesMap();
-            const marketMetricsPromise = getCachedPoolMarketMetricsMap();
-
-            /** Get remote data via concurrent requests, if needed. */
             const [pools, incentives, marketMetrics] = await Promise.all([
-              poolsPromise,
-              incentivesPromise,
-              marketMetricsPromise,
+              getPools({
+                ...ctx,
+                search,
+                minLiquidityUsd,
+                types,
+                denoms,
+              }),
+              getCachedPoolIncentivesMap(),
+              getCachedPoolMarketMetricsMap(),
             ]);
 
             const marketIncentivePools = pools
