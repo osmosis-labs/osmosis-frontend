@@ -910,6 +910,7 @@
     "from": "Z",
     "to": "Do",
     "max": "Maks",
+    "pendingApproval": "Oczekuje na zatwierdzenie",
     "available": "dostępny",
     "connectTo": "Połącz się z {network}",
     "transferWith": "Przenieś z",

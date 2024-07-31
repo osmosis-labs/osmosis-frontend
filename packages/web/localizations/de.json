@@ -910,6 +910,7 @@
     "from": "Von {network}",
     "to": "Zu {network}",
     "max": "Max",
+    "pendingApproval": "Ausstehende Genehmigung",
     "available": "verfügbar",
     "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",

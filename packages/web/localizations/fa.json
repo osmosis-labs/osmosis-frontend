@@ -910,6 +910,7 @@
     "from": "از",
     "to": "برای",
     "max": "حداکثر",
+    "pendingApproval": "در انتظار تایید",
     "available": "در دسترس",
     "connectTo": "اتصال به {network}",
     "transferWith": "انتقال با",

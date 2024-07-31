@@ -910,6 +910,7 @@
     "from": "Из",
     "to": "Чтобы",
     "max": "Макс",
+    "pendingApproval": "В ожидании утверждения",
     "available": "доступный",
     "connectTo": "Подключитесь к {network}",
     "transferWith": "Трансфер с",

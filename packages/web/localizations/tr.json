@@ -910,6 +910,7 @@
     "from": "kaynağından",
     "to": "için",
     "max": "Maksimum",
+    "pendingApproval": "Onay bekleyen",
     "available": "mevcut",
     "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
