@@ -386,7 +386,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return (
           swapState.marketState.inAmountInput.isEmpty ||
           swapState.marketState.inAmountInput.amount?.toDec().isZero() ||
-          isMarketLoading
+          isMarketLoading ||
+          swapState.marketState.error
         );
       }
 
@@ -399,6 +400,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.inAmountInput.isEmpty,
       isMarketLoading,
       swapState.insufficientFunds,
+      swapState.marketState.error,
     ]);
 
     const isButtonLoading = useMemo(() => {

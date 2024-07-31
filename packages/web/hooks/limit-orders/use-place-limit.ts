@@ -211,6 +211,8 @@ export const usePlaceLimit = ({
   }, [paymentFiatValue, makerFee]);
 
   const placeLimitMsg = useMemo(() => {
+    if (isMarket) return;
+
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
 
     if (quantity === "0") {
@@ -238,6 +240,7 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     normalizationFactor,
     paymentTokenValue,
+    isMarket,
   ]);
 
   const encodedMsg = useMemo(() => {
