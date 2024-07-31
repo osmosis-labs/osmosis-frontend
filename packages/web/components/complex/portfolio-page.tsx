@@ -57,21 +57,23 @@ export const PortfolioPage: FunctionComponent = () => {
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
+  // these useCallbacks are key to prevent unnecessary rerenders of page + table
+  // this prevents flickering
   const onDeposit = useCallback(
-    (coinMinimalDenom: string) => {
-      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "deposit" });
+    (coinDenom: string) => {
+      bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
     },
     [bridgeAsset]
   );
   const onWithdraw = useCallback(
-    (coinMinimalDenom: string) => {
-      bridgeAsset({ anyDenom: coinMinimalDenom, direction: "withdraw" });
+    (coinDenom: string) => {
+      bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
     },
     [bridgeAsset]
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex w-full max-w-container flex-col gap-8 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={totalValue}

@@ -1,5 +1,6 @@
+import { noop } from "@osmosis-labs/utils";
 import Link from "next/link";
-import { useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import {
   incentiveTypes,
@@ -11,7 +12,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
-interface TokenPoolsProps {
+interface AssetPoolsProps {
   denom: string;
 }
 
@@ -26,7 +27,7 @@ const sortParams: PoolsTabelSortParams = {
   allPoolsSortDir: "desc",
 };
 
-export const TokenPools = (props: TokenPoolsProps) => {
+export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
   const { denom } = props;
   const { t } = useTranslation();
 
@@ -60,8 +61,8 @@ export const TokenPools = (props: TokenPoolsProps) => {
         filters={filters}
         disablePagination
         sortParams={sortParams}
-        setSortDirection={() => {}}
-        setSortKey={() => {}}
+        setSortDirection={noop}
+        setSortKey={noop}
         emptyResultsText={t("search.poolsEmpty", { denom })}
       />
     </section>

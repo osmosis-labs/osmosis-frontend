@@ -3,8 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useMemo } from "react";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -15,11 +14,14 @@ import {
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
-import { ChartButton } from "~/components/ui/button";
-import { Button } from "~/components/ui/button";
+import { Button, ChartButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -145,7 +147,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
 
     return (
-      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
         {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
             isOpen={true}
@@ -154,7 +156,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           />
         )}
         <section className="flex flex-col gap-8">
-          <div className="flex flex-col rounded-3xl bg-osmoverse-1000 p-8">
+          <div className="flex flex-col rounded-3xl p-8">
             <div className="flex flex-row lg:flex-col lg:gap-3">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-2">

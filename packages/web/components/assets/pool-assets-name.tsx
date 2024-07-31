@@ -1,4 +1,4 @@
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Link from "next/link";
 import { Fragment, FunctionComponent } from "react";
@@ -19,10 +19,10 @@ export const PoolAssetsName: FunctionComponent<{
           <Fragment key={asset}>
             <Link href={`/assets/${asset}`}>
               {asset.startsWith("ibc/")
-                ? truncateString(asset)
+                ? truncate(asset)
                 : asset.includes("channel")
-                ? truncateString(asset.split(" ")[0], 12)
-                : truncateString(asset, 16)}
+                ? truncate(asset.split(" ")[0], 12)
+                : truncate(asset, 16)}
             </Link>
             {index < assetDenoms.length - 1 && (size === "sm" ? "/" : " / ")}
           </Fragment>

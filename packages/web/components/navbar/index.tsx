@@ -4,8 +4,8 @@ import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
   formatICNSName,
   getDeepValue,
-  getShortAddress,
   noop,
+  shorten,
 } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -32,8 +32,7 @@ import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -185,7 +184,7 @@ export const NavBar: FunctionComponent<
       <>
         <div
           className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
             className
           )}
         >
@@ -336,7 +335,7 @@ export const NavBar: FunctionComponent<
         {/* Back-layer element to occupy space for the caller */}
         <div
           className={classNames(
-            "bg-osmoverse-900",
+            "bg-osmoverse-1000",
             showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
             backElementClassNames
           )}
@@ -506,7 +505,7 @@ const WalletInfo: FunctionComponent<
                 <span className="body2 font-bold leading-4" title={icnsName}>
                   {Boolean(icnsName)
                     ? formatICNSName(icnsName)
-                    : getShortAddress(wallet?.address!)}
+                    : shorten(wallet?.address!)}
                 </span>
                 <span className="caption font-medium tracking-wider text-osmoverse-200">
                   {userOsmoAsset?.amount

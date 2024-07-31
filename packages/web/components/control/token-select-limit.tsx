@@ -118,10 +118,11 @@ export const TokenSelectLimit: FunctionComponent<
         !baseFiatBalance.toDec().isZero(),
       [isWalletConnected, orderDirection, baseFiatBalance]
     );
-    const showQuoteBalance = useMemo(
-      () => orderDirection === "bid",
-      [orderDirection]
-    );
+
+    // const showQuoteBalance = useMemo(
+    //   () => orderDirection === "bid",
+    //   [orderDirection]
+    // );
 
     return (
       <div className="flex flex-col">
@@ -189,8 +190,8 @@ export const TokenSelectLimit: FunctionComponent<
           </div>
         </button>
         <PriceSelector
-          showQuoteBalance={showQuoteBalance}
-          tokenSelectionAvailable={tokenSelectionAvailable}
+          // showQuoteBalance={showQuoteBalance}
+          // tokenSelectionAvailable={tokenSelectionAvailable}
           disabled={disabled}
         />
         <TokenSelectModalLimit

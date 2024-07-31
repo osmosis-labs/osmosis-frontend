@@ -1,10 +1,9 @@
-import { Menu, Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { Fragment, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
-import { Icon } from "~/components/assets";
-import { EventName, SpriteIconId } from "~/config";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
@@ -12,8 +11,6 @@ interface UITradeType {
   // id: "market" | "limit" | "recurring";
   id: "market" | "limit";
   title: string;
-  description: string;
-  icon: SpriteIconId;
   disabled: boolean;
 }
 
@@ -33,7 +30,6 @@ export const OrderTypeSelector = () => {
     "quote",
     parseAsString.withDefault("USDC")
   );
-  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const { selectableBaseAssets, selectableQuoteDenoms } =
     useOrderbookSelectableDenoms();
@@ -75,25 +71,12 @@ export const OrderTypeSelector = () => {
     () => [
       {
         id: "market",
-        title: t("limitOrders.marketOrder.title"),
-        description:
-          tab === "buy"
-            ? t("limitOrders.marketOrder.description.buy")
-            : t("limitOrders.marketOrder.description.sell"),
-        icon: "exchange",
+        title: t("limitOrders.market"),
         disabled: false,
       },
       {
         id: "limit",
-        title: t("limitOrders.limitOrder.title"),
-        description: !hasOrderbook
-          ? t("limitOrders.limitOrder.description.disabled", {
-              denom: base,
-            })
-          : tab === "buy"
-          ? t("limitOrders.limitOrder.description.buy", { denom: base })
-          : t("limitOrders.limitOrder.description.sell", { denom: base }),
-        icon: "trade",
+        title: t("limitOrders.limit"),
         disabled: !hasOrderbook,
       },
       // {
@@ -103,76 +86,43 @@ export const OrderTypeSelector = () => {
       //   icon: "history-uncolored",
       // },
     ],
-    [base, hasOrderbook, t, tab]
+    [hasOrderbook, t]
   );
 
   return (
-    <Menu as="div" className="relative inline-block">
-      <Menu.Button className="flex items-center gap-2 rounded-[48px] bg-osmoverse-825 py-3 px-4">
-        <p className="font-semibold text-wosmongton-200">
-          {type === "market" ? t("limitOrders.market") : t("limitOrders.limit")}
-        </p>
-        <div className="flex h-6 w-6 items-center justify-center">
-          <Icon id="chevron-down" className="h-[7px] w-3 text-wosmongton-200" />
-        </div>
-      </Menu.Button>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute right-0 z-50 mt-2 flex w-[280px] origin-top-right flex-col rounded-xl bg-osmoverse-800">
-          <div className="flex items-center border-b border-osmoverse-700 py-3 px-4">
-            <p className="text-subtitle1 font-semibold">
-              {t("limitOrders.orderType")}
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 p-2">
-            {uiTradeTypes.map(({ id, title, description, icon, disabled }) => {
-              const isSelected = type === id;
+    <div className="flex w-max items-center rounded-3xl border border-osmoverse-700">
+      {uiTradeTypes.map(({ disabled, id, title }) => {
+        const isSelected = type === id;
 
-              return (
-                <Menu.Item key={title}>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={() => setType(id)}
-                      className={classNames(
-                        "flex gap-3 rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
-                        { "bg-osmoverse-700": active || isSelected },
-                        { "opacity-50": disabled }
-                      )}
-                      disabled={disabled}
-                    >
-                      <div className="flex h-6 w-6 items-center justify-center">
-                        <Icon
-                          id={icon}
-                          className={classNames(
-                            "h-6 w-6 text-osmoverse-400 transition-colors",
-                            {
-                              "text-white-full": active || isSelected,
-                            }
-                          )}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1 text-left">
-                        <p>{title}</p>
-                        <small className="text-sm leading-5 text-osmoverse-300">
-                          {description}
-                        </small>
-                      </div>
-                    </button>
-                  )}
-                </Menu.Item>
-              );
-            })}
-          </div>
-        </Menu.Items>
-      </Transition>
-    </Menu>
+        return (
+          <GenericDisclaimer
+            disabled={!disabled}
+            title={`Limit orders unavailable for ${base}`}
+            key={`order-type-selector-${id}`}
+            containerClassName="!w-fit"
+          >
+            <button
+              onClick={() => setType(id)}
+              className={classNames(
+                "rounded-3xl px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
+                {
+                  "hover:bg-osmoverse-850": !isSelected,
+                  "bg-osmoverse-700": isSelected,
+                }
+              )}
+              disabled={disabled}
+            >
+              <p
+                className={classNames("font-semibold", {
+                  "text-wosmongton-100": !isSelected,
+                })}
+              >
+                {title}
+              </p>
+            </button>
+          </GenericDisclaimer>
+        );
+      })}
+    </div>
   );
 };

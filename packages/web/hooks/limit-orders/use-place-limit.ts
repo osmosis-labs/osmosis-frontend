@@ -33,6 +33,7 @@ export interface UsePlaceLimitParams {
   quoteDenom: string;
   type: "limit" | "market";
   page: EventPage;
+  maxSlippage?: Dec;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -49,6 +50,7 @@ export const usePlaceLimit = ({
   useOtherCurrencies = true,
   type,
   page,
+  maxSlippage,
 }: UsePlaceLimitParams) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -78,15 +80,13 @@ export const usePlaceLimit = ({
     initialToDenom: orderDirection === "ask" ? quoteDenom : baseDenom,
     useQueryParams: false,
     useOtherCurrencies,
-    // forceSwapInPoolId: poolId,
-    maxSlippage: new Dec(0.1),
+    maxSlippage,
   });
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
   const priceState = useLimitPrice({
-    orderbookContractAddress,
     orderDirection,
     baseDenom: baseAsset?.coinMinimalDenom,
   });
@@ -132,19 +132,14 @@ export const usePlaceLimit = ({
       return baseTokenAmount;
     }
 
-    const price = priceState.price;
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue = mulPrice(
-      baseTokenAmount,
-      new PricePretty(DEFAULT_VS_CURRENCY, price ?? new Dec(1)),
-      DEFAULT_VS_CURRENCY
-    );
+    const outgoingFiatValue =
+      marketState.inAmountInput.amount?.toDec() ?? new Dec(0);
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
     const quoteTokenAmount = outgoingFiatValue!
-      .quo(quoteAssetPrice ?? new Dec(1))
-      .toDec()
+      .quo(quoteAssetPrice.toDec() ?? new Dec(1))
       .mul(new Dec(Math.pow(10, quoteAsset!.coinDecimals)));
     return new CoinPretty(quoteAsset!, quoteTokenAmount);
   }, [
@@ -153,7 +148,6 @@ export const usePlaceLimit = ({
     orderDirection,
     inAmountInput.amount,
     quoteAsset,
-    priceState.price,
     isMarket,
     marketState.inAmountInput.amount,
   ]);
@@ -483,7 +477,7 @@ export const usePlaceLimit = ({
   };
 };
 
-const DEFAULT_PERCENT_ADJUSTMENT = "0.5";
+const DEFAULT_PERCENT_ADJUSTMENT = "0";
 
 const MAX_TICK_PRICE = 340282300000000000000;
 const MIN_TICK_PRICE = 0.000000000001;
@@ -494,22 +488,12 @@ const MIN_TICK_PRICE = 0.000000000001;
  * Also returns relevant spot price for each direction.
  */
 const useLimitPrice = ({
-  orderbookContractAddress,
   orderDirection,
   baseDenom,
 }: {
-  orderbookContractAddress: string;
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
-  const { data, isLoading } = api.edge.orderbooks.getOrderbookState.useQuery(
-    {
-      osmoAddress: orderbookContractAddress,
-    },
-    {
-      enabled: !!orderbookContractAddress,
-    }
-  );
   const {
     data: assetPrice,
     isLoading: loadingSpotPrice,
@@ -518,7 +502,7 @@ const useLimitPrice = ({
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 10000, enabled: !!baseDenom }
+    { refetchInterval: 5000, enabled: !!baseDenom }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
@@ -537,6 +521,7 @@ const useLimitPrice = ({
       }
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
+
       if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
         price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
       } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
@@ -545,7 +530,7 @@ const useLimitPrice = ({
 
       setOrderPrice(price);
 
-      if (price.length === 0) {
+      if (price.length === 0 || newPrice.isZero()) {
         setManualPercentAdjusted("");
       }
     },
@@ -568,7 +553,8 @@ const useLimitPrice = ({
         return;
 
       if (countDecimals(percentAdjusted) > 10) {
-        percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        // percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
+        return;
       }
 
       const split = percentAdjusted.split(".");
@@ -608,7 +594,7 @@ const useLimitPrice = ({
   // given the current direction of the order.
   // If the form is empty we default to a percentage relative to the spot price.
   const price = useMemo(() => {
-    if (orderPrice && orderPrice.length > 0) {
+    if (isValidInputPrice) {
       return new Dec(orderPrice);
     }
 
@@ -623,12 +609,18 @@ const useLimitPrice = ({
         : // Adjust positively for ask orders
           new Dec(1).add(new Dec(percent).quo(new Dec(100)));
 
-    return spotPrice.mul(percentAdjusted) ?? new Dec(1);
-  }, [orderPrice, spotPrice, manualPercentAdjusted, orderDirection]);
+    return spotPrice.mul(percentAdjusted);
+  }, [
+    orderPrice,
+    spotPrice,
+    manualPercentAdjusted,
+    orderDirection,
+    isValidInputPrice,
+  ]);
 
   // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
-    () => price.quo(spotPrice ?? new Dec(1)).sub(new Dec(1)),
+    () => price.quo(spotPrice).sub(new Dec(1)),
     [price, spotPrice]
   );
 
@@ -645,32 +637,6 @@ const useLimitPrice = ({
     setManualPercentAdjusted("");
     setOrderPrice("");
   }, []);
-
-  // const setPercentAdjusted = useCallback(
-  //   (percentAdjusted: string) => {
-  //     if (!percentAdjusted || percentAdjusted.length === 0) {
-  //       setManualPercentAdjusted("");
-  //     } else {
-  //       if (countDecimals(percentAdjusted) > 10) {
-  //         percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
-  //       }
-  //       if (
-  //         orderDirection === "bid" &&
-  //         new Dec(percentAdjusted).gte(new Dec(100))
-  //       ) {
-  //         return;
-  //       }
-
-  //       const split = percentAdjusted.split(".");
-  //       if (split[0].length > 9) {
-  //         return;
-  //       }
-
-  //       setManualPercentAdjusted(percentAdjusted);
-  //     }
-  //   },
-  //   [setManualPercentAdjusted, orderDirection]
-  // );
 
   useEffect(() => {
     reset();
@@ -689,13 +655,11 @@ const useLimitPrice = ({
     setPercentAdjusted: setManualPercentAdjustedSafe,
     _setPercentAdjustedUnsafe: setManualPercentAdjusted,
     percentAdjusted,
-    isLoading: isLoading || loadingSpotPrice,
+    isLoading: loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
-    bidSpotPrice: data?.bidSpotPrice,
-    askSpotPrice: data?.askSpotPrice,
     isSpotPriceRefetching,
   };
 };

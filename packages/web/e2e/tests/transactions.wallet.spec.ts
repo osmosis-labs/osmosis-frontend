@@ -4,6 +4,7 @@ import process from "process";
 
 import { SwapPage } from "~/e2e/pages/swap-page";
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
+import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
@@ -24,16 +25,10 @@ test.describe("Test Transactions feature", () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
     console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: [
-        "--headless=new",
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-      viewport: { width: 1440, height: 1280 },
-      slowMo: 300,
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
+    );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);

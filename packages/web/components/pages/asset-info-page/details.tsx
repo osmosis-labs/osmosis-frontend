@@ -1,15 +1,15 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { MaybeUserAssetCoin } from "@osmosis-labs/server";
-import { MinimalAsset } from "@osmosis-labs/types";
+import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { FunctionComponent, ReactNode, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { SkeletonLoader } from "~/components/loaders";
 import { Markdown } from "~/components/markdown";
+import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -19,23 +19,16 @@ import { api } from "~/utils/trpc";
 
 const TEXT_CHAR_LIMIT = 450;
 
-export interface TokenDetailsProps {
-  token: MinimalAsset & MaybeUserAssetCoin;
-  className?: string;
-}
-
-const _TokenDetails = ({ className }: TokenDetailsProps) => {
+export const AssetDetails = observer(({ className }: CustomClasses) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const { title, websiteURL, twitterUrl, coingeckoURL, details, token } =
+  const { title, websiteURL, twitterUrl, coingeckoURL, details, asset } =
     useAssetInfo();
 
-  const isExpandable = useMemo(
-    () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,
-    [details]
-  );
+  const isExpandable =
+    details?.description && details?.description.length > TEXT_CHAR_LIMIT;
 
   const expandedText = useMemo(() => {
     if (isExpandable && !isExpanded) {
@@ -50,24 +43,10 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
   const toggleExpand = () => {
     logEvent([
       EventName.TokenInfo.viewMoreClicked,
-      { tokenName: token.coinDenom },
+      { tokenName: asset.coinDenom },
     ]);
     setIsExpanded(!isExpanded);
   };
-
-  const shortBase = useMemo(() => {
-    if (token.coinMinimalDenom) {
-      if (!token.coinMinimalDenom.includes("/")) {
-        return token.coinMinimalDenom;
-      }
-
-      const [prefix, ...rest] = token.coinMinimalDenom.split("/");
-
-      const hash = rest.join("");
-
-      return `${prefix}/${hash.slice(0, 2)}...${hash.slice(-5)}`;
-    }
-  }, [token.coinMinimalDenom]);
 
   return (
     <section
@@ -119,13 +98,13 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
                   </Link>
                 </Button>
               ) : null}
-              {shortBase ? (
+              {asset.coinMinimalDenom.includes("/") ? (
                 <ClipboardButton
                   aria-label="Clipboard"
                   defaultIcon="code"
-                  value={token.coinMinimalDenom}
+                  value={asset.coinMinimalDenom}
                 >
-                  {shortBase}
+                  {shorten(asset.coinMinimalDenom)}
                 </ClipboardButton>
               ) : (
                 false
@@ -171,9 +150,7 @@ const _TokenDetails = ({ className }: TokenDetailsProps) => {
       )}
     </section>
   );
-};
-
-export const TokenDetails = observer(_TokenDetails);
+});
 
 const formatCompact = (value: PricePretty | Dec | number) => {
   return formatPretty(typeof value === "number" ? new Dec(value) : value, {
@@ -184,11 +161,7 @@ const formatCompact = (value: PricePretty | Dec | number) => {
   });
 };
 
-interface TokenStatsProps {
-  className?: string;
-}
-
-export const TokenStats = observer((props: TokenStatsProps) => {
+export const AssetStats = observer((props: CustomClasses) => {
   const { className } = props;
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -197,15 +170,15 @@ export const TokenStats = observer((props: TokenStatsProps) => {
     coinGeckoId,
     coingeckoCoin,
     isLoadingCoingeckoCoin = true,
-    tokenDenom,
+    denom: tokenDenom,
   } = useAssetInfo();
 
-  const { data: tokenMarket, isLoading: isLoadingTokenMarket } =
+  const { data: market, isLoading: isLoadingMarket } =
     api.edge.assets.getMarketAsset.useQuery({
       findMinDenomOrSymbol: tokenDenom,
     });
 
-  const stats: TokenStatProps[] = useMemo(() => {
+  const stats: Stat[] = useMemo(() => {
     const data = [
       {
         title: t("tokenInfos.marketCapRank"),
@@ -245,10 +218,8 @@ export const TokenStats = observer((props: TokenStatsProps) => {
       },
       {
         title: t("tokenInfos.volumeOnOsmosis"),
-        value: tokenMarket?.volume24h
-          ? formatCompact(tokenMarket?.volume24h)
-          : "-",
-        isLoading: isLoadingTokenMarket,
+        value: market?.volume24h ? formatCompact(market?.volume24h) : "-",
+        isLoading: isLoadingMarket,
       },
       {
         title: t("tokenInfos.circulatingSupply"),
@@ -259,28 +230,26 @@ export const TokenStats = observer((props: TokenStatsProps) => {
       },
       {
         title: t("tokenInfos.supplyOnOsmosis"),
-        value: tokenMarket?.totalSupply
-          ? formatCompact(tokenMarket.totalSupply.toDec())
+        value: market?.totalSupply
+          ? formatCompact(market.totalSupply.toDec())
           : "-",
-        isLoading: isLoadingTokenMarket,
+        isLoading: isLoadingMarket,
       },
       {
         title: t("tokenInfos.liquidityOnOsmosis"),
-        value: tokenMarket?.liquidity
-          ? formatCompact(tokenMarket?.liquidity)
-          : "-",
-        isLoading: isLoadingTokenMarket,
+        value: market?.liquidity ? formatCompact(market?.liquidity) : "-",
+        isLoading: isLoadingMarket,
       },
     ];
 
     return isExpanded ? data : data.slice(0, 4);
   }, [
-    tokenMarket,
+    market,
     coingeckoCoin,
     isLoadingCoingeckoCoin,
     coinGeckoId,
     isExpanded,
-    isLoadingTokenMarket,
+    isLoadingMarket,
     t,
   ]);
 
@@ -290,11 +259,11 @@ export const TokenStats = observer((props: TokenStatsProps) => {
         <h6>{t("tokenInfos.info.title")}</h6>
       </header>
       <ul className="flex flex-col gap-6">
-        {stats.map((stat, index) => (
-          <TokenStat key={index} {...stat} />
+        {stats.map((stat) => (
+          <Stat key={stat.title} {...stat} />
         ))}
 
-        <TokenStat
+        <Stat
           title={t("tokenInfos.info.moreStats")}
           value={
             <Button
@@ -325,31 +294,30 @@ export const TokenStats = observer((props: TokenStatsProps) => {
   );
 });
 
-interface TokenStatProps {
+type Stat = {
   title: string;
   value: ReactNode;
   isLoading?: boolean;
   slotLeft?: ReactNode;
   slotRight?: ReactNode;
-}
-
-const TokenStat = (props: TokenStatProps) => {
-  const { title, value, slotLeft, slotRight, isLoading = false } = props;
-
-  return (
-    <li className="flex items-center justify-between gap-4">
-      <h5 className="text-body1 font-body1 text-osmoverse-300">{title}</h5>
-
-      <SkeletonLoader
-        className="flex min-w-10 justify-end"
-        isLoaded={!isLoading}
-      >
-        <div className="flex items-center gap-2">
-          {slotLeft}
-          <p className="text-body1 font-body1 text-osmoverse-100">{value}</p>
-          {slotRight}
-        </div>
-      </SkeletonLoader>
-    </li>
-  );
 };
+
+const Stat: FunctionComponent<Stat> = ({
+  title,
+  value,
+  slotLeft,
+  slotRight,
+  isLoading = false,
+}) => (
+  <li className="flex items-center justify-between gap-4">
+    <h5 className="text-body1 font-body1 text-osmoverse-300">{title}</h5>
+
+    <SkeletonLoader className="flex min-w-10 justify-end" isLoaded={!isLoading}>
+      <div className="flex items-center gap-2">
+        {slotLeft}
+        <p className="text-body1 font-body1 text-osmoverse-100">{value}</p>
+        {slotRight}
+      </div>
+    </SkeletonLoader>
+  </li>
+);

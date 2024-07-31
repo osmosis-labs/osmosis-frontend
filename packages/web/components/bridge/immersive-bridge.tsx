@@ -4,7 +4,6 @@ import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { memo, PropsWithChildren, useEffect, useState } from "react";
-import { useLockBodyScroll } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ErrorBoundary } from "~/components/error/error-boundary";
@@ -13,7 +12,7 @@ import { Screen, ScreenManager } from "~/components/screen-manager";
 import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation, useWindowKeyActions, useWindowSize } from "~/hooks";
+import { useTranslation, useWindowKeyActions } from "~/hooks";
 import { BridgeFlowProvider } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDisclosure } from "~/hooks/use-disclosure";
@@ -39,7 +38,6 @@ export const ImmersiveBridgeFlow = ({
   children,
 }: PropsWithChildren<BridgeFlowProvider>) => {
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
 
   const [isVisible, setIsVisible] = useState(false);
@@ -83,8 +81,17 @@ export const ImmersiveBridgeFlow = ({
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
-  // `!isMobile`: body scroll is needed on mobile safari
-  useLockBodyScroll(isVisible && !isMobile);
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isVisible]);
 
   const onClose = () => {
     setIsVisible(false);
@@ -121,6 +128,12 @@ export const ImmersiveBridgeFlow = ({
           onOpen(direction);
           setStep(ImmersiveBridgeScreen.Amount);
           setSelectedAssetDenom(anyDenom);
+          logEvent([
+            EventName.DepositWithdraw.assetSelected,
+            {
+              tokenName: anyDenom,
+            },
+          ]);
         },
         fiatRamp: ({
           fiatRampKey,
@@ -166,7 +179,7 @@ export const ImmersiveBridgeFlow = ({
                     onReset={resetQueries}
                   >
                     <div className="flex-1 overflow-y-auto">
-                      <div className="mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
+                      <div className="sticky top-0 z-50 mx-auto flex max-w-7xl place-content-between items-center gap-3 bg-osmoverse-900 py-8 px-10">
                         {step === ImmersiveBridgeScreen.Asset ? (
                           <div className="h-12 w-12 flex-shrink-0 md:h-8 md:w-8" />
                         ) : (
@@ -228,11 +241,17 @@ export const ImmersiveBridgeFlow = ({
                               direction ? (
                                 <AssetSelectScreen
                                   type={direction}
-                                  onSelectAsset={(asset) => {
+                                  onSelectAsset={({ coinDenom }) => {
                                     setCurrentScreen(
                                       ImmersiveBridgeScreen.Amount
                                     );
-                                    setSelectedAssetDenom(asset.coinDenom);
+                                    setSelectedAssetDenom(coinDenom);
+                                    logEvent([
+                                      EventName.DepositWithdraw.assetSelected,
+                                      {
+                                        tokenName: coinDenom,
+                                      },
+                                    ]);
                                   }}
                                 />
                               ) : null
