@@ -92,6 +92,7 @@ export const TradeDetails = ({
             className="flex w-full flex-col transition-all"
             style={{
               height: open ? detailsHeight : 32,
+              overflow: open ? "hidden" : undefined,
             }}
           >
             <div ref={details} className="flex w-full flex-col">
