@@ -76,10 +76,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       const selectedAsset =
         assetsRef.current?.find((asset) => asset.coinDenom === coinDenom) ??
         swapState.recommendedAssets.find((asset) => {
-          console.log(
-            "Checking asset in recommendedAssets array:",
-            asset.coinDenom
-          );
           if (asset.coinDenom === coinDenom) {
             isRecommended = true;
             return true;

@@ -14,11 +14,8 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import {
-  useOrderbookAllActiveOrders,
-  useOrderbookClaimableOrders,
-} from "~/hooks/limit-orders/use-orderbook";
+import { useAmplitudeAnalytics } from "~/hooks";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {
@@ -35,14 +32,14 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         SwapToolTab.SWAP
       )
     );
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const { count } = useOrderbookClaimableOrders({
-      userAddress: wallet?.address ?? "",
-    });
+    // const { count } = useOrderbookClaimableOrders({
+    //   userAddress: wallet?.address ?? "",
+    // });
 
     const { orders } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
@@ -73,12 +70,12 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     }, [tab]);
     return (
       <ClientOnly>
-        <div className="relative flex flex-col gap-3 md:gap-3 md:px-3 md:pb-4 md:pt-4">
+        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3">
           <div className="flex w-full items-center justify-between">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">
               {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
-              {wallet?.isWalletConnected && (
+              {/* {wallet?.isWalletConnected && (
                 <Link
                   href={"/transactions?tab=orders&fromPage=swap"}
                   className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
@@ -95,15 +92,15 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                     </div>
                   )}
                 </Link>
-              )}
+              )} */}
             </div>
           </div>
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return <PlaceLimitTool page={page} />;
+                return <PlaceLimitTool key="tool-buy" page={page} />;
               case SwapToolTab.SELL:
-                return <PlaceLimitTool page={page} />;
+                return <PlaceLimitTool key="tool-sell" page={page} />;
               case SwapToolTab.SWAP:
               default:
                 return (
@@ -116,36 +113,38 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                 );
             }
           }, [page, swapToolProps, tab])}
-          {wallet?.isWalletConnected && openOrders.length > 0 && (
-            <Link
-              href="/transactions?tab=orders&fromPage=swap"
-              className="my-3 flex items-center justify-between rounded-2xl bg-osmoverse-850 py-4 px-5"
-            >
-              <div className="flex items-center gap-2">
+        </div>
+        {wallet?.isWalletConnected && openOrders.length > 0 && (
+          <Link
+            href="/transactions?tab=orders&fromPage=swap"
+            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-[#3E386A8A] bg-osmoverse-1000 py-2 px-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center">
                 <Icon
                   id="history-uncolored"
                   width={24}
                   height={24}
                   className="text-osmoverse-500"
                 />
-                <span className="subtitle1 text-osmoverse-200">
-                  {t("limitOrders.openOrders")}
-                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-wosmongton-200">{openOrders.length}</span>
-                <div className="flex h-6 w-6 items-center justify-center">
-                  <Icon
-                    id="chevron-right"
-                    width={10}
-                    height={17}
-                    className="text-wosmongton-200"
-                  />
-                </div>
+              <span className="subtitle1 text-osmoverse-200">
+                Order history
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* <span className="text-wosmongton-200">{openOrders.length}</span> */}
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="chevron-right"
+                  width={10}
+                  height={17}
+                  className="text-wosmongton-200"
+                />
               </div>
-            </Link>
-          )}
-        </div>
+            </div>
+          </Link>
+        )}
       </ClientOnly>
     );
   }

@@ -310,9 +310,7 @@
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    },
-    "balancesMovedTitle": "Suchen Sie nach Ihren Guthaben?",
-    "balancesMovedDescription": "Gehen Sie zur Portfolio-Seite, dem neuen Zuhause für Ihre Guthaben und mehr."
+    }
   },
   "portfolio": {
     "buy": "Kaufen",

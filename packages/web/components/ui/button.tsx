@@ -258,4 +258,22 @@ export const IconButton = forwardRef<
   );
 });
 
-export { ArrowButton, Button, buttonVariants, ShowMoreButton };
+const GoBackButton = forwardRef<
+  HTMLButtonElement,
+  ButtonHTMLAttributes<HTMLButtonElement>
+>((props, ref) => {
+  return (
+    <IconButton
+      ref={ref}
+      {...props}
+      className={classNames(
+        "w-fit text-osmoverse-400 hover:text-osmoverse-100",
+        props.className
+      )}
+      icon={<Icon id="chevron-left" width={16} height={16} />}
+      aria-label="Go Back"
+    />
+  );
+});
+
+export { ArrowButton, Button, buttonVariants, GoBackButton, ShowMoreButton };

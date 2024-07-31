@@ -67,7 +67,6 @@ export default async function handler(
      * It's a cosmos node error. Forward data as 200 to the client.
      */
     if (error instanceof ApiClientError && error.data?.code) {
-      console.log("errorr!", error);
       return res.status(500).json(error.data);
     }
 

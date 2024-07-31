@@ -23,6 +23,7 @@ import {
 import { AssetCell } from "~/components/table/cells/asset";
 import {
   Breakpoint,
+  useFeatureFlags,
   useTranslation,
   useWalletSelect,
   useWindowSize,
@@ -56,9 +57,9 @@ export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
   /** Memoized function for handling deposits from table row. */
-  onDeposit: (coinMinimalDenom: string) => void;
+  onDeposit: (coinDenom: string) => void;
   /** Memoized function for handling withdrawals from table row. */
-  onWithdraw: (coinMinimalDenom: string) => void;
+  onWithdraw: (coinDenom: string) => void;
 }> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
@@ -457,8 +458,8 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
 );
 
 export const AssetActionsCell: AssetCellComponent<{
-  onDeposit: (coinMinimalDenom: string) => void;
-  onWithdraw: (coinMinimalDenom: string) => void;
+  onDeposit: (coinDenom: string) => void;
+  onWithdraw: (coinDenom: string) => void;
   onExternalTransferUrl: (url: string) => void;
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
@@ -468,7 +469,6 @@ export const AssetActionsCell: AssetCellComponent<{
 }> = ({
   coinDenom,
   coinImageUrl,
-  coinMinimalDenom,
   amount,
   transferMethods,
   counterparty,
@@ -480,11 +480,14 @@ export const AssetActionsCell: AssetCellComponent<{
   confirmUnverifiedAsset,
 }) => {
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
   // if it's the first transfer method it's considered the preferred method
+  // the new d/w flow handles this, so we only need to check for the old flow
   const externalTransfer =
     Boolean(transferMethods.length) &&
-    transferMethods[0].type === "external_interface"
+    transferMethods[0].type === "external_interface" &&
+    !featureFlags.newDepositWithdrawFlow
       ? transferMethods[0]
       : undefined;
 
@@ -516,7 +519,7 @@ export const AssetActionsCell: AssetCellComponent<{
               if (externalTransfer && externalTransfer.depositUrl) {
                 onExternalTransferUrl(externalTransfer.depositUrl);
               } else {
-                onDeposit(coinMinimalDenom);
+                onDeposit(coinDenom);
               }
             }}
           >
@@ -535,7 +538,7 @@ export const AssetActionsCell: AssetCellComponent<{
               if (externalTransfer && externalTransfer.withdrawUrl) {
                 onExternalTransferUrl(externalTransfer.withdrawUrl);
               } else {
-                onWithdraw(coinMinimalDenom);
+                onWithdraw(coinDenom);
               }
             }}
           >

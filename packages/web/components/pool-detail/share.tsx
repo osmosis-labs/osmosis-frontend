@@ -29,11 +29,12 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLockTokenConfig,
   useSuperfluidPool,
+  useTranslation,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import {
@@ -316,7 +317,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     );
 
     return (
-      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
         {pool && showAddLiquidityModal && (
           <AddLiquidityModal
             isOpen={true}

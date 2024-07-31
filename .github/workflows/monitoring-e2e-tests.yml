@@ -132,7 +132,7 @@ jobs:
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
-    needs: [frontend-e2e-tests, fe-quote-tests]
+    needs: [server-e2e-tests, fe-quote-tests]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7

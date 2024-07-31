@@ -6,7 +6,12 @@ import {
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, ReactNode, useState } from "react";
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { Connector } from "wagmi";
 
 import { Icon } from "~/components/assets";
@@ -17,11 +22,12 @@ import {
   ScreenGoBackButton,
   ScreenManager,
 } from "~/components/screen-manager";
-import { Button } from "~/components/ui/button";
+import { Button, GoBackButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
+import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import {
   useDisconnectEvmWallet,
   useEvmWalletAccount,
@@ -48,6 +54,7 @@ export const BridgeWalletSelectModal: FunctionComponent<
   BridgeWalletSelectProps & ModalBaseProps
 > = (props) => {
   const { t } = useTranslation();
+  const [removeMinHeight, setRemoveMinHeight] = useState(false);
 
   return (
     <ModalBase
@@ -58,10 +65,14 @@ export const BridgeWalletSelectModal: FunctionComponent<
             : t("transfer.selectWithdrawWallet")}
         </div>
       }
-      className="min-h-[50vh] !max-w-lg"
+      className={classNames("!max-w-lg", { "min-h-[50vh]": !removeMinHeight })}
       {...props}
     >
-      <BridgeWalletSelectScreens {...props} onClose={props.onRequestClose} />
+      <BridgeWalletSelectScreens
+        {...props}
+        onClose={props.onRequestClose}
+        setRemoveMinHeight={setRemoveMinHeight}
+      />
     </ModalBase>
   );
 };
@@ -74,6 +85,7 @@ enum WalletSelectScreens {
 export const BridgeWalletSelectScreens: FunctionComponent<
   BridgeWalletSelectProps & {
     onClose: () => void;
+    setRemoveMinHeight?: (nextValue: boolean) => void;
   }
 > = observer(
   ({
@@ -85,10 +97,12 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     toChain,
     initialManualAddress,
     onConfirmManualAddress,
+    setRemoveMinHeight,
   }) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const cosmosAccount = cosmosChain
       ? accountStore.getWallet(accountStore.osmosisChainId)
@@ -103,7 +117,8 @@ export const BridgeWalletSelectScreens: FunctionComponent<
       isConnected: isEvmWalletConnected,
       chainId: currentEvmChainId,
     } = useEvmWalletAccount();
-    const { switchChainAsync } = useSwitchEvmChain();
+    const { switchChainAsync, reset: resetSwitchEvmChainState } =
+      useSwitchEvmChain();
 
     const { disconnect: disconnectEvmWallet } = useDisconnectEvmWallet();
 
@@ -113,6 +128,7 @@ export const BridgeWalletSelectScreens: FunctionComponent<
         variables: connectingWagmiVariables,
         status: connectingWagmiStatus,
         error: connectingWagmiError,
+        reset: resetEvmConnecting,
       },
     } = useConnectWallet({
       walletOptions: [
@@ -138,9 +154,31 @@ export const BridgeWalletSelectScreens: FunctionComponent<
       isMobile,
     });
 
+    useEffect(() => {
+      // Adjust modal height when connecting to a wallet or switching chain to prevent misalignment.
+      if (
+        !isNil(connectingWagmiVariables?.connector) ||
+        (isEvmWalletConnected && isSwitchingChain)
+      ) {
+        return setRemoveMinHeight?.(true);
+      }
+      setRemoveMinHeight?.(false);
+    }, [
+      connectingWagmiVariables?.connector,
+      isEvmWalletConnected,
+      isSwitchingChain,
+      setRemoveMinHeight,
+    ]);
+
     if (!isNil(connectingWagmiVariables?.connector)) {
       return (
         <div className="pt-12">
+          <GoBackButton
+            onClick={() => {
+              resetEvmConnecting();
+            }}
+            className="absolute top-7 left-4"
+          />
           <EvmWalletState
             onRequestClose={onClose}
             connector={connectingWagmiVariables.connector as Connector}
@@ -155,6 +193,12 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     if (isEvmWalletConnected && isSwitchingChain) {
       return (
         <div className="flex items-center justify-center pt-12">
+          <GoBackButton
+            onClick={() => {
+              resetSwitchEvmChainState();
+            }}
+            className="absolute top-7 left-4"
+          />
           <SwitchingNetworkState
             walletLogo={evmConnector?.icon}
             walletName={evmConnector?.name}
@@ -343,23 +387,24 @@ export const BridgeWalletSelectScreens: FunctionComponent<
                               .toLowerCase()
                               .includes(search.toLowerCase());
                           })
-                          .map((wallet) => {
-                            return (
-                              <WalletButton
-                                key={wallet.id}
-                                onClick={() =>
-                                  onConnectWallet({
-                                    walletType: "evm",
-                                    wallet,
-                                    chainId:
-                                      evmChain.chainId as EthereumChainIds,
-                                  })
-                                }
-                                name={wallet.name}
-                                icon={wallet.icon}
-                              />
-                            );
-                          })}
+                          .map((wallet) => (
+                            <WalletButton
+                              key={wallet.id}
+                              onClick={() => {
+                                onConnectWallet({
+                                  walletType: "evm",
+                                  wallet,
+                                  chainId: evmChain.chainId as EthereumChainIds,
+                                });
+                                logEvent([
+                                  EventName.DepositWithdraw.walletSelected,
+                                  { walletName: wallet.name },
+                                ]);
+                              }}
+                              name={wallet.name}
+                              icon={wallet.icon}
+                            />
+                          ))}
                       </div>
                     </div>
                   )}
