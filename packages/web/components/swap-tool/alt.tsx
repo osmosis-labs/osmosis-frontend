@@ -651,7 +651,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           title="Swap"
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
-          swapState={swapState}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
           slippageConfig={slippageConfig}
@@ -659,6 +658,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
           outputDifference={outputDifference}
           showOutputDifferenceWarning={showOutputDifferenceWarning}
+          fromAsset={swapState.fromAsset}
+          toAsset={swapState.toAsset}
+          inAmountToken={swapState.inAmountInput.amount}
+          inAmountFiat={swapState.inAmountInput.fiatValue}
+          expectedOutput={swapState.quote?.amount}
+          expectedOutputFiat={swapState.tokenOutFiatValue}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

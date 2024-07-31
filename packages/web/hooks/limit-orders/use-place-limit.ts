@@ -542,6 +542,7 @@ export const usePlaceLimit = ({
       !isBaseTokenBalanceLoading && !isQuoteTokenBalanceLoading,
     insufficientFunds,
     paymentFiatValue,
+    paymentTokenValue,
     makerFee,
     isMakerFeeLoading,
     expectedTokenAmountOut,
@@ -576,6 +577,8 @@ const useLimitPrice = ({
   orderDirection: OrderDirection;
   baseDenom?: string;
 }) => {
+  const [priceLocked, setPriceLock] = useState(false);
+
   const {
     data: assetPrice,
     isLoading: loadingSpotPrice,
@@ -584,7 +587,7 @@ const useLimitPrice = ({
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 5000, enabled: !!baseDenom }
+    { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
   );
 
   const [orderPrice, setOrderPrice] = useState("");
@@ -743,5 +746,6 @@ const useLimitPrice = ({
     isValidPrice,
     isBeyondOppositePrice,
     isSpotPriceRefetching,
+    setPriceLock,
   };
 };
