@@ -159,8 +159,6 @@ export const CryptoFiatInput: FunctionComponent<{
         );
       }
 
-      console.log(nextValue);
-
       type === "fiat"
         ? setFiatInputRaw(nextValue)
         : setCryptoInputRaw(nextValue);
