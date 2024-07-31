@@ -350,7 +350,7 @@ function StableCoinsInfoTooltip() {
           </svg>
         </div>
       }
-      className="text-wosmongton-300"
+      className="underline decoration-dotted underline-offset-4"
     >
       <>stablecoin</>
     </Tooltip>
