@@ -70,7 +70,11 @@ const transformAmount = (value: string, decimalCount = 18) => {
 };
 
 // Certain errors we do not wish to show on the button
-const NON_DISPLAY_ERRORS = ["errors.zeroAmount", "errors.emptyAmount"];
+const NON_DISPLAY_ERRORS = [
+  "errors.zeroAmount",
+  "errors.emptyAmount",
+  "limitOrders.insufficientFunds",
+];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
