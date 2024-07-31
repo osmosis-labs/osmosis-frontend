@@ -578,7 +578,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           onClose={() => setReviewOpen(false)}
           expectedOutput={swapState.expectedTokenAmountOut}
           expectedOutputFiat={swapState.expectedFiatAmountOut}
-          orderType={type}
           percentAdjusted={swapState.priceState.percentAdjusted}
           limitPriceFiat={swapState.priceState.priceFiat}
           baseDenom={swapState.baseAsset?.coinDenom}

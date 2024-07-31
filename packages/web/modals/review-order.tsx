@@ -9,6 +9,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
+import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
@@ -33,9 +34,7 @@ interface ReviewOrderProps {
   outFiatAmountLessSlippage?: PricePretty;
   outputDifference?: RatePretty;
   showOutputDifferenceWarning?: boolean;
-  orderType?: "market" | "limit";
   percentAdjusted?: Dec;
-  limitOrderDirection?: "bid" | "ask";
   limitPriceFiat?: PricePretty;
   limitSetPriceLock?: (lock: boolean) => void;
   baseDenom?: string;
@@ -60,9 +59,7 @@ export function ReviewOrder({
   outFiatAmountLessSlippage,
   outputDifference,
   showOutputDifferenceWarning,
-  orderType = "market",
   percentAdjusted,
-  limitOrderDirection,
   limitPriceFiat,
   baseDenom,
   title,
@@ -84,6 +81,11 @@ export function ReviewOrder({
   let isManualSlippageTooHigh = useMemo(
     () => +manualSlippage >= 1,
     [manualSlippage]
+  );
+
+  const [orderType] = useQueryState(
+    "type",
+    parseAsString.withDefault("market")
   );
 
   const handleManualSlippageChange = useCallback(
