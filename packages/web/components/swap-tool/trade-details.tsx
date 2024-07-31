@@ -283,14 +283,7 @@ export const TradeDetails = ({
                             )}
                           >
                             <Icon id="gas" width={16} height={16} />
-                            {gasAmount && (
-                              <>
-                                ~
-                                {formatPretty(gasAmount, {
-                                  maxDecimals: 2,
-                                })}
-                              </>
-                            )}
+                            {gasAmount && gasAmount.toString()}
                           </span>
                         ) : (
                           <Skeleton className="h-5 w-16" />
