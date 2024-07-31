@@ -1,9 +1,15 @@
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
@@ -20,7 +26,6 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  swapState: ReturnType<typeof useSwap>;
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
@@ -32,16 +37,22 @@ interface ReviewOrderProps {
   percentAdjusted?: Dec;
   limitOrderDirection?: "bid" | "ask";
   limitPriceFiat?: PricePretty;
+  limitSetPriceLock?: (lock: boolean) => void;
   baseDenom?: string;
   title: string;
   gasAmount?: PricePretty;
   isGasLoading?: boolean;
+  expectedOutput?: CoinPretty;
+  expectedOutputFiat?: PricePretty;
+  inAmountToken?: CoinPretty;
+  inAmountFiat?: PricePretty;
+  fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
+  toAsset?: ReturnType<typeof useSwap>["toAsset"];
 }
 
 export function ReviewOrder({
   isOpen,
   onClose,
-  swapState,
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
@@ -57,6 +68,13 @@ export function ReviewOrder({
   title,
   gasAmount,
   isGasLoading,
+  limitSetPriceLock,
+  expectedOutput,
+  expectedOutputFiat,
+  inAmountToken,
+  inAmountFiat,
+  toAsset,
+  fromAsset,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
@@ -89,6 +107,10 @@ export function ReviewOrder({
     },
     [slippageConfig]
   );
+
+  useEffect(() => {
+    if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
+  }, [limitSetPriceLock, isOpen, orderType]);
 
   return (
     <ModalBase
@@ -178,10 +200,10 @@ export function ReviewOrder({
           >
             <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
-                {swapState.fromAsset && (
+                {fromAsset && (
                   <Image
-                    src={swapState.fromAsset.coinImageUrl ?? ""}
-                    alt={`${swapState.fromAsset.coinDenom} image`}
+                    src={fromAsset.coinImageUrl ?? ""}
+                    alt={`${fromAsset.coinDenom} image`}
                     width={40}
                     height={40}
                     className="h-10 w-10"
@@ -189,9 +211,9 @@ export function ReviewOrder({
                 )}
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("limitOrders.sell")}</p>
-                  {swapState.inAmountInput.amount && (
+                  {inAmountToken && (
                     <span className="subtitle1">
-                      {formatPretty(swapState.inAmountInput.amount)}
+                      {formatPretty(inAmountToken)}
                     </span>
                   )}
                 </div>
@@ -199,12 +221,10 @@ export function ReviewOrder({
               <div className="flex flex-col items-end">
                 <p>
                   {formatPretty(
-                    swapState.inAmountInput.fiatValue ??
-                      new PricePretty(DEFAULT_VS_CURRENCY, 0),
+                    inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0),
                     {
                       ...getPriceExtendedFormatOptions(
-                        swapState.inAmountInput?.fiatValue?.toDec() ??
-                          new Dec(0)
+                        inAmountFiat?.toDec() ?? new Dec(0)
                       ),
                     }
                   )}
@@ -223,10 +243,10 @@ export function ReviewOrder({
             </div>
             <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
-                {swapState.toAsset && (
+                {toAsset && (
                   <Image
-                    src={swapState.toAsset.coinImageUrl ?? ""}
-                    alt={`${swapState.toAsset.coinDenom} image`}
+                    src={toAsset.coinImageUrl ?? ""}
+                    alt={`${toAsset.coinDenom} image`}
                     width={40}
                     height={40}
                     className="h-10 w-10"
@@ -235,15 +255,15 @@ export function ReviewOrder({
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
                   <span className="subtitle1">
-                    {swapState.quote?.amount && (
+                    {expectedOutput && (
                       <>
-                        {formatPretty(swapState.quote?.amount.toDec(), {
+                        {formatPretty(expectedOutput.toDec(), {
                           minimumSignificantDigits: 6,
                           maximumSignificantDigits: 6,
                           maxDecimals: 10,
                           notation: "standard",
                         })}{" "}
-                        {swapState.toAsset?.coinDenom}
+                        {toAsset?.coinDenom}
                       </>
                     )}
                   </span>
@@ -262,9 +282,9 @@ export function ReviewOrder({
                     >{`-${outputDifference}`}</span>
                   )}
                   <span>
-                    {formatPretty(swapState.tokenOutFiatValue ?? new Dec(0), {
+                    {formatPretty(expectedOutputFiat ?? new Dec(0), {
                       ...getPriceExtendedFormatOptions(
-                        swapState.tokenOutFiatValue?.toDec() ?? new Dec(0)
+                        expectedOutputFiat?.toDec() ?? new Dec(0)
                       ),
                     })}
                   </span>
@@ -332,8 +352,8 @@ export function ReviewOrder({
                               logEvent([
                                 EventName.Swap.slippageToleranceSet,
                                 {
-                                  fromToken: swapState?.fromAsset?.coinDenom,
-                                  toToken: swapState?.toAsset?.coinDenom,
+                                  fromToken: fromAsset?.coinDenom,
+                                  toToken: toAsset?.coinDenom,
                                   // isOnHome: page === "Swap Page",
                                   isOnHome: true,
                                   percentage:
@@ -386,12 +406,12 @@ export function ReviewOrder({
                     <span>
                       {outAmountLessSlippage &&
                         outFiatAmountLessSlippage &&
-                        swapState.toAsset && (
+                        toAsset && (
                           <span className="text-osmoverse-100">
                             {formatPretty(outAmountLessSlippage, {
                               maxDecimals: 6,
                             })}{" "}
-                            {swapState.toAsset.coinDenom}
+                            {toAsset.coinDenom}
                           </span>
                         )}{" "}
                       {outFiatAmountLessSlippage && (

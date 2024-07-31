@@ -560,7 +560,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isConfirmationDisabled={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
-          swapState={swapState.marketState}
+          expectedOutput={swapState.expectedTokenAmountOut}
+          expectedOutputFiat={swapState.expectedFiatAmountOut}
           orderType={type}
           percentAdjusted={swapState.priceState.percentAdjusted}
           limitPriceFiat={swapState.priceState.priceFiat}
@@ -568,6 +569,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           slippageConfig={slippageConfig}
           gasAmount={swapState.gas.gasAmountFiat}
           isGasLoading={swapState.gas.isLoading}
+          limitSetPriceLock={swapState.priceState.setPriceLock}
+          inAmountToken={swapState.paymentTokenValue}
+          inAmountFiat={swapState.paymentFiatValue}
+          fromAsset={swapState.marketState.fromAsset}
+          toAsset={swapState.marketState.toAsset}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
