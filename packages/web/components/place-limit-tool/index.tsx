@@ -71,7 +71,6 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
-    const [inputMode, setInputMode] = useState<"fiat" | "token">("token");
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);

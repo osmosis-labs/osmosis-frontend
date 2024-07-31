@@ -195,7 +195,10 @@ export const PriceSelector = observer(() => {
       <Menu as="div" className="relative inline-block">
         {({ open }) => (
           <>
-            <Menu.Button className="flex items-center justify-between">
+            <Menu.Button
+              className="flex items-center justify-between"
+              disabled={denomsLoading}
+            >
               <div className="flex w-full items-center justify-between">
                 {quoteAsset && (
                   <div
