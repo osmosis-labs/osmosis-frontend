@@ -2,12 +2,14 @@ import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage } from "~/config";
-import { useAmountInput } from "~/hooks/input/use-amount-input";
+import {
+  isValidNumericalRawInput,
+  useAmountInput,
+} from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -604,6 +606,8 @@ const useLimitPrice = ({
       if (countDecimals(price) > 4) {
         return;
       }
+
+      if (!isValidNumericalRawInput(price)) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
 

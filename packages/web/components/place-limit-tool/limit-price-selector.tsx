@@ -8,7 +8,6 @@ import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { useTranslation } from "~/hooks";
-import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
@@ -191,8 +190,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 ).toFixed(4)}
                 onChange={(e) => {
                   const value = e.target.value.trim();
-                  if (!isValidNumericalRawInput(value) || value.length === 0)
-                    return swapState.priceState.setPrice("");
                   swapState.priceState.setPrice(value);
                 }}
               />
