@@ -33,6 +33,8 @@ interface TradeDetailsProps {
   treatAsStable?: string;
   makerFee?: Dec;
   isMakerFeeLoading?: boolean;
+  gasAmount?: PricePretty;
+  isGasLoading?: boolean;
 }
 
 export const TradeDetails = ({
@@ -42,6 +44,8 @@ export const TradeDetails = ({
   type,
   makerFee,
   isMakerFeeLoading,
+  gasAmount,
+  isGasLoading,
 }: Partial<TradeDetailsProps>) => {
   const { t } = useTranslation();
 
@@ -58,16 +62,8 @@ export const TradeDetails = ({
 
   const isLoading = useMemo(
     () =>
-      (swapState?.isLoadingNetworkFee ||
-        swapState?.isQuoteLoading ||
-        swapState?.inAmountInput.isTyping) &&
-      !Boolean(swapState.error),
-    [
-      swapState?.inAmountInput.isTyping,
-      swapState?.isLoadingNetworkFee,
-      swapState?.isQuoteLoading,
-      swapState?.error,
-    ]
+      (isGasLoading || swapState?.isQuoteLoading) && !Boolean(swapState?.error),
+    [isGasLoading, swapState?.isQuoteLoading, swapState?.error]
   );
 
   const priceImpact = useMemo(
@@ -81,6 +77,7 @@ export const TradeDetails = ({
   );
 
   const limitTotalFees = useMemo(() => {
+    if (!makerFee || makerFee.isZero()) return;
     return formatPretty((makerFee ?? new Dec(0)).mul(new Dec(100)), {
       maxDecimals: 2,
       minimumFractionDigits: 2,
@@ -193,9 +190,13 @@ export const TradeDetails = ({
                   <RecapRow
                     left={<span>Trade fees (when order filled)</span>}
                     right={
-                      <span className="text-bullish-400">
-                        {t("transfer.free")}
-                      </span>
+                      !limitTotalFees ? (
+                        <span className="text-bullish-400">
+                          {t("transfer.free")}
+                        </span>
+                      ) : (
+                        <span>{limitTotalFees}</span>
+                      )
                     }
                   />
                 )}
@@ -274,7 +275,7 @@ export const TradeDetails = ({
                   right={
                     swapState && (
                       <>
-                        {!swapState.isLoadingNetworkFee ? (
+                        {!isGasLoading && gasAmount ? (
                           <span
                             className={classNames(
                               "inline-flex items-center gap-1 text-osmoverse-100",
@@ -282,10 +283,14 @@ export const TradeDetails = ({
                             )}
                           >
                             <Icon id="gas" width={16} height={16} />
-                            {type === "market"
-                              ? swapState.networkFee?.gasUsdValueToPay &&
-                                swapState.networkFee?.gasUsdValueToPay.toString()
-                              : limitTotalFees}
+                            {gasAmount && (
+                              <>
+                                ~
+                                {formatPretty(gasAmount, {
+                                  maxDecimals: 2,
+                                })}
+                              </>
+                            )}
                           </span>
                         ) : (
                           <Skeleton className="h-5 w-16" />

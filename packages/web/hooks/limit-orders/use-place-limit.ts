@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -10,6 +11,7 @@ import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -206,6 +208,57 @@ export const usePlaceLimit = ({
     );
   }, [paymentFiatValue, makerFee]);
 
+  const placeLimitMsg = useMemo(() => {
+    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+
+    if (quantity === "0") {
+      return;
+    }
+
+    // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
+    // To account for this we divide by the quote asset price.
+    const tickId = priceToTick(
+      priceState.price.quo(quoteAssetPrice.toDec()).mul(normalizationFactor)
+    );
+    const msg = {
+      place_limit: {
+        tick_id: parseInt(tickId.toString()),
+        order_direction: orderDirection,
+        quantity,
+        claim_bounty: CLAIM_BOUNTY,
+      },
+    };
+
+    return msg;
+  }, [
+    orderDirection,
+    priceState.price,
+    quoteAssetPrice,
+    normalizationFactor,
+    paymentTokenValue,
+  ]);
+
+  const encodedMsg = useMemo(() => {
+    if (!placeLimitMsg) return;
+
+    return cosmwasmMsgOpts.executeWasm.messageComposer({
+      contract: orderbookContractAddress,
+      sender: account?.address ?? "",
+      msg: Buffer.from(JSON.stringify(placeLimitMsg)),
+      funds: [
+        {
+          denom: paymentTokenValue.toCoin().denom,
+          amount: paymentTokenValue.toCoin().amount ?? "0",
+        },
+      ],
+    });
+  }, [
+    account?.address,
+    orderbookContractAddress,
+    paymentTokenValue,
+    placeLimitMsg,
+  ]);
+
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -254,20 +307,9 @@ export const usePlaceLimit = ({
       }
     }
 
+    if (!placeLimitMsg) return;
+
     const paymentDenom = paymentTokenValue.toCoin().denom;
-    // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
-    // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(
-      priceState.price.quo(quoteAssetPrice.toDec()).mul(normalizationFactor)
-    );
-    const msg = {
-      place_limit: {
-        tick_id: parseInt(tickId.toString()),
-        order_direction: orderDirection,
-        quantity,
-        claim_bounty: CLAIM_BOUNTY,
-      },
-    };
 
     const baseEvent = {
       type: orderDirection === "bid" ? "buy" : "sell",
@@ -286,7 +328,7 @@ export const usePlaceLimit = ({
       await account?.cosmwasm.sendExecuteContractMsg(
         "executeWasm",
         orderbookContractAddress,
-        msg,
+        placeLimitMsg!,
         [
           {
             amount: quantity,
@@ -311,18 +353,16 @@ export const usePlaceLimit = ({
     orderbookContractAddress,
     account,
     orderDirection,
-    priceState,
     paymentTokenValue,
     isMarket,
     marketState,
-    quoteAssetPrice,
-    normalizationFactor,
     paymentFiatValue,
     baseAsset,
     quoteAsset,
     logEvent,
     page,
     feeUsdValue,
+    placeLimitMsg,
   ]);
 
   const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
@@ -443,6 +483,53 @@ export const usePlaceLimit = ({
     orderbookError,
   ]);
 
+  const shouldEstimateLimitGas = useMemo(() => {
+    return (
+      !isMarket &&
+      !!encodedMsg &&
+      !!account?.address &&
+      !insufficientFunds &&
+      !inAmountInput.isTyping &&
+      !marketState.inAmountInput.isTyping
+    );
+  }, [
+    isMarket,
+    encodedMsg,
+    account?.address,
+    insufficientFunds,
+    inAmountInput.isTyping,
+    marketState.inAmountInput.isTyping,
+  ]);
+
+  const { data: gasEstimate, isLoading: gasFeeLoading } = useEstimateTxFees({
+    chainId: accountStore.osmosisChainId,
+    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
+    enabled: shouldEstimateLimitGas,
+  });
+
+  const gasAmountFiat = useMemo(() => {
+    if (isMarket) {
+      return marketState.networkFee?.gasUsdValueToPay;
+    }
+    return gasEstimate?.gasUsdValueToPay;
+  }, [
+    isMarket,
+    marketState.networkFee?.gasUsdValueToPay,
+    gasEstimate?.gasUsdValueToPay,
+  ]);
+
+  const isGasLoading = useMemo(() => {
+    if (isMarket) {
+      return marketState.isLoadingNetworkFee;
+    }
+    return gasFeeLoading && shouldEstimateLimitGas;
+  }, [
+    isMarket,
+    marketState.isLoadingNetworkFee,
+    gasFeeLoading,
+    shouldEstimateLimitGas,
+  ]);
+
   return {
     baseAsset,
     quoteAsset,
@@ -465,6 +552,10 @@ export const usePlaceLimit = ({
     reset,
     error,
     feeUsdValue,
+    gas: {
+      gasAmountFiat,
+      isLoading: isGasLoading,
+    },
   };
 };
 

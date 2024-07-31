@@ -34,6 +34,8 @@ interface ReviewOrderProps {
   limitPriceFiat?: PricePretty;
   baseDenom?: string;
   title: string;
+  gasAmount?: PricePretty;
+  isGasLoading?: boolean;
 }
 
 export function ReviewOrder({
@@ -53,6 +55,8 @@ export function ReviewOrder({
   limitPriceFiat,
   baseDenom,
   title,
+  gasAmount,
+  isGasLoading,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
@@ -418,13 +422,17 @@ export function ReviewOrder({
                 left="Additional network fee"
                 right={
                   <>
-                    {!swapState.isLoadingNetworkFee ? (
+                    {!isGasLoading && gasAmount ? (
                       <span className="inline-flex items-center gap-1 text-osmoverse-100">
-                        <Icon id="gas" width={16} height={16} />~
-                        {swapState.networkFee?.gasUsdValueToPay &&
-                          formatPretty(swapState.networkFee?.gasUsdValueToPay, {
-                            maxDecimals: 2,
-                          })}
+                        <Icon id="gas" width={16} height={16} />
+                        {gasAmount && (
+                          <>
+                            ~
+                            {formatPretty(gasAmount, {
+                              maxDecimals: 2,
+                            })}
+                          </>
+                        )}
                       </span>
                     ) : (
                       <Skeleton className="h-5 w-16" />

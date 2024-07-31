@@ -180,15 +180,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       return (
         swapState.isMarket &&
         (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee) ||
-          swapState.marketState.inAmountInput.isTyping) &&
+          Boolean(swapState.marketState.isLoadingNetworkFee)) &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
       swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.isQuoteLoading,
-      swapState.marketState.inAmountInput.isTyping,
       swapState.marketState.error,
     ]);
 
@@ -544,13 +542,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             type={type}
             isMakerFeeLoading={swapState.isMakerFeeLoading}
             makerFee={swapState.makerFee}
-            // inDenom={swapState.baseAsset?.coinDenom}
-            // inPrice={
-            //   new PricePretty(
-            //     DEFAULT_VS_CURRENCY,
-            //     swapState.priceState.spotPrice
-            //   )
-            // }
+            gasAmount={swapState.gas.gasAmountFiat}
+            isGasLoading={swapState.gas.isLoading}
           />
         </div>
         <ReviewOrder
@@ -573,6 +566,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           limitPriceFiat={swapState.priceState.priceFiat}
           baseDenom={swapState.baseAsset?.coinDenom}
           slippageConfig={slippageConfig}
+          gasAmount={swapState.gas.gasAmountFiat}
+          isGasLoading={swapState.gas.isLoading}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}
