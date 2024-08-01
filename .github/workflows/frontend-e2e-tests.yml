@@ -31,8 +31,6 @@ jobs:
     timeout-minutes: 10
     runs-on: macos-latest
     needs: wait-for-deployment
-    environment:
-      name: prod_swap_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -61,7 +59,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"
@@ -73,12 +71,10 @@ jobs:
           name: preview-swap-test-results
           path: packages/web/playwright-report
 
-  preview-portfolio-tests:
+  preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
     runs-on: macos-latest
-    environment:
-      name: prod_swap_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -99,7 +95,7 @@ jobs:
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
         run: |
           cd packages/web
           npx playwright test portfolio transactions
@@ -135,7 +131,6 @@ jobs:
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
           npx playwright test pools select
