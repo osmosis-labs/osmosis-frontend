@@ -99,6 +99,35 @@ export const TradeDetails = observer(
         : t("swap.gas.error");
     }, [gasAmount, isOneClickTradingEnabled, gasError, t]);
 
+    const GasEstimation = useMemo(() => {
+      return !!gasFeeError ? (
+        <GenericDisclaimer
+          title={t("swap.gas.gasEstimationError")}
+          body={gasFeeError}
+        >
+          <span className="flex items-center gap-1">
+            <Icon
+              id="question"
+              width={24}
+              height={24}
+              className="scale-75 text-osmoverse-300"
+            />{" "}
+            {t("swap.gas.unknown")}
+          </span>
+        </GenericDisclaimer>
+      ) : (
+        <span
+          className={classNames(
+            "inline-flex items-center gap-1 text-osmoverse-100",
+            { "animate-pulse": isGasLoading }
+          )}
+        >
+          <Icon id="gas" width={16} height={16} />
+          {gasAmount && gasAmount.toString()}
+        </span>
+      );
+    }, [gasAmount, isGasLoading, gasFeeError, t]);
+
     return (
       <div className="flex w-full">
         <Disclosure>
@@ -276,53 +305,25 @@ export const TradeDetails = observer(
                   <RecapRow
                     left={
                       <GenericDisclaimer
-                        title="What are trade fees?"
+                        title={t("swap.gas.whatAreTradeFees")}
                         body={
                           <span>
-                            This is the fee charged by the Osmosis protocol at
-                            the time of trade execution in order to reward
-                            liquidity providers and maintain the network. <br />
-                            <br /> Trade fees for limit orders are currently
-                            free.
+                            {t("swap.gas.tradeFeesInfo")} <br />
+                            <br /> {t("swap.gas.tradeFeesLimitInfo")}
                             <br />
                             <br />
-                            Network fees are additional to every transaction.
+                            {t("swap.gas.networkFeesAdditional")}
                           </span>
                         }
                       >
-                        Additional network fees
+                        {t("swap.gas.additionalNetworkFee")}
                       </GenericDisclaimer>
                     }
                     right={
                       swapState && (
                         <>
                           {!isGasLoading ? (
-                            !!gasFeeError ? (
-                              <GenericDisclaimer
-                                title="Network fee cannot be estimated"
-                                body={gasFeeError}
-                              >
-                                <span className="flex items-center gap-1">
-                                  <Icon
-                                    id="question"
-                                    width={24}
-                                    height={24}
-                                    className="scale-75 text-osmoverse-300"
-                                  />{" "}
-                                  Unknown
-                                </span>
-                              </GenericDisclaimer>
-                            ) : (
-                              <span
-                                className={classNames(
-                                  "inline-flex items-center gap-1 text-osmoverse-100",
-                                  { "animate-pulse": isGasLoading }
-                                )}
-                              >
-                                <Icon id="gas" width={16} height={16} />
-                                {gasAmount && gasAmount.toString()}
-                              </span>
-                            )
+                            GasEstimation
                           ) : (
                             <Skeleton className="h-5 w-16" />
                           )}

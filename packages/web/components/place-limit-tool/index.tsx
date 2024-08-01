@@ -398,7 +398,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.isMarket,
       swapState.marketState.inAmountInput.amount,
       swapState.marketState.inAmountInput.isEmpty,
-      swapState.insufficientFunds,
       isMarketLoading,
       swapState.insufficientFunds,
       swapState.marketState.error,

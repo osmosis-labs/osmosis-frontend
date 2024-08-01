@@ -852,7 +852,8 @@
     "dynamicSpreadFactor": "动态的",
     "gas": {
       "oneClickTradingError": "目前无法估算网络费用。如果费用超出您的 1-Click Trading 网络费用限额，您将能够继续在钱包中进行手动批准。",
-      "error": "目前无法估算网络费用。在批准交易之前，请先检查钱包中的网络费用。"
+      "error": "目前无法估算网络费用。在批准交易之前，请先检查钱包中的网络费用。",
+      "unknown": "未知"
     }
   },
   "walletSelect": {

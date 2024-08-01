@@ -852,7 +852,14 @@
     "dynamicSpreadFactor": "Dynamic",
     "gas": {
       "oneClickTradingError": "Network fee cannot be estimated at this time. If the fee exceeds your 1-Click Trading network fee limit, you will be able to proceed with manual approval in your wallet.",
-      "error": "Network fee cannot be estimated at this time. Review network fees in your wallet before approving the transaction."
+      "error": "Network fee cannot be estimated at this time. Review network fees in your wallet before approving the transaction.",
+      "gasEstimationError": "Network fee cannot be estimated",
+      "unknown": "Unknown",
+      "additionalNetworkFee": "Additional network fee",
+      "whatAreTradeFees": "What are trade fees?",
+      "tradeFeesInfo": "This is the fee charged by the Osmosis protocol at the time of trade execution in order to reward liquidity providers and maintain the network.",
+      "tradeFeesLimitInfo": "Trade fees for limit orders are currently free.",
+      "networkFeesAdditional": "Network fees are additional to every transaction."
     }
   },
   "walletSelect": {

@@ -852,7 +852,8 @@
     "dynamicSpreadFactor": "Dinamik",
     "gas": {
       "oneClickTradingError": "Ağ ücreti şu anda tahmin edilemiyor. Ücret, Tek Tıkla Ticaret ağ ücreti limitinizi aşarsa, cüzdanınızda manuel onay işlemine devam edebileceksiniz.",
-      "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin."
+      "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin.",
+      "unknown": "Bilinmeyen"
     }
   },
   "walletSelect": {
