@@ -425,15 +425,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   tab === "buy"
                     ? swapState.quoteAsset?.usdValue &&
                       formatPretty(swapState.quoteAsset?.usdValue, {
-                        minimumFractionDigits: 2,
+                        minimumSignificantDigits: 6,
                         maximumSignificantDigits: 6,
-                        maxDecimals: 2,
+                        maxDecimals: 10,
+                        notation: "standard",
                       })
                     : swapState.baseTokenBalance &&
                       formatPretty(swapState.baseTokenBalance.toDec(), {
                         minimumSignificantDigits: 6,
                         maximumSignificantDigits: 6,
                         maxDecimals: 10,
+                        notation: "standard",
                       })
                 }
                 onMax={toggleMax}
