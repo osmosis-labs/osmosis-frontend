@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -8,18 +8,48 @@ import Image from "next/image";
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
-import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
+import { t } from "~/hooks";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
-const columnHelper = createColumnHelper<DisplayableLimitOrder>();
+export type OrderCellData = MappedLimitOrder & {
+  isRefetching: boolean;
+  refetch: () => Promise<any>;
+};
+
+const columnHelper = createColumnHelper<OrderCellData>();
 
 export const tableColumns = [
   columnHelper.display({
     id: "order",
     header: () => {
-      return <small className="body2">Order</small>;
+      return (
+        <small className="body2">
+          {t("limitOrders.historyTable.columns.order")}
+        </small>
+      );
     },
+    cell: ({
+      row: {
+        original: { order_direction },
+      },
+    }) => {
+      return (
+        <small className="subtitle1">
+          {order_direction === "bid"
+            ? t("limitOrders.buy")
+            : t("limitOrders.sell")}
+        </small>
+      );
+    },
+  }),
+  columnHelper.display({
+    id: "amount",
     size: 400,
+    header: () => (
+      <small className="body2">
+        {t("limitOrders.historyTable.columns.amount")}
+      </small>
+    ),
     cell: ({
       row: {
         original: {
@@ -28,11 +58,6 @@ export const tableColumns = [
           baseAsset,
           placed_quantity,
           output,
-          // quantity,
-          // tick_id,
-          // percentFilled,
-          // if 100 -> order filled
-          // an order is claimable when percent filled is gt percent claimed
         },
       },
     }) => {
@@ -42,17 +67,6 @@ export const tableColumns = [
         "";
       return (
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800">
-            <Icon
-              id="exchange"
-              className={classNames("h-6 w-6", {
-                "text-bullish-400": order_direction === "bid",
-                "text-rust-400": order_direction === "ask",
-              })}
-              width={24}
-              height={24}
-            />
-          </div>
           <div className="flex flex-col gap-1">
             <p
               className={classNames(
@@ -92,8 +106,7 @@ export const tableColumns = [
               </span>
             </p>
             <div className="inline-flex items-center gap-2">
-              <span className="subtitle1 font-bold">
-                {order_direction === "bid" ? "Buy" : "Sell"}{" "}
+              <span>
                 {formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
@@ -109,7 +122,7 @@ export const tableColumns = [
                         )
                   )
                 )}{" "}
-                of
+                {t("limitOrders.of")}
               </span>
               <Image
                 src={baseAssetLogo}
@@ -118,7 +131,7 @@ export const tableColumns = [
                 height={20}
                 className="h-5 w-5"
               />
-              <span className="subtitle1">{baseAsset?.symbol}</span>
+              <span>{baseAsset?.symbol}</span>
             </div>
           </div>
         </div>
@@ -128,7 +141,11 @@ export const tableColumns = [
   columnHelper.display({
     id: "price",
     header: () => {
-      return <small className="body2">Price</small>;
+      return (
+        <small className="body2">
+          {t("limitOrders.historyTable.columns.price")}
+        </small>
+      );
     },
     cell: ({
       row: {
@@ -138,7 +155,7 @@ export const tableColumns = [
       return (
         <div className="flex flex-col gap-1">
           <p className="body2 text-osmoverse-300">
-            {baseAsset?.symbol} · Limit
+            {baseAsset?.symbol} · {t("limitOrders.limit")}
           </p>
           <p>
             {formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price), {
@@ -152,7 +169,11 @@ export const tableColumns = [
   columnHelper.display({
     id: "orderPlaced",
     header: () => {
-      return <small className="body2">Order Placed</small>;
+      return (
+        <small className="body2">
+          {t("limitOrders.historyTable.columns.orderPlaced")}
+        </small>
+      );
     },
     cell: ({
       row: {
@@ -173,20 +194,24 @@ export const tableColumns = [
   columnHelper.display({
     id: "status",
     header: () => {
-      return <small className="body2">Status</small>;
+      return (
+        <small className="body2">
+          {t("limitOrders.historyTable.columns.status")}
+        </small>
+      );
     },
     cell: ({ row: { original: order } }) => {
-      const { status } = order;
+      const { status, placed_at } = order;
       const statusString = (() => {
         switch (status) {
           case "open":
           case "partiallyFilled":
-            return "Open";
+            return t("limitOrders.open");
           case "filled":
           case "fullyClaimed":
-            return "Filled";
+            return t("limitOrders.filled");
           case "cancelled":
-            return "Cancelled";
+            return t("limitOrders.cancelled");
         }
       })();
 
@@ -195,6 +220,16 @@ export const tableColumns = [
           case "open":
           case "partiallyFilled":
             return <OrderProgressBar order={order} />;
+          case "cancelled":
+            return (
+              <span className="body2 text-osmoverse-300">
+                {t("limitOrders.daysAgo", {
+                  days: dayjs(new Date())
+                    .diff(dayjs(placed_at), "d")
+                    .toString(),
+                })}
+              </span>
+            );
           default:
             return;
         }
@@ -204,7 +239,7 @@ export const tableColumns = [
         <div className="flex flex-col gap-1">
           {statusComponent}
           <span
-            className={classNames("caption", {
+            className={classNames({
               "text-bullish-400":
                 status === "filled" || status === "fullyClaimed",
               "text-osmoverse-300":

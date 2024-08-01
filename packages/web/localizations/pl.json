@@ -849,7 +849,12 @@
       "title": "Ustawienia Transakcji"
     },
     "title": "Wymień",
-    "dynamicSpreadFactor": "Dynamiczny"
+    "dynamicSpreadFactor": "Dynamiczny",
+    "gas": {
+      "oneClickTradingError": "W tej chwili nie można oszacować opłaty sieciowej. Jeśli opłata przekroczy limit opłat w sieci 1-Click Trading, będziesz mógł kontynuować ręczną akceptację w swoim portfelu.",
+      "error": "W tej chwili nie można oszacować opłaty sieciowej. Przed zatwierdzeniem transakcji sprawdź opłaty sieciowe w swoim portfelu.",
+      "unknown": "Nieznany"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
@@ -1225,6 +1230,19 @@
         "sell": "Sprzedaj natychmiast po najlepszej dostępnej cenie"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Zamówienie",
+        "amount": "Kwota",
+        "price": "Cena",
+        "orderPlaced": "Zamówienie złożone",
+        "status": "Status"
+      },
+      "emptyState": {
+        "title": "Brak ostatnich zamówień",
+        "subtitle": "Tutaj pojawi się historia Twoich zleceń handlowych."
+      }
+    },
     "limitOrder": {
       "title": "Zamówienie z limitem",
       "description": {
@@ -1247,7 +1265,46 @@
     },
     "enterAnAmountTo": "Wpisz kwotę do",
     "sell": "Sprzedać",
+    "buy": "Kupić",
+    "open": "otwarty",
+    "filled": "Wypełniony",
+    "pending": "Aż do",
+    "claimable": "Możliwość roszczenia",
+    "claimAndClose": "Złóż wniosek i zamknij",
+    "past": "Przeszłość",
+    "accept": "Zaakceptować",
+    "cancelled": "Odwołany",
+    "cancel": "Anulować",
+    "daysAgo": "{days} d temu",
+    "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
+    "orderHistory": "Historia zamówień",
+    "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
+    "tradeAnotherAsset": "Zamień inny zasób na {coinDenom}",
+    "sellAnAsset": "Sprzedaj aktywa",
+    "swapAnAsset": "Zamień zasób",
+    "of": "z",
     "insufficientFunds": "Niewystarczające środki",
+    "startTrading": "Zacznij handlować",
+    "filledOrdersToClaim": "Wypełnione zamówienia do odbioru",
+    "tradeFees": "Opłaty handlowe (po zrealizowaniu zamówienia)",
+    "youNeed": "Potrzebujesz",
+    "stablecoin": "moneta stabilna",
+    "quoteUpdated": "Cytat zaktualizowany",
+    "fundsOsmosisToBuyAssets": "fundusze na Osmozie na zakup aktywów.",
+    "chooseAnOption": "Wybierz opcję, aby kontynuować.",
+    "errors": {
+      "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować."
+    },
+    "transferFromAnotherNetwork": "Przelew z innej sieci lub portfela",
+    "whatIsOrderClaim": {
+      "title": "Co oznacza żądanie zamówienia?",
+      "description": "W większości przypadków po zrealizowaniu zlecenia z limitem środki są automatycznie dodawane do Twojego salda. Jednak w niektórych rzadkich przypadkach środki należy pobrać ręcznie z wypełnionego zamówienia.<inlang-LineFeed>\nTen proces zgłaszania roszczeń obejmuje zatwierdzenie pojedynczej transakcji w Twoim portfelu dla wszystkich nieodebranych, zrealizowanych zamówień, co wiąże się z symboliczną opłatą sieciową."
+    },
+    "whatIsAStablecoin": {
+      "title": "Co to jest stablecoin?",
+      "description": "Stablecoiny to rodzaj kryptowaluty, której wartość jest powiązana z innym aktywem, takim jak waluta fiducjarna lub złoto, w celu utrzymania stabilnej ceny. Na platformie Osmosis głównymi monetami stabilnymi do kupna i sprzedaży aktywów są USDC i USDT."
+    },
+    "claimAll": "Zażądaj wszystkiego",
     "addFunds": "Dodać fundusze",
     "watchOut": "Uważaj! Nadchodzi wieloryb",
     "selectAnAssetTo": {

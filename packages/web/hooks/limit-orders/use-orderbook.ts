@@ -1,7 +1,10 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
-import { MappedLimitOrder } from "@osmosis-labs/trpc";
+import {
+  MappedLimitOrder,
+  MaybeUserAssetCoin,
+  Orderbook,
+} from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
@@ -283,7 +286,8 @@ export const useOrderbookAllActiveOrders = ({
     isFetchingNextPage,
     hasNextPage,
     refetch,
-  } = api.edge.orderbooks.getAllActiveOrders.useInfiniteQuery(
+    isRefetching,
+  } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
     {
       contractAddresses: addresses,
       userOsmoAddress: userAddress,
@@ -295,6 +299,7 @@ export const useOrderbookAllActiveOrders = ({
       keepPreviousData: true,
       refetchInterval: 5000,
       enabled: !!userAddress && addresses.length > 0,
+      refetchOnMount: true,
     }
   );
 
@@ -309,6 +314,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching,
   };
 };
 
@@ -325,6 +331,7 @@ export const useOrderbookClaimableOrders = ({
     data: orders,
     isLoading,
     isFetching,
+    refetch,
   } = api.edge.orderbooks.getClaimableOrders.useQuery(
     {
       contractAddresses: addresses,
@@ -332,6 +339,8 @@ export const useOrderbookClaimableOrders = ({
     },
     {
       enabled: !!userAddress && addresses.length > 0,
+      refetchInterval: 5000,
+      refetchOnMount: true,
     }
   );
 
@@ -363,8 +372,9 @@ export const useOrderbookClaimableOrders = ({
 
     if (msgs.length > 0) {
       await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+      await refetch();
     }
-  }, [orders, account, addresses]);
+  }, [orders, account, addresses, refetch]);
 
   return {
     orders: orders ?? [],

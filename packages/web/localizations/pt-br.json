@@ -849,7 +849,12 @@
       "title": "Configurações de Transação"
     },
     "title": "Trocar",
-    "dynamicSpreadFactor": "Dinâmico"
+    "dynamicSpreadFactor": "Dinâmico",
+    "gas": {
+      "oneClickTradingError": "A taxa de rede não pode ser estimada neste momento. Se a taxa exceder o limite de taxas da rede 1-Click Trading, você poderá prosseguir com a aprovação manual em sua carteira.",
+      "error": "A taxa de rede não pode ser estimada neste momento. Revise as taxas de rede em sua carteira antes de aprovar a transação.",
+      "unknown": "Desconhecido"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Começando",
@@ -1225,6 +1230,19 @@
         "sell": "Venda imediatamente ao melhor preço disponível"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Ordem",
+        "amount": "Quantia",
+        "price": "Preço",
+        "orderPlaced": "Pedido feito",
+        "status": "Status"
+      },
+      "emptyState": {
+        "title": "Nenhum pedido recente",
+        "subtitle": "Seu histórico de ordens comerciais aparecerá aqui."
+      }
+    },
     "limitOrder": {
       "title": "Ordem Limitada",
       "description": {
@@ -1247,7 +1265,46 @@
     },
     "enterAnAmountTo": "Insira um valor para",
     "sell": "Vender",
+    "buy": "Comprar",
+    "open": "Abrir",
+    "filled": "Preenchido",
+    "pending": "Pendente",
+    "claimable": "Exigível",
+    "claimAndClose": "Reivindique e feche",
+    "past": "Passado",
+    "accept": "Aceitar",
+    "cancelled": "Cancelado",
+    "cancel": "Cancelar",
+    "daysAgo": "{days} atrás",
+    "buyWith": "Compre com {coinA} ou {coinB}",
+    "orderHistory": "Histórico de pedidos",
+    "tradeAnotherAssetOr": "Negocie outro ativo por {coinA} ou {coinB}",
+    "tradeAnotherAsset": "Negocie outro ativo por {coinDenom}",
+    "sellAnAsset": "Vender um ativo",
+    "swapAnAsset": "Trocar um ativo",
+    "of": "de",
     "insufficientFunds": "Fundos insuficientes",
+    "startTrading": "Comece a negociar",
+    "filledOrdersToClaim": "Pedidos preenchidos para reivindicar",
+    "tradeFees": "Taxas comerciais (quando o pedido é preenchido)",
+    "youNeed": "Você precisa",
+    "stablecoin": "moeda estável",
+    "quoteUpdated": "Cotação atualizada",
+    "fundsOsmosisToBuyAssets": "fundos em Osmose para comprar ativos.",
+    "chooseAnOption": "Escolha uma opção para continuar.",
+    "errors": {
+      "noAssetAvailable": "Você não tem nenhum fundo {coinName} no Osmosis para negociar. Escolha uma opção para continuar."
+    },
+    "transferFromAnotherNetwork": "Transferir de outra rede ou carteira",
+    "whatIsOrderClaim": {
+      "title": "O que o pedido está reivindicando?",
+      "description": "Na maioria dos casos, quando uma ordem com limite é executada, os fundos são automaticamente adicionados ao seu saldo. No entanto, em alguns casos raros, os fundos devem ser reivindicados manualmente a partir do pedido preenchido.<inlang-LineFeed>\nEste processo de reivindicação envolve a aprovação de uma única transação em sua carteira para todos os pedidos preenchidos não reclamados, o que incorre em uma taxa de rede nominal."
+    },
+    "whatIsAStablecoin": {
+      "title": "O que é uma moeda estável?",
+      "description": "Stablecoins são um tipo de criptomoeda cujo valor está atrelado a outro ativo, como uma moeda fiduciária ou ouro, para manter um preço estável. No Osmosis, as principais stablecoins para negociação de ativos são USDC e USDT."
+    },
+    "claimAll": "Reivindique tudo",
     "addFunds": "Adicionar fundos",
     "watchOut": "Atenção! Baleia chegando",
     "selectAnAssetTo": {

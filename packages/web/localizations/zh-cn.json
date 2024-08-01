@@ -849,7 +849,12 @@
       "title": "交易设置"
     },
     "title": "兑换",
-    "dynamicSpreadFactor": "动态的"
+    "dynamicSpreadFactor": "动态的",
+    "gas": {
+      "oneClickTradingError": "目前无法估算网络费用。如果费用超出您的 1-Click Trading 网络费用限额，您将能够继续在钱包中进行手动批准。",
+      "error": "目前无法估算网络费用。在批准交易之前，请先检查钱包中的网络费用。",
+      "unknown": "未知"
+    }
   },
   "walletSelect": {
     "gettingStarted": "入门",
@@ -1225,6 +1230,19 @@
         "sell": "立即以最佳价格出售"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "命令",
+        "amount": "数量",
+        "price": "价格",
+        "orderPlaced": "订单已下",
+        "status": "地位"
+      },
+      "emptyState": {
+        "title": "暂无近期订单",
+        "subtitle": "您的交易订单历史记录将显示在这里。"
+      }
+    },
     "limitOrder": {
       "title": "限价订单",
       "description": {
@@ -1247,7 +1265,46 @@
     },
     "enterAnAmountTo": "输入金额",
     "sell": "卖",
+    "buy": "买",
+    "open": "打开",
+    "filled": "填充",
+    "pending": "待办的",
+    "claimable": "可索偿",
+    "claimAndClose": "认领并关闭",
+    "past": "过去的",
+    "accept": "接受",
+    "cancelled": "取消",
+    "cancel": "取消",
+    "daysAgo": "{days}天前",
+    "buyWith": "使用{coinA}或{coinB}购买",
+    "orderHistory": "订单历史",
+    "tradeAnotherAssetOr": "将另一种资产交易为{coinA}或{coinB}",
+    "tradeAnotherAsset": "用{coinDenom}交易另一种资产",
+    "sellAnAsset": "出售资产",
+    "swapAnAsset": "交换资产",
+    "of": "的",
     "insufficientFunds": "不充足的资金",
+    "startTrading": "开始交易",
+    "filledOrdersToClaim": "已填写订单并领取",
+    "tradeFees": "交易费（订单成交时）",
+    "youNeed": "你需要",
+    "stablecoin": "稳定币",
+    "quoteUpdated": "报价已更新",
+    "fundsOsmosisToBuyAssets": "Osmosis 上的资金用于购买资产。",
+    "chooseAnOption": "选择一个选项以继续。",
+    "errors": {
+      "noAssetAvailable": "您在 Osmosis 上没有任何{coinName}资金可供交易。选择一个选项以继续。"
+    },
+    "transferFromAnotherNetwork": "从其他网络或钱包转移",
+    "whatIsOrderClaim": {
+      "title": "什么是订单索取？",
+      "description": "在大多数情况下，当限价订单成交时，资金会自动添加到您的余额中。但在极少数情况下，必须手动从已成交的订单中领取资金。<inlang-LineFeed><inlang-LineFeed>此认领流程涉及批准您钱包中所有未认领的已完成订单的单笔交易，这会产生象征性的网络费用。"
+    },
+    "whatIsAStablecoin": {
+      "title": "什么是稳定币？",
+      "description": "稳定币是一种加密货币，其价值与另一种资产（例如法定货币或黄金）挂钩，以保持稳定的价格。在 Osmosis 上，用于购买和出售资产的主要稳定币是 USDC 和 USDT。"
+    },
+    "claimAll": "索取全部",
     "addFunds": "增加资金",
     "watchOut": "小心！鲸鱼来了",
     "selectAnAssetTo": {

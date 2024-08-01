@@ -5,3 +5,4 @@ export * from "./maker-fee";
 export * from "./orderbook-state";
 export * from "./pools";
 export * from "./tick-state";
+export * from "./types";

@@ -104,10 +104,11 @@ export const TokenSelectLimit: FunctionComponent<
       () => orderDirection === "ask" && isWalletConnected,
       [isWalletConnected, orderDirection]
     );
-    const showQuoteBalance = useMemo(
-      () => orderDirection === "bid",
-      [orderDirection]
-    );
+
+    // const showQuoteBalance = useMemo(
+    //   () => orderDirection === "bid",
+    //   [orderDirection]
+    // );
 
     return (
       <div className="flex flex-col">
@@ -172,11 +173,7 @@ export const TokenSelectLimit: FunctionComponent<
             )}
           </div>
         </button>
-        <PriceSelector
-          showQuoteBalance={showQuoteBalance}
-          tokenSelectionAvailable={tokenSelectionAvailable}
-          disabled={disabled}
-        />
+        <PriceSelector />
         <TokenSelectModalLimit
           headerTitle={
             orderDirection === "ask"
