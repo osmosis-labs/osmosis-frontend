@@ -966,8 +966,6 @@
       "title": "Sélectionnez réseau",
       "searchPlaceholder": "Rechercher des réseaux pris en charge"
     },
-    "pendingWithdraw": "En attente de retrait",
-    "pendingDeposit": "Dépôt en attente",
     "completedWithdraw": "Retrait terminé",
     "completedDeposit": "Dépôt complété",
     "failedWithdraw": "Échec du retrait",

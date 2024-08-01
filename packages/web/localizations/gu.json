@@ -966,8 +966,6 @@
       "title": "નેટવર્ક પસંદ કરો",
       "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
     },
-    "pendingWithdraw": "બાકી ઉપાડ",
-    "pendingDeposit": "બાકી થાપણ",
     "completedWithdraw": "ઉપાડ પૂર્ણ",
     "completedDeposit": "ડિપોઝિટ પૂર્ણ",
     "failedWithdraw": "ઉપાડ નિષ્ફળ",

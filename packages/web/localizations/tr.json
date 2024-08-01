@@ -966,8 +966,6 @@
       "title": "Ağ seçin",
       "searchPlaceholder": "Desteklenen ağları arayın"
     },
-    "pendingWithdraw": "Geri çekilme bekleniyor",
-    "pendingDeposit": "Bekleyen mevduat",
     "completedWithdraw": "Para çekme işlemi tamamlandı",
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",

@@ -966,8 +966,6 @@
       "title": "Netzwerk auswählen",
       "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     },
-    "pendingWithdraw": "Ausstehender Auszug",
-    "pendingDeposit": "Ausstehende Einzahlung",
     "completedWithdraw": "Auszahlung abgeschlossen",
     "completedDeposit": "Einzahlung abgeschlossen",
     "failedWithdraw": "Auszahlung fehlgeschlagen",

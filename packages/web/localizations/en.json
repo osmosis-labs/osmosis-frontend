@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
     "startAgain": "Start again"
   },
+  "estimated": "Estimated",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
     "simplifiedExperience": "Your experience has been simplified!",
@@ -966,8 +967,10 @@
       "title": "Select network",
       "searchPlaceholder": "Search supported networks"
     },
-    "pendingWithdraw": "Pending withdraw",
-    "pendingDeposit": "Pending deposit",
+    "pendingWithdraw": "Withdraw in progress",
+    "pendingDeposit": "Deposit in progress",
+    "amountToChain": "{amount} to {chain}",
+    "amountFromChain": "{amount} from {chain}",
     "completedWithdraw": "Withdraw completed",
     "completedDeposit": "Deposit completed",
     "failedWithdraw": "Withdraw failed",

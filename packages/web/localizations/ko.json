@@ -966,8 +966,6 @@
       "title": "네트워크 선택",
       "searchPlaceholder": "지원되는 네트워크 검색"
     },
-    "pendingWithdraw": "출금 대기 중",
-    "pendingDeposit": "입금 대기 중",
     "completedWithdraw": "출금 완료",
     "completedDeposit": "입금완료",
     "failedWithdraw": "출금 실패",

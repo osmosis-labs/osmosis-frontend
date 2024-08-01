@@ -966,8 +966,6 @@
       "title": "ネットワークを選択",
       "searchPlaceholder": "サポートされているネットワークを検索"
     },
-    "pendingWithdraw": "保留中の撤回",
-    "pendingDeposit": "保留中の入金",
     "completedWithdraw": "引き出しが完了しました",
     "completedDeposit": "入金完了",
     "failedWithdraw": "引き出しに失敗しました",

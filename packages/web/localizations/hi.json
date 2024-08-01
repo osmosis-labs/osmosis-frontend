@@ -966,8 +966,6 @@
       "title": "नेटवर्क चुनें",
       "searchPlaceholder": "समर्थित नेटवर्क खोजें"
     },
-    "pendingWithdraw": "लंबित निकासी",
-    "pendingDeposit": "लंबित जमा",
     "completedWithdraw": "निकासी पूर्ण हुई",
     "completedDeposit": "जमा पूर्ण हुआ",
     "failedWithdraw": "निकासी विफल",

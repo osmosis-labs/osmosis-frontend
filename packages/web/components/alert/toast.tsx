@@ -74,16 +74,19 @@ const LoadingToast: FunctionComponent<Alert> = ({
   captionElement,
   learnMoreUrl,
   learnMoreUrlCaption,
+  iconElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
-    <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
-      <Image
-        alt="loading"
-        src="/icons/loading-blue.svg"
-        height={32}
-        width={32}
-      />
-    </div>
+    {iconElement ?? (
+      <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
+        <Image
+          alt="loading"
+          src="/icons/loading-blue.svg"
+          height={32}
+          width={32}
+        />
+      </div>
+    )}
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}

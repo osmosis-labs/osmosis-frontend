@@ -966,8 +966,6 @@
       "title": "選擇網路",
       "searchPlaceholder": "搜尋支援的網絡"
     },
-    "pendingWithdraw": "待提款",
-    "pendingDeposit": "待定存款",
     "completedWithdraw": "提現完成",
     "completedDeposit": "存款完成",
     "failedWithdraw": "提現失敗",

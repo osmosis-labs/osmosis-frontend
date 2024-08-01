@@ -966,8 +966,6 @@
       "title": "Wybierz sieć",
       "searchPlaceholder": "Wyszukaj obsługiwane sieci"
     },
-    "pendingWithdraw": "Oczekuje na wycofanie",
-    "pendingDeposit": "Oczekujący depozyt",
     "completedWithdraw": "Wypłata zakończona",
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",

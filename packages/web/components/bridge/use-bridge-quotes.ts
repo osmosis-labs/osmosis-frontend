@@ -422,23 +422,40 @@ export const useBridgeQuotes = ({
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: Bridge, params: GetTransferStatusParams) => {
+    ({
+      estimatedArrivalUnix,
+      providerId,
+      params,
+    }: {
+      estimatedArrivalUnix: number;
+      providerId: Bridge;
+      params: GetTransferStatusParams;
+    }) => {
       if (inputAmountRaw !== "" && availableBalance && inputCoin) {
-        transferHistoryStore.pushTxNow(
-          `${providerId}${JSON.stringify(params)}`,
-          inputCoin.trim(true).toString(),
+        transferHistoryStore.pushTxNow({
+          prefixedKey: `${providerId}${JSON.stringify(params)}`,
+          amount: inputCoin.trim(true).toString(),
+          amountLogo: inputCoin.currency.coinImageUrl,
           isWithdraw,
-          (isWithdraw ? fromAddress : toAddress) ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
-        );
+          chainPrettyName:
+            direction === "deposit"
+              ? fromChain?.chainName ?? ""
+              : toChain?.chainName ?? "",
+          estimatedArrivalUnix,
+          accountAddress: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account)
+        });
       }
     },
     [
       availableBalance,
-      inputCoin,
-      toAddress,
+      direction,
       fromAddress,
+      fromChain?.chainName,
       inputAmountRaw,
+      inputCoin,
       isWithdraw,
+      toAddress,
+      toChain?.chainName,
       transferHistoryStore,
     ]
   );
@@ -522,10 +539,14 @@ export const useBridgeQuotes = ({
         hash: sendTxHash,
       });
 
-      trackTransferStatus(quote.provider.id, {
-        sendTxHash: sendTxHash as string,
-        fromChainId: quote.fromChain.chainId,
-        toChainId: quote.toChain.chainId,
+      trackTransferStatus({
+        estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+        providerId: quote.provider.id,
+        params: {
+          sendTxHash: sendTxHash as string,
+          fromChainId: quote.fromChain.chainId,
+          toChainId: quote.toChain.chainId,
+        },
       });
 
       // TODO: Investigate if this is still needed
@@ -605,10 +626,14 @@ export const useBridgeQuotes = ({
               queryBalance.fetch();
             }
 
-            trackTransferStatus(quote.provider.id, {
-              sendTxHash: tx.transactionHash,
-              fromChainId: quote.fromChain.chainId,
-              toChainId: quote.toChain.chainId,
+            trackTransferStatus({
+              estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+              providerId: quote.provider.id,
+              params: {
+                sendTxHash: tx.transactionHash,
+                fromChainId: quote.fromChain.chainId,
+                toChainId: quote.toChain.chainId,
+              },
             });
 
             onTransferProp?.();
