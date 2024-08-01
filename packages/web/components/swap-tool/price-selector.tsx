@@ -22,6 +22,25 @@ type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
 const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
 
+const VALID_QUOTES = [
+  ...UI_DEFAULT_QUOTES,
+  "USDC.sol.axl",
+  "USDC.sol.wh",
+  "USDC.eth.grv",
+  "USDC.eth.wh",
+  "USDC.matic.axl",
+  "USDC.avax.axl",
+  "USDC.eth.axl",
+  "USDT.sol.axl",
+  "USDT.eth.grv",
+  "USDT.eth.wh",
+  "USDT.matic.axl",
+  "USDT.avax.axl",
+  "USDT.kava",
+  "USDT.eth.pica",
+  "USDT.sol.pica",
+];
+
 function sortByAmount(
   assetA?: MaybeUserAssetCoin,
   assetB?: MaybeUserAssetCoin
@@ -89,6 +108,14 @@ export const PriceSelector = memo(() => {
       select: (data) =>
         data.items
           .map((walletAsset) => {
+            if (
+              !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
+                walletAsset.coinDenom
+              )
+            ) {
+              return undefined;
+            }
+
             const asset = getAssetFromAssetList({
               assetLists: AssetLists,
               symbol: walletAsset.coinDenom,
