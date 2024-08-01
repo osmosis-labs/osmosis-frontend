@@ -12,6 +12,7 @@ import {
   getDecimalCount,
   getNumberMagnitude,
   toScientificNotation,
+  trimPlaceholderZeros,
 } from "~/utils/number";
 
 type CustomFormatOpts = {
@@ -354,3 +355,24 @@ export const compressZeros = (
     decimalDigits: otherDigits,
   };
 };
+
+/**
+ * Formats a fiat price using `getPriceExtendedFormatOptions` and displays `<0.01` if the price is less than $0.01.
+ * Rounds to the provided `maxDecimals` parameter.
+ */
+export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
+  if (!price.toDec().isZero() && price.toDec().lt(new Dec(0.01))) {
+    return "<$0.01";
+  }
+
+  const truncatedAmount = new Dec(
+    parseFloat(price.toDec().toString()).toFixed(maxDecimals).toString()
+  );
+  const truncatedPrice = new PricePretty(price.fiatCurrency, truncatedAmount);
+
+  return trimPlaceholderZeros(
+    formatPretty(truncatedPrice, {
+      ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
+    })
+  );
+}

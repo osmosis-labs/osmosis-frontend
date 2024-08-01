@@ -15,7 +15,7 @@ import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
@@ -459,12 +459,8 @@ const SelectableQuotes = observer(
                           "text-white-full": availableBalance.gt(new Dec(0)),
                         })}
                       >
-                        {formatPretty(
-                          new PricePretty(
-                            DEFAULT_VS_CURRENCY,
-                            availableBalance
-                          ),
-                          getPriceExtendedFormatOptions(availableBalance)
+                        {formatFiatPrice(
+                          new PricePretty(DEFAULT_VS_CURRENCY, availableBalance)
                         )}
                       </span>
                       <span className="body2 font-light">
