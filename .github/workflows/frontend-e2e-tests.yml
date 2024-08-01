@@ -114,7 +114,7 @@ jobs:
   preview-pools-and-select-pair-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
