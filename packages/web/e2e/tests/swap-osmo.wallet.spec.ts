@@ -25,7 +25,7 @@ test.describe("Test Swap Osmo feature", () => {
     // Launch Chrome with a Keplr wallet extension
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension)
+      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
     );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
