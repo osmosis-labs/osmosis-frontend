@@ -28,6 +28,7 @@ jobs:
         run: echo "$environment_url"
 
   preview-swap-tests:
+    timeout-minutes: 10
     runs-on: macos-latest
     needs: wait-for-deployment
     environment:
@@ -73,6 +74,7 @@ jobs:
           path: packages/web/playwright-report
 
   preview-portfolio-tests:
+    timeout-minutes: 10
     needs: wait-for-deployment
     runs-on: macos-latest
     environment:
@@ -100,16 +102,17 @@ jobs:
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
           cd packages/web
-          npx playwright test -g "Test Portfolio feature"
-      - name: upload Portfolio test results
+          npx playwright test portfolio transactions
+      - name: upload Portfolio and transactions test results
         if: failure()
         id: portfolio-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: preview-portfolio-test-results
+          name: preview-portfolio-trx-test-results
           path: packages/web/playwright-report
 
   preview-pools-and-select-pair-tests:
+    timeout-minutes: 10
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
@@ -142,41 +145,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-pools-test-results
-          path: packages/web/playwright-report
-
-  preview-transactions-tests:
-    needs: wait-for-deployment
-    runs-on: macos-latest
-    environment:
-      name: prod_swap_test
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Transactions tests
-        env:
-          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        run: |
-          cd packages/web
-          npx playwright test -g "Test Transactions feature"
-      - name: upload transactions test results
-        if: failure()
-        id: transactions-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: preview-transactions-test-results
           path: packages/web/playwright-report
