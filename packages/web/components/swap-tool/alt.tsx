@@ -9,6 +9,7 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -86,6 +87,13 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
+
+    const [_, setType] = useQueryState("type");
+
+    useEffect(() => {
+      setType(null);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig();

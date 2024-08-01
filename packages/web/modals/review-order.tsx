@@ -91,6 +91,7 @@ export function ReviewOrder({
     () => +manualSlippage > 1,
     [manualSlippage]
   );
+  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
@@ -214,7 +215,7 @@ export function ReviewOrder({
             "pb-8": !diffGteSlippage,
           })}
         >
-          {orderType === "limit" && (
+          {orderType === "limit" && tab !== "swap" && (
             <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 min-w-10 items-center justify-center">
