@@ -265,7 +265,7 @@ export const OrderHistory = observer(() => {
 
   return (
     <div className="mt-3 flex flex-col">
-      <table>
+      <table className="table-auto">
         <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
