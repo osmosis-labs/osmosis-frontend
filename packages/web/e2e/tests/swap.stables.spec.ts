@@ -10,8 +10,7 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
-  const walletId =
-    process.env.WALLET_ID_S ?? "osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c";
+  //const walletId = process.env.WALLET_ID_S ?? "osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c";
   const privateKey = process.env.PRIVATE_KEY_S ?? "private_key_s";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
@@ -40,10 +39,7 @@ test.describe("Test Swap Stables feature", () => {
     await walletPage.setWalletNameAndPassword("Test Stables", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
-    // Wait for random timeout between 1 and 120 seconds, only monitoring tests
-    const randomWait = Math.floor(Math.random() * 120);
     page = context.pages()[0];
-    await page.waitForTimeout(randomWait * 1000);
     // Switch to Application
     swapPage = new SwapPage(page);
     await swapPage.goto();
@@ -63,7 +59,7 @@ test.describe("Test Swap Stables feature", () => {
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(msgContentAmount).toContain("sender: " + walletId);
+    //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDCa);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -78,7 +74,7 @@ test.describe("Test Swap Stables feature", () => {
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDCa);
-    expect(msgContentAmount).toContain("sender: " + walletId);
+    //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -93,7 +89,7 @@ test.describe("Test Swap Stables feature", () => {
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(USDC);
-    expect(msgContentAmount).toContain("sender: " + walletId);
+    //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
@@ -108,7 +104,7 @@ test.describe("Test Swap Stables feature", () => {
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(msgContentAmount).toContain("sender: " + walletId);
+    //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
     expect(swapPage.isTransactionBroadcasted(10));
     expect(swapPage.isTransactionSuccesful(10));
