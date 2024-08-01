@@ -120,12 +120,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       const { onMouseDown: onMouseDownQuickSelect } =
         useDraggableScroll(quickSelectRef);
 
-      const onClose = () => {
-        setIsRequestingClose(true);
-        setKeyboardSelectedIndex(0);
-        onCloseProp?.();
-      };
-
       const onSelect = (coinDenom: string) => {
         onSelectProp?.(coinDenom);
         onClose();
@@ -156,10 +150,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
 
         onSelect(coinDenom);
       };
-
-      useWindowKeyActions({
-        Escape: onClose,
-      });
 
       const { handleKeyDown: containerKeyDown } = useKeyActions({
         ArrowDown: () => {
@@ -218,6 +208,18 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         selectableAssets,
         ["coinDenom", "coinName"]
       );
+
+      const onClose = () => {
+        setIsRequestingClose(true);
+        setKeyboardSelectedIndex(0);
+        onCloseProp?.();
+        setQuery("");
+        if (setAssetQueryInput) setAssetQueryInput("");
+      };
+
+      useWindowKeyActions({
+        Escape: onClose,
+      });
 
       const searchValue = useMemo(
         () => (!!assetQueryInput ? assetQueryInput : filterValue),
