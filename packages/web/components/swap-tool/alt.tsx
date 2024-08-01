@@ -591,6 +591,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             outFiatAmountLessSlippage={outFiatAmountLessSlippage}
             gasAmount={swapState.networkFee?.gasUsdValueToPay}
             isGasLoading={swapState.isLoadingNetworkFee}
+            gasError={swapState.networkFeeError}
           />
         </div>
         <TokenSelectModalLimit

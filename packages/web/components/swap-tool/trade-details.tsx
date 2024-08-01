@@ -3,6 +3,7 @@ import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -15,6 +16,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import {
   useDisclosure,
   UseDisclosureReturn,
+  useOneClickTradingSession,
   usePreviousWhen,
   useSlippageConfig,
   useTranslation,
@@ -32,333 +34,370 @@ interface TradeDetailsProps {
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
-  isMakerFeeLoading?: boolean;
   gasAmount?: PricePretty;
   isGasLoading?: boolean;
+  gasError?: Error | null;
 }
 
-export const TradeDetails = ({
-  swapState,
-  inPriceFetching,
-  treatAsStable,
-  type,
-  makerFee,
-  isMakerFeeLoading,
-  gasAmount,
-  isGasLoading,
-}: Partial<TradeDetailsProps>) => {
-  const { t } = useTranslation();
+export const TradeDetails = observer(
+  ({
+    swapState,
+    inPriceFetching,
+    treatAsStable,
+    type,
+    makerFee,
+    gasAmount,
+    isGasLoading,
+    gasError,
+  }: Partial<TradeDetailsProps>) => {
+    const { t } = useTranslation();
 
-  const routesVisDisclosure = useDisclosure();
+    const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
-  const [outAsBase, setOutAsBase] = useState(true);
+    const routesVisDisclosure = useDisclosure();
 
-  const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
+    const [outAsBase, setOutAsBase] = useState(true);
 
-  const isInAmountEmpty = useMemo(
-    () => swapState?.inAmountInput.error instanceof EmptyAmountError,
-    [swapState?.inAmountInput.error]
-  );
+    const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
-  const isLoading = useMemo(
-    () =>
-      type === "market" &&
-      swapState?.isQuoteLoading &&
-      !Boolean(swapState?.error),
-    [swapState?.isQuoteLoading, swapState?.error, type]
-  );
+    const isInAmountEmpty = useMemo(
+      () => swapState?.inAmountInput.error instanceof EmptyAmountError,
+      [swapState?.inAmountInput.error]
+    );
 
-  const priceImpact = useMemo(
-    () => swapState?.quote?.priceImpactTokenOut,
-    [swapState?.quote?.priceImpactTokenOut]
-  );
+    const isLoading = useMemo(
+      () =>
+        type === "market" &&
+        swapState?.isQuoteLoading &&
+        !Boolean(swapState?.error),
+      [swapState?.isQuoteLoading, swapState?.error, type]
+    );
 
-  const isPriceImpactHigh = useMemo(
-    () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
-    [priceImpact]
-  );
+    const priceImpact = useMemo(
+      () => swapState?.quote?.priceImpactTokenOut,
+      [swapState?.quote?.priceImpactTokenOut]
+    );
 
-  const limitTotalFees = useMemo(() => {
-    if (!makerFee || makerFee.isZero()) return;
-    return formatPretty((makerFee ?? new Dec(0)).mul(new Dec(100)), {
-      maxDecimals: 2,
-      minimumFractionDigits: 2,
-    });
-  }, [makerFee]);
+    const isPriceImpactHigh = useMemo(
+      () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
+      [priceImpact]
+    );
 
-  return (
-    <div className="flex w-full">
-      <Disclosure>
-        {({ open, close }) => (
-          <div
-            className="flex w-full flex-col transition-all"
-            style={{
-              height: open ? detailsHeight : 32,
-              overflow: open ? "hidden" : undefined,
-            }}
-          >
-            <div ref={details} className="flex w-full flex-col">
-              <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-              <div className="flex h-8 w-full items-center justify-between">
-                <SkeletonLoader
-                  isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
-                >
-                  <GenericDisclaimer
-                    title="What is expected rate?"
-                    body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
+    const limitTotalFees = useMemo(() => {
+      if (!makerFee || makerFee.isZero()) return;
+      return formatPretty((makerFee ?? new Dec(0)).mul(new Dec(100)), {
+        maxDecimals: 2,
+        minimumFractionDigits: 2,
+      });
+    }, [makerFee]);
+
+    const gasFeeError = useMemo(() => {
+      if (!!gasAmount && !gasError) return;
+
+      return isOneClickTradingEnabled
+        ? t("swap.gas.oneClickTradingError")
+        : t("swap.gas.error");
+    }, [gasAmount, isOneClickTradingEnabled, gasError, t]);
+
+    return (
+      <div className="flex w-full">
+        <Disclosure>
+          {({ open, close }) => (
+            <div
+              className="flex w-full flex-col transition-all"
+              style={{
+                height: open ? detailsHeight : 32,
+                overflow: open ? "hidden" : undefined,
+              }}
+            >
+              <div ref={details} className="flex w-full flex-col">
+                <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
+                <div className="flex h-8 w-full items-center justify-between">
+                  <SkeletonLoader
+                    isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                   >
-                    <div className="flex items-center gap-2">
-                      {isLoading && (
-                        <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                      )}
-                      <span
-                        onClick={() => setOutAsBase(!outAsBase)}
-                        className={classNames("body2 text-osmoverse-300", {
-                          "animate-pulse": inPriceFetching || isLoading,
-                        })}
-                      >
-                        {swapState?.inBaseOutQuoteSpotPrice &&
-                          ExpectedRate(swapState, outAsBase, treatAsStable)}
-                      </span>
-                    </div>
-                  </GenericDisclaimer>
-                </SkeletonLoader>
-                <Disclosure.Button
-                  className={classNames(
-                    "relative flex items-center justify-between py-1 transition-opacity"
-                  )}
-                  disabled={isInAmountEmpty}
-                >
-                  <GenericDisclaimer
-                    title="High price impact"
-                    body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                    disabled={!isPriceImpactHigh}
-                  >
-                    <div
-                      className={classNames(
-                        "flex items-center gap-2 transition-opacity",
-                        {
-                          "opacity-0": isInAmountEmpty,
-                        }
-                      )}
+                    <GenericDisclaimer
+                      title="What is expected rate?"
+                      body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
                     >
-                      {isPriceImpactHigh && (
-                        <Icon id="alert-circle-filled" width={16} height={16} />
-                      )}
-                      <span className="body2 text-wosmongton-300">
-                        {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                      </span>
-                    </div>
-                  </GenericDisclaimer>
-                </Disclosure.Button>
-              </div>
-              <Disclosure.Panel className="body2 flex flex-col text-osmoverse-300">
-                {type === "market" ? (
+                      <div className="flex items-center gap-2">
+                        {isLoading && (
+                          <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                        )}
+                        <span
+                          onClick={() => setOutAsBase(!outAsBase)}
+                          className={classNames("body2 text-osmoverse-300", {
+                            "animate-pulse": inPriceFetching || isLoading,
+                          })}
+                        >
+                          {swapState?.inBaseOutQuoteSpotPrice &&
+                            ExpectedRate(swapState, outAsBase, treatAsStable)}
+                        </span>
+                      </div>
+                    </GenericDisclaimer>
+                  </SkeletonLoader>
+                  <Disclosure.Button
+                    className={classNames(
+                      "relative flex items-center justify-between py-1 transition-opacity"
+                    )}
+                    disabled={isInAmountEmpty}
+                  >
+                    <GenericDisclaimer
+                      title="High price impact"
+                      body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                      disabled={!isPriceImpactHigh}
+                    >
+                      <div
+                        className={classNames(
+                          "flex items-center gap-2 transition-opacity",
+                          {
+                            "opacity-0": isInAmountEmpty,
+                          }
+                        )}
+                      >
+                        {isPriceImpactHigh && (
+                          <Icon
+                            id="alert-circle-filled"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                        <span className="body2 text-wosmongton-300">
+                          {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                        </span>
+                      </div>
+                    </GenericDisclaimer>
+                  </Disclosure.Button>
+                </div>
+                <Disclosure.Panel className="body2 flex flex-col text-osmoverse-300">
+                  {type === "market" ? (
+                    <RecapRow
+                      left={
+                        <GenericDisclaimer
+                          title="What is price impact?"
+                          body="This is the difference in value between what you pay and what you receive. Positive numbers mean the asset you’re buying is worth more, while negative numbers mean the asset you’re selling is worth more."
+                        >
+                          {t("assets.transfer.priceImpact")}
+                        </GenericDisclaimer>
+                      }
+                      right={
+                        <GenericDisclaimer
+                          title="High price impact"
+                          body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                          disabled={!isPriceImpactHigh}
+                        >
+                          <div className="inline-flex items-center gap-1">
+                            {isPriceImpactHigh && (
+                              <Icon
+                                id="alert-circle-filled"
+                                width={16}
+                                height={16}
+                              />
+                            )}
+                            <span
+                              className={classNames({
+                                "text-rust-400": isPriceImpactHigh,
+                                "text-bullish-400": !isPriceImpactHigh,
+                              })}
+                            >
+                              -{formatPretty(priceImpact ?? new Dec(0))}
+                            </span>
+                          </div>
+                        </GenericDisclaimer>
+                      }
+                    />
+                  ) : (
+                    <RecapRow
+                      left={<span>Trade fees (when order filled)</span>}
+                      right={
+                        !limitTotalFees ? (
+                          <span className="text-bullish-400">
+                            {t("transfer.free")}
+                          </span>
+                        ) : (
+                          <span>{limitTotalFees}</span>
+                        )
+                      }
+                    />
+                  )}
+                  {type === "market" && (
+                    <RecapRow
+                      left={
+                        <GenericDisclaimer
+                          title="What are swap fees?"
+                          body="This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
+                        >
+                          {t("pools.aprBreakdown.swapFees")}
+                        </GenericDisclaimer>
+                      }
+                      right={
+                        <>
+                          {swapState?.tokenInFeeAmountFiatValue && (
+                            <>
+                              {swapState?.tokenInFeeAmountFiatValue
+                                .toDec()
+                                .gt(new Dec(0)) ? (
+                                <span>
+                                  <span className="text-osmoverse-100">
+                                    {swapState?.tokenInFeeAmountFiatValue
+                                      .toDec()
+                                      .lte(new Dec(0.01)) ? (
+                                      <>&lt;$0.01</>
+                                    ) : (
+                                      <>
+                                        ~
+                                        {formatPretty(
+                                          swapState?.tokenInFeeAmountFiatValue,
+                                          {
+                                            maxDecimals: 3,
+                                            maximumSignificantDigits: 4,
+                                          }
+                                        )}
+                                      </>
+                                    )}
+                                  </span>
+                                  <span className="text-osmoverse-500">
+                                    {swapState?.quote?.swapFee
+                                      ? ` (${swapState?.quote?.swapFee})`
+                                      : ""}
+                                  </span>
+                                </span>
+                              ) : (
+                                <span className="text-bullish-400">
+                                  {t("transfer.free")}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </>
+                      }
+                    />
+                  )}
                   <RecapRow
                     left={
                       <GenericDisclaimer
-                        title="What is price impact?"
-                        body="This is the difference in value between what you pay and what you receive. Positive numbers mean the asset you’re buying is worth more, while negative numbers mean the asset you’re selling is worth more."
-                      >
-                        {t("assets.transfer.priceImpact")}
-                      </GenericDisclaimer>
-                    }
-                    right={
-                      <GenericDisclaimer
-                        title="High price impact"
-                        body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                        disabled={!isPriceImpactHigh}
-                      >
-                        <div className="inline-flex items-center gap-1">
-                          {isPriceImpactHigh && (
-                            <Icon
-                              id="alert-circle-filled"
-                              width={16}
-                              height={16}
-                            />
-                          )}
-                          <span
-                            className={classNames({
-                              "text-rust-400": isPriceImpactHigh,
-                              "text-bullish-400": !isPriceImpactHigh,
-                            })}
-                          >
-                            -{formatPretty(priceImpact ?? new Dec(0))}
+                        title="What are trade fees?"
+                        body={
+                          <span>
+                            This is the fee charged by the Osmosis protocol at
+                            the time of trade execution in order to reward
+                            liquidity providers and maintain the network. <br />
+                            <br /> Trade fees for limit orders are currently
+                            free.
+                            <br />
+                            <br />
+                            Network fees are additional to every transaction.
                           </span>
-                        </div>
+                        }
+                      >
+                        Additional network fees
                       </GenericDisclaimer>
                     }
-                  />
-                ) : (
-                  <RecapRow
-                    left={<span>Trade fees (when order filled)</span>}
                     right={
-                      !limitTotalFees ? (
-                        <span className="text-bullish-400">
-                          {t("transfer.free")}
-                        </span>
-                      ) : (
-                        <span>{limitTotalFees}</span>
+                      swapState && (
+                        <>
+                          {!isGasLoading ? (
+                            !!gasFeeError ? (
+                              <GenericDisclaimer
+                                title="Network fee cannot be estimated"
+                                body={gasFeeError}
+                              >
+                                <span className="flex items-center gap-1">
+                                  <Icon
+                                    id="question"
+                                    width={24}
+                                    height={24}
+                                    className="scale-75 text-osmoverse-300"
+                                  />{" "}
+                                  Unknown
+                                </span>
+                              </GenericDisclaimer>
+                            ) : (
+                              <span
+                                className={classNames(
+                                  "inline-flex items-center gap-1 text-osmoverse-100",
+                                  { "animate-pulse": isGasLoading }
+                                )}
+                              >
+                                <Icon id="gas" width={16} height={16} />
+                                {gasAmount && gasAmount.toString()}
+                              </span>
+                            )
+                          ) : (
+                            <Skeleton className="h-5 w-16" />
+                          )}
+                        </>
                       )
                     }
                   />
-                )}
-                {type === "market" && (
-                  <RecapRow
-                    left={
-                      <GenericDisclaimer
-                        title="What are swap fees?"
-                        body="This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
-                      >
-                        {t("pools.aprBreakdown.swapFees")}
-                      </GenericDisclaimer>
-                    }
-                    right={
-                      <>
-                        {swapState?.tokenInFeeAmountFiatValue && (
-                          <>
-                            {swapState?.tokenInFeeAmountFiatValue
-                              .toDec()
-                              .gt(new Dec(0)) ? (
-                              <span>
-                                <span className="text-osmoverse-100">
-                                  {swapState?.tokenInFeeAmountFiatValue
-                                    .toDec()
-                                    .lte(new Dec(0.01)) ? (
-                                    <>&lt;$0.01</>
-                                  ) : (
-                                    <>
-                                      ~
-                                      {formatPretty(
-                                        swapState?.tokenInFeeAmountFiatValue,
-                                        {
-                                          maxDecimals: 3,
-                                          maximumSignificantDigits: 4,
-                                        }
-                                      )}
-                                    </>
-                                  )}
-                                </span>
-                                <span className="text-osmoverse-500">
-                                  {swapState?.quote?.swapFee
-                                    ? ` (${swapState?.quote?.swapFee})`
-                                    : ""}
-                                </span>
-                              </span>
-                            ) : (
-                              <span className="text-bullish-400">
-                                {t("transfer.free")}
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </>
-                    }
-                  />
-                )}
-                <RecapRow
-                  left={
-                    <GenericDisclaimer
-                      title="What are trade fees?"
-                      body={
-                        <span>
-                          This is the fee charged by the Osmosis protocol at the
-                          time of trade execution in order to reward liquidity
-                          providers and maintain the network. <br />
-                          <br /> Trade fees for limit orders are currently free.
-                          <br />
-                          <br />
-                          Network fees are additional to every transaction.
-                        </span>
-                      }
-                    >
-                      Additional network fees
-                    </GenericDisclaimer>
-                  }
-                  right={
-                    swapState && (
-                      <>
-                        {!isGasLoading && gasAmount ? (
-                          <span
-                            className={classNames(
-                              "inline-flex items-center gap-1 text-osmoverse-100",
-                              { "animate-pulse": isMakerFeeLoading }
-                            )}
-                          >
-                            <Icon id="gas" width={16} height={16} />
-                            {gasAmount && gasAmount.toString()}
-                          </span>
-                        ) : (
-                          <Skeleton className="h-5 w-16" />
-                        )}
-                      </>
-                    )
-                  }
-                />
-                {type === "market" && (
-                  <Disclosure>
-                    {({ open }) => {
-                      const routes = swapState?.quote?.split;
+                  {type === "market" && (
+                    <Disclosure>
+                      {({ open }) => {
+                        const routes = swapState?.quote?.split;
 
-                      return (
-                        <>
-                          <Disclosure.Button className="flex h-8 w-full items-center justify-between">
-                            <GenericDisclaimer
-                              title="What is a trade route?"
-                              body={
-                                <>
-                                  If there’s no direct market between the assets
-                                  you’re trading, Osmosis will try to make the
-                                  trade happen by making a series of trades with
-                                  other assets to get the best price at any
-                                  given time.
-                                  <br />
-                                  <br />
-                                  For optimal efficiency based on available
-                                  liquidity, sometimes trades will be split into
-                                  multiple routes with different assets.
-                                </>
-                              }
-                            >
-                              <span className="body2 text-osmoverse-300">
-                                {t("swap.autoRouter")}
-                              </span>
-                            </GenericDisclaimer>
-                            <div className="flex items-center gap-1 text-wosmongton-300">
-                              <span className="body2">
-                                {routes?.length}{" "}
-                                {routes?.length === 1 ? "route" : "routes"}
-                              </span>
-                              <Icon
-                                id="chevron-down"
-                                width={16}
-                                height={16}
-                                className={classNames("transition-transform", {
-                                  "rotate-180": open,
-                                })}
+                        return (
+                          <>
+                            <Disclosure.Button className="flex h-8 w-full items-center justify-between">
+                              <GenericDisclaimer
+                                title="What is a trade route?"
+                                body={
+                                  <>
+                                    If there’s no direct market between the
+                                    assets you’re trading, Osmosis will try to
+                                    make the trade happen by making a series of
+                                    trades with other assets to get the best
+                                    price at any given time.
+                                    <br />
+                                    <br />
+                                    For optimal efficiency based on available
+                                    liquidity, sometimes trades will be split
+                                    into multiple routes with different assets.
+                                  </>
+                                }
+                              >
+                                <span className="body2 text-osmoverse-300">
+                                  {t("swap.autoRouter")}
+                                </span>
+                              </GenericDisclaimer>
+                              <div className="flex items-center gap-1 text-wosmongton-300">
+                                <span className="body2">
+                                  {routes?.length}{" "}
+                                  {routes?.length === 1 ? "route" : "routes"}
+                                </span>
+                                <Icon
+                                  id="chevron-down"
+                                  width={16}
+                                  height={16}
+                                  className={classNames(
+                                    "transition-transform",
+                                    {
+                                      "rotate-180": open,
+                                    }
+                                  )}
+                                />
+                              </div>
+                            </Disclosure.Button>
+                            <Disclosure.Panel className="flex w-full flex-col gap-2">
+                              <RoutesTaken
+                                {...routesVisDisclosure}
+                                split={routes ?? []}
+                                isLoading={swapState?.isQuoteLoading}
                               />
-                            </div>
-                          </Disclosure.Button>
-                          <Disclosure.Panel className="flex w-full flex-col gap-2">
-                            <RoutesTaken
-                              {...routesVisDisclosure}
-                              split={routes ?? []}
-                              isLoading={swapState?.isQuoteLoading}
-                            />
-                          </Disclosure.Panel>
-                        </>
-                      );
-                    }}
-                  </Disclosure>
-                )}
-              </Disclosure.Panel>
+                            </Disclosure.Panel>
+                          </>
+                        );
+                      }}
+                    </Disclosure>
+                  )}
+                </Disclosure.Panel>
+              </div>
             </div>
-          </div>
-        )}
-      </Disclosure>
-    </div>
-  );
-};
+          )}
+        </Disclosure>
+      </div>
+    );
+  }
+);
 
 export function Closer({
   close,
@@ -383,6 +422,10 @@ export function ExpectedRate(
 ) {
   var inBaseOutQuoteSpotPrice =
     swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
+  if (inBaseOutQuoteSpotPrice.isZero()) {
+    console.warn("ExpectedRate: inBaseOutQuoteSpotPrice is Zero");
+    return;
+  }
 
   var baseAsset;
   var quoteAsset;

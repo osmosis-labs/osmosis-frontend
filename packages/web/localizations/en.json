@@ -849,7 +849,11 @@
       "title": "Transaction settings"
     },
     "title": "Swap",
-    "dynamicSpreadFactor": "Dynamic"
+    "dynamicSpreadFactor": "Dynamic",
+    "gas": {
+      "oneClickTradingError": "Network fee cannot be estimated at this time. If the fee exceeds your 1-Click Trading network fee limit, you will be able to proceed with manual approval in your wallet.",
+      "error": "Network fee cannot be estimated at this time. Review network fees in your wallet before approving the transaction."
+    }
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

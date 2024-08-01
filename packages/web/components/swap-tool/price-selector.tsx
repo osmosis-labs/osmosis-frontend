@@ -170,7 +170,7 @@ export const PriceSelector = memo(() => {
                       "flex items-center gap-1 transition-opacity"
                     )}
                   >
-                    <span className="body2 min-w-[60px] text-osmoverse-300">
+                    <span className="body2 whitespace-nowrap text-osmoverse-300">
                       {tab === "buy"
                         ? t("limitOrders.payWith")
                         : t("limitOrders.receive")}
