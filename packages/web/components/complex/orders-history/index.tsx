@@ -47,11 +47,6 @@ export const OrderHistory = observer(() => {
     userAddress: wallet?.address ?? "",
   });
 
-  useEffect(() => {
-    if (!isRefetching) refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const tableData: OrderCellData[] = useMemo(() => {
     return orders.map((o) => ({
       ...o,

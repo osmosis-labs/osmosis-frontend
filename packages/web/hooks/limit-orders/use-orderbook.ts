@@ -299,6 +299,7 @@ export const useOrderbookAllActiveOrders = ({
       keepPreviousData: true,
       refetchInterval: 5000,
       enabled: !!userAddress && addresses.length > 0,
+      refetchOnMount: true,
     }
   );
 
@@ -339,6 +340,7 @@ export const useOrderbookClaimableOrders = ({
     {
       enabled: !!userAddress && addresses.length > 0,
       refetchInterval: 5000,
+      refetchOnMount: true,
     }
   );
 
