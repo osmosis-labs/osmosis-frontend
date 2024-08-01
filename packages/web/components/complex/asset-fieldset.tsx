@@ -138,41 +138,36 @@ interface AssetFieldsetInputProps {
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(
-  (
-    { inputPrefix, inputValue, onInputChange, outputValue, page = "Swap Page" },
-    ref
-  ) => {
-    const { isMobile } = useWindowSize();
+>(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
+  const { isMobile } = useWindowSize();
 
-    const scale = useMemo(
-      () => calcScale((inputValue ?? "").length, isMobile),
-      [inputValue, isMobile]
-    );
+  const scale = useMemo(
+    () => calcScale((inputValue ?? "").length, isMobile),
+    [inputValue, isMobile]
+  );
 
-    return (
-      <div className="flex items-center overflow-visible">
-        {inputPrefix}
-        {outputValue || (
-          <div
-            className="transiiton-all w-full origin-left overflow-visible"
-            style={{
-              transform: `scale(${scale})`,
-            }}
-          >
-            <input
-              ref={ref}
-              className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
-              placeholder="0"
-              onChange={onInputChange}
-              value={inputValue}
-            />
-          </div>
-        )}
-      </div>
-    );
-  }
-);
+  return (
+    <div className="flex items-center overflow-visible">
+      {inputPrefix}
+      {outputValue || (
+        <div
+          className="transiiton-all w-full origin-left overflow-visible"
+          style={{
+            transform: `scale(${scale})`,
+          }}
+        >
+          <input
+            ref={ref}
+            className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
+            placeholder="0"
+            onChange={onInputChange}
+            value={inputValue}
+          />
+        </div>
+      )}
+    </div>
+  );
+});
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex h-12 w-full items-center justify-between pb-4">
