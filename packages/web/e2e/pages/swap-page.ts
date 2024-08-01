@@ -150,8 +150,8 @@ export class SwapPage extends BasePage {
     return await this.exchangeRate.innerText();
   }
 
-  async isTransactionSuccesful(delay: number = 7) {
-    console.log("Wait for a transaction success for 7 seconds.");
+  async isTransactionSuccesful(delay: number = 9) {
+    console.log("Wait for a transaction success for 9 seconds.");
     return await this.trxSuccessful.isVisible({
       timeout: delay * 1000,
     });
@@ -163,8 +163,8 @@ export class SwapPage extends BasePage {
     return trxUrl;
   }
 
-  async isTransactionBroadcasted(delay: number = 5) {
-    console.log("Wait for a transaction broadcasting for 5 seconds.");
+  async isTransactionBroadcasted(delay: number = 7) {
+    console.log("Wait for a transaction broadcasting for 7 seconds.");
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
   }
 

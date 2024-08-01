@@ -13,17 +13,16 @@ test.describe("Test Swap feature", () => {
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
-  let USDC =
+  const USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  let ATOM =
+  const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
-  let TIA =
+  const TIA =
     "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877";
-  let INJ =
+  const INJ =
     "ibc/64BA6E31FE887D66C6F8F31C7B1A80C7CA179239677B4088BB55F5EA07DBE273";
-  let AKT =
+  const AKT =
     "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
   test.beforeAll(async () => {
@@ -41,7 +40,10 @@ test.describe("Test Swap feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps", password);
+    await walletPage.setWalletNameAndPassword(
+      "Test Swaps",
+      "TestPassword2024."
+    );
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -65,8 +67,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -80,8 +82,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -95,8 +97,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + TIA);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -110,8 +112,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + TIA);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -125,8 +127,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + INJ);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -140,8 +142,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + INJ);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -155,8 +157,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + AKT);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -170,8 +172,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + AKT);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 });

@@ -13,11 +13,10 @@ test.describe("Test Swap Osmo feature", () => {
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
-  let USDC =
+  const USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  let ATOM =
+  const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
   test.beforeAll(async () => {
@@ -35,7 +34,10 @@ test.describe("Test Swap Osmo feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps", password);
+    await walletPage.setWalletNameAndPassword(
+      "Test Swaps",
+      "TestPassword2024."
+    );
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -58,8 +60,8 @@ test.describe("Test Swap Osmo feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -73,8 +75,8 @@ test.describe("Test Swap Osmo feature", () => {
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -88,8 +90,8 @@ test.describe("Test Swap Osmo feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 
@@ -103,8 +105,8 @@ test.describe("Test Swap Osmo feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
+    expect(swapPage.isTransactionBroadcasted());
+    expect(swapPage.isTransactionSuccesful());
     expect(swapPage.getTransactionUrl()).toBeTruthy();
   });
 });
