@@ -185,9 +185,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 min={0}
                 className="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                 value={swapState.priceState.orderPrice}
-                placeholder={parseFloat(
-                  swapState.priceState.price.toString()
-                ).toFixed(4)}
+                placeholder={formatPretty(
+                  priceState.priceFiat,
+                  getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
+                ).replace("$", "")}
                 onChange={(e) => {
                   const value = e.target.value.trim();
                   swapState.priceState.setPrice(value);

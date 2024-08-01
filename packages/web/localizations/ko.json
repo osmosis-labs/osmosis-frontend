@@ -1229,6 +1229,19 @@
         "sell": "가장 좋은 가격으로 즉시 판매"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "주문하다",
+        "amount": "양",
+        "price": "가격",
+        "orderPlaced": "주문 완료",
+        "status": "상태"
+      },
+      "emptyState": {
+        "title": "최근 주문 없음",
+        "subtitle": "귀하의 거래 주문 내역이 여기에 표시됩니다."
+      }
+    },
     "limitOrder": {
       "title": "제한 주문",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "금액을 입력하세요.",
     "sell": "팔다",
+    "buy": "구입하다",
+    "open": "열려 있는",
+    "filled": "채우는",
+    "pending": "보류 중",
+    "claimable": "청구 가능",
+    "claimAndClose": "청구 및 종료",
+    "past": "과거",
+    "accept": "수용하다",
+    "cancelled": "취소 된",
+    "cancel": "취소",
+    "daysAgo": "{days} 일 전",
+    "buyWith": "{coinA} 또는 {coinB} 로 구매하세요.",
+    "orderHistory": "주문 내역",
+    "tradeAnotherAssetOr": "다른 자산을 {coinA} 또는 {coinB} 로 교환하세요",
+    "tradeAnotherAsset": "다른 자산을 {coinDenom} 으로 교환하세요",
+    "sellAnAsset": "자산 판매",
+    "swapAnAsset": "자산 교환",
+    "of": "~의",
     "insufficientFunds": "자금 부족",
+    "startTrading": "거래 시작",
+    "filledOrdersToClaim": "청구할 주문이 완료되었습니다.",
+    "tradeFees": "거래 수수료(주문 완료 시)",
+    "youNeed": "당신은 필요",
+    "stablecoin": "스테이블코인",
+    "quoteUpdated": "견적이 업데이트되었습니다.",
+    "fundsOsmosisToBuyAssets": "자산을 구매하기 위한 Osmosis 자금.",
+    "chooseAnOption": "계속하려면 옵션을 선택하세요.",
+    "errors": {
+      "noAssetAvailable": "Osmosis에 거래할 수 {coinName} 자금이 없습니다. 계속하려면 옵션을 선택하세요."
+    },
+    "transferFromAnotherNetwork": "다른 네트워크나 지갑에서 전송",
+    "whatIsOrderClaim": {
+      "title": "주문 청구란 무엇입니까?",
+      "description": "대부분의 경우 지정가 주문이 체결되면 자금이 자동으로 잔액에 추가됩니다. 그러나 드문 경우지만, 체결된 주문에서 자금을 수동으로 청구해야 합니다.<inlang-LineFeed>\n이 청구 프로세스에는 소액의 네트워크 수수료가 발생하는 청구되지 않은 모든 주문에 대해 지갑에서 단일 거래를 승인하는 작업이 포함됩니다."
+    },
+    "whatIsAStablecoin": {
+      "title": "스테이블 코인이란 무엇입니까?",
+      "description": "스테이블코인은 안정적인 가격을 유지하기 위해 명목화폐나 금과 같은 다른 자산에 가치가 고정되어 있는 암호화폐의 일종입니다. Osmosis에서 자산을 사고 파는 데 사용되는 주요 스테이블코인은 USDC와 USDT입니다."
+    },
+    "claimAll": "모두 청구",
     "addFunds": "자금 추가",
     "watchOut": "조심해! 고래가 들어오다",
     "selectAnAssetTo": {

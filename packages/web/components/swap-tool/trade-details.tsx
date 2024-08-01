@@ -208,7 +208,7 @@ export const TradeDetails = observer(
                     />
                   ) : (
                     <RecapRow
-                      left={<span>Trade fees (when order filled)</span>}
+                      left={<span>{t("limitOrders.tradeFees")}</span>}
                       right={
                         !limitTotalFees ? (
                           <span className="text-bullish-400">

@@ -1229,6 +1229,19 @@
         "sell": "最高価格ですぐに販売"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "注文",
+        "amount": "額",
+        "price": "価格",
+        "orderPlaced": "注文済み",
+        "status": "状態"
+      },
+      "emptyState": {
+        "title": "最近の注文はありません",
+        "subtitle": "取引注文履歴がここに表示されます。"
+      }
+    },
     "limitOrder": {
       "title": "指値注文",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "金額を入力してください",
     "sell": "売る",
+    "buy": "買う",
+    "open": "開ける",
+    "filled": "満たされた",
+    "pending": "保留中",
+    "claimable": "請求可能",
+    "claimAndClose": "請求して終了",
+    "past": "過去",
+    "accept": "受け入れる",
+    "cancelled": "キャンセル",
+    "cancel": "キャンセル",
+    "daysAgo": "{days}日前",
+    "buyWith": "{coinA}または{coinB}で購入",
+    "orderHistory": "注文履歴",
+    "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
+    "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
+    "sellAnAsset": "資産を売る",
+    "swapAnAsset": "資産を交換する",
+    "of": "の",
     "insufficientFunds": "残高不足",
+    "startTrading": "取引を始める",
+    "filledOrdersToClaim": "請求する注文を完了",
+    "tradeFees": "取引手数料（注文成立時）",
+    "youNeed": "必要なのは",
+    "stablecoin": "ステーブルコイン",
+    "quoteUpdated": "引用を更新しました",
+    "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
+    "chooseAnOption": "続行するにはオプションを選択してください。",
+    "errors": {
+      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。"
+    },
+    "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
+    "whatIsOrderClaim": {
+      "title": "注文請求とは何ですか?",
+      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに、約定した注文から資金を手動で請求する必要がある場合もあります。<inlang-LineFeed><inlang-LineFeed>この請求プロセスでは、未請求のすべての約定済み注文に対してウォレット内の単一のトランザクションを承認する必要があり、少額のネットワーク料金が発生します。"
+    },
+    "whatIsAStablecoin": {
+      "title": "ステーブルコインとは何ですか?",
+      "description": "ステーブルコインは、法定通貨や金などの別の資産に価値が固定され、安定した価格を維持する暗号通貨の一種です。Osmosis では、資産の売買に使用される主なステーブルコインは USDC と USDT です。"
+    },
+    "claimAll": "すべてを主張する",
     "addFunds": "資金を追加",
     "watchOut": "気をつけろ！クジラが来る",
     "selectAnAssetTo": {

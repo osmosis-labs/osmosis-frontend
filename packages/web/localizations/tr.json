@@ -1229,6 +1229,19 @@
         "sell": "Mümkün olan en iyi fiyatla hemen satış yapın"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Emir",
+        "amount": "Miktar",
+        "price": "Fiyat",
+        "orderPlaced": "Sipariş Verildi",
+        "status": "Durum"
+      },
+      "emptyState": {
+        "title": "Yeni sipariş yok",
+        "subtitle": "Ticari sipariş geçmişiniz burada görünecektir."
+      }
+    },
     "limitOrder": {
       "title": "Limit Emri",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "Bir miktar girin",
     "sell": "Satmak",
+    "buy": "Satın almak",
+    "open": "Açık",
+    "filled": "Dolu",
+    "pending": "Askıda olması",
+    "claimable": "Hak talebinde bulunulabilir",
+    "claimAndClose": "Talep et ve kapat",
+    "past": "Geçmiş",
+    "accept": "Kabul etmek",
+    "cancelled": "İptal edildi",
+    "cancel": "İptal etmek",
+    "daysAgo": "{days} gün önce",
+    "buyWith": "{coinA} veya {coinB} ile satın alın",
+    "orderHistory": "Sipariş Geçmişi",
+    "tradeAnotherAssetOr": "{coinA} veya {coinB} ile başka bir varlıkla işlem yapın",
+    "tradeAnotherAsset": "{coinDenom} ile başka bir varlığı takas edin",
+    "sellAnAsset": "Bir varlık satmak",
+    "swapAnAsset": "Bir varlığı takas etme",
+    "of": "ile ilgili",
     "insufficientFunds": "Yetersiz bakiye",
+    "startTrading": "Ticarete başla",
+    "filledOrdersToClaim": "Talep edilecek siparişler tamamlandı",
+    "tradeFees": "Ticaret ücretleri (sipariş tamamlandığında)",
+    "youNeed": "ihtiyacın var",
+    "stablecoin": "stabilcoin",
+    "quoteUpdated": "Teklif güncellendi",
+    "fundsOsmosisToBuyAssets": "varlık satın almak için Osmosis'e fon sağlıyor.",
+    "chooseAnOption": "Devam etmek için bir seçenek seçin.",
+    "errors": {
+      "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin."
+    },
+    "transferFromAnotherNetwork": "Başka bir ağdan veya cüzdandan aktarma",
+    "whatIsOrderClaim": {
+      "title": "Sipariş talebi nedir?",
+      "description": "Çoğu durumda, bir limit emri yerine getirildiğinde fonlar otomatik olarak bakiyenize eklenir. Ancak bazı nadir durumlarda, fonların doldurulan siparişten manuel olarak talep edilmesi gerekir.<inlang-LineFeed>\nBu hak talebinde bulunma süreci, nominal bir ağ ücreti gerektiren tüm talep edilmemiş doldurulmuş siparişler için cüzdanınızda tek bir işlemin onaylanmasını içerir."
+    },
+    "whatIsAStablecoin": {
+      "title": "Stablecoin nedir?",
+      "description": "Stablecoin'ler, sabit bir fiyatı korumak için değeri fiat para birimi veya altın gibi başka bir varlığa sabitlenen bir tür kripto para birimidir. Osmosis'te varlık alım ve satımında kullanılan başlıca stablecoin'ler USDC ve USDT'dir."
+    },
+    "claimAll": "Tümünü talep edin",
     "addFunds": "Fon Ekle",
     "watchOut": "Dikkat! Balina geliyor",
     "selectAnAssetTo": {

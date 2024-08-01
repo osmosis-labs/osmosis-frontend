@@ -2,6 +2,7 @@ import { CellContext } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 
+import { t } from "~/hooks";
 import { DisplayableLimitOrder } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
@@ -17,7 +18,9 @@ export function ActionsCell({
         return <ClaimAndCloseButton order={row.original} />;
       case "filled":
         return (
-          <span className="text-body-1 text-osmoverse-300">Claimable</span>
+          <span className="text-body-1 text-osmoverse-300">
+            {t("limitOrders.claimable")}
+          </span>
         );
       default:
         return null;
@@ -69,7 +72,9 @@ const ClaimAndCloseButton = observer(
         className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
         onClick={claimAndClose}
       >
-        <span className="body2 text-wosmongton-200">Claim and close</span>
+        <span className="body2 text-wosmongton-200">
+          {t("limitOrders.claimAndClose")}
+        </span>
       </button>
     );
   }
@@ -106,7 +111,9 @@ const CancelButton = observer(({ order }: { order: DisplayableLimitOrder }) => {
       className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
       onClick={cancel}
     >
-      <span className="body2 text-wosmongton-200">Cancel</span>
+      <span className="body2 text-wosmongton-200">
+        {t("limitOrders.cancel")}
+      </span>
     </button>
   );
 });

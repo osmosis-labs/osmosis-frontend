@@ -1229,6 +1229,19 @@
         "sell": "立即以最優惠的價格出售"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "命令",
+        "amount": "數量",
+        "price": "價格",
+        "orderPlaced": "訂單已下",
+        "status": "地位"
+      },
+      "emptyState": {
+        "title": "最近沒有訂單",
+        "subtitle": "您的交易訂單歷史記錄將顯示在這裡。"
+      }
+    },
     "limitOrder": {
       "title": "限價訂單",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "輸入金額至",
     "sell": "賣",
+    "buy": "買",
+    "open": "打開",
+    "filled": "填充",
+    "pending": "待辦的",
+    "claimable": "可索賠",
+    "claimAndClose": "索賠並關閉",
+    "past": "過去的",
+    "accept": "接受",
+    "cancelled": "取消",
+    "cancel": "取消",
+    "daysAgo": "{days}天前",
+    "buyWith": "使用{coinA}或{coinB}購買",
+    "orderHistory": "訂單歷史",
+    "tradeAnotherAssetOr": "將另一種資產交易為{coinA}或{coinB}",
+    "tradeAnotherAsset": "將另一種資產交易為{coinDenom}",
+    "sellAnAsset": "出售資產",
+    "swapAnAsset": "交換資產",
+    "of": "的",
     "insufficientFunds": "不充足的資金",
+    "startTrading": "開始交易",
+    "filledOrdersToClaim": "已填寫訂單以領取",
+    "tradeFees": "交易費用（訂單成交時）",
+    "youNeed": "你需要",
+    "stablecoin": "穩定幣",
+    "quoteUpdated": "報價已更新",
+    "fundsOsmosisToBuyAssets": "Osmosis 上的資金用於購買資產。",
+    "chooseAnOption": "選擇一個選項繼續。",
+    "errors": {
+      "noAssetAvailable": "您在 Osmosis 上沒有任何可用於交易的{coinName}資金。選擇一個選項繼續。"
+    },
+    "transferFromAnotherNetwork": "從另一個網路或錢包轉賬",
+    "whatIsOrderClaim": {
+      "title": "什麼是訂單索賠？",
+      "description": "在大多數情況下，當限價訂單被執行時，資金會自動加到您的餘額中。但在極少數情況下，必須從已執行的訂單中手動領取資金。<inlang-LineFeed><inlang-LineFeed>此認領過程涉及批准您錢包中所有無人認領的已完成訂單的單筆交易，這會產生象徵性的網路費用。"
+    },
+    "whatIsAStablecoin": {
+      "title": "什麼是穩定幣？",
+      "description": "穩定幣是一種加密貨幣，其價值與另一種資產（例如法定貨幣或黃金）掛鉤，以維持穩定的價格。在 Osmosis 上，買賣資產的主要穩定幣是 USDC 和 USDT。"
+    },
+    "claimAll": "索取全部",
     "addFunds": "增加資金",
     "watchOut": "小心！鯨魚來襲",
     "selectAnAssetTo": {

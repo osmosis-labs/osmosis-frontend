@@ -1229,6 +1229,19 @@
         "sell": "Vinde imediat la cel mai bun pret disponibil"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Ordin",
+        "amount": "Cantitate",
+        "price": "Preț",
+        "orderPlaced": "Comandă plasată",
+        "status": "stare"
+      },
+      "emptyState": {
+        "title": "Fără comenzi recente",
+        "subtitle": "Istoricul comenzilor dvs. comerciale va apărea aici."
+      }
+    },
     "limitOrder": {
       "title": "Ordin limită",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "Introduceți o sumă la",
     "sell": "Vinde",
+    "buy": "Cumpără",
+    "open": "Deschis",
+    "filled": "Umplut",
+    "pending": "In asteptarea",
+    "claimable": "Revendicabil",
+    "claimAndClose": "Revendicați și închideți",
+    "past": "Trecut",
+    "accept": "Accept",
+    "cancelled": "Anulat",
+    "cancel": "Anulare",
+    "daysAgo": "{days} zi în urmă",
+    "buyWith": "Cumpărați cu {coinA} sau {coinB}",
+    "orderHistory": "Istoric comenzi",
+    "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
+    "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
+    "sellAnAsset": "Vinde un activ",
+    "swapAnAsset": "Schimbați un activ",
+    "of": "de",
     "insufficientFunds": "Fonduri insuficiente",
+    "startTrading": "Începeți să tranzacționați",
+    "filledOrdersToClaim": "Comenzi completate pentru revendicare",
+    "tradeFees": "Taxe de tranzacționare (când comanda este completată)",
+    "youNeed": "Ai nevoie",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "Citat actualizat",
+    "fundsOsmosisToBuyAssets": "fonduri pe Osmosis pentru a cumpăra active.",
+    "chooseAnOption": "Alegeți o opțiune pentru a continua.",
+    "errors": {
+      "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua."
+    },
+    "transferFromAnotherNetwork": "Transfer din altă rețea sau portofel",
+    "whatIsOrderClaim": {
+      "title": "Ce este revendicarea ordinului?",
+      "description": "În majoritatea cazurilor, atunci când un ordin limită este completat, fondurile sunt adăugate automat la soldul dvs. Cu toate acestea, în unele cazuri rare, fondurile trebuie solicitate manual din comanda completată.<inlang-LineFeed>\nAcest proces de revendicare implică aprobarea unei singure tranzacții în portofel pentru toate comenzile completate nerevendicate care implică o taxă de rețea nominală."
+    },
+    "whatIsAStablecoin": {
+      "title": "Ce este o monedă stabilă?",
+      "description": "Monedele stabile sunt un tip de criptomonedă a cărui valoare este legată de un alt activ, cum ar fi o monedă fiat sau aurul, pentru a menține un preț stabil. Pe Osmosis, principalele monede stabile pentru cumpărarea și vânzarea de active sunt USDC și USDT."
+    },
+    "claimAll": "Revendica totul",
     "addFunds": "Adăuga fonduri",
     "watchOut": "Ai grijă! Sosește balena",
     "selectAnAssetTo": {

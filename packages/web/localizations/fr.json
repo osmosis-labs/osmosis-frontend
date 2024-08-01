@@ -1229,6 +1229,19 @@
         "sell": "Vendre immédiatement au meilleur prix disponible"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Commande",
+        "amount": "Montant",
+        "price": "Prix",
+        "orderPlaced": "Commande passée",
+        "status": "Statut"
+      },
+      "emptyState": {
+        "title": "Aucune commande récente",
+        "subtitle": "L’historique de vos commandes commerciales apparaîtra ici."
+      }
+    },
     "limitOrder": {
       "title": "Ordre Limité",
       "description": {
@@ -1251,7 +1264,46 @@
     },
     "enterAnAmountTo": "Entrez un montant à",
     "sell": "Vendre",
+    "buy": "Acheter",
+    "open": "Ouvrir",
+    "filled": "Rempli",
+    "pending": "En attente",
+    "claimable": "Réclamable",
+    "claimAndClose": "Réclamez et clôturez",
+    "past": "Passé",
+    "accept": "Accepter",
+    "cancelled": "Annulé",
+    "cancel": "Annuler",
+    "daysAgo": "{days} il y a 4 jours",
+    "buyWith": "Achetez avec {coinA} ou {coinB}",
+    "orderHistory": "Historique des commandes",
+    "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
+    "tradeAnotherAsset": "Échangez un autre actif contre {coinDenom}",
+    "sellAnAsset": "Vendre un actif",
+    "swapAnAsset": "Échanger un actif",
+    "of": "de",
     "insufficientFunds": "Fonds insuffisants",
+    "startTrading": "Commencer à trader",
+    "filledOrdersToClaim": "Commandes exécutées à réclamer",
+    "tradeFees": "Frais de transaction (lorsque la commande est exécutée)",
+    "youNeed": "Vous avez besoin",
+    "stablecoin": "pièce stable",
+    "quoteUpdated": "Devis mis à jour",
+    "fundsOsmosisToBuyAssets": "fonds sur Osmosis pour acheter des actifs.",
+    "chooseAnOption": "Choisissez une option pour continuer.",
+    "errors": {
+      "noAssetAvailable": "Vous n'avez aucun fonds {coinName} sur Osmosis avec lequel échanger. Choisissez une option pour continuer."
+    },
+    "transferFromAnotherNetwork": "Transfert depuis un autre réseau ou portefeuille",
+    "whatIsOrderClaim": {
+      "title": "Qu'est-ce qu'une réclamation de commande ?",
+      "description": "Dans la majorité des cas, lorsqu'un ordre limité est exécuté, les fonds sont automatiquement ajoutés à votre solde. Cependant, dans de rares cas, les fonds doivent être réclamés manuellement à partir de la commande exécutée.<inlang-LineFeed>\nCe processus de réclamation consiste à approuver une seule transaction dans votre portefeuille pour toutes les commandes exécutées non réclamées, ce qui entraîne des frais de réseau nominaux."
+    },
+    "whatIsAStablecoin": {
+      "title": "Qu’est-ce qu’un stablecoin ?",
+      "description": "Les Stablecoins sont un type de crypto-monnaie dont la valeur est liée à un autre actif, comme une monnaie fiduciaire ou de l'or, pour maintenir un prix stable. Sur Osmosis, les principales pièces stables pour l'achat et la vente d'actifs sont l'USDC et l'USDT."
+    },
+    "claimAll": "Réclamez tout",
     "addFunds": "Ajouter des fonds",
     "watchOut": "Attention! Baleine entrante",
     "selectAnAssetTo": {
