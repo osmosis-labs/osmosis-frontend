@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 
 import type { OrderCellData } from "~/components/complex/orders-history/columns";
+import { t } from "~/hooks";
 import { useStore } from "~/stores";
 
 export function ActionsCell({ row }: CellContext<OrderCellData, unknown>) {
@@ -15,7 +16,9 @@ export function ActionsCell({ row }: CellContext<OrderCellData, unknown>) {
         return <ClaimAndCloseButton order={row.original} />;
       case "filled":
         return (
-          <span className="text-body-1 text-osmoverse-300">Claimable</span>
+          <span className="text-body-1 text-osmoverse-300">
+            {t("limitOrders.claimable")}
+          </span>
         );
       default:
         return null;
@@ -71,7 +74,9 @@ const ClaimAndCloseButton = observer(({ order }: { order: OrderCellData }) => {
       onClick={claimAndClose}
       disabled={claiming}
     >
-      <span className="body2 text-wosmongton-200">Claim and close</span>
+      <span className="body2 text-wosmongton-200">
+        {t("limitOrders.claimAndClose")}
+      </span>
     </button>
   );
 });
@@ -113,7 +118,9 @@ const CancelButton = observer(({ order }: { order: OrderCellData }) => {
       onClick={cancel}
       disabled={cancelling}
     >
-      <span className="body2 text-wosmongton-200">Cancel</span>
+      <span className="body2 text-wosmongton-200">
+        {t("limitOrders.cancel")}
+      </span>
     </button>
   );
 });

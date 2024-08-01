@@ -173,11 +173,7 @@ export const TokenSelectLimit: FunctionComponent<
             )}
           </div>
         </button>
-        <PriceSelector
-          // showQuoteBalance={showQuoteBalance}
-          // tokenSelectionAvailable={tokenSelectionAvailable}
-          disabled={disabled}
-        />
+        <PriceSelector />
         <TokenSelectModalLimit
           headerTitle={
             orderDirection === "ask"

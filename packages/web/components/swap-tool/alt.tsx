@@ -4,7 +4,6 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import {
   FunctionComponent,
@@ -14,6 +13,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import {
@@ -25,7 +25,6 @@ import {
   AssetFieldsetInput,
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
-import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { Button } from "~/components/ui/button";
@@ -325,45 +324,60 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       [forceSwapInPoolId]
     );
 
-    const isUnsufficentBalance = useMemo(
-      () => swapState.error?.message === "Insufficient balance",
-      [swapState.error?.message]
-    );
-
     const {
       isOpen: isAddFundsModalOpen,
       onClose: closeAddFundsModal,
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
+    const [containerRef, { width }] = useMeasure<HTMLDivElement>();
+
     return (
       <>
-        <div className="relative flex flex-col gap-6 overflow-hidden">
+        <div ref={containerRef} className="relative flex flex-col">
           <div className="flex flex-col gap-3">
             <div className="relative flex flex-col">
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
-                    <span className="pt-1.5 text-osmoverse-400">From</span>
+                    <span className="body2 py-1.5 text-osmoverse-300">
+                      From
+                    </span>
                   </AssetFieldsetHeaderLabel>
                   <AssetFieldsetHeaderBalance
                     onMax={() => swapState.inAmountInput.toggleMax()}
                     availableBalance={
                       swapState.inAmountInput.balance &&
                       formatPretty(
-                        swapState.inAmountInput.balance?.toDec() ?? new Dec(0),
-                        {
-                          minimumSignificantDigits: 6,
-                          maximumSignificantDigits: 6,
-                          maxDecimals: 10,
-                          notation: "standard",
-                        }
+                        swapState.inAmountInput.balance.toDec(),
+                        swapState.inAmountInput.balance.toDec().gt(new Dec(0))
+                          ? {
+                              minimumSignificantDigits: 6,
+                              maximumSignificantDigits: 6,
+                              maxDecimals: 10,
+                              notation: "standard",
+                            }
+                          : undefined
                       )
+                    }
+                    showAddFundsButton={
+                      !account?.isWalletConnected ||
+                      (swapState.inAmountInput.balance &&
+                        swapState.inAmountInput.balance.toDec().isZero())
+                    }
+                    openAddFundsModal={openAddFundsModal}
+                    isLoadingMaxButton={isLoadingMaxButton}
+                    isMaxButtonDisabled={
+                      !swapState.inAmountInput.balance ||
+                      swapState.inAmountInput.balance.toDec().isZero() ||
+                      swapState.inAmountInput.notEnoughBalanceForMax ||
+                      isLoadingMaxButton
                     }
                   />
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
+                    ref={fromAmountInputEl}
                     inputValue={swapState.inAmountInput.inputAmount}
                     onInputChange={(e) => {
                       e.preventDefault();
@@ -383,7 +397,15 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 </div>
                 <AssetFieldsetFooter>
-                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
+                  <span
+                    className={classNames(
+                      "body2 h-5 text-osmoverse-300 transition-all",
+                      {
+                        "!text-osmoverse-600":
+                          !swapState.inAmountInput?.fiatValue,
+                      }
+                    )}
+                  >
                     {formatPretty(
                       swapState.inAmountInput?.fiatValue ??
                         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
@@ -396,10 +418,33 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   </span>
                 </AssetFieldsetFooter>
               </AssetFieldset>
+              <div className="relative flex w-full">
+                <div
+                  className="absolute top-0 h-0.5 -translate-x-5 bg-[#3C356D4A]"
+                  style={{ width: width + 40 }}
+                />
+                <button
+                  className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
+                  onClick={() => {
+                    const out = swapState.quote?.amount
+                      ? formatPretty(swapState.quote.amount.toDec())
+                      : "";
+                    swapState.inAmountInput.setAmount(out);
+                    swapState.switchAssets();
+                  }}
+                >
+                  <Icon
+                    id="switch"
+                    className="h-6 w-6 text-wosmongton-200 transition-transform group-hover:rotate-180"
+                  />
+                </button>
+              </div>
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
-                    <span className="pt-1.5 text-osmoverse-400">To</span>
+                    <span className="body2 py-1.5 text-osmoverse-300">
+                      {t("assets.transfer.to")}
+                    </span>
                   </AssetFieldsetHeaderLabel>
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
@@ -412,12 +457,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                             !swapState.inAmountInput.isTyping &&
                             !swapState.isQuoteLoading
                             ? "text-white-full"
-                            : "text-white-disabled",
+                            : "text-osmoverse-600",
                           {
-                            "opacity-50":
-                              isSwapToolLoading ||
-                              !swapState.quote ||
-                              swapState.inAmountInput.isEmpty,
+                            "opacity-50": isSwapToolLoading,
                           }
                         )}
                       >
@@ -443,296 +485,49 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 </div>
                 <AssetFieldsetFooter>
-                  <span className="body2 h-5 text-osmoverse-300 transition-opacity">
-                    {formatPretty(
-                      swapState.inAmountInput?.fiatValue ??
-                        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-                      swapState.inAmountInput?.fiatValue?.toDec() && {
-                        ...getPriceExtendedFormatOptions(
-                          swapState.inAmountInput?.fiatValue?.toDec()
-                        ),
+                  <span
+                    className={classNames(
+                      "body2 h-5 text-osmoverse-300 transition-all",
+                      {
+                        "!text-osmoverse-600": swapState.tokenOutFiatValue
+                          ?.toDec()
+                          .isZero(),
                       }
+                    )}
+                  >
+                    {swapState.tokenOutFiatValue ? (
+                      <span>
+                        {formatPretty(
+                          swapState.tokenOutFiatValue,
+                          swapState.tokenOutFiatValue?.toDec().gt(new Dec(0))
+                            ? {
+                                ...getPriceExtendedFormatOptions(
+                                  swapState.tokenOutFiatValue.toDec()
+                                ),
+                              }
+                            : undefined
+                        )}
+                        <span
+                          className={classNames(
+                            "opacity-0 transition-opacity",
+                            {
+                              "opacity-100": swapState.tokenOutFiatValue
+                                ?.toDec()
+                                .gt(new Dec(0)),
+                              "text-rust-400": showOutputDifferenceWarning,
+                              "text-osmoverse-600":
+                                !showOutputDifferenceWarning,
+                            }
+                          )}
+                        >{` (-${outputDifference})`}</span>
+                      </span>
+                    ) : (
+                      ""
                     )}
                   </span>
                 </AssetFieldsetFooter>
               </AssetFieldset>
-              <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
-                <div className="flex w-full flex-col">
-                  <div className="body2 flex justify-between pb-1">
-                    <span className="pt-1.5 text-osmoverse-400">From</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col py-2">
-                      <input
-                        ref={fromAmountInputEl}
-                        type="text"
-                        className={classNames(
-                          "w-full bg-transparent text-white-full transition-colors placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                          "text-h5 font-h5 md:font-subtitle1",
-                          {
-                            "text-rust-300": isUnsufficentBalance,
-                          }
-                        )}
-                        placeholder="0"
-                        onChange={(e) => {
-                          e.preventDefault();
-                          if (e.target.value.length <= (isMobile ? 19 : 26)) {
-                            swapState.inAmountInput.setAmount(e.target.value);
-                          }
-                        }}
-                        value={swapState.inAmountInput.inputAmount}
-                      />
-                    </div>
-                    <div className="flex flex-col items-end py-2">
-                      {swapState.fromAsset && (
-                        <div className="flex items-center gap-4 py-3">
-                          <Image
-                            src={swapState.fromAsset.coinImageUrl ?? ""}
-                            alt={`${swapState.fromAsset.coinDenom} icon`}
-                            width={48}
-                            height={48}
-                            className="h-8 w-8"
-                          />
-                          <button
-                            onClick={() =>
-                              showTokenSelectRecommendedTokens &&
-                              setOneTokenSelectOpen("from")
-                            }
-                            className={classNames("flex flex-col", {
-                              "pointer-events-none":
-                                !showTokenSelectRecommendedTokens,
-                            })}
-                          >
-                            <div className="flex items-center gap-2">
-                              <h5>{swapState.fromAsset.coinDenom}</h5>
-                              {showTokenSelectRecommendedTokens && (
-                                <div className="flex h-6 w-6 items-center justify-center">
-                                  <Icon
-                                    id="chevron-down"
-                                    className="h-auto w-4.5 text-osmoverse-400"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* <span
-                        className={classNames(
-                          "body1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity"
-                        )}
-                      >
-                        {swapState.inAmountInput?.fiatValue
-                          ?.toDec()
-                          .gt(new Dec(0))
-                          ? `${formatPretty(
-                              swapState.inAmountInput?.fiatValue,
-                              {
-                                ...getPriceExtendedFormatOptions(
-                                  swapState.inAmountInput?.fiatValue?.toDec()
-                                ),
-                              }
-                            )}`
-                          : ""}
-                      </span> */}
-
-                  <div className="body2 flex justify-between pb-1">
-                    <span
-                      className={classNames(
-                        "md:caption whitespace-nowrap pt-1.5 text-osmoverse-400 transition-opacity"
-                      )}
-                    >
-                      {swapState.inAmountInput?.fiatValue
-                        ?.toDec()
-                        .gt(new Dec(0))
-                        ? `${formatPretty(swapState.inAmountInput?.fiatValue, {
-                            ...getPriceExtendedFormatOptions(
-                              swapState.inAmountInput?.fiatValue?.toDec()
-                            ),
-                          })}`
-                        : ""}
-                    </span>
-                    {account?.isWalletConnected && (
-                      <div className="body2 flex justify-between gap-2 pb-1">
-                        <span className="pt-1.5 text-osmoverse-400">
-                          {t("pool.available") +
-                            ": " +
-                            formatPretty(
-                              swapState.inAmountInput.balance?.toDec() ??
-                                new Dec(0),
-                              {
-                                minimumSignificantDigits: 6,
-                                maximumSignificantDigits: 6,
-                                maxDecimals: 10,
-                                notation: "standard",
-                              }
-                            ) +
-                            "  "}
-                        </span>
-                        {swapState.inAmountInput.balance &&
-                        swapState.inAmountInput.balance
-                          .toDec()
-                          .gt(new Dec(0)) ? (
-                          <button
-                            disabled={
-                              !swapState.inAmountInput.balance ||
-                              swapState.inAmountInput.balance
-                                .toDec()
-                                .isZero() ||
-                              swapState.inAmountInput.notEnoughBalanceForMax ||
-                              isLoadingMaxButton
-                            }
-                            onClick={() => swapState.inAmountInput.toggleMax()}
-                            className={classNames(
-                              "flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 bg-transparent py-1.5 px-3 text-wosmongton-200 transition-colors hover:bg-osmoverse-700 disabled:pointer-events-none disabled:opacity-50",
-                              {
-                                "text-rust-300": isUnsufficentBalance,
-                              }
-                            )}
-                          >
-                            {isLoadingMaxButton && (
-                              <Spinner className="h-2.5 w-2.5" />
-                            )}
-                            Max
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={openAddFundsModal}
-                            className="flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
-                          >
-                            {t("limitOrders.addFunds")}
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="relative flex h-3 w-full">
-                <button
-                  className="absolute top-1/2 left-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-osmoverse-825"
-                  onClick={() => {
-                    const out = swapState.quote?.amount
-                      ? formatPretty(swapState.quote.amount.toDec())
-                      : "";
-                    swapState.inAmountInput.setAmount(out);
-                    swapState.switchAssets();
-                  }}
-                >
-                  <Icon
-                    id="arrows-swap-16"
-                    className="h-4 w-4 text-wosmongton-200"
-                  />
-                </button>
-              </div>
-              <div className="flex rounded-2xl bg-osmoverse-1000 py-2 px-4 transition-all">
-                <div className="flex w-full flex-col">
-                  <div className="body2 flex justify-between pb-1">
-                    <span className="pt-1.5 text-osmoverse-400">To</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col py-2">
-                      <h5
-                        className={classNames(
-                          "md:subtitle1 whitespace-nowrap transition-opacity",
-                          swapState.quote?.amount.toDec().isPositive() &&
-                            !swapState.inAmountInput.isTyping &&
-                            !swapState.isQuoteLoading
-                            ? "text-white-full"
-                            : "text-white-disabled",
-                          {
-                            "opacity-50":
-                              isSwapToolLoading ||
-                              !swapState.quote ||
-                              swapState.inAmountInput.isEmpty,
-                          }
-                        )}
-                      >
-                        {swapState.quote?.amount
-                          ? formatPretty(swapState.quote.amount.toDec(), {
-                              minimumSignificantDigits: 6,
-                              maximumSignificantDigits: 6,
-                              maxDecimals: 10,
-                              notation: "standard",
-                            })
-                          : "0"}
-                      </h5>
-                    </div>
-                    <div className="flex flex-col items-end py-2">
-                      {swapState.toAsset && (
-                        <div className="flex items-center gap-4 py-3">
-                          <Image
-                            src={swapState.toAsset.coinImageUrl ?? ""}
-                            alt={`${swapState.toAsset.coinDenom} icon`}
-                            width={40}
-                            height={40}
-                            className="h-8 w-8"
-                          />
-                          <button
-                            onClick={() =>
-                              showTokenSelectRecommendedTokens &&
-                              setOneTokenSelectOpen("to")
-                            }
-                            className={classNames("flex flex-col", {
-                              "pointer-events-none":
-                                !showTokenSelectRecommendedTokens,
-                            })}
-                          >
-                            <div className="flex items-center gap-2">
-                              <h5>{swapState.toAsset.coinDenom}</h5>
-                              {showTokenSelectRecommendedTokens && (
-                                <div className="flex h-6 w-6 items-center justify-center">
-                                  <Icon
-                                    id="chevron-down"
-                                    className="h-auto w-4.5 text-osmoverse-400"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="body2 flex justify-between pb-1">
-                    <span
-                      className={classNames(
-                        "md:caption whitespace-nowrap pt-1.5 text-osmoverse-400 transition-opacity"
-                      )}
-                    >
-                      {swapState.tokenOutFiatValue?.toDec().gt(new Dec(0)) ? (
-                        <span>
-                          {formatPretty(swapState.tokenOutFiatValue, {
-                            ...getPriceExtendedFormatOptions(
-                              swapState.tokenOutFiatValue.toDec()
-                            ),
-                          })}
-                          <span
-                            className={
-                              showOutputDifferenceWarning
-                                ? "text-rust-400"
-                                : "text-osmoverse-600"
-                            }
-                          >{` (-${outputDifference})`}</span>
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
-            <TradeDetails
-              swapState={swapState}
-              slippageConfig={slippageConfig}
-              outAmountLessSlippage={outAmountLessSlippage}
-              outFiatAmountLessSlippage={outFiatAmountLessSlippage}
-            />
           </div>
           {!isNil(warningText) && (
             <div
@@ -745,46 +540,60 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             </div>
           )}
           {swapButton ?? (
-            <Button
-              disabled={
-                isSendingTx ||
-                isWalletLoading ||
-                (account?.walletStatus === WalletStatus.Connected &&
-                  (swapState.inAmountInput.isEmpty ||
-                    !Boolean(swapState.quote) ||
-                    Boolean(swapState.error) ||
-                    account?.txTypeInProgress !== ""))
-              }
-              isLoading={
-                /**
-                 * While 1-Click is enabled, display a loading spinner when simulation
-                 * is in progress since we don't have a wallet to compute the fee for
-                 * us. We need the network fee to be calculated before we can proceed
-                 * with the trade.
-                 */
-                isOneClickTradingEnabled &&
-                swapState.isLoadingNetworkFee &&
-                !swapState.inAmountInput.isEmpty
-              }
-              loadingText={buttonText}
-              onClick={() => {
-                if (account?.walletStatus !== WalletStatus.Connected) {
-                  return onOpenWalletSelect({
-                    walletOptions: [{ walletType: "cosmos", chainId: chainId }],
-                  });
+            <div className="flex w-full pb-3">
+              <Button
+                disabled={
+                  isSendingTx ||
+                  isWalletLoading ||
+                  (account?.walletStatus === WalletStatus.Connected &&
+                    (swapState.inAmountInput.isEmpty ||
+                      !Boolean(swapState.quote) ||
+                      Boolean(swapState.error) ||
+                      account?.txTypeInProgress !== ""))
                 }
+                isLoading={
+                  /**
+                   * While 1-Click is enabled, display a loading spinner when simulation
+                   * is in progress since we don't have a wallet to compute the fee for
+                   * us. We need the network fee to be calculated before we can proceed
+                   * with the trade.
+                   */
+                  isOneClickTradingEnabled &&
+                  swapState.isLoadingNetworkFee &&
+                  !swapState.inAmountInput.isEmpty
+                }
+                loadingText={buttonText}
+                onClick={() => {
+                  if (account?.walletStatus !== WalletStatus.Connected) {
+                    return onOpenWalletSelect({
+                      walletOptions: [
+                        { walletType: "cosmos", chainId: chainId },
+                      ],
+                    });
+                  }
 
-                setShowSwapReviewModal(true);
-              }}
-            >
-              <h6>
-                {account?.walletStatus === WalletStatus.Connected ||
-                isSwapToolLoading
-                  ? buttonText
-                  : t("connectWallet")}
-              </h6>
-            </Button>
+                  setShowSwapReviewModal(true);
+                }}
+                className="w-full"
+              >
+                <h6>
+                  {account?.walletStatus === WalletStatus.Connected ||
+                  isSwapToolLoading
+                    ? buttonText
+                    : t("connectWallet")}
+                </h6>
+              </Button>
+            </div>
           )}
+          <TradeDetails
+            type="market"
+            swapState={swapState}
+            slippageConfig={slippageConfig}
+            outAmountLessSlippage={outAmountLessSlippage}
+            outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+            gasAmount={swapState.networkFee?.gasUsdValueToPay}
+            isGasLoading={swapState.isLoadingNetworkFee}
+          />
         </div>
         <TokenSelectModalLimit
           headerTitle={t("limitOrders.selectAnAssetTo.sell")}
@@ -844,7 +653,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           title="Swap"
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
-          swapState={swapState}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
           slippageConfig={slippageConfig}
@@ -852,6 +660,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
           outputDifference={outputDifference}
           showOutputDifferenceWarning={showOutputDifferenceWarning}
+          fromAsset={swapState.fromAsset}
+          toAsset={swapState.toAsset}
+          inAmountToken={swapState.inAmountInput.amount}
+          inAmountFiat={swapState.inAmountInput.fiatValue}
+          expectedOutput={swapState.quote?.amount}
+          expectedOutputFiat={swapState.tokenOutFiatValue}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

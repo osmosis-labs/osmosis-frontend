@@ -77,14 +77,15 @@ export function AddFundsModal({
         <div className="flex flex-col items-center justify-center pb-3 text-center">
           {from === "buy" ? (
             <span className="flex w-[448px] flex-wrap justify-center gap-1 text-osmoverse-300">
-              <span>You need</span> <StableCoinsInfoTooltip />{" "}
-              <span>funds on Osmosis to buy assets.</span>
-              <span>Choose an option to continue.</span>
+              <span>{t("limitOrders.youNeed")}</span> <StableCoinsInfoTooltip />{" "}
+              <span>{t("limitOrders.fundsOsmosisToBuyAssets")}</span>
+              <span>{t("limitOrders.chooseAnOption")}</span>
             </span>
           ) : (
             <span className="flex w-[448px] flex-wrap justify-center gap-1 text-osmoverse-300">
-              You don’t have any {fromAsset?.coinName} funds on Osmosis to trade
-              with. Choose an option to continue.
+              {t("limitOrders.errors.noAssetAvailable", {
+                coinName: fromAsset?.coinName ?? "",
+              })}
             </span>
           )}
         </div>
@@ -105,9 +106,9 @@ export function AddFundsModal({
                 alt="USDC logo"
               />
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Deposit USDC</span>
+                <span className="subtitle1">{t("transfer.deposit")} USDC</span>
                 <span className="body2 text-osmoverse-300">
-                  Transfer from another network or wallet
+                  {t("limitOrders.transferFromAnotherNetwork")}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -140,9 +141,11 @@ export function AddFundsModal({
                 />
               </div>
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Deposit {fromAsset?.coinName}</span>
+                <span className="subtitle1">
+                  {t("transfer.deposit")} {fromAsset?.coinName}
+                </span>
                 <span className="body2 text-osmoverse-300">
-                  Transfer from another network or wallet
+                  {t("limitOrders.transferFromAnotherNetwork")}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -171,9 +174,9 @@ export function AddFundsModal({
                 alt="USDT logo"
               />
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Deposit USDT</span>
+                <span className="subtitle1">{t("transfer.deposit")} USDT</span>
                 <span className="body2 text-osmoverse-300">
-                  Transfer from another network or wallet
+                  {t("limitOrders.transferFromAnotherNetwork")}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -203,9 +206,11 @@ export function AddFundsModal({
                 alt={classNames(`${fromAsset?.coinDenom} logo`)}
               />
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Buy {fromAsset?.coinDenom}</span>
+                <span className="subtitle1">
+                  {t("limitOrders.buy")} {fromAsset?.coinDenom}
+                </span>
                 <span className="body2 text-osmoverse-300">
-                  Buy with USDC or USDT
+                  {t("limitOrders.buyWith", { coinA: "USDC", coinB: "USDT" })}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -238,9 +243,14 @@ export function AddFundsModal({
                 />
               </div>
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Sell an asset</span>
+                <span className="subtitle1">
+                  {t("limitOrders.sellAnAsset")}
+                </span>
                 <span className="body2 text-osmoverse-300">
-                  Trade another asset for USDC or USDT
+                  {t("limitOrders.tradeAnotherAssetOr", {
+                    coinA: "USDC",
+                    coinB: "USDT",
+                  })}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -272,9 +282,13 @@ export function AddFundsModal({
                 />
               </div>
               <div className="flex w-full flex-col gap-1">
-                <span className="subtitle1">Swap an asset</span>
+                <span className="subtitle1">
+                  {t("limitOrders.swapAnAsset")}
+                </span>
                 <span className="body2 text-osmoverse-300">
-                  Trade another asset for {fromAsset?.coinDenom}
+                  {t("limitOrders.tradeAnotherAsset", {
+                    coinDenom: fromAsset?.coinDenom ?? "",
+                  })}
                 </span>
               </div>
               <div className="flex h-6 w-6 items-center justify-center">
@@ -294,7 +308,7 @@ export function AddFundsModal({
             onClick={onRequestClose}
             className="flex h-14 w-full items-center justify-center rounded-2xl py-4 transition-colors hover:bg-osmoverse-900"
           >
-            <h6 className="text-wosmongton-200">Cancel</h6>
+            <h6 className="text-wosmongton-200">{t("limitOrders.cancel")}</h6>
           </button>
         </div>
       </div>
@@ -303,6 +317,8 @@ export function AddFundsModal({
 }
 
 function StableCoinsInfoTooltip() {
+  const { t } = useTranslation();
+
   return (
     <Tooltip
       rootClassNames="!p-0 w-[280px] !border-0 !rounded-none !bg-transparent"
@@ -315,12 +331,11 @@ function StableCoinsInfoTooltip() {
             className="h-4 min-w-[16px] text-osmoverse-500"
           />
           <div className="flex flex-col gap-1">
-            <span className="caption">What is a stablecoin?</span>
+            <span className="caption">
+              {t("limitOrders.whatIsAStablecoin.title")}
+            </span>
             <span className="caption text-osmoverse-300">
-              Stablecoins are a type of cryptocurrency whose value is pegged to
-              another asset, such as a fiat currency or gold, to maintain a
-              stable price. On Osmosis, the primary stablecoins for buying and
-              selling assets are USDC and USDT.
+              {t("limitOrders.whatIsAStablecoin.description")}
             </span>
           </div>
           <svg
@@ -350,9 +365,9 @@ function StableCoinsInfoTooltip() {
           </svg>
         </div>
       }
-      className="text-wosmongton-300"
+      className="underline decoration-dotted underline-offset-4"
     >
-      <>stablecoin</>
+      <>{t("limitOrders.stablecoin")}</>
     </Tooltip>
   );
 }

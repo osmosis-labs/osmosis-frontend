@@ -1225,6 +1225,19 @@
         "sell": "Sofort zum besten verfügbaren Preis verkaufen"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Befehl",
+        "amount": "Menge",
+        "price": "Preis",
+        "orderPlaced": "Bestellung aufgegeben",
+        "status": "Status"
+      },
+      "emptyState": {
+        "title": "Keine aktuellen Bestellungen",
+        "subtitle": "Ihr Handelsauftragsverlauf wird hier angezeigt."
+      }
+    },
     "limitOrder": {
       "title": "Limit-Auftrag",
       "description": {
@@ -1247,7 +1260,46 @@
     },
     "enterAnAmountTo": "Geben Sie einen Betrag ein, um",
     "sell": "Verkaufen",
+    "buy": "Kaufen",
+    "open": "Offen",
+    "filled": "Gefüllt",
+    "pending": "Ausstehend",
+    "claimable": "Einforderbar",
+    "claimAndClose": "Beanspruchen und schließen",
+    "past": "Vergangenheit",
+    "accept": "Akzeptieren",
+    "cancelled": "Abgesagt",
+    "cancel": "Stornieren",
+    "daysAgo": "{days} vor Tagen",
+    "buyWith": "Kaufen mit {coinA} oder {coinB}",
+    "orderHistory": "Bestellverlauf",
+    "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
+    "tradeAnotherAsset": "Tauschen Sie einen anderen Vermögenswert gegen {coinDenom}",
+    "sellAnAsset": "Einen Vermögenswert verkaufen",
+    "swapAnAsset": "Tauschen Sie einen Vermögenswert aus",
+    "of": "von",
     "insufficientFunds": "Unzureichende Mittel",
+    "startTrading": "Mit dem handel beginnen",
+    "filledOrdersToClaim": "Ausgeführte Bestellungen zum Einfordern",
+    "tradeFees": "Handelsgebühren (bei Auftragsausführung)",
+    "youNeed": "Du brauchst",
+    "stablecoin": "stabile Münze",
+    "quoteUpdated": "Angebot aktualisiert",
+    "fundsOsmosisToBuyAssets": "Mittel auf Osmosis, um Vermögenswerte zu kaufen.",
+    "chooseAnOption": "Wählen Sie eine Option, um fortzufahren.",
+    "errors": {
+      "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren."
+    },
+    "transferFromAnotherNetwork": "Überweisung von einem anderen Netzwerk oder Wallet",
+    "whatIsOrderClaim": {
+      "title": "Was ist eine Auftragsbeantragung?",
+      "description": "In den meisten Fällen werden bei der Ausführung einer Limit-Order Gelder automatisch Ihrem Konto gutgeschrieben. In einigen seltenen Fällen müssen Gelder jedoch manuell aus der ausgeführten Order angefordert werden.<inlang-LineFeed>\nBei diesem Anspruchsprozess wird für alle nicht beanspruchten, ausgeführten Bestellungen eine einzelne Transaktion in Ihrem Portemonnaie genehmigt, für die eine geringe Netzwerkgebühr anfällt."
+    },
+    "whatIsAStablecoin": {
+      "title": "Was ist eine Stablecoin?",
+      "description": "Stablecoins sind eine Art Kryptowährung, deren Wert an einen anderen Vermögenswert wie eine Fiat-Währung oder Gold gekoppelt ist, um einen stabilen Preis aufrechtzuerhalten. Auf Osmosis sind USDC und USDT die wichtigsten Stablecoins zum Kaufen und Verkaufen von Vermögenswerten."
+    },
+    "claimAll": "Alles beanspruchen",
     "addFunds": "Guthaben hinzufügen",
     "watchOut": "Achtung, Wal im Anmarsch",
     "selectAnAssetTo": {

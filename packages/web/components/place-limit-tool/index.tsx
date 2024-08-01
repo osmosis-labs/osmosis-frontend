@@ -45,6 +45,14 @@ export interface PlaceLimitToolProps {
   page: EventPage;
 }
 
+const fixDecimalCount = (value: string, decimalCount = 18) => {
+  const split = value.split(".");
+  const result =
+    split[0] +
+    (decimalCount > 0 ? "." + split[1].substring(0, decimalCount) : "");
+  return result;
+};
+
 const transformAmount = (value: string, decimalCount = 18) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
@@ -57,9 +65,16 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
   const decimals = countDecimals(updatedValue);
   return decimals > decimalCount
-    ? parseFloat(updatedValue).toFixed(decimalCount).toString()
+    ? fixDecimalCount(updatedValue, decimalCount)
     : updatedValue;
 };
+
+// Certain errors we do not wish to show on the button
+const NON_DISPLAY_ERRORS = [
+  "errors.zeroAmount",
+  "errors.emptyAmount",
+  "limitOrders.insufficientFunds",
+];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
@@ -82,6 +97,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       to: parseAsString,
     });
     const [isSendingTx, setIsSendingTx] = useState(false);
+
+    const [focused, setFocused] = useState<"fiat" | "token">(
+      tab === "buy" ? "fiat" : "token"
+    );
+
+    const [fiatAmount, setFiatAmount] = useState<string>("");
 
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
 
@@ -123,6 +144,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [swapState.priceState, type]);
 
+    useEffect(() => {
+      if (type === "market" && focused === "token" && tab === "buy") {
+        setFocused("fiat");
+      }
+
+      if (type === "market" && focused === "fiat" && tab === "sell") {
+        setFocused("token");
+      }
+    }, [focused, tab, type]);
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     // const isSwapToolLoading = false;
@@ -137,32 +168,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [swapState.baseTokenBalance, swapState.quoteTokenBalance, tab]
     );
 
-    const buttonText = useMemo(() => {
-      if (swapState.error) {
-        return t(swapState.error);
-      } else {
-        return orderDirection === "bid"
-          ? t("portfolio.buy")
-          : t("limitOrders.sell");
-      }
-    }, [orderDirection, swapState.error, t]);
-
-    // const price = useMemo(
-    //   () =>
-    //     type === "market"
-    //       ? orderDirection === "bid"
-    //         ? swapState.priceState.askSpotPrice!
-    //         : swapState.priceState.bidSpotPrice!
-    //       : swapState.priceState.price,
-    //   [
-    //     orderDirection,
-    //     swapState.priceState.askSpotPrice,
-    //     swapState.priceState.bidSpotPrice,
-    //     swapState.priceState.price,
-    //     type,
-    //   ]
-    // );
-
     const tokenAmount = useMemo(
       () => swapState.inAmountInput.inputAmount,
       [swapState.inAmountInput.inputAmount]
@@ -172,15 +177,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       return (
         swapState.isMarket &&
         (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee) ||
-          swapState.marketState.inAmountInput.isTyping) &&
+          Boolean(swapState.marketState.isLoadingNetworkFee)) &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
       swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.isQuoteLoading,
-      swapState.marketState.inAmountInput.isTyping,
       swapState.marketState.error,
     ]);
 
@@ -220,12 +223,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.tokenOutFiatValue,
     ]);
 
-    const [focused, setFocused] = useState<"fiat" | "token">(
-      tab === "buy" ? "fiat" : "token"
-    );
-
-    const [fiatAmount, setFiatAmount] = useState<string>("");
-
     const setAmountSafe = useCallback(
       (amountType: "fiat" | "token", value?: string) => {
         const update =
@@ -234,6 +231,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             : swapState.inAmountInput.setAmount;
         const setMarketAmount = swapState.marketState.inAmountInput.setAmount;
 
+        // If value is empty clear values
         if (!value?.trim()) {
           if (amountType === "fiat") {
             setMarketAmount("");
@@ -243,7 +241,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
         const updatedValue = transformAmount(
           value,
-          amountType === "fiat" ? 6 : swapState.baseAsset?.coinDecimals
+          amountType === "fiat" ? 2 : swapState.baseAsset?.coinDecimals
         ).trim();
 
         if (
@@ -283,37 +281,36 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       ]
     );
 
-    // useEffect(() => {
-    //   if (tokenAmount.length === 0 && focused === "fiat") {
-    //     setAmountSafe("fiat", "");
-    //     if (tab === "buy") {
-    //       swapState.marketState.inAmountInput.setAmount("");
-    //     }
-    //   }
+    // Adjusts the token value when the user updates the fiat value
+    useEffect(() => {
+      if (focused !== "token" || !swapState.priceState.price) return;
 
-    //   if (focused !== "token" || !price) return;
+      const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+      const fiatValue = value
+        ? swapState.priceState.price.mul(value)
+        : undefined;
 
-    //   const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
-    //   const fiatValue = value ? price.mul(value) : undefined;
+      setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+    }, [
+      focused,
+      setAmountSafe,
+      swapState.priceState.price,
+      tokenAmount,
+      swapState.marketState.inAmountInput,
+      tab,
+    ]);
 
-    //   setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
-    // }, [
-    //   focused,
-    //   price,
-    //   setAmountSafe,
-    //   tokenAmount,
-    //   swapState.marketState.inAmountInput,
-    //   tab,
-    // ]);
+    // Adjusts the token value when the user updates the fiat value
+    useEffect(() => {
+      if (focused !== "fiat" || !swapState.priceState.price) return;
 
-    // useEffect(() => {
-    //   if (focused !== "fiat" || !price) return;
-
-    //   const value =
-    //     fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
-    //   const tokenValue = value ? new Dec(value).quo(price) : undefined;
-    //   setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
-    // }, [price, fiatAmount, setAmountSafe, focused]);
+      const value =
+        fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
+      const tokenValue = value
+        ? new Dec(value).quo(swapState.priceState.price)
+        : undefined;
+      setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
+    }, [fiatAmount, setAmountSafe, focused, swapState.priceState.price]);
 
     const expectedOutput = useMemo(
       () => swapState.marketState.quote?.amount.toDec(),
@@ -322,22 +319,94 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
-        return setAmountSafe(
-          "fiat",
-          swapState.quoteTokenBalance?.toDec().toString() ?? ""
-        );
+        // Tab is buy so use quote amount
+
+        // Determine amount based on current input
+        const amount =
+          focused === "fiat"
+            ? swapState.quoteTokenBalance?.toDec().toString()
+            : swapState.quoteTokenBalance
+                ?.toDec()
+                .quo(swapState.priceState.price)
+                .toString();
+
+        setAmountSafe(focused, amount);
+
+        return;
       }
 
-      return setAmountSafe(
-        "token",
-        swapState.baseTokenBalance?.toDec().toString() ?? ""
-      );
+      // Tab must be sell so we use base amount
+
+      // Determine amount based on current input
+      const amount =
+        focused === "token"
+          ? swapState.baseTokenBalance?.toDec().toString()
+          : swapState.baseTokenBalance
+              ?.toDec()
+              .mul(swapState.priceState.price)
+              .toString();
+      return setAmountSafe(focused, amount);
     }, [
       tab,
       setAmountSafe,
       swapState.baseTokenBalance,
       swapState.quoteTokenBalance,
+      focused,
+      swapState.priceState.price,
     ]);
+
+    const inputValue = useMemo(
+      () =>
+        focused === "fiat"
+          ? type === "market" && tab === "sell"
+            ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
+            : fiatAmount
+          : type === "market" && tab === "buy"
+          ? trimPlaceholderZeros((expectedOutput ?? new Dec(0)).toString())
+          : tokenAmount,
+      [expectedOutput, fiatAmount, focused, tab, tokenAmount, type]
+    );
+
+    const buttonText = useMemo(() => {
+      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        return t(swapState.error);
+      } else {
+        return orderDirection === "bid"
+          ? t("portfolio.buy")
+          : t("limitOrders.sell");
+      }
+    }, [orderDirection, swapState.error, t]);
+
+    const isButtonDisabled = useMemo(() => {
+      if (swapState.insufficientFunds) {
+        return true;
+      }
+
+      if (swapState.isMarket) {
+        return (
+          swapState.marketState.inAmountInput.isEmpty ||
+          swapState.marketState.inAmountInput.amount?.toDec().isZero() ||
+          isMarketLoading ||
+          Boolean(swapState.marketState.error)
+        );
+      }
+
+      return Boolean(swapState.error) || !swapState.isBalancesFetched;
+    }, [
+      swapState.error,
+      swapState.isBalancesFetched,
+      swapState.isMarket,
+      swapState.marketState.inAmountInput.amount,
+      swapState.marketState.inAmountInput.isEmpty,
+      swapState.insufficientFunds,
+      isMarketLoading,
+      swapState.insufficientFunds,
+      swapState.marketState.error,
+    ]);
+
+    const isButtonLoading = useMemo(() => {
+      return !swapState.isBalancesFetched;
+    }, [swapState.isBalancesFetched]);
 
     return (
       <>
@@ -353,33 +422,40 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 </span>
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
-                className={classNames({ "opacity-0": !hasFunds })}
                 availableBalance={
                   tab === "buy"
                     ? swapState.quoteAsset?.usdValue &&
-                      formatPretty(swapState.quoteAsset?.usdValue)
+                      formatPretty(swapState.quoteAsset?.usdValue, {
+                        minimumFractionDigits: 2,
+                        maximumSignificantDigits: 6,
+                        maxDecimals: 2,
+                      })
                     : swapState.baseTokenBalance &&
-                      formatPretty(swapState.baseTokenBalance)
+                      formatPretty(swapState.baseTokenBalance.toDec(), {
+                        minimumSignificantDigits: 6,
+                        maximumSignificantDigits: 6,
+                        maxDecimals: 10,
+                      })
                 }
                 onMax={toggleMax}
+                openAddFundsModal={openAddFundsModal}
+                showAddFundsButton={!hasFunds}
               />
             </AssetFieldsetHeader>
             <div className="flex items-center justify-between py-3">
               <AssetFieldsetInput
-                inputPrefix={focused === "fiat" && <h3>$</h3>}
-                inputValue={
-                  focused === "fiat"
-                    ? type === "market" && tab === "sell"
-                      ? trimPlaceholderZeros(
-                          (expectedOutput ?? new Dec(0)).toString()
-                        )
-                      : fiatAmount
-                    : type === "market" && tab === "buy"
-                    ? trimPlaceholderZeros(
-                        (expectedOutput ?? new Dec(0)).toString()
-                      )
-                    : tokenAmount
+                inputPrefix={
+                  focused === "fiat" && (
+                    <h3
+                      className={classNames({
+                        "text-osmoverse-600": inputValue === "",
+                      })}
+                    >
+                      $
+                    </h3>
+                  )
                 }
+                inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
               <AssetFieldsetTokenSelector
@@ -398,7 +474,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             <AssetFieldsetFooter>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
+                className="inline-flex items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
@@ -472,22 +548,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </Button>
             ) : hasFunds ? (
               <Button
-                disabled={
-                  Boolean(swapState.error) ||
-                  isMarketLoading ||
-                  (swapState.isMarket &&
-                    (swapState.marketState.inAmountInput.isEmpty ||
-                      swapState.marketState.inAmountInput.amount
-                        ?.toDec()
-                        .isZero())) ||
-                  !swapState.isBalancesFetched ||
-                  swapState.isMakerFeeLoading
-                }
-                isLoading={
-                  !swapState.isBalancesFetched ||
-                  (!swapState.isMarket && swapState.isMakerFeeLoading) ||
-                  isMarketLoading
-                }
+                disabled={isButtonDisabled}
+                isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
               >
@@ -504,13 +566,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             type={type}
             isMakerFeeLoading={swapState.isMakerFeeLoading}
             makerFee={swapState.makerFee}
-            // inDenom={swapState.baseAsset?.coinDenom}
-            // inPrice={
-            //   new PricePretty(
-            //     DEFAULT_VS_CURRENCY,
-            //     swapState.priceState.spotPrice
-            //   )
-            // }
+            gasAmount={swapState.gas.gasAmountFiat}
+            isGasLoading={swapState.gas.isLoading}
           />
         </div>
         <ReviewOrder
@@ -527,12 +584,19 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isConfirmationDisabled={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
-          swapState={swapState.marketState}
-          orderType={type}
+          expectedOutput={swapState.expectedTokenAmountOut}
+          expectedOutputFiat={swapState.expectedFiatAmountOut}
           percentAdjusted={swapState.priceState.percentAdjusted}
           limitPriceFiat={swapState.priceState.priceFiat}
           baseDenom={swapState.baseAsset?.coinDenom}
           slippageConfig={slippageConfig}
+          gasAmount={swapState.gas.gasAmountFiat}
+          isGasLoading={swapState.gas.isLoading}
+          limitSetPriceLock={swapState.priceState.setPriceLock}
+          inAmountToken={swapState.paymentTokenValue}
+          inAmountFiat={swapState.paymentFiatValue}
+          fromAsset={swapState.marketState.fromAsset}
+          toAsset={swapState.marketState.toAsset}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

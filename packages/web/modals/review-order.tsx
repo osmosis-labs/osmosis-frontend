@@ -1,9 +1,16 @@
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
-import { useCallback, useMemo, useState } from "react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
@@ -20,7 +27,6 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  swapState: ReturnType<typeof useSwap>;
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
@@ -28,18 +34,24 @@ interface ReviewOrderProps {
   outFiatAmountLessSlippage?: PricePretty;
   outputDifference?: RatePretty;
   showOutputDifferenceWarning?: boolean;
-  orderType?: "market" | "limit";
   percentAdjusted?: Dec;
-  limitOrderDirection?: "bid" | "ask";
   limitPriceFiat?: PricePretty;
+  limitSetPriceLock?: (lock: boolean) => void;
   baseDenom?: string;
   title: string;
+  gasAmount?: PricePretty;
+  isGasLoading?: boolean;
+  expectedOutput?: CoinPretty;
+  expectedOutputFiat?: PricePretty;
+  inAmountToken?: CoinPretty;
+  inAmountFiat?: PricePretty;
+  fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
+  toAsset?: ReturnType<typeof useSwap>["toAsset"];
 }
 
 export function ReviewOrder({
   isOpen,
   onClose,
-  swapState,
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
@@ -47,21 +59,63 @@ export function ReviewOrder({
   outFiatAmountLessSlippage,
   outputDifference,
   showOutputDifferenceWarning,
-  orderType = "market",
   percentAdjusted,
-  limitOrderDirection,
   limitPriceFiat,
   baseDenom,
   title,
+  gasAmount,
+  isGasLoading,
+  limitSetPriceLock,
+  expectedOutput,
+  expectedOutputFiat,
+  inAmountToken,
+  inAmountFiat,
+  toAsset,
+  fromAsset,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
-  let isManualSlippageTooHigh = useMemo(
-    () => +manualSlippage >= 1,
+  const isManualSlippageTooHigh = useMemo(
+    () => +manualSlippage > 1,
     [manualSlippage]
+  );
+
+  const isManualSlippageTooLow = useMemo(
+    () => manualSlippage !== "" && +manualSlippage < 0.1,
+    [manualSlippage]
+  );
+
+  const [orderType] = useQueryState(
+    "type",
+    parseAsString.withDefault("market")
+  );
+
+  const initialOutput = useMemo(
+    () => outAmountLessSlippage ?? new IntPretty(0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const { diffGteSlippage, restart } = useMemo(
+    () => {
+      let originalValue = initialOutput;
+      return {
+        diffGteSlippage: slippageConfig
+          ? originalValue
+              .sub(outAmountLessSlippage ?? new IntPretty(0))
+              .toDec()
+              .gte(slippageConfig?.slippage.toDec())
+          : false,
+        restart: () => {
+          originalValue = outAmountLessSlippage ?? new IntPretty(0);
+        },
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [outAmountLessSlippage, slippageConfig]
   );
 
   const handleManualSlippageChange = useCallback(
@@ -86,6 +140,10 @@ export function ReviewOrder({
     [slippageConfig]
   );
 
+  useEffect(() => {
+    if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
+  }, [limitSetPriceLock, isOpen, orderType]);
+
   return (
     <ModalBase
       isOpen={isOpen}
@@ -103,19 +161,17 @@ export function ReviewOrder({
             <Icon id="thin-x" className="text-wosmongton-200" />
           </button>
         </div>
-        <div className="flex flex-col px-8 pb-8">
+        <div
+          className={classNames("flex flex-col px-8", {
+            "pb-8": !diffGteSlippage,
+          })}
+        >
           {orderType === "limit" && (
             <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center">
-                  {limitOrderDirection === "bid" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
+                <div className="flex h-10 min-w-10 items-center justify-center">
+                  {percentAdjusted?.isNegative() ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -143,17 +199,19 @@ export function ReviewOrder({
                 {percentAdjusted && (
                   <div className="flex items-center">
                     <div className="flex h-6 w-6 items-center justify-center">
-                      <Icon
-                        id="triangle-down"
-                        width={11}
-                        height={6}
-                        className={classNames({
-                          "rotate-180 text-bullish-400":
-                            percentAdjusted.isPositive(),
-                          "rotate-0 text-rust-500":
-                            percentAdjusted.isNegative(),
-                        })}
-                      />
+                      {!percentAdjusted.isZero() && (
+                        <Icon
+                          id="triangle-down"
+                          width={11}
+                          height={6}
+                          className={classNames({
+                            "rotate-180 text-bullish-400":
+                              percentAdjusted.isPositive(),
+                            "rotate-0 text-rust-500":
+                              percentAdjusted.isNegative(),
+                          })}
+                        />
+                      )}
                     </div>
                     <span>
                       {formatPretty(percentAdjusted.mul(new Dec(100)).abs())}%
@@ -174,10 +232,10 @@ export function ReviewOrder({
           >
             <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
-                {swapState.fromAsset && (
+                {fromAsset && (
                   <Image
-                    src={swapState.fromAsset.coinImageUrl ?? ""}
-                    alt={`${swapState.fromAsset.coinDenom} image`}
+                    src={fromAsset.coinImageUrl ?? ""}
+                    alt={`${fromAsset.coinDenom} image`}
                     width={40}
                     height={40}
                     className="h-10 w-10"
@@ -185,9 +243,9 @@ export function ReviewOrder({
                 )}
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("limitOrders.sell")}</p>
-                  {swapState.inAmountInput.amount && (
+                  {inAmountToken && (
                     <span className="subtitle1">
-                      {formatPretty(swapState.inAmountInput.amount)}
+                      {formatPretty(inAmountToken)}
                     </span>
                   )}
                 </div>
@@ -195,12 +253,10 @@ export function ReviewOrder({
               <div className="flex flex-col items-end">
                 <p>
                   {formatPretty(
-                    swapState.inAmountInput.fiatValue ??
-                      new PricePretty(DEFAULT_VS_CURRENCY, 0),
+                    inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0),
                     {
                       ...getPriceExtendedFormatOptions(
-                        swapState.inAmountInput?.fiatValue?.toDec() ??
-                          new Dec(0)
+                        inAmountFiat?.toDec() ?? new Dec(0)
                       ),
                     }
                   )}
@@ -219,10 +275,10 @@ export function ReviewOrder({
             </div>
             <div className="flex items-end justify-between p-2">
               <div className="flex items-center gap-4">
-                {swapState.toAsset && (
+                {toAsset && (
                   <Image
-                    src={swapState.toAsset.coinImageUrl ?? ""}
-                    alt={`${swapState.toAsset.coinDenom} image`}
+                    src={toAsset.coinImageUrl ?? ""}
+                    alt={`${toAsset.coinDenom} image`}
                     width={40}
                     height={40}
                     className="h-10 w-10"
@@ -231,15 +287,15 @@ export function ReviewOrder({
                 <div className="flex flex-col">
                   <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
                   <span className="subtitle1">
-                    {swapState.quote?.amount && (
+                    {expectedOutput && (
                       <>
-                        {formatPretty(swapState.quote?.amount.toDec(), {
+                        {formatPretty(expectedOutput.toDec(), {
                           minimumSignificantDigits: 6,
                           maximumSignificantDigits: 6,
                           maxDecimals: 10,
                           notation: "standard",
                         })}{" "}
-                        {swapState.toAsset?.coinDenom}
+                        {toAsset?.coinDenom}
                       </>
                     )}
                   </span>
@@ -258,9 +314,9 @@ export function ReviewOrder({
                     >{`-${outputDifference}`}</span>
                   )}
                   <span>
-                    {formatPretty(swapState.tokenOutFiatValue ?? new Dec(0), {
+                    {formatPretty(expectedOutputFiat ?? new Dec(0), {
                       ...getPriceExtendedFormatOptions(
-                        swapState.tokenOutFiatValue?.toDec() ?? new Dec(0)
+                        expectedOutputFiat?.toDec() ?? new Dec(0)
                       ),
                     })}
                   </span>
@@ -314,7 +370,10 @@ export function ReviewOrder({
                               setIsEditingSlippage(true);
                             }}
                             onBlur={() => {
-                              if (isManualSlippageTooHigh) {
+                              if (
+                                isManualSlippageTooHigh &&
+                                +manualSlippage > 50
+                              ) {
                                 handleManualSlippageChange(
                                   (+manualSlippage).toString().split("")[0]
                                 );
@@ -328,8 +387,8 @@ export function ReviewOrder({
                               logEvent([
                                 EventName.Swap.slippageToleranceSet,
                                 {
-                                  fromToken: swapState?.fromAsset?.coinDenom,
-                                  toToken: swapState?.toAsset?.coinDenom,
+                                  fromToken: fromAsset?.coinDenom,
+                                  toToken: toAsset?.coinDenom,
                                   // isOnHome: page === "Swap Page",
                                   isOnHome: true,
                                   percentage:
@@ -353,19 +412,45 @@ export function ReviewOrder({
                     }
                   />
                   {isManualSlippageTooHigh && (
-                    <div className="flex items-start gap-3 rounded-xl border border-solid border-rust-500 p-5">
+                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                       <Icon
                         id="alert-triangle"
-                        width={20}
-                        height={20}
+                        width={24}
+                        height={24}
                         className="text-rust-400"
                       />
                       <div className="flex flex-col gap-1">
-                        <span className="caption">
+                        <span className="body2">
                           Your trade may result in significant loss of value
                         </span>
-                        <span className="caption text-osmoverse-300">
+                        <span className="body2 text-osmoverse-300">
                           A lower slippage tolerance is recommended.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {isManualSlippageTooLow && (
+                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-[#3E386A8A] p-5">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 6.20101 17.799 1.5 12 1.5C6.20101 1.5 1.5 6.20101 1.5 12C1.5 17.799 6.20101 22.5 12 22.5ZM12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24ZM13.5 7.49976C13.5 8.32818 12.8284 8.99976 12 8.99976C11.1716 8.99976 10.5 8.32818 10.5 7.49976C10.5 6.67133 11.1716 5.99976 12 5.99976C12.8284 5.99976 13.5 6.67133 13.5 7.49976ZM11.25 10.4998C10.8358 10.4998 10.5 10.8355 10.5 11.2498V17.2498C10.5 17.664 10.8358 17.9998 11.25 17.9998H12.75C13.1642 17.9998 13.5 17.664 13.5 17.2498V11.2498C13.5 10.8355 13.1642 10.4998 12.75 10.4998H11.25Z"
+                          fill="#736CA3"
+                        />
+                      </svg>
+                      <div className="flex flex-col gap-1">
+                        <span className="body2">
+                          Your trade may not be executed
+                        </span>
+                        <span className="body2 text-osmoverse-300">
+                          Try a higher maximum slippage tolerance.
                         </span>
                       </div>
                     </div>
@@ -382,12 +467,12 @@ export function ReviewOrder({
                     <span>
                       {outAmountLessSlippage &&
                         outFiatAmountLessSlippage &&
-                        swapState.toAsset && (
+                        toAsset && (
                           <span className="text-osmoverse-100">
                             {formatPretty(outAmountLessSlippage, {
                               maxDecimals: 6,
                             })}{" "}
-                            {swapState.toAsset.coinDenom}
+                            {toAsset.coinDenom}
                           </span>
                         )}{" "}
                       {outFiatAmountLessSlippage && (
@@ -418,13 +503,10 @@ export function ReviewOrder({
                 left="Additional network fee"
                 right={
                   <>
-                    {!swapState.isLoadingNetworkFee ? (
+                    {!isGasLoading && gasAmount ? (
                       <span className="inline-flex items-center gap-1 text-osmoverse-100">
-                        <Icon id="gas" width={16} height={16} />~
-                        {swapState.networkFee?.gasUsdValueToPay &&
-                          formatPretty(swapState.networkFee?.gasUsdValueToPay, {
-                            maxDecimals: 2,
-                          })}
+                        <Icon id="gas" width={16} height={16} />
+                        {gasAmount.toString()}
                       </span>
                     ) : (
                       <Skeleton className="h-5 w-16" />
@@ -447,18 +529,44 @@ export function ReviewOrder({
                 <a className="text-wosmongton-300">Learn more</a>
               </span>
             </div> */}
-            <div className="flex w-full justify-between gap-3 pt-3">
+            {!diffGteSlippage && (
+              <div className="flex w-full justify-between gap-3 pt-3">
+                <Button
+                  mode="primary"
+                  onClick={confirmAction}
+                  disabled={isConfirmationDisabled}
+                  className="body2 !rounded-2xl"
+                >
+                  <h6>{t("limitOrders.confirm")}</h6>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        {diffGteSlippage && (
+          <div className="flex w-full px-5 pb-8">
+            <div className="flex w-full items-center justify-between gap-3 rounded-2xl bg-osmoverse-800 p-3">
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icon
+                  id="alert-triangle"
+                  className="text-ammelia-400"
+                  width={20}
+                  height={17}
+                />
+              </div>
+              <span className="subtitle1 w-full">
+                {t("limitOrders.quoteUpdated")}
+              </span>
               <Button
                 mode="primary"
-                onClick={confirmAction}
-                disabled={isConfirmationDisabled}
-                className="body2 !rounded-2xl"
+                onClick={() => restart}
+                className="body2 w-fit !rounded-2xl"
               >
-                <h6>{t("limitOrders.confirm")}</h6>
+                <h6>{t("limitOrders.accept")}</h6>
               </Button>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </ModalBase>
   );

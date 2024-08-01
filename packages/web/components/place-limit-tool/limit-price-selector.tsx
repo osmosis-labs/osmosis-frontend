@@ -2,12 +2,12 @@ import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { useTranslation } from "~/hooks";
-import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { OrderDirection, PlaceLimitState } from "~/hooks/limit-orders";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
@@ -48,19 +48,21 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     if (input) input.focus();
   }, [inputMode, input]);
 
+  // Adjust the percentage adjusted when the spot price changes and user is inputting a price
   useEffect(() => {
     if (
       priceState.spotPrice &&
       priceState.orderPrice.length > 0 &&
       inputMode === InputMode.Price
     ) {
-      const percentAdjusted = new Dec(priceState.orderPrice)
+      const manualPrice = new Dec(priceState.orderPrice);
+      const percentAdjusted = manualPrice
         .quo(priceState.spotPrice)
         .sub(new Dec(1))
         .mul(new Dec(100));
 
       priceState._setPercentAdjustedUnsafe(
-        percentAdjusted.isZero()
+        percentAdjusted.isZero() || manualPrice.isZero()
           ? ""
           : formatPretty(percentAdjusted.abs(), {
               maxDecimals: 2,
@@ -77,6 +79,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
       );
     }
+
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs())}%`;
@@ -96,24 +99,17 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         } ${t("limitOrders.currentPrice")}`;
   }, [t, priceState.percentAdjusted, orderDirection]);
 
-  // const TooltipContent = useMemo(() => {
-  //   const translationId =
-  //     orderDirection === "bid"
-  //       ? "limitOrders.aboveMarket"
-  //       : "limitOrders.belowMarket";
-  //   return (
-  //     <div>
-  //       <div className="text-caption">{t(`${translationId}.title`)}</div>
-  //       <span className="text-caption text-osmoverse-300">
-  //         {t(`${translationId}.description`)}
-  //       </span>
-  //     </div>
-  //   );
-  // }, [orderDirection, t]);
+  const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
   return (
-    <div className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5">
-      <div className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]" />
+    <div
+      ref={containerRef}
+      className="relative flex w-full flex-col items-start justify-start pb-4 pt-4.5"
+    >
+      <div
+        className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]"
+        style={{ width: width + 40 }}
+      />
       <GenericDisclaimer
         disabled={!swapState.priceState.isBeyondOppositePrice}
         title={
@@ -169,28 +165,32 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
           />
         </button>
       </GenericDisclaimer>
-      <div className="flex w-full items-center justify-between">
+      <label className="flex w-full items-center justify-between">
         <div className="inline-flex items-end gap-1 py-3 text-h6 font-h6">
           <SkeletonLoader
             isLoaded={priceState.spotPrice && !priceState.isLoading}
           >
-            {inputMode === InputMode.Price && <span>$</span>}
+            {inputMode === InputMode.Price && (
+              <span
+                className={classNames("transition-colors", {
+                  "text-osmoverse-600": swapState.priceState.orderPrice === "",
+                })}
+              >
+                $
+              </span>
+            )}
             {inputMode === InputMode.Price ? (
               <input
                 type="text"
                 min={0}
-                className="bg-transparent text-white-full"
-                value={
-                  swapState.priceState.orderPrice === ""
-                    ? parseFloat(swapState.priceState.price.toString()).toFixed(
-                        2
-                      )
-                    : swapState.priceState.orderPrice
-                }
+                className="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
+                value={swapState.priceState.orderPrice}
+                placeholder={formatPretty(
+                  priceState.priceFiat,
+                  getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
+                ).replace("$", "")}
                 onChange={(e) => {
                   const value = e.target.value.trim();
-                  if (!isValidNumericalRawInput(value) || value.length === 0)
-                    return swapState.priceState.setPrice("");
                   swapState.priceState.setPrice(value);
                 }}
               />
@@ -198,7 +198,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               <AutosizeInput
                 type="text"
                 extraWidth={0}
-                inputClassName="bg-transparent text-white-full"
+                inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                 value={swapState.priceState.manualPercentAdjusted}
                 placeholder={trimPlaceholderZeros(
                   swapState.priceState.percentAdjusted
@@ -216,7 +216,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             )}
             {inputMode === InputMode.Percentage && (
               <span className="inline-flex items-baseline gap-1">
-                <span className="text-white-full">%</span>
+                <span
+                  className={classNames("text-white-full transition-colors", {
+                    "!text-osmoverse-600":
+                      swapState.priceState.manualPercentAdjusted === "",
+                  })}
+                >
+                  %
+                </span>
                 <span className="body2 text-osmoverse-500">
                   {percentageSuffix}
                 </span>
@@ -224,12 +231,12 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             )}
           </SkeletonLoader>
         </div>
-      </div>
+      </label>
       <div className="flex w-full items-center justify-between gap-2 pt-3 pb-2">
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
-            className="flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-700 px-3 py-1 disabled:opacity-50"
+            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-[#3E386A] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               priceState.setPrice("");
@@ -246,19 +253,19 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                     id="triangle-down"
                     width={10}
                     height={6}
-                    className="rotate-180 text-wosmongton-200 transition-transform"
+                    className="rotate-180  transition-transform"
                   />
                 ) : (
                   <Icon
                     id="triangle-down"
                     width={10}
                     height={6}
-                    className="text-wosmongton-200 transition-transform"
+                    className="transition-transform"
                   />
                 )}
               </div>
             )}
-            <span className="body2 text-wosmongton-200">{label}</span>
+            <span className="body2">{label}</span>
           </button>
         ))}
       </div>

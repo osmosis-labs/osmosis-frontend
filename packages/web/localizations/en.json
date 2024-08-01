@@ -836,7 +836,7 @@
     "priceImpact": "Market Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
-    "showDetails": "Show Details",
+    "showDetails": "Show details",
     "hideDetails": "Hide",
     "continueAnyway": "Continue Anyway",
     "warning": {
@@ -1225,6 +1225,19 @@
         "sell": "Sell immediately at best available price"
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Order",
+        "amount": "Amount",
+        "price": "Price",
+        "orderPlaced": "Order Placed",
+        "status": "Status"
+      },
+      "emptyState": {
+        "title": "No recent orders",
+        "subtitle": "Your trade order history will appear here."
+      }
+    },
     "limitOrder": {
       "title": "Limit Order",
       "description": {
@@ -1247,14 +1260,53 @@
     },
     "enterAnAmountTo": "Enter an amount to",
     "sell": "Sell",
-    "insufficientFunds": "Insufficient Funds",
-    "addFunds": "Add Funds",
+    "buy": "Buy",
+    "open": "Open",
+    "filled": "Filled",
+    "pending": "Pending",
+    "claimable": "Claimable",
+    "claimAndClose": "Claim and close",
+    "past": "Past",
+    "accept": "Accept",
+    "cancelled": "Cancelled",
+    "cancel": "Cancel",
+    "daysAgo": "{days}d ago",
+    "buyWith": "Buy with {coinA} or {coinB}",
+    "orderHistory": "Order history",
+    "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
+    "tradeAnotherAsset": "Trade another asset for {coinDenom}",
+    "sellAnAsset": "Sell an asset",
+    "swapAnAsset": "Swap an asset",
+    "of": "of",
+    "insufficientFunds": "Insufficient balance",
+    "startTrading": "Start trading",
+    "filledOrdersToClaim": "Filled orders to claim",
+    "tradeFees": "Trade fees (when order filled)",
+    "youNeed": "You need",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "Quote updated",
+    "fundsOsmosisToBuyAssets": "funds on Osmosis to buy assets.",
+    "chooseAnOption": "Choose an option to continue.",
+    "errors": {
+      "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue."
+    },
+    "transferFromAnotherNetwork": "Transfer from another network or wallet",
+    "whatIsOrderClaim": {
+      "title": "What is order claiming?",
+      "description": "In the majority of cases, when a limit order is filled, funds are automatically added to your balance. However in some rare cases, funds must be manually claimed from the filled order.\n\nThis claiming process involves approving a single transaction in your wallet for all unclaimed filled orders which incurs a nominal network fee."
+    },
+    "whatIsAStablecoin": {
+      "title": "What is a stablecoin?",
+      "description": "Stablecoins are a type of cryptocurrency whose value is pegged to another asset, such as a fiat currency or gold, to maintain a stable price. On Osmosis, the primary stablecoins for buying and selling assets are USDC and USDT."
+    },
+    "claimAll": "Claim all",
+    "addFunds": "Add funds",
     "watchOut": "Watch out! Whale incoming",
     "selectAnAssetTo": {
       "buy": "Select an asset to buy",
       "sell": "Select an asset to sell"
     },
-    "payWith": "Pay With",
+    "payWith": "Pay with",
     "receive": "Receive",
     "swapFromAnotherAsset": "Swap from another asset",
     "connectYourWallet": "Connect your wallet",
@@ -1273,7 +1325,7 @@
     "totalEstimatedFees": "Total Estimated Fees",
     "receiveMin": "Receive minimum",
     "receiveAsset": "Receive asset",
-    "orderType": "Order Type",
+    "orderType": "Order type",
     "limitPrice": "Limit Price",
     "moreDetails": "More details",
     "confirm": "Confirm",

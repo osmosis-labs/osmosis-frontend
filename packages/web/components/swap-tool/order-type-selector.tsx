@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { useEffect, useMemo } from "react";
 
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
@@ -94,26 +95,32 @@ export const OrderTypeSelector = () => {
         const isSelected = type === id;
 
         return (
-          <button
-            key={`order-type-selecto-${id}`}
-            onClick={() => setType(id)}
-            className={classNames(
-              "rounded-3xl px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
-              {
-                "hover:bg-osmoverse-850": !isSelected,
-                "bg-osmoverse-700": isSelected,
-              }
-            )}
-            disabled={disabled}
+          <GenericDisclaimer
+            disabled={!disabled}
+            title={`Limit orders unavailable for ${base}`}
+            key={`order-type-selector-${id}`}
+            containerClassName="!w-fit"
           >
-            <p
-              className={classNames("font-semibold", {
-                "text-wosmongton-100": !isSelected,
-              })}
+            <button
+              onClick={() => setType(id)}
+              className={classNames(
+                "rounded-[22px] px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50",
+                {
+                  "hover:bg-osmoverse-850": !isSelected,
+                  "bg-osmoverse-700": isSelected,
+                }
+              )}
+              disabled={disabled}
             >
-              {title}
-            </p>
-          </button>
+              <p
+                className={classNames("font-semibold", {
+                  "text-wosmongton-100": !isSelected,
+                })}
+              >
+                {title}
+              </p>
+            </button>
+          </GenericDisclaimer>
         );
       })}
     </div>

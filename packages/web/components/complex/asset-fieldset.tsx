@@ -1,13 +1,27 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { ChangeEventHandler, PropsWithChildren, ReactNode } from "react";
+import {
+  ChangeEventHandler,
+  forwardRef,
+  PropsWithChildren,
+  ReactNode,
+  useMemo,
+} from "react";
 
 import { Icon } from "~/components/assets";
+import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
+import { useStore } from "~/stores";
 
 const AssetFieldset = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex flex-col">{children}</div>
@@ -22,40 +36,95 @@ const AssetFieldsetHeader = ({ children }: PropsWithChildren<unknown>) => (
 const AssetFieldsetHeaderLabel = ({ children }: PropsWithChildren<unknown>) =>
   children;
 
-const AssetFieldsetHeaderBalance = ({
-  onMax,
-  availableBalance,
-  className,
-}: {
-  onMax?: () => void;
-  availableBalance?: ReactNode;
-  className?: string;
-}) => {
-  const { t } = useTranslation();
+const AssetFieldsetHeaderBalance = observer(
+  ({
+    onMax,
+    availableBalance,
+    className,
+    showAddFundsButton,
+    openAddFundsModal,
+    isMaxButtonDisabled,
+    isLoadingMaxButton,
+  }: {
+    onMax?: () => void;
+    availableBalance?: ReactNode;
+    className?: string;
+    showAddFundsButton?: boolean;
+    openAddFundsModal?: () => void;
+    isMaxButtonDisabled?: boolean;
+    isLoadingMaxButton?: boolean;
+  }) => {
+    const { t } = useTranslation();
+    const { accountStore } = useStore();
 
-  return (
-    <div
-      className={classNames(
-        "flex items-center gap-2 transition-opacity",
-        className
-      )}
-    >
-      {availableBalance && (
-        <span className="body2 text-osmoverse-300">
-          {availableBalance} {t("pool.available").toLowerCase()}
-        </span>
-      )}
-      {onMax && (
-        <button
-          type="button"
-          className="flex items-center justify-center rounded-5xl border border-osmoverse-700 py-1.5 px-3"
-          onClick={onMax}
-        >
-          <span className="body2 text-wosmongton-300">Max</span>
-        </button>
-      )}
-    </div>
-  );
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+    return (
+      <div
+        className={classNames(
+          "flex items-center gap-2 transition-opacity",
+          className
+        )}
+      >
+        {wallet?.isWalletConnected ? (
+          showAddFundsButton ? (
+            <button
+              type="button"
+              onClick={openAddFundsModal}
+              className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
+            >
+              {t("limitOrders.addFunds")}
+            </button>
+          ) : (
+            <>
+              <span className="body2 text-osmoverse-300">
+                {availableBalance} {t("pool.available").toLowerCase()}
+              </span>
+              {onMax && (
+                <button
+                  type="button"
+                  className="flex items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1.5 px-3 disabled:pointer-events-none disabled:opacity-50"
+                  onClick={onMax}
+                  disabled={isMaxButtonDisabled}
+                >
+                  {isLoadingMaxButton && (
+                    <Spinner className="!h-2.5 !w-2.5 text-wosmongton-300" />
+                  )}
+                  <span className="body2 text-wosmongton-300">Max</span>
+                </button>
+              )}
+            </>
+          )
+        ) : null}
+      </div>
+    );
+  }
+);
+
+const calcScale = (numChars: number, isMobile: boolean): string => {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        8: "1",
+        10: "0.90",
+        12: "0.80",
+        18: "0.70",
+        100: "0.48",
+      }
+    : {
+        8: "1",
+        12: "0.90",
+        18: "0.90",
+        100: "0.48",
+      };
+
+  console.log(numChars);
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "1";
 };
 
 interface AssetFieldsetInputProps {
@@ -65,27 +134,42 @@ interface AssetFieldsetInputProps {
   outputValue?: ReactNode;
 }
 
-const AssetFieldsetInput = ({
-  inputPrefix,
-  inputValue,
-  onInputChange,
-  outputValue,
-}: AssetFieldsetInputProps) => (
-  <div className="flex items-center">
-    {inputPrefix}
-    {outputValue || (
-      <input
-        className="w-full bg-transparent text-h3 font-h3 placeholder:text-white-disabled placeholder:opacity-50"
-        placeholder="0"
-        onChange={onInputChange}
-        value={inputValue}
-      />
-    )}
-  </div>
-);
+const AssetFieldsetInput = forwardRef<
+  HTMLInputElement,
+  AssetFieldsetInputProps
+>(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
+  const { isMobile } = useWindowSize();
+
+  const scale = useMemo(
+    () => calcScale((inputValue ?? "").length, isMobile),
+    [inputValue, isMobile]
+  );
+
+  return (
+    <div className="flex items-center overflow-visible">
+      {inputPrefix}
+      {outputValue || (
+        <div
+          className="transiiton-all w-full origin-left overflow-visible"
+          style={{
+            transform: `scale(${scale})`,
+          }}
+        >
+          <input
+            ref={ref}
+            className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
+            placeholder="0"
+            onChange={onInputChange}
+            value={inputValue}
+          />
+        </div>
+      )}
+    </div>
+  );
+});
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
-  <div className="flex w-full items-center justify-between pb-4">
+  <div className="flex h-12 w-full items-center justify-between pb-4">
     {children}
   </div>
 );
