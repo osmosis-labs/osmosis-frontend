@@ -62,7 +62,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
         run: |
           cd packages/web
-          npx playwright test -g "Test Swap feature"
+          npx playwright test -g "Test Swap Osmo feature"
       - name: upload Swap test results
         if: failure()
         id: swap-test-results
