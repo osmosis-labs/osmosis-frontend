@@ -849,7 +849,11 @@
       "title": "İşlem Ayarları"
     },
     "title": "Takas",
-    "dynamicSpreadFactor": "Dinamik"
+    "dynamicSpreadFactor": "Dinamik",
+    "gas": {
+      "oneClickTradingError": "Ağ ücreti şu anda tahmin edilemiyor. Ücret, Tek Tıkla Ticaret ağ ücreti limitinizi aşarsa, cüzdanınızda manuel onay işlemine devam edebileceksiniz.",
+      "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin."
+    }
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
