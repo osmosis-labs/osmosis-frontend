@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
     "startAgain": "फिर से शुरू करें"
   },
+  "estimated": "अनुमानित",
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
     "simplifiedExperience": "आपका अनुभव सरल हो गया है!",
@@ -966,6 +967,11 @@
       "title": "नेटवर्क चुनें",
       "searchPlaceholder": "समर्थित नेटवर्क खोजें"
     },
+    "pendingWithdraw": "वापसी जारी है",
+    "pendingDeposit": "जमा करने का कार्य प्रगति पर है",
+    "amountToChain": "{amount} से {chain}",
+    "amountFromChain": "{amount} से {chain}",
+    "amountFailedToWithdraw": "{amount} निकासी विफल",
     "completedWithdraw": "निकासी पूर्ण हुई",
     "completedDeposit": "जमा पूर्ण हुआ",
     "failedWithdraw": "निकासी विफल",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "अनुमानित प्राप्त राशि",
     "slippageWarning": "इस लेनदेन के लिए अपेक्षित आउटपुट इनपुट राशि से काफी कम है, जिसके परिणामस्वरूप अपेक्षित राशि से भिन्न अंतिम राशि प्राप्त हो सकती है।",
     "priceImpactWarning": "इस लेनदेन का मूल्य प्रभाव {priceImpact} है, जो प्राप्त अंतिम राशि को प्रभावित कर सकता है।",
-    "connect": "जोड़ना",
     "confirm": "पुष्टि करना",
     "cancel": "रद्द करना",
     "confirmDepositTo": "{chain} में जमा की पुष्टि करें",

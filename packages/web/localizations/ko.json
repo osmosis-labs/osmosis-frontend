@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
     "startAgain": "다시 시작"
   },
+  "estimated": "추정된",
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
     "simplifiedExperience": "귀하의 경험이 단순화되었습니다!",
@@ -966,6 +967,11 @@
       "title": "네트워크 선택",
       "searchPlaceholder": "지원되는 네트워크 검색"
     },
+    "pendingWithdraw": "출금 진행 중",
+    "pendingDeposit": "입금 진행 중",
+    "amountToChain": "{amount} 를 {chain}",
+    "amountFromChain": "{chain} 의 {amount}",
+    "amountFailedToWithdraw": "{amount} 인출 실패",
     "completedWithdraw": "출금 완료",
     "completedDeposit": "입금완료",
     "failedWithdraw": "출금 실패",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "예상 수령 금액",
     "slippageWarning": "이 거래에 대한 예상 출력은 입력 금액보다 상당히 낮으므로 예상과 다른 최종 금액을 받게 될 수 있습니다.",
     "priceImpactWarning": "이 거래의 가격 영향은 {priceImpact} 이며, 최종 수령 금액에 영향을 미칠 수 있습니다.",
-    "connect": "연결하다",
     "confirm": "확인하다",
     "cancel": "취소",
     "confirmDepositTo": "{chain} 에 입금 확인",

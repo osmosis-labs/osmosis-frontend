@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
     "startAgain": "Tekrar başla"
   },
+  "estimated": "Tahmini",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
     "simplifiedExperience": "Deneyiminiz basitleştirildi!",
@@ -966,6 +967,11 @@
       "title": "Ağ seçin",
       "searchPlaceholder": "Desteklenen ağları arayın"
     },
+    "pendingWithdraw": "Geri çekme işlemi devam ediyor",
+    "pendingDeposit": "Para yatırma işlemi devam ediyor",
+    "amountToChain": "{amount} - { {chain}",
+    "amountFromChain": "{amount} from {chain}",
+    "amountFailedToWithdraw": "{amount} çekilemedi",
     "completedWithdraw": "Para çekme işlemi tamamlandı",
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
     "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
-    "connect": "Bağlamak",
     "confirm": "Onaylamak",
     "cancel": "İptal etmek",
     "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",

@@ -43,7 +43,7 @@ export const BridgeQuoteRemainingTime: FunctionComponent<
       () => {
         updateProgress();
       },
-      1000 // Update every ms
+      1000 // Update every s
     );
 
     return () => clearInterval(intervalId);

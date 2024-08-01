@@ -28,6 +28,7 @@ type TxSnapshot = {
   createdAtMs: number;
   prefixedKey: string;
   amount: string;
+  startTimeUnix: number;
   amountLogo: string | undefined;
   status: TransferStatus;
   estimatedArrivalUnix: number | undefined;
@@ -152,34 +153,39 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       prefixedKey.slice(statusSource.keyPrefix.length)
     );
 
-    console.log(amountLogo, estimatedArrivalUnix);
+    const startTimeUnix = Date.now() / 1000;
 
-    setTimeout(() => {
-      displayToast(
-        {
-          titleTranslationKey: isWithdraw
-            ? "transfer.pendingWithdraw"
-            : "transfer.pendingDeposit",
-          iconElement:
-            amountLogo && estimatedArrivalUnix ? (
-              <PendingTransferLoadingIcon
-                estimatedArrivalUnix={estimatedArrivalUnix}
-                assetLogo={amountLogo}
-              />
-            ) : undefined,
-          captionElement: (
-            <PendingTransfer
-              amount={amount}
-              chainPrettyName={chainPrettyName}
-              isWithdraw={isWithdraw}
+    displayToast(
+      {
+        titleTranslationKey: isWithdraw
+          ? "transfer.pendingWithdraw"
+          : "transfer.pendingDeposit",
+        iconElement:
+          amountLogo && estimatedArrivalUnix ? (
+            <PendingTransferLoadingIcon
+              key={startTimeUnix + "pending-transfer-loading-icon"}
               estimatedArrivalUnix={estimatedArrivalUnix}
+              assetLogo={amountLogo}
+              startTimeUnix={startTimeUnix}
             />
-          ),
-        },
-        ToastType.LOADING,
-        { toastId: prefixedKey, autoClose: false }
-      );
-    }, 500);
+          ) : undefined,
+        captionElement: (
+          <PendingTransfer
+            key={startTimeUnix + "pending-transfer"}
+            amount={amount}
+            chainPrettyName={chainPrettyName}
+            isWithdraw={isWithdraw}
+            estimatedArrivalUnix={estimatedArrivalUnix}
+          />
+        ),
+      },
+      ToastType.LOADING,
+      {
+        toastId: prefixedKey,
+        autoClose: false,
+        containerId: "deposit-withdraw",
+      }
+    );
 
     this.snapshots.push({
       createdAtMs: Date.now(),
@@ -191,6 +197,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       chainPrettyName,
       estimatedArrivalUnix,
       amountLogo,
+      startTimeUnix,
     });
   }
 
@@ -229,6 +236,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
                 <PendingTransferLoadingIcon
                   estimatedArrivalUnix={snapshot.estimatedArrivalUnix}
                   assetLogo={snapshot.amountLogo}
+                  startTimeUnix={snapshot.startTimeUnix}
                 />
               ) : undefined,
             captionElement: (
@@ -241,7 +249,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ),
           },
           ToastType.LOADING,
-          { updateToastId: prefixedKey, autoClose: false }
+          {
+            updateToastId: prefixedKey,
+            autoClose: false,
+            containerId: "deposit-withdraw",
+          }
         );
         break;
       case "success":
@@ -251,10 +263,18 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: snapshot.isWithdraw
               ? "transfer.completedWithdraw"
               : "transfer.completedDeposit",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: snapshot.isWithdraw
+              ? [
+                  "transfer.amountToChain",
+                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
+                ]
+              : [
+                  "transfer.amountFromChain",
+                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
+                ],
           },
           ToastType.SUCCESS,
-          { updateToastId: prefixedKey }
+          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
         );
         this.onAccountTransferSuccess(snapshot.accountAddress);
         this._resolvedTxStatusKeys.add(prefixedKey);
@@ -266,10 +286,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: snapshot.isWithdraw
               ? "transfer.failedWithdraw"
               : "transfer.failedDeposit",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: [
+              "transfer.amountFailedToWithdraw",
+              { amount: snapshot.amount },
+            ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey }
+          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
         break;
@@ -278,10 +301,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         displayToast(
           {
             titleTranslationKey: "transfer.connectionError",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: [
+              "transfer.amountFailedToWithdraw",
+              { amount: snapshot.amount },
+            ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey }
+          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
         break;
@@ -328,22 +354,25 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 }
 
-const PendingTransferLoadingIcon: FunctionComponent<{
+export const PendingTransferLoadingIcon: FunctionComponent<{
   assetLogo: string;
   estimatedArrivalUnix: number;
-}> = ({ assetLogo, estimatedArrivalUnix }) => {
+  startTimeUnix: number;
+}> = ({ assetLogo, estimatedArrivalUnix, startTimeUnix }) => {
   const [progress, setProgress] = useState(100);
 
   useEffect(() => {
     if (!estimatedArrivalUnix) return;
 
     const updateProgress = () => {
-      const elapsed = Date.now();
-      const percentage = Math.max(
-        (1 - elapsed / estimatedArrivalUnix) * 100,
+      const currentTime = Date.now() / 1000;
+      const remainingTime = estimatedArrivalUnix - currentTime;
+      const totalElapsedTime = estimatedArrivalUnix - startTimeUnix;
+      const progressPercentage = Math.max(
+        (remainingTime / totalElapsedTime) * 100,
         0
       );
-      setProgress(percentage);
+      setProgress(progressPercentage);
     };
 
     updateProgress();
@@ -352,11 +381,11 @@ const PendingTransferLoadingIcon: FunctionComponent<{
       () => {
         updateProgress();
       },
-      1000 // Update every ms
+      1000 // Update every s
     );
 
     return () => clearInterval(intervalId);
-  }, [estimatedArrivalUnix]);
+  }, [estimatedArrivalUnix, startTimeUnix]);
 
   return (
     <div className="relative flex h-12 w-12 items-center justify-center">

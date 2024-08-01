@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
     "startAgain": "دوباره شروع کن"
   },
+  "estimated": "تخمین زده",
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
     "simplifiedExperience": "تجربه شما ساده شده است!",
@@ -966,6 +967,11 @@
       "title": "شبکه را انتخاب کنید",
       "searchPlaceholder": "جستجوی شبکه های پشتیبانی شده"
     },
+    "pendingWithdraw": "برداشت در حال انجام است",
+    "pendingDeposit": "سپرده در حال انجام است",
+    "amountToChain": "{amount} به {chain}",
+    "amountFromChain": "{amount} از {chain}",
+    "amountFailedToWithdraw": "{amount} برداشت نشد",
     "completedWithdraw": "برداشت کامل شد",
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
     "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
     "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد.",
-    "connect": "اتصال",
     "confirm": "تایید",
     "cancel": "لغو کنید",
     "confirmDepositTo": "تایید سپرده به {chain}",

@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
     "startAgain": "Recommencer"
   },
+  "estimated": "Estimé",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
     "simplifiedExperience": "Votre expérience a été simplifiée!",
@@ -966,6 +967,11 @@
       "title": "Sélectionnez réseau",
       "searchPlaceholder": "Rechercher des réseaux pris en charge"
     },
+    "pendingWithdraw": "Retrait en cours",
+    "pendingDeposit": "Dépôt en cours",
+    "amountToChain": "{amount} à {chain}",
+    "amountFromChain": "{amount} de {chain}",
+    "amountFailedToWithdraw": "{amount}",
     "completedWithdraw": "Retrait terminé",
     "completedDeposit": "Dépôt complété",
     "failedWithdraw": "Échec du retrait",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "Montant estimé reçu",
     "slippageWarning": "Le résultat attendu pour cette transaction est nettement inférieur au montant d'entrée, ce qui peut entraîner la réception d'un montant final différent de celui attendu.",
     "priceImpactWarning": "L'impact sur le prix de cette transaction est {priceImpact} , ce qui peut influencer le montant final reçu.",
-    "connect": "Connecter",
     "confirm": "Confirmer",
     "cancel": "Annuler",
     "confirmDepositTo": "Confirmez le dépôt à {chain}",

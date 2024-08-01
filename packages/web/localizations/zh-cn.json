@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
     "startAgain": "重新开始"
   },
+  "estimated": "估计的",
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
     "simplifiedExperience": "您的体验已被简化！",
@@ -966,6 +967,11 @@
       "title": "选择网络",
       "searchPlaceholder": "搜索支持的网络"
     },
+    "pendingWithdraw": "提现正在进行中",
+    "pendingDeposit": "正在存款",
+    "amountToChain": "{amount}至{chain}",
+    "amountFromChain": "{amount}来自{chain}",
+    "amountFailedToWithdraw": "{amount}提现失败",
     "completedWithdraw": "提现完成",
     "completedDeposit": "存款已完成",
     "failedWithdraw": "提现失败",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "预计收到金额",
     "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
     "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
-    "connect": "连接",
     "confirm": "确认",
     "cancel": "取消",
     "confirmDepositTo": "确认存款至{chain}",

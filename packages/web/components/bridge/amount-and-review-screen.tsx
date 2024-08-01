@@ -186,6 +186,7 @@ export const AmountAndReviewScreen = observer(
                 : toAsset.address,
             decimals: toAsset.decimals,
             denom: toAsset.denom,
+            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
           }
         : undefined,
       fromAddress,
@@ -199,6 +200,7 @@ export const AmountAndReviewScreen = observer(
             decimals: fromAsset.decimals,
             denom: fromAsset.denom,
             amount: fromAsset.amount,
+            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
           }
         : undefined,
       direction,
@@ -222,7 +224,9 @@ export const AmountAndReviewScreen = observer(
       },
     });
 
-    if (!selectedAssetDenom) return;
+    if (!selectedAssetDenom) {
+      throw new Error("Selected asset denom is undefined.");
+    }
 
     return (
       <>

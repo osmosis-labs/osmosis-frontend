@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
     "startAgain": "Fang nochmal an"
   },
+  "estimated": "Geschätzt",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
     "simplifiedExperience": "Ihre Erfahrung wurde vereinfacht!",
@@ -966,6 +967,11 @@
       "title": "Netzwerk auswählen",
       "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     },
+    "pendingWithdraw": "Auszahlung in Bearbeitung",
+    "pendingDeposit": "Einzahlung in Bearbeitung",
+    "amountToChain": "{amount} {chain}",
+    "amountFromChain": "{amount} von {chain}",
+    "amountFailedToWithdraw": "{amount} fehlgeschlagen",
     "completedWithdraw": "Auszahlung abgeschlossen",
     "completedDeposit": "Einzahlung abgeschlossen",
     "failedWithdraw": "Auszahlung fehlgeschlagen",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
     "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
     "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken.",
-    "connect": "Verbinden",
     "confirm": "Bestätigen",
     "cancel": "Stornieren",
     "confirmDepositTo": "Einzahlung an {chain} bestätigen",

@@ -85,14 +85,7 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-    portfolioPageAndNewAssetsPage:
-      // don't want to use either on mobile
-      // as this flag bundles the 2 pages,
-      // and the portfolio page not be mobile responsive yet
-      // (even thought the assets page is)
-      isMobile || !isInitialized
-        ? false
-        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
+    portfolioPageAndNewAssetsPage: false,
     oneClickTrading:
       !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag

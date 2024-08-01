@@ -62,11 +62,13 @@ export const useBridgeQuotes = ({
 
   inputAmount: string;
 
-  fromAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
+  fromAsset:
+    | (BridgeAsset & { amount: CoinPretty; imageUrl: string | undefined })
+    | undefined;
   fromChain: BridgeChain | undefined;
   fromAddress: string | undefined;
 
-  toAsset: BridgeAsset | undefined;
+  toAsset: (BridgeAsset & { imageUrl: string | undefined }) | undefined;
   toChain: BridgeChain | undefined;
   toAddress: string | undefined;
 
@@ -435,7 +437,7 @@ export const useBridgeQuotes = ({
         transferHistoryStore.pushTxNow({
           prefixedKey: `${providerId}${JSON.stringify(params)}`,
           amount: inputCoin.trim(true).toString(),
-          amountLogo: inputCoin.currency.coinImageUrl,
+          amountLogo: isWithdraw ? toAsset?.imageUrl : fromAsset.imageUrl,
           isWithdraw,
           chainPrettyName:
             direction === "deposit"
@@ -450,11 +452,13 @@ export const useBridgeQuotes = ({
       availableBalance,
       direction,
       fromAddress,
+      fromAsset?.imageUrl,
       fromChain?.chainName,
       inputAmountRaw,
       inputCoin,
       isWithdraw,
       toAddress,
+      toAsset?.imageUrl,
       toChain?.chainName,
       transferHistoryStore,
     ]

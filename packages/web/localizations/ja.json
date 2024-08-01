@@ -410,6 +410,7 @@
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"
   },
+  "estimated": "推定",
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
     "simplifiedExperience": "あなたの経験は簡素化されました!",
@@ -966,6 +967,11 @@
       "title": "ネットワークを選択",
       "searchPlaceholder": "サポートされているネットワークを検索"
     },
+    "pendingWithdraw": "撤退中",
+    "pendingDeposit": "入金処理中",
+    "amountToChain": "{amount}から{chain}",
+    "amountFromChain": "{amount}から{chain}",
+    "amountFailedToWithdraw": "{amount}引き出しに失敗しました",
     "completedWithdraw": "引き出しが完了しました",
     "completedDeposit": "入金完了",
     "failedWithdraw": "引き出しに失敗しました",
@@ -980,7 +986,6 @@
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
     "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
-    "connect": "接続する",
     "confirm": "確認する",
     "cancel": "キャンセル",
     "confirmDepositTo": "{chain}への入金を確認します",

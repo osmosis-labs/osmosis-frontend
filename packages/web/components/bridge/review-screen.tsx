@@ -12,6 +12,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -227,9 +228,11 @@ const AssetBox: FunctionComponent<{
               height={16}
             />
           )}
-          <div className="text-wosmongton-200">
-            {shorten(address, { prefixLength: 12 })}
-          </div>
+          <Tooltip maxWidth="500px" content={address}>
+            <div className="text-wosmongton-200">
+              {shorten(address, { prefixLength: 12 })}
+            </div>
+          </Tooltip>
         </div>
       </div>
     </div>
@@ -246,7 +249,9 @@ const AssetBox: FunctionComponent<{
       </div>
       <div className="flex items-center gap-2">
         <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
-        <div className="body1 text-wosmongton-200">{shorten(address)}</div>
+        <Tooltip maxWidth="500px" content={address}>
+          <div className="body1 text-wosmongton-200">{shorten(address)}</div>
+        </Tooltip>
       </div>
     </div>
   );
