@@ -473,7 +473,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             <AssetFieldsetFooter>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 disabled:pointer-events-none disabled:cursor-default"
+                className="inline-flex items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));

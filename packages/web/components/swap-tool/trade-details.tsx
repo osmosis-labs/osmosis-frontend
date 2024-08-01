@@ -382,7 +382,7 @@ export function ExpectedRate(
   treatAsStable: string | undefined = undefined
 ) {
   var inBaseOutQuoteSpotPrice =
-    swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(0);
+    swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
 
   var baseAsset;
   var quoteAsset;
