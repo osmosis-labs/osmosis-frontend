@@ -14,7 +14,7 @@ import { tableColumns } from "~/components/complex/orders-history/columns";
 import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import {
   DisplayableLimitOrder,
   useOrderbookAllActiveOrders,
@@ -29,6 +29,7 @@ export const OrderHistory = observer(() => {
     onLoadEvent: [EventName.LimitOrder.pageViewed],
   });
   const { accountStore } = useStore();
+  const { t } = useTranslation();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
   const { orders, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -236,11 +237,11 @@ export const OrderHistory = observer(() => {
           width={120}
           height={80}
         />
-        <h6>No recent orders</h6>
+        <h6>{t("limitOrders.historyTable.emptyState.title")}</h6>
         <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
-          Your trade order history will appear here.
+          {t("limitOrders.historyTable.emptyState.subtitle")}
           <Link href={"/"} className="text-wosmongton-300">
-            Start trading
+            {t("limitOrders.startTrading")}
           </Link>
         </p>
       </div>
@@ -282,24 +283,14 @@ export const OrderHistory = observer(() => {
                   <div className="flex w-full items-end justify-between pr-4">
                     <div className="relative flex items-end gap-3 pt-5">
                       <div className="flex items-center gap-2 pb-3">
-                        <h6>Filled orders to claim</h6>
+                        <h6>{t("limitOrders.filledOrdersToClaim")}</h6>
                         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
                           <span className="caption">{filledOrders.length}</span>
                         </div>
                       </div>
                       <GenericDisclaimer
-                        title="What is order claiming?"
-                        body={
-                          <>
-                            In the majority of cases, when a limit order is
-                            filled, funds are automatically added to your
-                            balance. However in some rare cases, funds must be
-                            manually claimed from the filled order. <br />
-                            <br /> This claiming process involves approving a
-                            single transaction in your wallet for all unclaimed
-                            filled orders which incurs a nominal network fee.
-                          </>
-                        }
+                        title={t("limitOrders.whatIsOrderClaim.title")}
+                        body={t("limitOrders.whatIsOrderClaim.description")}
                       >
                         <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
                           <Icon
@@ -315,7 +306,9 @@ export const OrderHistory = observer(() => {
                       className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4"
                       onClick={claimOrders}
                     >
-                      <span className="subtitle1">Claim all</span>
+                      <span className="subtitle1">
+                        {t("limitOrders.claimAll")}
+                      </span>
                     </button>
                   </div>
                 </td>
@@ -338,7 +331,7 @@ export const OrderHistory = observer(() => {
           )}
           {pendingOrdersCount > 0 && (
             <>
-              <h6 className="h-[84px] pb-4 pt-8">Pending</h6>
+              <h6 className="h-[84px] pb-4 pt-8">{t("limitOrders.pending")}</h6>
               {pendingOrderRows.map((row) => {
                 return (
                   <tr key={row.id} className="h-[84px]">
@@ -357,7 +350,7 @@ export const OrderHistory = observer(() => {
           )}
           {pastOrders.length > 0 && (
             <>
-              <h6 className="h-[84px] pb-4 pt-8">Past</h6>
+              <h6 className="h-[84px] pb-4 pt-8">{t("limitOrders.past")}</h6>
               {pastOrderRows.map((row) => {
                 return (
                   <tr key={row.id} className="h-[84px]">

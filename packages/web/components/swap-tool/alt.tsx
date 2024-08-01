@@ -442,7 +442,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               <AssetFieldset>
                 <AssetFieldsetHeader>
                   <AssetFieldsetHeaderLabel>
-                    <span className="body2 py-1.5 text-osmoverse-300">To</span>
+                    <span className="body2 py-1.5 text-osmoverse-300">
+                      {t("assets.transfer.to")}
+                    </span>
                   </AssetFieldsetHeaderLabel>
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">

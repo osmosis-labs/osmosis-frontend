@@ -1225,6 +1225,19 @@
         "sell": "Vender inmediatamente al mejor precio disponible."
       }
     },
+    "historyTable": {
+      "columns": {
+        "order": "Orden",
+        "amount": "Cantidad",
+        "price": "Precio",
+        "orderPlaced": "Pedido realizado",
+        "status": "Estado"
+      },
+      "emptyState": {
+        "title": "No hay pedidos recientes",
+        "subtitle": "Su historial de órdenes comerciales aparecerá aquí."
+      }
+    },
     "limitOrder": {
       "title": "Orden límite",
       "description": {
@@ -1247,7 +1260,46 @@
     },
     "enterAnAmountTo": "Introduzca una cantidad a",
     "sell": "Vender",
+    "buy": "Comprar",
+    "open": "Abierto",
+    "filled": "Completado",
+    "pending": "Pendiente",
+    "claimable": "Reclamable",
+    "claimAndClose": "Reclamar y cerrar",
+    "past": "Pasado",
+    "accept": "Aceptar",
+    "cancelled": "Cancelado",
+    "cancel": "Cancelar",
+    "daysAgo": "{days} hace d",
+    "buyWith": "Compre con {coinA} o {coinB}",
+    "orderHistory": "Historial de pedidos",
+    "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
+    "tradeAnotherAsset": "Cambie otro activo por {coinDenom}",
+    "sellAnAsset": "Vender un activo",
+    "swapAnAsset": "Intercambiar un activo",
+    "of": "de",
     "insufficientFunds": "Fondos insuficientes",
+    "startTrading": "Comienza a negociar",
+    "filledOrdersToClaim": "Pedidos completados para reclamar",
+    "tradeFees": "Tarifas comerciales (cuando se completa el pedido)",
+    "youNeed": "Necesitas",
+    "stablecoin": "moneda estable",
+    "quoteUpdated": "Cotización actualizada",
+    "fundsOsmosisToBuyAssets": "fondos en Osmosis para comprar activos.",
+    "chooseAnOption": "Elija una opción para continuar.",
+    "errors": {
+      "noAssetAvailable": "No tienes fondos {coinName} en Osmosis para operar. Elija una opción para continuar."
+    },
+    "transferFromAnotherNetwork": "Transferir desde otra red o billetera",
+    "whatIsOrderClaim": {
+      "title": "¿Qué reclama el pedido?",
+      "description": "En la mayoría de los casos, cuando se completa una orden limitada, los fondos se agregan automáticamente a su saldo. Sin embargo, en algunos casos excepcionales, los fondos deben reclamarse manualmente desde la orden completada.<inlang-LineFeed>\nEste proceso de reclamo implica aprobar una única transacción en su billetera para todos los pedidos ejecutados no reclamados, lo que genera una tarifa de red nominal."
+    },
+    "whatIsAStablecoin": {
+      "title": "¿Qué es una moneda estable?",
+      "description": "Las monedas estables son un tipo de criptomoneda cuyo valor está vinculado a otro activo, como una moneda fiduciaria o el oro, para mantener un precio estable. En Osmosis, las principales monedas estables para comprar y vender activos son USDC y USDT."
+    },
+    "claimAll": "Reclamar todo",
     "addFunds": "Añadir fondos",
     "watchOut": "¡Cuidado! ballena entrante",
     "selectAnAssetTo": {

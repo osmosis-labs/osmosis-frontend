@@ -554,13 +554,15 @@ export function ReviewOrder({
                   height={17}
                 />
               </div>
-              <span className="subtitle1 w-full">Quote updated</span>
+              <span className="subtitle1 w-full">
+                {t("limitOrders.quoteUpdated")}
+              </span>
               <Button
                 mode="primary"
                 onClick={() => restart}
                 className="body2 w-fit !rounded-2xl"
               >
-                <h6>Accept</h6>
+                <h6>{t("limitOrders.accept")}</h6>
               </Button>
             </div>
           </div>

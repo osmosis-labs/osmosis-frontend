@@ -14,7 +14,7 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
@@ -26,6 +26,7 @@ export interface TradeToolProps {
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
   ({ page, swapToolProps }) => {
     const { logEvent } = useAmplitudeAnalytics();
+    const { t } = useTranslation();
     const [tab, setTab] = useQueryState(
       "tab",
       parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
@@ -125,7 +126,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                 />
               </div>
               <span className="subtitle1 text-osmoverse-300">
-                Order history
+                {t("limitOrders.orderHistory")}
               </span>
             </div>
             <div className="flex items-center gap-2">
