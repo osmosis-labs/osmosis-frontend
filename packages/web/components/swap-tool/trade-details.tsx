@@ -145,7 +145,7 @@ export const TradeDetails = observer(
                     <GenericDisclaimer
                       title="High price impact"
                       body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                      disabled={!isPriceImpactHigh}
+                      disabled={!isPriceImpactHigh || open}
                     >
                       <div
                         className={classNames(
@@ -155,7 +155,7 @@ export const TradeDetails = observer(
                           }
                         )}
                       >
-                        {isPriceImpactHigh && (
+                        {isPriceImpactHigh && !open && (
                           <Icon
                             id="alert-circle-filled"
                             width={16}

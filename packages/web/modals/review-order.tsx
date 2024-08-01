@@ -15,10 +15,15 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { EventName } from "~/config/analytics-events";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useOneClickTradingSession,
+  useTranslation,
+} from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
@@ -41,6 +46,7 @@ interface ReviewOrderProps {
   title: string;
   gasAmount?: PricePretty;
   isGasLoading?: boolean;
+  gasError?: Error | null;
   expectedOutput?: CoinPretty;
   expectedOutputFiat?: PricePretty;
   inAmountToken?: CoinPretty;
@@ -65,6 +71,7 @@ export function ReviewOrder({
   title,
   gasAmount,
   isGasLoading,
+  gasError,
   limitSetPriceLock,
   expectedOutput,
   expectedOutputFiat,
@@ -82,6 +89,8 @@ export function ReviewOrder({
     () => +manualSlippage > 1,
     [manualSlippage]
   );
+
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
   const isManualSlippageTooLow = useMemo(
     () => manualSlippage !== "" && +manualSlippage < 0.1,
@@ -143,6 +152,14 @@ export function ReviewOrder({
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
   }, [limitSetPriceLock, isOpen, orderType]);
+
+  const gasFeeError = useMemo(() => {
+    if (!!gasAmount && !gasError) return;
+
+    return isOneClickTradingEnabled
+      ? t("swap.gas.oneClickTradingError")
+      : t("swap.gas.error");
+  }, [gasAmount, isOneClickTradingEnabled, gasError, t]);
 
   return (
     <ModalBase
@@ -503,11 +520,33 @@ export function ReviewOrder({
                 left="Additional network fee"
                 right={
                   <>
-                    {!isGasLoading && gasAmount ? (
-                      <span className="inline-flex items-center gap-1 text-osmoverse-100">
-                        <Icon id="gas" width={16} height={16} />
-                        {gasAmount.toString()}
-                      </span>
+                    {!isGasLoading ? (
+                      !!gasFeeError ? (
+                        <GenericDisclaimer
+                          title="Network fee cannot be estimated"
+                          body={gasFeeError}
+                        >
+                          <span className="flex items-center gap-1">
+                            <Icon
+                              id="question"
+                              width={24}
+                              height={24}
+                              className="scale-75 text-osmoverse-300"
+                            />{" "}
+                            Unknown
+                          </span>
+                        </GenericDisclaimer>
+                      ) : (
+                        <span
+                          className={classNames(
+                            "inline-flex items-center gap-1 text-osmoverse-100",
+                            { "animate-pulse": isGasLoading }
+                          )}
+                        >
+                          <Icon id="gas" width={16} height={16} />
+                          {gasAmount && gasAmount.toString()}
+                        </span>
+                      )
                     ) : (
                       <Skeleton className="h-5 w-16" />
                     )}

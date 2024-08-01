@@ -593,6 +593,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           slippageConfig={slippageConfig}
           gasAmount={swapState.gas.gasAmountFiat}
           isGasLoading={swapState.gas.isLoading}
+          gasError={swapState.gas.error}
           limitSetPriceLock={swapState.priceState.setPriceLock}
           inAmountToken={swapState.paymentTokenValue}
           inAmountFiat={swapState.paymentFiatValue}
