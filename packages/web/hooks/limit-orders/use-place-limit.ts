@@ -506,7 +506,11 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.isTyping,
   ]);
 
-  const { data: gasEstimate, isLoading: gasFeeLoading } = useEstimateTxFees({
+  const {
+    data: gasEstimate,
+    isLoading: gasFeeLoading,
+    error: limitGasError,
+  } = useEstimateTxFees({
     chainId: accountStore.osmosisChainId,
     messages: encodedMsg && !isMarket ? [encodedMsg] : [],
     enabled: shouldEstimateLimitGas,
@@ -535,6 +539,13 @@ export const usePlaceLimit = ({
     shouldEstimateLimitGas,
   ]);
 
+  const gasError = useMemo(() => {
+    if (isMarket) {
+      return marketState.networkFeeError;
+    }
+    return limitGasError;
+  }, [isMarket, marketState.networkFeeError, limitGasError]);
+
   return {
     baseAsset,
     quoteAsset,
@@ -561,6 +572,7 @@ export const usePlaceLimit = ({
     gas: {
       gasAmountFiat,
       isLoading: isGasLoading,
+      error: gasError,
     },
   };
 };

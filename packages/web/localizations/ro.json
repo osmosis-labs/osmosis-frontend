@@ -849,7 +849,12 @@
       "title": "Setari tranzactie"
     },
     "title": "Schimb",
-    "dynamicSpreadFactor": "Dinamic"
+    "dynamicSpreadFactor": "Dinamic",
+    "gas": {
+      "oneClickTradingError": "Taxa de rețea nu poate fi estimată în acest moment. Dacă taxa depășește limita taxei de rețea de tranzacționare cu 1 clic, veți putea continua cu aprobarea manuală în portofel.",
+      "error": "Taxa de rețea nu poate fi estimată în acest moment. Verificați taxele de rețea în portofel înainte de a aproba tranzacția.",
+      "unknown": "Necunoscut"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",

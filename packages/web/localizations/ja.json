@@ -849,7 +849,12 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "dynamicSpreadFactor": "動的"
+    "dynamicSpreadFactor": "動的",
+    "gas": {
+      "oneClickTradingError": "現時点ではネットワーク手数料を見積もることはできません。手数料が 1 クリック取引ネットワーク手数料の上限を超える場合は、ウォレットで手動で承認を進めることができます。",
+      "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
+      "unknown": "未知"
+    }
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

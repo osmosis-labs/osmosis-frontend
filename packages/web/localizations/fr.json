@@ -849,7 +849,12 @@
       "title": "Paramètres de transaction"
     },
     "title": "Échanger",
-    "dynamicSpreadFactor": "Dynamique"
+    "dynamicSpreadFactor": "Dynamique",
+    "gas": {
+      "oneClickTradingError": "Les frais de réseau ne peuvent pas être estimés pour le moment. Si les frais dépassent la limite des frais de votre réseau 1-Click Trading, vous pourrez procéder à une approbation manuelle dans votre portefeuille.",
+      "error": "Les frais de réseau ne peuvent pas être estimés pour le moment. Vérifiez les frais de réseau dans votre portefeuille avant d'approuver la transaction.",
+      "unknown": "Inconnu"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

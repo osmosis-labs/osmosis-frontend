@@ -593,6 +593,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             outFiatAmountLessSlippage={outFiatAmountLessSlippage}
             gasAmount={swapState.networkFee?.gasUsdValueToPay}
             isGasLoading={swapState.isLoadingNetworkFee}
+            gasError={swapState.networkFeeError}
           />
         </div>
         <TokenSelectModalLimit
@@ -666,6 +667,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           inAmountFiat={swapState.inAmountInput.fiatValue}
           expectedOutput={swapState.quote?.amount}
           expectedOutputFiat={swapState.tokenOutFiatValue}
+          gasAmount={swapState.networkFee?.gasUsdValueToPay}
+          isGasLoading={swapState.isLoadingNetworkFee}
+          gasError={swapState.networkFeeError}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

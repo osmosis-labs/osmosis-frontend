@@ -849,7 +849,12 @@
       "title": "Ustawienia Transakcji"
     },
     "title": "Wymień",
-    "dynamicSpreadFactor": "Dynamiczny"
+    "dynamicSpreadFactor": "Dynamiczny",
+    "gas": {
+      "oneClickTradingError": "W tej chwili nie można oszacować opłaty sieciowej. Jeśli opłata przekroczy limit opłat w sieci 1-Click Trading, będziesz mógł kontynuować ręczną akceptację w swoim portfelu.",
+      "error": "W tej chwili nie można oszacować opłaty sieciowej. Przed zatwierdzeniem transakcji sprawdź opłaty sieciowe w swoim portfelu.",
+      "unknown": "Nieznany"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

@@ -849,7 +849,12 @@
       "title": "兌換設定"
     },
     "title": "兌換",
-    "dynamicSpreadFactor": "動態的"
+    "dynamicSpreadFactor": "動態的",
+    "gas": {
+      "oneClickTradingError": "目前無法估計網路費用。如果費用超過您的一鍵交易網路費用限額，您將能夠在錢包中進行手動批准。",
+      "error": "目前無法估計網路費用。在批准交易之前，請檢查錢包中的網路費用。",
+      "unknown": "未知"
+    }
   },
   "walletSelect": {
     "gettingStarted": "入門",

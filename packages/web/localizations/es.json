@@ -849,7 +849,12 @@
       "title": "Configuración de transacción"
     },
     "title": "Intercambio",
-    "dynamicSpreadFactor": "Dinámica"
+    "dynamicSpreadFactor": "Dinámica",
+    "gas": {
+      "oneClickTradingError": "La tarifa de red no se puede estimar en este momento. Si la tarifa excede el límite de tarifa de la red 1-Click Trading, podrá continuar con la aprobación manual en su billetera.",
+      "error": "La tarifa de red no se puede estimar en este momento. Revise las tarifas de la red en su billetera antes de aprobar la transacción.",
+      "unknown": "Desconocido"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

@@ -398,7 +398,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.isMarket,
       swapState.marketState.inAmountInput.amount,
       swapState.marketState.inAmountInput.isEmpty,
-      swapState.insufficientFunds,
       isMarketLoading,
       swapState.insufficientFunds,
       swapState.marketState.error,
@@ -564,10 +563,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           <TradeDetails
             swapState={swapState.marketState}
             type={type}
-            isMakerFeeLoading={swapState.isMakerFeeLoading}
             makerFee={swapState.makerFee}
             gasAmount={swapState.gas.gasAmountFiat}
             isGasLoading={swapState.gas.isLoading}
+            gasError={
+              swapState.gas.error === null ? undefined : swapState.gas.error
+            }
           />
         </div>
         <ReviewOrder
@@ -592,6 +593,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           slippageConfig={slippageConfig}
           gasAmount={swapState.gas.gasAmountFiat}
           isGasLoading={swapState.gas.isLoading}
+          gasError={swapState.gas.error}
           limitSetPriceLock={swapState.priceState.setPriceLock}
           inAmountToken={swapState.paymentTokenValue}
           inAmountFiat={swapState.paymentFiatValue}

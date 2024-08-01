@@ -849,7 +849,12 @@
       "title": "트랜잭션 설정"
     },
     "title": "거래",
-    "dynamicSpreadFactor": "동적"
+    "dynamicSpreadFactor": "동적",
+    "gas": {
+      "oneClickTradingError": "현재로서는 네트워크 수수료를 추정할 수 없습니다. 수수료가 1-Click Trading 네트워크 수수료 한도를 초과하는 경우 지갑에서 수동 승인을 진행할 수 있습니다.",
+      "error": "현재로서는 네트워크 수수료를 추정할 수 없습니다. 거래를 승인하기 전에 지갑의 네트워크 수수료를 검토하세요.",
+      "unknown": "알려지지 않은"
+    }
   },
   "walletSelect": {
     "gettingStarted": "시작하기",

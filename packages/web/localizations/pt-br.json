@@ -849,7 +849,12 @@
       "title": "Configurações de Transação"
     },
     "title": "Trocar",
-    "dynamicSpreadFactor": "Dinâmico"
+    "dynamicSpreadFactor": "Dinâmico",
+    "gas": {
+      "oneClickTradingError": "A taxa de rede não pode ser estimada neste momento. Se a taxa exceder o limite de taxas da rede 1-Click Trading, você poderá prosseguir com a aprovação manual em sua carteira.",
+      "error": "A taxa de rede não pode ser estimada neste momento. Revise as taxas de rede em sua carteira antes de aprovar a transação.",
+      "unknown": "Desconhecido"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Começando",

@@ -849,7 +849,12 @@
       "title": "Transaktionseinstellungen"
     },
     "title": "Tauschen",
-    "dynamicSpreadFactor": "Dynamisch"
+    "dynamicSpreadFactor": "Dynamisch",
+    "gas": {
+      "oneClickTradingError": "Die Netzwerkgebühr kann derzeit nicht geschätzt werden. Wenn die Gebühr Ihr 1-Click Trading-Netzwerkgebührenlimit überschreitet, können Sie mit der manuellen Genehmigung in Ihrem Wallet fortfahren.",
+      "error": "Die Netzwerkgebühr kann derzeit nicht geschätzt werden. Überprüfen Sie die Netzwerkgebühren in Ihrem Wallet, bevor Sie die Transaktion genehmigen.",
+      "unknown": "Unbekannt"
+    }
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",
