@@ -9,6 +9,7 @@ export * from "./middleware";
 export * from "./one-click-trading";
 export * from "./parameter-types";
 export * from "./pools";
+export * from "./portfolio";
 export * from "./staking";
 export * from "./swap";
 export * from "./transactions";

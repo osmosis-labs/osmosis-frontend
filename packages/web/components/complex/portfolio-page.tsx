@@ -374,6 +374,19 @@ function useUserPositionsData(address: string | undefined) {
         },
       }
     );
+
+  const { data: allocation, isLoading: isLoadingAllocation } =
+    api.edge.portfolio.getAllocation.useQuery(
+      {
+        address: "osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06",
+      },
+      {
+        enabled: Boolean(address),
+      }
+    );
+
+  console.log("allocation: ", allocation);
+
   const hasPositions = Boolean(positions?.length);
 
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
