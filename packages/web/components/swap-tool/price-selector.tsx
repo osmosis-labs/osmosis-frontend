@@ -15,12 +15,31 @@ import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
 const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
+
+const VALID_QUOTES = [
+  ...UI_DEFAULT_QUOTES,
+  "USDC.sol.axl",
+  "USDC.sol.wh",
+  "USDC.eth.grv",
+  "USDC.eth.wh",
+  "USDC.matic.axl",
+  "USDC.avax.axl",
+  "USDC.eth.axl",
+  "USDT.sol.axl",
+  "USDT.eth.grv",
+  "USDT.eth.wh",
+  "USDT.matic.axl",
+  "USDT.avax.axl",
+  "USDT.kava",
+  "USDT.eth.pica",
+  "USDT.sol.pica",
+];
 
 function sortByAmount(
   assetA?: MaybeUserAssetCoin,
@@ -89,6 +108,14 @@ export const PriceSelector = memo(() => {
       select: (data) =>
         data.items
           .map((walletAsset) => {
+            if (
+              !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
+                walletAsset.coinDenom
+              )
+            ) {
+              return undefined;
+            }
+
             const asset = getAssetFromAssetList({
               assetLists: AssetLists,
               symbol: walletAsset.coinDenom,
@@ -432,12 +459,8 @@ const SelectableQuotes = observer(
                           "text-white-full": availableBalance.gt(new Dec(0)),
                         })}
                       >
-                        {formatPretty(
-                          new PricePretty(
-                            DEFAULT_VS_CURRENCY,
-                            availableBalance
-                          ),
-                          getPriceExtendedFormatOptions(availableBalance)
+                        {formatFiatPrice(
+                          new PricePretty(DEFAULT_VS_CURRENCY, availableBalance)
                         )}
                       </span>
                       <span className="body2 font-light">
