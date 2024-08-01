@@ -267,7 +267,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
             isOpen={isOpen}
             onRequestClose={onClose}
             hideCloseButton
-            className="w-[512px] rounded-5xl !p-0"
+            className="!max-h-[90vh] w-[512px] self-start rounded-5xl !p-0"
           >
             <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-850">
               <div className="relative flex min-h-[80px] items-center justify-center p-4">
@@ -296,7 +296,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                   >
                     {t("limitOrders.connectYourWallet")}
                   </button>
-                  <p className="font-semibold">
+                  <p className="font-semibold text-osmoverse-300">
                     {t("limitOrders.toSeeYourBalances")}
                   </p>
                 </div>
@@ -361,71 +361,72 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
               ) : (
                 <div className="no-scrollbar flex flex-col overflow-auto py-3 px-4">
                   {/* TODO: fix typing */}
-                  {(results as any[]).map(
-                    (
-                      {
-                        coinDenom,
-                        coinMinimalDenom,
-                        coinImageUrl,
-                        coinName,
-                        amount,
-                        usdValue,
-                        isVerified,
-                      },
-                      index
-                    ) => {
-                      return (
-                        <button
-                          key={coinMinimalDenom}
-                          className={classNames(
-                            "flex cursor-pointer items-center justify-between rounded-2xl p-4 transition-colors duration-150 ease-out",
-                            {
-                              "bg-osmoverse-900":
-                                keyboardSelectedIndex === index,
-                            }
-                          )}
-                          data-testid="token-select-asset"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onClickAsset?.(coinDenom);
-                          }}
-                          onMouseOver={() => setKeyboardSelectedIndex(index)}
-                          onFocus={() => setKeyboardSelectedIndex(index)}
-                          {...{
-                            [dataAttributeName]: getTokenItemId(
-                              uniqueId,
-                              index
-                            ),
-                          }}
-                        >
-                          <div
+                  {results.length > 0 ? (
+                    (results as any[]).map(
+                      (
+                        {
+                          coinDenom,
+                          coinMinimalDenom,
+                          coinImageUrl,
+                          coinName,
+                          amount,
+                          usdValue,
+                          isVerified,
+                        },
+                        index
+                      ) => {
+                        return (
+                          <button
+                            key={coinMinimalDenom}
                             className={classNames(
-                              "flex w-full items-center justify-between text-left",
+                              "flex cursor-pointer items-center justify-between rounded-2xl p-4 transition-colors duration-150 ease-out",
                               {
-                                "opacity-40":
-                                  !shouldShowUnverifiedAssets && !isVerified,
+                                "bg-osmoverse-900":
+                                  keyboardSelectedIndex === index,
                               }
                             )}
+                            data-testid="token-select-asset"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onClickAsset?.(coinDenom);
+                            }}
+                            onMouseOver={() => setKeyboardSelectedIndex(index)}
+                            onFocus={() => setKeyboardSelectedIndex(index)}
+                            {...{
+                              [dataAttributeName]: getTokenItemId(
+                                uniqueId,
+                                index
+                              ),
+                            }}
                           >
-                            <div className="flex items-center gap-4">
-                              {coinImageUrl && (
-                                <div className="h-12 w-12 rounded-full">
-                                  <Image
-                                    src={coinImageUrl}
-                                    alt={`${coinDenom} icon`}
-                                    width={48}
-                                    height={48}
-                                    className="rounded-full"
-                                  />
-                                </div>
+                            <div
+                              className={classNames(
+                                "flex w-full items-center justify-between text-left",
+                                {
+                                  "opacity-40":
+                                    !shouldShowUnverifiedAssets && !isVerified,
+                                }
                               )}
-                              <div className="flex flex-col">
-                                <span className="subtitle1">{coinName}</span>
-                                <span className="subtitle2 text-osmoverse-400">
-                                  {coinDenom}
-                                </span>
-                              </div>
-                              {/* {!isVerified && shouldShowUnverifiedAssets && (
+                            >
+                              <div className="flex items-center gap-4">
+                                {coinImageUrl && (
+                                  <div className="h-12 w-12 rounded-full">
+                                    <Image
+                                      src={coinImageUrl}
+                                      alt={`${coinDenom} icon`}
+                                      width={48}
+                                      height={48}
+                                      className="rounded-full"
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-col">
+                                  <span className="subtitle1">{coinName}</span>
+                                  <span className="subtitle2 text-osmoverse-400">
+                                    {coinDenom}
+                                  </span>
+                                </div>
+                                {/* {!isVerified && shouldShowUnverifiedAssets && (
                               <Tooltip
                                 content={t(
                                   "components.selectToken.unverifiedAsset"
@@ -437,26 +438,29 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                 />
                               </Tooltip>
                             )} */}
-                            </div>
+                              </div>
 
-                            {isWalletConnected && !hideBalances && (
-                              <div className="flex flex-col items-end gap-1">
-                                <p
-                                  className={classNames("text-osmoverse-400", {
-                                    "text-white-full": usdValue,
-                                  })}
-                                >
-                                  {formatPretty(
-                                    usdValue ??
-                                      new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                              {isWalletConnected && !hideBalances && (
+                                <div className="flex flex-col items-end gap-1">
+                                  <p
+                                    className={classNames(
+                                      "text-osmoverse-400",
+                                      {
+                                        "text-white-full": usdValue,
+                                      }
+                                    )}
+                                  >
+                                    {formatPretty(
+                                      usdValue ??
+                                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                                    )}
+                                  </p>
+                                  {amount && (
+                                    <span className="body2 text-osmoverse-300">
+                                      {formatPretty(amount).split(" ")[0]}
+                                    </span>
                                   )}
-                                </p>
-                                {amount && (
-                                  <span className="body2 text-osmoverse-300">
-                                    {formatPretty(amount).split(" ")[0]}
-                                  </span>
-                                )}
-                                {/* <Link
+                                  {/* <Link
                                 href={"#"}
                                 className="subtitle2 inline-flex items-center text-wosmongton-300"
                               >
@@ -468,9 +472,9 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                   />
                                 </div>
                               </Link> */}
-                              </div>
-                            )}
-                            {/* {amount &&
+                                </div>
+                              )}
+                              {/* {amount &&
                             isVerified &&
                             usdValue &&
                             amount.toDec().isPositive() && (
@@ -485,15 +489,31 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                 </span>
                               </div>
                             )} */}
-                          </div>
-                          {/* {!shouldShowUnverifiedAssets && !isVerified && (
+                            </div>
+                            {/* {!shouldShowUnverifiedAssets && !isVerified && (
                           <p className="caption whitespace-nowrap text-wosmongton-200">
                             {t("components.selectToken.clickToActivate")}
                           </p>
                         )} */}
-                        </button>
-                      );
-                    }
+                          </button>
+                        );
+                      }
+                    )
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-center text-osmoverse-300">
+                      <Icon
+                        id="search"
+                        width={32}
+                        height={32}
+                        className="text-osmoverse-700"
+                      />
+                      <span className="mt-6 text-h6 font-h6 text-white-high">
+                        No results for "{searchValue}"
+                      </span>
+                      <span className="body1 pt-1">
+                        Try adjusting your search query
+                      </span>
+                    </div>
                   )}
                   <Intersection
                     onVisible={() => {

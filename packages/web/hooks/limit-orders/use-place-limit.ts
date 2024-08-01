@@ -563,7 +563,7 @@ export const usePlaceLimit = ({
     placeLimit,
     baseTokenBalance,
     quoteTokenBalance,
-    isBalancesFetched: isBalancesLoading,
+    isBalancesFetched: !isBalancesLoading,
     insufficientFunds,
     paymentFiatValue,
     paymentTokenValue,
