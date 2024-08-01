@@ -86,9 +86,9 @@ export const MoreBridgeOptionsModal: FunctionComponent<
             ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
             : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
           {
-            asset: fromAsset?.denom ?? "",
-            fromChain: fromChain?.chainName ?? "",
-            toChain: toChain?.chainName ?? "",
+            asset: fromAsset.denom,
+            fromChain: fromChain.prettyName,
+            toChain: toChain.prettyName,
           }
         )}
       </p>
