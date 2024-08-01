@@ -75,10 +75,15 @@ export const AssetsOverview: FunctionComponent<
 
   const address = wallet?.address ?? "";
 
-  const [dataPoint, setDataPoint] = useState<DataPoint>({
+  const [dataPoint, setDataPoint] = useState<{
+    time?: Time;
+    value?: number;
+  }>({
     time: dayjs().unix() as Time,
     value: 0,
   });
+
+  console.log("dataPoint: ", dataPoint);
 
   const [range, setRange] = useState<Range>("1mo");
 
@@ -111,9 +116,9 @@ export const AssetsOverview: FunctionComponent<
     totalPriceChange,
   } = calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
 
-  const formattedDate = formatDate(
-    dayjs.unix(dataPoint.time as number).format("YYYY-MM-DD")
-  );
+  const formattedDate = dataPoint.time
+    ? formatDate(dayjs.unix(dataPoint.time as number).format("YYYY-MM-DD"))
+    : undefined;
 
   if (isWalletLoading) return null;
 
@@ -195,6 +200,7 @@ export const AssetsOverview: FunctionComponent<
             setRange={setRange}
             totalPriceChange={totalPriceChange}
             error={error}
+            totalValue={totalValue}
           />
         </>
       ) : (

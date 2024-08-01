@@ -16,7 +16,9 @@ export const PortfolioPerformance: FunctionComponent<{
         priceChange={selectedPercentage}
         value={selectedDifference}
       />
-      <span className="ml-2 text-osmoverse-400">{formattedDate}</span>
+      {formattedDate && (
+        <span className="ml-2 text-osmoverse-400">{formattedDate}</span>
+      )}
     </div>
   );
 };
