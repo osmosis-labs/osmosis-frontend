@@ -54,7 +54,7 @@ jobs:
           cd packages/web
           npx playwright test select pools transactions
       - name: upload test results
-        if: always()
+        if: failure()
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -102,7 +102,7 @@ jobs:
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
       - name: upload test results
-        if: always()
+        if: failure()
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
