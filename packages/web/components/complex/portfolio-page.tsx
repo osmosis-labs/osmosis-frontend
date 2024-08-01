@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
+import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -51,6 +52,20 @@ export const PortfolioPage: FunctionComponent = () => {
         },
       }
     );
+
+  const { data: allocation, isLoading: isLoadingAllocation } =
+    api.edge.portfolio.getAllocation.useQuery(
+      {
+        address: "osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      }
+    );
+
+  console.log("allocation: ", allocation);
+  console.log("isLoadingAllocation: ", isLoadingAllocation);
+
   const userHasNoAssets = totalValue && totalValue.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
@@ -79,6 +94,10 @@ export const PortfolioPage: FunctionComponent = () => {
           totalValue={totalValue}
           isTotalValueFetched={isTotalValueFetched}
         />
+      </section>
+
+      <section className="w-full">
+        <Allocation allocation={allocation} />
       </section>
 
       <section className="w-full py-3">
@@ -374,18 +393,6 @@ function useUserPositionsData(address: string | undefined) {
         },
       }
     );
-
-  const { data: allocation, isLoading: isLoadingAllocation } =
-    api.edge.portfolio.getAllocation.useQuery(
-      {
-        address: "osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06",
-      },
-      {
-        enabled: Boolean(address),
-      }
-    );
-
-  console.log("allocation: ", allocation);
 
   const hasPositions = Boolean(positions?.length);
 
