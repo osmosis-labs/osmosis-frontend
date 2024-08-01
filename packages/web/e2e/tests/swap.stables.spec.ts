@@ -28,7 +28,7 @@ test.describe("Test Swap Stables feature", () => {
     // Launch Chrome with a Keplr wallet extension
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
+      new TestConfig().getBrowserExtensionConfig(false, pathToExtension)
     );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
