@@ -122,7 +122,7 @@ jobs:
           cd packages/web
           npx playwright test -g "Test Select Swap Pair feature"
       - name: upload test results
-        if: always()
+        if: failure()
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:

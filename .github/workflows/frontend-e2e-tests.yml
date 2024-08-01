@@ -65,7 +65,7 @@ jobs:
           cd packages/web
           npx playwright test -g "Test Swap feature"
       - name: upload Swap test results
-        if: always()
+        if: failure()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -102,7 +102,7 @@ jobs:
           cd packages/web
           npx playwright test -g "Test Portfolio feature"
       - name: upload Portfolio test results
-        if: always()
+        if: failure()
         id: portfolio-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -137,7 +137,7 @@ jobs:
           cd packages/web
           npx playwright test pools select
       - name: upload pools test results
-        if: always()
+        if: failure()
         id: pools-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -174,7 +174,7 @@ jobs:
           cd packages/web
           npx playwright test -g "Test Transactions feature"
       - name: upload transactions test results
-        if: always()
+        if: failure()
         id: transactions-test-results
         uses: actions/upload-artifact@v4
         with:
