@@ -370,33 +370,42 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: baseTokenBalance, isLoading: isBaseTokenBalanceLoading } =
+  const { data: balances, isLoading: isBalancesLoading } =
     api.local.balances.getUserBalances.useQuery(
       { bech32Address: account?.address ?? "" },
       {
         enabled: !!account?.address,
         select: (balances) =>
-          balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-            ?.coin,
-      }
-    );
-  const { data: quoteTokenBalance, isLoading: isQuoteTokenBalanceLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
-      {
-        enabled: !!account?.address,
-        select: (balances) =>
-          balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-            ?.coin,
+          balances.filter(
+            ({ denom }) =>
+              denom === baseAsset?.coinMinimalDenom ||
+              denom === quoteAsset?.coinMinimalDenom
+          ),
       }
     );
 
-  const insufficientFunds =
-    (orderDirection === "bid"
-      ? quoteTokenBalance?.toDec()?.lt(paymentTokenValue.toDec() ?? new Dec(0))
-      : baseTokenBalance
-          ?.toDec()
-          ?.lt(paymentTokenValue.toDec() ?? new Dec(0))) ?? true;
+  const quoteTokenBalance = useMemo(() => {
+    if (!balances) return;
+
+    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
+      ?.coin;
+  }, [balances, quoteAsset]);
+
+  const baseTokenBalance = useMemo(() => {
+    if (!balances) return;
+
+    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
+      ?.coin;
+  }, [balances, baseAsset]);
+  const insufficientFunds = useMemo(() => {
+    return orderDirection === "bid"
+      ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(
+          paymentTokenValue.toDec() ?? new Dec(0)
+        )
+      : (baseTokenBalance?.toDec() ?? new Dec(0)).lt(
+          paymentTokenValue.toDec() ?? new Dec(0)
+        );
+  }, [orderDirection, paymentTokenValue, baseTokenBalance, quoteTokenBalance]);
 
   const expectedTokenAmountOut = useMemo(() => {
     if (isMarket) {
@@ -554,8 +563,7 @@ export const usePlaceLimit = ({
     placeLimit,
     baseTokenBalance,
     quoteTokenBalance,
-    isBalancesFetched:
-      !isBaseTokenBalanceLoading && !isQuoteTokenBalanceLoading,
+    isBalancesFetched: isBalancesLoading,
     insufficientFunds,
     paymentFiatValue,
     paymentTokenValue,
@@ -618,7 +626,7 @@ const useLimitPrice = ({
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
     (price: string) => {
-      if (countDecimals(price) > 12) {
+      if (countDecimals(price) > 4) {
         return;
       }
 
