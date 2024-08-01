@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "現時点ではネットワーク手数料を見積もることはできません。手数料が 1 クリック取引ネットワーク手数料の上限を超える場合は、ウォレットで手動で承認を進めることができます。",
       "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
-      "unknown": "未知"
+      "gasEstimationError": "ネットワーク料金は見積もれません",
+      "unknown": "未知",
+      "additionalNetworkFee": "追加のネットワーク料金",
+      "whatAreTradeFees": "取引手数料とは何ですか?",
+      "tradeFeesInfo": "これは、流動性プロバイダーに報酬を与え、ネットワークを維持するために、取引実行時に Osmosis プロトコルによって請求される手数料です。",
+      "tradeFeesLimitInfo": "指値注文の取引手数料は現在無料です。",
+      "networkFeesAdditional": "ネットワーク手数料はすべての取引に追加されます。"
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "引用を更新しました",
     "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
     "chooseAnOption": "続行するにはオプションを選択してください。",
+    "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
+    "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
+    "reviewTrade": "取引のレビュー",
     "errors": {
-      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。"
+      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
+      "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",
+      "tradeMayNotExecuted": "取引が実行されない可能性があります"
     },
     "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
     "whatIsOrderClaim": {

@@ -13,7 +13,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
-import { EventName } from "~/config";
+import { EventName, EventPage } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -132,41 +132,47 @@ interface AssetFieldsetInputProps {
   onInputChange?: ChangeEventHandler<HTMLInputElement>;
   inputValue?: string;
   outputValue?: ReactNode;
+  page?: EventPage;
 }
 
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
-  const { isMobile } = useWindowSize();
+>(
+  (
+    { inputPrefix, inputValue, onInputChange, outputValue, page = "Swap Page" },
+    ref
+  ) => {
+    const { isMobile } = useWindowSize();
 
-  const scale = useMemo(
-    () => calcScale((inputValue ?? "").length, isMobile),
-    [inputValue, isMobile]
-  );
+    const scale = useMemo(
+      () => calcScale((inputValue ?? "").length, isMobile),
+      [inputValue, isMobile]
+    );
 
-  return (
-    <div className="flex items-center overflow-visible">
-      {inputPrefix}
-      {outputValue || (
-        <div
-          className="transiiton-all w-full origin-left overflow-visible"
-          style={{
-            transform: `scale(${scale})`,
-          }}
-        >
-          <input
-            ref={ref}
-            className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
-            placeholder="0"
-            onChange={onInputChange}
-            value={inputValue}
-          />
-        </div>
-      )}
-    </div>
-  );
-});
+    return (
+      <div className="flex items-center overflow-visible">
+        {inputPrefix}
+        {outputValue || (
+          <div
+            className="transiiton-all w-full origin-left overflow-visible"
+            style={{
+              transform: `scale(${scale})`,
+            }}
+          >
+            <input
+              ref={ref}
+              className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
+              placeholder="0"
+              onChange={onInputChange}
+              value={inputValue}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex h-12 w-full items-center justify-between pb-4">
@@ -185,6 +191,7 @@ interface TokenSelectProps {
   fetchNextPageAssets?: () => void;
   hasNextPageAssets?: boolean;
   isFetchingNextPageAssets?: boolean;
+  page?: EventPage;
 }
 
 const AssetFieldsetTokenSelector = ({
@@ -198,6 +205,7 @@ const AssetFieldsetTokenSelector = ({
   fetchNextPageAssets,
   hasNextPageAssets,
   isFetchingNextPageAssets,
+  page = "Swap Page",
 }: TokenSelectProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -216,7 +224,7 @@ const AssetFieldsetTokenSelector = ({
       {
         tokenName: tokenDenom,
         isOnHome: router.pathname === "/",
-        page: "Swap Page",
+        page,
       },
     ]);
     onOriginalSelect?.(tokenDenom);

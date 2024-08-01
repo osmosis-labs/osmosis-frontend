@@ -1298,8 +1298,13 @@
     "quoteUpdated": "Quote updated",
     "fundsOsmosisToBuyAssets": "funds on Osmosis to buy assets.",
     "chooseAnOption": "Choose an option to continue.",
+    "lowerSlippageToleranceRecommended": "A lower slippage tolerance is recommended.",
+    "tryHigherSlippage": "Try a higher maximum slippage tolerance.",
+    "reviewTrade": "Review trade",
     "errors": {
-      "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue."
+      "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue.",
+      "tradeMayResultInLossOfValue": "Your trade may result in significant loss of value",
+      "tradeMayNotExecuted": "Your trade may not be executed"
     },
     "transferFromAnotherNetwork": "Transfer from another network or wallet",
     "whatIsOrderClaim": {

@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "현재로서는 네트워크 수수료를 추정할 수 없습니다. 수수료가 1-Click Trading 네트워크 수수료 한도를 초과하는 경우 지갑에서 수동 승인을 진행할 수 있습니다.",
       "error": "현재로서는 네트워크 수수료를 추정할 수 없습니다. 거래를 승인하기 전에 지갑의 네트워크 수수료를 검토하세요.",
-      "unknown": "알려지지 않은"
+      "gasEstimationError": "네트워크 요금을 추정할 수 없습니다.",
+      "unknown": "알려지지 않은",
+      "additionalNetworkFee": "추가 네트워크 요금",
+      "whatAreTradeFees": "거래 수수료란 무엇입니까?",
+      "tradeFeesInfo": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 거래 실행 시 Osmosis 프로토콜에서 부과하는 수수료입니다.",
+      "tradeFeesLimitInfo": "지정가 주문에 대한 거래 수수료는 현재 무료입니다.",
+      "networkFeesAdditional": "모든 거래에는 네트워크 수수료가 추가됩니다."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "견적이 업데이트되었습니다.",
     "fundsOsmosisToBuyAssets": "자산을 구매하기 위한 Osmosis 자금.",
     "chooseAnOption": "계속하려면 옵션을 선택하세요.",
+    "lowerSlippageToleranceRecommended": "낮은 미끄러짐 허용 오차를 권장합니다.",
+    "tryHigherSlippage": "최대 미끄러짐 허용 오차를 더 높이십시오.",
+    "reviewTrade": "거래 검토",
     "errors": {
-      "noAssetAvailable": "Osmosis에 거래할 수 {coinName} 자금이 없습니다. 계속하려면 옵션을 선택하세요."
+      "noAssetAvailable": "Osmosis에 거래할 수 {coinName} 자금이 없습니다. 계속하려면 옵션을 선택하세요.",
+      "tradeMayResultInLossOfValue": "귀하의 거래로 인해 상당한 가치 손실이 발생할 수 있습니다",
+      "tradeMayNotExecuted": "귀하의 거래가 실행되지 않을 수 있습니다"
     },
     "transferFromAnotherNetwork": "다른 네트워크나 지갑에서 전송",
     "whatIsOrderClaim": {

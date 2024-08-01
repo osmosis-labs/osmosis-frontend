@@ -18,7 +18,7 @@ import { Button } from "~/components/buttons";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
-import { EventName } from "~/config/analytics-events";
+import { EventName, EventPage } from "~/config/analytics-events";
 import {
   useAmplitudeAnalytics,
   useOneClickTradingSession,
@@ -53,6 +53,7 @@ interface ReviewOrderProps {
   inAmountFiat?: PricePretty;
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
+  page?: EventPage;
 }
 
 export function ReviewOrder({
@@ -79,6 +80,7 @@ export function ReviewOrder({
   inAmountFiat,
   toAsset,
   fromAsset,
+  page,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
@@ -435,11 +437,10 @@ export function ReviewOrder({
                                 {
                                   fromToken: fromAsset?.coinDenom,
                                   toToken: toAsset?.coinDenom,
-                                  // isOnHome: page === "Swap Page",
                                   isOnHome: true,
                                   percentage:
                                     slippageConfig?.slippage.toString(),
-                                  page: "Swap Page",
+                                  page,
                                 },
                               ]);
                             }}
@@ -467,10 +468,10 @@ export function ReviewOrder({
                       />
                       <div className="flex flex-col gap-1">
                         <span className="body2">
-                          Your trade may result in significant loss of value
+                          {t("limitOrders.errors.tradeMayResultInLossOfValue")}
                         </span>
                         <span className="body2 text-osmoverse-300">
-                          A lower slippage tolerance is recommended.
+                          {t("limitOrders.lowerSlippageToleranceRecommended")}
                         </span>
                       </div>
                     </div>
@@ -493,10 +494,10 @@ export function ReviewOrder({
                       </svg>
                       <div className="flex flex-col gap-1">
                         <span className="body2">
-                          Your trade may not be executed
+                          {t("limitOrders.errors.tradeMayNotExecuted")}
                         </span>
                         <span className="body2 text-osmoverse-300">
-                          Try a higher maximum slippage tolerance.
+                          {t("limitOrders.tryHigherSlippage")}
                         </span>
                       </div>
                     </div>

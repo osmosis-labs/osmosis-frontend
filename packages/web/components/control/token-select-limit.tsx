@@ -9,7 +9,7 @@ import { FunctionComponent, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { Disableable } from "~/components/types";
-import { EventName } from "~/config";
+import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import { OrderDirection } from "~/hooks/limit-orders";
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -38,6 +38,7 @@ export interface TokenSelectLimitProps {
   onTokenSelect: (tokenDenom: string) => void;
   canSelectTokens?: boolean;
   orderDirection: OrderDirection;
+  page?: EventPage;
 }
 
 export const TokenSelectLimit: FunctionComponent<
@@ -53,6 +54,7 @@ export const TokenSelectLimit: FunctionComponent<
     baseBalance,
     disabled,
     orderDirection,
+    page = "Swap Page",
   }) => {
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
@@ -82,7 +84,7 @@ export const TokenSelectLimit: FunctionComponent<
         {
           tokenName: tokenDenom,
           isOnHome: router.pathname === "/",
-          page: "Swap Page",
+          page,
         },
       ]);
       onTokenSelect(tokenDenom);

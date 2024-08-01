@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "Die Netzwerkgebühr kann derzeit nicht geschätzt werden. Wenn die Gebühr Ihr 1-Click Trading-Netzwerkgebührenlimit überschreitet, können Sie mit der manuellen Genehmigung in Ihrem Wallet fortfahren.",
       "error": "Die Netzwerkgebühr kann derzeit nicht geschätzt werden. Überprüfen Sie die Netzwerkgebühren in Ihrem Wallet, bevor Sie die Transaktion genehmigen.",
-      "unknown": "Unbekannt"
+      "gasEstimationError": "Netzwerkgebühr kann nicht geschätzt werden",
+      "unknown": "Unbekannt",
+      "additionalNetworkFee": "Zusätzliche Netzwerkgebühr",
+      "whatAreTradeFees": "Was sind Handelsgebühren?",
+      "tradeFeesInfo": "Dies ist die Gebühr, die vom Osmosis-Protokoll zum Zeitpunkt der Handelsausführung erhoben wird, um Liquiditätsanbieter zu belohnen und das Netzwerk aufrechtzuerhalten.",
+      "tradeFeesLimitInfo": "Handelsgebühren für Limit-Orders sind derzeit kostenlos.",
+      "networkFeesAdditional": "Zu jeder Transaktion fallen zusätzlich Netzwerkgebühren an."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "Angebot aktualisiert",
     "fundsOsmosisToBuyAssets": "Mittel auf Osmosis, um Vermögenswerte zu kaufen.",
     "chooseAnOption": "Wählen Sie eine Option, um fortzufahren.",
+    "lowerSlippageToleranceRecommended": "Eine geringere Rutschtoleranz wird empfohlen.",
+    "tryHigherSlippage": "Versuchen Sie es mit einer höheren maximalen Schlupftoleranz.",
+    "reviewTrade": "Handel überprüfen",
     "errors": {
-      "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren."
+      "noAssetAvailable": "Sie haben keine {coinName} Guthaben auf Osmosis, mit denen Sie handeln können. Wählen Sie eine Option, um fortzufahren.",
+      "tradeMayResultInLossOfValue": "Ihr Handel kann zu einem erheblichen Wertverlust führen",
+      "tradeMayNotExecuted": "Ihr Handel wird möglicherweise nicht ausgeführt"
     },
     "transferFromAnotherNetwork": "Überweisung von einem anderen Netzwerk oder Wallet",
     "whatIsOrderClaim": {

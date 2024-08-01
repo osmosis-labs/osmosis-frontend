@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "A taxa de rede não pode ser estimada neste momento. Se a taxa exceder o limite de taxas da rede 1-Click Trading, você poderá prosseguir com a aprovação manual em sua carteira.",
       "error": "A taxa de rede não pode ser estimada neste momento. Revise as taxas de rede em sua carteira antes de aprovar a transação.",
-      "unknown": "Desconhecido"
+      "gasEstimationError": "A taxa de rede não pode ser estimada",
+      "unknown": "Desconhecido",
+      "additionalNetworkFee": "Taxa de rede adicional",
+      "whatAreTradeFees": "O que são taxas comerciais?",
+      "tradeFeesInfo": "É a taxa cobrada pelo protocolo Osmosis no momento da execução da negociação para recompensar os provedores de liquidez e manter a rede.",
+      "tradeFeesLimitInfo": "Atualmente, as taxas de negociação para pedidos com limite são gratuitas.",
+      "networkFeesAdditional": "As taxas de rede são adicionais a cada transação."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "Cotação atualizada",
     "fundsOsmosisToBuyAssets": "fundos em Osmose para comprar ativos.",
     "chooseAnOption": "Escolha uma opção para continuar.",
+    "lowerSlippageToleranceRecommended": "Recomenda-se uma menor tolerância ao deslizamento.",
+    "tryHigherSlippage": "Experimente uma tolerância máxima de escorregamento mais alta.",
+    "reviewTrade": "Revise o comércio",
     "errors": {
-      "noAssetAvailable": "Você não tem nenhum fundo {coinName} no Osmosis para negociar. Escolha uma opção para continuar."
+      "noAssetAvailable": "Você não tem nenhum fundo {coinName} no Osmosis para negociar. Escolha uma opção para continuar.",
+      "tradeMayResultInLossOfValue": "Sua negociação pode resultar em perda significativa de valor",
+      "tradeMayNotExecuted": "Sua negociação pode não ser executada"
     },
     "transferFromAnotherNetwork": "Transferir de outra rede ou carteira",
     "whatIsOrderClaim": {

@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "W tej chwili nie można oszacować opłaty sieciowej. Jeśli opłata przekroczy limit opłat w sieci 1-Click Trading, będziesz mógł kontynuować ręczną akceptację w swoim portfelu.",
       "error": "W tej chwili nie można oszacować opłaty sieciowej. Przed zatwierdzeniem transakcji sprawdź opłaty sieciowe w swoim portfelu.",
-      "unknown": "Nieznany"
+      "gasEstimationError": "Nie można oszacować opłaty sieciowej",
+      "unknown": "Nieznany",
+      "additionalNetworkFee": "Dodatkowa opłata sieciowa",
+      "whatAreTradeFees": "Co to są opłaty handlowe?",
+      "tradeFeesInfo": "Jest to opłata pobierana przez protokół Osmosis w momencie realizacji transakcji w celu nagrodzenia dostawców płynności i utrzymania sieci.",
+      "tradeFeesLimitInfo": "Opłaty handlowe za zlecenia z limitem są obecnie bezpłatne.",
+      "networkFeesAdditional": "Opłaty sieciowe są doliczane do każdej transakcji."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "Cytat zaktualizowany",
     "fundsOsmosisToBuyAssets": "fundusze na Osmozie na zakup aktywów.",
     "chooseAnOption": "Wybierz opcję, aby kontynuować.",
+    "lowerSlippageToleranceRecommended": "Zalecana jest niższa tolerancja poślizgu.",
+    "tryHigherSlippage": "Wypróbuj wyższą maksymalną tolerancję poślizgu.",
+    "reviewTrade": "Przejrzyj handel",
     "errors": {
-      "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować."
+      "noAssetAvailable": "Nie masz żadnych środków {coinName} na platformie Osmosis, którymi mógłbyś handlować. Wybierz opcję, aby kontynuować.",
+      "tradeMayResultInLossOfValue": "Twoja transakcja może spowodować znaczną utratę wartości",
+      "tradeMayNotExecuted": "Twoja transakcja może nie zostać zrealizowana"
     },
     "transferFromAnotherNetwork": "Przelew z innej sieci lub portfela",
     "whatIsOrderClaim": {

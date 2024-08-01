@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "Ağ ücreti şu anda tahmin edilemiyor. Ücret, Tek Tıkla Ticaret ağ ücreti limitinizi aşarsa, cüzdanınızda manuel onay işlemine devam edebileceksiniz.",
       "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin.",
-      "unknown": "Bilinmeyen"
+      "gasEstimationError": "Ağ ücreti tahmin edilemiyor",
+      "unknown": "Bilinmeyen",
+      "additionalNetworkFee": "Ek ağ ücreti",
+      "whatAreTradeFees": "Ticaret ücretleri nedir?",
+      "tradeFeesInfo": "Bu, likidite sağlayıcılarını ödüllendirmek ve ağı korumak için Osmosis protokolü tarafından ticaretin gerçekleştirildiği sırada alınan ücrettir.",
+      "tradeFeesLimitInfo": "Limit emirleri için işlem ücretleri şu anda ücretsizdir.",
+      "networkFeesAdditional": "Ağ ücretleri her işleme ek olarak uygulanır."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "Teklif güncellendi",
     "fundsOsmosisToBuyAssets": "varlık satın almak için Osmosis'e fon sağlıyor.",
     "chooseAnOption": "Devam etmek için bir seçenek seçin.",
+    "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
+    "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
+    "reviewTrade": "Ticareti inceleyin",
     "errors": {
-      "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin."
+      "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
+      "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",
+      "tradeMayNotExecuted": "İşleminiz gerçekleştirilemeyebilir"
     },
     "transferFromAnotherNetwork": "Başka bir ağdan veya cüzdandan aktarma",
     "whatIsOrderClaim": {

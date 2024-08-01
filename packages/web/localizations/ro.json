@@ -853,7 +853,13 @@
     "gas": {
       "oneClickTradingError": "Taxa de rețea nu poate fi estimată în acest moment. Dacă taxa depășește limita taxei de rețea de tranzacționare cu 1 clic, veți putea continua cu aprobarea manuală în portofel.",
       "error": "Taxa de rețea nu poate fi estimată în acest moment. Verificați taxele de rețea în portofel înainte de a aproba tranzacția.",
-      "unknown": "Necunoscut"
+      "gasEstimationError": "Taxa de rețea nu poate fi estimată",
+      "unknown": "Necunoscut",
+      "additionalNetworkFee": "Taxă suplimentară de rețea",
+      "whatAreTradeFees": "Ce sunt taxele comerciale?",
+      "tradeFeesInfo": "Acesta este comisionul perceput de protocolul Osmosis la momentul executării tranzacției pentru a recompensa furnizorii de lichidități și a menține rețeaua.",
+      "tradeFeesLimitInfo": "Taxele de tranzacționare pentru ordinele limită sunt în prezent gratuite.",
+      "networkFeesAdditional": "Taxele de rețea sunt suplimentare pentru fiecare tranzacție."
     }
   },
   "walletSelect": {
@@ -1292,8 +1298,13 @@
     "quoteUpdated": "Citat actualizat",
     "fundsOsmosisToBuyAssets": "fonduri pe Osmosis pentru a cumpăra active.",
     "chooseAnOption": "Alegeți o opțiune pentru a continua.",
+    "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
+    "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
+    "reviewTrade": "Examinați comerțul",
     "errors": {
-      "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua."
+      "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
+      "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",
+      "tradeMayNotExecuted": "Este posibil ca tranzacția dvs. să nu fie executată"
     },
     "transferFromAnotherNetwork": "Transfer din altă rețea sau portofel",
     "whatIsOrderClaim": {

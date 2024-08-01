@@ -443,6 +443,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </AssetFieldsetHeader>
             <div className="flex items-center justify-between py-3">
               <AssetFieldsetInput
+                page={page}
                 inputPrefix={
                   focused === "fiat" && (
                     <h3
@@ -458,6 +459,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
               <AssetFieldsetTokenSelector
+                page={page}
                 onSelect={setBase}
                 selectableAssets={selectableBaseAssets}
                 orderDirection={orderDirection}
@@ -572,7 +574,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           />
         </div>
         <ReviewOrder
-          title="Review trade"
+          title={t("limitOrders.reviewTrade")}
+          page={page}
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();
