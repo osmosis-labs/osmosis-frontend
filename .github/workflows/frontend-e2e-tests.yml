@@ -29,7 +29,7 @@ jobs:
 
   preview-swap-tests:
     timeout-minutes: 10
-    runs-on: macos-13
+    runs-on: macos-14
     needs: wait-for-deployment
     steps:
       - name: Check out repository
@@ -74,7 +74,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
