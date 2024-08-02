@@ -1,6 +1,6 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
-import cachified, { CacheEntry } from "cachified";
+import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { queryAllocation } from "../../../queries/data-services";
@@ -159,26 +159,19 @@ export async function getAllocation({
   address: string;
   assetLists: AssetList[];
 }): Promise<GetAllocationResponse> {
-  return await cachified({
-    cache: allocationCache,
-    ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
-    key: `allocation-${address}`,
-    getFreshValue: async () => {
-      const data = await queryAllocation({
-        address,
-      });
-
-      const categories = data.categories;
-
-      const all = await getAll(categories);
-      const assets = await getAssets(categories, assetLists);
-      const available = await getAvailable(categories, assetLists);
-
-      return {
-        all,
-        assets,
-        available,
-      };
-    },
+  const data = await queryAllocation({
+    address,
   });
+
+  const categories = data.categories;
+
+  const all = await getAll(categories);
+  const assets = await getAssets(categories, assetLists);
+  const available = await getAvailable(categories, assetLists);
+
+  return {
+    all,
+    assets,
+    available,
+  };
 }
