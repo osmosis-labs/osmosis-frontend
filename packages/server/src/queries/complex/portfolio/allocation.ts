@@ -90,7 +90,6 @@ async function getAssets(categories: any, assetLists: AssetList[]) {
       key: assetFromAssetLists.coinDenom,
       percentage: (asset.cap_value / totalCap) * 100,
       amount: +asset.cap_value,
-      color: COLORS[index % COLORS.length],
     };
   });
 
