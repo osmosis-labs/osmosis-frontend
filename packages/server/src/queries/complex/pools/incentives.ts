@@ -15,9 +15,9 @@ import {
   queryPoolAprsRange,
 } from "../../data-services/pool-aprs";
 import { Gauge, queryGauges } from "../../osmosis";
-import { Epochs } from "../../osmosis/epochs";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
 import { getEpochs } from "../osmosis";
+import { Epoch } from "../osmosis/epochs";
 
 /**
  * Pools that are excluded from showing external boost incentives APRs.
@@ -302,17 +302,11 @@ export function getActiveGauges({ chainList }: { chainList: Chain[] }) {
 const DURATION_1_DAY = 86400000;
 const MAX_NEW_GAUGES_PER_DAY = 100;
 
-function checkForStaleness(
-  gauge: Gauge,
-  lastGaugeId: number,
-  epochs: Epochs["epochs"]
-) {
+function checkForStaleness(gauge: Gauge, lastGaugeId: number, epochs: Epoch[]) {
   const parsedGaugeStartTime = Date.parse(gauge.start_time);
 
   const NOW = Date.now();
-  const CURRENT_EPOCH_START_TIME = Date.parse(
-    epochs[0].current_epoch_start_time
-  );
+  const CURRENT_EPOCH_START_TIME = epochs[0].startTime.getTime();
 
   return (
     gauge.distributed_coins.length > 0 ||

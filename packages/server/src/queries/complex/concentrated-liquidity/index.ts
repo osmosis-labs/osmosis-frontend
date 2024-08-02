@@ -274,7 +274,7 @@ export async function mapGetUserPositionDetails({
 
   const stakeCurrency = getAsset({
     ...params,
-    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
+    anyDenom: params.chainList[0].staking!.staking_tokens[0].denom,
   });
 
   const lockableDurations = getLockableDurations();
