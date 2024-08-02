@@ -31,7 +31,7 @@ export const AllocationTabs: FunctionComponent<AllocationTabProps> = ({
           value: "available",
         },
       ] as { label: string; value: AllocationOptions }[],
-    []
+    [t]
   );
 
   return (
