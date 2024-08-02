@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 
-// osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06
 export const portfolioRouter = createTRPCRouter({
   getAllocation: publicProcedure
     .input(
