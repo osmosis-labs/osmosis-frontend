@@ -29,7 +29,11 @@ export function useConnectWalletModalRedirect(
   const { accountStore } = useStore();
   const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
+  const { onOpenWalletSelect, isLoading: isWalletLoading_ } = useWalletSelect();
+  const isWalletLoading =
+    isWalletLoading_ ||
+    !osmosisAccount?.walletStatus ||
+    osmosisAccount.walletStatus === WalletStatus.Connecting;
 
   const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected
@@ -55,8 +59,8 @@ export function useConnectWalletModalRedirect(
   return {
     showModalBase: showSelf,
     accountActionButton:
-      osmosisAccount?.walletStatus === WalletStatus.Connected ||
-      isWalletLoading ? (
+      isWalletLoading ||
+      osmosisAccount?.walletStatus === WalletStatus.Connected ? (
         <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
       ) : (
         <Button

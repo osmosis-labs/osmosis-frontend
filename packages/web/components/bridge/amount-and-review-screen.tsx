@@ -94,7 +94,7 @@ export const AmountAndReviewScreen = observer(
         ? evmConnector?.name
         : toChainCosmosAccount?.walletInfo.name;
 
-    const { data: assetsInOsmosis } =
+    const { data: assetsInOsmosis, isLoading: isLoadingAssetsInOsmosis } =
       api.edge.assets.getCanonicalAssetWithVariants.useQuery(
         {
           findMinDenomOrSymbol: selectedAssetDenom ?? "",
@@ -236,6 +236,7 @@ export const AmountAndReviewScreen = observer(
               direction={direction}
               selectedDenom={selectedAssetDenom!}
               assetsInOsmosis={assetsInOsmosis}
+              isLoadingAssetsInOsmosis={isLoadingAssetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
               supportedBridges={bridges}
               fromChain={fromChain}

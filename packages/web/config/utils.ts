@@ -116,16 +116,10 @@ export function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom = chain.staking?.staking_tokens[0]?.denom;
+  const stakingTokenSourceDenom = chain.staking?.staking_tokens[0].denom;
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
-
-  if (!stakeAsset) {
-    console.warn(
-      `Failed to find stake asset for ${stakingTokenSourceDenom} on ${chain.chain_name}. Proceeding to use minimalDenom as currency.`
-    );
-  }
 
   const stakeDisplayDecimals = stakeAsset?.decimals;
   const stakeSourceDenom = stakeAsset?.sourceDenom;
@@ -212,20 +206,36 @@ export function getKeplrCompatibleChain({
       },
       []
     ),
-    stakeCurrency: {
-      coinDecimals: stakeDisplayDecimals ?? 0,
-      coinDenom: stakeAsset?.symbol ?? stakingTokenSourceDenom,
-      coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom,
-      coinGeckoId: stakeAsset?.coingeckoId,
-      coinImageUrl:
-        stakeAsset?.logoURIs.svg || stakeAsset?.logoURIs.png
-          ? getImageRelativeFilePath(
-              stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
-              stakeAsset.symbol
-            )
-          : undefined,
-      base: stakeAsset?.coinMinimalDenom,
-    },
+    stakeCurrency:
+      // Note: this is a hacky fix since it's possible for chains to have no staking token (i.e. Noble)
+      // Newever versions of Keplr made this nullable, but our Keplr stores are from an old version of Keplr.
+      // I don't anticipate this being an issue since we don't really use staking tokens on other chain in our FE features.
+      // Further, most chains have staking tokens.
+      // So, I add a placeholder token to stay compatible with the ChainInfo types that we imported into the keplr-* packages in the monorepo.
+      // Long term, once we remove the keplr stores for good and delete that code, we can upgrade our Keplr chain type to use the newer
+      // type that tolerates missing staking tokens. Then, we can suggest chains to Keplr wallet with Staking tokens missing.
+      stakeAsset &&
+      stakeDisplayDecimals &&
+      (stakeSourceDenom || stakingTokenSourceDenom)
+        ? {
+            coinDecimals: stakeDisplayDecimals ?? 0,
+            coinDenom: stakeAsset.symbol ?? stakingTokenSourceDenom,
+            coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom!,
+            coinGeckoId: stakeAsset.coingeckoId,
+            coinImageUrl:
+              stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
+                ? getImageRelativeFilePath(
+                    stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
+                    stakeAsset.symbol
+                  )
+                : undefined,
+            base: stakeAsset.coinMinimalDenom,
+          }
+        : {
+            coinDecimals: 0,
+            coinDenom: "STAKE",
+            coinMinimalDenom: "tempStakePlaceholder",
+          },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {

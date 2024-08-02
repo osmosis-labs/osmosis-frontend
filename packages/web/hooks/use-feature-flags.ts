@@ -7,8 +7,6 @@ import { useWindowSize } from "~/hooks";
 export type AvailableFlags =
   | "staking"
   | "swapsAdBanner"
-  | "notifications"
-  | "mobileNotifications"
   | "tokenInfo"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
@@ -38,7 +36,6 @@ type ModifiedFlags =
 const defaultFlags: Record<ModifiedFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
-  notifications: true,
   tokenInfo: true,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
@@ -82,10 +79,14 @@ export const useFeatureFlags = () => {
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
-    notifications: isMobile
-      ? launchdarklyFlags.mobileNotifications
-      : launchdarklyFlags.notifications,
-    portfolioPageAndNewAssetsPage: false,
+    portfolioPageAndNewAssetsPage:
+      // don't want to use either on mobile
+      // as this flag bundles the 2 pages,
+      // and the portfolio page not be mobile responsive yet
+      // (even thought the assets page is)
+      isMobile || !isInitialized
+        ? false
+        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     oneClickTrading:
       !isMobile &&
       launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
