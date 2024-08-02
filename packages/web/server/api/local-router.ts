@@ -4,6 +4,7 @@ import {
   concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
+  paramsRouter,
   swapRouter,
 } from "@osmosis-labs/trpc";
 
@@ -18,5 +19,6 @@ export const localRouter = createTRPCRouter({
   concentratedLiquidity: concentratedLiquidityRouter,
   oneClickTrading: oneClickTradingRouter,
   cms: cmsRouter,
+  params: paramsRouter,
   bridgeTransfer: localBridgeTransferRouter,
 });
