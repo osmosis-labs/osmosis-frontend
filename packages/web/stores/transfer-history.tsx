@@ -163,7 +163,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         iconElement:
           amountLogo && estimatedArrivalUnix ? (
             <PendingTransferLoadingIcon
-              key={startTimeUnix + "pending-transfer-loading-icon"}
               estimatedArrivalUnix={estimatedArrivalUnix}
               assetLogo={amountLogo}
               startTimeUnix={startTimeUnix}
@@ -171,7 +170,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
           ) : undefined,
         captionElement: (
           <PendingTransfer
-            key={startTimeUnix + "pending-transfer"}
             amount={amount}
             chainPrettyName={chainPrettyName}
             isWithdraw={isWithdraw}
@@ -180,11 +178,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         ),
       },
       ToastType.LOADING,
-      {
-        toastId: prefixedKey,
-        autoClose: false,
-        containerId: "deposit-withdraw",
-      }
+      { toastId: prefixedKey, autoClose: false }
     );
 
     this.snapshots.push({
@@ -249,11 +243,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ),
           },
           ToastType.LOADING,
-          {
-            updateToastId: prefixedKey,
-            autoClose: false,
-            containerId: "deposit-withdraw",
-          }
+          { updateToastId: prefixedKey, autoClose: false }
         );
         break;
       case "success":
@@ -274,7 +264,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
                 ],
           },
           ToastType.SUCCESS,
-          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
+          { updateToastId: prefixedKey }
         );
         this.onAccountTransferSuccess(snapshot.accountAddress);
         this._resolvedTxStatusKeys.add(prefixedKey);
@@ -292,7 +282,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
+          { updateToastId: prefixedKey }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
         break;
@@ -307,7 +297,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey, containerId: "deposit-withdraw" }
+          { updateToastId: prefixedKey }
         );
         this._resolvedTxStatusKeys.add(prefixedKey);
         break;
@@ -354,7 +344,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 }
 
-export const PendingTransferLoadingIcon: FunctionComponent<{
+const PendingTransferLoadingIcon: FunctionComponent<{
   assetLogo: string;
   estimatedArrivalUnix: number;
   startTimeUnix: number;

@@ -84,18 +84,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <ToastContainer
                   toastStyle={{
                     backgroundColor: "#2d2755",
-                    boxShadow: "0px 16px 48px 0px #090524",
                   }}
                   transition={Bounce}
-                  containerId="deposit-withdraw"
-                />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                    boxShadow: "0px 16px 48px 0px #090524",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
+                  stacked
                 />
                 <MainLayoutWrapper>
                   {Component && <Component {...pageProps} />}
