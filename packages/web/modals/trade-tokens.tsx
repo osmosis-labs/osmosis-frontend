@@ -35,7 +35,7 @@ export const TradeTokens: FunctionComponent<
       <div className="flex items-center justify-between p-4">
         <span className="px-4 text-h6">Swap</span>
         <div
-          className="flex rounded-full bg-osmoverse-800 p-3 text-wosmongton-200 transition hover:cursor-pointer hover:bg-osmoversealpha-800 hover:text-white-full"
+          className="flex rounded-full bg-osmoverse-800 p-3 text-wosmongton-200 transition hover:cursor-pointer hover:bg-osmoverse-700/[.54] hover:text-white-full"
           onClick={modalProps.onRequestClose}
         >
           <Icon id="close" width={24} height={24} />

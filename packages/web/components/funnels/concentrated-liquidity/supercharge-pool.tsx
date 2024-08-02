@@ -17,7 +17,7 @@ interface Props extends CustomClasses {
 export const SuperchargePool: FunctionComponent<Props> = (props) => (
   <div
     className={classNames(
-      "flex w-full place-content-between gap-10 rounded-3xl bg-osmoverse-800 p-7",
+      "flex w-full place-content-between gap-10 rounded-3xl bg-osmoverse-900 p-7",
       props.className
     )}
   >
