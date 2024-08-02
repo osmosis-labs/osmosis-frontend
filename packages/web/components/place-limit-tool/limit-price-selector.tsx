@@ -82,7 +82,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
-      : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs())}%`;
+      : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+          maxDecimals: 3,
+          maximumSignificantDigits: 5,
+        })}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const percentageSuffix = useMemo(() => {
