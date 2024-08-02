@@ -632,10 +632,10 @@ export const AmountScreen = observer(
     /** If an asset is disabled */
     const isDisabled =
       direction === "withdraw"
-        ? Boolean(canonicalAsset.isDisabled)
+        ? Boolean(canonicalAsset.areTransfersDisabled)
         : Boolean(
             assetsInOsmosis.find((a) => a.coinMinimalDenom === toAsset?.address)
-              ?.isDisabled
+              ?.areTransfersDisabled
           );
 
     // This condition will be met iff:

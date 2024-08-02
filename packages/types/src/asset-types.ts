@@ -194,7 +194,7 @@ export type MinimalAsset = {
   /** Transfers are allowed, but unstable. */
   isUnstable: boolean;
   /** Transfers are NOT allowed. */
-  isDisabled: boolean;
+  areTransfersDisabled: boolean;
   /** Is verified by community. */
   isVerified: boolean;
   /** Flag indicating if this asset is an alloyed asset. */

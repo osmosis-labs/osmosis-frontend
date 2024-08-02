@@ -81,7 +81,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     coinGeckoId: coingeckoId,
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
-    isDisabled: disabled,
+    areTransfersDisabled: disabled,
     isVerified: verified,
     variantGroupKey,
     isAlloyed,
