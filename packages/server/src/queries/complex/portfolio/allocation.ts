@@ -70,7 +70,7 @@ async function getAll(categories: any) {
       key: "Pooled",
       percentage: (pooledCap / totalCap) * 100,
       amount: pooledCap,
-      color: "bg-bullish-500",
+      color: "bg-ion-500",
     },
   ];
 }
