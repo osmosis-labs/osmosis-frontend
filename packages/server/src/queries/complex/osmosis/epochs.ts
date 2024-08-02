@@ -23,7 +23,7 @@ export function getEpochs({
   return cachified({
     cache: epochsCache,
     key: "epochs",
-    ttl: 1000 * 30, // 30 seconds
+    ttl: 1000 * 60, // 60 seconds
     getFreshValue: () =>
       queryEpochs({ chainList }).then(({ epochs }) =>
         epochs.map((e) => {
