@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Opłaty handlowe za zlecenia z limitem są obecnie bezpłatne.",
       "networkFeesAdditional": "Opłaty sieciowe są doliczane do każdej transakcji."
     },
-    "noRoutes": "Nie znaleziono żadnych tras"
+    "noRoutes": "Nie znaleziono żadnych tras",
+    "route": "trasa",
+    "routes": "trasy"
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

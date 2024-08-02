@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Les frais de transaction pour les ordres limités sont actuellement gratuits.",
       "networkFeesAdditional": "Les frais de réseau sont en supplément à chaque transaction."
     },
-    "noRoutes": "Aucun itinéraire trouvé"
+    "noRoutes": "Aucun itinéraire trouvé",
+    "route": "itinéraire",
+    "routes": "itinéraires"
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

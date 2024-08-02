@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Atualmente, as taxas de negociação para pedidos com limite são gratuitas.",
       "networkFeesAdditional": "As taxas de rede são adicionais a cada transação."
     },
-    "noRoutes": "Nenhuma rota encontrada"
+    "noRoutes": "Nenhuma rota encontrada",
+    "route": "rota",
+    "routes": "rotas"
   },
   "walletSelect": {
     "gettingStarted": "Começando",

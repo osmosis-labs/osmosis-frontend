@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Trade fees for limit orders are currently free.",
       "networkFeesAdditional": "Network fees are additional to every transaction."
     },
-    "noRoutes": "No routes found"
+    "noRoutes": "No routes found",
+    "route": "route",
+    "routes": "routes"
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

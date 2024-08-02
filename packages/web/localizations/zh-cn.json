@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "限价订单的交易费目前是免费的。",
       "networkFeesAdditional": "每笔交易都需要另外支付网络费。"
     },
-    "noRoutes": "未找到任何路线"
+    "noRoutes": "未找到任何路线",
+    "route": "路线",
+    "routes": "路线"
   },
   "walletSelect": {
     "gettingStarted": "入门",

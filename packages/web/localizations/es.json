@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Las tarifas comerciales para órdenes limitadas son actualmente gratuitas.",
       "networkFeesAdditional": "Las tarifas de red son adicionales a cada transacción."
     },
-    "noRoutes": "No se encontraron rutas"
+    "noRoutes": "No se encontraron rutas",
+    "route": "ruta",
+    "routes": "rutas"
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

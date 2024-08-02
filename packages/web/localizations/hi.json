@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "सीमा आदेशों के लिए व्यापार शुल्क वर्तमान में निःशुल्क है।",
       "networkFeesAdditional": "प्रत्येक लेनदेन पर नेटवर्क शुल्क अतिरिक्त लगता है।"
     },
-    "noRoutes": "कोई मार्ग नहीं मिला"
+    "noRoutes": "कोई मार्ग नहीं मिला",
+    "route": "मार्ग",
+    "routes": "मार्ग"
   },
   "walletSelect": {
     "gettingStarted": "शुरू करना",

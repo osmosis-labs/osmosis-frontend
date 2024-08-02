@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "限價訂單的交易費用目前是免費的。",
       "networkFeesAdditional": "每筆交易均需額外支付網路費用。"
     },
-    "noRoutes": "沒有找到路線"
+    "noRoutes": "沒有找到路線",
+    "route": "路線",
+    "routes": "路線"
   },
   "walletSelect": {
     "gettingStarted": "入門",

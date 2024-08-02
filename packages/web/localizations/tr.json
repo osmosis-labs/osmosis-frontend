@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Limit emirleri için işlem ücretleri şu anda ücretsizdir.",
       "networkFeesAdditional": "Ağ ücretleri her işleme ek olarak uygulanır."
     },
-    "noRoutes": "Rota bulunamadı"
+    "noRoutes": "Rota bulunamadı",
+    "route": "rota",
+    "routes": "rotalar"
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",

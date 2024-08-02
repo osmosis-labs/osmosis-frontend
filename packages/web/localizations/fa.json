@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "کارمزد معامله برای سفارشات محدود در حال حاضر رایگان است.",
       "networkFeesAdditional": "هزینه های شبکه برای هر تراکنش اضافی است."
     },
-    "noRoutes": "هیچ مسیری پیدا نشد"
+    "noRoutes": "هیچ مسیری پیدا نشد",
+    "route": "مسیر",
+    "routes": "مسیرها"
   },
   "walletSelect": {
     "gettingStarted": "شروع شدن",

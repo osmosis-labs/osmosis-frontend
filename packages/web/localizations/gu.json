@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "મર્યાદા ઓર્ડર માટે ટ્રેડ ફી હાલમાં મફત છે.",
       "networkFeesAdditional": "નેટવર્ક ફી દરેક વ્યવહાર માટે વધારાની છે."
     },
-    "noRoutes": "કોઈ રૂટ મળ્યા નથી"
+    "noRoutes": "કોઈ રૂટ મળ્યા નથી",
+    "route": "માર્ગ",
+    "routes": "માર્ગો"
   },
   "walletSelect": {
     "gettingStarted": "શરૂઆત કરવી",

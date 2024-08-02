@@ -4,7 +4,6 @@ import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -33,6 +32,7 @@ interface TradeDetailsProps {
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
+  tab?: "buy" | "sell";
 }
 
 export const TradeDetails = observer(
@@ -42,12 +42,12 @@ export const TradeDetails = observer(
     treatAsStable,
     type,
     makerFee,
+    tab,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
-    const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
     const routesVisDisclosure = useDisclosure();
 
-    const [outAsBase, setOutAsBase] = useState(true);
+    const [outAsBase, setOutAsBase] = useState(!tab || tab === "buy");
 
     const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
@@ -81,16 +81,6 @@ export const TradeDetails = observer(
         minimumFractionDigits: 2,
       });
     }, [makerFee]);
-
-    useEffect(() => {
-      if (tab === "sell") {
-        setOutAsBase(false);
-      }
-
-      if (tab === "buy") {
-        setOutAsBase(true);
-      }
-    }, [tab]);
 
     return (
       <div className="flex w-full">
@@ -301,8 +291,8 @@ export const TradeDetails = observer(
                                     <>
                                       {routes?.length}{" "}
                                       {routes?.length === 1
-                                        ? "route"
-                                        : "routes"}
+                                        ? t("swap.route")
+                                        : t("swap.routes")}
                                     </>
                                   ) : (
                                     <span className="text-rust-400">

@@ -861,7 +861,9 @@
       "tradeFeesLimitInfo": "Handelsgebühren für Limit-Orders sind derzeit kostenlos.",
       "networkFeesAdditional": "Zu jeder Transaktion fallen zusätzlich Netzwerkgebühren an."
     },
-    "noRoutes": "Keine Routen gefunden"
+    "noRoutes": "Keine Routen gefunden",
+    "route": "Route",
+    "routes": "Routen"
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",
