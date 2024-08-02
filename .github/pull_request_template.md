@@ -1,20 +1,14 @@
 ## What is the purpose of the change:
 
-<!-- > Add a description of the overall background and high level changes that this PR introduces
-
-_(E.g.: This pull request improves area A by adding ...._ -->
+<!-- > Add a description of the overall background and high level changes that this PR introduces -->
 
 ### Linear Task
 
-[Linear Task URL](PASTE_LINEAR_TASK_URL_HERE)
+<!-- > Add a link to the linear task that this PR is addressing. TIP: go to the linear task and use Ctrl/⌘ + C to copy a link. -->
 
 ## Brief Changelog
 
-<!-- _(for example:)_
-
-- _This adds frontend_asset_name to page_name_
-- _Adds a new button for ..._
-- _Removes the ..._ -->
+-
 
 ## Testing and Verifying
 

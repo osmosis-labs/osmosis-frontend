@@ -2890,6 +2890,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "noble-1",
           chainType: "cosmos",
+          coinGeckoId: "usd-coin",
           address: "uusdc",
           denom: "USDC",
           decimals: 6,
@@ -2897,6 +2898,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 1,
           chainType: "evm",
+          coinGeckoId: "usd-coin",
           address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
           denom: "USDC",
           decimals: 6,
@@ -2922,6 +2924,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "axelar-dojo-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "axelarnet",
           denom: "axlUSDC",
           address: "uusdc",
@@ -2930,6 +2933,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 1,
           chainType: "evm",
+          coinGeckoId: "usd-coin",
           chainName: "Ethereum",
           denom: "USDC",
           address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -2938,6 +2942,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "agoric-3",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "agoric",
           denom: "axlUSDC",
           address:
@@ -2947,6 +2952,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 42161,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "Arbitrum",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -2955,6 +2961,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "archway-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "archway",
           denom: "axlUSDC",
           address:
@@ -2964,6 +2971,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "mantle-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "assetmantle",
           denom: "axlUSDC",
           address:
@@ -2973,6 +2981,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 43114,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "Avalanche",
           denom: "axlUSDC",
           address: "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
@@ -2981,6 +2990,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 8453,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "base",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -2989,6 +2999,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 56,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "binance",
           denom: "axlUSDC",
           address: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
@@ -2997,6 +3008,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 81457,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "blast",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3005,6 +3017,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "carbon-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "carbon",
           denom: "USDC",
           address:
@@ -3014,6 +3027,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 42220,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "celo",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3022,6 +3036,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "comdex-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "comdex",
           denom: "axlUSDC",
           address:
@@ -3031,6 +3046,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "crescent-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "crescent",
           denom: "axlUSDC",
           address:
@@ -3040,6 +3056,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "dymension_1100-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "dymension",
           denom: "axlUSDC",
           address:
@@ -3049,6 +3066,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "evmos_9001-2",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "evmos",
           denom: "axlUSDC",
           address: "uusdc",
@@ -3057,6 +3075,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 250,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "Fantom",
           denom: "axlUSDC",
           address: "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
@@ -3065,6 +3084,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 314,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "filecoin",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3073,6 +3093,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 252,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "fraxtal",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3081,6 +3102,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 13371,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "immutable",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3089,6 +3111,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "injective-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "injective",
           denom: "axlUSDC",
           address:
@@ -3098,6 +3121,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "juno-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "juno",
           denom: "axlUSDC",
           address:
@@ -3107,6 +3131,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 2222,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "kava",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3115,6 +3140,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "kaiyo-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "kujira",
           denom: "axlUSDC",
           address:
@@ -3124,6 +3150,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 59144,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "linea",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3132,6 +3159,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 5000,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "mantle",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3140,6 +3168,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 1284,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "Moonbeam",
           denom: "axlUSDC",
           address: "0xCa01a1D0993565291051daFF390892518ACfAD3A",
@@ -3148,6 +3177,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "neutron-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "neutron",
           denom: "axlUSDC",
           address:
@@ -3157,6 +3187,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 10,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "optimism",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3165,6 +3196,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 137,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "Polygon",
           denom: "axlUSDC",
           address: "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
@@ -3173,6 +3205,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "regen-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "regen",
           denom: "axlUSDC",
           address:
@@ -3182,6 +3215,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 534352,
           chainType: "evm",
+          coinGeckoId: "axlusdc",
           chainName: "scroll",
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
@@ -3190,6 +3224,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "secret-4",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "secret-snip",
           denom: "axlUSDC",
           address: "secret1vkq022x4q8t8kx9de3r84u669l65xnwf2lg3e6",
@@ -3198,6 +3233,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "stargaze-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "stargaze",
           denom: "axlUSDC",
           address:
@@ -3207,6 +3243,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "columbus-5",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "terra",
           denom: "axlUSDC",
           address:
@@ -3216,6 +3253,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "phoenix-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "terra-2",
           denom: "axlUSDC",
           address:
@@ -3225,6 +3263,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "umee-1",
           chainType: "cosmos",
+          coinGeckoId: "axlusdc",
           chainName: "umee",
           denom: "axlUSDC",
           address:
@@ -3252,6 +3291,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "axelar-dojo-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "axelarnet",
           denom: "axlWETH",
           address: "weth-wei",
@@ -3260,6 +3300,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 1,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "Ethereum",
           denom: "WETH",
           address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -3268,6 +3309,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 1,
           chainType: "evm",
+          coinGeckoId: "ethereum",
           chainName: "Ethereum",
           denom: "ETH",
           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -3276,6 +3318,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "agoric-3",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "agoric",
           denom: "axlWETH",
           address:
@@ -3285,6 +3328,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 42161,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "Arbitrum",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3293,6 +3337,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "archway-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "archway",
           denom: "axlWETH",
           address:
@@ -3302,6 +3347,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "mantle-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "assetmantle",
           denom: "axlWETH",
           address:
@@ -3311,6 +3357,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 81457,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "blast",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3319,6 +3366,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 42220,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "celo",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3327,6 +3375,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "comdex-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "comdex",
           denom: "axlWETH",
           address:
@@ -3336,6 +3385,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "crescent-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "crescent",
           denom: "axlWETH",
           address:
@@ -3345,6 +3395,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "dymension_1100-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "dymension",
           denom: "axlETH",
           address:
@@ -3354,6 +3405,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "evmos_9001-2",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "evmos",
           denom: "axlWETH",
           address: "weth-wei",
@@ -3362,6 +3414,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 250,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "Fantom",
           denom: "axlETH",
           address: "0xfe7eDa5F2c56160d406869A8aA4B2F365d544C7B",
@@ -3370,6 +3423,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 314,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "filecoin",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3378,6 +3432,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 252,
           chainType: "evm",
+          coinGeckoId: "axlweth",
           chainName: "fraxtal",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3386,6 +3441,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "injective-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "injective",
           denom: "axlWETH",
           address:
@@ -3395,6 +3451,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "juno-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "juno",
           denom: "axlWETH",
           address:
@@ -3404,6 +3461,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 2222,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "kava",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3412,6 +3470,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "kaiyo-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "kujira",
           denom: "axlWETH",
           address:
@@ -3421,6 +3480,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 59144,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "linea",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3429,6 +3489,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 5000,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "mantle",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3437,6 +3498,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "neutron-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "neutron",
           denom: "axlETH",
           address:
@@ -3446,6 +3508,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "pirin-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "nolus",
           denom: "ETH",
           address:
@@ -3455,6 +3518,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "regen-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "regen",
           denom: "axlWETH",
           address:
@@ -3464,6 +3528,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: 534352,
           chainType: "evm",
+          coinGeckoId: "weth",
           chainName: "scroll",
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
@@ -3472,6 +3537,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "secret-4",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "secret-snip",
           denom: "axlETH",
           address: "secret139qfh3nmuzfgwsx2npnmnjl4hrvj3xq5rmq8a0",
@@ -3480,6 +3546,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "columbus-5",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "terra",
           denom: "axlWETH",
           address:
@@ -3489,6 +3556,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "phoenix-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "terra-2",
           denom: "axlWETH",
           address:
@@ -3498,6 +3566,7 @@ describe("SquidBridgeProvider", () => {
         {
           chainId: "umee-1",
           chainType: "cosmos",
+          coinGeckoId: "weth",
           chainName: "umee",
           denom: "axlWETH",
           address:

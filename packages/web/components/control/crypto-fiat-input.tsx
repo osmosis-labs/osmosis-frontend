@@ -14,6 +14,7 @@ import { ScaledCurrencyInput } from "~/components/input/scaled-currency-input";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
+import { replaceAt } from "~/utils/array";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 const mulGasSlippage = new Dec("1.1");
@@ -132,9 +133,30 @@ export const CryptoFiatInput: FunctionComponent<{
         // Update the fiat amount based on the crypto amount
         const priceInFiat = assetPrice.toDec();
         const nextCryptoAmount = new Dec(nextValue || "0");
-        const nextFiatAmount = nextCryptoAmount.mul(priceInFiat).toString();
+        const nextFiatAmount = nextCryptoAmount.mul(priceInFiat);
 
-        setFiatInputRaw(trimPlaceholderZeros(nextFiatAmount));
+        // Create a string of placeholder zeroes based on the maximum number of decimals allowed for the fiat currency.
+        const placeholderZeroes = `0.${new Array(
+          assetPrice.fiatCurrency.maxDecimals
+        )
+          .fill("0")
+          .join("")}`;
+
+        const smallestPossibleValue = new Dec(
+          replaceAt(
+            "1",
+            placeholderZeroes.split(""),
+            placeholderZeroes.length - 1
+          ).join("")
+        );
+
+        // Set the fiat input raw value. If the next fiat amount is less than the smallest possible value,
+        // use the placeholder zeroes.
+        setFiatInputRaw(
+          nextFiatAmount.lt(smallestPossibleValue)
+            ? placeholderZeroes
+            : trimPlaceholderZeros(nextFiatAmount.toString())
+        );
       }
 
       type === "fiat"
@@ -220,8 +242,16 @@ export const CryptoFiatInput: FunctionComponent<{
                 }}
                 value={fiatInputRaw}
                 onChange={(value) => {
-                  onInput("fiat")(value);
                   setIsMax(false);
+
+                  // Prevent the user from entering more decimals than fiat supports
+                  if (
+                    value.split(".")[1]?.length >
+                    assetPrice.fiatCurrency.maxDecimals
+                  ) {
+                    return;
+                  }
+                  onInput("fiat")(value);
                 }}
               />
             ) : (
@@ -234,7 +264,11 @@ export const CryptoFiatInput: FunctionComponent<{
                   setCurrentUnit("fiat");
                 }}
               >
-                <span>{inputValue.maxDecimals(2).toString()}</span>
+                <span>
+                  {inputValue
+                    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+                    .toString()}
+                </span>
                 <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
               </button>
             )}
@@ -265,8 +299,15 @@ export const CryptoFiatInput: FunctionComponent<{
                 }}
                 value={cryptoInputRaw}
                 onChange={(value) => {
-                  onInput("crypto")(value);
                   setIsMax(false);
+                  // Prevent the user from entering more decimals than the asset supports
+                  if (
+                    value.toString().split(".")[1]?.length >
+                    assetWithBalance.decimals
+                  ) {
+                    return;
+                  }
+                  onInput("crypto")(value);
                 }}
               />
             ) : (
@@ -323,7 +364,7 @@ export const CryptoFiatInput: FunctionComponent<{
               "body2 md:caption w-14 shrink-0 transform rounded-5xl py-2 px-3 text-wosmongton-200 transition duration-200 disabled:opacity-80 md:w-13",
               {
                 "border-osmoverse-850 bg-osmoverse-850 text-white-full": isMax,
-                "!border-ammelia-500": hasSubtractedAmount,
+                "border !border-ammelia-500": hasSubtractedAmount,
                 "border border-osmoverse-700 hover:border-osmoverse-850 hover:bg-osmoverse-850 hover:text-white-full":
                   !isMax,
               }

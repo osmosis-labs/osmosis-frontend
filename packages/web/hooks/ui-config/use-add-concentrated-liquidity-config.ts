@@ -54,8 +54,8 @@ export function useAddConcentratedLiquidityConfig(
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
+  const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -171,9 +171,9 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                osmosisQueries.queryLiquiditiesPerTickRange
-                  .getForPoolId(poolId)
-                  .waitFreshResponse()
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
                   .then(() => resolve());
 
                 logEvent([
@@ -192,7 +192,7 @@ export function useAddConcentratedLiquidityConfig(
     [
       poolId,
       account?.osmosis,
-      osmosisQueries.queryLiquiditiesPerTickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       config.baseDepositAmountIn.sendCurrency,
       config.baseDepositAmountIn.amount,
       config.quoteDepositAmountIn.sendCurrency,
@@ -235,15 +235,14 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                osmosisQueries.queryLiquiditiesPerTickRange
-                  .getForPoolId(poolId)
-                  .waitFreshResponse();
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .then(() => resolve());
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
                 ]);
-
-                resolve();
               }
             }
           );
@@ -254,7 +253,7 @@ export function useAddConcentratedLiquidityConfig(
       }),
     [
       poolId,
-      osmosisQueries.queryLiquiditiesPerTickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       config.baseDepositAmountIn,
       config.quoteDepositAmountIn,
       config.baseDepositOnly,

@@ -201,16 +201,6 @@ export const EventName = {
     collectAndReinvestStarted: "Stake: Collect and re-invest started",
     collectAndReinvestCompleted: "Stake: Collect and re-invest started",
   },
-  // Notifi Notifications:
-  Notifications: {
-    iconClicked: "Notifications: Icon clicked",
-    enableClicked: "Notifications: Enable clicked",
-    enableCompleted: "Notifications: Enable completed",
-    enableAlertClicked: "Notifications: Enable alert clicked",
-    disableAlertClicked: "Notifications: Disable alert clicked",
-    alertClicked: "Notifications: Alert clicked",
-    saveChangesClicked: "Notifications: Save changes clicked",
-  },
   TokenInfo: {
     pageViewed: "Token Info: Page view",
     viewMoreClicked: "Token Info: View more clicked",

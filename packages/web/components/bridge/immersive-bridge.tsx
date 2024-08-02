@@ -1,5 +1,4 @@
 import { Transition } from "@headlessui/react";
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
@@ -99,7 +98,7 @@ export const ImmersiveBridgeFlow = ({
     setSelectedAssetDenom(null);
   };
 
-  const onOpen = (direction: BridgeTransactionDirection) => {
+  const onOpen = (direction: "deposit" | "withdraw") => {
     setIsVisible(true);
     setDirection(direction);
   };
@@ -111,11 +110,7 @@ export const ImmersiveBridgeFlow = ({
   return (
     <Provider
       value={{
-        startBridge: ({
-          direction,
-        }: {
-          direction: BridgeTransactionDirection;
-        }) => {
+        startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
           onOpen(direction);
         },
         bridgeAsset: async ({
@@ -123,7 +118,7 @@ export const ImmersiveBridgeFlow = ({
           direction,
         }: {
           anyDenom: string;
-          direction: BridgeTransactionDirection;
+          direction: "deposit" | "withdraw";
         }) => {
           onOpen(direction);
           setStep(ImmersiveBridgeScreen.Amount);
@@ -186,7 +181,6 @@ export const ImmersiveBridgeFlow = ({
                           <IconButton
                             aria-label="Go Back"
                             className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                            variant="secondary"
                             icon={
                               <Icon
                                 id="arrow-left-thin"
@@ -199,6 +193,7 @@ export const ImmersiveBridgeFlow = ({
                                   Number(step) - 1
                                 ).toString() as ImmersiveBridgeScreen
                               );
+                              setSelectedAssetDenom(null);
                             }}
                           />
                         )}
@@ -209,7 +204,10 @@ export const ImmersiveBridgeFlow = ({
                               displayLabel: t("transfer.stepLabels.asset"),
                               onClick:
                                 step !== ImmersiveBridgeScreen.Asset
-                                  ? () => setStep(ImmersiveBridgeScreen.Asset)
+                                  ? () => {
+                                      setStep(ImmersiveBridgeScreen.Asset);
+                                      setSelectedAssetDenom(null);
+                                    }
                                   : undefined,
                             },
                             {
@@ -228,7 +226,6 @@ export const ImmersiveBridgeFlow = ({
                         <IconButton
                           aria-label="Close"
                           className="z-50 !h-12 !w-12 flex-shrink-0 text-wosmongton-200 hover:text-osmoverse-100 md:!h-8 md:!w-8"
-                          variant="secondary"
                           icon={<Icon id="close" className="md:h-4 md:w-4" />}
                           onClick={onClose}
                         />

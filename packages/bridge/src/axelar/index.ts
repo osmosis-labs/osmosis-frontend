@@ -117,7 +117,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
               fromAmount as any
             ),
             this.estimateGasCost(params),
-          ]);
+          ]).catch((e) => {
+            throw new BridgeQuoteError({
+              bridgeId: AxelarBridgeProvider.ID,
+              errorType: "UnsupportedQuoteError",
+              message:
+                "Axelar Bridge doesn't support this quote:" + e.toString(),
+            });
+          });
 
           let transferLimitAmount: string | undefined;
           try {
@@ -198,6 +205,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
               denom: fromAsset.denom ?? transferFeeRes.fee.denom,
             },
             estimatedGasFee,
+            // Note: transactionRequest is missing here because deposit addresses can take 10+ seconds to generate
           };
         } catch (e) {
           if (typeof e === "string" && e.includes("not found")) {
@@ -227,7 +235,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       // Use of toLowerCase is advised due to registry (Axelar + others) differences
       // in casing of asset addresses. May be somewhat unsafe.
-
       const axelarSourceAsset = axelarAssets.find(({ addresses }) =>
         Object.keys(addresses).some(
           (address) =>
@@ -304,6 +311,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
               chainType: axelarChain.chain_type,
             };
 
+      if (chain.chainId === axelarChain.chain_id.toString()) return [];
+
       foundVariants.setAsset(
         axelarChain.chain_id.toString(),
         axelarSourceAsset.denom,
@@ -313,6 +322,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           denom: addressAsset.symbol,
           address: assetAddress,
           decimals: axelarSourceAsset.decimals,
+          coinGeckoId: axelarSourceAsset.coingecko_id,
         }
       );
 
@@ -337,6 +347,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             denom: axelarChain.native_token.symbol,
             address: NativeEVMTokenConstantAddress,
             decimals: axelarChain.native_token.decimals,
+            coinGeckoId: axelarSourceAsset.coingecko_id,
           }
         );
       }
@@ -355,103 +366,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
   }
 
-  async estimateGasCost(
-    params: GetBridgeQuoteParams
-  ): Promise<BridgeCoin | undefined> {
-    const transactionData = await this.getTransactionData({
-      ...params,
-      fromAmount: "0",
-      simulated: true,
-    });
-
-    if (transactionData.type === "evm") {
-      const evmChain = Object.values(EthereumChainInfo).find(
-        ({ id: chainId }) =>
-          String(chainId) === String(params.fromChain.chainId)
-      );
-
-      if (!evmChain) throw new Error("Could not find EVM chain");
-
-      const fromProvider = createPublicClient({
-        chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
-      });
-
-      const gasAmountUsed = String(
-        await fromProvider.estimateGas({
-          account: params.fromAddress as Address,
-          to: transactionData.to,
-          value: transactionData.value
-            ? BigInt(transactionData.value)
-            : undefined,
-          data: transactionData.data,
-        })
-      );
-
-      const gasPrice = (await fromProvider.getGasPrice()).toString();
-
-      const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
-      return {
-        amount: gasCost.truncate().toString(),
-        address: NativeEVMTokenConstantAddress,
-        decimals: evmChain.nativeCurrency.decimals,
-        denom: evmChain.nativeCurrency.symbol,
-      };
-    }
-
-    if (transactionData.type === "cosmos") {
-      const txSimulation = await estimateGasFee({
-        chainId: params.fromChain.chainId.toString(),
-        chainList: this.ctx.chainList,
-        body: {
-          messages: [
-            this.protoRegistry.encodeAsAny({
-              typeUrl: transactionData.msgTypeUrl,
-              value: transactionData.msg,
-            }),
-          ],
-        },
-        bech32Address: params.fromAddress,
-      }).catch((e) => {
-        if (
-          e instanceof Error &&
-          e.message.includes(
-            "No fee tokens found with sufficient balance on account"
-          )
-        ) {
-          throw new BridgeQuoteError({
-            bridgeId: AxelarBridgeProvider.ID,
-            errorType: "InsufficientAmountError",
-            message: e.message,
-          });
-        }
-
-        throw e;
-      });
-
-      const gasFee = txSimulation.amount[0];
-      const gasAsset = this.ctx.assetLists
-        .flatMap((list) => list.assets)
-        .find(
-          (asset) =>
-            asset.coinMinimalDenom === gasFee.denom ||
-            asset.counterparty.some(
-              (c) =>
-                "chainId" in c &&
-                c.chainId === params.fromChain.chainId &&
-                c.sourceDenom === gasFee.denom
-            )
-        );
-
-      return {
-        amount: gasFee.amount,
-        denom: gasAsset?.symbol ?? gasFee.denom,
-        decimals: gasAsset?.decimals ?? 0,
-        address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
-      };
-    }
-  }
-
   async getTransactionData(
     params: GetBridgeQuoteParams & { simulated?: boolean }
   ): Promise<BridgeTransactionRequest> {
@@ -461,8 +375,132 @@ export class AxelarBridgeProvider implements BridgeProvider {
     if (isEvmTransaction) {
       return await this.createEvmTransaction(params);
     } else {
-      return await this.createCosmosTransaction(params);
+      const transaction = await this.createCosmosTransaction(params);
+      const gasFee = await this.estimateCosmosTxGasCost(params, transaction);
+
+      return {
+        ...transaction,
+        gasFee:
+          gasFee && gasFee.gas
+            ? {
+                amount: gasFee.amount,
+                denom: gasFee.address,
+                gas: gasFee.gas,
+              }
+            : undefined,
+      };
     }
+  }
+
+  async estimateGasCost(
+    params: GetBridgeQuoteParams
+  ): Promise<(BridgeCoin & { gas?: string }) | undefined> {
+    const transactionData = await this.getTransactionData({
+      ...params,
+      fromAmount: "0",
+      simulated: true,
+    });
+
+    if (transactionData.type === "cosmos") {
+      return this.estimateCosmosTxGasCost(params, transactionData);
+    } else if (transactionData.type === "evm") {
+      return this.estimateEvmTxGasCost(params, transactionData);
+    }
+  }
+
+  async estimateCosmosTxGasCost(
+    params: GetBridgeQuoteParams,
+    transactionData: CosmosBridgeTransactionRequest
+  ) {
+    const txSimulation = await estimateGasFee({
+      chainId: params.fromChain.chainId.toString(),
+      chainList: this.ctx.chainList,
+      body: {
+        messages: [
+          this.protoRegistry.encodeAsAny({
+            typeUrl: transactionData.msgTypeUrl,
+            value: transactionData.msg,
+          }),
+        ],
+      },
+      bech32Address: params.fromAddress,
+      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: AxelarBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
+    });
+
+    const gasFee = txSimulation.amount[0];
+    const gasAsset = this.ctx.assetLists
+      .flatMap((list) => list.assets)
+      .find(
+        (asset) =>
+          asset.coinMinimalDenom === gasFee.denom ||
+          asset.counterparty.some(
+            (c) =>
+              "chainId" in c &&
+              c.chainId === params.fromChain.chainId &&
+              c.sourceDenom === gasFee.denom
+          )
+      );
+
+    return {
+      amount: gasFee.amount,
+      denom: gasAsset?.symbol ?? gasFee.denom,
+      decimals: gasAsset?.decimals ?? 0,
+      address: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+      coinGeckoId: gasAsset?.coingeckoId,
+      gas: txSimulation.gas,
+    };
+  }
+
+  async estimateEvmTxGasCost(
+    params: GetBridgeQuoteParams,
+    transactionData: EvmBridgeTransactionRequest
+  ) {
+    const evmChain = Object.values(EthereumChainInfo).find(
+      ({ id: chainId }) => String(chainId) === String(params.fromChain.chainId)
+    );
+
+    if (!evmChain) throw new Error("Could not find EVM chain");
+
+    const fromProvider = createPublicClient({
+      chain: evmChain,
+      transport: http(evmChain.rpcUrls.default.http[0]),
+    });
+
+    const gasAmountUsed = String(
+      await fromProvider.estimateGas({
+        account: params.fromAddress as Address,
+        to: transactionData.to,
+        value: transactionData.value
+          ? BigInt(transactionData.value)
+          : undefined,
+        data: transactionData.data,
+      })
+    );
+
+    const gasPrice = (await fromProvider.getGasPrice()).toString();
+
+    const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
+    return {
+      amount: gasCost.truncate().toString(),
+      address: NativeEVMTokenConstantAddress,
+      decimals: evmChain.nativeCurrency.decimals,
+      denom: evmChain.nativeCurrency.symbol,
+    };
   }
 
   async createEvmTransaction({
@@ -795,7 +833,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     url.searchParams.set("destination", toChainId);
     // asset_denom denotes the selection of the from asset
     url.searchParams.set("asset_denom", toAssetId);
-    url.searchParams.set("destination_address", toAddress);
+    if (toAddress) url.searchParams.set("destination_address", toAddress);
 
     return { urlProviderName: "Satellite Money", url };
   }

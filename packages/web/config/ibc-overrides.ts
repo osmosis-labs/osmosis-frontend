@@ -110,17 +110,6 @@ const MainnetIBCAdditionalData: Partial<
       ],
     },
   },
-  "wstETH.eth.axl": {
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wsteth.ethereum,
-      ],
-    },
-  },
   SOL: {
     depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=SOL",
     withdrawUrlOverride: "/wormhole?from=osmosis&to=solana&token=SOL",
@@ -766,6 +755,22 @@ const MainnetIBCAdditionalData: Partial<
       "https://satellite.money/?source=polygon&destination=osmosis&asset_denom=polygon-weth-wei",
     withdrawUrlOverride:
       "https://satellite.money/?source=osmosis&destination=polygon&asset_denom=polygon-weth-wei",
+  },
+  UM: {
+    depositUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
+    withdrawUrlOverride: "https://stake.with.starlingcyber.net/#/ibc",
+  },
+  "TRX.rt": {
+    depositUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt",
+    withdrawUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt&toToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  },
+  "USDT.trx.rt": {
+    depositUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt",
+    withdrawUrlOverride:
+      "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt&toToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C",
   },
 };
 

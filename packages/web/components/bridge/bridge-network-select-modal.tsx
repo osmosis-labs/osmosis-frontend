@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
 import React, { FunctionComponent, useMemo } from "react";
 
@@ -15,7 +14,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { SupportedChain } from "./use-bridges-supported-assets";
 
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   toChain: BridgeChainWithDisplayInfo;
   chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
