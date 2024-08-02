@@ -116,8 +116,7 @@ export function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom =
-    "staking" in chain ? chain.staking.staking_tokens[0].denom : undefined;
+  const stakingTokenSourceDenom = chain.staking?.staking_tokens[0].denom;
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
