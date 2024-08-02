@@ -8,6 +8,7 @@ export * from "./earn";
 export * from "./middleware";
 export * from "./one-click-trading";
 export * from "./parameter-types";
+export * from "./params";
 export * from "./pools";
 export * from "./portfolio";
 export * from "./staking";

@@ -1,10 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import {
-  DEFAULT_VS_CURRENCY,
-  FilteredPoolsResponse,
-  NumPoolsResponse,
-} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY, NumPoolsResponse } from "@osmosis-labs/server";
 import { createCallerFactory } from "@osmosis-labs/trpc";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { screen, waitFor } from "@testing-library/react";
@@ -119,41 +115,42 @@ it("should return only pool assets when sending a pool id and useOtherCurrencies
   expect(assets).toHaveLength(3);
 
   server.use(
-    rest.get(
-      "https://stage-proxy-data-api.osmosis-labs.workers.dev/stream/pool/v1/all",
-      (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            pagination: {
-              next_offset: 1,
-              total_pools: 1,
-            },
-            pools: [
-              {
-                type: "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" as const,
-                pool_id: Number(poolId),
-                swap_fees: 0.01,
-                exit_fees: 0,
-                total_weight_or_scaling: 1000000000002,
-                total_shares: {
-                  denom: `gamm/pool/${poolId}`,
-                  amount: "8443258129578637381630355637",
-                },
-                pool_tokens: rawPoolTokens,
-                liquidity: 1081.220295254844,
-                liquidity_24h_change: 0.41118621205053774,
-                volume_24h: 200.52200454814368,
-                volume_24h_change: 1162.2634682787304,
-                volume_7d: 384.3539256324429,
-                address:
-                  "osmo1znf8ut62jkpgxn38q280td73w380j260vegz63yd29gm2hrps8csamg6u7",
+    rest.get("https://sqs.osmosis.zone/pools", (_req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json([
+          {
+            chain_model: {
+              address:
+                "osmo1mw0ac6rwlp5r8wapwk3zs6g29h8fcscxqakdzw9emkne6c8wjp9q0t3v8t",
+              id: Number(poolId),
+              pool_params: {
+                swap_fee: "0.002000000000000000",
+                exit_fee: "0.000000000000000000",
               },
-            ] as unknown as FilteredPoolsResponse["pools"],
-          } as FilteredPoolsResponse)
-        );
-      }
-    ),
+              future_pool_governor: "24h",
+              total_weight: "1073741824000000.000000000000000000",
+              total_shares: {
+                denom: `gamm/pool/${poolId}`,
+                amount: "8443258129578637381630355637",
+              },
+              pool_assets: rawPoolTokens.map((token) => ({
+                token: { denom: token.denom, amount: token.amount },
+                weight: token.weight_or_scaling,
+              })),
+            },
+            balances: rawPoolTokens.map((token) => ({
+              denom: token.denom,
+              amount: token.amount,
+            })),
+            type: 0,
+            spread_factor: "0.002000000000000000",
+            liquidity_cap: "6822727",
+            liquidity_cap_error: "",
+          },
+        ])
+      );
+    }),
     rest.get(
       "https://lcd-osmosis.keplr.app/osmosis/poolmanager/v1beta1/num_pools",
       (_req, res, ctx) => {

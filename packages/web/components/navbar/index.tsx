@@ -40,11 +40,6 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import {
-  NotifiContextProvider,
-  NotifiModal,
-  NotifiPopover,
-} from "~/integrations/notifi";
-import {
   ModalBase,
   ModalBaseProps,
   SettingsModal,
@@ -95,12 +90,6 @@ export const NavBar: FunctionComponent<
     } = useDisclosure();
 
     const {
-      isOpen: isNotifiOpen,
-      onClose: onCloseNotifi,
-      onOpen: onOpenNotifi,
-    } = useDisclosure();
-
-    const {
       isOpen: isProfileOpen,
       onOpen: onOpenProfile,
       onClose: onCloseProfile,
@@ -145,8 +134,6 @@ export const NavBar: FunctionComponent<
     }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
 
     const wallet = accountStore.getWallet(chainId);
-    const walletSupportsNotifications =
-      wallet?.walletInfo?.features?.includes("notifications");
 
     const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
       address: wallet?.address ?? "",
@@ -204,20 +191,6 @@ export const NavBar: FunctionComponent<
                   },
                   icon: <Icon id="setting" className="h-6 w-6" />,
                 });
-
-                if (featureFlags.notifications && walletSupportsNotifications) {
-                  mobileMenus = mobileMenus.concat({
-                    label: t("menu.notifications"),
-                    link: (e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      if (!wallet) return;
-                      onOpenNotifi();
-                      closeMobileMainMenu();
-                    },
-                    icon: <Icon id="bell" className="h-6 w-6" />,
-                  });
-                }
 
                 return (
                   <>
@@ -296,16 +269,6 @@ export const NavBar: FunctionComponent<
               </div>
             )}
 
-            {featureFlags.notifications && walletSupportsNotifications && (
-              <NotifiContextProvider>
-                <NotifiPopover className="z-40 px-3 outline-none" />
-                <NotifiModal
-                  isOpen={isNotifiOpen}
-                  onRequestClose={onCloseNotifi}
-                  onOpenNotifi={onOpenNotifi}
-                />
-              </NotifiContextProvider>
-            )}
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}

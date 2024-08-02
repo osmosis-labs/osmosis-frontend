@@ -51,7 +51,7 @@ export const marketIncentivePoolsSortKeys = [
   "feesSpent24hUsd",
   "volume7dUsd",
   "volume24hUsd",
-  "aprBreakdown.total",
+  "aprBreakdown.total.upper",
 ] as const;
 
 export type MarketIncentivePoolsSortKey =
@@ -276,7 +276,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         header: () => (
           <SortHeader
             label={t("pools.allPools.sort.APRIncentivized")}
-            sortKey="aprBreakdown.total"
+            sortKey="aprBreakdown.total.upper"
             disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortParams.allPoolsSortDir}
@@ -445,7 +445,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       className={classNames(
-                        "transition-colors duration-200 ease-in-out",
+                        "transition-colors duration-200 ease-in-out xs:px-1",
                         isPreviousData && isFetching && "cursor-progress"
                       )}
                       key={cell.id}
@@ -597,31 +597,59 @@ export const AprBreakdownCell: PoolCellComponent = ({
   row: {
     original: { aprBreakdown },
   },
-}) =>
-  (aprBreakdown && (
+}) => {
+  if (!aprBreakdown) {
+    return null;
+  }
+
+  const available = Boolean(
+    aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper
+  );
+
+  const disabled =
+    !available &&
+    !Boolean(aprBreakdown.superfluid?.upper) &&
+    Boolean(aprBreakdown.swapFee?.upper);
+
+  return (
     <Tooltip
       rootClassNames="!rounded-2xl drop-shadow-md"
       content={<AprBreakdown {...aprBreakdown} />}
+      disabled={disabled}
     >
       <p
         className={classNames(
           "ml-auto flex items-center gap-1.5 whitespace-nowrap",
           {
-            "text-bullish-500": Boolean(
-              aprBreakdown.boost || aprBreakdown.osmosis
-            ),
+            "text-bullish-500": available,
           }
         )}
       >
-        {aprBreakdown.boost || aprBreakdown.osmosis ? (
+        {aprBreakdown.boost?.upper || aprBreakdown.osmosis?.upper ? (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
           </div>
-        ) : (
+        ) : !disabled ? (
           <Icon id="info" className="h-4 w-4" />
+        ) : null}
+        {aprBreakdown?.total?.lower &&
+        aprBreakdown?.total?.upper?.maxDecimals(1).toString() ===
+          aprBreakdown?.total?.lower.maxDecimals(1).toString() ? (
+          <p className="xs:text-xs">
+            {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+          </p>
+        ) : (
+          <p className="xs:flex xs:flex-col xs:text-xs">
+            <label>
+              {aprBreakdown?.total?.lower?.maxDecimals(1).toString()}
+            </label>{" "}
+            -{" "}
+            <label>
+              {aprBreakdown?.total?.upper?.maxDecimals(1).toString()}
+            </label>
+          </p>
         )}
-        {aprBreakdown.total?.maxDecimals(0).toString() ?? ""}
       </p>
     </Tooltip>
-  )) ??
-  null;
+  );
+};

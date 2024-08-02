@@ -14,11 +14,12 @@ import { Button } from "../ui/button";
 
 interface MoreBridgeOptionsProps {
   direction: "deposit" | "withdraw";
-  fromAsset: BridgeAsset;
-  toAsset: BridgeAsset;
-  fromChain: BridgeChainWithDisplayInfo;
-  toChain: BridgeChainWithDisplayInfo;
-  toAddress: string | undefined;
+  fromAsset?: BridgeAsset;
+  toAsset?: BridgeAsset;
+  canonicalAssetDenom?: string;
+  fromChain?: BridgeChainWithDisplayInfo;
+  toChain?: BridgeChainWithDisplayInfo;
+  toAddress?: string;
   bridges: Bridge[];
 }
 
@@ -28,6 +29,7 @@ export const MoreBridgeOptionsModal: FunctionComponent<
   direction,
   fromAsset,
   toAsset,
+  canonicalAssetDenom,
   fromChain,
   toChain,
   toAddress,
@@ -65,6 +67,8 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       }
     );
 
+  const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
+
   return (
     <ModalBase
       title={
@@ -80,15 +84,23 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       {...modalProps}
     >
       <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
-        {t(
-          direction === "deposit"
-            ? "transfer.moreBridgeOptions.descriptionDeposit"
-            : "transfer.moreBridgeOptions.descriptionWithdraw",
-          {
-            asset: fromAsset?.denom ?? "",
-            chain: toChain?.chainName ?? "",
-          }
-        )}
+        {!fromChain || !toChain
+          ? t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+                : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+              { denom }
+            )
+          : t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
+                : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
+              {
+                asset: denom,
+                fromChain: fromChain.prettyName,
+                toChain: toChain.prettyName,
+              }
+            )}
       </p>
       <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
         {isLoadingExternalUrls ? (
@@ -131,6 +143,17 @@ export const MoreBridgeOptionsModal: FunctionComponent<
           </>
         )}
       </div>
+
+      <div className="caption pb-3 pt-5 text-center text-osmoverse-400">
+        {t("transfer.risks")}{" "}
+        <Link
+          href="/disclaimer#providers-and-bridge-disclaimer"
+          target="_blank"
+          className="mx-auto text-xs font-semibold text-wosmongton-300 hover:text-rust-200"
+        >
+          {t("transfer.learnMore")}
+        </Link>
+      </div>
     </ModalBase>
   );
 };
@@ -141,6 +164,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   direction,
   toChain,
   toAsset,
+  canonicalAssetDenom,
   fromChain,
   fromAsset,
   toAddress,
@@ -157,17 +181,9 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         toAsset: toAsset,
         fromChain: fromChain,
         toChain: toChain,
-        toAddress: toAddress ?? "",
+        toAddress: toAddress,
       },
       {
-        enabled:
-          !!fromAsset &&
-          !!toAsset &&
-          !!fromChain &&
-          !!toChain &&
-          !!toAddress &&
-          !!bridges.length,
-
         // skip batching so this query does not get
         // batched with getSupportedAssetsByBridge query
         trpc: {
@@ -182,6 +198,33 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   if (externalUrlsData?.externalUrls.length === 1) {
     const { url, logo, urlProviderName } = externalUrlsData.externalUrls[0];
 
+    const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
+    const translatedText =
+      !fromChain || !toChain
+        ? t(
+            direction === "deposit"
+              ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+              : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+            { denom }
+          )
+        : t(
+            direction === "deposit"
+              ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
+              : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
+            {
+              denom,
+              networkA: fromChain.prettyName ?? "",
+              networkB: toChain.prettyName ?? "",
+              service: urlProviderName,
+            }
+          );
+
+    /** Extract text that matches denom in translation and wrap in blue span. */
+    const wrappedText = translatedText.replace(
+      new RegExp(denom, "g"),
+      `<span class="text-wosmongton-300">${denom}</span>`
+    );
+
     return (
       <div className="flex w-full flex-col">
         <div className="flex w-full flex-col text-center">
@@ -193,14 +236,10 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
             width={64}
           />
 
-          <p className="body1 md:body2 py-6 px-8 text-osmoverse-300 md:p-0">
-            {t("transfer.externalTransferSplash", {
-              denom: fromAsset.denom,
-              networkA: fromChain.prettyName,
-              networkB: toChain.prettyName,
-              service: urlProviderName,
-            })}
-          </p>
+          <p
+            className="body1 md:body2 py-6 px-8 text-osmoverse-300 md:p-0"
+            dangerouslySetInnerHTML={{ __html: wrappedText }}
+          />
         </div>
         <div className="flex flex-col gap-3 py-3">
           <Button asChild>
@@ -227,19 +266,38 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
     );
   }
 
-  return (
-    <div>
-      <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
-        {t(
+  const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
+  const translatedText =
+    !fromChain || !toChain
+      ? t(
+          direction === "deposit"
+            ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+            : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+          { denom }
+        )
+      : t(
           direction === "deposit"
             ? "transfer.moreBridgeOptions.descriptionDeposit"
             : "transfer.moreBridgeOptions.descriptionWithdraw",
           {
-            asset: fromAsset?.denom ?? "",
-            chain: toChain?.chainName ?? "",
+            denom,
+            networkA: fromChain.prettyName,
+            networkB: toChain.prettyName,
           }
-        )}
-      </p>
+        );
+
+  /** Extract text that matches denom in translation and wrap in blue span. */
+  const wrappedText = translatedText.replace(
+    new RegExp(denom, "g"),
+    `<span class="text-wosmongton-300">${denom}</span>`
+  );
+
+  return (
+    <div>
+      <p
+        className="body1 md:body2 py-4 px-8 text-center text-osmoverse-300 md:px-4 md:py-2"
+        dangerouslySetInnerHTML={{ __html: wrappedText }}
+      />
       <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
         {isLoadingExternalUrls ? (
           <>
@@ -256,15 +314,17 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
                   href={url.toString()}
                   target="_blank"
                   rel="noreferrer"
-                  className="subtitle1 md:caption flex items-center justify-between bg-transparent px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:px-2 md:py-2"
+                  className="subtitle1 md:caption flex items-center justify-between rounded-lg bg-transparent px-4 py-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:px-2 md:py-2"
                 >
-                  <div className="flex items-center gap-3">
-                    <Image
-                      alt={`${providerName} logo`}
-                      src={logo}
-                      width={44}
-                      height={42}
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-[42px] w-[44px] items-center">
+                      <Image
+                        alt={`${providerName} logo`}
+                        src={logo}
+                        width={44}
+                        height={42}
+                      />
+                    </div>
                     <span>
                       {t(
                         direction === "deposit"
@@ -282,7 +342,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         )}
       </div>
 
-      <div className="caption pt-6 text-center text-osmoverse-400 md:pt-4">
+      <div className="caption py-3 text-center text-osmoverse-400">
         {t("transfer.risks")}{" "}
         <Link
           href="/disclaimer#providers-and-bridge-disclaimer"
@@ -293,7 +353,7 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         </Link>
       </div>
 
-      <Button className="mt-3 w-full" variant="secondary" onClick={onDone}>
+      <Button className="w-full" variant="secondary" onClick={onDone}>
         <div className="md:body1 text-h6 font-h6">{t("transfer.done")}</div>
       </Button>
     </div>

@@ -3,6 +3,7 @@ import {
   chainsRouter,
   createTRPCRouter,
   earnRouter,
+  paramsRouter,
   poolsRouter,
   portfolioRouter,
   stakingRouter,
@@ -18,4 +19,5 @@ export const edgeRouter = createTRPCRouter({
   transactions: transactionsRouter,
   chains: chainsRouter,
   portfolio: portfolioRouter,
+  params: paramsRouter,
 });
