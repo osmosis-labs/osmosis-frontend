@@ -45,7 +45,7 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
     staked: t("portfolio.staked"),
     unstaking: t("portfolio.unstaking"),
     unclaimedRewards: t("portfolio.unclaimedRewards"),
-    positions: t("portfolio.positions"),
+    pooled: t("portfolio.pooled"),
     other: t("portfolio.other"),
   };
 
