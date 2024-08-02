@@ -67,6 +67,8 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       }
     );
 
+  const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
+
   return (
     <ModalBase
       title={
@@ -82,16 +84,23 @@ export const MoreBridgeOptionsModal: FunctionComponent<
       {...modalProps}
     >
       <p className="body1 md:body2 py-4 text-center text-osmoverse-300 md:py-2">
-        {t(
-          direction === "deposit"
-            ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
-            : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
-          {
-            asset: canonicalAssetDenom ?? fromAsset?.denom ?? "",
-            fromChain: fromChain?.prettyName ?? "",
-            toChain: toChain?.prettyName ?? "",
-          }
-        )}
+        {!fromChain || !toChain
+          ? t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+                : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+              { denom }
+            )
+          : t(
+              direction === "deposit"
+                ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
+                : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
+              {
+                asset: denom,
+                fromChain: fromChain.prettyName,
+                toChain: toChain.prettyName,
+              }
+            )}
       </p>
       <div className="flex flex-col gap-1 pt-4 md:gap-0 md:pt-2">
         {isLoadingExternalUrls ? (
@@ -190,17 +199,25 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
     const { url, logo, urlProviderName } = externalUrlsData.externalUrls[0];
 
     const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
-    const translatedText = t(
-      direction === "deposit"
-        ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
-        : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
-      {
-        denom: canonicalAssetDenom ?? fromAsset?.denom ?? "",
-        networkA: fromChain?.prettyName ?? "",
-        networkB: toChain?.prettyName ?? "",
-        service: urlProviderName,
-      }
-    );
+    const translatedText =
+      !fromChain || !toChain
+        ? t(
+            direction === "deposit"
+              ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+              : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+            { denom }
+          )
+        : t(
+            direction === "deposit"
+              ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
+              : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
+            {
+              denom,
+              networkA: fromChain.prettyName ?? "",
+              networkB: toChain.prettyName ?? "",
+              service: urlProviderName,
+            }
+          );
 
     /** Extract text that matches denom in translation and wrap in blue span. */
     const wrappedText = translatedText.replace(
@@ -250,16 +267,24 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   }
 
   const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
-  const translatedText = t(
-    direction === "deposit"
-      ? "transfer.moreBridgeOptions.descriptionDeposit"
-      : "transfer.moreBridgeOptions.descriptionWithdraw",
-    {
-      denom,
-      networkA: fromChain?.prettyName ?? "",
-      networkB: toChain?.prettyName ?? "",
-    }
-  );
+  const translatedText =
+    !fromChain || !toChain
+      ? t(
+          direction === "deposit"
+            ? "transfer.moreBridgeOptions.depositDescriptionUnknown"
+            : "transfer.moreBridgeOptions.withdrawDescriptionUnknown",
+          { denom }
+        )
+      : t(
+          direction === "deposit"
+            ? "transfer.moreBridgeOptions.descriptionDeposit"
+            : "transfer.moreBridgeOptions.descriptionWithdraw",
+          {
+            denom,
+            networkA: fromChain.prettyName,
+            networkB: toChain.prettyName,
+          }
+        );
 
   /** Extract text that matches denom in translation and wrap in blue span. */
   const wrappedText = translatedText.replace(

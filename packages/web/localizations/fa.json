@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
+      "depositDescriptionUnknown": "برای واریز {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
+      "withdrawDescriptionUnknown": "برای برداشتن {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
       "singleDescriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",

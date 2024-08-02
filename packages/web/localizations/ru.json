@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
+      "depositDescriptionUnknown": "Чтобы внести {denom} , используйте альтернативного поставщика.",
+      "withdrawDescriptionUnknown": "Чтобы вывести {denom} , используйте альтернативного поставщика.",
       "singleDescriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} , используйте {service} .",
       "singleDescriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} , используйте {service} .",
       "descriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
