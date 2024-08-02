@@ -860,7 +860,10 @@
       "tradeFeesInfo": "これは、流動性プロバイダーに報酬を与え、ネットワークを維持するために、取引実行時に Osmosis プロトコルによって請求される手数料です。",
       "tradeFeesLimitInfo": "指値注文の取引手数料は現在無料です。",
       "networkFeesAdditional": "ネットワーク手数料はすべての取引に追加されます。"
-    }
+    },
+    "noRoutes": "ルートが見つかりません",
+    "route": "ルート",
+    "routes": "ルート"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

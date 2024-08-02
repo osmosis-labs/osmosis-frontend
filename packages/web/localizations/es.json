@@ -860,7 +860,10 @@
       "tradeFeesInfo": "Esta es la tarifa que cobra el protocolo Osmosis en el momento de la ejecución de la operación para recompensar a los proveedores de liquidez y mantener la red.",
       "tradeFeesLimitInfo": "Las tarifas comerciales para órdenes limitadas son actualmente gratuitas.",
       "networkFeesAdditional": "Las tarifas de red son adicionales a cada transacción."
-    }
+    },
+    "noRoutes": "No se encontraron rutas",
+    "route": "ruta",
+    "routes": "rutas"
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

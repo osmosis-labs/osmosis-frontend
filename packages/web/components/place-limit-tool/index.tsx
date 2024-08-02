@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -70,11 +71,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 };
 
 // Certain errors we do not wish to show on the button
-const NON_DISPLAY_ERRORS = [
-  "errors.zeroAmount",
-  "errors.emptyAmount",
-  "limitOrders.insufficientFunds",
-];
+const NON_DISPLAY_ERRORS = ["errors.zeroAmount", "errors.emptyAmount"];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
@@ -86,6 +83,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onClose: closeAddFundsModal,
       onOpen: openAddFundsModal,
     } = useDisclosure();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // const fromAssetsPage = useMemo(() => page === "Token Info Page", [page]);
 
@@ -368,14 +366,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
 
     const buttonText = useMemo(() => {
-      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
-        return t(swapState.error);
-      } else {
-        return orderDirection === "bid"
-          ? t("portfolio.buy")
-          : t("limitOrders.sell");
-      }
-    }, [orderDirection, swapState.error, t]);
+      return orderDirection === "bid"
+        ? t("portfolio.buy")
+        : t("limitOrders.sell");
+    }, [orderDirection, t]);
 
     const isButtonDisabled = useMemo(() => {
       if (swapState.insufficientFunds) {
@@ -407,17 +401,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       return !swapState.isBalancesFetched;
     }, [swapState.isBalancesFetched]);
 
+    const errorDisplay = useMemo(() => {
+      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        return t(swapState.error);
+      }
+    }, [swapState.error, t]);
+
     return (
       <>
         <div className="flex flex-col">
           <AssetFieldset>
             <AssetFieldsetHeader>
               <AssetFieldsetHeaderLabel>
-                <span className="body2 text-osmoverse-300">
-                  {t("limitOrders.enterAnAmountTo")}{" "}
-                  {orderDirection === "bid"
-                    ? t("portfolio.buy").toLowerCase()
-                    : t("limitOrders.sell").toLowerCase()}
+                <span
+                  className={classNames("body2 text-osmoverse-300", {
+                    "text-rust-400": errorDisplay,
+                  })}
+                >
+                  {errorDisplay ? (
+                    errorDisplay
+                  ) : (
+                    <>
+                      {t("limitOrders.enterAnAmountTo")}{" "}
+                      {orderDirection === "bid"
+                        ? t("portfolio.buy").toLowerCase()
+                        : t("limitOrders.sell").toLowerCase()}
+                    </>
+                  )}
                 </span>
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
@@ -457,6 +467,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     </h3>
                   )
                 }
+                ref={inputRef}
                 inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
@@ -481,6 +492,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
+                  if (inputRef.current) {
+                    inputRef.current.focus();
+                  }
                 }}
               >
                 {type === "limit" && (
@@ -549,18 +563,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               >
                 <h6>{t("connectWallet")}</h6>
               </Button>
-            ) : hasFunds ? (
+            ) : (
               <Button
-                disabled={isButtonDisabled}
+                disabled={isButtonDisabled || !hasFunds}
                 isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
               >
                 <h6>{buttonText}</h6>
-              </Button>
-            ) : (
-              <Button onClick={openAddFundsModal}>
-                <h6>{t("limitOrders.addFunds")}</h6>
               </Button>
             )}
           </div>
@@ -568,11 +578,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             swapState={swapState.marketState}
             type={type}
             makerFee={swapState.makerFee}
-            gasAmount={swapState.gas.gasAmountFiat}
-            isGasLoading={swapState.gas.isLoading}
-            gasError={
-              swapState.gas.error === null ? undefined : swapState.gas.error
-            }
+            treatAsStable={tab === "buy" ? "in" : "out"}
+            tab={tab as "buy" | "sell"}
           />
         </div>
         <ReviewOrder

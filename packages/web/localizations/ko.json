@@ -860,7 +860,10 @@
       "tradeFeesInfo": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 거래 실행 시 Osmosis 프로토콜에서 부과하는 수수료입니다.",
       "tradeFeesLimitInfo": "지정가 주문에 대한 거래 수수료는 현재 무료입니다.",
       "networkFeesAdditional": "모든 거래에는 네트워크 수수료가 추가됩니다."
-    }
+    },
+    "noRoutes": "경로를 찾을 수 없습니다.",
+    "route": "노선",
+    "routes": "노선"
   },
   "walletSelect": {
     "gettingStarted": "시작하기",

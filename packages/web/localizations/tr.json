@@ -860,7 +860,10 @@
       "tradeFeesInfo": "Bu, likidite sağlayıcılarını ödüllendirmek ve ağı korumak için Osmosis protokolü tarafından ticaretin gerçekleştirildiği sırada alınan ücrettir.",
       "tradeFeesLimitInfo": "Limit emirleri için işlem ücretleri şu anda ücretsizdir.",
       "networkFeesAdditional": "Ağ ücretleri her işleme ek olarak uygulanır."
-    }
+    },
+    "noRoutes": "Rota bulunamadı",
+    "route": "rota",
+    "routes": "rotalar"
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
