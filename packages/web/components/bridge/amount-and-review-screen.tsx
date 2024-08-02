@@ -226,7 +226,8 @@ export const AmountAndReviewScreen = observer(
     });
 
     if (!selectedAssetDenom) {
-      return setCurrentScreen(ImmersiveBridgeScreen.Asset);
+      setCurrentScreen(ImmersiveBridgeScreen.Asset);
+      return null;
     }
 
     return (
