@@ -114,7 +114,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         {wallet?.isWalletConnected && openOrders.length > 0 && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
-            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-[#3E386A8A] bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
+            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoversealpha-800 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center">

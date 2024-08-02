@@ -59,6 +59,9 @@ module.exports = {
         900: "#140F34",
         1000: "#090524",
       },
+      osmoversealpha: {
+        800: "#3E386A",
+      },
       ammelia: {
         300: "#E196DB",
         400: "#D779CF",

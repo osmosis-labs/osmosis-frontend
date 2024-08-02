@@ -239,7 +239,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
-            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-[#3E386A] hover:text-white-high disabled:opacity-50"
+            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-osmoversealpha-800 hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               priceState.setPrice("");
