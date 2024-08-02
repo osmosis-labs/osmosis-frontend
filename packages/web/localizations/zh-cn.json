@@ -324,7 +324,16 @@
     "noAssets": "您在{osmosis}上没有余额",
     "getStarted": "存入资产即可开始",
     "noPositions": "您没有职位",
-    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产"
+    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产",
+    "allocation": "分配",
+    "available": "可用的",
+    "staked": "已质押",
+    "unstaking": "取消质押",
+    "unclaimedRewards": "未领取的奖励",
+    "pooled": "池化",
+    "other": "其他",
+    "all": "全部",
+    "assets": "资产"
   },
   "buyTokens": "购买代币",
   "components": {

@@ -324,7 +324,16 @@
     "noAssets": "{osmosis}に残高がありません",
     "getStarted": "始めるには資産を預けてください",
     "noPositions": "ポジションがありません",
-    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう",
+    "allocation": "割り当て",
+    "available": "利用可能",
+    "staked": "賭けられた",
+    "unstaking": "ステーキング解除",
+    "unclaimedRewards": "未請求の報酬",
+    "pooled": "プール",
+    "other": "他の",
+    "all": "全て",
+    "assets": "資産"
   },
   "buyTokens": "トークンを購入する",
   "components": {

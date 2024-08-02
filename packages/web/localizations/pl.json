@@ -324,7 +324,16 @@
     "noAssets": "Nie masz salda na {osmosis}",
     "getStarted": "Aby rozpocząć, zdeponuj środki",
     "noPositions": "Nie masz żadnych stanowisk",
-    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności",
+    "allocation": "Przydział",
+    "available": "Dostępny",
+    "staked": "Postawione",
+    "unstaking": "Odstawienie",
+    "unclaimedRewards": "Nieodebrane nagrody",
+    "pooled": "Połączone",
+    "other": "Inny",
+    "all": "Wszystko",
+    "assets": "Aktywa"
   },
   "buyTokens": "Kup tokeny",
   "components": {
