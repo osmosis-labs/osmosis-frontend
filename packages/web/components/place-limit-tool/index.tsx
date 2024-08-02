@@ -580,11 +580,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             swapState={swapState.marketState}
             type={type}
             makerFee={swapState.makerFee}
-            gasAmount={swapState.gas.gasAmountFiat}
-            isGasLoading={swapState.gas.isLoading}
-            gasError={
-              swapState.gas.error === null ? undefined : swapState.gas.error
-            }
           />
         </div>
         <ReviewOrder

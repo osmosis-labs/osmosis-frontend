@@ -12,11 +12,9 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
-import { Skeleton } from "~/components/ui/skeleton";
 import {
   useDisclosure,
   UseDisclosureReturn,
-  useOneClickTradingSession,
   usePreviousWhen,
   useSlippageConfig,
   useTranslation,
@@ -34,9 +32,6 @@ interface TradeDetailsProps {
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
-  gasAmount?: PricePretty;
-  isGasLoading?: boolean;
-  gasError?: Error | null;
 }
 
 export const TradeDetails = observer(
@@ -46,13 +41,8 @@ export const TradeDetails = observer(
     treatAsStable,
     type,
     makerFee,
-    gasAmount,
-    isGasLoading,
-    gasError,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
-
-    const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
     const routesVisDisclosure = useDisclosure();
 
@@ -90,43 +80,6 @@ export const TradeDetails = observer(
         minimumFractionDigits: 2,
       });
     }, [makerFee]);
-
-    const gasFeeError = useMemo(() => {
-      if (!!gasAmount && !gasError) return;
-
-      return isOneClickTradingEnabled
-        ? t("swap.gas.oneClickTradingError")
-        : t("swap.gas.error");
-    }, [gasAmount, isOneClickTradingEnabled, gasError, t]);
-
-    const GasEstimation = useMemo(() => {
-      return !!gasFeeError ? (
-        <GenericDisclaimer
-          title={t("swap.gas.gasEstimationError")}
-          body={gasFeeError}
-        >
-          <span className="flex items-center gap-1">
-            <Icon
-              id="question"
-              width={24}
-              height={24}
-              className="scale-75 text-osmoverse-300"
-            />{" "}
-            {t("swap.gas.unknown")}
-          </span>
-        </GenericDisclaimer>
-      ) : (
-        <span
-          className={classNames(
-            "inline-flex items-center gap-1 text-osmoverse-100",
-            { "animate-pulse": isGasLoading }
-          )}
-        >
-          <Icon id="gas" width={16} height={16} />
-          {gasAmount && gasAmount.toString()}
-        </span>
-      );
-    }, [gasAmount, isGasLoading, gasFeeError, t]);
 
     return (
       <div className="flex w-full">
@@ -302,35 +255,6 @@ export const TradeDetails = observer(
                       }
                     />
                   )}
-                  <RecapRow
-                    left={
-                      <GenericDisclaimer
-                        title={t("swap.gas.whatAreTradeFees")}
-                        body={
-                          <span>
-                            {t("swap.gas.tradeFeesInfo")} <br />
-                            <br /> {t("swap.gas.tradeFeesLimitInfo")}
-                            <br />
-                            <br />
-                            {t("swap.gas.networkFeesAdditional")}
-                          </span>
-                        }
-                      >
-                        {t("swap.gas.additionalNetworkFee")}
-                      </GenericDisclaimer>
-                    }
-                    right={
-                      swapState && (
-                        <>
-                          {!isGasLoading ? (
-                            GasEstimation
-                          ) : (
-                            <Skeleton className="h-5 w-16" />
-                          )}
-                        </>
-                      )
-                    }
-                  />
                   {type === "market" && (
                     <Disclosure>
                       {({ open }) => {
