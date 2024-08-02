@@ -30,6 +30,7 @@ import {
   LiquidityPosition,
   queryAccountPositions,
   queryAccountUnbondingPositions,
+  queryLiquidityPerTickRange,
   queryPositionById,
 } from "../../../queries/osmosis/concentratedliquidity";
 import {
@@ -273,7 +274,7 @@ export async function mapGetUserPositionDetails({
 
   const stakeCurrency = getAsset({
     ...params,
-    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
+    anyDenom: params.chainList[0].staking!.staking_tokens[0].denom,
   });
 
   const lockableDurations = getLockableDurations();
@@ -709,4 +710,25 @@ export async function getPositionHistoricalPerformance({
     totalEarnedValue,
     roi,
   };
+}
+
+export type ActiveLiquidityPerTickRange = {
+  /** Price-correlated tick index. */
+  lowerTick: Int;
+  upperTick: Int;
+  /** Net liquidity, for calculating active liquidity. */
+  liquidityAmount: Dec;
+};
+
+export async function getLiquidityPerTickRange(params: {
+  poolId: string;
+  chainList: Chain[];
+}): Promise<ActiveLiquidityPerTickRange[]> {
+  return queryLiquidityPerTickRange(params).then(({ liquidity }) =>
+    liquidity.map(({ liquidity_amount, lower_tick, upper_tick }) => ({
+      lowerTick: new Int(lower_tick),
+      upperTick: new Int(upper_tick),
+      liquidityAmount: new Dec(liquidity_amount),
+    }))
+  );
 }

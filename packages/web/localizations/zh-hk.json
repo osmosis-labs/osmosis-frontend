@@ -97,6 +97,7 @@
     "onePosition": "1 個位置",
     "goToPool": "前往泳池 #{poolId}"
   },
+  "copied": "複製了！",
   "app": {
     "banner": {
       "backToOsmosis": "返回Osmosis",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
     "startAgain": "重新開始"
   },
+  "estimated": "估計的",
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
     "simplifiedExperience": "您的體驗已被簡化！",
@@ -451,46 +453,7 @@
     "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
     "new": "新的",
-    "settings": "設定",
-    "notifications": "通知"
-  },
-  "notifi": {
-    "saveChanges": "保存更改",
-    "unsupportedHistoryTitle": "不支持的通知",
-    "unsupportedHistoryMessage": "哎呀！出事了。請告訴我們",
-    "getStartedHistoryTitle1": "購買代幣以開始使用",
-    "getStartedHistoryMessage1": "收購OSMO開始交易",
-    "getStartedHistoryTitle2": "如何開始交易",
-    "getStartedHistoryMessage2": "這個快速教程將讓您在幾分鐘內完成交易",
-    "getStartedHistoryTitle3": "如何存入資金",
-    "getStartedHistoryMessage3": "了解如何在 Osmosis 上存入資金",
-    "signupDummyHistoryTitle1": "購買代幣以開始使用",
-    "signupDummyHistoryMessage1": "收購OSMO開始交易",
-    "signupDummyHistoryTitle2": "如何存入資產",
-    "signupDummyHistoryMessage2": "了解如何將資金轉移到 Osmosis",
-    "signupDummyHistoryTitle3": "如何開始交易",
-    "signupDummyHistoryMessage3": "這個快速教程將讓您在幾分鐘內完成交易",
-    "outboundTransferHistoryTitle": "滲透出境轉移",
-    "outboundTransferHistoryMessage": "數量",
-    "poolExitedHistoryTitle": "滲透池已退出",
-    "poolExitedHistoryMessage": "池 ID",
-    "poolJoinedHistoryTitle": "滲透池已加入",
-    "poolJoinedHistoryMessage": "代幣",
-    "swapHistoryTitle": "滲透交換已確認",
-    "swapHistoryMessage": "交換到",
-    "emptyHistoryTitle": "無題",
-    "emptyHistoryMessage": "沒有消息",
-    "assetReceivedHistoryTitle": "已收到資產",
-    "assetReceivedHistoryMessage": "數量",
-    "positionOutOfRangeHistoryTitle": "位置超出範圍",
-    "positionOutOfRangeHistoryMessage": "您的 LP 位置超出範圍",
-    "signupPageTitle": "現已提供通知。",
-    "signupPageMessage": "再也不會錯過重要的更新，從新的代幣列表到關鍵位置狀態。",
-    "signupPageButton": "啟用通知",
-    "loadMore": "裝載更多",
-    "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
-    "discardButton": "放棄更改",
-    "clearAllHistory": "全部清除"
+    "settings": "設定"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "從",
     "to": "到",
     "max": "最大限度",
+    "pendingApproval": "待批准",
     "available": "可用的",
     "connectTo": "連接到{network}",
     "transferWith": "轉移與",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
+      "depositDescriptionUnknown": "若要存入{denom} ，請使用替代提供者。",
+      "withdrawDescriptionUnknown": "若要撤回{denom} ，請使用替代提供者。",
       "singleDescriptionDeposit": "將{denom}從{networkA}存入{networkB} ，請使用{service} 。",
       "singleDescriptionWithdraw": "將{denom}從{networkA}撤回到{networkB} ，請使用{service} 。",
       "descriptionDeposit": "將{denom}從{networkA}存入{networkB} ，請使用下列替代提供者之一。",
       "descriptionWithdraw": "將{denom}從{networkA}撤回到{networkB} ，請使用下列替代提供者之一。",
+      "chooseAnAlternativeProviderDeposit": "選擇一個替代提供者將{asset}從{fromChain}存入{toChain}",
+      "chooseAnAlternativeProviderWithdraw": "選擇替代提供者將{asset}從{fromChain}撤回到{toChain}",
       "depositWith": "存款於",
       "withdrawWith": "撤回與"
     },
@@ -963,8 +931,11 @@
       "title": "選擇網路",
       "searchPlaceholder": "搜尋支援的網絡"
     },
-    "pendingWithdraw": "待提款",
-    "pendingDeposit": "待定存款",
+    "pendingWithdraw": "提款正在進行中",
+    "pendingDeposit": "存款進行中",
+    "amountToChain": "{amount}到{chain}",
+    "amountFromChain": "來自{chain} {amount} }",
+    "amountFailedToWithdraw": "{amount}提現失敗",
     "completedWithdraw": "提現完成",
     "completedDeposit": "存款完成",
     "failedWithdraw": "提現失敗",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "預計收到金額",
     "slippageWarning": "該交易的預期輸出明顯低於輸入金額，這可能導致收到與預期不同的最終金額。",
     "priceImpactWarning": "此交易的價格影響為{priceImpact} ，這可能會影響最終收到的金額。",
-    "connect": "連接",
     "confirm": "確認",
     "cancel": "取消",
     "confirmDepositTo": "確認充值至{chain}",

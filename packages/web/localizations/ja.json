@@ -97,6 +97,7 @@
     "onePosition": "1 ポジション",
     "goToPool": "プール #{poolId}に移動します"
   },
+  "copied": "コピーしました！",
   "app": {
     "banner": {
       "backToOsmosis": "浸透に戻る",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"
   },
+  "estimated": "推定",
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
     "simplifiedExperience": "あなたの経験は簡素化されました!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "レヴァナが提供する",
     "more": "もっと",
     "new": "新しい",
-    "settings": "設定",
-    "notifications": "通知"
-  },
-  "notifi": {
-    "saveChanges": "変更内容を保存",
-    "unsupportedHistoryTitle": "サポートされていない通知",
-    "unsupportedHistoryMessage": "おっと！何かが間違っていた。お知らせください",
-    "getStartedHistoryTitle1": "トークンを購入して始めましょう",
-    "getStartedHistoryMessage1": "OSMOを取得して取引を開始する",
-    "getStartedHistoryTitle2": "取引の開始方法",
-    "getStartedHistoryMessage2": "この簡単なチュートリアルでは数分で取引できるようになります",
-    "getStartedHistoryTitle3": "資金の入金方法",
-    "getStartedHistoryMessage3": "Osmosis に資金を入金する方法を学ぶ",
-    "signupDummyHistoryTitle1": "トークンを購入して始めましょう",
-    "signupDummyHistoryMessage1": "OSMOを取得して取引を開始する",
-    "signupDummyHistoryTitle2": "資産の預け入れ方法",
-    "signupDummyHistoryMessage2": "Osmosis に資金を送金する方法を学ぶ",
-    "signupDummyHistoryTitle3": "取引の開始方法",
-    "signupDummyHistoryMessage3": "この簡単なチュートリアルでは数分で取引できるようになります",
-    "outboundTransferHistoryTitle": "浸透アウトバウンド転送",
-    "outboundTransferHistoryMessage": "額",
-    "poolExitedHistoryTitle": "浸透プールが終了しました",
-    "poolExitedHistoryMessage": "プールID",
-    "poolJoinedHistoryTitle": "浸透プールが参加しました",
-    "poolJoinedHistoryMessage": "トークン",
-    "swapHistoryTitle": "浸透圧の交換が確認されました",
-    "swapHistoryMessage": "に交換されました",
-    "emptyHistoryTitle": "タイトルなし",
-    "emptyHistoryMessage": "メッセージなし",
-    "assetReceivedHistoryTitle": "資産を受け取りました",
-    "assetReceivedHistoryMessage": "額",
-    "positionOutOfRangeHistoryTitle": "範囲外の位置",
-    "positionOutOfRangeHistoryMessage": "LP の位置が範囲外です",
-    "signupPageTitle": "通知が利用できるようになりました。",
-    "signupPageMessage": "新しいトークンのリストから重要なポジションのステータスまで、重要な更新を見逃すことはもうありません。",
-    "signupPageButton": "通知を有効にします",
-    "loadMore": "もっと読み込む",
-    "unsavedChangeModalInfo": "未保存の変更があります。したいですか",
-    "discardButton": "変更を破棄",
-    "clearAllHistory": "すべてクリア"
+    "settings": "設定"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "{network}から",
     "to": "{network}へ",
     "max": "マックス",
+    "pendingApproval": "承認待ちの",
     "available": "利用可能",
     "connectTo": "{network}に接続します",
     "transferWith": "転送",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
+      "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
+      "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
       "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
       "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
       "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
       "descriptionWithdraw": "{denom}を{networkA}から{networkB}に引き出すには、次の代替プロバイダーのいずれかを使用してください。",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
     },
@@ -963,8 +931,11 @@
       "title": "ネットワークを選択",
       "searchPlaceholder": "サポートされているネットワークを検索"
     },
-    "pendingWithdraw": "保留中の撤回",
-    "pendingDeposit": "保留中の入金",
+    "pendingWithdraw": "撤退中",
+    "pendingDeposit": "入金処理中",
+    "amountToChain": "{amount}から{chain}",
+    "amountFromChain": "{amount}から{chain}",
+    "amountFailedToWithdraw": "{amount}引き出しに失敗しました",
     "completedWithdraw": "引き出しが完了しました",
     "completedDeposit": "入金完了",
     "failedWithdraw": "引き出しに失敗しました",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
     "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
-    "connect": "接続する",
     "confirm": "確認する",
     "cancel": "キャンセル",
     "confirmDepositTo": "{chain}への入金を確認します",

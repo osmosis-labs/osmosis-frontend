@@ -96,6 +96,7 @@ describe("getAssetWithVariants", () => {
     expect(result).toMatchInlineSnapshot(`
       [
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "USDC.axl",
           "coinGeckoId": "axlusdc",
@@ -109,6 +110,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "polygon.USDC.axl",
           "coinGeckoId": "usd-coin",
@@ -122,6 +124,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "avalanche.USDC.axl",
           "coinGeckoId": "usd-coin",
@@ -135,6 +138,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "USDC.grv",
           "coinGeckoId": "gravity-bridge-usdc",
@@ -148,6 +152,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "USDC",
           "coinGeckoId": "usd-coin",
@@ -161,6 +166,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "USDC.wh",
           "coinGeckoId": undefined,
@@ -174,6 +180,7 @@ describe("getAssetWithVariants", () => {
           "variantGroupKey": "USDC",
         },
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "solana.USDC.wh",
           "coinGeckoId": undefined,
@@ -208,6 +215,7 @@ describe("getAssetWithVariants", () => {
     ).toMatchInlineSnapshot(`
       [
         {
+          "areTransfersDisabled": false,
           "coinDecimals": 6,
           "coinDenom": "ATOM",
           "coinGeckoId": "cosmos",

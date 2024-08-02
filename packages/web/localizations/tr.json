@@ -97,6 +97,7 @@
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}"
   },
+  "copied": "Kopyalandı!",
   "app": {
     "banner": {
       "backToOsmosis": "Osmosis'e Geri Dön",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
     "startAgain": "Tekrar başla"
   },
+  "estimated": "Tahmini",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
     "simplifiedExperience": "Deneyiminiz basitleştirildi!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
     "new": "YENİ",
-    "settings": "Ayarlar",
-    "notifications": "Bildirimler"
-  },
-  "notifi": {
-    "saveChanges": "Değişiklikleri Kaydet",
-    "unsupportedHistoryTitle": "Desteklenmeyen Bildirim",
-    "unsupportedHistoryMessage": "Hoop! Birşeyler yanlış gitti. Lütfen bize bildirin",
-    "getStartedHistoryTitle1": "Başlamak için jeton satın alın",
-    "getStartedHistoryMessage1": "Ticarete başlamak için OSMO'yu edinin",
-    "getStartedHistoryTitle2": "Ticarete nasıl başlanır?",
-    "getStartedHistoryMessage2": "Bu hızlı eğitim dakikalar içinde işlem yapmanızı sağlayacak",
-    "getStartedHistoryTitle3": "Nasıl para yatırılır",
-    "getStartedHistoryMessage3": "Osmosis'e nasıl para yatıracağınızı öğrenin",
-    "signupDummyHistoryTitle1": "Başlamak için jeton satın alın",
-    "signupDummyHistoryMessage1": "Ticarete başlamak için OSMO'yu edinin",
-    "signupDummyHistoryTitle2": "Varlıklar nasıl yatırılır",
-    "signupDummyHistoryMessage2": "Osmosis'e nasıl para aktarılacağını öğrenin",
-    "signupDummyHistoryTitle3": "Ticarete nasıl başlanır",
-    "signupDummyHistoryMessage3": "Bu hızlı eğitim dakikalar içinde işlem yapmanızı sağlayacak",
-    "outboundTransferHistoryTitle": "Ozmoz Giden Transfer",
-    "outboundTransferHistoryMessage": "Miktar",
-    "poolExitedHistoryTitle": "Osmoz Havuzundan Çıkıldı",
-    "poolExitedHistoryMessage": "havuz kimliği",
-    "poolJoinedHistoryTitle": "Osmoz Havuzuna Katıldı",
-    "poolJoinedHistoryMessage": "Jeton",
-    "swapHistoryTitle": "Ozmoz Takas Onaylandı",
-    "swapHistoryMessage": "takas edildi",
-    "emptyHistoryTitle": "Başlık yok",
-    "emptyHistoryMessage": "Mesaj yok",
-    "assetReceivedHistoryTitle": "Alınan Varlık",
-    "assetReceivedHistoryMessage": "Miktar",
-    "positionOutOfRangeHistoryTitle": "Pozisyon Menzil Dışında",
-    "positionOutOfRangeHistoryMessage": "LP konumunuz menzil dışında",
-    "signupPageTitle": "Bildirimler artık kullanılabilir.",
-    "signupPageMessage": "Yeni belirteç listelerinden kritik konum durumlarına kadar önemli bir güncellemeyi bir daha asla kaçırmayın.",
-    "signupPageButton": "Bildirimleri Etkinleştir",
-    "loadMore": "Daha fazla yükle",
-    "unsavedChangeModalInfo": "Kaydedilmemiş değişiklikleriniz mevcut. Arzu eder misiniz",
-    "discardButton": "Değişiklikleri gözardı et",
-    "clearAllHistory": "Hepsini temizle"
+    "settings": "Ayarlar"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "kaynağından",
     "to": "için",
     "max": "Maksimum",
+    "pendingApproval": "Onay bekleyen",
     "available": "mevcut",
     "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
+      "depositDescriptionUnknown": "{denom} yatırmak için lütfen alternatif bir sağlayıcı kullanın.",
+      "withdrawDescriptionUnknown": "{denom} öğesini geri çekmek için lütfen alternatif bir sağlayıcı kullanın.",
       "singleDescriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
       "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
       "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
       "descriptionWithdraw": "{denom} öğesini {networkA} öğesinden {networkB} çekmek için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "chooseAnAlternativeProviderDeposit": "{asset} yi {fromChain} den {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} yi {fromChain} den {toChain}",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
@@ -963,8 +931,11 @@
       "title": "Ağ seçin",
       "searchPlaceholder": "Desteklenen ağları arayın"
     },
-    "pendingWithdraw": "Geri çekilme bekleniyor",
-    "pendingDeposit": "Bekleyen mevduat",
+    "pendingWithdraw": "Geri çekme işlemi devam ediyor",
+    "pendingDeposit": "Para yatırma işlemi devam ediyor",
+    "amountToChain": "{amount} - { {chain}",
+    "amountFromChain": "{amount} from {chain}",
+    "amountFailedToWithdraw": "{amount} çekilemedi",
     "completedWithdraw": "Para çekme işlemi tamamlandı",
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
     "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
-    "connect": "Bağlamak",
     "confirm": "Onaylamak",
     "cancel": "İptal etmek",
     "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",

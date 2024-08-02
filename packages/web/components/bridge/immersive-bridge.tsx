@@ -193,7 +193,9 @@ export const ImmersiveBridgeFlow = ({
                                   Number(step) - 1
                                 ).toString() as ImmersiveBridgeScreen
                               );
-                              setSelectedAssetDenom(null);
+                              if (step === ImmersiveBridgeScreen.Amount) {
+                                setSelectedAssetDenom(null);
+                              }
                             }}
                           />
                         )}

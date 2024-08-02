@@ -97,6 +97,7 @@
     "onePosition": "1 સ્થિતિ",
     "goToPool": "પૂલ #{poolId} પર જાઓ"
   },
+  "copied": "નકલ કરી!",
   "app": {
     "banner": {
       "backToOsmosis": "ઓસ્મોસિસ પર પાછા જાઓ",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
     "startAgain": "ફરી શરૂ કરો"
   },
+  "estimated": "અંદાજિત",
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
     "simplifiedExperience": "તમારો અનુભવ સરળ કરવામાં આવ્યો છે!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "Levana દ્વારા સંચાલિત",
     "more": "વધુ",
     "new": "નવું",
-    "settings": "સેટિંગ્સ",
-    "notifications": "સૂચનાઓ"
-  },
-  "notifi": {
-    "saveChanges": "ફેરફારો સંગ્રહ",
-    "unsupportedHistoryTitle": "અસમર્થિત સૂચના",
-    "unsupportedHistoryMessage": "અરેરે, કંઈક ખોટું થયું. કૃપા કરીને અમને જણાવો",
-    "getStartedHistoryTitle1": "પ્રારંભ કરવા માટે ટોકન્સ ખરીદો",
-    "getStartedHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
-    "getStartedHistoryTitle2": "વેપાર કેવી રીતે શરૂ કરવો",
-    "getStartedHistoryMessage2": "આ ઝડપી ટ્યુટોરીયલ તમને મિનિટોમાં ટ્રેડિંગ કરાવશે",
-    "getStartedHistoryTitle3": "ભંડોળ કેવી રીતે જમા કરવું",
-    "getStartedHistoryMessage3": "ઓસ્મોસિસ પર ફંડ કેવી રીતે જમા કરવું તે જાણો",
-    "signupDummyHistoryTitle1": "પ્રારંભ કરવા માટે ટોકન્સ ખરીદો",
-    "signupDummyHistoryMessage1": "વેપાર શરૂ કરવા માટે OSMO મેળવો",
-    "signupDummyHistoryTitle2": "સંપત્તિ કેવી રીતે જમા કરવી",
-    "signupDummyHistoryMessage2": "ઓસ્મોસિસ પર ફંડ કેવી રીતે ટ્રાન્સફર કરવું તે જાણો",
-    "signupDummyHistoryTitle3": "વેપાર કેવી રીતે શરૂ કરવો",
-    "signupDummyHistoryMessage3": "આ ઝડપી ટ્યુટોરીયલ તમને મિનિટોમાં ટ્રેડિંગ કરાવશે",
-    "outboundTransferHistoryTitle": "ઓસ્મોસિસ આઉટબાઉન્ડ ટ્રાન્સફર",
-    "outboundTransferHistoryMessage": "રકમ",
-    "poolExitedHistoryTitle": "ઓસ્મોસિસ પૂલ બહાર નીકળ્યો",
-    "poolExitedHistoryMessage": "પૂલ ID",
-    "poolJoinedHistoryTitle": "ઓસ્મોસિસ પૂલ જોડાયા",
-    "poolJoinedHistoryMessage": "ટોકન",
-    "swapHistoryTitle": "ઓસ્મોસિસ સ્વેપ પુષ્ટિ",
-    "swapHistoryMessage": "માં અદલાબદલી",
-    "emptyHistoryTitle": "કોઈ શીર્ષક નથી",
-    "emptyHistoryMessage": "કોઈ સંદેશ નથી",
-    "assetReceivedHistoryTitle": "સંપત્તિ પ્રાપ્ત થઈ",
-    "assetReceivedHistoryMessage": "રકમ",
-    "positionOutOfRangeHistoryTitle": "શ્રેણીની બહારની સ્થિતિ",
-    "positionOutOfRangeHistoryMessage": "તમારી LP સ્થિતિ શ્રેણીની બહાર છે",
-    "signupPageTitle": "સૂચનાઓ હવે ઉપલબ્ધ છે.",
-    "signupPageMessage": "નવી ટોકન સૂચિઓથી લઈને નિર્ણાયક સ્થિતિ સ્થિતિઓ સુધી ફરી ક્યારેય મહત્વપૂર્ણ અપડેટ ચૂકશો નહીં.",
-    "signupPageButton": "સૂચનાઓ સક્ષમ કરો",
-    "loadMore": "વધુ બતાવો",
-    "unsavedChangeModalInfo": "તમારી પાસે વણસાચવેલા ફેરફારો છે. તમે કરવા માંગો છો",
-    "discardButton": "ફેરફારોને અવગણો",
-    "clearAllHistory": "બધું સાફ કરો"
+    "settings": "સેટિંગ્સ"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "માંથી",
     "to": "માટે",
     "max": "મહત્તમ",
+    "pendingApproval": "મંજૂરી બાકી હોવી",
     "available": "ઉપલબ્ધ",
     "connectTo": "{network} થી કનેક્ટ કરો",
     "transferWith": "સાથે ટ્રાન્સફર કરો",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
+      "depositDescriptionUnknown": "{denom} જમા કરાવવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
+      "withdrawDescriptionUnknown": "{denom} પાછી ખેંચવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
       "singleDescriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "singleDescriptionWithdraw": "{denom} ને {networkA} માંથી {networkB} માં પાછી ખેંચી લેવા {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "descriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
       "descriptionWithdraw": "{denom} ને {networkA} માંથી {networkB} માં પાછી ખેંચી લેવા {networkB} , કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain} થી {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain} થી {toChain}",
       "depositWith": "સાથે જમા",
       "withdrawWith": "સાથે પાછી ખેંચો"
     },
@@ -963,8 +931,11 @@
       "title": "નેટવર્ક પસંદ કરો",
       "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
     },
-    "pendingWithdraw": "બાકી ઉપાડ",
-    "pendingDeposit": "બાકી થાપણ",
+    "pendingWithdraw": "પાછી ખેંચવાની પ્રક્રિયા ચાલુ છે",
+    "pendingDeposit": "ડિપોઝીટ ચાલુ છે",
+    "amountToChain": "{amount} થી {chain}",
+    "amountFromChain": "{amount} {chain}",
+    "amountFailedToWithdraw": "{amount} પાછી ખેંચવામાં નિષ્ફળ",
     "completedWithdraw": "ઉપાડ પૂર્ણ",
     "completedDeposit": "ડિપોઝિટ પૂર્ણ",
     "failedWithdraw": "ઉપાડ નિષ્ફળ",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
     "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
     "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે.",
-    "connect": "જોડાવા",
     "confirm": "પુષ્ટિ કરો",
     "cancel": "રદ કરો",
     "confirmDepositTo": "{chain} માં જમા કરાવવાની પુષ્ટિ કરો",

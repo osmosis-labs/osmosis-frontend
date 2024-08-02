@@ -97,6 +97,7 @@
     "onePosition": "1 posição",
     "goToPool": "Vá para a piscina #{poolId}"
   },
+  "copied": "Copiado!",
   "app": {
     "banner": {
       "backToOsmosis": "Voltar para o Osmosis",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
     "startAgain": "Comece de novo"
   },
+  "estimated": "Estimado",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
     "simplifiedExperience": "Sua experiência foi simplificada!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "Desenvolvido por Levana",
     "more": "Mais",
     "new": "NOVO",
-    "settings": "Configurações",
-    "notifications": "Notificações"
-  },
-  "notifi": {
-    "saveChanges": "Salvar alterações",
-    "unsupportedHistoryTitle": "Notificação não suportada",
-    "unsupportedHistoryMessage": "Ops, algo deu errado. Por favor nos informe",
-    "getStartedHistoryTitle1": "Compre tokens para começar",
-    "getStartedHistoryMessage1": "Adquira o OSMO para começar a negociar",
-    "getStartedHistoryTitle2": "Como começar a negociar",
-    "getStartedHistoryMessage2": "Este tutorial rápido fará você negociar em minutos",
-    "getStartedHistoryTitle3": "Como depositar fundos",
-    "getStartedHistoryMessage3": "Aprenda a depositar fundos no Osmosis",
-    "signupDummyHistoryTitle1": "Compre tokens para começar",
-    "signupDummyHistoryMessage1": "Adquira o OSMO para começar a negociar",
-    "signupDummyHistoryTitle2": "Como depositar ativos",
-    "signupDummyHistoryMessage2": "Aprenda a transferir fundos para o Osmosis",
-    "signupDummyHistoryTitle3": "Como começar a negociar",
-    "signupDummyHistoryMessage3": "Este tutorial rápido fará você negociar em minutos",
-    "outboundTransferHistoryTitle": "Transferência de Saída de Osmose",
-    "outboundTransferHistoryMessage": "Quantia",
-    "poolExitedHistoryTitle": "Piscina de osmose encerrada",
-    "poolExitedHistoryMessage": "ID da piscina",
-    "poolJoinedHistoryTitle": "Conjunto de osmose associado",
-    "poolJoinedHistoryMessage": "Símbolo",
-    "swapHistoryTitle": "Troca de osmose confirmada",
-    "swapHistoryMessage": "trocado para",
-    "emptyHistoryTitle": "sem título",
-    "emptyHistoryMessage": "Nenhuma mensagem",
-    "assetReceivedHistoryTitle": "Ativo recebido",
-    "assetReceivedHistoryMessage": "Quantia",
-    "positionOutOfRangeHistoryTitle": "Posição fora do alcance",
-    "positionOutOfRangeHistoryMessage": "Sua posição LP está fora de alcance",
-    "signupPageTitle": "As notificações já estão disponíveis.",
-    "signupPageMessage": "Nunca mais perca uma atualização importante, desde novas listagens de tokens até status de posições críticas.",
-    "signupPageButton": "Ativar notificações",
-    "loadMore": "Carregue mais",
-    "unsavedChangeModalInfo": "Você tem alterações não salvas. Você gostaria de",
-    "discardButton": "Descartar mudanças",
-    "clearAllHistory": "Limpar tudo"
+    "settings": "Configurações"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "De",
     "to": "Para",
     "max": "Máx.",
+    "pendingApproval": "Aprovação pendente",
     "available": "disponível",
     "connectTo": "Conecte-se a {network}",
     "transferWith": "Transferir com",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",
       "titleWithdraw": "Mais opções de retirada",
+      "depositDescriptionUnknown": "Para depositar {denom} , use um provedor alternativo.",
+      "withdrawDescriptionUnknown": "Para retirar {denom} , use um provedor alternativo.",
       "singleDescriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use {service} .",
       "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use {service} .",
       "descriptionDeposit": "Para depositar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
       "descriptionWithdraw": "Para retirar {denom} de {networkA} para {networkB} , use um dos seguintes provedores alternativos.",
+      "chooseAnAlternativeProviderDeposit": "Escolha um provedor alternativo para depositar {asset} de {fromChain} para {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Escolha um provedor alternativo para retirar {asset} de {fromChain} para {toChain}",
       "depositWith": "Deposite com",
       "withdrawWith": "Retirar com"
     },
@@ -963,8 +931,11 @@
       "title": "Selecione a rede",
       "searchPlaceholder": "Pesquisar redes suportadas"
     },
-    "pendingWithdraw": "Retirada pendente",
-    "pendingDeposit": "Depósito pendente",
+    "pendingWithdraw": "Retirada em andamento",
+    "pendingDeposit": "Depósito em andamento",
+    "amountToChain": "{amount} para {chain}",
+    "amountFromChain": "{amount} de {chain}",
+    "amountFailedToWithdraw": "{amount} Falha ao retirar",
     "completedWithdraw": "Retirada concluída",
     "completedDeposit": "Depósito concluído",
     "failedWithdraw": "Falha na retirada",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "Valor estimado recebido",
     "slippageWarning": "O resultado esperado para esta transação é significativamente inferior ao valor do insumo, o que pode resultar no recebimento de um valor final diferente do esperado.",
     "priceImpactWarning": "O impacto no preço desta transação é {priceImpact} , o que pode influenciar o valor final recebido.",
-    "connect": "Conectar",
     "confirm": "confirme",
     "cancel": "Cancelar",
     "confirmDepositTo": "Confirme o depósito em {chain}",

@@ -59,37 +59,8 @@ export class IbcBridgeProvider implements BridgeProvider {
       this.estimateTransferTime(fromChainId, toChainId),
     ]);
 
-    const txSimulation = await estimateGasFee({
-      chainId: fromChainId,
-      chainList: this.ctx.chainList,
-      body: {
-        messages: [
-          this.protoRegistry.encodeAsAny({
-            typeUrl: signDoc.msgTypeUrl,
-            value: signDoc.msg,
-          }),
-        ],
-      },
-      bech32Address: params.fromAddress,
-    }).catch((e) => {
-      if (
-        e instanceof Error &&
-        e.message.includes(
-          "No fee tokens found with sufficient balance on account"
-        )
-      ) {
-        throw new BridgeQuoteError({
-          bridgeId: IbcBridgeProvider.ID,
-          errorType: "InsufficientAmountError",
-          message: e.message,
-        });
-      }
-
-      throw e;
-    });
-
-    const gasFee = txSimulation.amount[0];
-    const gasAsset = await this.getGasAsset(fromChainId, gasFee.denom);
+    const gasAsset = signDoc.gasAsset;
+    const gasFee = signDoc.gasFee;
 
     return {
       input: {
@@ -110,21 +81,16 @@ export class IbcBridgeProvider implements BridgeProvider {
         amount: "0",
       },
       estimatedTime,
-      estimatedGasFee: {
-        address: gasAsset?.address ?? gasFee.denom,
-        denom: gasAsset?.denom ?? gasFee.denom,
-        decimals: gasAsset?.decimals ?? 0,
-        coinGeckoId: gasAsset?.coinGeckoId,
-        amount: gasFee.amount,
-      },
-      transactionRequest: {
-        ...signDoc,
-        gasFee: {
-          gas: txSimulation.gas,
-          amount: gasFee.amount,
-          denom: gasFee.denom,
-        },
-      },
+      estimatedGasFee: gasFee
+        ? {
+            address: gasAsset?.address ?? gasFee.denom,
+            denom: gasAsset?.denom ?? gasFee.denom,
+            decimals: gasAsset?.decimals ?? 0,
+            coinGeckoId: gasAsset?.coinGeckoId,
+            amount: gasFee.amount,
+          }
+        : undefined,
+      transactionRequest: signDoc,
     };
   }
 
@@ -174,7 +140,7 @@ export class IbcBridgeProvider implements BridgeProvider {
    */
   async getTransactionData(
     params: GetBridgeQuoteParams
-  ): Promise<CosmosBridgeTransactionRequest> {
+  ): Promise<CosmosBridgeTransactionRequest & { gasAsset?: BridgeAsset }> {
     this.validate(params);
 
     const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
@@ -209,6 +175,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
+      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -226,15 +193,22 @@ export class IbcBridgeProvider implements BridgeProvider {
       throw e;
     });
 
+    const gasFee = txSimulation.amount[0];
+    const gasAsset = await this.getGasAsset(
+      params.fromChain.chainId as string,
+      gasFee.denom
+    );
+
     return {
       type: "cosmos",
       msgTypeUrl: typeUrl,
       msg,
       gasFee: {
         gas: txSimulation.gas,
-        amount: txSimulation.amount[0].amount,
-        denom: txSimulation.amount[0].denom,
+        amount: gasFee.amount,
+        denom: gasFee.denom,
       },
+      gasAsset,
     };
   }
 
@@ -392,15 +366,23 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain.chainType === "evm" || toChain.chainType === "evm") {
+    if (fromChain?.chainType === "evm" || toChain?.chainType === "evm") {
       return undefined;
     }
 
     const url = new URL("https://geo.tfm.com/");
-    url.searchParams.set("chainFrom", fromChain.chainId);
-    url.searchParams.set("token0", fromAsset.address);
-    url.searchParams.set("chainTo", toChain.chainId);
-    url.searchParams.set("token1", toAsset.address);
+    if (fromChain) {
+      url.searchParams.set("chainFrom", fromChain.chainId);
+    }
+    if (fromAsset) {
+      url.searchParams.set("token0", fromAsset.address);
+    }
+    if (toChain) {
+      url.searchParams.set("chainTo", toChain.chainId);
+    }
+    if (toAsset) {
+      url.searchParams.set("token1", toAsset.address);
+    }
 
     return { urlProviderName: "TFM", url };
   }

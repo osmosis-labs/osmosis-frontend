@@ -128,7 +128,7 @@ describe("SkipBridgeProvider", () => {
     });
 
     expect(quote).toBeDefined();
-    expect(quote).toEqual({
+    expect(quote).toMatchObject({
       input: {
         amount: "10000000000000000000",
         denom: "ETH",

@@ -21,7 +21,7 @@ export const createMsgOpts = <
 /** Core message options for cosmos-based chains. */
 export const cosmosMsgOpts = createMsgOpts({
   ibcTransfer: {
-    gas: 450000,
+    gas: 250000,
     messageComposer:
       ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer,
   },

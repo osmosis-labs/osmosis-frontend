@@ -97,6 +97,7 @@
     "onePosition": "1 موقعیت",
     "goToPool": "رفتن به استخر #{poolId}"
   },
+  "copied": "کپی شده!",
   "app": {
     "banner": {
       "backToOsmosis": "بازگشت به Osmosis",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
     "startAgain": "دوباره شروع کن"
   },
+  "estimated": "تخمین زده",
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
     "simplifiedExperience": "تجربه شما ساده شده است!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
     "new": "جدید",
-    "settings": "تنظیمات",
-    "notifications": "اطلاعیه"
-  },
-  "notifi": {
-    "saveChanges": "ذخیره تغییرات",
-    "unsupportedHistoryTitle": "اعلان پشتیبانی نشده",
-    "unsupportedHistoryMessage": "اوه، مشکلی پیش آمد. لطفا اجازه دهید تا ما بدانیم",
-    "getStartedHistoryTitle1": "برای شروع، توکن بخرید",
-    "getStartedHistoryMessage1": "برای شروع تجارت، OSMO را خریداری کنید",
-    "getStartedHistoryTitle2": "چگونه تجارت را شروع کنیم",
-    "getStartedHistoryMessage2": "این آموزش سریع شما را در عرض چند دقیقه معامله می کند",
-    "getStartedHistoryTitle3": "نحوه واریز وجوه",
-    "getStartedHistoryMessage3": "نحوه واریز وجوه در اسموز را بیاموزید",
-    "signupDummyHistoryTitle1": "برای شروع، توکن بخرید",
-    "signupDummyHistoryMessage1": "برای شروع تجارت، OSMO را خریداری کنید",
-    "signupDummyHistoryTitle2": "نحوه سپرده گذاری دارایی ها",
-    "signupDummyHistoryMessage2": "نحوه انتقال وجه به اسموز را بیاموزید",
-    "signupDummyHistoryTitle3": "چگونه تجارت را شروع کنیم",
-    "signupDummyHistoryMessage3": "این آموزش سریع شما را در عرض چند دقیقه معامله می کند",
-    "outboundTransferHistoryTitle": "انتقال خروجی اسمز",
-    "outboundTransferHistoryMessage": "میزان",
-    "poolExitedHistoryTitle": "استخر اسمز خارج شد",
-    "poolExitedHistoryMessage": "شناسه استخر",
-    "poolJoinedHistoryTitle": "استخر اسمز ملحق شد",
-    "poolJoinedHistoryMessage": "رمز",
-    "swapHistoryTitle": "تعویض اسمز تایید شد",
-    "swapHistoryMessage": "مبادله به",
-    "emptyHistoryTitle": "بدون عنوان",
-    "emptyHistoryMessage": "بدون پیام",
-    "assetReceivedHistoryTitle": "دارایی دریافت شده",
-    "assetReceivedHistoryMessage": "میزان",
-    "positionOutOfRangeHistoryTitle": "موقعیت خارج از محدوده",
-    "positionOutOfRangeHistoryMessage": "موقعیت LP شما خارج از محدوده است",
-    "signupPageTitle": "اعلان ها اکنون در دسترس هستند.",
-    "signupPageMessage": "هرگز یک به‌روزرسانی مهم را از دست ندهید، از فهرست‌های نشانه‌های جدید گرفته تا وضعیت‌های موقعیت بحرانی.",
-    "signupPageButton": "اعلان ها را فعال کنید",
-    "loadMore": "بارگذاری بیشتر",
-    "unsavedChangeModalInfo": "شما تغییرات ذخیره نشده ای دارید. آیا شما می خواهید",
-    "discardButton": "لغو تغییرات",
-    "clearAllHistory": "همه را پاک کن"
+    "settings": "تنظیمات"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "از",
     "to": "برای",
     "max": "حداکثر",
+    "pendingApproval": "در انتظار تایید",
     "available": "در دسترس",
     "connectTo": "اتصال به {network}",
     "transferWith": "انتقال با",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
+      "depositDescriptionUnknown": "برای واریز {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
+      "withdrawDescriptionUnknown": "برای برداشتن {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
       "singleDescriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
       "descriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
+      "chooseAnAlternativeProviderDeposit": "یک ارائه‌دهنده جایگزین برای واریز {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "یک ارائه‌دهنده جایگزین برای برداشتن {asset} از {fromChain} به {toChain} انتخاب کنید. {toChain}",
       "depositWith": "سپرده گذاری با",
       "withdrawWith": "برداشت با"
     },
@@ -963,8 +931,11 @@
       "title": "شبکه را انتخاب کنید",
       "searchPlaceholder": "جستجوی شبکه های پشتیبانی شده"
     },
-    "pendingWithdraw": "در انتظار برداشت",
-    "pendingDeposit": "سپرده معلق",
+    "pendingWithdraw": "برداشت در حال انجام است",
+    "pendingDeposit": "سپرده در حال انجام است",
+    "amountToChain": "{amount} به {chain}",
+    "amountFromChain": "{amount} از {chain}",
+    "amountFailedToWithdraw": "{amount} برداشت نشد",
     "completedWithdraw": "برداشت کامل شد",
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
     "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
     "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد.",
-    "connect": "اتصال",
     "confirm": "تایید",
     "cancel": "لغو کنید",
     "confirmDepositTo": "تایید سپرده به {chain}",

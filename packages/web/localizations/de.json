@@ -97,6 +97,7 @@
     "onePosition": "1 Position",
     "goToPool": "Gehen Sie zu Pool #{poolId}"
   },
+  "copied": "Kopiert!",
   "app": {
     "banner": {
       "backToOsmosis": "Zurück zur Osmose",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
     "startAgain": "Fang nochmal an"
   },
+  "estimated": "Geschätzt",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
     "simplifiedExperience": "Ihre Erfahrung wurde vereinfacht!",
@@ -451,46 +453,7 @@
     "levanaSubtext": "Unterstützt von Levana",
     "more": "Mehr",
     "new": "NEU",
-    "settings": "Einstellungen",
-    "notifications": "Benachrichtigungen"
-  },
-  "notifi": {
-    "saveChanges": "Änderungen speichern",
-    "unsupportedHistoryTitle": "Nicht unterstützte Benachrichtigung",
-    "unsupportedHistoryMessage": "Hoppla! Etwas ist schiefgelaufen. Informieren Sie uns bitte",
-    "getStartedHistoryTitle1": "Kaufen Sie Token, um loszulegen",
-    "getStartedHistoryMessage1": "Erwerben Sie OSMO, um mit dem Handel zu beginnen",
-    "getStartedHistoryTitle2": "So beginnen Sie mit dem Handel",
-    "getStartedHistoryMessage2": "Mit diesem kurzen Tutorial können Sie in wenigen Minuten handeln",
-    "getStartedHistoryTitle3": "So zahlen Sie Geld ein",
-    "getStartedHistoryMessage3": "Erfahren Sie, wie Sie Geld bei Osmosis einzahlen",
-    "signupDummyHistoryTitle1": "Kaufen Sie Token, um loszulegen",
-    "signupDummyHistoryMessage1": "Erwerben Sie OSMO, um mit dem Handel zu beginnen",
-    "signupDummyHistoryTitle2": "So hinterlegen Sie Vermögenswerte",
-    "signupDummyHistoryMessage2": "Erfahren Sie, wie Sie Gelder auf Osmosis überweisen",
-    "signupDummyHistoryTitle3": "So beginnen Sie mit dem Handel",
-    "signupDummyHistoryMessage3": "Mit diesem kurzen Tutorial können Sie in wenigen Minuten handeln",
-    "outboundTransferHistoryTitle": "Osmose-Ausgangstransfer",
-    "outboundTransferHistoryMessage": "Menge",
-    "poolExitedHistoryTitle": "Osmosebecken verlassen",
-    "poolExitedHistoryMessage": "Pool-ID",
-    "poolJoinedHistoryTitle": "Osmosebecken angeschlossen",
-    "poolJoinedHistoryMessage": "Zeichen",
-    "swapHistoryTitle": "Osmose-Austausch bestätigt",
-    "swapHistoryMessage": "getauscht",
-    "emptyHistoryTitle": "Kein Titel",
-    "emptyHistoryMessage": "Keine Nachricht",
-    "assetReceivedHistoryTitle": "Erhaltener Vermögenswert",
-    "assetReceivedHistoryMessage": "Menge",
-    "positionOutOfRangeHistoryTitle": "Position außerhalb des Bereichs",
-    "positionOutOfRangeHistoryMessage": "Ihre LP-Position liegt außerhalb des Bereichs",
-    "signupPageTitle": "Benachrichtigungen sind jetzt verfügbar.",
-    "signupPageMessage": "Verpassen Sie nie wieder ein wichtiges Update, von neuen Token-Auflistungen bis hin zu kritischen Positionsstatus.",
-    "signupPageButton": "Benachrichtigungen aktivieren",
-    "loadMore": "Mehr laden",
-    "unsavedChangeModalInfo": "Du hast nicht gespeicherte Änderungen. Möchten Sie gerne",
-    "discardButton": "Änderungen verwerfen",
-    "clearAllHistory": "Alles löschen"
+    "settings": "Einstellungen"
   },
   "oneClickTrading": {
     "toast": {
@@ -910,6 +873,7 @@
     "from": "Von {network}",
     "to": "Zu {network}",
     "max": "Max",
+    "pendingApproval": "Ausstehende Genehmigung",
     "available": "verfügbar",
     "connectTo": "Verbinden mit {network}",
     "transferWith": "Übertragen mit",
@@ -947,10 +911,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
+      "depositDescriptionUnknown": "Um {denom} einzuzahlen, verwenden Sie bitte einen alternativen Anbieter.",
+      "withdrawDescriptionUnknown": "Um {denom} abzuheben, verwenden Sie bitte einen alternativen Anbieter.",
       "singleDescriptionDeposit": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
       "singleDescriptionWithdraw": "Um {denom} von {networkA} nach {networkB} , verwenden Sie bitte {service} .",
       "descriptionDeposit": "Um {denom} von {networkA} nach {networkB} einzuzahlen, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
       "descriptionWithdraw": "Um {denom} von {networkA} nach {networkB} abzuheben, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
+      "chooseAnAlternativeProviderDeposit": "Wählen Sie einen alternativen Anbieter zum Einzahlen {asset} von {fromChain} nach {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Wählen Sie einen alternativen Anbieter zum Abheben {asset} von {fromChain} nach {toChain}",
       "depositWith": "Einzahlung mit",
       "withdrawWith": "Abheben mit"
     },
@@ -963,8 +931,11 @@
       "title": "Netzwerk auswählen",
       "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     },
-    "pendingWithdraw": "Ausstehender Auszug",
-    "pendingDeposit": "Ausstehende Einzahlung",
+    "pendingWithdraw": "Auszahlung in Bearbeitung",
+    "pendingDeposit": "Einzahlung in Bearbeitung",
+    "amountToChain": "{amount} {chain}",
+    "amountFromChain": "{amount} von {chain}",
+    "amountFailedToWithdraw": "{amount} fehlgeschlagen",
     "completedWithdraw": "Auszahlung abgeschlossen",
     "completedDeposit": "Einzahlung abgeschlossen",
     "failedWithdraw": "Auszahlung fehlgeschlagen",
@@ -979,7 +950,6 @@
     "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
     "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
     "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken.",
-    "connect": "Verbinden",
     "confirm": "Bestätigen",
     "cancel": "Stornieren",
     "confirmDepositTo": "Einzahlung an {chain} bestätigen",

@@ -12,8 +12,10 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -203,6 +205,8 @@ const AssetBox: FunctionComponent<{
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
+  const { hasCopied, onCopy } = useClipboard(address, 3000);
+
   const ChainAndWallet = isMobile ? (
     <div className="caption flex gap-2 p-3 text-osmoverse-300">
       {t(type === "from" ? "transfer.from" : "transfer.to")}
@@ -227,9 +231,20 @@ const AssetBox: FunctionComponent<{
               height={16}
             />
           )}
-          <div className="text-wosmongton-200">
-            {shorten(address, { prefixLength: 12 })}
-          </div>
+          <Tooltip
+            maxWidth="500px"
+            content={hasCopied ? t("copied") : address}
+            hideOnClick={false}
+          >
+            <button
+              onClick={() => {
+                onCopy();
+              }}
+              className="text-wosmongton-200"
+            >
+              {shorten(address, { prefixLength: 12 })}
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>
@@ -246,7 +261,20 @@ const AssetBox: FunctionComponent<{
       </div>
       <div className="flex items-center gap-2">
         <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
-        <div className="body1 text-wosmongton-200">{shorten(address)}</div>
+        <Tooltip
+          maxWidth="500px"
+          content={hasCopied ? t("copied") : address}
+          hideOnClick={false}
+        >
+          <button
+            onClick={() => {
+              onCopy();
+            }}
+            className="body1 text-wosmongton-200"
+          >
+            {shorten(address)}
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

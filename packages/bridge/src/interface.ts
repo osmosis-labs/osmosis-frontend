@@ -251,23 +251,23 @@ export const getBridgeExternalUrlSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: bridgeChainSchema,
+  fromChain: bridgeChainSchema.optional(),
   /**
    * The destination chain information.
    */
-  toChain: bridgeChainSchema,
+  toChain: bridgeChainSchema.optional(),
   /**
    * The asset on the originating chain.
    */
-  fromAsset: bridgeAssetSchema,
+  fromAsset: bridgeAssetSchema.optional(),
   /**
    * The asset on the destination chain.
    */
-  toAsset: bridgeAssetSchema,
+  toAsset: bridgeAssetSchema.optional(),
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: z.string(),
+  toAddress: z.string().optional(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<

@@ -3745,11 +3745,6 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.4.tgz#1d459cee5031893a08a0e064c406ad2130cced7c"
   integrity sha512-dWO2pw8hhi+WrXq1YJy2yCuWoL20PddgGaqTgVe4cOS9Q6qklXCiA1tJEqX6BEwRNSCP84/afac9hd4MS+zEUA==
 
-"@graphql-typed-document-node/core@^3.1.1":
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.2.0.tgz"
-  integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
-
 "@hapi/hoek@^9.0.0":
   version "9.2.1"
   resolved "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.2.1.tgz"
@@ -5206,68 +5201,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
-
-"@notifi-network/notifi-axios-adapter@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.87.0.tgz#c7413844db2bc37a70fec4f2f802c468836ee1b1"
-  integrity sha512-R6iTWMjEL7CxTkL9NT4UgICBXi83riu/0b4glBQzUWS+jmdCgQpj0wCAB+rQbq1WP8Mk++W2GZ4RZ2BUkfMAPg==
-  dependencies:
-    "@notifi-network/notifi-axios-utils" "^0.87.0"
-
-"@notifi-network/notifi-axios-utils@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.87.0.tgz#d776d1caa6233f5e312fabfc61c77a37e0d42684"
-  integrity sha512-sl0SNyOTpww1kqwqJoHhrU+JS4016CsPWfOqwRHSRwK3bUYFKq4++GItcxE/zxxrIIvfhmfbLXOwOyV1SkVbLg==
-
-"@notifi-network/notifi-core@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.87.0.tgz#cc291b6cd015aebefba30512f5a69f8222ad26e7"
-  integrity sha512-X2AWkHcRzmcvbj/D3Aa+M3sB0O2lFeLX06frDflLCyaTZxOFwzeUeSoL2Qw8OCFYnAeOj0m8ap8p1fx4eXgy2g==
-  dependencies:
-    "@notifi-network/notifi-graphql" "^0.87.0"
-
-"@notifi-network/notifi-frontend-client@0.87.0", "@notifi-network/notifi-frontend-client@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.87.0.tgz#90fc90f3108a7949853049bd54352da035d9a198"
-  integrity sha512-+lNlg3qNPfkdOWvgOnVrtp8ki99tndgP3+BYT7ZEYC3NXRhC8UDywMxhbdu4AmupDu4SOA1G+Dni8CBrimmZdg==
-  dependencies:
-    "@notifi-network/notifi-graphql" "^0.87.0"
-    graphql-request "5.1.0"
-    localforage "^1.10.0"
-
-"@notifi-network/notifi-graphql@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-graphql/-/notifi-graphql-0.87.0.tgz#90da2fd830e23dd52fe265ea6cd2ad552222bfce"
-  integrity sha512-SEk8vPC0co9i6nRjZFLeBmVwFMalOZkSbJ5cCRfjAx0xuKn0hz8wnvus6juR6dV3rTllEqBZS//66XDRC0bsUA==
-  dependencies:
-    graphql "^16.6.0"
-    graphql-request "5.1.0"
-    uuid "^8.3.2"
-
-"@notifi-network/notifi-react-card@0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-card/-/notifi-react-card-0.87.0.tgz#942d9057ded522af632870ced57efb3b07215064"
-  integrity sha512-p3R8Xcv1+GsnLc0fzM7j7BN5F1CepF0TdSPGVxsVmc/RyMu2F3U61ezTeuB3e+2lUaPIaLcm20s0zRw9+c5Hig==
-  dependencies:
-    "@notifi-network/notifi-frontend-client" "^0.87.0"
-    "@notifi-network/notifi-react-hooks" "^0.87.0"
-    clsx "^1.2.1"
-    date-fns "^2.29.3"
-    dompurify "^3.0.5"
-    libphonenumber-js "^1.10.13"
-    react-virtuoso "^3.1.1"
-
-"@notifi-network/notifi-react-hooks@^0.87.0":
-  version "0.87.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.87.0.tgz#974dbe3cb25c8f8b46615b554b3f084eca3794e7"
-  integrity sha512-+uwh87l9+wgNoLY7v2SOdp0jL4rSEnLYZcT39f9R5WJRD4a6pnJAOR6aeYBdJ0/qmei3kht9vJjJqIscmJQZhA==
-  dependencies:
-    "@notifi-network/notifi-axios-adapter" "^0.87.0"
-    "@notifi-network/notifi-axios-utils" "^0.87.0"
-    "@notifi-network/notifi-core" "^0.87.0"
-    axios "^0.26.0"
-    localforage "^1.10.0"
-    typescript "^4.5.5"
 
 "@npmcli/agent@^2.0.0":
   version "2.2.1"
@@ -7833,18 +7766,6 @@
   dependencies:
     crypto-js "^4.2.0"
 
-"@virtuoso.dev/react-urx@^0.2.12":
-  version "0.2.13"
-  resolved "https://registry.npmjs.org/@virtuoso.dev/react-urx/-/react-urx-0.2.13.tgz"
-  integrity sha512-MY0ugBDjFb5Xt8v2HY7MKcRGqw/3gTpMlLXId2EwQvYJoC8sP7nnXjAxcBtTB50KTZhO0SbzsFimaZ7pSdApwA==
-  dependencies:
-    "@virtuoso.dev/urx" "^0.2.13"
-
-"@virtuoso.dev/urx@^0.2.12", "@virtuoso.dev/urx@^0.2.13":
-  version "0.2.13"
-  resolved "https://registry.npmjs.org/@virtuoso.dev/urx/-/urx-0.2.13.tgz"
-  integrity sha512-iirJNv92A1ZWxoOHHDYW/1KPoi83939o83iUBQHIim0i3tMeSKEh+bxhJdTHQ86Mr4uXx9xGUTq69cp52ZP8Xw==
-
 "@visx/annotation@2.18.0":
   version "2.18.0"
   resolved "https://registry.npmjs.org/@visx/annotation/-/annotation-2.18.0.tgz"
@@ -9327,13 +9248,6 @@ axios@^0.21.1, axios@^0.21.2:
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
     follow-redirects "^1.14.0"
-
-axios@^0.26.0:
-  version "0.26.1"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.26.1.tgz"
-  integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
-  dependencies:
-    follow-redirects "^1.14.8"
 
 axios@^0.27.2:
   version "0.27.2"
@@ -11575,7 +11489,7 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-dompurify@^3.0.5, dompurify@^3.0.6:
+dompurify@^3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.6.tgz#925ebd576d54a9531b5d76f0a5bef32548351dae"
   integrity sha512-ilkD8YEnnGh1zJ240uJsW7AzE+2qpbOUYjacomn3AvJ6J4JhKGSZ2nh4wUIXPZrEPppaCLx5jFe8T89Rk8tQ7w==
@@ -12649,11 +12563,6 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
-extract-files@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/extract-files/-/extract-files-9.0.0.tgz"
-  integrity sha512-CvdFfHkC95B4bBBk36hcEmvdR2awOdhhVUYH6S/zrVj3477zven/fJMYg7121h4T1xHZC+tetUpubpAhxwI7hQ==
-
 extsprintf@1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
@@ -12938,11 +12847,6 @@ follow-redirects@^1.10.0, follow-redirects@^1.14.0:
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.7.tgz"
   integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
 
-follow-redirects@^1.14.8:
-  version "1.15.2"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
-  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
-
 follow-redirects@^1.14.9:
   version "1.15.1"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.1.tgz"
@@ -12980,15 +12884,6 @@ forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
-
-form-data@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/form-data/-/form-data-3.0.1.tgz"
-  integrity sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "^1.0.8"
-    mime-types "^2.1.12"
 
 form-data@^4.0.0:
   version "4.0.0"
@@ -13465,21 +13360,6 @@ graphemer@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
-
-graphql-request@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/graphql-request/-/graphql-request-5.1.0.tgz"
-  integrity sha512-0OeRVYigVwIiXhNmqnPDt+JhMzsjinxHE7TVy3Lm6jUzav0guVcL0lfSbi6jVTRAxcbwgyr6yrZioSHxf9gHzw==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
-    cross-fetch "^3.1.5"
-    extract-files "^9.0.0"
-    form-data "^3.0.0"
-
-graphql@^16.6.0:
-  version "16.7.1"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-16.7.1.tgz"
-  integrity sha512-DRYR9tf+UGU0KOsMcKAlXeFfX89UiiIZ0dRU3mR0yJfu6OjZqUcp68NnFLnqQU5RexygFoDy1EW+ccOYcPfmHg==
 
 graphql@^16.8.1:
   version "16.8.1"
@@ -15916,11 +15796,6 @@ libnpmpublish@7.3.0:
     sigstore "^1.4.0"
     ssri "^10.0.1"
 
-libphonenumber-js@^1.10.13:
-  version "1.10.37"
-  resolved "https://registry.npmjs.org/libphonenumber-js/-/libphonenumber-js-1.10.37.tgz"
-  integrity sha512-Z10PCaOCiAxbUxLyR31DNeeNugSVP6iv/m7UrSKS5JHziEMApJtgku4e9Q69pzzSC9LnQiM09sqsGf2ticZnMw==
-
 libsodium-sumo@^0.7.13:
   version "0.7.13"
   resolved "https://registry.yarnpkg.com/libsodium-sumo/-/libsodium-sumo-0.7.13.tgz#533b97d2be44b1277e59c1f9f60805978ac5542d"
@@ -16081,7 +15956,7 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
-localforage@^1.10.0, localforage@^1.8.1:
+localforage@^1.8.1:
   version "1.10.0"
   resolved "https://registry.npmjs.org/localforage/-/localforage-1.10.0.tgz"
   integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
@@ -19110,7 +18985,7 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
-react-toastify@^10.0.4:
+react-toastify@^10.0.5:
   version "10.0.5"
   resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-10.0.5.tgz#6b8f8386060c5c856239f3036d1e76874ce3bd1e"
   integrity sha512-mNKt2jBXJg4O7pSdbNUfDdTsK9FIdikfsIE/yUCxbAEXl4HMyJaivrVFcn3Elvt5xvCQYhUZm+hqTIu1UXM3Pw==
@@ -19148,14 +19023,6 @@ react-use@^17.4.0:
     throttle-debounce "^3.0.1"
     ts-easing "^0.2.0"
     tslib "^2.1.0"
-
-react-virtuoso@^3.1.1:
-  version "3.1.5"
-  resolved "https://registry.npmjs.org/react-virtuoso/-/react-virtuoso-3.1.5.tgz"
-  integrity sha512-Dwf7SGr73UAahfcQNIND+c+MtCb0PeHu+QTZ5ptR7oXxQkupfHXEKGwEDF5lDkLqdGxm+yH4uh/IFCqMKxudJw==
-  dependencies:
-    "@virtuoso.dev/react-urx" "^0.2.12"
-    "@virtuoso.dev/urx" "^0.2.12"
 
 react@^16.14.0:
   version "16.14.0"
@@ -21532,11 +21399,6 @@ typescript@5.4.5, "typescript@>=3 < 6", typescript@^5.4.5:
   version "5.4.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
   integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
-
-typescript@^4.5.5:
-  version "4.9.5"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 ufo@^1.3.2, ufo@^1.4.0, ufo@^1.5.3:
   version "1.5.3"
