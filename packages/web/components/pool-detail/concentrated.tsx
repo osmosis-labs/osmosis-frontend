@@ -476,7 +476,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
 
     return (
       <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-1000 px-8 py-7">
+        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-900 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
               {t("clPositions.totalBalance")}
@@ -517,7 +517,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
         {featureFlags.aprBreakdown && (
           <SkeletonLoader isLoaded={!isLoadingIncentives}>
             <AprBreakdown
-              className="shrink-0 rounded-3xl bg-osmoverse-1000"
+              className="shrink-0 rounded-3xl bg-osmoverse-900"
               showDisclaimerTooltip
               {...incentives?.aprBreakdown}
             />
@@ -525,7 +525,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
         )}
 
         {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-1000 px-8 py-7">
+          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-900 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">
               {t("pool.incentives")}
             </span>
