@@ -93,14 +93,7 @@ export const PortfolioPage: FunctionComponent = () => {
           isTotalValueFetched={isTotalValueFetched}
         />
       </section>
-      <section className="w-full">
-        {!isLoadingAllocation && (
-          <Allocation
-            // @ts-ignore
-            allocation={allocation}
-          />
-        )}
-      </section>
+
       <section className="w-full py-3">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <Tab.Group>
@@ -155,6 +148,11 @@ export const PortfolioPage: FunctionComponent = () => {
           </Tab.Group>
         ) : isWalletLoading ? null : (
           <WalletDisconnectedSplash />
+        )}
+      </section>
+      <section className="w-full">
+        {!isLoadingAllocation && !userHasNoAssets && (
+          <Allocation allocation={allocation} />
         )}
       </section>
     </main>
