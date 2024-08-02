@@ -19,7 +19,7 @@ const COLORS: Record<AllocationOptions, string[]> = {
     "bg-ammelia-400",
     "bg-osmoverse-500",
     "bg-bullish-500",
-    "bg-bullish-500",
+    "bg-ion-500",
   ],
   assets: [
     "bg-[#9C01D4]",
