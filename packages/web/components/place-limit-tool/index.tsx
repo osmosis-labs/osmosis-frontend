@@ -407,17 +407,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       return !swapState.isBalancesFetched;
     }, [swapState.isBalancesFetched]);
 
+    const errorDisplay = useMemo(() => {
+      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        return t(swapState.error);
+      }
+    }, [swapState.error, t]);
+
     return (
       <>
         <div className="flex flex-col">
           <AssetFieldset>
             <AssetFieldsetHeader>
               <AssetFieldsetHeaderLabel>
-                <span className="body2 text-osmoverse-300">
-                  {t("limitOrders.enterAnAmountTo")}{" "}
-                  {orderDirection === "bid"
-                    ? t("portfolio.buy").toLowerCase()
-                    : t("limitOrders.sell").toLowerCase()}
+                <span
+                  className={classNames("body2 text-osmoverse-300", {
+                    "text-rust-400": errorDisplay,
+                  })}
+                >
+                  {errorDisplay ? (
+                    errorDisplay
+                  ) : (
+                    <>
+                      {t("limitOrders.enterAnAmountTo")}{" "}
+                      {orderDirection === "bid"
+                        ? t("portfolio.buy").toLowerCase()
+                        : t("limitOrders.sell").toLowerCase()}
+                    </>
+                  )}
                 </span>
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
