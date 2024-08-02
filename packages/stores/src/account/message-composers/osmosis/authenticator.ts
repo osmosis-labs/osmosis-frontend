@@ -1,11 +1,11 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
 
 export function makeAddAuthenticatorMsg({
-  type,
+  authenticatorType,
   data,
   sender,
 }: {
-  type: string;
+  authenticatorType: string;
   data: Uint8Array;
   sender: string;
 }) {
@@ -13,7 +13,7 @@ export function makeAddAuthenticatorMsg({
     {
       data,
       sender,
-      type,
+      authenticatorType,
     }
   );
 }

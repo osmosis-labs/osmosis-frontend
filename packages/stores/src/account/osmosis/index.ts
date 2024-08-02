@@ -2132,7 +2132,7 @@ export class OsmosisAccountImpl {
     onBroadcasted,
     signOptions,
   }: {
-    addAuthenticators: { type: string; data: Uint8Array }[];
+    addAuthenticators: { authenticatorType: string; data: Uint8Array }[];
     removeAuthenticators: bigint[];
     memo?: string;
     onFulfill?: (tx: DeliverTxResponse) => void;
@@ -2141,7 +2141,7 @@ export class OsmosisAccountImpl {
   }) {
     const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
       this.msgOpts.addAuthenticator.messageComposer({
-        type: authenticator.type,
+        authenticatorType: authenticator.authenticatorType,
         data: authenticator.data,
         sender: this.address,
       })
@@ -2186,13 +2186,13 @@ export class OsmosisAccountImpl {
     );
   }
   async sendAddAuthenticatorsMsg(
-    authenticators: { type: string; data: any }[],
+    authenticators: { authenticatorType: string; data: any }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const addAuthenticatorMsgs = authenticators.map((authenticator) =>
       this.msgOpts.addAuthenticator.messageComposer({
-        type: authenticator.type,
+        authenticatorType: authenticator.authenticatorType,
         data: authenticator.data,
         sender: this.address,
       })
