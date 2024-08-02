@@ -1,5 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+import { SIDECAR_BASE_URL } from "../../env";
+
 interface Coin {
   denom: string;
   amount: string;
@@ -36,8 +38,7 @@ export async function queryAllocation({
 }): Promise<AllocationResponse> {
   const url = new URL(
     `passthrough/portfolio-assets/${address}`,
-    "https://sqs.stage.osmosis.zone/"
-    // SIDECAR_BASE_URL
+    SIDECAR_BASE_URL
   );
 
   return apiClient<AllocationResponse>(url.toString());

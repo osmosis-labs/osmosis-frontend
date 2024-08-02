@@ -12,7 +12,7 @@ import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 
-const COLORS = {
+const COLORS: Record<AllocationOptions, string[]> = {
   all: [
     "bg-wosmongton-500",
     "bg-ammelia-400",
@@ -70,7 +70,7 @@ export const Allocation: FunctionComponent<{
         <>
           <div className="my-4">
             <AllocationTabs
-              setTab={(tab) => setSelectedOption(tab)}
+              setTab={(option) => setSelectedOption(option)}
               activeTab={selectedOption}
             />
           </div>
