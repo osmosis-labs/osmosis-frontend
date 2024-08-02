@@ -1,9 +1,11 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { queryAllocation } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { getAsset } from "../assets";
 
 const allocationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -13,8 +15,15 @@ export interface GetAllocationResponse {
     color: string;
     percentage: number;
     amount: number;
+    asset?: CoinPretty;
   }[];
-  assets: any;
+  assets: {
+    key: string;
+    color: string;
+    percentage: number;
+    amount: number;
+    asset?: CoinPretty;
+  }[];
   available: any;
 }
 
@@ -66,6 +75,41 @@ async function getAll(categories: any) {
   ];
 }
 
+const COLORS = [
+  "bg-[#9C01D4]",
+  "bg-[#E9983D]",
+  "bg-[#2775CA]",
+  "bg-[#424667]",
+  "bg-[#009393]",
+];
+
+async function getAssets(categories: any, assetLists: AssetList[]) {
+  console.log("assetLists: ", assetLists);
+  const totalAssets = categories["total-assets"];
+  const totalCap = +totalAssets.capitalization;
+
+  // Get top 5 assets by cap value
+  const accountCoinsResults = totalAssets.account_coins_result
+    .sort((a: any, b: any) => +b.cap_value - +a.cap_value)
+    .slice(0, 5);
+
+  const assets = accountCoinsResults.map((asset: any, index: number) => {
+    const assetFromAssetLists = getAsset({
+      assetLists,
+      anyDenom: asset.coin.denom,
+    });
+
+    return {
+      key: assetFromAssetLists.coinDenom,
+      percentage: (asset.cap_value / totalCap) * 100,
+      amount: +asset.cap_value,
+      color: COLORS[index % COLORS.length],
+    };
+  });
+
+  return assets;
+}
+
 export async function getAllocation({
   address,
   assetLists,
@@ -85,10 +129,11 @@ export async function getAllocation({
       const categories = data.categories;
 
       const all = await getAll(categories);
+      const assets = await getAssets(categories, assetLists);
 
       return {
         all,
-        assets: {},
+        assets,
         available: {},
       };
     },
