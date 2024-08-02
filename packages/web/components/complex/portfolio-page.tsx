@@ -64,9 +64,6 @@ export const PortfolioPage: FunctionComponent = () => {
       }
     );
 
-  console.log("allocation: ", allocation);
-  console.log("isLoadingAllocation: ", isLoadingAllocation);
-
   const userHasNoAssets = totalValue && totalValue.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
@@ -98,10 +95,14 @@ export const PortfolioPage: FunctionComponent = () => {
       </section>
 
       <section className="w-full">
-        <Allocation
-          // @ts-ignore
-          allocation={allocation}
-        />
+        {isLoadingAllocation ? (
+          "...loading"
+        ) : (
+          <Allocation
+            // @ts-ignore
+            allocation={allocation}
+          />
+        )}
       </section>
 
       <section className="w-full py-3">
