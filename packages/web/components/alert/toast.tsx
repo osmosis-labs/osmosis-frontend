@@ -33,7 +33,7 @@ export function displayToast(
     closeButton: ({ closeToast }) => (
       <button
         onClick={closeToast}
-        className="absolute -left-2 -top-2 hidden h-6 w-6 hover:opacity-75 group-hover:block md:top-2 md:h-5 md:w-5"
+        className="invisible absolute -left-2 -top-2 h-6 w-6 opacity-0 transition duration-200 hover:opacity-75 group-hover:visible group-hover:opacity-100 md:top-2 md:h-5 md:w-5"
       >
         <Image
           alt="close"
