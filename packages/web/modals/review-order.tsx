@@ -487,7 +487,7 @@ export function ReviewOrder({
                     </div>
                   )}
                   {isManualSlippageTooLow && (
-                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-osmoverse-700/[.54] p-5">
+                    <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-osmoverse-alpha-800/[.54] p-5">
                       <svg
                         width="24"
                         height="24"

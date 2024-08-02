@@ -656,7 +656,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <ReviewOrder
-          title="Swap"
+          title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
           confirmAction={sendSwapTx}
