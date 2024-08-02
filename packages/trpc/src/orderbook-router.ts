@@ -101,6 +101,7 @@ export const orderbookRouter = createTRPCRouter({
           input.contractAddresses,
           input.userOsmoAddress,
         ]),
+        ttl: 500,
         cursor: input.cursor,
         limit: input.limit,
       });
