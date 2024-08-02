@@ -89,11 +89,13 @@ async function getAssets(categories: any, assetLists: AssetList[]) {
   const totalCap = +totalAssets.capitalization;
 
   // Get top 5 assets by cap value
-  const accountCoinsResults = totalAssets.account_coins_result
-    .sort((a: any, b: any) => +b.cap_value - +a.cap_value)
-    .slice(0, 5);
+  const sortedAccountCoinsResults = totalAssets.account_coins_result.sort(
+    (a: any, b: any) => +b.cap_value - +a.cap_value
+  );
 
-  const assets = accountCoinsResults.map((asset: any, index: number) => {
+  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
+
+  const assets = top5AccountCoinsResults.map((asset: any, index: number) => {
     const assetFromAssetLists = getAsset({
       assetLists,
       anyDenom: asset.coin.denom,
@@ -107,7 +109,21 @@ async function getAssets(categories: any, assetLists: AssetList[]) {
     };
   });
 
-  return assets;
+  const otherAssets = sortedAccountCoinsResults.slice(5);
+  const otherAmount = otherAssets.reduce(
+    (sum: number, asset: any) => sum + +asset.cap_value,
+    0
+  );
+  const otherPercentage = (otherAmount / totalCap) * 100;
+
+  const other = {
+    key: "Other",
+    percentage: otherPercentage,
+    amount: otherAmount,
+    color: "bg-osmoverse-500",
+  };
+
+  return [...assets, other];
 }
 
 export async function getAllocation({
