@@ -65,7 +65,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         percentAdjusted.isZero() || manualPrice.isZero()
           ? ""
           : formatPretty(percentAdjusted.abs(), {
-              maxDecimals: 2,
+              maxDecimals: 3,
             }).toString()
       );
     }
