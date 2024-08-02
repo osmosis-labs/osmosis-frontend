@@ -565,18 +565,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               >
                 <h6>{t("connectWallet")}</h6>
               </Button>
-            ) : hasFunds ? (
+            ) : (
               <Button
-                disabled={isButtonDisabled}
+                disabled={isButtonDisabled || !hasFunds}
                 isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
               >
                 <h6>{buttonText}</h6>
-              </Button>
-            ) : (
-              <Button onClick={openAddFundsModal}>
-                <h6>{t("limitOrders.addFunds")}</h6>
               </Button>
             )}
           </div>
