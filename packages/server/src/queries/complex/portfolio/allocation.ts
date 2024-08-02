@@ -100,11 +100,10 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
   );
   const otherPercentage = (otherAmount / totalCap) * 100;
 
-  const other = {
+  const other: FormattedAllocation = {
     key: "Other",
     percentage: otherPercentage,
     amount: otherAmount,
-    color: "bg-osmoverse-500",
   };
 
   return [...assets, other];
