@@ -1253,6 +1253,7 @@
     "cancelled": "キャンセル",
     "cancel": "キャンセル",
     "daysAgo": "{days}日前",
+    "hoursAgo": "{hours}前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",

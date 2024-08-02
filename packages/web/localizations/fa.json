@@ -1253,6 +1253,7 @@
     "cancelled": "لغو شد",
     "cancel": "لغو کنید",
     "daysAgo": "{days} روز قبل",
+    "hoursAgo": "{hours} ساعت قبل",
     "buyWith": "خرید با {coinA} یا {coinB}",
     "orderHistory": "تاریخچه سفارش ها",
     "tradeAnotherAssetOr": "دارایی دیگری را برای {coinA} یا {coinB} مبادله کنید.",

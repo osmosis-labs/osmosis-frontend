@@ -1253,6 +1253,7 @@
     "cancelled": "Отменено",
     "cancel": "Отмена",
     "daysAgo": "{days} назад",
+    "hoursAgo": "{hours} час назад",
     "buyWith": "Купите с помощью {coinA} или {coinB}",
     "orderHistory": "История заказов",
     "tradeAnotherAssetOr": "Обменяйте другой актив на {coinA} или {coinB}",

@@ -1253,6 +1253,7 @@
     "cancelled": "Anulat",
     "cancel": "Anulare",
     "daysAgo": "{days} zi în urmă",
+    "hoursAgo": "{hours} h în urmă",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
     "orderHistory": "Istoric comenzi",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",

@@ -1253,6 +1253,7 @@
     "cancelled": "취소 된",
     "cancel": "취소",
     "daysAgo": "{days} 일 전",
+    "hoursAgo": "{hours} 시간 전",
     "buyWith": "{coinA} 또는 {coinB} 로 구매하세요.",
     "orderHistory": "주문 내역",
     "tradeAnotherAssetOr": "다른 자산을 {coinA} 또는 {coinB} 로 교환하세요",

@@ -1253,6 +1253,7 @@
     "cancelled": "取消",
     "cancel": "取消",
     "daysAgo": "{days}天前",
+    "hoursAgo": "{hours}小时前",
     "buyWith": "使用{coinA}或{coinB}购买",
     "orderHistory": "订单历史",
     "tradeAnotherAssetOr": "将另一种资产交易为{coinA}或{coinB}",

@@ -1253,6 +1253,7 @@
     "cancelled": "İptal edildi",
     "cancel": "İptal etmek",
     "daysAgo": "{days} gün önce",
+    "hoursAgo": "{hours} saat önce",
     "buyWith": "{coinA} veya {coinB} ile satın alın",
     "orderHistory": "Sipariş Geçmişi",
     "tradeAnotherAssetOr": "{coinA} veya {coinB} ile başka bir varlıkla işlem yapın",

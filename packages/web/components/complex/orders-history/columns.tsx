@@ -221,13 +221,20 @@ export const tableColumns = [
           case "partiallyFilled":
             return <OrderProgressBar order={order} />;
           case "cancelled":
+            const dayDiff = dayjs(new Date()).diff(dayjs(placed_at), "d");
+            const hourDiff = dayjs(new Date()).diff(dayjs(placed_at), "h");
+
             return (
               <span className="body2 text-osmoverse-300">
-                {t("limitOrders.daysAgo", {
-                  days: dayjs(new Date())
-                    .diff(dayjs(placed_at), "d")
-                    .toString(),
-                })}
+                {dayDiff > 0
+                  ? t("limitOrders.daysAgo", {
+                      days: dayDiff.toString(),
+                    })
+                  : hourDiff > 0
+                  ? t("limitOrders.hoursAgo", {
+                      hours: hourDiff.toString(),
+                    })
+                  : "<1 hour ago"}
               </span>
             );
           default:

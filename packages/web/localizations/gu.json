@@ -1253,6 +1253,7 @@
     "cancelled": "રદ કરેલ",
     "cancel": "રદ કરો",
     "daysAgo": "{days} દિવસ પહેલા",
+    "hoursAgo": "{hours} કલાક પહેલા",
     "buyWith": "{coinA} અથવા {coinB} વડે ખરીદો",
     "orderHistory": "ઓર્ડર ઇતિહાસ",
     "tradeAnotherAssetOr": "{coinA} અથવા {coinB} માટે બીજી સંપત્તિનો વેપાર કરો",

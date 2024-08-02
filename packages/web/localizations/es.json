@@ -1253,6 +1253,7 @@
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
     "daysAgo": "{days} hace d",
+    "hoursAgo": "{hours} hace h",
     "buyWith": "Compre con {coinA} o {coinB}",
     "orderHistory": "Historial de pedidos",
     "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",

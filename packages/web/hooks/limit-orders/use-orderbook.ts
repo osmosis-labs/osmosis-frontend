@@ -272,9 +272,11 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 export const useOrderbookAllActiveOrders = ({
   userAddress,
   pageSize = 10,
+  refetchInterval = 2000,
 }: {
   userAddress: string;
   pageSize?: number;
+  refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
@@ -296,8 +298,7 @@ export const useOrderbookAllActiveOrders = ({
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      keepPreviousData: true,
-      refetchInterval: 5000,
+      refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
     }

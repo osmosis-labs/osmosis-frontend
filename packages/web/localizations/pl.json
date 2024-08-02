@@ -1253,6 +1253,7 @@
     "cancelled": "Odwołany",
     "cancel": "Anulować",
     "daysAgo": "{days} d temu",
+    "hoursAgo": "{hours} godz. temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zamówień",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",

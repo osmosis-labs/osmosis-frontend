@@ -41,6 +41,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     const { orders } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
       pageSize: 100,
+      refetchInterval: 4000,
     });
 
     const openOrders = useMemo(
