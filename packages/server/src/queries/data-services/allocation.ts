@@ -30,7 +30,7 @@ export interface AllocationResponse {
   categories: Categories;
 }
 
-export async function getAllocation({
+export async function queryAllocation({
   address,
 }: {
   address: string;

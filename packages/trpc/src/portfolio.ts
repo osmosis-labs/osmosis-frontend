@@ -11,9 +11,10 @@ export const portfolioRouter = createTRPCRouter({
         address: z.string(),
       })
     )
-    .query(async ({ input: { address } }) => {
+    .query(async ({ input: { address }, ctx }) => {
       const res = await getAllocation({
         address,
+        assetLists: ctx.assetLists,
       });
       return res;
     }),
