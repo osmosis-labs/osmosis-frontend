@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
-import { Screen } from "~/components/screen-manager";
+import { Screen, useScreenManager } from "~/components/screen-manager";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
@@ -39,6 +39,7 @@ export const AmountAndReviewScreen = observer(
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
     const { logEvent } = useAmplitudeAnalytics();
+    const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -225,7 +226,7 @@ export const AmountAndReviewScreen = observer(
     });
 
     if (!selectedAssetDenom) {
-      throw new Error("Selected asset denom is undefined.");
+      return setCurrentScreen(ImmersiveBridgeScreen.Asset);
     }
 
     return (
