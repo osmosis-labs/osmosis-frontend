@@ -105,7 +105,7 @@ export const Allocation: FunctionComponent<{
             )}
           </div>
           <div className="flex flex-col space-y-3">
-            {selectedList.map(({ key, percentage, amount }, index) => (
+            {selectedList.map(({ key, percentage, fiatValue }, index) => (
               <div key={key} className="body2 flex w-full justify-between">
                 <div className="flex items-center space-x-1">
                   <div
@@ -123,7 +123,7 @@ export const Allocation: FunctionComponent<{
                 </div>
                 <div>
                   {displayFiatPrice(
-                    new PricePretty(DEFAULT_VS_CURRENCY, amount),
+                    new PricePretty(DEFAULT_VS_CURRENCY, fiatValue),
                     "",
                     t
                   )}

@@ -1,20 +1,15 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
-import { CacheEntry } from "cachified";
-import { LRUCache } from "lru-cache";
 
 import { queryAllocation } from "../../../queries/data-services";
 import { Categories } from "../../../queries/data-services";
 import { AccountCoinsResult } from "../../../queries/data-services";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { getAsset } from "../assets";
-
-const allocationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 interface FormattedAllocation {
   key: string;
   percentage: number;
-  amount: number;
+  fiatValue: number;
   asset?: CoinPretty;
 }
 
@@ -24,7 +19,7 @@ export interface GetAllocationResponse {
   available: FormattedAllocation[];
 }
 
-async function getAll(categories: Categories) {
+function getAll(categories: Categories): FormattedAllocation[] {
   const userBalancesCap = +categories["user-balances"].capitalization;
   const stakedCap = +categories["staked"].capitalization;
   const unstakingCap = +categories["unstaking"].capitalization;
@@ -42,27 +37,27 @@ async function getAll(categories: Categories) {
     {
       key: "available",
       percentage: (userBalancesCap / totalCap) * 100,
-      amount: userBalancesCap,
+      fiatValue: userBalancesCap,
     },
     {
       key: "staked",
       percentage: (stakedCap / totalCap) * 100,
-      amount: stakedCap,
+      fiatValue: stakedCap,
     },
     {
       key: "unstaking",
       percentage: (unstakingCap / totalCap) * 100,
-      amount: unstakingCap,
+      fiatValue: unstakingCap,
     },
     {
       key: "unclaimedRewards",
       percentage: (unclaimedRewardsCap / totalCap) * 100,
-      amount: unclaimedRewardsCap,
+      fiatValue: unclaimedRewardsCap,
     },
     {
       key: "pooled",
       percentage: (pooledCap / totalCap) * 100,
-      amount: pooledCap,
+      fiatValue: pooledCap,
     },
   ];
 }
@@ -89,7 +84,7 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
     return {
       key: assetFromAssetLists.coinDenom,
       percentage: (+asset.cap_value / totalCap) * 100,
-      amount: +asset.cap_value,
+      fiatValue: +asset.cap_value,
     };
   });
 
@@ -103,7 +98,7 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
   const other: FormattedAllocation = {
     key: "Other",
     percentage: otherPercentage,
-    amount: otherAmount,
+    fiatValue: otherAmount,
   };
 
   return [...assets, other];
@@ -131,7 +126,7 @@ async function getAvailable(categories: Categories, assetLists: AssetList[]) {
     return {
       key: assetFromAssetLists.coinDenom,
       percentage: (+asset.cap_value / totalCap) * 100,
-      amount: +asset.cap_value,
+      fiatValue: +asset.cap_value,
     };
   });
 
@@ -142,10 +137,10 @@ async function getAvailable(categories: Categories, assetLists: AssetList[]) {
   );
   const otherPercentage = (otherAmount / totalCap) * 100;
 
-  const other = {
+  const other: FormattedAllocation = {
     key: "Other",
     percentage: otherPercentage,
-    amount: otherAmount,
+    fiatValue: otherAmount,
   };
 
   return [...assets, other];
