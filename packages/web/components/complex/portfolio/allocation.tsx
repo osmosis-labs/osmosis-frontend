@@ -10,6 +10,32 @@ import { useTranslation } from "~/hooks";
 
 type AllocationOptions = "all" | "assets" | "available";
 
+const COLORS = {
+  all: [
+    "bg-wosmongton-500",
+    "bg-ammelia-400",
+    "bg-osmoverse-500",
+    "bg-bullish-500",
+    "bg-bullish-500",
+  ],
+  assets: [
+    "bg-[#9C01D4]",
+    "bg-[#E9983D]",
+    "bg-[#2775CA]",
+    "bg-[#424667]",
+    "bg-[#009393]",
+    "bg-osmoverse-500",
+  ],
+  available: [
+    "bg-[#9C01D4]",
+    "bg-[#E9983D]",
+    "bg-[#2775CA]",
+    "bg-[#424667]",
+    "bg-[#009393]",
+    "bg-osmoverse-500",
+  ],
+};
+
 export interface SwapToolTabsProps {
   setTab: (tab: AllocationOptions) => void;
   activeTab: AllocationOptions;
@@ -117,11 +143,16 @@ export const Allocation: FunctionComponent<{
           <div className="my-[8px] flex h-4 w-full gap-1">
             {selectedList.map(
               // @ts-ignore
-              ({ key, percentage, amount, color }) =>
+              ({ key, percentage, amount }, index) =>
                 percentage === 0 ? null : (
                   <div
                     key={key}
-                    className={classNames("h-full rounded-[4px]", color)}
+                    className={classNames(
+                      "h-full rounded-[4px]",
+                      COLORS[selectedOption][
+                        index % COLORS[selectedOption].length
+                      ]
+                    )}
                     style={{ width: `${percentage.toString()}%` }}
                   />
                 )
@@ -130,13 +161,15 @@ export const Allocation: FunctionComponent<{
           <div className="flex flex-col space-y-3">
             {selectedList.map(
               // @ts-ignore
-              ({ key, percentage, amount, color }) => (
+              ({ key, percentage, amount }, index) => (
                 <div key={key} className="body2 flex w-full justify-between">
                   <div className="flex items-center space-x-1">
                     <div
                       className={classNames(
                         "my-auto inline-block h-3 w-3 rounded-[4px]",
-                        color
+                        COLORS[selectedOption][
+                          index % COLORS[selectedOption].length
+                        ]
                       )}
                     />
                     <span>{key}</span>

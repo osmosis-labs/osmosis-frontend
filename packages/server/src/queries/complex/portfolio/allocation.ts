@@ -12,14 +12,12 @@ const allocationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 export interface GetAllocationResponse {
   all: {
     key: string;
-    color: string;
     percentage: number;
     amount: number;
     asset?: CoinPretty;
   }[];
   assets: {
     key: string;
-    color: string;
     percentage: number;
     amount: number;
     asset?: CoinPretty;
@@ -46,42 +44,29 @@ async function getAll(categories: any) {
       key: "Available",
       percentage: (userBalancesCap / totalCap) * 100,
       amount: userBalancesCap,
-      color: "bg-wosmongton-500",
     },
     {
       key: "Staked",
       percentage: (stakedCap / totalCap) * 100,
       amount: stakedCap,
-      color: "bg-ammelia-400",
     },
     {
       key: "Unstaking",
       percentage: (unstakingCap / totalCap) * 100,
       amount: unstakingCap,
-      color: "bg-osmoverse-500",
     },
     {
       key: "Unclaimed Rewards",
       percentage: (unclaimedRewardsCap / totalCap) * 100,
       amount: unclaimedRewardsCap,
-      color: "bg-bullish-500",
     },
     {
       key: "Pooled",
       percentage: (pooledCap / totalCap) * 100,
       amount: pooledCap,
-      color: "bg-ion-500",
     },
   ];
 }
-
-const COLORS = [
-  "bg-[#9C01D4]",
-  "bg-[#E9983D]",
-  "bg-[#2775CA]",
-  "bg-[#424667]",
-  "bg-[#009393]",
-];
 
 async function getAssets(categories: any, assetLists: AssetList[]) {
   console.log("assetLists: ", assetLists);
@@ -147,7 +132,6 @@ async function getAvailable(categories: any, assetLists: AssetList[]) {
       key: assetFromAssetLists.coinDenom,
       percentage: (asset.cap_value / totalCap) * 100,
       amount: +asset.cap_value,
-      color: COLORS[index % COLORS.length],
     };
   });
 
@@ -162,7 +146,6 @@ async function getAvailable(categories: any, assetLists: AssetList[]) {
     key: "Other",
     percentage: otherPercentage,
     amount: otherAmount,
-    color: "bg-osmoverse-500",
   };
 
   return [...assets, other];
