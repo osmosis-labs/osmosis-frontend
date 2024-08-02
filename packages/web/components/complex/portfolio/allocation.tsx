@@ -1,5 +1,5 @@
 import { AllocationResponse } from "@osmosis-labs/server";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { RadioWithOptions } from "~/components/radio-with-options";
 
@@ -8,21 +8,19 @@ type AllocationOptions = "all" | "assets" | "available";
 import { PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useMemo } from "react";
 
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
-import { useTranslation } from "~/hooks";
 
-export enum SwapToolTab {
-  SWAP = "swap",
-  BUY = "buy",
-  SELL = "sell",
+export enum AllocationTab {
+  ALL = "all",
+  ASSETS = "assets",
+  AVAILABLE = "available",
 }
 
 export interface SwapToolTabsProps {
-  setTab: (tab: SwapToolTab) => void;
-  activeTab: SwapToolTab;
+  setTab: (tab: AllocationTab) => void;
+  activeTab: AllocationTab;
 }
 
 /**
@@ -41,16 +39,16 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   const tabs = useMemo(
     () => [
       {
-        label: t("portfolio.buy"),
-        value: SwapToolTab.BUY,
+        label: "All",
+        value: AllocationTab.ALL,
       },
       {
-        label: t("limitOrders.sell"),
-        value: SwapToolTab.SELL,
+        label: "Assets",
+        value: AllocationTab.ASSETS,
       },
       {
-        label: t("swap.title"),
-        value: SwapToolTab.SWAP,
+        label: "Available",
+        value: AllocationTab.AVAILABLE,
       },
     ],
     [t]
@@ -98,6 +96,7 @@ export const Allocation: FunctionComponent<{
     return null;
   }
 
+  // @ts-ignore
   const selectedList = allocation[selectedOption];
 
   console.log("Selected List:", selectedList);
@@ -126,37 +125,42 @@ export const Allocation: FunctionComponent<{
         />
       </div>
       <div className="my-4 flex h-4 w-full gap-1">
-        {selectedList.map(({ key, percentage, amount, color }) =>
-          percentage === 0 ? null : (
-            <div
-              key={key}
-              className={`h-full ${color} rounded-[4px]`}
-              style={{ width: `${percentage.toString()}%` }}
-            />
-          )
+        {selectedList.map(
+          // @ts-ignore
+          ({ key, percentage, amount, color }) =>
+            percentage === 0 ? null : (
+              <div
+                key={key}
+                className={`h-full ${color} rounded-[4px]`}
+                style={{ width: `${percentage.toString()}%` }}
+              />
+            )
         )}
       </div>
       <div className="flex flex-col space-y-3">
-        {selectedList.map(({ key, percentage, amount, color }) => (
-          <div key={key} className="body2 flex w-full justify-between">
-            <div className="flex items-center space-x-1">
-              <div
-                className={`my-auto inline-block h-3 w-3 rounded-[4px] ${color}`}
-              />
-              <span>{key}</span>
-              <span className="text-osmoverse-400">
-                {(+percentage.toString()).toFixed(0)}%
-              </span>
+        {selectedList.map(
+          // @ts-ignore
+          ({ key, percentage, amount, color }) => (
+            <div key={key} className="body2 flex w-full justify-between">
+              <div className="flex items-center space-x-1">
+                <div
+                  className={`my-auto inline-block h-3 w-3 rounded-[4px] ${color}`}
+                />
+                <span>{key}</span>
+                <span className="text-osmoverse-400">
+                  {(+percentage.toString()).toFixed(0)}%
+                </span>
+              </div>
+              <div>
+                {displayFiatPrice(
+                  new PricePretty(DEFAULT_VS_CURRENCY, amount),
+                  "",
+                  t
+                )}
+              </div>
             </div>
-            <div>
-              {displayFiatPrice(
-                new PricePretty(DEFAULT_VS_CURRENCY, amount),
-                "",
-                t
-              )}
-            </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );
