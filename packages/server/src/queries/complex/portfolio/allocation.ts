@@ -52,7 +52,7 @@ async function getAll(categories: any) {
       key: "Staked",
       percentage: (stakedCap / totalCap) * 100,
       amount: stakedCap,
-      color: "bg-ammelia-500",
+      color: "bg-ammelia-400",
     },
     {
       key: "Unstaking",

@@ -106,7 +106,7 @@ export const Allocation: FunctionComponent<{
             percentage === 0 ? null : (
               <div
                 key={key}
-                className={`h-full ${color} rounded-[4px]`}
+                className={classNames("h-full rounded-[4px]", color)}
                 style={{ width: `${percentage.toString()}%` }}
               />
             )
@@ -119,7 +119,10 @@ export const Allocation: FunctionComponent<{
             <div key={key} className="body2 flex w-full justify-between">
               <div className="flex items-center space-x-1">
                 <div
-                  className={`my-auto inline-block h-3 w-3 rounded-[4px] ${color}`}
+                  className={classNames(
+                    "my-auto inline-block h-3 w-3 rounded-[4px]",
+                    color
+                  )}
                 />
                 <span>{key}</span>
                 <span className="text-osmoverse-400">
