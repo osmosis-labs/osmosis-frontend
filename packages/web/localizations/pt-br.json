@@ -860,7 +860,8 @@
       "tradeFeesInfo": "É a taxa cobrada pelo protocolo Osmosis no momento da execução da negociação para recompensar os provedores de liquidez e manter a rede.",
       "tradeFeesLimitInfo": "Atualmente, as taxas de negociação para pedidos com limite são gratuitas.",
       "networkFeesAdditional": "As taxas de rede são adicionais a cada transação."
-    }
+    },
+    "noRoutes": "Nenhuma rota encontrada"
   },
   "walletSelect": {
     "gettingStarted": "Começando",

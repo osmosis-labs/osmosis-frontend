@@ -860,7 +860,8 @@
       "tradeFeesInfo": "Acesta este comisionul perceput de protocolul Osmosis la momentul executării tranzacției pentru a recompensa furnizorii de lichidități și a menține rețeaua.",
       "tradeFeesLimitInfo": "Taxele de tranzacționare pentru ordinele limită sunt în prezent gratuite.",
       "networkFeesAdditional": "Taxele de rețea sunt suplimentare pentru fiecare tranzacție."
-    }
+    },
+    "noRoutes": "Nu au fost găsite rute"
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",

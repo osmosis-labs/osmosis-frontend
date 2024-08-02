@@ -286,8 +286,18 @@ export const TradeDetails = observer(
                               </GenericDisclaimer>
                               <div className="flex items-center gap-1 text-wosmongton-300">
                                 <span className="body2">
-                                  {routes?.length}{" "}
-                                  {routes?.length === 1 ? "route" : "routes"}
+                                  {!!routes && routes.length > 0 ? (
+                                    <>
+                                      {routes?.length}{" "}
+                                      {routes?.length === 1
+                                        ? "route"
+                                        : "routes"}
+                                    </>
+                                  ) : (
+                                    <span className="text-rust-400">
+                                      {t("swap.noRoutes")}
+                                    </span>
+                                  )}
                                 </span>
                                 <Icon
                                   id="chevron-down"

@@ -860,7 +860,8 @@
       "tradeFeesInfo": "這是 Osmosis 協議在交易執行時收取的費用，以獎勵流動性提供者並維護網路。",
       "tradeFeesLimitInfo": "限價訂單的交易費用目前是免費的。",
       "networkFeesAdditional": "每筆交易均需額外支付網路費用。"
-    }
+    },
+    "noRoutes": "沒有找到路線"
   },
   "walletSelect": {
     "gettingStarted": "入門",

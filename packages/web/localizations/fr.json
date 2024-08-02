@@ -860,7 +860,8 @@
       "tradeFeesInfo": "Il s'agit des frais facturés par le protocole Osmosis au moment de l'exécution de la transaction afin de récompenser les fournisseurs de liquidité et d'entretenir le réseau.",
       "tradeFeesLimitInfo": "Les frais de transaction pour les ordres limités sont actuellement gratuits.",
       "networkFeesAdditional": "Les frais de réseau sont en supplément à chaque transaction."
-    }
+    },
+    "noRoutes": "Aucun itinéraire trouvé"
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

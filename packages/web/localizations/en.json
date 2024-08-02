@@ -860,7 +860,8 @@
       "tradeFeesInfo": "This is the fee charged by the Osmosis protocol at the time of trade execution in order to reward liquidity providers and maintain the network.",
       "tradeFeesLimitInfo": "Trade fees for limit orders are currently free.",
       "networkFeesAdditional": "Network fees are additional to every transaction."
-    }
+    },
+    "noRoutes": "No routes found"
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

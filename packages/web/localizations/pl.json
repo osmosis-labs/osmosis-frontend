@@ -860,7 +860,8 @@
       "tradeFeesInfo": "Jest to opłata pobierana przez protokół Osmosis w momencie realizacji transakcji w celu nagrodzenia dostawców płynności i utrzymania sieci.",
       "tradeFeesLimitInfo": "Opłaty handlowe za zlecenia z limitem są obecnie bezpłatne.",
       "networkFeesAdditional": "Opłaty sieciowe są doliczane do każdej transakcji."
-    }
+    },
+    "noRoutes": "Nie znaleziono żadnych tras"
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
