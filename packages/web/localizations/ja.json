@@ -97,6 +97,7 @@
     "onePosition": "1 ポジション",
     "goToPool": "プール #{poolId}に移動します"
   },
+  "copied": "コピーしました！",
   "app": {
     "banner": {
       "backToOsmosis": "浸透に戻る",

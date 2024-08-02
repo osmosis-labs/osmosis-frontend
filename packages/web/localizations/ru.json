@@ -97,6 +97,7 @@
     "onePosition": "1 позиция",
     "goToPool": "Перейти к пулу № #{poolId}"
   },
+  "copied": "Скопировано!",
   "app": {
     "banner": {
       "backToOsmosis": "Вернемся к осмосу",

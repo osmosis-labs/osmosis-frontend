@@ -65,11 +65,11 @@ export const useBridgeQuotes = ({
   fromAsset:
     | (BridgeAsset & { amount: CoinPretty; imageUrl: string | undefined })
     | undefined;
-  fromChain: BridgeChain | undefined;
+  fromChain: (BridgeChain & { prettyName: string }) | undefined;
   fromAddress: string | undefined;
 
   toAsset: (BridgeAsset & { imageUrl: string | undefined }) | undefined;
-  toChain: BridgeChain | undefined;
+  toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
   bridges: QuotableBridge[];
@@ -441,8 +441,8 @@ export const useBridgeQuotes = ({
           isWithdraw,
           chainPrettyName:
             direction === "deposit"
-              ? fromChain?.chainName ?? ""
-              : toChain?.chainName ?? "",
+              ? fromChain?.prettyName ?? ""
+              : toChain?.prettyName ?? "",
           estimatedArrivalUnix,
           accountAddress: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account)
         });
@@ -453,13 +453,13 @@ export const useBridgeQuotes = ({
       direction,
       fromAddress,
       fromAsset?.imageUrl,
-      fromChain?.chainName,
+      fromChain?.prettyName,
       inputAmountRaw,
       inputCoin,
       isWithdraw,
       toAddress,
       toAsset?.imageUrl,
-      toChain?.chainName,
+      toChain?.prettyName,
       transferHistoryStore,
     ]
   );

@@ -97,6 +97,7 @@
     "onePosition": "1 个职位",
     "goToPool": "前往泳池#{poolId}"
   },
+  "copied": "已复制！",
   "app": {
     "banner": {
       "backToOsmosis": "返回Osmosis",

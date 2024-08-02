@@ -97,6 +97,7 @@
     "onePosition": "1 पद",
     "goToPool": "पूल # पर जाएँ #{poolId}"
   },
+  "copied": "कॉपी किया गया!",
   "app": {
     "banner": {
       "backToOsmosis": "ऑस्मोसिस को लौटें",

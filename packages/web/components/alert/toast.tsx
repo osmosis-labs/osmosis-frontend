@@ -29,10 +29,11 @@ export function displayToast(
     draggable: false,
     progress: undefined,
     pauseOnFocusLoss: false,
+    className: "group",
     closeButton: ({ closeToast }) => (
       <button
         onClick={closeToast}
-        className="absolute -left-2 -top-2 h-6 w-6 hover:opacity-75 md:top-2 md:h-5 md:w-5"
+        className="absolute -left-2 -top-2 hidden h-6 w-6 hover:opacity-75 group-hover:block md:top-2 md:h-5 md:w-5"
       >
         <Image
           alt="close"

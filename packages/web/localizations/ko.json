@@ -97,6 +97,7 @@
     "onePosition": "1 위치",
     "goToPool": "풀 번호로 이동 #{poolId}"
   },
+  "copied": "복사되었습니다!",
   "app": {
     "banner": {
       "backToOsmosis": "Osmosis로 돌아가기",

@@ -97,6 +97,7 @@
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}"
   },
+  "copied": "Kopyalandı!",
   "app": {
     "banner": {
       "backToOsmosis": "Osmosis'e Geri Dön",

@@ -97,6 +97,7 @@
     "onePosition": "1 posição",
     "goToPool": "Vá para a piscina #{poolId}"
   },
+  "copied": "Copiado!",
   "app": {
     "banner": {
       "backToOsmosis": "Voltar para o Osmosis",

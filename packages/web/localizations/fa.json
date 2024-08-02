@@ -97,6 +97,7 @@
     "onePosition": "1 موقعیت",
     "goToPool": "رفتن به استخر #{poolId}"
   },
+  "copied": "کپی شده!",
   "app": {
     "banner": {
       "backToOsmosis": "بازگشت به Osmosis",
