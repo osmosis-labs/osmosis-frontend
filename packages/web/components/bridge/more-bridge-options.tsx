@@ -14,12 +14,12 @@ import { Button } from "../ui/button";
 
 interface MoreBridgeOptionsProps {
   direction: "deposit" | "withdraw";
-  fromAsset: BridgeAsset;
-  toAsset: BridgeAsset;
+  fromAsset?: BridgeAsset;
+  toAsset?: BridgeAsset;
   canonicalAssetDenom?: string;
-  fromChain: BridgeChainWithDisplayInfo;
-  toChain: BridgeChainWithDisplayInfo;
-  toAddress: string | undefined;
+  fromChain?: BridgeChainWithDisplayInfo;
+  toChain?: BridgeChainWithDisplayInfo;
+  toAddress?: string;
   bridges: Bridge[];
 }
 
@@ -29,6 +29,7 @@ export const MoreBridgeOptionsModal: FunctionComponent<
   direction,
   fromAsset,
   toAsset,
+  canonicalAssetDenom,
   fromChain,
   toChain,
   toAddress,
@@ -86,9 +87,9 @@ export const MoreBridgeOptionsModal: FunctionComponent<
             ? "transfer.moreBridgeOptions.chooseAnAlternativeProviderDeposit"
             : "transfer.moreBridgeOptions.chooseAnAlternativeProviderWithdraw",
           {
-            asset: fromAsset.denom,
-            fromChain: fromChain.prettyName,
-            toChain: toChain.prettyName,
+            asset: canonicalAssetDenom ?? fromAsset?.denom ?? "",
+            fromChain: fromChain?.prettyName ?? "",
+            toChain: toChain?.prettyName ?? "",
           }
         )}
       </p>
@@ -171,16 +172,9 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
         toAsset: toAsset,
         fromChain: fromChain,
         toChain: toChain,
-        toAddress: toAddress ?? "",
+        toAddress: toAddress,
       },
       {
-        enabled:
-          !!fromAsset &&
-          !!toAsset &&
-          !!fromChain &&
-          !!toChain &&
-          !!bridges.length,
-
         // skip batching so this query does not get
         // batched with getSupportedAssetsByBridge query
         trpc: {
@@ -195,15 +189,15 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
   if (externalUrlsData?.externalUrls.length === 1) {
     const { url, logo, urlProviderName } = externalUrlsData.externalUrls[0];
 
-    const denom = canonicalAssetDenom ?? fromAsset.denom;
+    const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
     const translatedText = t(
       direction === "deposit"
         ? "transfer.moreBridgeOptions.singleDescriptionDeposit"
         : "transfer.moreBridgeOptions.singleDescriptionWithdraw",
       {
-        denom: canonicalAssetDenom ?? fromAsset.denom,
-        networkA: fromChain.prettyName,
-        networkB: toChain.prettyName,
+        denom: canonicalAssetDenom ?? fromAsset?.denom ?? "",
+        networkA: fromChain?.prettyName ?? "",
+        networkB: toChain?.prettyName ?? "",
         service: urlProviderName,
       }
     );
@@ -255,15 +249,15 @@ export const OnlyExternalBridgeSuggest: FunctionComponent<
     );
   }
 
-  const denom = canonicalAssetDenom ?? fromAsset.denom;
+  const denom = canonicalAssetDenom ?? fromAsset?.denom ?? "";
   const translatedText = t(
     direction === "deposit"
       ? "transfer.moreBridgeOptions.descriptionDeposit"
       : "transfer.moreBridgeOptions.descriptionWithdraw",
     {
       denom,
-      networkA: fromChain.prettyName,
-      networkB: toChain.prettyName,
+      networkA: fromChain?.prettyName ?? "",
+      networkB: toChain?.prettyName ?? "",
     }
   );
 
