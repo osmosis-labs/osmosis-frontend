@@ -49,13 +49,15 @@ export const Allocation: FunctionComponent<{
         />
       </div>
       <div className="my-4 flex h-4 w-full gap-1">
-        {selectedList.map(({ key, percentage, amount, color }) => (
-          <div
-            key={key}
-            className={`h-full ${color} rounded-[4px]`}
-            style={{ width: `${percentage.toString()}%` }}
-          />
-        ))}
+        {selectedList.map(({ key, percentage, amount, color }) =>
+          percentage === 0 ? null : (
+            <div
+              key={key}
+              className={`h-full ${color} rounded-[4px]`}
+              style={{ width: `${percentage.toString()}%` }}
+            />
+          )
+        )}
       </div>
       <div className="flex flex-col space-y-3">
         {selectedList.map(({ key, percentage, amount, color }) => (

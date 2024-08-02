@@ -126,6 +126,48 @@ async function getAssets(categories: any, assetLists: AssetList[]) {
   return [...assets, other];
 }
 
+async function getAvailable(categories: any, assetLists: AssetList[]) {
+  const userBalances = categories["user-balances"];
+  const totalCap = +userBalances.capitalization;
+  // Get top 5 assets by cap value
+
+  const sortedAccountCoinsResults = userBalances.account_coins_result.sort(
+    (a: any, b: any) => +b.cap_value - +a.cap_value
+  );
+
+  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
+
+  const assets = top5AccountCoinsResults.map((asset: any, index: number) => {
+    const assetFromAssetLists = getAsset({
+      assetLists,
+      anyDenom: asset.coin.denom,
+    });
+
+    return {
+      key: assetFromAssetLists.coinDenom,
+      percentage: (asset.cap_value / totalCap) * 100,
+      amount: +asset.cap_value,
+      color: COLORS[index % COLORS.length],
+    };
+  });
+
+  const otherAssets = sortedAccountCoinsResults.slice(5);
+  const otherAmount = otherAssets.reduce(
+    (sum: number, asset: any) => sum + +asset.cap_value,
+    0
+  );
+  const otherPercentage = (otherAmount / totalCap) * 100;
+
+  const other = {
+    key: "Other",
+    percentage: otherPercentage,
+    amount: otherAmount,
+    color: "bg-osmoverse-500",
+  };
+
+  return [...assets, other];
+}
+
 export async function getAllocation({
   address,
   assetLists,
@@ -146,11 +188,12 @@ export async function getAllocation({
 
       const all = await getAll(categories);
       const assets = await getAssets(categories, assetLists);
+      const available = await getAvailable(categories, assetLists);
 
       return {
         all,
         assets,
-        available: {},
+        available,
       };
     },
   });
