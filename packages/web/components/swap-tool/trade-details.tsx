@@ -300,17 +300,19 @@ export const TradeDetails = observer(
                                     </span>
                                   )}
                                 </span>
-                                <Icon
-                                  id="chevron-down"
-                                  width={16}
-                                  height={16}
-                                  className={classNames(
-                                    "transition-transform",
-                                    {
-                                      "rotate-180": open,
-                                    }
-                                  )}
-                                />
+                                {!!routes && routes.length > 0 && (
+                                  <Icon
+                                    id="chevron-down"
+                                    width={16}
+                                    height={16}
+                                    className={classNames(
+                                      "transition-transform",
+                                      {
+                                        "rotate-180": open,
+                                      }
+                                    )}
+                                  />
+                                )}
                               </div>
                             </Disclosure.Button>
                             <Disclosure.Panel className="flex w-full flex-col gap-2">
