@@ -4,6 +4,7 @@ import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { parseAsString, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -43,7 +44,7 @@ export const TradeDetails = observer(
     makerFee,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
-
+    const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
     const routesVisDisclosure = useDisclosure();
 
     const [outAsBase, setOutAsBase] = useState(true);
@@ -80,6 +81,16 @@ export const TradeDetails = observer(
         minimumFractionDigits: 2,
       });
     }, [makerFee]);
+
+    useEffect(() => {
+      if (tab === "sell") {
+        setOutAsBase(false);
+      }
+
+      if (tab === "buy") {
+        setOutAsBase(true);
+      }
+    }, [tab]);
 
     return (
       <div className="flex w-full">

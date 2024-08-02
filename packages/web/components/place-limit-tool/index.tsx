@@ -71,11 +71,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 };
 
 // Certain errors we do not wish to show on the button
-const NON_DISPLAY_ERRORS = [
-  "errors.zeroAmount",
-  "errors.emptyAmount",
-  "limitOrders.insufficientFunds",
-];
+const NON_DISPLAY_ERRORS = ["errors.zeroAmount", "errors.emptyAmount"];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page }: PlaceLimitToolProps) => {
@@ -370,14 +366,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
 
     const buttonText = useMemo(() => {
-      if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
-        return t(swapState.error);
-      } else {
-        return orderDirection === "bid"
-          ? t("portfolio.buy")
-          : t("limitOrders.sell");
-      }
-    }, [orderDirection, swapState.error, t]);
+      return orderDirection === "bid"
+        ? t("portfolio.buy")
+        : t("limitOrders.sell");
+    }, [orderDirection, t]);
 
     const isButtonDisabled = useMemo(() => {
       if (swapState.insufficientFunds) {
