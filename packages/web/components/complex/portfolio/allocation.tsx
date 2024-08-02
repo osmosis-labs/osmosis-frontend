@@ -114,7 +114,7 @@ export const Allocation: FunctionComponent<{
               activeTab={selectedOption}
             />
           </div>
-          <div className="my-4 flex h-4 w-full gap-1">
+          <div className="my-[8px] flex h-4 w-full gap-1">
             {selectedList.map(
               // @ts-ignore
               ({ key, percentage, amount, color }) =>

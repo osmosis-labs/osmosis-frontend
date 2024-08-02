@@ -56,8 +56,8 @@ export const PortfolioPage: FunctionComponent = () => {
   const { data: allocation, isLoading: isLoadingAllocation } =
     api.edge.portfolio.getAllocation.useQuery(
       {
-        address: "osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06",
-        // address: wallet?.address ?? "",
+        // address: "osmo140p7pef5hlkewuuramngaf5j6s8dlynth5zm06",
+        address: wallet?.address ?? "",
       },
       {
         enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
@@ -93,18 +93,14 @@ export const PortfolioPage: FunctionComponent = () => {
           isTotalValueFetched={isTotalValueFetched}
         />
       </section>
-
       <section className="w-full">
-        {isLoadingAllocation ? (
-          "...loading"
-        ) : (
+        {!isLoadingAllocation && (
           <Allocation
             // @ts-ignore
             allocation={allocation}
           />
         )}
       </section>
-
       <section className="w-full py-3">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <Tab.Group>
