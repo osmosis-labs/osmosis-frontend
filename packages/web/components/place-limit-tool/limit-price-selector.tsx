@@ -36,7 +36,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   const [input, setInput] = useState<HTMLInputElement | null>(null);
   const { t } = useTranslation();
   const { priceState } = swapState;
-  const [inputMode, setInputMode] = useState(InputMode.Percentage);
+  const [inputMode, setInputMode] = useState(InputMode.Price);
 
   const swapInputMode = useCallback(() => {
     setInputMode(
@@ -45,8 +45,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         : InputMode.Percentage
     );
 
+    if (inputMode === InputMode.Price) {
+      priceState.setPriceLock(false);
+    } else {
+      priceState.setPriceLock(true);
+    }
+
     if (input) input.focus();
-  }, [inputMode, input]);
+  }, [inputMode, input, priceState]);
 
   // Adjust the percentage adjusted when the spot price changes and user is inputting a price
   useEffect(() => {
@@ -69,8 +75,33 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             }).toString()
       );
     }
+
+    if (priceState.spotPrice && inputMode === InputMode.Percentage) {
+      priceState.setPriceAsPercentageOfSpotPrice(
+        new Dec(priceState.manualPercentAdjusted).quo(new Dec(100)),
+        false
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceState.spotPrice, priceState.orderPrice, inputMode]);
+  }, [
+    priceState.spotPrice,
+    priceState.orderPrice,
+    inputMode,
+    priceState.manualPercentAdjusted,
+  ]);
+
+  useEffect(() => {
+    if (inputMode === InputMode.Price && !priceState.priceLocked) {
+      const formattedPrice = formatPretty(
+        priceState.priceFiat,
+        getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
+      )
+        .replace("$", "")
+        .replace(",", "");
+      priceState._setPriceUnsafe(formattedPrice);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputMode, priceState.priceFiat, priceState.priceLocked]);
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
@@ -239,10 +270,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-[#3E386A] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
-              priceState.setPrice("");
-              priceState.setPercentAdjusted(
-                formatPretty(value.mul(new Dec(100)))
-              );
+              if (inputMode === InputMode.Percentage) {
+                priceState.setPercentAdjusted(
+                  formatPretty(value.mul(new Dec(100)))
+                );
+              } else {
+                priceState.setPriceAsPercentageOfSpotPrice(value);
+              }
             }}
             disabled={!priceState.spotPrice || priceState.isLoading}
           >

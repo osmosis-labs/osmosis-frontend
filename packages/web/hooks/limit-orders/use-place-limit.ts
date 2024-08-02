@@ -640,6 +640,7 @@ const useLimitPrice = ({
         price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
       }
 
+      setPriceLock(true);
       setOrderPrice(price);
 
       if (price.length === 0 || newPrice.isZero()) {
@@ -684,11 +685,8 @@ const useLimitPrice = ({
       }
 
       setManualPercentAdjusted(percentAdjusted);
-
-      // Reset the user's manual order price if they adjust percentage
-      if (orderPrice.length > 0) setOrderPrice("");
     },
-    [setManualPercentAdjusted, orderPrice.length, orderDirection]
+    [setManualPercentAdjusted, orderDirection]
   );
 
   // Whether the user's manual order price is a valid price
@@ -748,15 +746,32 @@ const useLimitPrice = ({
   const reset = useCallback(() => {
     setManualPercentAdjusted("");
     setOrderPrice("");
+    setPriceLock(false);
   }, []);
 
   useEffect(() => {
     reset();
-  }, [orderDirection, reset]);
+  }, [orderDirection, reset, baseDenom]);
 
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
+
+  const setPriceAsPercentageOfSpotPrice = useCallback(
+    (percent: Dec, lockPrice = true) => {
+      const percentAdjusted =
+        orderDirection === "bid"
+          ? // Adjust negatively for bid orders
+            new Dec(1).sub(percent)
+          : // Adjust positively for ask orders
+            new Dec(1).add(percent);
+      const newPrice = spotPrice.mul(percentAdjusted).toString();
+      const [sigFigs, decimals] = newPrice.split(".");
+      setOrderPrice(sigFigs + "." + decimals.slice(0, 6));
+      setPriceLock(lockPrice);
+    },
+    [setOrderPrice, orderDirection, spotPrice]
+  );
 
   return {
     spotPrice,
@@ -770,9 +785,12 @@ const useLimitPrice = ({
     isLoading: loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
+    _setPriceUnsafe: setOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
     isSpotPriceRefetching,
     setPriceLock,
+    priceLocked,
+    setPriceAsPercentageOfSpotPrice,
   };
 };
