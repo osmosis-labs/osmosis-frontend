@@ -1,8 +1,9 @@
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
-import { AllocationOptions } from "./types";
+import { useTranslation } from "~/hooks";
 
+import { AllocationOptions } from "./types";
 export interface AllocationTabProps {
   setTab: (tab: AllocationOptions) => void;
   activeTab: AllocationOptions;
@@ -12,19 +13,21 @@ export const AllocationTabs: FunctionComponent<AllocationTabProps> = ({
   setTab,
   activeTab,
 }) => {
+  const { t } = useTranslation();
+
   const tabs = useMemo(
     () =>
       [
         {
-          label: "All",
+          label: t("portfolio.all"),
           value: "all",
         },
         {
-          label: "Assets",
+          label: t("portfolio.assets"),
           value: "assets",
         },
         {
-          label: "Available",
+          label: t("portfolio.available"),
           value: "available",
         },
       ] as { label: string; value: AllocationOptions }[],

@@ -40,27 +40,27 @@ async function getAll(categories: Categories) {
 
   return [
     {
-      key: "Available",
+      key: "available",
       percentage: (userBalancesCap / totalCap) * 100,
       amount: userBalancesCap,
     },
     {
-      key: "Staked",
+      key: "staked",
       percentage: (stakedCap / totalCap) * 100,
       amount: stakedCap,
     },
     {
-      key: "Unstaking",
+      key: "unstaking",
       percentage: (unstakingCap / totalCap) * 100,
       amount: unstakingCap,
     },
     {
-      key: "Unclaimed Rewards",
+      key: "unclaimedRewards",
       percentage: (unclaimedRewardsCap / totalCap) * 100,
       amount: unclaimedRewardsCap,
     },
     {
-      key: "Pooled",
+      key: "pooled",
       percentage: (pooledCap / totalCap) * 100,
       amount: pooledCap,
     },

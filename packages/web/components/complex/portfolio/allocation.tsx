@@ -10,6 +10,7 @@ import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
+import { MultiLanguageT } from "~/hooks";
 import { useTranslation } from "~/hooks";
 
 const COLORS: Record<AllocationOptions, string[]> = {
@@ -38,6 +39,19 @@ const COLORS: Record<AllocationOptions, string[]> = {
   ],
 };
 
+const getTranslation = (key: string, t: MultiLanguageT): string => {
+  const translationMap: Record<string, string> = {
+    available: t("portfolio.available"),
+    staked: t("portfolio.staked"),
+    unstaking: t("portfolio.unstaking"),
+    unclaimedRewards: t("portfolio.unclaimedRewards"),
+    positions: t("portfolio.positions"),
+    other: t("portfolio.other"),
+  };
+
+  return translationMap[key] || key;
+};
+
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
 }> = ({ allocation }) => {
@@ -58,7 +72,7 @@ export const Allocation: FunctionComponent<{
         className="flex cursor-pointer items-center justify-between py-3"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <h6>Allocation</h6>
+        <h6>{t("portfolio.allocation")}</h6>
         <Icon
           id="chevron-down"
           className={classNames("transition-transform", {
@@ -102,7 +116,7 @@ export const Allocation: FunctionComponent<{
                       ]
                     )}
                   />
-                  <span>{key}</span>
+                  <span>{getTranslation(key, t)}</span>
                   <span className="text-osmoverse-400">
                     {(+percentage.toString()).toFixed(0)}%
                   </span>
