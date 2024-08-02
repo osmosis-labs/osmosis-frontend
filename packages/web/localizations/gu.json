@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
+      "depositDescriptionUnknown": "{denom} જમા કરાવવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
+      "withdrawDescriptionUnknown": "{denom} પાછી ખેંચવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
       "singleDescriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "singleDescriptionWithdraw": "{denom} ને {networkA} માંથી {networkB} માં પાછી ખેંચી લેવા {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "descriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",

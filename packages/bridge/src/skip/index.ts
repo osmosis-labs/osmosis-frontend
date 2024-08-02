@@ -900,10 +900,18 @@ export class SkipBridgeProvider implements BridgeProvider {
     if (this.ctx.env === "testnet") return undefined;
 
     const url = new URL("https://go.skip.build/");
-    url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
-    url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    if (fromChain?.chainId) {
+      url.searchParams.set("src_chain", String(fromChain.chainId));
+    }
+    if (fromAsset?.address) {
+      url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
+    }
+    if (toChain?.chainId) {
+      url.searchParams.set("dest_chain", String(toChain.chainId));
+    }
+    if (toAsset?.address) {
+      url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    }
 
     return { urlProviderName: "Skip:Go", url };
   }

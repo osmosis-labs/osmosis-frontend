@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
+      "depositDescriptionUnknown": "{denom} जमा करने के लिए कृपया वैकल्पिक प्रदाता का उपयोग करें।",
+      "withdrawDescriptionUnknown": "{denom} वापस लेने के लिए, कृपया वैकल्पिक प्रदाता का उपयोग करें।",
       "singleDescriptionDeposit": "{denom} {networkA} से {networkB} में जमा करने के लिए, कृपया {service} उपयोग करें।",
       "singleDescriptionWithdraw": "{denom} {networkA} से {networkB} में वापस लाने के लिए, कृपया {service} उपयोग करें।",
       "descriptionDeposit": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",

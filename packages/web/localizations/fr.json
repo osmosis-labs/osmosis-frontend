@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Plus d'options de dépôt",
       "titleWithdraw": "Plus d'options de retrait",
+      "depositDescriptionUnknown": "Pour déposer {denom} , veuillez utiliser un autre fournisseur.",
+      "withdrawDescriptionUnknown": "Pour retirer {denom} , veuillez utiliser un autre fournisseur.",
       "singleDescriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
       "singleDescriptionWithdraw": "Pour retirer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
       "descriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",

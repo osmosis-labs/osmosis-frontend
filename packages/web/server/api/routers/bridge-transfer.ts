@@ -543,10 +543,10 @@ export const bridgeTransferRouter = createTRPCRouter({
       // add external urls for external interfaces from asset list, as long as not already added
       const assetListFromAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.fromAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
       const assetListToAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.toAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
 
       const externalTransferMethods = (
         assetListFromAsset?.transferMethods.filter(
@@ -573,13 +573,13 @@ export const bridgeTransferRouter = createTRPCRouter({
           }
 
           let urlToAdd: (typeof externalUrls)[number] | undefined =
-            input.fromChain.chainId === "osmosis-1" && withdrawUrl
+            input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],
                   url: withdrawUrl,
                 }
-              : input.toChain.chainId === "osmosis-1" && depositUrl
+              : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],

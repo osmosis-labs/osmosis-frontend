@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",
       "titleWithdraw": "更多提款選項",
+      "depositDescriptionUnknown": "若要存入{denom} ，請使用替代提供者。",
+      "withdrawDescriptionUnknown": "若要撤回{denom} ，請使用替代提供者。",
       "singleDescriptionDeposit": "將{denom}從{networkA}存入{networkB} ，請使用{service} 。",
       "singleDescriptionWithdraw": "將{denom}從{networkA}撤回到{networkB} ，請使用{service} 。",
       "descriptionDeposit": "將{denom}從{networkA}存入{networkB} ，請使用下列替代提供者之一。",

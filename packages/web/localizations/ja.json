@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
+      "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
+      "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
       "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
       "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
       "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",

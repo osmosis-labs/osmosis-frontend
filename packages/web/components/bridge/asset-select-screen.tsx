@@ -250,12 +250,12 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     asset.usdValue &&
                     asset.amount.toDec().isPositive() && (
                       <div className="flex flex-col text-right">
-                        <p className="button">
+                        <p className="body1">
                           {formatPretty(asset.amount.hideDenom(true), {
                             maxDecimals: 6,
                           })}
                         </p>
-                        <span className="caption font-medium text-osmoverse-400">
+                        <span className="body2 font-medium text-osmoverse-400">
                           {asset.usdValue.toString()}
                         </span>
                       </div>

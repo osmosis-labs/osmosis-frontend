@@ -819,9 +819,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toAddress,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     const [fromChainId, toChainId, toAssetId] = await Promise.all([
-      this.getAxelarChainId(fromChain),
-      this.getAxelarChainId(toChain),
-      this.getAxelarAssetId(fromChain, fromAsset),
+      fromChain ? await this.getAxelarChainId(fromChain) : undefined,
+      toChain ? await this.getAxelarChainId(toChain) : undefined,
+      fromChain && fromAsset
+        ? await this.getAxelarAssetId(fromChain, fromAsset)
+        : undefined,
     ]);
 
     const url = new URL(
@@ -829,10 +831,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ? "https://satellite.money/"
         : "https://testnet.satellite.money/"
     );
-    url.searchParams.set("source", fromChainId);
-    url.searchParams.set("destination", toChainId);
-    // asset_denom denotes the selection of the from asset
-    url.searchParams.set("asset_denom", toAssetId);
+    if (fromChainId) url.searchParams.set("source", fromChainId);
+    if (toChainId) url.searchParams.set("destination", toChainId);
+    if (toAssetId) url.searchParams.set("asset_denom", toAssetId);
     if (toAddress) url.searchParams.set("destination_address", toAddress);
 
     return { urlProviderName: "Satellite Money", url };

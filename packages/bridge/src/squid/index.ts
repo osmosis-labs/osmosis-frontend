@@ -708,14 +708,19 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://app.squidrouter.com/"
         : "https://testnet.app.squidrouter.com/"
     );
-    url.searchParams.set(
-      "chains",
-      [fromChain.chainId, toChain.chainId].join(",")
-    );
-    url.searchParams.set(
-      "tokens",
-      [fromAsset.address, toAsset.address].join(",")
-    );
+    const chains = [fromChain?.chainId, toChain?.chainId]
+      .filter(Boolean)
+      .join(",");
+    const tokens = [fromAsset?.address, toAsset?.address]
+      .filter(Boolean)
+      .join(",");
+
+    if (chains) {
+      url.searchParams.set("chains", chains);
+    }
+    if (tokens) {
+      url.searchParams.set("tokens", tokens);
+    }
 
     return { urlProviderName: "Squid", url };
   }

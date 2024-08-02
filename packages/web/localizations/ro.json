@@ -909,6 +909,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
+      "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
       "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
       "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
       "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
