@@ -68,7 +68,6 @@ async function getAll(categories: Categories) {
 }
 
 async function getAssets(categories: Categories, assetLists: AssetList[]) {
-  console.log("assetLists: ", assetLists);
   const totalAssets = categories["total-assets"];
   const totalCap = +totalAssets.capitalization;
 
@@ -114,8 +113,8 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
 async function getAvailable(categories: Categories, assetLists: AssetList[]) {
   const userBalances = categories["user-balances"];
   const totalCap = +userBalances.capitalization;
-  // Get top 5 assets by cap value
 
+  // Get top 5 assets by cap value
   const sortedAccountCoinsResults =
     userBalances?.account_coins_result?.sort(
       (a: AccountCoinsResult, b: AccountCoinsResult) =>
