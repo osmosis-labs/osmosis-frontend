@@ -5,6 +5,7 @@ import {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "@osmosis-labs/bridge";
+import dayjs from "dayjs";
 import {
   action,
   autorun,
@@ -15,12 +16,12 @@ import {
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useRef } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
 import { useTranslation } from "~/hooks";
-import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time";
+import { humanizeTime } from "~/utils/date";
 
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
@@ -155,31 +156,33 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const startTimeUnix = Date.now() / 1000;
 
-    displayToast(
-      {
-        titleTranslationKey: isWithdraw
-          ? "transfer.pendingWithdraw"
-          : "transfer.pendingDeposit",
-        iconElement:
-          amountLogo && estimatedArrivalUnix ? (
-            <PendingTransferLoadingIcon
+    setTimeout(() => {
+      displayToast(
+        {
+          titleTranslationKey: isWithdraw
+            ? "transfer.pendingWithdraw"
+            : "transfer.pendingDeposit",
+          iconElement:
+            amountLogo && estimatedArrivalUnix ? (
+              <PendingTransferLoadingIcon
+                estimatedArrivalUnix={estimatedArrivalUnix}
+                assetLogo={amountLogo}
+                startTimeUnix={startTimeUnix}
+              />
+            ) : undefined,
+          captionElement: (
+            <PendingTransfer
+              amount={amount}
+              chainPrettyName={chainPrettyName}
+              isWithdraw={isWithdraw}
               estimatedArrivalUnix={estimatedArrivalUnix}
-              assetLogo={amountLogo}
-              startTimeUnix={startTimeUnix}
             />
-          ) : undefined,
-        captionElement: (
-          <PendingTransfer
-            amount={amount}
-            chainPrettyName={chainPrettyName}
-            isWithdraw={isWithdraw}
-            estimatedArrivalUnix={estimatedArrivalUnix}
-          />
-        ),
-      },
-      ToastType.LOADING,
-      { toastId: prefixedKey, autoClose: false }
-    );
+          ),
+        },
+        ToastType.LOADING,
+        { toastId: prefixedKey, autoClose: false }
+      );
+    }, 1000);
 
     this.snapshots.push({
       createdAtMs: Date.now(),
@@ -349,10 +352,10 @@ const PendingTransferLoadingIcon: FunctionComponent<{
   estimatedArrivalUnix: number;
   startTimeUnix: number;
 }> = ({ assetLogo, estimatedArrivalUnix, startTimeUnix }) => {
-  const [progress, setProgress] = useState(100);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!estimatedArrivalUnix) return;
+    if (!estimatedArrivalUnix || !progressRef.current) return;
 
     const updateProgress = () => {
       const currentTime = Date.now() / 1000;
@@ -362,17 +365,27 @@ const PendingTransferLoadingIcon: FunctionComponent<{
         (remainingTime / totalElapsedTime) * 100,
         0
       );
-      setProgress(progressPercentage);
+
+      // Directly update the HTML elements
+      // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
+      if (progressRef.current) {
+        const circles = progressRef.current.querySelectorAll("circle");
+        const radius = 20;
+        const circumference = 2 * Math.PI * radius;
+        const offset = (progressPercentage / 100) * circumference;
+
+        circles.forEach((circle, index) => {
+          if (index === 1) {
+            // Only update the second circle
+            circle.style.strokeDashoffset = `${offset}`;
+          }
+        });
+      }
     };
 
     updateProgress();
 
-    const intervalId = setInterval(
-      () => {
-        updateProgress();
-      },
-      1000 // Update every s
-    );
+    const intervalId = setInterval(updateProgress, 1000); // Update every second
 
     return () => clearInterval(intervalId);
   }, [estimatedArrivalUnix, startTimeUnix]);
@@ -380,8 +393,8 @@ const PendingTransferLoadingIcon: FunctionComponent<{
   return (
     <div className="relative flex h-12 w-12 items-center justify-center">
       <Image src={assetLogo} width={32} height={32} alt="Asset image" />
-      <div className="absolute inset-0">
-        <RadialProgress progress={progress} strokeWidth={2} />
+      <div className="absolute inset-0" ref={progressRef}>
+        <RadialProgress progress={100} strokeWidth={2} />
       </div>
     </div>
   );
@@ -394,9 +407,27 @@ const PendingTransfer: FunctionComponent<{
   estimatedArrivalUnix: number | undefined;
 }> = ({ isWithdraw, amount, chainPrettyName, estimatedArrivalUnix }) => {
   const { t } = useTranslation();
-  const { humanizedRemainingTime } = useHumanizedRemainingTime({
-    unix: estimatedArrivalUnix,
-  });
+  const progressRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (!estimatedArrivalUnix || !progressRef.current) return;
+
+    const updateTime = () => {
+      const humanizedTime = humanizeTime(dayjs.unix(estimatedArrivalUnix));
+      if (progressRef.current) {
+        // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
+        progressRef.current.textContent = `${t("estimated")} ${
+          humanizedTime.value
+        } ${t(humanizedTime.unitTranslationKey)} ${t("remaining")}`;
+      }
+    };
+
+    updateTime();
+
+    const intervalId = setInterval(updateTime, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [estimatedArrivalUnix, t]);
 
   return (
     <div>
@@ -405,12 +436,7 @@ const PendingTransfer: FunctionComponent<{
           ? t("transfer.amountToChain", { amount, chain: chainPrettyName })
           : t("transfer.amountFromChain", { amount, chain: chainPrettyName })}
       </p>
-      {humanizedRemainingTime && (
-        <p className="body2 text-osmoverse-300">
-          {t("estimated")} {humanizedRemainingTime.value}{" "}
-          {t(humanizedRemainingTime.unitTranslationKey)} {t("remaining")}
-        </p>
-      )}
+      <p className="body2 text-osmoverse-300" ref={progressRef}></p>
     </div>
   );
 };
