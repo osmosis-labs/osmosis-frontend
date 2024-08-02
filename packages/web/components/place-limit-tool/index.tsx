@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -86,6 +87,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onClose: closeAddFundsModal,
       onOpen: openAddFundsModal,
     } = useDisclosure();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // const fromAssetsPage = useMemo(() => page === "Token Info Page", [page]);
 
@@ -473,6 +475,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     </h3>
                   )
                 }
+                ref={inputRef}
                 inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
               />
@@ -497,6 +500,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
+                  if (inputRef.current) {
+                    inputRef.current.focus();
+                  }
                 }}
               >
                 {type === "limit" && (
@@ -580,6 +586,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             swapState={swapState.marketState}
             type={type}
             makerFee={swapState.makerFee}
+            treatAsStable={tab === "buy" ? "in" : "out"}
           />
         </div>
         <ReviewOrder
