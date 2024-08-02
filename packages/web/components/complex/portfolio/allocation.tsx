@@ -4,6 +4,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 
@@ -76,6 +77,7 @@ export const Allocation: FunctionComponent<{
 
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
+  const [isOpen, setIsOpen] = useState(true);
 
   const { t } = useTranslation();
 
@@ -91,56 +93,70 @@ export const Allocation: FunctionComponent<{
 
   return (
     <div className="flex w-full max-w-[320px] flex-col">
-      <h6 className="py-3 pr-4">Allocation</h6>
-      {/* <h6 className="py-3 pr-4 text-h6">Allocation</h6> */}
-      <div className="my-4">
-        <AllocationTabs
-          setTab={(tab) => setSelectedOption(tab)}
-          // @ts-ignore
-          activeTab={selectedOption}
+      <div
+        className="flex cursor-pointer items-center justify-between py-3"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h6>Allocation</h6>
+        <Icon
+          id="chevron-down"
+          className={classNames("transition-transform", {
+            "rotate-180": isOpen,
+          })}
         />
       </div>
-      <div className="my-4 flex h-4 w-full gap-1">
-        {selectedList.map(
-          // @ts-ignore
-          ({ key, percentage, amount, color }) =>
-            percentage === 0 ? null : (
-              <div
-                key={key}
-                className={classNames("h-full rounded-[4px]", color)}
-                style={{ width: `${percentage.toString()}%` }}
-              />
-            )
-        )}
-      </div>
-      <div className="flex flex-col space-y-3">
-        {selectedList.map(
-          // @ts-ignore
-          ({ key, percentage, amount, color }) => (
-            <div key={key} className="body2 flex w-full justify-between">
-              <div className="flex items-center space-x-1">
-                <div
-                  className={classNames(
-                    "my-auto inline-block h-3 w-3 rounded-[4px]",
-                    color
-                  )}
-                />
-                <span>{key}</span>
-                <span className="text-osmoverse-400">
-                  {(+percentage.toString()).toFixed(0)}%
-                </span>
-              </div>
-              <div>
-                {displayFiatPrice(
-                  new PricePretty(DEFAULT_VS_CURRENCY, amount),
-                  "",
-                  t
-                )}
-              </div>
-            </div>
-          )
-        )}
-      </div>
+      {isOpen && (
+        <>
+          <div className="my-4">
+            <AllocationTabs
+              setTab={(tab) => setSelectedOption(tab)}
+              // @ts-ignore
+              activeTab={selectedOption}
+            />
+          </div>
+          <div className="my-4 flex h-4 w-full gap-1">
+            {selectedList.map(
+              // @ts-ignore
+              ({ key, percentage, amount, color }) =>
+                percentage === 0 ? null : (
+                  <div
+                    key={key}
+                    className={classNames("h-full rounded-[4px]", color)}
+                    style={{ width: `${percentage.toString()}%` }}
+                  />
+                )
+            )}
+          </div>
+          <div className="flex flex-col space-y-3">
+            {selectedList.map(
+              // @ts-ignore
+              ({ key, percentage, amount, color }) => (
+                <div key={key} className="body2 flex w-full justify-between">
+                  <div className="flex items-center space-x-1">
+                    <div
+                      className={classNames(
+                        "my-auto inline-block h-3 w-3 rounded-[4px]",
+                        color
+                      )}
+                    />
+                    <span>{key}</span>
+                    <span className="text-osmoverse-400">
+                      {(+percentage.toString()).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div>
+                    {displayFiatPrice(
+                      new PricePretty(DEFAULT_VS_CURRENCY, amount),
+                      "",
+                      t
+                    )}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
