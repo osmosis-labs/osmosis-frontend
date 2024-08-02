@@ -1,76 +1,63 @@
-import { AllocationResponse } from "@osmosis-labs/server";
-import { FunctionComponent, useMemo, useState } from "react";
-
-import { RadioWithOptions } from "~/components/radio-with-options";
-
-type AllocationOptions = "all" | "assets" | "available";
-
 import { PricePretty } from "@keplr-wallet/unit";
+import { AllocationResponse } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 
-export enum AllocationTab {
-  ALL = "all",
-  ASSETS = "assets",
-  AVAILABLE = "available",
-}
+type AllocationOptions = "all" | "assets" | "available";
 
 export interface SwapToolTabsProps {
-  setTab: (tab: AllocationTab) => void;
-  activeTab: AllocationTab;
+  setTab: (tab: AllocationOptions) => void;
+  activeTab: AllocationOptions;
 }
 
-/**
- * Component for swapping between tabs on the swap modal.
- * Has three tabs:
- * - Buy
- * - Sell
- * - Swap
- */
-export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
+// Note - merge with Swap Tool Tabs once Orderbook is implemented
+export const AllocationTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
 }) => {
-  const { t } = useTranslation();
-
   const tabs = useMemo(
-    () => [
-      {
-        label: "All",
-        value: AllocationTab.ALL,
-      },
-      {
-        label: "Assets",
-        value: AllocationTab.ASSETS,
-      },
-      {
-        label: "Available",
-        value: AllocationTab.AVAILABLE,
-      },
-    ],
-    [t]
+    () =>
+      [
+        {
+          label: "All",
+          value: "all",
+        },
+        {
+          label: "Assets",
+          value: "assets",
+        },
+        {
+          label: "Available",
+          value: "available",
+        },
+      ] as { label: string; value: AllocationOptions }[],
+    []
   );
 
   return (
-    <div className="flex w-max items-center rounded-3xl border border-osmoverse-700">
+    <div className="flex h-8 w-full items-center rounded-3xl border border-osmoverse-700">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.value;
         return (
           <button
             key={`swap-tab-${tab.value}`}
             onClick={() => setTab(tab.value)}
-            className={classNames("rounded-3xl px-4 py-3 transition-colors", {
-              "hover:bg-osmoverse-850": !isActive,
-              "bg-wosmongton-100": isActive,
-            })}
+            className={classNames(
+              "h-full w-1/3 rounded-3xl transition-colors",
+              {
+                "hover:bg-osmoverse-850": !isActive,
+                "bg-osmoverse-700": isActive,
+              }
+            )}
           >
             <p
-              className={classNames("font-semibold", {
+              className={classNames("body2", {
                 "text-wosmongton-100": !isActive,
-                "text-osmoverse-900": isActive,
+                "text-white": isActive,
               })}
             >
               {tab.label}
@@ -106,22 +93,10 @@ export const Allocation: FunctionComponent<{
     <div className="flex w-1/2 flex-col">
       <div className="text-h6">Allocation</div>
       <div className="my-2">
-        <SwapToolTabs
+        <AllocationTabs
           setTab={(tab) => setSelectedOption(tab)}
+          // @ts-ignore
           activeTab={selectedOption}
-        />
-        <RadioWithOptions
-          mode="secondary"
-          variant="small"
-          value={selectedOption}
-          onChange={(value) => setSelectedOption(value as AllocationOptions)}
-          options={
-            [
-              { label: "All", value: "all" },
-              { label: "Assets", value: "assets" },
-              { label: "Available", value: "available" },
-            ] as { label: string; value: AllocationOptions }[]
-          }
         />
       </div>
       <div className="my-4 flex h-4 w-full gap-1">

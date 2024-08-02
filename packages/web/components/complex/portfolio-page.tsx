@@ -98,7 +98,10 @@ export const PortfolioPage: FunctionComponent = () => {
       </section>
 
       <section className="w-full">
-        <Allocation allocation={allocation} />
+        <Allocation
+          // @ts-ignore
+          allocation={allocation}
+        />
       </section>
 
       <section className="w-full py-3">
