@@ -97,6 +97,7 @@
     "onePosition": "1 позиция",
     "goToPool": "Перейти к пулу № #{poolId}"
   },
+  "copied": "Скопировано!",
   "app": {
     "banner": {
       "backToOsmosis": "Вернемся к осмосу",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
     "startAgain": "Начать заново"
   },
+  "estimated": "Оцененный",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
     "simplifiedExperience": "Ваш опыт был упрощен!",
@@ -929,8 +931,11 @@
       "title": "Выберите сеть",
       "searchPlaceholder": "Поиск поддерживаемых сетей"
     },
-    "pendingWithdraw": "Ожидание вывода",
-    "pendingDeposit": "Ожидается депозит",
+    "pendingWithdraw": "Вывод средств в процессе",
+    "pendingDeposit": "Депозит в процессе",
+    "amountToChain": "{amount} до {chain}",
+    "amountFromChain": "{amount} из {chain}",
+    "amountFailedToWithdraw": "{amount} Не удалось вывести средства",
     "completedWithdraw": "Вывод завершен",
     "completedDeposit": "Депозит завершен",
     "failedWithdraw": "Вывести не удалось",
@@ -945,7 +950,6 @@
     "estimatedAmountReceived": "Ориентировочная полученная сумма",
     "slippageWarning": "Ожидаемый результат этой транзакции значительно ниже входной суммы, что может привести к получению другой конечной суммы, чем ожидалось.",
     "priceImpactWarning": "Влияние этой транзакции на цену составляет {priceImpact} , что может повлиять на конечную полученную сумму.",
-    "connect": "Соединять",
     "confirm": "Подтверждать",
     "cancel": "Отмена",
     "confirmDepositTo": "Подтвердите депозит на {chain}",

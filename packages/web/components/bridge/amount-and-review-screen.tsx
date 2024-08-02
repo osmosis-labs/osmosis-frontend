@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
-import { Screen } from "~/components/screen-manager";
+import { Screen, useScreenManager } from "~/components/screen-manager";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
@@ -39,6 +39,7 @@ export const AmountAndReviewScreen = observer(
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
     const { logEvent } = useAmplitudeAnalytics();
+    const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -186,6 +187,7 @@ export const AmountAndReviewScreen = observer(
                 : toAsset.address,
             decimals: toAsset.decimals,
             denom: toAsset.denom,
+            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
           }
         : undefined,
       fromAddress,
@@ -199,6 +201,7 @@ export const AmountAndReviewScreen = observer(
             decimals: fromAsset.decimals,
             denom: fromAsset.denom,
             amount: fromAsset.amount,
+            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
           }
         : undefined,
       direction,
@@ -222,7 +225,10 @@ export const AmountAndReviewScreen = observer(
       },
     });
 
-    if (!selectedAssetDenom) return;
+    if (!selectedAssetDenom) {
+      setCurrentScreen(ImmersiveBridgeScreen.Asset);
+      return null;
+    }
 
     return (
       <>

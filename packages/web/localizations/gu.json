@@ -97,6 +97,7 @@
     "onePosition": "1 સ્થિતિ",
     "goToPool": "પૂલ #{poolId} પર જાઓ"
   },
+  "copied": "નકલ કરી!",
   "app": {
     "banner": {
       "backToOsmosis": "ઓસ્મોસિસ પર પાછા જાઓ",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
     "startAgain": "ફરી શરૂ કરો"
   },
+  "estimated": "અંદાજિત",
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
     "simplifiedExperience": "તમારો અનુભવ સરળ કરવામાં આવ્યો છે!",
@@ -929,8 +931,11 @@
       "title": "નેટવર્ક પસંદ કરો",
       "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
     },
-    "pendingWithdraw": "બાકી ઉપાડ",
-    "pendingDeposit": "બાકી થાપણ",
+    "pendingWithdraw": "પાછી ખેંચવાની પ્રક્રિયા ચાલુ છે",
+    "pendingDeposit": "ડિપોઝીટ ચાલુ છે",
+    "amountToChain": "{amount} થી {chain}",
+    "amountFromChain": "{amount} {chain}",
+    "amountFailedToWithdraw": "{amount} પાછી ખેંચવામાં નિષ્ફળ",
     "completedWithdraw": "ઉપાડ પૂર્ણ",
     "completedDeposit": "ડિપોઝિટ પૂર્ણ",
     "failedWithdraw": "ઉપાડ નિષ્ફળ",
@@ -945,7 +950,6 @@
     "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
     "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
     "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે.",
-    "connect": "જોડાવા",
     "confirm": "પુષ્ટિ કરો",
     "cancel": "રદ કરો",
     "confirmDepositTo": "{chain} માં જમા કરાવવાની પુષ્ટિ કરો",

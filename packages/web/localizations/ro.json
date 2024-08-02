@@ -97,6 +97,7 @@
     "onePosition": "1 pozitie",
     "goToPool": "Mergi la piscina #{poolId}"
   },
+  "copied": "Copiat!",
   "app": {
     "banner": {
       "backToOsmosis": "Înapoi la Osmosis",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
     "startAgain": "Incepe din nou"
   },
+  "estimated": "Estimată",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
     "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
@@ -929,8 +931,11 @@
       "title": "Selecteaza reteaua",
       "searchPlaceholder": "Căutați rețele acceptate"
     },
-    "pendingWithdraw": "În așteptarea retragerii",
-    "pendingDeposit": "Depunerea în așteptare",
+    "pendingWithdraw": "Retragere în curs",
+    "pendingDeposit": "Depozit în curs",
+    "amountToChain": "{amount} la {chain}",
+    "amountFromChain": "{amount} din { {chain}",
+    "amountFailedToWithdraw": "{amount} Retragere eșuată",
     "completedWithdraw": "Retragere finalizată",
     "completedDeposit": "Depozit finalizat",
     "failedWithdraw": "Retragerea a eșuat",
@@ -945,7 +950,6 @@
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
     "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
-    "connect": "Conectați",
     "confirm": "A confirma",
     "cancel": "Anulare",
     "confirmDepositTo": "Confirmați depunerea către {chain}",

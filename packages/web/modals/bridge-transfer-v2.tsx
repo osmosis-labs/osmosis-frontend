@@ -746,23 +746,40 @@ export const TransferContent: FunctionComponent<
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: Bridge, params: GetTransferStatusParams) => {
+    ({
+      estimatedArrivalUnix,
+      providerId,
+      params,
+    }: {
+      estimatedArrivalUnix: number;
+      providerId: Bridge;
+      params: GetTransferStatusParams;
+    }) => {
       if (inputAmountRaw !== "") {
-        transferHistoryStore.pushTxNow(
-          `${providerId}${JSON.stringify(params)}`,
-          new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
+        transferHistoryStore.pushTxNow({
+          prefixedKey: `${providerId}${JSON.stringify(params)}`,
+          amount: new CoinPretty(originCurrency, inputAmount)
+            .trim(true)
+            .toString(),
+          amountLogo: originCurrency.coinImageUrl,
           isWithdraw,
-          osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
-        );
+          chainPrettyName: isWithdraw
+            ? counterpartyPath.networkName
+            : osmosisPath.networkName,
+          estimatedArrivalUnix,
+          accountAddress: osmosisAccount?.address ?? "", // use osmosis account for account keys (vs any EVM account)
+        });
       }
     },
     [
-      inputAmountRaw,
-      transferHistoryStore,
-      originCurrency,
+      counterpartyPath.networkName,
       inputAmount,
+      inputAmountRaw,
       isWithdraw,
+      originCurrency,
       osmosisAccount?.address,
+      osmosisPath.networkName,
+      transferHistoryStore,
     ]
   );
 
@@ -862,10 +879,14 @@ export const TransferContent: FunctionComponent<
 
       await new Promise((resolve, reject) => {
         const onConfirm = () => {
-          trackTransferStatus(quote.provider.id, {
-            sendTxHash: txHash as string,
-            fromChainId: quote.fromChain.chainId,
-            toChainId: quote.toChain.chainId,
+          trackTransferStatus({
+            estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+            providerId: quote.provider.id,
+            params: {
+              sendTxHash: txHash as string,
+              fromChainId: quote.fromChain.chainId,
+              toChainId: quote.toChain.chainId,
+            },
           });
           setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
 
@@ -952,10 +973,14 @@ export const TransferContent: FunctionComponent<
             queryBalance.fetch();
           }
 
-          trackTransferStatus(quote.provider.id, {
-            sendTxHash: tx.transactionHash,
-            fromChainId: quote.fromChain.chainId,
-            toChainId: quote.toChain.chainId,
+          trackTransferStatus({
+            estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+            providerId: quote.provider.id,
+            params: {
+              sendTxHash: tx.transactionHash,
+              fromChainId: quote.fromChain.chainId,
+              toChainId: quote.toChain.chainId,
+            },
           });
 
           if (isWithdraw) {

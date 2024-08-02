@@ -678,8 +678,8 @@ export const AmountScreen = observer(
     };
 
     const resetInput = () => {
-      setCryptoAmount("0");
-      setFiatAmount("0");
+      setCryptoAmount("");
+      setFiatAmount("");
     };
 
     return (

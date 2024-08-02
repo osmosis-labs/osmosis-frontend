@@ -97,6 +97,7 @@
     "onePosition": "1 pozycja",
     "goToPool": "Idź do basenu #{poolId}"
   },
+  "copied": "Skopiowano!",
   "app": {
     "banner": {
       "backToOsmosis": "Powrót do Osmosis",
@@ -410,6 +411,7 @@
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
     "startAgain": "Zacznij jeszcze raz"
   },
+  "estimated": "Szacowany",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
     "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
@@ -929,8 +931,11 @@
       "title": "Wybierz sieć",
       "searchPlaceholder": "Wyszukaj obsługiwane sieci"
     },
-    "pendingWithdraw": "Oczekuje na wycofanie",
-    "pendingDeposit": "Oczekujący depozyt",
+    "pendingWithdraw": "Wypłata w toku",
+    "pendingDeposit": "Wpłata w toku",
+    "amountToChain": "{amount} do {chain}",
+    "amountFromChain": "{amount} z {chain}",
+    "amountFailedToWithdraw": "{amount} Wypłata nie powiodła się",
     "completedWithdraw": "Wypłata zakończona",
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",
@@ -945,7 +950,6 @@
     "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
     "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
     "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
-    "connect": "Łączyć",
     "confirm": "Potwierdzać",
     "cancel": "Anulować",
     "confirmDepositTo": "Potwierdź wpłatę do {chain}",
