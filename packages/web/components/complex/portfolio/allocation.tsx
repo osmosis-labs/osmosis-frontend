@@ -5,6 +5,12 @@ import { RadioWithOptions } from "~/components/radio-with-options";
 
 type AllocationOptions = "all" | "assets" | "available";
 
+import { PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+
+import { displayFiatPrice } from "~/components/transactions/transaction-utils";
+import { useTranslation } from "~/hooks";
+
 export const Allocation: FunctionComponent<{
   allocation?: AllocationResponse;
 }> = ({ allocation }) => {
@@ -12,6 +18,8 @@ export const Allocation: FunctionComponent<{
 
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
+
+  const { t } = useTranslation();
 
   if (!allocation) {
     return null;
@@ -61,7 +69,13 @@ export const Allocation: FunctionComponent<{
                 {(+percentage.toString()).toFixed(0)}%
               </span>
             </div>
-            <div>{amount}</div>
+            <div>
+              {displayFiatPrice(
+                new PricePretty(DEFAULT_VS_CURRENCY, amount),
+                "",
+                t
+              )}
+            </div>
           </div>
         ))}
       </div>
