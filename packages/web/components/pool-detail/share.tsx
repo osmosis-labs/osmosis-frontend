@@ -377,7 +377,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             />
           )}
         <section className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
+          <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-900 pb-4">
             <div
               ref={poolDetailsContainerRef}
               className={classNames(
@@ -532,7 +532,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           </div>
           {userSharePool && userSharePool.totalValue.toDec().isPositive() && (
             <div className="flex w-full gap-4 1.5lg:flex-col">
-              <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+              <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-900 px-8 py-7">
                 <span className="body2 text-osmoverse-300">
                   {t("pool.yourStats")}
                 </span>
@@ -556,7 +556,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
               </div>
 
               <div className="flex flex-1 gap-4 1.5md:flex-col">
-                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pb-4 pt-2">
+                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
                   <PriceBreakdownChart
                     prices={[
                       {
