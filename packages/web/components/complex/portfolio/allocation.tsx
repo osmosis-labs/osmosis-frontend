@@ -90,9 +90,10 @@ export const Allocation: FunctionComponent<{
   console.log("Selected Option:", selectedOption);
 
   return (
-    <div className="flex w-1/2 flex-col">
-      <div className="text-h6">Allocation</div>
-      <div className="my-2">
+    <div className="flex w-full max-w-[320px] flex-col">
+      <h6 className="py-3 pr-4">Allocation</h6>
+      {/* <h6 className="py-3 pr-4 text-h6">Allocation</h6> */}
+      <div className="my-4">
         <AllocationTabs
           setTab={(tab) => setSelectedOption(tab)}
           // @ts-ignore
