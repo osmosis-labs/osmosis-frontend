@@ -1,6 +1,8 @@
 import { PricePretty } from "@keplr-wallet/unit";
-import { AllocationResponse } from "@osmosis-labs/server";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  DEFAULT_VS_CURRENCY,
+  GetAllocationResponse,
+} from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo, useState } from "react";
 
@@ -41,7 +43,6 @@ export interface SwapToolTabsProps {
   activeTab: AllocationOptions;
 }
 
-// Note - merge with Swap Tool Tabs once Orderbook is implemented
 export const AllocationTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
@@ -97,25 +98,18 @@ export const AllocationTabs: FunctionComponent<SwapToolTabsProps> = ({
 };
 
 export const Allocation: FunctionComponent<{
-  allocation?: AllocationResponse;
+  allocation?: GetAllocationResponse;
 }> = ({ allocation }) => {
-  console.log("allocation: ", allocation);
-
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
+
   const [isOpen, setIsOpen] = useState(true);
 
   const { t } = useTranslation();
 
-  if (!allocation) {
-    return null;
-  }
+  if (!allocation) return null;
 
-  // @ts-ignore
   const selectedList = allocation[selectedOption];
-
-  console.log("Selected List:", selectedList);
-  console.log("Selected Option:", selectedOption);
 
   return (
     <div className="flex w-full max-w-[320px] flex-col">
@@ -136,57 +130,51 @@ export const Allocation: FunctionComponent<{
           <div className="my-4">
             <AllocationTabs
               setTab={(tab) => setSelectedOption(tab)}
-              // @ts-ignore
               activeTab={selectedOption}
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList.map(
-              // @ts-ignore
-              ({ key, percentage, amount }, index) =>
-                percentage === 0 ? null : (
+            {selectedList.map(({ key, percentage }, index) =>
+              percentage === 0 ? null : (
+                <div
+                  key={key}
+                  className={classNames(
+                    "h-full rounded-[4px]",
+                    COLORS[selectedOption][
+                      index % COLORS[selectedOption].length
+                    ]
+                  )}
+                  style={{ width: `${percentage.toString()}%` }}
+                />
+              )
+            )}
+          </div>
+          <div className="flex flex-col space-y-3">
+            {selectedList.map(({ key, percentage, amount }, index) => (
+              <div key={key} className="body2 flex w-full justify-between">
+                <div className="flex items-center space-x-1">
                   <div
-                    key={key}
                     className={classNames(
-                      "h-full rounded-[4px]",
+                      "my-auto inline-block h-3 w-3 rounded-[4px]",
                       COLORS[selectedOption][
                         index % COLORS[selectedOption].length
                       ]
                     )}
-                    style={{ width: `${percentage.toString()}%` }}
                   />
-                )
-            )}
-          </div>
-          <div className="flex flex-col space-y-3">
-            {selectedList.map(
-              // @ts-ignore
-              ({ key, percentage, amount }, index) => (
-                <div key={key} className="body2 flex w-full justify-between">
-                  <div className="flex items-center space-x-1">
-                    <div
-                      className={classNames(
-                        "my-auto inline-block h-3 w-3 rounded-[4px]",
-                        COLORS[selectedOption][
-                          index % COLORS[selectedOption].length
-                        ]
-                      )}
-                    />
-                    <span>{key}</span>
-                    <span className="text-osmoverse-400">
-                      {(+percentage.toString()).toFixed(0)}%
-                    </span>
-                  </div>
-                  <div>
-                    {displayFiatPrice(
-                      new PricePretty(DEFAULT_VS_CURRENCY, amount),
-                      "",
-                      t
-                    )}
-                  </div>
+                  <span>{key}</span>
+                  <span className="text-osmoverse-400">
+                    {(+percentage.toString()).toFixed(0)}%
+                  </span>
                 </div>
-              )
-            )}
+                <div>
+                  {displayFiatPrice(
+                    new PricePretty(DEFAULT_VS_CURRENCY, amount),
+                    "",
+                    t
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}

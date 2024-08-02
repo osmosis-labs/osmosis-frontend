@@ -5,18 +5,17 @@ interface Coin {
   amount: string;
 }
 
-interface AccountCoinsResult {
+export interface AccountCoinsResult {
   coin: Coin;
   cap_value: string;
 }
-
-interface Category {
+export interface Category {
   capitalization: string;
   is_best_effort: boolean;
   account_coins_result?: AccountCoinsResult[];
 }
 
-interface Categories {
+export interface Categories {
   "in-locks": Category;
   pooled: Category;
   staked: Category;
