@@ -258,6 +258,7 @@ export function ReviewOrder({
                               percentAdjusted.isPositive(),
                             "rotate-0 text-rust-500":
                               percentAdjusted.isNegative(),
+                            "opacity-0": percentAdjusted.isZero(),
                           })}
                         />
                       )}
@@ -291,7 +292,11 @@ export function ReviewOrder({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">{t("limitOrders.sell")}</p>
+                  <p className="text-osmoverse-300">
+                    {tab === "buy"
+                      ? t("limitOrders.pay")
+                      : t("limitOrders.sell")}
+                  </p>
                   {inAmountToken && (
                     <span className="subtitle1">
                       {formatPretty(inAmountToken)}
@@ -334,7 +339,11 @@ export function ReviewOrder({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">{t("portfolio.buy")}</p>
+                  <p className="text-osmoverse-300">
+                    {tab === "sell"
+                      ? t("limitOrders.receive")
+                      : t("portfolio.buy")}
+                  </p>
                   <span className="subtitle1">
                     {expectedOutput && (
                       <>

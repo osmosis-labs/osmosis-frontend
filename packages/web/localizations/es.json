@@ -1242,6 +1242,7 @@
     "enterAnAmountTo": "Introduzca una cantidad a",
     "sell": "Vender",
     "buy": "Comprar",
+    "pay": "Pagar",
     "open": "Abierto",
     "filled": "Completado",
     "pending": "Pendiente",

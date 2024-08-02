@@ -1242,6 +1242,7 @@
     "enterAnAmountTo": "金額を入力してください",
     "sell": "売る",
     "buy": "買う",
+    "pay": "支払う",
     "open": "開ける",
     "filled": "満たされた",
     "pending": "保留中",
