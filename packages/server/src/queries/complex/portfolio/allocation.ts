@@ -81,20 +81,18 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
 
   const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
 
-  const assets = top5AccountCoinsResults.map(
-    (asset: AccountCoinsResult, index: number) => {
-      const assetFromAssetLists = getAsset({
-        assetLists,
-        anyDenom: asset.coin.denom,
-      });
+  const assets = top5AccountCoinsResults.map((asset: AccountCoinsResult) => {
+    const assetFromAssetLists = getAsset({
+      assetLists,
+      anyDenom: asset.coin.denom,
+    });
 
-      return {
-        key: assetFromAssetLists.coinDenom,
-        percentage: (+asset.cap_value / totalCap) * 100,
-        amount: +asset.cap_value,
-      };
-    }
-  );
+    return {
+      key: assetFromAssetLists.coinDenom,
+      percentage: (+asset.cap_value / totalCap) * 100,
+      amount: +asset.cap_value,
+    };
+  });
 
   const otherAssets = sortedAccountCoinsResults.slice(5);
   const otherAmount = otherAssets.reduce(
