@@ -75,7 +75,7 @@ export const useBridgesSupportedAssets = ({
     () =>
       supportedAssetsResults.some(
         (data): data is NonNullable<Required<typeof data>> =>
-          !isNil(data) && data.isLoading
+          isNil(data) || data.isLoading
       ),
     [supportedAssetsResults]
   );
