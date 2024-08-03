@@ -494,7 +494,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       // is an ibc transfer
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: messageData.receiver,
+        chainId: messageData.chain_id,
       });
 
       const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
