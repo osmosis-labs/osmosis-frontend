@@ -1,5 +1,6 @@
+import { AssetLists as assetLists } from "../../../../queries/__tests__/mock-asset-lists";
 import { AllocationResponse } from "../../../data-services/allocation";
-import { getAll } from "../allocation";
+import { calculatePercentAndFiatValues, getAll } from "../allocation";
 
 const MOCK_DATA: AllocationResponse = {
   categories: {
@@ -115,194 +116,70 @@ describe("Allocation Functions", () => {
     });
   });
 
-  // describe("calculatePercentAndFiatValues", () => {
-  //   it("should calculate the correct asset percentages and fiat values", async () => {
-  //     const categories = {
-  //       "total-assets": {
-  //         capitalization: "1000",
-  //         account_coins_result: [
-  //           { coin: { denom: "asset1" }, cap_value: "400" },
-  //           { coin: { denom: "asset2" }, cap_value: "300" },
-  //           { coin: { denom: "asset3" }, cap_value: "200" },
-  //           { coin: { denom: "asset4" }, cap_value: "50" },
-  //           { coin: { denom: "asset5" }, cap_value: "30" },
-  //           { coin: { denom: "asset6" }, cap_value: "20" },
-  //         ],
-  //       },
-  //     };
+  describe("calculatePercentAndFiatValues", () => {
+    it("should calculate the correct asset percentages and fiat values", async () => {
+      const result = await calculatePercentAndFiatValues(
+        MOCK_DATA.categories,
+        assetLists,
+        "total-assets"
+      ).map((allocation) => ({
+        ...allocation,
+        percentage: allocation.percentage.toString(),
+        fiatValue: allocation.fiatValue.toString(),
+      }));
 
-  //     const assetLists = [];
+      expect(result).toEqual([
+        {
+          key: "CTK",
+          percentage: "50%",
+          fiatValue: "$30",
+        },
+        {
+          key: "SAIL",
+          percentage: "33.333%",
+          fiatValue: "$20",
+        },
+        {
+          key: "WOSMO",
+          percentage: "16.666%",
+          fiatValue: "$10",
+        },
+        {
+          key: "Other",
+          percentage: "0%",
+          fiatValue: "$0",
+        },
+      ]);
+    });
 
-  //     getAsset.mockImplementation(({ anyDenom }) => ({
-  //       coinDenom: anyDenom,
-  //     }));
+    it("should calculate the correct asset percentages and fiat values", async () => {
+      const result = await calculatePercentAndFiatValues(
+        MOCK_DATA.categories,
+        assetLists,
+        "user-balances"
+      ).map((allocation) => ({
+        ...allocation,
+        percentage: allocation.percentage.toString(),
+        fiatValue: allocation.fiatValue.toString(),
+      }));
 
-  //     const result = await calculatePercentAndFiatValues(
-  //       categories,
-  //       assetLists,
-  //       "total-assets"
-  //     );
-
-  //     expect(result).toEqual([
-  //       {
-  //         key: "asset1",
-  //         percentage: new RatePretty(new Dec(400).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(400)),
-  //       },
-  //       {
-  //         key: "asset2",
-  //         percentage: new RatePretty(new Dec(300).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(300)),
-  //       },
-  //       {
-  //         key: "asset3",
-  //         percentage: new RatePretty(new Dec(200).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(200)),
-  //       },
-  //       {
-  //         key: "asset4",
-  //         percentage: new RatePretty(new Dec(50).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(50)),
-  //       },
-  //       {
-  //         key: "asset5",
-  //         percentage: new RatePretty(new Dec(30).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(30)),
-  //       },
-  //       {
-  //         key: "Other",
-  //         percentage: new RatePretty(new Dec(20).quo(new Dec(1000))),
-  //         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(20)),
-  //       },
-  //     ]);
-  //   });
-  // });
-
-  // describe("getAllocation", () => {
-  //   it("should return the correct allocation response", async () => {
-  //     const address = "test-address";
-  //     const assetLists = [];
-
-  //     const mockCategories = {
-  //       "user-balances": { capitalization: "100" },
-  //       staked: { capitalization: "200" },
-  //       unstaking: { capitalization: "300" },
-  //       "unclaimed-rewards": { capitalization: "400" },
-  //       pooled: { capitalization: "500" },
-  //       "total-assets": {
-  //         capitalization: "1000",
-  //         account_coins_result: [
-  //           { coin: { denom: "asset1" }, cap_value: "400" },
-  //           { coin: { denom: "asset2" }, cap_value: "300" },
-  //           { coin: { denom: "asset3" }, cap_value: "200" },
-  //           { coin: { denom: "asset4" }, cap_value: "50" },
-  //           { coin: { denom: "asset5" }, cap_value: "30" },
-  //           { coin: { denom: "asset6" }, cap_value: "20" },
-  //         ],
-  //       },
-  //     };
-
-  //     queryAllocation.mockResolvedValue({ categories: mockCategories });
-
-  //     getAsset.mockImplementation(({ anyDenom }) => ({
-  //       coinDenom: anyDenom,
-  //     }));
-
-  //     const result = await getAllocation({ address, assetLists });
-
-  //     expect(result).toEqual({
-  //       all: [
-  //         {
-  //           key: "available",
-  //           percentage: new RatePretty(new Dec(100).quo(new Dec(1500))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(100)),
-  //         },
-  //         {
-  //           key: "staked",
-  //           percentage: new RatePretty(new Dec(200).quo(new Dec(1500))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(200)),
-  //         },
-  //         {
-  //           key: "unstaking",
-  //           percentage: new RatePretty(new Dec(300).quo(new Dec(1500))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(300)),
-  //         },
-  //         {
-  //           key: "unclaimedRewards",
-  //           percentage: new RatePretty(new Dec(400).quo(new Dec(1500))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(400)),
-  //         },
-  //         {
-  //           key: "pooled",
-  //           percentage: new RatePretty(new Dec(500).quo(new Dec(1500))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(500)),
-  //         },
-  //       ],
-  //       assets: [
-  //         {
-  //           key: "asset1",
-  //           percentage: new RatePretty(new Dec(400).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(400)),
-  //         },
-  //         {
-  //           key: "asset2",
-  //           percentage: new RatePretty(new Dec(300).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(300)),
-  //         },
-  //         {
-  //           key: "asset3",
-  //           percentage: new RatePretty(new Dec(200).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(200)),
-  //         },
-  //         {
-  //           key: "asset4",
-  //           percentage: new RatePretty(new Dec(50).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(50)),
-  //         },
-  //         {
-  //           key: "asset5",
-  //           percentage: new RatePretty(new Dec(30).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(30)),
-  //         },
-  //         {
-  //           key: "Other",
-  //           percentage: new RatePretty(new Dec(20).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(20)),
-  //         },
-  //       ],
-  //       available: [
-  //         {
-  //           key: "asset1",
-  //           percentage: new RatePretty(new Dec(400).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(400)),
-  //         },
-  //         {
-  //           key: "asset2",
-  //           percentage: new RatePretty(new Dec(300).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(300)),
-  //         },
-  //         {
-  //           key: "asset3",
-  //           percentage: new RatePretty(new Dec(200).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(200)),
-  //         },
-  //         {
-  //           key: "asset4",
-  //           percentage: new RatePretty(new Dec(50).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(50)),
-  //         },
-  //         {
-  //           key: "asset5",
-  //           percentage: new RatePretty(new Dec(30).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(30)),
-  //         },
-  //         {
-  //           key: "Other",
-  //           percentage: new RatePretty(new Dec(20).quo(new Dec(1000))),
-  //           fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(20)),
-  //         },
-  //       ],
-  //     });
-  //   });
-  // });
+      expect(result).toEqual([
+        {
+          key: "SAIL",
+          percentage: "200%",
+          fiatValue: "$20",
+        },
+        {
+          key: "WOSMO",
+          percentage: "100%",
+          fiatValue: "$10",
+        },
+        {
+          key: "Other",
+          percentage: "0%",
+          fiatValue: "$0",
+        },
+      ]);
+    });
+  });
 });

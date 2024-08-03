@@ -65,7 +65,7 @@ export function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
-export async function calculatePercentAndFiatValues(
+export function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
   category: "total-assets" | "user-balances"
