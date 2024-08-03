@@ -1,6 +1,8 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 
+import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import { queryAllocation } from "../../../queries/data-services";
 import { Categories } from "../../../queries/data-services";
 import { AccountCoinsResult } from "../../../queries/data-services";
@@ -8,8 +10,8 @@ import { getAsset } from "../assets";
 
 interface FormattedAllocation {
   key: string;
-  percentage: number;
-  fiatValue: number;
+  percentage: RatePretty;
+  fiatValue: PricePretty;
   asset?: CoinPretty;
 }
 
@@ -20,44 +22,45 @@ export interface GetAllocationResponse {
 }
 
 function getAll(categories: Categories): FormattedAllocation[] {
-  const userBalancesCap = +categories["user-balances"].capitalization;
-  const stakedCap = +categories["staked"].capitalization;
-  const unstakingCap = +categories["unstaking"].capitalization;
-  const unclaimedRewardsCap = +categories["unclaimed-rewards"].capitalization;
-  const pooledCap = +categories["pooled"].capitalization;
+  const userBalancesCap = new Dec(categories["user-balances"].capitalization);
+  const stakedCap = new Dec(categories["staked"].capitalization);
+  const unstakingCap = new Dec(categories["unstaking"].capitalization);
+  const unclaimedRewardsCap = new Dec(
+    categories["unclaimed-rewards"].capitalization
+  );
+  const pooledCap = new Dec(categories["pooled"].capitalization);
 
-  const totalCap =
-    userBalancesCap +
-    stakedCap +
-    unstakingCap +
-    unclaimedRewardsCap +
-    pooledCap;
+  const totalCap = userBalancesCap
+    .add(stakedCap)
+    .add(unstakingCap)
+    .add(unclaimedRewardsCap)
+    .add(pooledCap);
 
   return [
     {
       key: "available",
-      percentage: (userBalancesCap / totalCap) * 100,
-      fiatValue: userBalancesCap,
+      percentage: new RatePretty(userBalancesCap.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, userBalancesCap),
     },
     {
       key: "staked",
-      percentage: (stakedCap / totalCap) * 100,
-      fiatValue: stakedCap,
+      percentage: new RatePretty(stakedCap.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, stakedCap),
     },
     {
       key: "unstaking",
-      percentage: (unstakingCap / totalCap) * 100,
-      fiatValue: unstakingCap,
+      percentage: new RatePretty(unstakingCap.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unstakingCap),
     },
     {
       key: "unclaimedRewards",
-      percentage: (unclaimedRewardsCap / totalCap) * 100,
-      fiatValue: unclaimedRewardsCap,
+      percentage: new RatePretty(unclaimedRewardsCap.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unclaimedRewardsCap),
     },
     {
       key: "pooled",
-      percentage: (pooledCap / totalCap) * 100,
-      fiatValue: pooledCap,
+      percentage: new RatePretty(pooledCap.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledCap),
     },
   ];
 }

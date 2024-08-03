@@ -1,8 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
-import {
-  DEFAULT_VS_CURRENCY,
-  GetAllocationResponse,
-} from "@osmosis-labs/server";
+import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
 
@@ -90,7 +86,7 @@ export const Allocation: FunctionComponent<{
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
             {selectedList.map(({ key, percentage }, index) =>
-              percentage === 0 ? null : (
+              percentage.toDec().isZero() ? null : (
                 <div
                   key={key}
                   className={classNames(
@@ -118,16 +114,10 @@ export const Allocation: FunctionComponent<{
                   />
                   <span>{getTranslation(key, t)}</span>
                   <span className="text-osmoverse-400">
-                    {(+percentage.toString()).toFixed(0)}%
+                    {percentage.maxDecimals(0).toString()}
                   </span>
                 </div>
-                <div>
-                  {displayFiatPrice(
-                    new PricePretty(DEFAULT_VS_CURRENCY, fiatValue),
-                    "",
-                    t
-                  )}
-                </div>
+                <div>{displayFiatPrice(fiatValue, "", t)}</div>
               </div>
             ))}
           </div>
