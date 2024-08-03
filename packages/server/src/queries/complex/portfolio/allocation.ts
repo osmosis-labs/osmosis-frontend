@@ -21,7 +21,7 @@ export interface GetAllocationResponse {
   available: FormattedAllocation[];
 }
 
-function getAll(categories: Categories): FormattedAllocation[] {
+export function getAll(categories: Categories): FormattedAllocation[] {
   const userBalancesCap = new Dec(categories["user-balances"].capitalization);
   const stakedCap = new Dec(categories["staked"].capitalization);
   const unstakingCap = new Dec(categories["unstaking"].capitalization);
@@ -65,7 +65,7 @@ function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
-async function calculatePercentAndFiatValues(
+export async function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
   category: "total-assets" | "user-balances"
