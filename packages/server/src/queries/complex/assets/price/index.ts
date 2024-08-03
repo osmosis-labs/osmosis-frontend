@@ -82,8 +82,7 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
-    getFreshValue: () =>
-      priceProvider(foundAsset, currency),
+    getFreshValue: () => priceProvider(foundAsset, currency),
   });
 }
 

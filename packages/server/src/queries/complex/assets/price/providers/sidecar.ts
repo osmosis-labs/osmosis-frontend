@@ -14,13 +14,9 @@ const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 /** Gets price from SQS query server. Currently only supports prices in USDC with decimals. Falls back to pools then querying CoinGecko if not available.
  *  @throws if there's an issue getting the price. */
-export function getPriceFromSidecar(
-  asset: Asset
-) {
+export function getPriceFromSidecar(asset: Asset) {
   return getBatchLoader().then((loader) =>
-    loader
-      .load(asset.coinMinimalDenom)
-      .then((price) => new Dec(price))
+    loader.load(asset.coinMinimalDenom).then((price) => new Dec(price))
   );
 }
 
