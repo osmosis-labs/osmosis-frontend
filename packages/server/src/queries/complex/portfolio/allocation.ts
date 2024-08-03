@@ -67,7 +67,7 @@ function getAll(categories: Categories): FormattedAllocation[] {
 
 async function getAssets(categories: Categories, assetLists: AssetList[]) {
   const totalAssets = categories["total-assets"];
-  const totalCap = +totalAssets.capitalization;
+  const totalCap = new Dec(totalAssets.capitalization);
 
   // Get top 5 assets by cap value
   const sortedAccountCoinsResults =
@@ -78,30 +78,37 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
 
   const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
 
-  const assets = top5AccountCoinsResults.map((asset: AccountCoinsResult) => {
-    const assetFromAssetLists = getAsset({
-      assetLists,
-      anyDenom: asset.coin.denom,
-    });
+  const assets: FormattedAllocation[] = top5AccountCoinsResults.map(
+    (asset: AccountCoinsResult) => {
+      const assetFromAssetLists = getAsset({
+        assetLists,
+        anyDenom: asset.coin.denom,
+      });
 
-    return {
-      key: assetFromAssetLists.coinDenom,
-      percentage: (+asset.cap_value / totalCap) * 100,
-      fiatValue: +asset.cap_value,
-    };
-  });
+      return {
+        key: assetFromAssetLists.coinDenom,
+        percentage: new RatePretty(new Dec(asset.cap_value).quo(totalCap)),
+        fiatValue: new PricePretty(
+          DEFAULT_VS_CURRENCY,
+          new Dec(asset.cap_value)
+        ),
+      };
+    }
+  );
 
   const otherAssets = sortedAccountCoinsResults.slice(5);
+
   const otherAmount = otherAssets.reduce(
-    (sum: number, asset: AccountCoinsResult) => sum + +asset.cap_value,
-    0
+    (sum: Dec, asset: AccountCoinsResult) => sum.add(new Dec(asset.cap_value)),
+    new Dec(0)
   );
-  const otherPercentage = (otherAmount / totalCap) * 100;
+
+  const otherPercentage = new RatePretty(otherAmount).quo(totalCap);
 
   const other: FormattedAllocation = {
     key: "Other",
     percentage: otherPercentage,
-    fiatValue: otherAmount,
+    fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, otherAmount),
   };
 
   return [...assets, other];
