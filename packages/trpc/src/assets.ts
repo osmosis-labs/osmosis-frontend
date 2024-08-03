@@ -122,11 +122,8 @@ export const assetsRouter = createTRPCRouter({
         coinMinimalDenom: z.string(),
       })
     )
-    .query(async ({ input: { coinMinimalDenom }, ctx }) => {
-      const price = await getAssetPrice({
-        ...ctx,
-        asset: { coinMinimalDenom },
-      });
+    .query(async ({ input: { coinMinimalDenom } }) => {
+      const price = await getAssetPrice(coinMinimalDenom);
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
@@ -138,10 +135,7 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
       const asset = getAsset({ ...ctx, anyDenom: findMinDenomOrSymbol });
-      const price = await getAssetPrice({
-        ...ctx,
-        asset,
-      });
+      const price = await getAssetPrice(asset.coinMinimalDenom);
 
       return {
         ...asset,
@@ -364,7 +358,7 @@ export const assetsRouter = createTRPCRouter({
             let priceAssets = await Promise.all(
               assets.map(async (asset) => {
                 const [currentPrice, priceChange24h] = await Promise.all([
-                  getAssetPrice({ ...ctx, asset })
+                  getAssetPrice(asset.coinMinimalDenom)
                     .then(
                       (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
                     )

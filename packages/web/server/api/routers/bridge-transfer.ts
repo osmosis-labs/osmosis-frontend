@@ -130,16 +130,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       const [assetPrice, feeAssetPrice, gasFeeAssetPrice] = await Promise.all([
         // since we're "bridging" the same variant, the to or from
         // asset could be used for pricing
-        getAssetPrice({
-          ...ctx,
-          asset: {
-            coinMinimalDenom: input.toAsset.address,
-            sourceDenom: input.toAsset.address,
-            chainId: input.toChain.chainId,
-            address: input.toAsset.address,
-            coinGeckoId: input.toAsset.coinGeckoId,
-          },
-        }).catch((e) => {
+        getAssetPrice(input.toAsset.address).catch((e) => {
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
@@ -154,27 +145,9 @@ export const bridgeTransferRouter = createTRPCRouter({
               }
             );
           }
-          return getAssetPrice({
-            ...ctx,
-            asset: {
-              coinMinimalDenom: input.fromAsset.address,
-              sourceDenom: input.fromAsset.address,
-              chainId: input.fromChain.chainId,
-              address: input.fromAsset.address,
-              coinGeckoId: input.fromAsset.coinGeckoId,
-            },
-          });
+          return getAssetPrice(input.fromAsset.address);
         }),
-        getAssetPrice({
-          ...ctx,
-          asset: {
-            coinMinimalDenom: feeCoin.address,
-            sourceDenom: feeCoin.address,
-            chainId: quote.transferFee.chainId,
-            address: quote.transferFee.address,
-            coinGeckoId: quote.transferFee.coinGeckoId,
-          },
-        }).catch((e) => {
+        getAssetPrice(feeCoin.address).catch((e) => {
           // it's common for bridge providers to not provide correct denoms
           if (process.env.NODE_ENV === "development") {
             console.warn(
@@ -193,16 +166,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           return undefined;
         }),
         quote.estimatedGasFee
-          ? getAssetPrice({
-              ...ctx,
-              asset: {
-                coinMinimalDenom: quote.estimatedGasFee.address,
-                sourceDenom: quote.estimatedGasFee.address,
-                chainId: quote.fromChain.chainId,
-                address: quote.estimatedGasFee.address,
-                coinGeckoId: quote.estimatedGasFee.coinGeckoId,
-              },
-            }).catch((e) => {
+          ? getAssetPrice(quote.estimatedGasFee.address).catch((e) => {
               // it's common for bridge providers to not provide correct denoms
               if (
                 quote.estimatedGasFee &&

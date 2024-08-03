@@ -500,11 +500,7 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     assetLists: AssetLists,
   })!.rawAsset;
 
-  const tokenPrice = await getAssetPrice({
-    assetLists: AssetLists,
-    chainList: MockChains,
-    asset: tokenInAsset,
-  });
+  const tokenPrice = await getAssetPrice(tokenInAsset.coinMinimalDenom);
 
   // Desired price is 10% of the total fiat value locked in the pool
   const desiredPrice = mediumVolumePool.totalFiatValueLocked
@@ -560,11 +556,7 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     assetLists: AssetLists,
   })!.rawAsset;
 
-  const tokenPrice = await getAssetPrice({
-    assetLists: AssetLists,
-    chainList: MockChains,
-    asset: tokenInAsset,
-  });
+  const tokenPrice = await getAssetPrice(tokenInAsset.coinMinimalDenom);
 
   // Desired price is 10% of the total fiat value locked in the pool
   const desiredPrice = lowVolumeTokenPool.totalFiatValueLocked
