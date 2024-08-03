@@ -65,7 +65,7 @@ function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
-async function getTotalAssetsOrUserBalances(
+async function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
   category: "total-assets" | "user-balances"
@@ -132,13 +132,13 @@ export async function getAllocation({
   const categories = data.categories;
 
   const all = await getAll(categories);
-  const assets = await getTotalAssetsOrUserBalances(
+  const assets = await calculatePercentAndFiatValues(
     categories,
     assetLists,
     "total-assets"
   );
 
-  const available = await getTotalAssetsOrUserBalances(
+  const available = await calculatePercentAndFiatValues(
     categories,
     assetLists,
     "user-balances"
