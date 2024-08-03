@@ -1,5 +1,5 @@
 import { AssetLists as assetLists } from "../../../../queries/__tests__/mock-asset-lists";
-import { AllocationResponse } from "../../../data-services/allocation";
+import { AllocationResponse } from "../../../sidecar/allocation";
 import { calculatePercentAndFiatValues, getAll } from "../allocation";
 
 const MOCK_DATA: AllocationResponse = {
