@@ -65,8 +65,12 @@ function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
-async function getAssets(categories: Categories, assetLists: AssetList[]) {
-  const totalAssets = categories["total-assets"];
+async function getTotalAssetsOrUserBalances(
+  categories: Categories,
+  assetLists: AssetList[],
+  category: "total-assets" | "user-balances"
+) {
+  const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
 
   // Get top 5 assets by cap value
@@ -114,48 +118,6 @@ async function getAssets(categories: Categories, assetLists: AssetList[]) {
   return [...assets, other];
 }
 
-async function getAvailable(categories: Categories, assetLists: AssetList[]) {
-  const userBalances = categories["user-balances"];
-  const totalCap = +userBalances.capitalization;
-
-  // Get top 5 assets by cap value
-  const sortedAccountCoinsResults =
-    userBalances?.account_coins_result?.sort(
-      (a: AccountCoinsResult, b: AccountCoinsResult) =>
-        +b.cap_value - +a.cap_value
-    ) || [];
-
-  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
-
-  const assets = top5AccountCoinsResults.map((asset: AccountCoinsResult) => {
-    const assetFromAssetLists = getAsset({
-      assetLists,
-      anyDenom: asset.coin.denom,
-    });
-
-    return {
-      key: assetFromAssetLists.coinDenom,
-      percentage: (+asset.cap_value / totalCap) * 100,
-      fiatValue: +asset.cap_value,
-    };
-  });
-
-  const otherAssets = sortedAccountCoinsResults.slice(5);
-  const otherAmount = otherAssets.reduce(
-    (sum: number, asset: AccountCoinsResult) => sum + +asset.cap_value,
-    0
-  );
-  const otherPercentage = (otherAmount / totalCap) * 100;
-
-  const other: FormattedAllocation = {
-    key: "Other",
-    percentage: otherPercentage,
-    fiatValue: otherAmount,
-  };
-
-  return [...assets, other];
-}
-
 export async function getAllocation({
   address,
   assetLists,
@@ -170,8 +132,17 @@ export async function getAllocation({
   const categories = data.categories;
 
   const all = await getAll(categories);
-  const assets = await getAssets(categories, assetLists);
-  const available = await getAvailable(categories, assetLists);
+  const assets = await getTotalAssetsOrUserBalances(
+    categories,
+    assetLists,
+    "total-assets"
+  );
+
+  const available = await getTotalAssetsOrUserBalances(
+    categories,
+    assetLists,
+    "user-balances"
+  );
 
   return {
     all,
