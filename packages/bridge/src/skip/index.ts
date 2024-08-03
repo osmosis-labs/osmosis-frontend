@@ -151,7 +151,8 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
-                )
+                ) ||
+                msg.includes("no routes found")
               ) {
                 throw new BridgeQuoteError({
                   bridgeId: SkipBridgeProvider.ID,
