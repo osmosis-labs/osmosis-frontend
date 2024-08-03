@@ -131,14 +131,14 @@ export async function getAllocation({
 
   const categories = data.categories;
 
-  const all = await getAll(categories);
-  const assets = await calculatePercentAndFiatValues(
+  const all = getAll(categories);
+  const assets = calculatePercentAndFiatValues(
     categories,
     assetLists,
     "total-assets"
   );
 
-  const available = await calculatePercentAndFiatValues(
+  const available = calculatePercentAndFiatValues(
     categories,
     assetLists,
     "user-balances"
