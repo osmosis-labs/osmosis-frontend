@@ -13,8 +13,6 @@ import { getPriceFromSidecar } from "./providers/sidecar";
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
-  assetLists: AssetList[],
-  chainList: Chain[],
   asset: Asset,
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
@@ -25,7 +23,6 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
   assetLists,
-  chainList,
   asset,
   currency = "usd",
   priceProvider = getPriceFromSidecar,
@@ -86,7 +83,7 @@ export async function getAssetPrice({
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
     getFreshValue: () =>
-      priceProvider(assetLists, chainList, foundAsset, currency),
+      priceProvider(foundAsset, currency),
   });
 }
 
