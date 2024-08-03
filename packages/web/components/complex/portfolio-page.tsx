@@ -54,7 +54,7 @@ export const PortfolioPage: FunctionComponent = () => {
     );
 
   const { data: allocation, isLoading: isLoadingAllocation } =
-    api.edge.portfolio.getAllocation.useQuery(
+    api.local.portfolio.getAllocation.useQuery(
       {
         address: wallet?.address ?? "",
       },
