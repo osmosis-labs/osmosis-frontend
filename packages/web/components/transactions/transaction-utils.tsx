@@ -53,7 +53,6 @@ export const displayFiatPrice = (
   prefix: "-" | "+" | "",
   t: MultiLanguageT
 ): string => {
-  console.log("Value: ", value);
   if (value === undefined) return t("transactions.noPriceData");
 
   const decValue = value.toDec();
