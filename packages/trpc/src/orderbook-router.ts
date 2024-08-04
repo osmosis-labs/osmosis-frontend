@@ -3,6 +3,7 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
+  getOrderbookDenoms,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
@@ -67,40 +68,51 @@ export const orderbookRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
+          const start = Date.now();
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-
           const historicalOrders = await getOrderbookHistoricalOrders({
             userOsmoAddress: input.userOsmoAddress,
             assetLists: ctx.assetLists,
             chainList: ctx.chainList,
           });
 
+          const before = Date.now();
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
+              const before = Date.now();
+              const { quoteAsset, baseAsset } = await getOrderbookDenoms({
+                orderbookAddress: contractOsmoAddress,
+                chainList: ctx.chainList,
+                assetLists: ctx.assetLists,
+              });
               const orders = await getOrderbookActiveOrders({
                 orderbookAddress: contractOsmoAddress,
                 userOsmoAddress: userOsmoAddress,
                 chainList: ctx.chainList,
-                assetLists: ctx.assetLists,
+                baseAsset,
+                quoteAsset,
               });
               const historicalOrdersForContract = historicalOrders.filter(
                 (o) => o.orderbookAddress === contractOsmoAddress
               );
-
+              console.log(
+                `orders time: ${contractOsmoAddress}`,
+                Date.now() - before
+              );
               return [...orders, ...historicalOrdersForContract];
             }
           );
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flatMap((p) => p);
+          console.log("active orders time", Date.now() - before);
+          console.log("complete time", Date.now() - start);
           return allOrders.sort(defaultSortOrders);
         },
-        cacheKey: JSON.stringify([
-          "all-active-orders",
-          input.contractAddresses,
-          input.userOsmoAddress,
-        ]),
+        cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
+          input.userOsmoAddress
+        }`,
         ttl: 500,
         cursor: input.cursor,
         limit: input.limit,
@@ -133,11 +145,17 @@ export const orderbookRouter = createTRPCRouter({
       const { contractAddresses, userOsmoAddress } = input;
       const promises = contractAddresses.map(
         async (contractOsmoAddress: string) => {
+          const { quoteAsset, baseAsset } = await getOrderbookDenoms({
+            orderbookAddress: contractOsmoAddress,
+            chainList: ctx.chainList,
+            assetLists: ctx.assetLists,
+          });
           const orders = await getOrderbookActiveOrders({
             orderbookAddress: contractOsmoAddress,
             userOsmoAddress: userOsmoAddress,
             chainList: ctx.chainList,
-            assetLists: ctx.assetLists,
+            baseAsset,
+            quoteAsset,
           });
 
           if (orders.length === 0) return [];
