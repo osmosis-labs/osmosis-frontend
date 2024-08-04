@@ -1,6 +1,7 @@
 {
   "name": "@osmosis-labs/web",
   "version": "5.1.0",
+  "sideEffects": false, 
   "private": true,
   "scripts": {
     "knip": "knip",

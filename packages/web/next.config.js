@@ -81,6 +81,14 @@ const config = {
   },
 };
 
+module.exports = {
+  ...module.exports,
+  mode: "production", // Ensure the mode is 'production' for tree shaking to work
+  optimization: {
+    usedExports: true, // This setting enables tree shaking
+  },
+};
+
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
