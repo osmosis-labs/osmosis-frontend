@@ -33,15 +33,13 @@ export function getOrderbookActiveOrders({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-${orderbookAddress}-${userOsmoAddress}`,
     ttl: 2000, // 2 seconds
-    getFreshValue: () => {
-      const now = Date.now();
-      return queryOrderbookActiveOrders({
+    getFreshValue: () =>
+      queryOrderbookActiveOrders({
         orderbookAddress,
         userAddress: userOsmoAddress,
         chainList,
       }).then(
         async ({ data }: { data: { count: number; orders: LimitOrder[] } }) => {
-          console.log(`order time ${orderbookAddress}`, Date.now() - now);
           const resp = await getTickInfoAndTransformOrders(
             orderbookAddress,
             data.orders,
@@ -49,11 +47,9 @@ export function getOrderbookActiveOrders({
             quoteAsset,
             baseAsset
           );
-          console.log(`transform time ${orderbookAddress}`, Date.now() - now);
           return resp;
         }
-      );
-    },
+      ),
   });
 }
 
@@ -75,7 +71,6 @@ async function getTickInfoAndTransformOrders(
 ): Promise<MappedLimitOrder[]> {
   const tickIds = [...new Set(orders.map((o) => o.tick_id))];
 
-  const now = Date.now();
   const [tickStates, unrealizedTickCancels] = await Promise.all([
     getOrderbookTickState({
       orderbookAddress,
@@ -88,7 +83,6 @@ async function getTickInfoAndTransformOrders(
       tickIds,
     }),
   ]);
-  console.log(`tick time ${orderbookAddress}`, Date.now() - now);
 
   const fullTickState = tickStates.map(({ tick_id, tick_state }) => ({
     tickId: tick_id,

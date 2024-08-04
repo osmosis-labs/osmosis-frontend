@@ -81,16 +81,11 @@ export const orderbookRouter = createTRPCRouter({
           const before = Date.now();
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
-              const beforeDenom = Date.now();
               const { quoteAsset, baseAsset } = await getOrderbookDenoms({
                 orderbookAddress: contractOsmoAddress,
                 chainList: ctx.chainList,
                 assetLists: ctx.assetLists,
               });
-              console.log(
-                `denom time ${contractOsmoAddress}`,
-                Date.now() - beforeDenom
-              );
               const orders = await getOrderbookActiveOrders({
                 orderbookAddress: contractOsmoAddress,
                 userOsmoAddress: userOsmoAddress,
