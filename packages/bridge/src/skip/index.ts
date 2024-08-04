@@ -151,7 +151,8 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
-                )
+                ) ||
+                msg.includes("no routes found")
               ) {
                 throw new BridgeQuoteError({
                   bridgeId: SkipBridgeProvider.ID,
@@ -493,7 +494,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       // is an ibc transfer
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: messageData.receiver,
+        chainId: messageData.chain_id,
       });
 
       const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({

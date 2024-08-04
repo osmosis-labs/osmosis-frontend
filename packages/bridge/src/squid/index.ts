@@ -271,6 +271,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             : await this.createCosmosTransaction(
                 transactionRequest.data,
                 fromAddress,
+                toChain.chainId.toString(),
                 { denom: fromAsset.address, amount: fromAmount }
                 // TODO: uncomment when we're able to find a way to get gas limit from Squid
                 // or get it ourselves
@@ -494,6 +495,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   async createCosmosTransaction(
     data: string,
     fromAddress: string,
+    toChainId: string,
     fromCoin: {
       denom: string;
       amount: string;
@@ -532,7 +534,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         };
 
         const timeoutHeight = await this.ctx.getTimeoutHeight({
-          destinationAddress: ibcData.msg.receiver,
+          chainId: toChainId,
         });
 
         const { typeUrl, value: msg } =
