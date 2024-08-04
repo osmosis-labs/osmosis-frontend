@@ -44,6 +44,7 @@ import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
+  refetchOrders: () => Promise<void>;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {
@@ -74,7 +75,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 const NON_DISPLAY_ERRORS = ["errors.zeroAmount", "errors.emptyAmount"];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ page }: PlaceLimitToolProps) => {
+  ({ page, refetchOrders }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -587,6 +588,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();
+            refetchOrders();
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);

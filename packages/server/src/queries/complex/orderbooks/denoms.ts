@@ -23,6 +23,8 @@ export function getOrderbookDenoms({
     cache: orderbookDenomsCache,
     key: `orderbookDenoms-${orderbookAddress}`,
     ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
+    swr: 1000 * 60 * 60 * 24 * 30, // 30 days
+    staleRefreshTimeout: 1000 * 60 * 60 * 24 * 30, // 30 days
     getFreshValue: () =>
       queryOrderbookDenoms({ orderbookAddress, chainList }).then(
         ({ data: { quote_denom, base_denom } }) => {

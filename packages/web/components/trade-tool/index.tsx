@@ -38,7 +38,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const { orders } = useOrderbookAllActiveOrders({
+    const { orders, refetch } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
       pageSize: 100,
       refetchInterval: 4000,
@@ -96,9 +96,25 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return <PlaceLimitTool key="tool-buy" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-buy"
+                    page={page}
+                    refetchOrders={async () => {
+                      refetch({ stale: false });
+                    }}
+                  />
+                );
               case SwapToolTab.SELL:
-                return <PlaceLimitTool key="tool-sell" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-sell"
+                    page={page}
+                    refetchOrders={async () => {
+                      refetch({ stale: false });
+                    }}
+                  />
+                );
               case SwapToolTab.SWAP:
               default:
                 return (
@@ -110,7 +126,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   />
                 );
             }
-          }, [page, swapToolProps, tab])}
+          }, [page, swapToolProps, tab, refetch])}
         </div>
         {wallet?.isWalletConnected && openOrders.length > 0 && (
           <Link
