@@ -69,6 +69,8 @@ async function getTickInfoAndTransformOrders(
   quoteAsset: ReturnType<typeof getAssetFromAssetList>,
   baseAsset: ReturnType<typeof getAssetFromAssetList>
 ): Promise<MappedLimitOrder[]> {
+  if (orders.length === 0) return [];
+
   const tickIds = [...new Set(orders.map((o) => o.tick_id))];
 
   const [tickStates, unrealizedTickCancels] = await Promise.all([
