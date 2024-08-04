@@ -384,7 +384,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           Boolean(swapState.marketState.error)
         );
       }
-
       return Boolean(swapState.error) || !swapState.isBalancesFetched;
     }, [
       swapState.error,
@@ -589,6 +588,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             setIsSendingTx(true);
             await swapState.placeLimit();
             swapState.reset();
+            setAmountSafe("fiat", "");
             setReviewOpen(false);
             setIsSendingTx(false);
           }}
