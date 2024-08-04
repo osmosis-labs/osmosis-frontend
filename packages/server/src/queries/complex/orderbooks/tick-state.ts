@@ -24,7 +24,7 @@ export function getOrderbookTickState({
     key: `orderbookTickInfo-${orderbookAddress}-${tickIds
       .sort((a, b) => a - b)
       .join(",")}`,
-    ttl: 1000 * 2, // 3 seconds
+    ttl: 1000 * 6, // 6 seconds
     getFreshValue: () =>
       queryOrderbookTicks({ orderbookAddress, chainList, tickIds }).then(
         ({ data }) => data.ticks
@@ -46,7 +46,7 @@ export function getOrderbookTickUnrealizedCancels({
     key: `orderbookTickUnrealizedCancels-${orderbookAddress}-${tickIds
       .sort((a, b) => a - b)
       .join(",")}`,
-    ttl: 1000 * 2, // 3 seconds
+    ttl: 1000 * 6, // 6 seconds
     getFreshValue: () =>
       queryOrderbookTickUnrealizedCancelsById({
         orderbookAddress,

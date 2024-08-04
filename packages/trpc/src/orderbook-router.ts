@@ -81,12 +81,16 @@ export const orderbookRouter = createTRPCRouter({
           const before = Date.now();
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
-              const before = Date.now();
+              const beforeDenom = Date.now();
               const { quoteAsset, baseAsset } = await getOrderbookDenoms({
                 orderbookAddress: contractOsmoAddress,
                 chainList: ctx.chainList,
                 assetLists: ctx.assetLists,
               });
+              console.log(
+                `denom time ${contractOsmoAddress}`,
+                Date.now() - beforeDenom
+              );
               const orders = await getOrderbookActiveOrders({
                 orderbookAddress: contractOsmoAddress,
                 userOsmoAddress: userOsmoAddress,
@@ -97,15 +101,11 @@ export const orderbookRouter = createTRPCRouter({
               const historicalOrdersForContract = historicalOrders.filter(
                 (o) => o.orderbookAddress === contractOsmoAddress
               );
-              console.log(
-                `orders time: ${contractOsmoAddress}`,
-                Date.now() - before
-              );
               return [...orders, ...historicalOrdersForContract];
             }
           );
           const ordersByContracts = await Promise.all(promises);
-          const allOrders = ordersByContracts.flatMap((p) => p);
+          const allOrders = ordersByContracts.flat();
           console.log("active orders time", Date.now() - before);
           console.log("complete time", Date.now() - start);
           return allOrders.sort(defaultSortOrders);
@@ -113,7 +113,7 @@ export const orderbookRouter = createTRPCRouter({
         cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
           input.userOsmoAddress
         }`,
-        ttl: 500,
+        ttl: 2000,
         cursor: input.cursor,
         limit: input.limit,
       });

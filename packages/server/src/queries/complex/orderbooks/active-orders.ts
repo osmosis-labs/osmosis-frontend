@@ -33,22 +33,27 @@ export function getOrderbookActiveOrders({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-${orderbookAddress}-${userOsmoAddress}`,
     ttl: 2000, // 2 seconds
-    getFreshValue: () =>
-      queryOrderbookActiveOrders({
+    getFreshValue: () => {
+      const now = Date.now();
+      return queryOrderbookActiveOrders({
         orderbookAddress,
         userAddress: userOsmoAddress,
         chainList,
       }).then(
         async ({ data }: { data: { count: number; orders: LimitOrder[] } }) => {
-          return getTickInfoAndTransformOrders(
+          console.log(`order time ${orderbookAddress}`, Date.now() - now);
+          const resp = await getTickInfoAndTransformOrders(
             orderbookAddress,
             data.orders,
             chainList,
             quoteAsset,
             baseAsset
           );
+          console.log(`transform time ${orderbookAddress}`, Date.now() - now);
+          return resp;
         }
-      ),
+      );
+    },
   });
 }
 
@@ -69,16 +74,21 @@ async function getTickInfoAndTransformOrders(
   baseAsset: ReturnType<typeof getAssetFromAssetList>
 ): Promise<MappedLimitOrder[]> {
   const tickIds = [...new Set(orders.map((o) => o.tick_id))];
-  const tickStates = await getOrderbookTickState({
-    orderbookAddress,
-    chainList,
-    tickIds,
-  });
-  const unrealizedTickCancels = await getOrderbookTickUnrealizedCancels({
-    orderbookAddress,
-    chainList,
-    tickIds,
-  });
+
+  const now = Date.now();
+  const [tickStates, unrealizedTickCancels] = await Promise.all([
+    getOrderbookTickState({
+      orderbookAddress,
+      chainList,
+      tickIds,
+    }),
+    getOrderbookTickUnrealizedCancels({
+      orderbookAddress,
+      chainList,
+      tickIds,
+    }),
+  ]);
+  console.log(`tick time ${orderbookAddress}`, Date.now() - now);
 
   const fullTickState = tickStates.map(({ tick_id, tick_state }) => ({
     tickId: tick_id,
