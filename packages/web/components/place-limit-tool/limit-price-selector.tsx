@@ -100,24 +100,39 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+          ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
           maxDecimals: 3,
           maximumSignificantDigits: 5,
         })}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const percentageSuffix = useMemo(() => {
-    return priceState.percentAdjusted.isZero()
-      ? `${
-          orderDirection === "bid"
-            ? t("limitOrders.below")
-            : t("limitOrders.above")
-        } ${t("limitOrders.currentPrice")}`
-      : `${
-          priceState.percentAdjusted.isNegative()
-            ? t("limitOrders.below")
-            : t("limitOrders.above")
-        } ${t("limitOrders.currentPrice")}`;
-  }, [t, priceState.percentAdjusted, orderDirection]);
+    if (priceState.percentAdjusted.isZero())
+      return ` ${
+        orderDirection === "bid"
+          ? t("limitOrders.below")
+          : t("limitOrders.above")
+      } ${t("limitOrders.currentPrice")}`;
+
+    if (orderDirection === "ask") {
+      return ` ${
+        priceState.isBeyondOppositePrice
+          ? t("limitOrders.below")
+          : t("limitOrders.above")
+      } ${t("limitOrders.currentPrice")}`;
+    }
+
+    return ` ${
+      priceState.isBeyondOppositePrice
+        ? t("limitOrders.above")
+        : t("limitOrders.below")
+    } ${t("limitOrders.currentPrice")}`;
+  }, [
+    t,
+    priceState.percentAdjusted,
+    orderDirection,
+    priceState.isBeyondOppositePrice,
+  ]);
 
   const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 

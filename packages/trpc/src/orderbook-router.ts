@@ -68,7 +68,6 @@ export const orderbookRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
-          const start = Date.now();
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
@@ -78,7 +77,6 @@ export const orderbookRouter = createTRPCRouter({
             chainList: ctx.chainList,
           });
 
-          const before = Date.now();
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
               const { quoteAsset, baseAsset } = await getOrderbookDenoms({
@@ -101,8 +99,6 @@ export const orderbookRouter = createTRPCRouter({
           );
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
-          console.log("active orders time", Date.now() - before);
-          console.log("complete time", Date.now() - start);
           return allOrders.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
