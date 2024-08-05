@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { AreaData, Time } from "lightweight-charts";
 
@@ -34,7 +34,7 @@ export const PortfolioHistoricalChart = ({
   setRange,
   totalPriceChange,
   error,
-  totalValue,
+  setShowDate,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
@@ -44,7 +44,7 @@ export const PortfolioHistoricalChart = ({
   setRange: (range: Range) => void;
   totalPriceChange: number;
   error: unknown;
-  totalValue: PricePretty;
+  setShowDate: (show: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -60,7 +60,10 @@ export const PortfolioHistoricalChart = ({
         ) : (
           <HistoricalChart
             data={data as AreaData<Time>[]}
-            onPointerHover={(value, time) => setDataPoint({ value, time })}
+            onPointerHover={(value, time) => {
+              setShowDate(true);
+              setDataPoint({ value, time });
+            }}
             style={getChartStyle(totalPriceChange)}
             onPointerOut={resetDataPoint}
           />

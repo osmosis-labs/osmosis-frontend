@@ -34,6 +34,8 @@ const calculatePortfolioPerformance = (
   selectedDifferencePricePretty: PricePretty;
   totalPriceChange: number;
 } => {
+  console.log("dataPoint", dataPoint);
+
   const openingPrice = data?.[0]?.value;
   const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
   const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
@@ -59,11 +61,6 @@ const calculatePortfolioPerformance = (
   };
 };
 
-const initialDataPoint = {
-  time: dayjs().unix() as Time,
-  value: 0,
-};
-
 export const AssetsOverview: FunctionComponent<
   {
     totalValue: PricePretty;
@@ -80,7 +77,12 @@ export const AssetsOverview: FunctionComponent<
 
   const address = wallet?.address ?? "";
 
-  const [dataPoint, setDataPoint] = useState<DataPoint>(initialDataPoint);
+  const [showDate, setShowDate] = useState(false);
+
+  const [dataPoint, setDataPoint] = useState<DataPoint>({
+    time: dayjs().unix() as Time,
+    value: 0,
+  });
 
   const [range, setRange] = useState<Range>("1mo");
 
@@ -152,6 +154,7 @@ export const AssetsOverview: FunctionComponent<
                 selectedDifference={selectedDifferencePricePretty}
                 selectedPercentage={selectedPercentageRatePretty}
                 formattedDate={formattedDate}
+                showDate={showDate}
               />
             </SkeletonLoader>
           </div>
@@ -197,8 +200,14 @@ export const AssetsOverview: FunctionComponent<
             setRange={setRange}
             totalPriceChange={totalPriceChange}
             error={error}
-            totalValue={totalValue}
-            resetDataPoint={() => setDataPoint(initialDataPoint)}
+            setShowDate={setShowDate}
+            resetDataPoint={() => {
+              setDataPoint({
+                time: dayjs().unix() as Time,
+                value: +totalValue.toDec().toString(),
+              });
+              setShowDate(false);
+            }}
           />
         </>
       ) : (

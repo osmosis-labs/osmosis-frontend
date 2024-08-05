@@ -8,7 +8,8 @@ export const PortfolioPerformance: FunctionComponent<{
   selectedDifference: PricePretty;
   selectedPercentage: RatePretty;
   formattedDate?: string;
-}> = ({ selectedDifference, selectedPercentage, formattedDate }) => {
+  showDate: boolean;
+}> = ({ selectedDifference, selectedPercentage, formattedDate, showDate }) => {
   return (
     <div className="body1 md:caption flex text-bullish-400">
       <PriceChange
@@ -16,7 +17,7 @@ export const PortfolioPerformance: FunctionComponent<{
         priceChange={selectedPercentage}
         value={selectedDifference}
       />
-      {formattedDate && (
+      {showDate && formattedDate && (
         <span className="ml-2 text-osmoverse-400">{formattedDate}</span>
       )}
     </div>
