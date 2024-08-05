@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
@@ -85,20 +86,22 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList.map(({ key, percentage }, index) =>
-              percentage.toDec().isZero() ? null : (
+            {selectedList.map(({ key, percentage }, index) => {
+              const isNeglibilePercent = percentage.toDec().lt(new Dec(0.01));
+
+              const width = isNeglibilePercent ? "0.1%" : percentage.toString();
+
+              const colorClass =
+                COLORS[selectedOption][index % COLORS[selectedOption].length];
+
+              return (
                 <div
                   key={key}
-                  className={classNames(
-                    "h-full rounded-[4px]",
-                    COLORS[selectedOption][
-                      index % COLORS[selectedOption].length
-                    ]
-                  )}
-                  style={{ width: `${percentage.toString()}%` }}
+                  className={classNames("h-full rounded-[4px]", colorClass)}
+                  style={{ width }}
                 />
-              )
-            )}
+              );
+            })}
           </div>
           <div className="flex flex-col space-y-3">
             {selectedList.map(({ key, percentage, fiatValue }, index) => (
