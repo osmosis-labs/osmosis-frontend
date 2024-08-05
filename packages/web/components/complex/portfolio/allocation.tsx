@@ -87,9 +87,11 @@ export const Allocation: FunctionComponent<{
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
             {selectedList.map(({ key, percentage }, index) => {
-              const isNeglibilePercent = percentage.toDec().lt(new Dec(0.01));
+              const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
 
-              const width = isNeglibilePercent ? "0.1%" : percentage.toString();
+              const width = isNegligiblePercent
+                ? "0.1%"
+                : percentage.toString();
 
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
@@ -104,25 +106,27 @@ export const Allocation: FunctionComponent<{
             })}
           </div>
           <div className="flex flex-col space-y-3">
-            {selectedList.map(({ key, percentage, fiatValue }, index) => (
-              <div key={key} className="body2 flex w-full justify-between">
-                <div className="flex items-center space-x-1">
-                  <div
-                    className={classNames(
-                      "my-auto inline-block h-3 w-3 rounded-[4px]",
-                      COLORS[selectedOption][
-                        index % COLORS[selectedOption].length
-                      ]
-                    )}
-                  />
-                  <span>{getTranslation(key, t)}</span>
-                  <span className="text-osmoverse-400">
-                    {percentage.maxDecimals(0).toString()}
-                  </span>
+            {selectedList.map(({ key, percentage, fiatValue }, index) => {
+              const colorClass =
+                COLORS[selectedOption][index % COLORS[selectedOption].length];
+              return (
+                <div key={key} className="body2 flex w-full justify-between">
+                  <div className="flex items-center space-x-1">
+                    <div
+                      className={classNames(
+                        "my-auto inline-block h-3 w-3 rounded-[4px]",
+                        colorClass
+                      )}
+                    />
+                    <span>{getTranslation(key, t)}</span>
+                    <span className="text-osmoverse-400">
+                      {percentage.maxDecimals(0).toString()}
+                    </span>
+                  </div>
+                  <div>{displayFiatPrice(fiatValue, "", t)}</div>
                 </div>
-                <div>{displayFiatPrice(fiatValue, "", t)}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
