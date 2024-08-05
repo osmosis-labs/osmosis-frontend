@@ -599,9 +599,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             slippageConfig={slippageConfig}
             outAmountLessSlippage={outAmountLessSlippage}
             outFiatAmountLessSlippage={outFiatAmountLessSlippage}
-            gasAmount={swapState.networkFee?.gasUsdValueToPay}
-            isGasLoading={swapState.isLoadingNetworkFee}
-            gasError={swapState.networkFeeError}
           />
         </div>
         <TokenSelectModalLimit
@@ -659,7 +656,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           isLoadingSelectAssets={swapState.isLoadingSelectAssets}
         />
         <ReviewOrder
-          title="Swap"
+          title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
           onClose={() => setShowSwapReviewModal(false)}
           confirmAction={sendSwapTx}

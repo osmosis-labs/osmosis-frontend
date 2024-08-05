@@ -664,7 +664,7 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-woz.png"
+          src="/images/profile-woz.svg"
           width={140}
           height={140}
         />
@@ -688,7 +688,7 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-ammelia.png"
+          src="/images/profile-ammelia.svg"
           width={140}
           height={140}
         />

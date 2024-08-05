@@ -137,17 +137,20 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: input.toAsset.address,
             chainId: input.toChain.chainId,
             address: input.toAsset.address,
+            coinGeckoId: input.toAsset.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: input.toAsset.address,
                 sourceDenom: input.toAsset.address,
                 chainId: input.toChain.chainId,
                 address: input.toAsset.address,
+                coinGeckoId: input.toAsset.coinGeckoId,
               }
             );
           }
@@ -158,6 +161,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               sourceDenom: input.fromAsset.address,
               chainId: input.fromChain.chainId,
               address: input.fromAsset.address,
+              coinGeckoId: input.fromAsset.coinGeckoId,
             },
           });
         }),
@@ -168,18 +172,21 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
+            coinGeckoId: quote.transferFee.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           // it's common for bridge providers to not provide correct denoms
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: feeCoin.address,
                 sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
+                coinGeckoId: quote.transferFee.coinGeckoId,
               }
             );
           }
@@ -193,8 +200,9 @@ export const bridgeTransferRouter = createTRPCRouter({
                 sourceDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
+                coinGeckoId: quote.estimatedGasFee.coinGeckoId,
               },
-            }).catch(() => {
+            }).catch((e) => {
               // it's common for bridge providers to not provide correct denoms
               if (
                 quote.estimatedGasFee &&
@@ -202,12 +210,14 @@ export const bridgeTransferRouter = createTRPCRouter({
               ) {
                 console.warn(
                   "getQuoteByBridge: Failed to get asset price for gas fee",
+                  e,
                   {
                     bridge: input.bridge,
                     coinMinimalDenom: quote.estimatedGasFee.address,
                     sourceDenom: quote.estimatedGasFee.address,
                     chainId: quote.fromChain.chainId,
                     address: quote.estimatedGasFee.address,
+                    coinGeckoId: quote.estimatedGasFee.coinGeckoId,
                   }
                 );
               }
@@ -334,10 +344,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new Error("Invalid bridge provider id: " + input.bridge);
       }
 
-      const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
-
-      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
-      const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
+      const supportedAssets = await bridgeProvider.getSupportedAssets(input);
 
       const assetsByChainId = supportedAssets.reduce<
         Record<
@@ -585,7 +592,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             urlToAdd &&
             !externalUrls.some(
               ({ urlProviderName, url }) =>
-                urlProviderName === urlToAdd.urlProviderName &&
+                urlProviderName === urlToAdd.urlProviderName ||
                 url.host === urlToAdd.url.host
             )
           ) {

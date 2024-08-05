@@ -53,7 +53,7 @@ export const OrderHistory = observer(() => {
     return orders.map((o) => ({
       ...o,
       isRefetching,
-      refetch,
+      refetch: async () => refetch({ stale: false }),
     }));
   }, [orders, isRefetching, refetch]);
 

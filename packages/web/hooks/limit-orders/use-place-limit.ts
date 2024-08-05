@@ -665,7 +665,7 @@ const useLimitPrice = ({
       )
         return;
 
-      if (countDecimals(percentAdjusted) > 10) {
+      if (countDecimals(percentAdjusted) > 3) {
         // percentAdjusted = parseFloat(percentAdjusted).toFixed(10).toString();
         return;
       }

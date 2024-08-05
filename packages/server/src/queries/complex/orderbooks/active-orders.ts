@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { tickToPrice } from "@osmosis-labs/math";
-import { AssetList, Chain } from "@osmosis-labs/types";
+import { Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
@@ -8,7 +8,6 @@ import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { LimitOrder, queryOrderbookActiveOrders } from "../../osmosis";
-import { getOrderbookDenoms } from "./denoms";
 import {
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
@@ -21,17 +20,19 @@ export function getOrderbookActiveOrders({
   orderbookAddress,
   userOsmoAddress,
   chainList,
-  assetLists,
+  baseAsset,
+  quoteAsset,
 }: {
   orderbookAddress: string;
   userOsmoAddress: string;
   chainList: Chain[];
-  assetLists: AssetList[];
+  baseAsset: ReturnType<typeof getAssetFromAssetList>;
+  quoteAsset: ReturnType<typeof getAssetFromAssetList>;
 }) {
   return cachified({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-${orderbookAddress}-${userOsmoAddress}`,
-    ttl: 500, // 2 seconds
+    ttl: 2000, // 2 seconds
     getFreshValue: () =>
       queryOrderbookActiveOrders({
         orderbookAddress,
@@ -39,19 +40,14 @@ export function getOrderbookActiveOrders({
         chainList,
       }).then(
         async ({ data }: { data: { count: number; orders: LimitOrder[] } }) => {
-          const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-            orderbookAddress,
-            chainList,
-            assetLists,
-          });
-
-          return getTickInfoAndTransformOrders(
+          const resp = await getTickInfoAndTransformOrders(
             orderbookAddress,
             data.orders,
             chainList,
             quoteAsset,
             baseAsset
           );
+          return resp;
         }
       ),
   });
@@ -73,17 +69,22 @@ async function getTickInfoAndTransformOrders(
   quoteAsset: ReturnType<typeof getAssetFromAssetList>,
   baseAsset: ReturnType<typeof getAssetFromAssetList>
 ): Promise<MappedLimitOrder[]> {
+  if (orders.length === 0) return [];
+
   const tickIds = [...new Set(orders.map((o) => o.tick_id))];
-  const tickStates = await getOrderbookTickState({
-    orderbookAddress,
-    chainList,
-    tickIds,
-  });
-  const unrealizedTickCancels = await getOrderbookTickUnrealizedCancels({
-    orderbookAddress,
-    chainList,
-    tickIds,
-  });
+
+  const [tickStates, unrealizedTickCancels] = await Promise.all([
+    getOrderbookTickState({
+      orderbookAddress,
+      chainList,
+      tickIds,
+    }),
+    getOrderbookTickUnrealizedCancels({
+      orderbookAddress,
+      chainList,
+      tickIds,
+    }),
+  ]);
 
   const fullTickState = tickStates.map(({ tick_id, tick_state }) => ({
     tickId: tick_id,

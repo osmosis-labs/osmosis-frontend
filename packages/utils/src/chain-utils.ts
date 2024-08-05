@@ -35,10 +35,15 @@ export function getChainStakeTokenSourceDenom({
 
   if (!chain) {
     console.info(`Chain ${chainId} not found`);
-    return undefined;
+    return;
   }
 
-  return chain.staking.staking_tokens[0].denom;
+  if (!chain.staking) {
+    console.error("This chain does not have staking info:", chainId);
+    return;
+  }
+
+  return chain.staking!.staking_tokens[0].denom;
 }
 
 export class ChainIdHelper {

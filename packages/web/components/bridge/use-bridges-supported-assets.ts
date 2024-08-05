@@ -82,7 +82,7 @@ export const useBridgesSupportedAssets = ({
 
   /**
    * Aggregate supported assets from all successful queries.
-   * This would be an object with chain id as key and an array of supported assets as value.
+   * This would be an object with chain id as key and an array of supported Osmosis variants as value.
    *
    * Example:
    * {
@@ -94,7 +94,7 @@ export const useBridgesSupportedAssets = ({
    *       "denom": "USDC",
    *       "decimals": 6,
    *       "supportedVariants": {
-   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": ["Skip", "Squid", "Axelar"],
+   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": ["Skip", "Squid", "Axelar", "IBC"],
    *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": ["Skip", "Squid", "Axelar"],
    *         "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A": ["Skip", "Squid", "Axelar"],
    *         "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C": ["Skip", "Axelar"],
@@ -108,12 +108,14 @@ export const useBridgesSupportedAssets = ({
    */
   const supportedAssetsByChainId = useMemo(() => {
     /**
-     * Map of supported assets by asset address and variant. This is used to
+     * Map of supported assets by asset address, chain, and variant. This is used to
      * merge the supported variants and providers for each input asset.
      */
-    const assetAddress_supportedVariants_bridges: Record<
-      string,
-      Record<string, Set<Bridge>>
+    type Address = string;
+    type ChainId = string;
+    const assetAddress_chainId_supportedVariants_bridges: Record<
+      Address,
+      Record<ChainId, Record<Address, Set<Bridge>>>
     > = {};
 
     type AssetsByChainId =
@@ -133,21 +135,27 @@ export const useBridgesSupportedAssets = ({
 
             const inputAssetAddress = data.supportedAssets.inputAssetAddress;
 
-            if (!assetAddress_supportedVariants_bridges[address]) {
-              assetAddress_supportedVariants_bridges[address] = {};
+            if (!assetAddress_chainId_supportedVariants_bridges[address]) {
+              assetAddress_chainId_supportedVariants_bridges[address] = {};
+            }
+            if (
+              !assetAddress_chainId_supportedVariants_bridges[address][chainId]
+            ) {
+              assetAddress_chainId_supportedVariants_bridges[address][chainId] =
+                {};
             }
 
             if (
-              !assetAddress_supportedVariants_bridges[address][
+              !assetAddress_chainId_supportedVariants_bridges[address][chainId][
                 inputAssetAddress
               ]
             ) {
-              assetAddress_supportedVariants_bridges[address][
+              assetAddress_chainId_supportedVariants_bridges[address][chainId][
                 inputAssetAddress
               ] = new Set<Bridge>();
             }
 
-            assetAddress_supportedVariants_bridges[address][
+            assetAddress_chainId_supportedVariants_bridges[address][chainId][
               inputAssetAddress
             ].add(data.supportedAssets.providerName);
           });
@@ -167,9 +175,9 @@ export const useBridgesSupportedAssets = ({
             ...asset,
             supportedVariants: Object.fromEntries(
               Object.entries(
-                assetAddress_supportedVariants_bridges[
+                assetAddress_chainId_supportedVariants_bridges[
                   asset.address.toLowerCase()
-                ]
+                ][chainId]
               ).map(([variant, bridges]) => [variant, Array.from(bridges)])
             ),
           }))
@@ -206,6 +214,19 @@ export const useBridgesSupportedAssets = ({
           .sort((a, b) => {
             // focus on evm chains to be picked first
             if (a.chainType === "evm" && b.chainType !== "evm") return -1;
+            if (
+              a.chainType === "solana" &&
+              b.chainType !== "solana" &&
+              b.chainType !== "evm"
+            )
+              return -1;
+            if (
+              a.chainType === "bitcoin" &&
+              b.chainType !== "bitcoin" &&
+              b.chainType !== "solana" &&
+              b.chainType !== "evm"
+            )
+              return -1;
             return 0;
           })
           .map((chain) => [chain.chainId, chain])

@@ -107,8 +107,21 @@ export const AmountAndReviewScreen = observer(
         }
       );
 
+    /**
+     * Only find supported assets for the selected variant
+     * when withdrawing.
+     */
+    const withdrawAsset =
+      direction === "withdraw"
+        ? assetsInOsmosis?.find(
+            (asset) =>
+              asset.coinDenom === selectedAssetDenom ||
+              asset.coinMinimalDenom === selectedAssetDenom
+          )
+        : undefined;
+
     const supportedAssets = useBridgesSupportedAssets({
-      assets: assetsInOsmosis,
+      assets: withdrawAsset ? [withdrawAsset] : assetsInOsmosis,
       chain: {
         chainId: accountStore.osmosisChainId,
         chainType: "cosmos",
@@ -117,26 +130,50 @@ export const AmountAndReviewScreen = observer(
     const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
       supportedAssets;
 
-    /** Filter for bridges that currently support quoting. */
-    const quoteBridges = useMemo(() => {
+    /** Filter for bridges for the current to/from chain/asset selection. */
+    const bridges = useMemo(() => {
+      if (!fromAsset || !toAsset || !fromChain || !toChain) return [];
+
       const assetSupportedBridges = new Set<Bridge>();
 
-      if (direction === "deposit" && fromAsset) {
-        const providers = Object.values(fromAsset.supportedVariants).flat();
+      if (direction === "deposit") {
+        const providers = fromAsset.supportedVariants[toAsset.address] ?? [];
         providers.forEach((provider) => assetSupportedBridges.add(provider));
-      } else if (direction === "withdraw" && fromAsset && toAsset) {
+      } else if (direction === "withdraw") {
         const counterpartyAssets =
           counterpartySupportedAssetsByChainId[toAsset.chainId];
-        counterpartyAssets.forEach((asset) => {
-          const providers = asset.supportedVariants[fromAsset.address] || [];
-          providers.forEach((provider) => assetSupportedBridges.add(provider));
-        });
+        counterpartyAssets
+          ?.filter(({ address }) => address === toAsset.address)
+          .forEach((asset) => {
+            const providers = asset.supportedVariants[fromAsset.address] ?? [];
+            providers.forEach((provider) =>
+              assetSupportedBridges.add(provider)
+            );
+          });
       }
 
-      return Array.from(assetSupportedBridges).filter(
-        (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
-      ) as QuotableBridge[];
-    }, [direction, fromAsset, toAsset, counterpartySupportedAssetsByChainId]);
+      return Array.from(assetSupportedBridges);
+    }, [
+      direction,
+      fromAsset,
+      fromChain,
+      toAsset,
+      toChain,
+      counterpartySupportedAssetsByChainId,
+    ]);
+    /**
+     * Only some bridges support quoting.
+     * It's also important to only return bridges
+     * that support the current to/from assets by extracting the bridges
+     * from the supported bridges mapping.
+     */
+    const quoteBridges = useMemo(
+      () =>
+        bridges.filter(
+          (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+        ) as QuotableBridge[],
+      [bridges]
+    );
 
     const quote = useBridgeQuotes({
       toAddress,
@@ -196,6 +233,7 @@ export const AmountAndReviewScreen = observer(
               selectedDenom={selectedAssetDenom!}
               assetsInOsmosis={assetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
+              supportedBridges={bridges}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}
@@ -251,11 +289,6 @@ export const AmountAndReviewScreen = observer(
                                 toAsset.chainId
                               ].map(({ address }) => address);
 
-                        const selectedVariant =
-                          direction === "deposit"
-                            ? toAsset.address
-                            : fromAsset.address;
-
                         /** If there's multiple variants, it's only recommended if
                          * the selected variant is the first one in the sorted list.
                          * If there's not multiple variants, it automatically is recommended.
@@ -265,7 +298,7 @@ export const AmountAndReviewScreen = observer(
                          */
                         const isRecommendedVariant =
                           variants.length > 1
-                            ? selectedVariant === variants[0]
+                            ? toAsset.address === variants[0]
                             : true;
 
                         const walletName =

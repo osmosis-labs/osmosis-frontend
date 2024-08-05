@@ -38,9 +38,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const { orders } = useOrderbookAllActiveOrders({
+    const { orders, refetch } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
       pageSize: 100,
+      refetchInterval: 4000,
     });
 
     const openOrders = useMemo(
@@ -95,9 +96,25 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return <PlaceLimitTool key="tool-buy" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-buy"
+                    page={page}
+                    refetchOrders={async () => {
+                      refetch({ stale: false });
+                    }}
+                  />
+                );
               case SwapToolTab.SELL:
-                return <PlaceLimitTool key="tool-sell" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-sell"
+                    page={page}
+                    refetchOrders={async () => {
+                      refetch({ stale: false });
+                    }}
+                  />
+                );
               case SwapToolTab.SWAP:
               default:
                 return (
@@ -109,12 +126,12 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   />
                 );
             }
-          }, [page, swapToolProps, tab])}
+          }, [page, swapToolProps, tab, refetch])}
         </div>
         {wallet?.isWalletConnected && openOrders.length > 0 && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
-            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-[#3E386A8A] bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
+            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center">

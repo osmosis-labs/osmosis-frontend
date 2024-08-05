@@ -16,6 +16,7 @@ export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getUserAssets.invalidate();
   apiUtils.edge.assets.getUserMarketAsset.invalidate();
   apiUtils.edge.assets.getUserAssetsTotal.invalidate();
+  apiUtils.edge.assets.getUserBridgeAsset.invalidate();
   apiUtils.edge.assets.getUserBridgeAssets.invalidate();
   apiUtils.edge.staking.getUserDelegations.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();

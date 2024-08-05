@@ -71,7 +71,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         percentAdjusted.isZero() || manualPrice.isZero()
           ? ""
           : formatPretty(percentAdjusted.abs(), {
-              maxDecimals: 2,
+              maxDecimals: 3,
             }).toString()
       );
     }
@@ -113,7 +113,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
-      : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs())}%`;
+      : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+          maxDecimals: 3,
+          maximumSignificantDigits: 5,
+        })}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const percentageSuffix = useMemo(() => {
@@ -267,7 +270,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
-            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-[#3E386A] hover:text-white-high disabled:opacity-50"
+            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-osmoverse-alpha-800/[.54] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               if (inputMode === InputMode.Percentage) {

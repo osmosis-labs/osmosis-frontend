@@ -33,7 +33,7 @@ import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
-import { AprBreakdownLegacy } from "../cards/apr-breakdown";
+import { AprBreakdown } from "../cards/apr-breakdown";
 import { SkeletonLoader } from "../loaders/skeleton-loader";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -464,9 +464,19 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
 
     const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
+    const { data: incentives, isLoading: isLoadingIncentives } =
+      api.edge.pools.getPoolIncentives.useQuery(
+        {
+          poolId,
+        },
+        {
+          enabled: featureFlags.aprBreakdown,
+        }
+      );
+
     return (
       <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-1000 px-8 py-7">
+        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-900 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
               {t("clPositions.totalBalance")}
@@ -505,15 +515,17 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
         </div>
         {featureFlags.aprBreakdown && (
-          <AprBreakdownLegacy
-            className="shrink-0 rounded-3xl bg-osmoverse-1000"
-            poolId={poolId}
-            showDisclaimerTooltip
-          />
+          <SkeletonLoader isLoaded={!isLoadingIncentives}>
+            <AprBreakdown
+              className="shrink-0 rounded-3xl bg-osmoverse-900"
+              showDisclaimerTooltip
+              {...incentives?.aprBreakdown}
+            />
+          </SkeletonLoader>
         )}
 
         {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-1000 px-8 py-7">
+          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-900 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">
               {t("pool.incentives")}
             </span>
