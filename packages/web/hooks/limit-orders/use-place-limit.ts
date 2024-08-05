@@ -626,7 +626,7 @@ const useLimitPrice = ({
           formatPretty(
             assetPrice.toDec(),
             getPriceExtendedFormatOptions(assetPrice.toDec())
-          ).replace(",", "")
+          ).replace(/,/g, "")
         )
       : new Dec(1);
   }, [assetPrice]);
@@ -642,7 +642,7 @@ const useLimitPrice = ({
       const newPrice = spotPrice.mul(percentAdjusted);
       setOrderPrice(
         formatPretty(newPrice, getPriceExtendedFormatOptions(newPrice)).replace(
-          ",",
+          /,/g,
           ""
         )
       );
@@ -668,6 +668,16 @@ const useLimitPrice = ({
         price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
       }
 
+      const percentAdjusted = newPrice
+        .quo(spotPrice)
+        .sub(new Dec(1))
+        .mul(new Dec(100));
+
+      const isPercentAdjustedTooLarge =
+        percentAdjusted.toString().split(".")[0].length > 9;
+
+      if (isPercentAdjustedTooLarge) return;
+
       setPriceLock(true);
       setOrderPrice(price);
 
@@ -676,19 +686,15 @@ const useLimitPrice = ({
         return;
       }
 
-      const manualPrice = new Dec(price);
-      const percentAdjusted = manualPrice
-        .quo(spotPrice)
-        .sub(new Dec(1))
-        .mul(new Dec(100));
-
       setManualPercentAdjusted(
-        percentAdjusted.isZero() || manualPrice.isZero()
+        percentAdjusted.isZero() || newPrice.isZero()
           ? "0"
           : trimPlaceholderZeros(
               formatPretty(percentAdjusted.abs(), {
                 maxDecimals: 3,
-              }).toString()
+              })
+                .toString()
+                .replace(/,/g, "")
             )
       );
     },
@@ -785,8 +791,11 @@ const useLimitPrice = ({
 
   // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
-    () => price.quo(spotPrice).sub(new Dec(1)),
-    [price, spotPrice]
+    () =>
+      !!manualPercentAdjusted
+        ? new Dec(manualPercentAdjusted).quo(new Dec(100))
+        : price.quo(spotPrice).sub(new Dec(1)),
+    [price, spotPrice, manualPercentAdjusted]
   );
 
   // If the user is inputting a price that crosses over the spot price
