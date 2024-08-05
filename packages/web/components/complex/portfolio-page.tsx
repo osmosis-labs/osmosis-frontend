@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
 
 import { Icon } from "~/components/assets";
+import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import {
   useDimension,
@@ -51,6 +52,17 @@ export const PortfolioPage: FunctionComponent = () => {
         },
       }
     );
+
+  const { data: allocation, isLoading: isLoadingAllocation } =
+    api.local.portfolio.getAllocation.useQuery(
+      {
+        address: wallet?.address ?? "",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      }
+    );
+
   const userHasNoAssets = totalValue && totalValue.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
@@ -135,6 +147,11 @@ export const PortfolioPage: FunctionComponent = () => {
           </Tab.Group>
         ) : isWalletLoading ? null : (
           <WalletDisconnectedSplash />
+        )}
+      </section>
+      <section className="w-full">
+        {!isLoadingAllocation && !userHasNoAssets && (
+          <Allocation allocation={allocation} />
         )}
       </section>
     </main>
@@ -374,6 +391,7 @@ function useUserPositionsData(address: string | undefined) {
         },
       }
     );
+
   const hasPositions = Boolean(positions?.length);
 
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =

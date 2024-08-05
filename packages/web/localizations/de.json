@@ -325,7 +325,16 @@
     "noAssets": "Sie haben keine Guthaben auf {osmosis}",
     "getStarted": "Zahlen Sie Guthaben ein, um loszulegen",
     "noPositions": "Sie haben keine Positionen",
-    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools"
+    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools",
+    "allocation": "Zuweisung",
+    "available": "Verfügbar",
+    "staked": "Abgesteckt",
+    "unstaking": "Aufheben der Absteckung",
+    "unclaimedRewards": "Nicht beanspruchte Belohnungen",
+    "pooled": "Gepoolt",
+    "other": "Andere",
+    "all": "Alle",
+    "assets": "Vermögenswerte"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
