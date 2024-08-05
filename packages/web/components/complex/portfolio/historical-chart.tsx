@@ -29,6 +29,7 @@ export const PortfolioHistoricalChart = ({
   data,
   isFetched,
   setDataPoint,
+  resetDataPoint,
   range,
   setRange,
   totalPriceChange,
@@ -38,6 +39,7 @@ export const PortfolioHistoricalChart = ({
   data?: AreaData<Time>[];
   isFetched: boolean;
   setDataPoint: (point: DataPoint) => void;
+  resetDataPoint: () => void;
   range: Range;
   setRange: (range: Range) => void;
   totalPriceChange: number;
@@ -60,13 +62,7 @@ export const PortfolioHistoricalChart = ({
             data={data as AreaData<Time>[]}
             onPointerHover={(value, time) => setDataPoint({ value, time })}
             style={getChartStyle(totalPriceChange)}
-            onPointerOut={() => {
-              console.log("onPointerOut: ", totalValue);
-              setDataPoint({
-                value: +totalValue.toDec().toString(),
-                time: undefined,
-              });
-            }}
+            onPointerOut={resetDataPoint}
           />
         )}
       </div>

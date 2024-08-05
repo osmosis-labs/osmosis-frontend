@@ -59,6 +59,11 @@ const calculatePortfolioPerformance = (
   };
 };
 
+const initialDataPoint = {
+  time: dayjs().unix() as Time,
+  value: 0,
+};
+
 export const AssetsOverview: FunctionComponent<
   {
     totalValue?: PricePretty;
@@ -78,10 +83,7 @@ export const AssetsOverview: FunctionComponent<
   const [dataPoint, setDataPoint] = useState<{
     time?: Time;
     value?: number;
-  }>({
-    time: dayjs().unix() as Time,
-    value: 0,
-  });
+  }>(initialDataPoint);
 
   console.log("dataPoint: ", dataPoint);
 
@@ -201,6 +203,7 @@ export const AssetsOverview: FunctionComponent<
             totalPriceChange={totalPriceChange}
             error={error}
             totalValue={totalValue}
+            resetDataPoint={() => setDataPoint(initialDataPoint)}
           />
         </>
       ) : (
