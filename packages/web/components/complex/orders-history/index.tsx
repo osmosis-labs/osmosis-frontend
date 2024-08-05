@@ -18,7 +18,10 @@ import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import {
+  useOrderbookAllActiveOrders,
+  useOrderbookClaimableOrders,
+} from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
 export const OrderHistory = observer(() => {
@@ -42,12 +45,9 @@ export const OrderHistory = observer(() => {
     pageSize: 10,
   });
 
-  // const { claimAllOrders } = useOrderbookClaimableOrders({
-  //   userAddress: wallet?.address ?? "",
-  // });
-  const claimAllOrders = useCallback(() => {
-    console.log("claimAllOrders");
-  }, []);
+  const { claimAllOrders } = useOrderbookClaimableOrders({
+    userAddress: wallet?.address ?? "",
+  });
 
   const tableData: OrderCellData[] = useMemo(() => {
     return orders.map((o) => ({
