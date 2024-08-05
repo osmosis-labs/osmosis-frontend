@@ -66,12 +66,11 @@ export function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
-const allocationLimit = 5;
-
 export function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
-  category: "total-assets" | "user-balances"
+  category: "total-assets" | "user-balances",
+  allocationLimit
 ) {
   const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
@@ -123,9 +122,11 @@ export function calculatePercentAndFiatValues(
 export async function getAllocation({
   address,
   assetLists,
+  allocationLimit = 5,
 }: {
   address: string;
   assetLists: AssetList[];
+  allocationLimit?: number;
 }): Promise<GetAllocationResponse> {
   const data = await queryAllocation({
     address,
@@ -137,13 +138,15 @@ export async function getAllocation({
   const assets = calculatePercentAndFiatValues(
     categories,
     assetLists,
-    "total-assets"
+    "total-assets",
+    allocationLimit
   );
 
   const available = calculatePercentAndFiatValues(
     categories,
     assetLists,
-    "user-balances"
+    "user-balances",
+    allocationLimit
   );
 
   return {
