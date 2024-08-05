@@ -64,21 +64,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   useEffect(() => {
     if (inputMode === InputMode.Price && !priceState.priceLocked) {
       const formattedPrice = formatPretty(
-        priceState.priceFiat,
-        getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
-      )
-        .replace("$", "")
-        .replace(/,/g, "");
+        priceState.spotPrice,
+        getPriceExtendedFormatOptions(priceState.spotPrice)
+      ).replace(/,/g, "");
       priceState._setPriceUnsafe(formattedPrice);
       priceState._setPercentAdjustedUnsafe("0");
     }
 
     if (inputMode === InputMode.Percentage) {
-      console.log(
-        "UPDATING PRICE",
-        priceState.spotPrice.toString(),
-        priceState.priceLocked
-      );
       priceState.setPriceAsPercentageOfSpotPrice(
         new Dec(
           !!priceState.manualPercentAdjusted
