@@ -16,6 +16,7 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -615,13 +616,40 @@ const useLimitPrice = ({
     { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
   );
 
-  const [orderPrice, setOrderPrice] = useState("");
-  const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
+  const [orderPrice, setOrderPrice] = useState("0");
+  const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
 
   // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
-    return assetPrice ? assetPrice.toDec() : new Dec(1);
+    return assetPrice
+      ? new Dec(
+          formatPretty(
+            assetPrice.toDec(),
+            getPriceExtendedFormatOptions(assetPrice.toDec())
+          ).replace(",", "")
+        )
+      : new Dec(1);
   }, [assetPrice]);
+
+  const setPriceAsPercentageOfSpotPrice = useCallback(
+    (percent: Dec, lockPrice = true) => {
+      const percentAdjusted =
+        orderDirection === "bid"
+          ? // Adjust negatively for bid orders
+            new Dec(1).sub(percent)
+          : // Adjust positively for ask orders
+            new Dec(1).add(percent);
+      const newPrice = spotPrice.mul(percentAdjusted);
+      setOrderPrice(
+        formatPretty(newPrice, getPriceExtendedFormatOptions(newPrice)).replace(
+          ",",
+          ""
+        )
+      );
+      setPriceLock(lockPrice);
+    },
+    [setOrderPrice, orderDirection, spotPrice]
+  );
 
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
@@ -645,9 +673,26 @@ const useLimitPrice = ({
 
       if (price.length === 0 || newPrice.isZero()) {
         setManualPercentAdjusted("");
+        return;
       }
+
+      const manualPrice = new Dec(price);
+      const percentAdjusted = manualPrice
+        .quo(spotPrice)
+        .sub(new Dec(1))
+        .mul(new Dec(100));
+
+      setManualPercentAdjusted(
+        percentAdjusted.isZero() || manualPrice.isZero()
+          ? "0"
+          : trimPlaceholderZeros(
+              formatPretty(percentAdjusted.abs(), {
+                maxDecimals: 3,
+              }).toString()
+            )
+      );
     },
-    [setOrderPrice]
+    [setOrderPrice, spotPrice]
   );
 
   // Adjusts the percentage for placing the order.
@@ -685,8 +730,18 @@ const useLimitPrice = ({
       }
 
       setManualPercentAdjusted(percentAdjusted);
+
+      if (!percentAdjusted) {
+        setPriceAsPercentageOfSpotPrice(new Dec(0), false);
+        return;
+      }
+
+      setPriceAsPercentageOfSpotPrice(
+        new Dec(percentAdjusted).quo(new Dec(100)),
+        false
+      );
     },
-    [setManualPercentAdjusted, orderDirection]
+    [setManualPercentAdjusted, orderDirection, setPriceAsPercentageOfSpotPrice]
   );
 
   // Whether the user's manual order price is a valid price
@@ -744,7 +799,7 @@ const useLimitPrice = ({
   }, [price]);
 
   const reset = useCallback(() => {
-    setManualPercentAdjusted("");
+    setManualPercentAdjusted("0");
     setOrderPrice("");
     setPriceLock(false);
   }, []);
@@ -756,22 +811,6 @@ const useLimitPrice = ({
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
   }, [isValidInputPrice, spotPrice]);
-
-  const setPriceAsPercentageOfSpotPrice = useCallback(
-    (percent: Dec, lockPrice = true) => {
-      const percentAdjusted =
-        orderDirection === "bid"
-          ? // Adjust negatively for bid orders
-            new Dec(1).sub(percent)
-          : // Adjust positively for ask orders
-            new Dec(1).add(percent);
-      const newPrice = spotPrice.mul(percentAdjusted).toString();
-      const [sigFigs, decimals] = newPrice.split(".");
-      setOrderPrice(sigFigs + "." + decimals.slice(0, 6));
-      setPriceLock(lockPrice);
-    },
-    [setOrderPrice, orderDirection, spotPrice]
-  );
 
   return {
     spotPrice,

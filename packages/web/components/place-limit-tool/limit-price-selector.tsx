@@ -54,42 +54,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     if (input) input.focus();
   }, [inputMode, input, priceState]);
 
-  // Adjust the percentage adjusted when the spot price changes and user is inputting a price
-  useEffect(() => {
-    if (
-      priceState.spotPrice &&
-      priceState.orderPrice.length > 0 &&
-      inputMode === InputMode.Price
-    ) {
-      const manualPrice = new Dec(priceState.orderPrice);
-      const percentAdjusted = manualPrice
-        .quo(priceState.spotPrice)
-        .sub(new Dec(1))
-        .mul(new Dec(100));
-
-      priceState._setPercentAdjustedUnsafe(
-        percentAdjusted.isZero() || manualPrice.isZero()
-          ? ""
-          : formatPretty(percentAdjusted.abs(), {
-              maxDecimals: 3,
-            }).toString()
-      );
-    }
-
-    if (priceState.spotPrice && inputMode === InputMode.Percentage) {
-      priceState.setPriceAsPercentageOfSpotPrice(
-        new Dec(priceState.manualPercentAdjusted).quo(new Dec(100)),
-        false
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    priceState.spotPrice,
-    priceState.orderPrice,
-    inputMode,
-    priceState.manualPercentAdjusted,
-  ]);
-
+  // Adjust order price as spot price changes until user inputs a price
   useEffect(() => {
     if (inputMode === InputMode.Price && !priceState.priceLocked) {
       const formattedPrice = formatPretty(
