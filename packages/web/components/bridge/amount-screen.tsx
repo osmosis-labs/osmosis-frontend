@@ -593,6 +593,10 @@ export const AmountScreen = observer(
           );
     }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
 
+    /**
+     * Only check the chain and connect the wallet if the quote is enabled,
+     * the asset transfers are not disabled, and the chain is set.
+     */
     useEffect(() => {
       const chain = direction === "deposit" ? fromChain : toChain;
       if (chain && quote.enabled && !areAssetTransfersDisabled) {
