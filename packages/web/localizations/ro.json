@@ -321,7 +321,16 @@
     "noAssets": "Nu aveți solduri pe {osmosis}",
     "getStarted": "Depuneți active pentru a începe",
     "noPositions": "Nu ai posturi",
-    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate",
+    "allocation": "Alocare",
+    "available": "Disponibil",
+    "staked": "Mizat",
+    "unstaking": "Dezlegarea",
+    "unclaimedRewards": "Recompense nerevendicate",
+    "pooled": "Adunate",
+    "other": "Alte",
+    "all": "Toate",
+    "assets": "Active"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {

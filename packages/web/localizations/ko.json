@@ -321,7 +321,16 @@
     "noAssets": "{osmosis} 에 잔액이 없습니다.",
     "getStarted": "시작하려면 자산을 예치하세요",
     "noPositions": "직책이 없습니다.",
-    "unlockPotential": "귀하의 수익 잠재력을 최대한 활용하고 자산을 유동성 풀과 함께 활용하세요"
+    "unlockPotential": "귀하의 수익 잠재력을 최대한 활용하고 자산을 유동성 풀과 함께 활용하세요",
+    "allocation": "배당",
+    "available": "사용 가능",
+    "staked": "스테이킹됨",
+    "unstaking": "언스테이킹",
+    "unclaimedRewards": "청구하지 않은 보상",
+    "pooled": "풀링됨",
+    "other": "다른",
+    "all": "모두",
+    "assets": "자산"
   },
   "buyTokens": "토큰 구매",
   "components": {

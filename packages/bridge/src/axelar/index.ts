@@ -568,7 +568,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           });
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: depositAddress,
+        chainId: toChain.chainId.toString(),
       });
 
       const ibcAsset = getAssetFromAssetList({

@@ -321,7 +321,16 @@
     "noAssets": "{osmosis} üzerinde bakiyeniz yok",
     "getStarted": "Başlamak için varlık yatırın",
     "noPositions": "Hiç pozisyonunuz yok",
-    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın",
+    "allocation": "Paylaştırma",
+    "available": "Mevcut",
+    "staked": "Bahis",
+    "unstaking": "Stake kaldırma",
+    "unclaimedRewards": "Talep edilmeyen ödüller",
+    "pooled": "havuzlanmış",
+    "other": "Diğer",
+    "all": "Tüm",
+    "assets": "Varlıklar"
   },
   "buyTokens": "jeton satın al",
   "components": {

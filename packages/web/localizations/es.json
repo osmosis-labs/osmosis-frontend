@@ -321,7 +321,16 @@
     "noAssets": "No tienes saldos en {osmosis}",
     "getStarted": "Deposite activos para comenzar",
     "noPositions": "no tienes posiciones",
-    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez"
+    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez",
+    "allocation": "Asignación",
+    "available": "Disponible",
+    "staked": "apostado",
+    "unstaking": "Desestacar",
+    "unclaimedRewards": "Recompensas no reclamadas",
+    "pooled": "agrupado",
+    "other": "Otro",
+    "all": "Todo",
+    "assets": "Activos"
   },
   "buyTokens": "Comprar fichas",
   "components": {

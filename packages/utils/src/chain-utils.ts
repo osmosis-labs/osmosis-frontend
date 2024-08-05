@@ -8,6 +8,10 @@ export function getChain<Chain extends ChainType>({
 }: {
   chainId?: string;
   chainName?: string;
+  /**
+   * WARNING: bech32 prefix may be the same across different chains,
+   * retulting in the use of an unintended chain.
+   */
   destinationAddress?: string;
   chainList: Chain[];
 }): Chain | undefined {

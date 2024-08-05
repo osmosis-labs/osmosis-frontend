@@ -152,6 +152,7 @@ function getPoolDenomsFromSidecarPool({ chain_model, balances }: SidecarPool) {
 function makePoolRawResponseFromChainPool(
   chainPool: SidecarPool["chain_model"]
 ): PoolRawResponse {
+  // CL pools
   if ("current_tick_liquidity" in chainPool) {
     return {
       ...chainPool,
@@ -162,6 +163,7 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
+  // Stable pools
   if ("scaling_factors" in chainPool) {
     return {
       ...chainPool,
@@ -172,13 +174,17 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
-  if ("id" in chainPool) {
+  // Weighted pools
+  if ("total_weight" in chainPool) {
     return {
       ...chainPool,
       id: chainPool.id?.toString(),
+      // SQS diverges from the node model by returning total_weight as a string decimal instead of string integer
+      total_weight: chainPool.total_weight.split(".")[0],
     } as PoolRawResponse;
   }
 
+  // Cosmwasm pools
   return {
     ...chainPool,
     pool_id: chainPool.pool_id?.toString(),
