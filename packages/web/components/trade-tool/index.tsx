@@ -40,7 +40,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
 
     const { orders, refetch } = useOrderbookAllActiveOrders({
       userAddress: wallet?.address ?? "",
-      pageSize: 100,
+      pageSize: 10,
       refetchInterval: 4000,
     });
 

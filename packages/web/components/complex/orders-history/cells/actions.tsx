@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 
 import type { OrderCellData } from "~/components/complex/orders-history/columns";
+import { Spinner } from "~/components/loaders";
 import { t } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -118,7 +119,8 @@ const CancelButton = observer(({ order }: { order: OrderCellData }) => {
       onClick={cancel}
       disabled={cancelling}
     >
-      <span className="body2 text-wosmongton-200">
+      <span className="body2 flex items-center justify-center text-wosmongton-200">
+        {cancelling && <Spinner className="mr-2 h-2 w-2" />}
         {t("limitOrders.cancel")}
       </span>
     </button>
