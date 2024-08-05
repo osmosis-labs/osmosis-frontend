@@ -34,8 +34,6 @@ const calculatePortfolioPerformance = (
   selectedDifferencePricePretty: PricePretty;
   totalPriceChange: number;
 } => {
-  console.log("dataPoint", dataPoint);
-
   const openingPrice = data?.[0]?.value;
   const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
   const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;

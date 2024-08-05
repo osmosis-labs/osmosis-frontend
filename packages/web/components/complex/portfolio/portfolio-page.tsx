@@ -141,7 +141,6 @@ export const PortfolioPage: FunctionComponent = () => {
                 </Tab.Panels>
               )}
             </Tab.Group>
-            )
           </section>
           <section className="w-full">
             {!isLoadingAllocation && !userHasNoAssets && (
