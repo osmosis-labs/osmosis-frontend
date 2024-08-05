@@ -1,4 +1,5 @@
 import { getPortfolioOverTime } from "@osmosis-labs/server";
+import { getAllocation } from "@osmosis-labs/server";
 import { ChartPortfolioOverTimeResponse } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { z } from "zod";
 
@@ -23,4 +24,17 @@ export const portfolioRouter = createTRPCRouter({
         return res;
       }
     ),
+  getAllocation: publicProcedure
+    .input(
+      z.object({
+        address: z.string(),
+      })
+    )
+    .query(async ({ input: { address }, ctx }) => {
+      const res = await getAllocation({
+        address,
+        assetLists: ctx.assetLists,
+      });
+      return res;
+    }),
 });

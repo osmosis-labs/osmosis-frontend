@@ -91,7 +91,7 @@ export const AssetsOverview: FunctionComponent<
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
     error,
-  } = api.edge.portfolio.getPortfolioOverTime.useQuery(
+  } = api.local.portfolio.getPortfolioOverTime.useQuery(
     {
       address,
       range,

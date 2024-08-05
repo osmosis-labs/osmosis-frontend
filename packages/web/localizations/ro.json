@@ -97,6 +97,7 @@
     "onePosition": "1 pozitie",
     "goToPool": "Mergi la piscina #{poolId}"
   },
+  "copied": "Copiat!",
   "app": {
     "banner": {
       "backToOsmosis": "Înapoi la Osmosis",
@@ -220,6 +221,7 @@
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
+      "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
@@ -323,7 +325,16 @@
     "noAssets": "Nu aveți solduri pe {osmosis}",
     "getStarted": "Depuneți active pentru a începe",
     "noPositions": "Nu ai posturi",
-    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate",
+    "allocation": "Alocare",
+    "available": "Disponibil",
+    "staked": "Mizat",
+    "unstaking": "Dezlegarea",
+    "unclaimedRewards": "Recompense nerevendicate",
+    "pooled": "Adunate",
+    "other": "Alte",
+    "all": "Toate",
+    "assets": "Active"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -409,6 +420,7 @@
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
     "startAgain": "Incepe din nou"
   },
+  "estimated": "Estimată",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
     "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
@@ -450,46 +462,7 @@
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
     "new": "NOU",
-    "settings": "Setări",
-    "notifications": "Notificări"
-  },
-  "notifi": {
-    "saveChanges": "Salvează modificările",
-    "unsupportedHistoryTitle": "Notificare neacceptată",
-    "unsupportedHistoryMessage": "Ups! Ceva a mers prost. Vă rugăm să ne anunțați",
-    "getStartedHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "getStartedHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "getStartedHistoryTitle2": "Cum să începeți tranzacționarea",
-    "getStartedHistoryMessage2": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "getStartedHistoryTitle3": "Cum să depuneți fonduri",
-    "getStartedHistoryMessage3": "Aflați cum să depuneți fonduri pe Osmosis",
-    "signupDummyHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "signupDummyHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "signupDummyHistoryTitle2": "Cum se depozitează active",
-    "signupDummyHistoryMessage2": "Aflați cum să transferați fonduri pe Osmosis",
-    "signupDummyHistoryTitle3": "Cum să începeți tranzacționarea",
-    "signupDummyHistoryMessage3": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "outboundTransferHistoryTitle": "Transfer ieșire prin osmoză",
-    "outboundTransferHistoryMessage": "Cantitate",
-    "poolExitedHistoryTitle": "Bazin de osmoză a ieșit",
-    "poolExitedHistoryMessage": "ID-ul piscinei",
-    "poolJoinedHistoryTitle": "S-a alăturat piscinei cu osmoză",
-    "poolJoinedHistoryMessage": "Jeton",
-    "swapHistoryTitle": "Schimb de osmoză confirmat",
-    "swapHistoryMessage": "schimbat la",
-    "emptyHistoryTitle": "Fara titlu",
-    "emptyHistoryMessage": "Niciun mesaj",
-    "assetReceivedHistoryTitle": "Activ primit",
-    "assetReceivedHistoryMessage": "Cantitate",
-    "positionOutOfRangeHistoryTitle": "Poziție în afara intervalului",
-    "positionOutOfRangeHistoryMessage": "Poziția dvs. de LP este în afara intervalului",
-    "signupPageTitle": "Notificările sunt acum disponibile.",
-    "signupPageMessage": "Nu ratați niciodată o actualizare importantă din nou, de la noi listări de simboluri până la stări critice ale pozițiilor.",
-    "signupPageButton": "Activați notificările",
-    "loadMore": "Incarca mai mult",
-    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
-    "discardButton": "Renunțați la modificări",
-    "clearAllHistory": "Curata tot"
+    "settings": "Setări"
   },
   "oneClickTrading": {
     "toast": {
@@ -679,9 +652,7 @@
       "total": "DAE totală",
       "explainer": {
         "title": "Cum se calculează APR-urile?",
-        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
-        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
-        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+        "subtitle": "Toate APR sunt estimări bazate pe ultimele 7 zile. Pe măsură ce volumul comerțului și prețul fluctuează, DAE se va modifica în consecință. Intervalul afișat se bazează pe următoarele.<inlang-LineFeed>\nPentru piscinele supraalimentate, limita inferioară se referă la poziții conservatoare, de gamă completă. Acest lucru poate duce la o DAE extrem de scăzută, deoarece lichiditatea este răspândită în toate tranzacțiile. Limita superioară este calculată pentru o poziție cu o concentrație de 30% în jurul prețului spot. Rețineți că o poziție nu va mai câștiga dacă iese din interval."
       }
     }
   },
@@ -911,16 +882,19 @@
     "from": "De la",
     "to": "Către",
     "max": "Max",
+    "pendingApproval": "Aprobare in asteptare",
     "available": "disponibil",
     "connectTo": "Conectați-vă la {network}",
     "transferWith": "Transfer cu",
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",
     "transfer": "Transferați {denom}",
+    "changeNetworkInWallet": "Schimbați rețeaua în portofel",
     "receive": "Primiți {denom}",
-    "selectDepositWallet": "Selectați portofelul de depozit",
-    "selectWithdrawWallet": "Selectați Retrage portofel",
-    "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "selectDepositWallet": "Selectați portofelul {network}",
+    "selectWithdrawWallet": "Selectați portofelul {network}",
+    "depositAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "withdrawAssetDescription": "Când retrageți anumite active, puteți alege ce versiune a activului doriți să primiți în rețeaua de destinație.",
     "estimatingTime": "Estimarea timpului",
     "calculatingFees": "Calcularea taxelor",
     "reviewDeposit": "Verificați depozitul",
@@ -946,8 +920,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "descriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
     },
@@ -960,8 +940,11 @@
       "title": "Selecteaza reteaua",
       "searchPlaceholder": "Căutați rețele acceptate"
     },
-    "pendingWithdraw": "În așteptarea retragerii",
-    "pendingDeposit": "Depunerea în așteptare",
+    "pendingWithdraw": "Retragere în curs",
+    "pendingDeposit": "Depozit în curs",
+    "amountToChain": "{amount} la {chain}",
+    "amountFromChain": "{amount} din { {chain}",
+    "amountFailedToWithdraw": "{amount} Retragere eșuată",
     "completedWithdraw": "Retragere finalizată",
     "completedDeposit": "Depozit finalizat",
     "failedWithdraw": "Retragerea a eșuat",
@@ -976,7 +959,6 @@
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
     "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
-    "connect": "Conectați",
     "confirm": "A confirma",
     "cancel": "Anulare",
     "confirmDepositTo": "Confirmați depunerea către {chain}",
@@ -991,12 +973,12 @@
     "enterAddress": "Introduceți o adresă",
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
-    "acknowledgement": "Recunosc că sunt pe deplin responsabil pentru sfârșitul lumii etc.",
+    "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
+    "transferWithNoun": "Transferați cu {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "externalTransferSplash": "Pentru a transfera {denom} de la {networkA} la {networkB} , vă rugăm să utilizați {service} .",
     "openNoun": "Deschideți {noun}"
   },
   "unknownError": "Eroare necunoscuta",

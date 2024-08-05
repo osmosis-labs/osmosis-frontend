@@ -70,6 +70,8 @@ export async function getCoinGeckoPricesBatchLoader({
   });
 }
 
+/** NOTE: Cached for 1 minute
+ *  Gets batched prices from CoinGecko by CoinGecko ID. */
 export async function getCoingeckoPrice({
   coinGeckoId,
   currency,

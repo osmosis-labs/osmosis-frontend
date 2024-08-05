@@ -48,7 +48,7 @@ export type QuoteStdFee = {
      * Indicates that the simulated transaction spends the account's balance required for the fee.
      * Likely, the input spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[];
 };
 
@@ -77,6 +77,7 @@ export async function estimateGasFee({
   bech32Address,
   gasMultiplier = 1.5,
   onlyDefaultFeeDenom,
+  fallbackGasLimit,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -88,6 +89,11 @@ export async function estimateGasFee({
    *  Default: `1.5` */
   gasMultiplier?: number;
 
+  /**
+   * If tx simulation fails for some reason, this can be provided as a fallback gas limit.
+   */
+  fallbackGasLimit?: number;
+
   sendCoin?: { denom: string; amount: string };
 
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
@@ -98,6 +104,15 @@ export async function estimateGasFee({
     chainList,
     body,
     bech32Address,
+  }).catch((e) => {
+    if (fallbackGasLimit) {
+      console.warn(
+        "Using fallback gas limit",
+        e instanceof Error ? e.message : e
+      );
+      return { gasUsed: fallbackGasLimit, coinsSpent: [] };
+    }
+    throw e;
   });
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
@@ -419,8 +434,8 @@ export async function getGasFeeAmount({
      * then we are missing balance to pay for the transaction. In this case,
      * we need to find an alternative token or subtract this amount from the input.
      */
-    const isBalanceNeededForTx = new Dec(spentAmount).gt(
-      new Dec(amount).sub(new Dec(feeAmount))
+    const isBalanceNeededForTx = new Int(spentAmount).gt(
+      new Int(amount).sub(new Int(feeAmount))
     );
 
     /**

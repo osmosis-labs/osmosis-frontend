@@ -7,6 +7,7 @@ import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
@@ -43,6 +44,16 @@ export const PortfolioPage: FunctionComponent = () => {
       }
     );
   const userHasNoAssets = totalValueData && totalValueData.toDec().isZero();
+
+  const { data: allocation, isLoading: isLoadingAllocation } =
+    api.local.portfolio.getAllocation.useQuery(
+      {
+        address: wallet?.address ?? "",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      }
+    );
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -126,6 +137,11 @@ export const PortfolioPage: FunctionComponent = () => {
           </Tab.Group>
         ) : isWalletLoading ? null : (
           <WalletDisconnectedSplash />
+        )}
+      </section>
+      <section className="w-full">
+        {!isLoadingAllocation && !userHasNoAssets && (
+          <Allocation allocation={allocation} />
         )}
       </section>
     </main>
@@ -255,6 +271,7 @@ function useUserPositionsData(address: string | undefined) {
         },
       }
     );
+
   const hasPositions = Boolean(positions?.length);
 
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =

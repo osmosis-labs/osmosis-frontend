@@ -1,3 +1,4 @@
+export * from "../sidecar/allocation";
 export * from "./earn";
 export * from "./filtered-pools";
 export * from "./market-cap";

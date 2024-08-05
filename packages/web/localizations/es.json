@@ -97,6 +97,7 @@
     "onePosition": "1 posición",
     "goToPool": "Ir a la piscina #{poolId}"
   },
+  "copied": "¡Copiado!",
   "app": {
     "banner": {
       "backToOsmosis": "Regresar a Osmosis",
@@ -220,6 +221,7 @@
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
       "approving": "Aprobando...",
+      "approveInWallet": "Aprobar en billetera",
       "enterAddress": "dirección {network}",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
@@ -323,7 +325,16 @@
     "noAssets": "No tienes saldos en {osmosis}",
     "getStarted": "Deposite activos para comenzar",
     "noPositions": "no tienes posiciones",
-    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez"
+    "unlockPotential": "Libere todo su potencial de ganancias y ponga sus activos a trabajar con fondos de liquidez",
+    "allocation": "Asignación",
+    "available": "Disponible",
+    "staked": "apostado",
+    "unstaking": "Desestacar",
+    "unclaimedRewards": "Recompensas no reclamadas",
+    "pooled": "agrupado",
+    "other": "Otro",
+    "all": "Todo",
+    "assets": "Activos"
   },
   "buyTokens": "Comprar fichas",
   "components": {
@@ -409,6 +420,7 @@
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Por favor, inténtelo de nuevo más tarde.",
     "startAgain": "Empezar de nuevo"
   },
+  "estimated": "Estimado",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
     "simplifiedExperience": "¡Tu experiencia ha sido simplificada!",
@@ -450,46 +462,7 @@
     "levanaSubtext": "Desarrollado por Levana",
     "more": "Más",
     "new": "NUEVO",
-    "settings": "Ajustes",
-    "notifications": "Notificaciones"
-  },
-  "notifi": {
-    "saveChanges": "Guardar cambios",
-    "unsupportedHistoryTitle": "Notificación no admitida",
-    "unsupportedHistoryMessage": "Huy! Algo salió mal. Por favor déjanos saber",
-    "getStartedHistoryTitle1": "Compra tokens para empezar",
-    "getStartedHistoryMessage1": "Adquiera OSMO para comenzar a operar",
-    "getStartedHistoryTitle2": "Cómo empezar a operar",
-    "getStartedHistoryMessage2": "Este rápido tutorial lo hará operar en minutos",
-    "getStartedHistoryTitle3": "Cómo depositar fondos",
-    "getStartedHistoryMessage3": "Aprende a depositar fondos en Osmosis",
-    "signupDummyHistoryTitle1": "Compra tokens para empezar",
-    "signupDummyHistoryMessage1": "Adquiera OSMO para comenzar a operar",
-    "signupDummyHistoryTitle2": "Cómo depositar activos",
-    "signupDummyHistoryMessage2": "Aprende a transferir fondos a Osmosis",
-    "signupDummyHistoryTitle3": "Cómo empezar a operar",
-    "signupDummyHistoryMessage3": "Este rápido tutorial lo hará operar en minutos",
-    "outboundTransferHistoryTitle": "Transferencia de salida por ósmosis",
-    "outboundTransferHistoryMessage": "Cantidad",
-    "poolExitedHistoryTitle": "Grupo de ósmosis cerrado",
-    "poolExitedHistoryMessage": "Identificación del grupo",
-    "poolJoinedHistoryTitle": "Piscina de ósmosis unida",
-    "poolJoinedHistoryMessage": "Simbólico",
-    "swapHistoryTitle": "Intercambio de ósmosis confirmado",
-    "swapHistoryMessage": "cambiado a",
-    "emptyHistoryTitle": "Sin título",
-    "emptyHistoryMessage": "Sin mensaje",
-    "assetReceivedHistoryTitle": "Activo recibido",
-    "assetReceivedHistoryMessage": "Cantidad",
-    "positionOutOfRangeHistoryTitle": "Posición fuera de rango",
-    "positionOutOfRangeHistoryMessage": "Su posición de LP está fuera de rango",
-    "signupPageTitle": "Las notificaciones ya están disponibles.",
-    "signupPageMessage": "No vuelva a perderse una actualización importante, desde nuevos listados de tokens hasta estados de posiciones críticas.",
-    "signupPageButton": "Permitir notificaciones",
-    "loadMore": "Carga más",
-    "unsavedChangeModalInfo": "Tiene cambios sin guardar. Le gustaría",
-    "discardButton": "Descartar los cambios",
-    "clearAllHistory": "Limpiar todo"
+    "settings": "Ajustes"
   },
   "oneClickTrading": {
     "toast": {
@@ -679,9 +652,7 @@
       "total": "TAE total",
       "explainer": {
         "title": "¿Cómo se calculan las APR?",
-        "p1": "Todas las APR son estimaciones. Se calculan tomando la APR promedio de liquidez en el pool.",
-        "p2": "En grupos sobrealimentados, la mayoría de los usuarios recibirán recompensas más bajas. Esto se debe a posiciones más concentradas, que captan una mayor parte de los incentivos.",
-        "p3": "Para mantener las estimaciones conservadoras, todas las APR se dividen por un factor de 3."
+        "subtitle": "Todas las APR son estimaciones basadas en los últimos 7 días. A medida que el volumen comercial y el precio fluctúen, la APR cambiará en consecuencia. El rango mostrado se basa en lo siguiente.<inlang-LineFeed>\nPara piscinas sobrealimentadas, el límite inferior hace referencia a posiciones conservadoras de rango completo. Esto puede resultar en una APR extremadamente baja ya que la liquidez se distribuye entre todas las operaciones. El límite superior se calcula para una posición con una concentración del 30% alrededor del precio spot. Tenga en cuenta que una posición ya no será rentable si se sale del rango."
       }
     }
   },
@@ -911,16 +882,19 @@
     "from": "De",
     "to": "A",
     "max": "máx.",
+    "pendingApproval": "Aprobación pendiente",
     "available": "disponible",
     "connectTo": "Conéctese a {network}",
     "transferWith": "Transferir con",
     "transferTo": "Transferir a",
     "receiveAsset": "Recibir activo",
     "transfer": "Transferir {denom}",
+    "changeNetworkInWallet": "Cambiar red en billetera",
     "receive": "Recibir {denom}",
-    "selectDepositWallet": "Seleccionar billetera de depósito",
-    "selectWithdrawWallet": "Seleccione retirar billetera",
-    "receiveAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
+    "selectDepositWallet": "Seleccione la billetera {network}",
+    "selectWithdrawWallet": "Seleccione la billetera {network}",
+    "depositAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
+    "withdrawAssetDescription": "Cuando retira ciertos activos, puede elegir qué versión del activo desea recibir en la red de destino.",
     "estimatingTime": "tiempo estimado",
     "calculatingFees": "Calcular tarifas",
     "reviewDeposit": "Revisar depósito",
@@ -946,8 +920,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",
       "titleWithdraw": "Más opciones de retiro",
-      "descriptionDeposit": "Elija entre los siguientes proveedores alternativos para depositar (también conocido como “puente”) su {asset} a {chain} .",
-      "descriptionWithdraw": "Elija entre los siguientes proveedores alternativos para retirar (también conocido como “puente”) su {asset} a {chain} .",
+      "depositDescriptionUnknown": "Para depositar {denom} , utilice un proveedor alternativo.",
+      "withdrawDescriptionUnknown": "Para retirar {denom} , utilice un proveedor alternativo.",
+      "singleDescriptionDeposit": "Para depositar {denom} desde {networkA} a {networkB} , utilice {service} .",
+      "singleDescriptionWithdraw": "Para retirar {denom} de {networkA} a {networkB} , utilice {service} .",
+      "descriptionDeposit": "Para depositar {denom} desde {networkA} a {networkB} , utilice uno de los siguientes proveedores alternativos.",
+      "descriptionWithdraw": "Para retirar {denom} de {networkA} a {networkB} , utilice uno de los siguientes proveedores alternativos.",
+      "chooseAnAlternativeProviderDeposit": "Elija un proveedor alternativo para depositar {asset} de {fromChain} a {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Elija un proveedor alternativo para retirar {asset} de {fromChain} a {toChain}",
       "depositWith": "Depositar con",
       "withdrawWith": "Retirarse con"
     },
@@ -960,8 +940,11 @@
       "title": "Seleccione la red",
       "searchPlaceholder": "Buscar redes compatibles"
     },
-    "pendingWithdraw": "A la espera de Retiro",
-    "pendingDeposit": "Deposito pendiente",
+    "pendingWithdraw": "Retiro en curso",
+    "pendingDeposit": "Depósito en curso",
+    "amountToChain": "{amount} a {chain}",
+    "amountFromChain": "{amount} de {chain}",
+    "amountFailedToWithdraw": "{amount} No se pudo retirar",
     "completedWithdraw": "Retiro completado",
     "completedDeposit": "Depósito completado",
     "failedWithdraw": "Retiro fallido",
@@ -976,7 +959,6 @@
     "estimatedAmountReceived": "Cantidad estimada recibida",
     "slippageWarning": "El resultado esperado para esta transacción es significativamente menor que el monto de entrada, lo que puede resultar en recibir un monto final diferente al esperado.",
     "priceImpactWarning": "El impacto en el precio de esta transacción es {priceImpact} , lo que puede influir en el importe final recibido.",
-    "connect": "Conectar",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
     "confirmDepositTo": "Confirmar depósito a {chain}",
@@ -991,12 +973,12 @@
     "enterAddress": "Introduce una direccion",
     "sendToAnotherAddress": "Enviar a otra dirección",
     "invalidAddress": "Dirección {chain} no válida",
-    "acknowledgement": "Reconozco que soy totalmente responsable del fin del mundo, etc.",
+    "acknowledgement": "Reconozco y acepto los riesgos de pérdida de fondos si proporciono una dirección de destinatario incorrecta o intento retirar dinero a un intercambio.",
     "done": "Hecho",
     "transferFrom": "Transferir desde {noun}",
+    "transferWithNoun": "Transferir con {noun}",
     "risks": "La unión conlleva riesgos.",
     "learnMore": "Aprende más",
-    "externalTransferSplash": "Para transferir {denom} de {networkA} a {networkB} , utilice {service} .",
     "openNoun": "Abrir {noun}"
   },
   "unknownError": "Error desconocido",

@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
 import React, { FunctionComponent, useMemo } from "react";
 
@@ -15,7 +14,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { SupportedChain } from "./use-bridges-supported-assets";
 
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   toChain: BridgeChainWithDisplayInfo;
   chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -81,7 +80,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
         )}
 
         <div
-          className={classNames({
+          className={classNames("py-4", {
             // Hide it to not unmount the function
             hidden: isSwitchingEvmChain,
           })}
@@ -127,11 +126,6 @@ export const BridgeNetworkSelectModal: FunctionComponent<
                       {chain.prettyName}
                     </span>
                   </div>
-                  {shouldSwitchEvmChain && (
-                    <span className="body1 md:body2 text-wosmongton-300">
-                      {t("transfer.connect")}
-                    </span>
-                  )}
                 </button>
               );
             })}

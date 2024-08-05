@@ -12,9 +12,8 @@ export interface BridgeProviderContext {
   assetLists: AssetList[];
   chainList: Chain[];
 
-  /** Provides current timeout height for a chain of the ID
-   *  parsed from the bech32 config of the given destinationAddress. */
-  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+  /** Provides current timeout height for a chain of given chainId. */
+  getTimeoutHeight(params: { chainId: string }): Promise<{
     revisionNumber: string | undefined;
     revisionHeight: string;
   }>;
@@ -198,6 +197,9 @@ export const bridgeAssetSchema = z.object({
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
+
+  /** CoinGecko ID for getting prices. */
+  coinGeckoId: z.string().optional(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
@@ -248,23 +250,23 @@ export const getBridgeExternalUrlSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: bridgeChainSchema,
+  fromChain: bridgeChainSchema.optional(),
   /**
    * The destination chain information.
    */
-  toChain: bridgeChainSchema,
+  toChain: bridgeChainSchema.optional(),
   /**
    * The asset on the originating chain.
    */
-  fromAsset: bridgeAssetSchema,
+  fromAsset: bridgeAssetSchema.optional(),
   /**
    * The asset on the destination chain.
    */
-  toAsset: bridgeAssetSchema,
+  toAsset: bridgeAssetSchema.optional(),
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: z.string(),
+  toAddress: z.string().optional(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<
@@ -329,6 +331,11 @@ export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
   msgTypeUrl: string;
   msg: Record<string, any>;
+  gasFee?: {
+    gas: string;
+    denom: string;
+    amount: string;
+  };
 }
 
 interface QRCodeBridgeTransactionRequest {
@@ -349,11 +356,12 @@ export type BridgeCoin = {
   /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
   address: string;
   decimals: number;
+  coinGeckoId?: string;
 };
 
 export interface BridgeQuote {
-  input: Required<BridgeCoin>;
-  expectedOutput: Required<BridgeCoin> & {
+  input: BridgeCoin;
+  expectedOutput: BridgeCoin & {
     /** Percentage represented as string. E.g. 10.0, 95.0 */
     priceImpact: string;
   };

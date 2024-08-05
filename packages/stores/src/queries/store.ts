@@ -11,7 +11,6 @@ import {
   ObservableQueryAccountsUnbondingPositions,
   ObservableQueryConcentratedLiquidityParams,
   ObservableQueryLiquiditiesNetInDirection,
-  ObservableQueryLiquiditiesPerTickRange,
   ObservableQueryLiquidityPositionsById,
 } from "./concentrated-liquidity";
 import { ObservableQueryEpochs } from "./epochs";
@@ -97,7 +96,6 @@ export const OsmosisQueries = {
 export class OsmosisQueriesImpl {
   // concentrated liquidity
   public readonly queryLiquiditiesInNetDirection: DeepReadonly<ObservableQueryLiquiditiesNetInDirection>;
-  public readonly queryLiquiditiesPerTickRange: DeepReadonly<ObservableQueryLiquiditiesPerTickRange>;
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
   public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
   public readonly queryAccountsUnbondingPositions: DeepReadonly<ObservableQueryAccountsUnbondingPositions>;
@@ -188,9 +186,6 @@ export class OsmosisQueriesImpl {
         chainId,
         chainGetter
       );
-
-    this.queryLiquiditiesPerTickRange =
-      new ObservableQueryLiquiditiesPerTickRange(kvStore, chainId, chainGetter);
 
     this.queryLiquidityPositionsById =
       new ObservableQueryLiquidityPositionsById(kvStore, chainId, chainGetter);

@@ -78,8 +78,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -137,17 +136,20 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: input.toAsset.address,
             chainId: input.toChain.chainId,
             address: input.toAsset.address,
+            coinGeckoId: input.toAsset.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: input.toAsset.address,
                 sourceDenom: input.toAsset.address,
                 chainId: input.toChain.chainId,
                 address: input.toAsset.address,
+                coinGeckoId: input.toAsset.coinGeckoId,
               }
             );
           }
@@ -158,6 +160,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               sourceDenom: input.fromAsset.address,
               chainId: input.fromChain.chainId,
               address: input.fromAsset.address,
+              coinGeckoId: input.fromAsset.coinGeckoId,
             },
           });
         }),
@@ -168,18 +171,21 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
+            coinGeckoId: quote.transferFee.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           // it's common for bridge providers to not provide correct denoms
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: feeCoin.address,
                 sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
+                coinGeckoId: quote.transferFee.coinGeckoId,
               }
             );
           }
@@ -193,8 +199,9 @@ export const bridgeTransferRouter = createTRPCRouter({
                 sourceDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
+                coinGeckoId: quote.estimatedGasFee.coinGeckoId,
               },
-            }).catch(() => {
+            }).catch((e) => {
               // it's common for bridge providers to not provide correct denoms
               if (
                 quote.estimatedGasFee &&
@@ -202,12 +209,14 @@ export const bridgeTransferRouter = createTRPCRouter({
               ) {
                 console.warn(
                   "getQuoteByBridge: Failed to get asset price for gas fee",
+                  e,
                   {
                     bridge: input.bridge,
                     coinMinimalDenom: quote.estimatedGasFee.address,
                     sourceDenom: quote.estimatedGasFee.address,
                     chainId: quote.fromChain.chainId,
                     address: quote.estimatedGasFee.address,
+                    coinGeckoId: quote.estimatedGasFee.coinGeckoId,
                   }
                 );
               }
@@ -320,8 +329,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -334,10 +342,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new Error("Invalid bridge provider id: " + input.bridge);
       }
 
-      const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
-
-      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
-      const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
+      const supportedAssets = await bridgeProvider.getSupportedAssets(input);
 
       const assetsByChainId = supportedAssets.reduce<
         Record<
@@ -448,9 +453,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -491,9 +494,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -536,10 +537,10 @@ export const bridgeTransferRouter = createTRPCRouter({
       // add external urls for external interfaces from asset list, as long as not already added
       const assetListFromAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.fromAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
       const assetListToAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.toAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
 
       const externalTransferMethods = (
         assetListFromAsset?.transferMethods.filter(
@@ -566,13 +567,13 @@ export const bridgeTransferRouter = createTRPCRouter({
           }
 
           let urlToAdd: (typeof externalUrls)[number] | undefined =
-            input.fromChain.chainId === "osmosis-1" && withdrawUrl
+            input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],
                   url: withdrawUrl,
                 }
-              : input.toChain.chainId === "osmosis-1" && depositUrl
+              : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],
@@ -585,7 +586,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             urlToAdd &&
             !externalUrls.some(
               ({ urlProviderName, url }) =>
-                urlProviderName === urlToAdd.urlProviderName &&
+                urlProviderName === urlToAdd.urlProviderName ||
                 url.host === urlToAdd.url.host
             )
           ) {
