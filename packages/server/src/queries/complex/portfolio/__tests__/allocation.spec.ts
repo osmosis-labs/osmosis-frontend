@@ -121,7 +121,8 @@ describe("Allocation Functions", () => {
       const result = await calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
-        "total-assets"
+        "total-assets",
+        5
       ).map((allocation) => ({
         ...allocation,
         percentage: allocation.percentage.toString(),
@@ -156,7 +157,8 @@ describe("Allocation Functions", () => {
       const result = await calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
-        "user-balances"
+        "user-balances",
+        5
       ).map((allocation) => ({
         ...allocation,
         percentage: allocation.percentage.toString(),
