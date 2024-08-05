@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useState } from "react";
 
 import type { OrderCellData } from "~/components/complex/orders-history/columns";
+import { Spinner } from "~/components/loaders";
 import { t } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -70,11 +71,12 @@ const ClaimAndCloseButton = observer(({ order }: { order: OrderCellData }) => {
 
   return (
     <button
-      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700"
+      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
       onClick={claimAndClose}
       disabled={claiming}
     >
-      <span className="body2 text-wosmongton-200">
+      <span className="body2 flex items-center text-wosmongton-200">
+        {claiming && <Spinner className="mr-2 h-2 w-2" />}
         {t("limitOrders.claimAndClose")}
       </span>
     </button>
@@ -118,7 +120,8 @@ const CancelButton = observer(({ order }: { order: OrderCellData }) => {
       onClick={cancel}
       disabled={cancelling}
     >
-      <span className="body2 text-wosmongton-200">
+      <span className="body2 flex items-center text-wosmongton-200">
+        {cancelling && <Spinner className="mr-2 h-2 w-2" />}
         {t("limitOrders.cancel")}
       </span>
     </button>

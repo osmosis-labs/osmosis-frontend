@@ -632,7 +632,7 @@ const useLimitPrice = ({
   }, [assetPrice]);
 
   const setPriceAsPercentageOfSpotPrice = useCallback(
-    (percent: Dec, lockPrice = true) => {
+    (percent: Dec, lockPrice = true, format = true) => {
       const percentAdjusted =
         orderDirection === "bid"
           ? // Adjust negatively for bid orders
@@ -641,10 +641,12 @@ const useLimitPrice = ({
             new Dec(1).add(percent);
       const newPrice = spotPrice.mul(percentAdjusted);
       setOrderPrice(
-        formatPretty(newPrice, getPriceExtendedFormatOptions(newPrice)).replace(
-          /,/g,
-          ""
-        )
+        format
+          ? formatPretty(
+              newPrice,
+              getPriceExtendedFormatOptions(newPrice)
+            ).replace(/,/g, "")
+          : newPrice.toString()
       );
       setPriceLock(lockPrice);
     },
