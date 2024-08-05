@@ -64,9 +64,31 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         .replace("$", "")
         .replace(",", "");
       priceState._setPriceUnsafe(formattedPrice);
+      priceState._setPercentAdjustedUnsafe("0");
+    }
+
+    if (inputMode === InputMode.Percentage) {
+      console.log(
+        "UPDATING PRICE",
+        priceState.spotPrice.toString(),
+        priceState.priceLocked
+      );
+      priceState.setPriceAsPercentageOfSpotPrice(
+        new Dec(
+          !!priceState.manualPercentAdjusted
+            ? priceState.manualPercentAdjusted
+            : 0
+        ).quo(new Dec(100)),
+        false
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputMode, priceState.priceFiat, priceState.priceLocked]);
+  }, [
+    inputMode,
+    priceState.priceFiat,
+    priceState.priceLocked,
+    priceState.spotPrice,
+  ]);
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
@@ -244,6 +266,9 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 );
               } else {
                 priceState.setPriceAsPercentageOfSpotPrice(value);
+                priceState._setPercentAdjustedUnsafe(
+                  formatPretty(value.mul(new Dec(100)))
+                );
               }
             }}
             disabled={!priceState.spotPrice || priceState.isLoading}
