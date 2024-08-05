@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { parseAsString, useQueryState } from "nuqs";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
@@ -33,6 +34,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   swapState,
   orderDirection,
 }) => {
+  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
   const [input, setInput] = useState<HTMLInputElement | null>(null);
   const { t } = useTranslation();
   const { priceState } = swapState;
@@ -51,6 +53,10 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       priceState.setPriceLock(true);
     }
 
+    if (priceState.isBeyondOppositePrice || !priceState.manualPercentAdjusted) {
+      priceState.setPercentAdjusted("0");
+    }
+
     if (input) input.focus();
   }, [inputMode, input, priceState]);
 
@@ -62,7 +68,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
       )
         .replace("$", "")
-        .replace(",", "");
+        .replace(/,/g, "");
       priceState._setPriceUnsafe(formattedPrice);
       priceState._setPercentAdjustedUnsafe("0");
     }
@@ -76,7 +82,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       priceState.setPriceAsPercentageOfSpotPrice(
         new Dec(
           !!priceState.manualPercentAdjusted
-            ? priceState.manualPercentAdjusted
+            ? priceState.manualPercentAdjusted.replace(/,/g, "")
             : 0
         ).quo(new Dec(100)),
         false
@@ -121,6 +127,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   }, [t, priceState.percentAdjusted, orderDirection]);
 
   const [containerRef, { width }] = useMeasure<HTMLDivElement>();
+
+  const isPercentTooLarge = useMemo(() => {
+    if (tab !== "buy") return false;
+
+    const maxPercentage = new Dec(99.999);
+    return priceState.percentAdjusted.abs().gt(maxPercentage);
+  }, [priceState.percentAdjusted, tab]);
 
   return (
     <div
@@ -216,24 +229,31 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 }}
               />
             ) : (
-              <AutosizeInput
-                type="text"
-                extraWidth={0}
-                inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
-                value={swapState.priceState.manualPercentAdjusted}
-                placeholder={trimPlaceholderZeros(
-                  swapState.priceState.percentAdjusted
-                    .mul(new Dec(100))
-                    .abs()
-                    .toString()
-                )}
-                inputRef={setInput}
-                onChange={(e) =>
-                  swapState.priceState.setPercentAdjusted(
-                    e.target.value.replace("%", "")
-                  )
-                }
-              />
+              <>
+                {isPercentTooLarge && <span>{">"}</span>}
+                <AutosizeInput
+                  type="text"
+                  extraWidth={0}
+                  inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
+                  value={
+                    isPercentTooLarge
+                      ? "99.999"
+                      : swapState.priceState.manualPercentAdjusted
+                  }
+                  placeholder={trimPlaceholderZeros(
+                    swapState.priceState.percentAdjusted
+                      .mul(new Dec(100))
+                      .abs()
+                      .toString()
+                  )}
+                  inputRef={setInput}
+                  onChange={(e) =>
+                    swapState.priceState.setPercentAdjusted(
+                      e.target.value.replace("%", "")
+                    )
+                  }
+                />
+              </>
             )}
             {inputMode === InputMode.Percentage && (
               <span className="inline-flex items-baseline gap-1">
