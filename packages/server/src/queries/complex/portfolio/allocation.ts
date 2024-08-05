@@ -1,6 +1,7 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
+import { sort } from "@osmosis-labs/utils";
 
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import { queryAllocation } from "../../../queries/data-services";
@@ -74,11 +75,17 @@ export function calculatePercentAndFiatValues(
   const totalCap = new Dec(totalAssets.capitalization);
 
   // Get top 5 assets by cap value
-  const sortedAccountCoinsResults =
-    totalAssets?.account_coins_result?.sort(
-      (a: AccountCoinsResult, b: AccountCoinsResult) =>
-        +b.cap_value - +a.cap_value
-    ) || [];
+  //   const sortedAccountCoinsResults =
+  //     totalAssets?.account_coins_result?.sort(
+  //       (a: AccountCoinsResult, b: AccountCoinsResult) =>
+  //         +b.cap_value - +a.cap_value
+  //     ) || [];
+
+  const sortedAccountCoinsResults = sort(
+    totalAssets?.account_coins_result || [],
+    "cap_value",
+    "asc"
+  );
 
   const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
 
