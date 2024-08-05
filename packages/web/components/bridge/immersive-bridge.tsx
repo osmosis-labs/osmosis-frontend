@@ -66,8 +66,14 @@ export const ImmersiveBridgeFlow = ({
     if (!isNil(selectedAssetDenom) && !isVisible) {
       setIsVisible(true);
       setStep(ImmersiveBridgeScreen.Amount);
+      logEvent([
+        EventName.DepositWithdraw.assetSelected,
+        {
+          tokenName: selectedAssetDenom,
+        },
+      ]);
     }
-  }, [direction, selectedAssetDenom, isVisible, setDirection]);
+  }, [direction, selectedAssetDenom, isVisible, setDirection, logEvent]);
 
   const [fiatRampParams, setFiatRampParams] = useState<{
     fiatRampKey: FiatRampKey;
