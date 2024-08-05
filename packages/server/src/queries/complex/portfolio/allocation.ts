@@ -66,6 +66,8 @@ export function getAll(categories: Categories): FormattedAllocation[] {
   ];
 }
 
+const allocationLimit = 5;
+
 export function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
@@ -74,20 +76,16 @@ export function calculatePercentAndFiatValues(
   const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
 
-  // Get top 5 assets by cap value
-  //   const sortedAccountCoinsResults =
-  //     totalAssets?.account_coins_result?.sort(
-  //       (a: AccountCoinsResult, b: AccountCoinsResult) =>
-  //         +b.cap_value - +a.cap_value
-  //     ) || [];
-
   const sortedAccountCoinsResults = sort(
     totalAssets?.account_coins_result || [],
     "cap_value",
     "asc"
   );
 
-  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(0, 5);
+  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(
+    0,
+    allocationLimit
+  );
 
   const assets: FormattedAllocation[] = top5AccountCoinsResults.map(
     (asset: AccountCoinsResult) => {
@@ -107,7 +105,7 @@ export function calculatePercentAndFiatValues(
     }
   );
 
-  const otherAssets = sortedAccountCoinsResults.slice(5);
+  const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
   const otherAmount = otherAssets.reduce(
     (sum: Dec, asset: AccountCoinsResult) => sum.add(new Dec(asset.cap_value)),
