@@ -72,11 +72,7 @@ export const useBridgesSupportedAssets = ({
   );
 
   const isLoading = useMemo(
-    () =>
-      supportedAssetsResults.some(
-        (data): data is NonNullable<Required<typeof data>> =>
-          !isNil(data) && data.isLoading
-      ),
+    () => supportedAssetsResults.some((data) => isNil(data) || data.isLoading),
     [supportedAssetsResults]
   );
 

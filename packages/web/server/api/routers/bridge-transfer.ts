@@ -78,8 +78,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -330,8 +329,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -455,9 +453,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -498,9 +494,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
