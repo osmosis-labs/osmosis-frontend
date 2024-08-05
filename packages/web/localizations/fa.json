@@ -225,13 +225,9 @@
       "enterAddress": "آدرس {network}",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
-        "insufficientFee": "کارمزد ناکافی",
         "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
         "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}",
         "seeRequest": "درخواست را در {walletName} ببینید",
-        "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
-        "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
-        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
         "invalidAddress": "آدرس نامعتبر",
         "missingAddress": "آدرس گم شده"
       },

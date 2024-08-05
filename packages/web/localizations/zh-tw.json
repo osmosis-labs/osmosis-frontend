@@ -225,13 +225,9 @@
       "enterAddress": "{network}位址",
       "errors": {
         "insufficientBal": "結餘不足",
-        "insufficientFee": "交易費不足",
         "reconnectWallet": "重新連接 {walletName}",
         "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
         "seeRequest": "在{walletName}中檢視請求",
-        "noQuotesAvailable": "無可用報價",
-        "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。",
         "invalidAddress": "無效地址",
         "missingAddress": "缺少地址"
       },

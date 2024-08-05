@@ -225,13 +225,9 @@
       "enterAddress": "{network} पता",
       "errors": {
         "insufficientBal": "अपर्याप्त शेषराशि",
-        "insufficientFee": "अपर्याप्त शुल्क",
         "reconnectWallet": "पुनः कनेक्ट करें {walletName}",
         "wrongNetworkInWallet": "{walletName} में गलत नेटवर्क",
         "seeRequest": "{walletName} में अनुरोध देखें",
-        "noQuotesAvailable": "कोई उद्धरण उपलब्ध नहीं",
-        "unexpectedError": "अप्रत्याशित त्रुटि। कृपया पुन: प्रयास करें।",
-        "transactionError": "लेन-देन प्राप्त करने में त्रुटि. कृपया पुन: प्रयास करें।",
         "invalidAddress": "अमान्य पता",
         "missingAddress": "गुम पता"
       },

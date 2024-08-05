@@ -225,13 +225,9 @@
       "enterAddress": "{network}アドレス",
       "errors": {
         "insufficientBal": "残高不足",
-        "insufficientFee": "不十分な料金",
         "reconnectWallet": "{walletName}を再接続します",
         "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
         "seeRequest": "{walletName}リクエストを参照してください。",
-        "noQuotesAvailable": "利用可能な見積もりはありません",
-        "unexpectedError": "予期しないエラー。もう一度試してください。",
-        "transactionError": "トランザクション取得エラー。もう一度試してください。",
         "invalidAddress": "無効なアドレス",
         "missingAddress": "住所がありません"
       },

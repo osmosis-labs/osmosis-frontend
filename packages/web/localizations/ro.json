@@ -225,13 +225,9 @@
       "enterAddress": "Adresa {network}",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
-        "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
         "wrongNetworkInWallet": "Retea gresita in {walletName}",
         "seeRequest": "Vezi solicitarea în {walletName}",
-        "noQuotesAvailable": "Nu există oferte disponibile",
-        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
         "invalidAddress": "Adresă invalidă",
         "missingAddress": "Adresa lipsă"
       },

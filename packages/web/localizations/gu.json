@@ -225,13 +225,9 @@
       "enterAddress": "{network} સરનામું",
       "errors": {
         "insufficientBal": "અપર્યાપ્ત બેલેન્સ",
-        "insufficientFee": "અપૂરતી ફી",
         "reconnectWallet": "ફરીથી કનેક્ટ કરો {walletName}",
         "wrongNetworkInWallet": "{walletName} માં ખોટું નેટવર્ક",
         "seeRequest": "{walletName} માં વિનંતી જુઓ",
-        "noQuotesAvailable": "કોઈ અવતરણ ઉપલબ્ધ નથી",
-        "unexpectedError": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
-        "transactionError": "વ્યવહાર મેળવવામાં ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
         "invalidAddress": "અમાન્ય સરનામું",
         "missingAddress": "સરનામું ખૂટે છે"
       },

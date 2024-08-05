@@ -686,8 +686,6 @@ export const useBridgeQuotes = ({
   let buttonErrorMessage: string | undefined;
   if (!fromAddress) {
     buttonErrorMessage = t("assets.transfer.errors.missingAddress");
-  } else if (hasNoQuotes) {
-    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (!isEvmWalletConnected && fromChain?.chainType === "evm") {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
@@ -696,15 +694,38 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (bridgeTransaction.error) {
-    buttonErrorMessage = t("assets.transfer.errors.transactionError");
-  } else if (isInsufficientFee) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
-  } else if (Boolean(someError)) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
   }
+
+  let errorBoxMessage: { heading: string; description: string } | undefined;
+  if (isInsufficientFee) {
+    errorBoxMessage = {
+      heading: t("transfer.insufficientFundsForFees"),
+      description: t("transfer.youNeedFundsToPay"),
+    };
+  } else if (hasNoQuotes) {
+    errorBoxMessage = {
+      heading: isWithdraw
+        ? t("transfer.assetsWithdrawsUnavailable", {
+            asset: toAsset?.denom ?? "",
+          })
+        : t("transfer.assetsDepositsUnavailable", {
+            asset: toAsset?.denom ?? "",
+          }),
+      description: isWithdraw
+        ? t("transfer.noAvailableWithdraws")
+        : t("transfer.noAvailableDeposits"),
+    };
+  } else if (bridgeTransaction.error || Boolean(someError)) {
+    errorBoxMessage = {
+      heading: t("transfer.somethingIsntWorking"),
+      description: t("transfer.sorryForTheInconvenience"),
+    };
+  }
+
+  // let warningBoxMessage: { heading: string; description: string } | undefined;
+  // if()
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =

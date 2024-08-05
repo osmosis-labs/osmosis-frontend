@@ -225,13 +225,9 @@
       "enterAddress": "{network} адрес",
       "errors": {
         "insufficientBal": "Недостаточный баланс",
-        "insufficientFee": "Недостаточная комиссия",
         "reconnectWallet": "Переподключите {walletName}",
         "wrongNetworkInWallet": "Неправильная сеть в {walletName}",
         "seeRequest": "См. запрос в {walletName}",
-        "noQuotesAvailable": "Нет доступных котировок",
-        "unexpectedError": "Неожиданная ошибка. Пожалуйста, попробуйте еще раз.",
-        "transactionError": "Ошибка получения транзакции. Пожалуйста, попробуйте еще раз.",
         "invalidAddress": "Неверный адрес",
         "missingAddress": "Отсутствует адрес"
       },

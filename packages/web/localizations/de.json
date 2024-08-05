@@ -225,13 +225,9 @@
       "enterAddress": "{network} Adresse",
       "errors": {
         "insufficientBal": "Mangelhaftes Gleichgewicht",
-        "insufficientFee": "Unzureichende Gebühr",
         "reconnectWallet": "Erneut verbinden {walletName}",
         "wrongNetworkInWallet": "Falsches Netzwerk in {walletName}",
         "seeRequest": "Siehe Anfrage in {walletName}",
-        "noQuotesAvailable": "Keine Angebote verfügbar",
-        "unexpectedError": "Unerwarteter Fehler. Bitte versuche es erneut.",
-        "transactionError": "Fehler beim Abrufen der Transaktion. Bitte versuche es erneut.",
         "invalidAddress": "Ungültige Adresse",
         "missingAddress": "Fehlende Adresse"
       },

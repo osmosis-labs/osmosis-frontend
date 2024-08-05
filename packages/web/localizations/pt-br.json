@@ -225,13 +225,9 @@
       "enterAddress": "{network} endereço",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
-        "insufficientFee": "Taxa Insuficiente",
         "reconnectWallet": "Reconectar {walletName}",
         "wrongNetworkInWallet": "Rede errada em {walletName}",
         "seeRequest": "Ver solicitação em {walletName}",
-        "noQuotesAvailable": "Nenhuma cotação disponível",
-        "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
         "invalidAddress": "Endereço inválido",
         "missingAddress": "Endereço ausente"
       },
