@@ -224,7 +224,6 @@
       "approveInWallet": "Im Wallet genehmigen",
       "enterAddress": "{network} Adresse",
       "errors": {
-        "insufficientBal": "Mangelhaftes Gleichgewicht",
         "reconnectWallet": "Erneut verbinden {walletName}",
         "wrongNetworkInWallet": "Falsches Netzwerk in {walletName}",
         "seeRequest": "Siehe Anfrage in {walletName}",
@@ -334,6 +333,9 @@
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Unzureichende Mittel"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Wählen Sie Fiat Onramp",
       "kadoSubtitle": "Unterstützt OSMO, USDC",
@@ -975,7 +977,17 @@
     "transferWithNoun": "Übertragen mit {noun}",
     "risks": "Das Überbrücken ist mit Risiken verbunden.",
     "learnMore": "Erfahren Sie mehr",
-    "openNoun": "Öffnen Sie {noun}"
+    "openNoun": "Öffnen Sie {noun}",
+    "insufficientFundsForFees": "Unzureichende Mittel für Gebühren",
+    "youNeedFundsToPay": "Sie benötigen Guthaben, um Netzwerk- und Überbrückungsgebühren für {chain} zu bezahlen.",
+    "assetsDepositsUnavailable": "{asset} Einlagen sind nicht verfügbar",
+    "assetsWithdrawsUnavailable": "{asset} Abhebungen sind nicht verfügbar",
+    "noAvailableDeposits": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld an Osmosis zu überweisen.",
+    "noAvailableWithdraws": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld von Osmosis zu überweisen.",
+    "somethingIsntWorking": "Irgendetwas funktioniert nicht ...",
+    "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld an Osmosis zu überweisen.",
+    "assetIsCurrentlyUnstable": "{asset} Übertragungen sind derzeit instabil",
+    "transferWillLikelyTakeLonger": "Überweisungen dauern möglicherweise länger als üblich oder schlagen möglicherweise ganz fehl. Sie führen die Überweisung auf eigenes Risiko durch."
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

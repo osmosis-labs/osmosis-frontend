@@ -63,12 +63,18 @@ export const useBridgeQuotes = ({
   inputAmount: string;
 
   fromAsset:
-    | (BridgeAsset & { amount: CoinPretty; imageUrl: string | undefined })
+    | (BridgeAsset & {
+        amount: CoinPretty;
+        imageUrl: string | undefined;
+        isUnstable: boolean;
+      })
     | undefined;
   fromChain: (BridgeChain & { prettyName: string }) | undefined;
   fromAddress: string | undefined;
 
-  toAsset: (BridgeAsset & { imageUrl: string | undefined }) | undefined;
+  toAsset:
+    | (BridgeAsset & { imageUrl: string | undefined; isUnstable: boolean })
+    | undefined;
   toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
@@ -694,15 +700,15 @@ export const useBridgeQuotes = ({
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: evmConnector?.name ?? "EVM Wallet",
     });
-  } else if (isInsufficientBal) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
   }
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
   if (isInsufficientFee) {
     errorBoxMessage = {
       heading: t("transfer.insufficientFundsForFees"),
-      description: t("transfer.youNeedFundsToPay"),
+      description: t("transfer.youNeedFundsToPay", {
+        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+      }),
     };
   } else if (hasNoQuotes) {
     errorBoxMessage = {
@@ -724,8 +730,13 @@ export const useBridgeQuotes = ({
     };
   }
 
-  // let warningBoxMessage: { heading: string; description: string } | undefined;
-  // if()
+  let warningBoxMessage: { heading: string; description: string } | undefined;
+  if (toAsset?.isUnstable) {
+    warningBoxMessage = {
+      heading: t("transfer.assetIsCurrentlyUnstable", { asset: toAsset.denom }),
+      description: t("transfer.transferWillLikelyTakeLonger"),
+    };
+  }
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
@@ -752,6 +763,7 @@ export const useBridgeQuotes = ({
     !isLoadingBridgeQuote &&
     !isLoadingBridgeTransaction &&
     !isTxPending &&
+    !errorBoxMessage &&
     Boolean(selectedQuote);
 
   let buttonText: string;
@@ -785,6 +797,8 @@ export const useBridgeQuotes = ({
     txButtonText,
     buttonText,
     buttonErrorMessage,
+    errorBoxMessage,
+    warningBoxMessage,
 
     userCanAdvance,
     isTxPending,

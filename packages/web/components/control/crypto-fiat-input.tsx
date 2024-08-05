@@ -207,6 +207,8 @@ export const CryptoFiatInput: FunctionComponent<{
     canSetMax,
   ]);
 
+  const insufficientFunds = isInsufficientBal || isInsufficientFee;
+
   return (
     <div className="relative flex flex-col items-center">
       <div className="flex h-36 w-full place-content-between items-center">
@@ -217,6 +219,11 @@ export const CryptoFiatInput: FunctionComponent<{
             inputRef.current?.focus();
           }}
         >
+          {insufficientFunds && (
+            <p className="body1 animate-[fadeIn_0.25s] text-rust-400">
+              {t("components.cryptoFiatInput.insufficientFunds")}
+            </p>
+          )}
           <div
             className={classNames(
               "absolute top-1/2 transition-transform",
@@ -232,14 +239,6 @@ export const CryptoFiatInput: FunctionComponent<{
               <ScaledCurrencyInput
                 fiatSymbol={assetPrice.symbol}
                 inputRef={inputRef}
-                classes={{
-                  input: classNames({
-                    "text-rust-300": isInsufficientBal || isInsufficientFee,
-                  }),
-                  ticker: classNames({
-                    "text-rust-300": isInsufficientBal || isInsufficientFee,
-                  }),
-                }}
                 value={fiatInputRaw}
                 onChange={(value) => {
                   setIsMax(false);
@@ -290,12 +289,7 @@ export const CryptoFiatInput: FunctionComponent<{
                 coinDenom={inputCoin.denom}
                 inputRef={inputRef}
                 classes={{
-                  input: classNames({
-                    "text-rust-300": isInsufficientBal || isInsufficientFee,
-                  }),
-                  ticker: classNames("ml-1 text-osmoverse-500", {
-                    "text-rust-300": isInsufficientBal || isInsufficientFee,
-                  }),
+                  ticker: "ml-1 text-osmoverse-500",
                 }}
                 value={cryptoInputRaw}
                 onChange={(value) => {

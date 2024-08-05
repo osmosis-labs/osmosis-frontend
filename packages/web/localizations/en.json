@@ -224,7 +224,6 @@
       "approveInWallet": "Approve in wallet",
       "enterAddress": "{network} address",
       "errors": {
-        "insufficientBal": "Insufficient Balance",
         "reconnectWallet": "Reconnect {walletName}",
         "wrongNetworkInWallet": "Wrong network in {walletName}",
         "seeRequest": "See request in {walletName}",
@@ -334,6 +333,9 @@
   },
   "buyTokens": "Buy tokens",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Insufficient funds"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Choose Fiat Onramp",
       "kadoSubtitle": "Supports OSMO, USDC",
@@ -977,13 +979,15 @@
     "learnMore": "Learn more",
     "openNoun": "Open {noun}",
     "insufficientFundsForFees": "Insufficient funds for fees",
-    "youNeedFundsToPay": "You need funds to pay network and bridging fees on Ethereum.",
+    "youNeedFundsToPay": "You need funds to pay network and bridging fees on {chain}.",
     "assetsDepositsUnavailable": "{asset} deposits are unavailable",
     "assetsWithdrawsUnavailable": "{asset} withdraws are unavailable",
     "noAvailableDeposits": "Currently no available routes or providers can be found. Please try again later or use an alternative application to transfer your funds to Osmosis.",
     "noAvailableWithdraws": "Currently no available routes or providers can be found. Please try again later or se an alternative application to transfer your funds from Osmosis.",
     "somethingIsntWorking": "Something isn’t working…",
-    "sorryForTheInconvenience": "Sorry for the inconvenience. Please refresh the page and try again or use an alternative application to transfer your funds to Osmosis."
+    "sorryForTheInconvenience": "Sorry for the inconvenience. Please refresh the page and try again or use an alternative application to transfer your funds to Osmosis.",
+    "assetIsCurrentlyUnstable": "{asset} transfers are currently unstable",
+    "transferWillLikelyTakeLonger": "Transfers will likely take longer than usual or may fail entirely. Proceed at your own risk."
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
