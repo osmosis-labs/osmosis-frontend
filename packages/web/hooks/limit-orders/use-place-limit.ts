@@ -16,6 +16,7 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -615,13 +616,40 @@ const useLimitPrice = ({
     { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
   );
 
-  const [orderPrice, setOrderPrice] = useState("");
-  const [manualPercentAdjusted, setManualPercentAdjusted] = useState("");
+  const [orderPrice, setOrderPrice] = useState("0");
+  const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
 
   // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
-    return assetPrice ? assetPrice.toDec() : new Dec(1);
+    return assetPrice
+      ? new Dec(
+          formatPretty(
+            assetPrice.toDec(),
+            getPriceExtendedFormatOptions(assetPrice.toDec())
+          ).replace(/,/g, "")
+        )
+      : new Dec(1);
   }, [assetPrice]);
+
+  const setPriceAsPercentageOfSpotPrice = useCallback(
+    (percent: Dec, lockPrice = true) => {
+      const percentAdjusted =
+        orderDirection === "bid"
+          ? // Adjust negatively for bid orders
+            new Dec(1).sub(percent)
+          : // Adjust positively for ask orders
+            new Dec(1).add(percent);
+      const newPrice = spotPrice.mul(percentAdjusted);
+      setOrderPrice(
+        formatPretty(newPrice, getPriceExtendedFormatOptions(newPrice)).replace(
+          /,/g,
+          ""
+        )
+      );
+      setPriceLock(lockPrice);
+    },
+    [setOrderPrice, orderDirection, spotPrice]
+  );
 
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
@@ -640,13 +668,37 @@ const useLimitPrice = ({
         price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
       }
 
+      const percentAdjusted = newPrice
+        .quo(spotPrice)
+        .sub(new Dec(1))
+        .mul(new Dec(100));
+
+      const isPercentAdjustedTooLarge =
+        percentAdjusted.toString().split(".")[0].length > 9;
+
+      if (isPercentAdjustedTooLarge) return;
+
+      setPriceLock(true);
       setOrderPrice(price);
 
       if (price.length === 0 || newPrice.isZero()) {
         setManualPercentAdjusted("");
+        return;
       }
+
+      setManualPercentAdjusted(
+        percentAdjusted.isZero() || newPrice.isZero()
+          ? "0"
+          : trimPlaceholderZeros(
+              formatPretty(percentAdjusted.abs(), {
+                maxDecimals: 3,
+              })
+                .toString()
+                .replace(/,/g, "")
+            )
+      );
     },
-    [setOrderPrice]
+    [setOrderPrice, spotPrice]
   );
 
   // Adjusts the percentage for placing the order.
@@ -685,10 +737,17 @@ const useLimitPrice = ({
 
       setManualPercentAdjusted(percentAdjusted);
 
-      // Reset the user's manual order price if they adjust percentage
-      if (orderPrice.length > 0) setOrderPrice("");
+      if (!percentAdjusted) {
+        setPriceAsPercentageOfSpotPrice(new Dec(0), false);
+        return;
+      }
+
+      setPriceAsPercentageOfSpotPrice(
+        new Dec(percentAdjusted).quo(new Dec(100)),
+        false
+      );
     },
-    [setManualPercentAdjusted, orderPrice.length, orderDirection]
+    [setManualPercentAdjusted, orderDirection, setPriceAsPercentageOfSpotPrice]
   );
 
   // Whether the user's manual order price is a valid price
@@ -732,8 +791,11 @@ const useLimitPrice = ({
 
   // The raw percentage adjusted based on the current order price state
   const percentAdjusted = useMemo(
-    () => price.quo(spotPrice).sub(new Dec(1)),
-    [price, spotPrice]
+    () =>
+      !!manualPercentAdjusted
+        ? new Dec(manualPercentAdjusted).quo(new Dec(100))
+        : price.quo(spotPrice).sub(new Dec(1)),
+    [price, spotPrice, manualPercentAdjusted]
   );
 
   // If the user is inputting a price that crosses over the spot price
@@ -746,13 +808,14 @@ const useLimitPrice = ({
   }, [price]);
 
   const reset = useCallback(() => {
-    setManualPercentAdjusted("");
+    setManualPercentAdjusted("0");
     setOrderPrice("");
+    setPriceLock(false);
   }, []);
 
   useEffect(() => {
     reset();
-  }, [orderDirection, reset]);
+  }, [orderDirection, reset, baseDenom]);
 
   const isValidPrice = useMemo(() => {
     return isValidInputPrice || Boolean(spotPrice);
@@ -770,9 +833,12 @@ const useLimitPrice = ({
     isLoading: loadingSpotPrice,
     reset,
     setPrice: setManualOrderPrice,
+    _setPriceUnsafe: setOrderPrice,
     isValidPrice,
     isBeyondOppositePrice,
     isSpotPriceRefetching,
     setPriceLock,
+    priceLocked,
+    setPriceAsPercentageOfSpotPrice,
   };
 };
