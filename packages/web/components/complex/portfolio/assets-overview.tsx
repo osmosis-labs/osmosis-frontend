@@ -123,7 +123,7 @@ export const AssetsOverview: FunctionComponent<
   if (isWalletLoading) return null;
 
   const totalDisplayValue =
-    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value)) ||
+    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
 
   return (

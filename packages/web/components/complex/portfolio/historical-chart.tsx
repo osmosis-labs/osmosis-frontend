@@ -2,14 +2,14 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { AreaData, Time } from "lightweight-charts";
 
-import { Icon } from "~/components/assets";
+// import { Icon } from "~/components/assets";
 import {
   HistoricalChart,
   HistoricalChartSkeleton,
 } from "~/components/chart/historical-chart";
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
-import { IconButton } from "~/components/ui/button";
+// import { IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 const getChartStyle = (
@@ -75,7 +75,8 @@ export const PortfolioHistoricalChart = ({
           priceRange={range}
           setPriceRange={setRange}
         />
-        <IconButton
+        {/* TODO - will handle in other PR */}
+        {/* <IconButton
           className="border border-osmoverse-700 py-0"
           aria-label="Open main menu dropdown"
           icon={
@@ -86,7 +87,7 @@ export const PortfolioHistoricalChart = ({
               width={16}
             />
           }
-        />
+        /> */}
       </div>
     </section>
   );
