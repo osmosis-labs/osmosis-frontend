@@ -458,13 +458,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 page={page}
                 inputPrefix={
                   focused === "fiat" && (
-                    <h3
+                    <span
                       className={classNames({
                         "text-osmoverse-600": inputValue === "",
                       })}
                     >
                       $
-                    </h3>
+                    </span>
                   )
                 }
                 ref={inputRef}

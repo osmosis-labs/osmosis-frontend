@@ -101,23 +101,22 @@ const AssetFieldsetHeaderBalance = observer(
   }
 );
 
-const calcScale = (numChars: number, isMobile: boolean): string => {
+const calcFontSize = (numChars: number, isMobile: boolean): string => {
   const sizeMapping: { [key: number]: string } = isMobile
     ? {
-        8: "1",
-        10: "0.90",
-        12: "0.80",
-        18: "0.70",
-        100: "0.48",
+        9: "48px",
+        15: "38px",
+        24: "32px",
+        100: "16px",
       }
     : {
-        8: "1",
-        12: "0.90",
-        18: "0.90",
-        100: "0.48",
+        7: "48px",
+        12: "38px",
+        16: "28px",
+        33: "24px",
+        100: "16px",
       };
 
-  console.log(numChars);
   for (const [key, value] of Object.entries(sizeMapping)) {
     if (numChars <= Number(key)) {
       return value;
@@ -141,24 +140,24 @@ const AssetFieldsetInput = forwardRef<
 >(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
   const { isMobile } = useWindowSize();
 
-  const scale = useMemo(
-    () => calcScale((inputValue ?? "").length, isMobile),
+  const fontSize = useMemo(
+    () => calcFontSize((inputValue ?? "").length, isMobile),
     [inputValue, isMobile]
   );
 
   return (
-    <div className="flex items-center overflow-visible">
+    <div
+      className={`flex items-center overflow-visible`}
+      style={{
+        fontSize,
+      }}
+    >
       {inputPrefix}
       {outputValue || (
-        <div
-          className="transiiton-all w-full origin-left overflow-visible"
-          style={{
-            transform: `scale(${scale})`,
-          }}
-        >
+        <div className="transiiton-all w-full origin-left overflow-visible">
           <input
             ref={ref}
-            className="w-full bg-transparent text-h3 font-h3 placeholder:text-osmoverse-600"
+            className={`text-[${fontSize}] w-full bg-transparent font-h3 placeholder:text-osmoverse-600`}
             placeholder="0"
             onChange={onInputChange}
             value={inputValue}
@@ -253,7 +252,7 @@ const AssetFieldsetTokenSelector = ({
               className="h-10 min-w-10 rounded-full"
             />
           )}
-          <h5>{selectedCoinDenom}</h5>
+          <h5 className="max-w-[125px] truncate">{selectedCoinDenom}</h5>
         </div>
         <div className="flex h-6 w-6 items-center justify-center">
           <Icon
