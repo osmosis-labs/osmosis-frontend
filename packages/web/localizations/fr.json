@@ -325,7 +325,16 @@
     "noAssets": "Vous n'avez aucun solde sur {osmosis}",
     "getStarted": "Déposez des actifs pour commencer",
     "noPositions": "Vous n'avez aucun poste",
-    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités"
+    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités",
+    "allocation": "Allocation",
+    "available": "Disponible",
+    "staked": "Jalonné",
+    "unstaking": "Détachement",
+    "unclaimedRewards": "Récompenses non réclamées",
+    "pooled": "Regroupé",
+    "other": "Autre",
+    "all": "Tous",
+    "assets": "Actifs"
   },
   "buyTokens": "Acheter jetons",
   "components": {
