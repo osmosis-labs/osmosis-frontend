@@ -522,11 +522,10 @@ export const AmountScreen = observer(
       }
     }, [
       counterpartySupportedAssetsByChainId,
-      toAsset,
       direction,
       setToAsset,
+      toAsset,
       toChain,
-      checkChainAndConnectWallet,
     ]);
 
     /**
@@ -574,7 +573,6 @@ export const AmountScreen = observer(
         setChain(firstChain);
       }
     }, [
-      checkChainAndConnectWallet,
       direction,
       fromChain,
       isLoadingSupportedAssets,
