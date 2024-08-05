@@ -70,7 +70,7 @@ export function calculatePercentAndFiatValues(
   categories: Categories,
   assetLists: AssetList[],
   category: "total-assets" | "user-balances",
-  allocationLimit: number
+  allocationLimit = 5
 ) {
   const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
