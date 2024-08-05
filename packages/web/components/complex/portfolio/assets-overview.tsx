@@ -66,7 +66,7 @@ const initialDataPoint = {
 
 export const AssetsOverview: FunctionComponent<
   {
-    totalValue?: PricePretty;
+    totalValue: PricePretty;
     isTotalValueFetched?: boolean;
   } & CustomClasses
 > = observer(({ totalValue, isTotalValueFetched }) => {
@@ -80,12 +80,7 @@ export const AssetsOverview: FunctionComponent<
 
   const address = wallet?.address ?? "";
 
-  const [dataPoint, setDataPoint] = useState<{
-    time?: Time;
-    value?: number;
-  }>(initialDataPoint);
-
-  console.log("dataPoint: ", dataPoint);
+  const [dataPoint, setDataPoint] = useState<DataPoint>(initialDataPoint);
 
   const [range, setRange] = useState<Range>("1mo");
 

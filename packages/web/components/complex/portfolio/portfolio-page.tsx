@@ -1,4 +1,6 @@
 import { Tab } from "@headlessui/react";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { FunctionComponent, useCallback } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
@@ -73,72 +75,83 @@ export const PortfolioPage: FunctionComponent = () => {
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
-          totalValue={totalValueData}
+          totalValue={
+            totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+          }
           isTotalValueFetched={isTotalValueFetched}
         />
       </section>
 
-      <section className="w-full py-3">
-        {wallet && wallet.isWalletConnected && wallet.address ? (
-          <Tab.Group>
-            <Tab.List className="flex gap-6" ref={tabsRef}>
-              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                {({ selected }) => (
-                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.yourAssets")}
-                  </h6>
-                )}
-              </Tab>
-              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                {({ selected }) => (
-                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.yourPositions")}
-                  </h6>
-                )}
-              </Tab>
-              <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                {({ selected }) => (
-                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.recentTransfers")}
-                  </h6>
-                )}
-              </Tab>
-            </Tab.List>
-            {!isTotalValueFetched ? (
-              <div className="mx-auto my-6 w-fit">
-                <Spinner />
-              </div>
-            ) : userHasNoAssets ? (
-              <UserZeroBalanceTableSplash />
-            ) : (
-              <Tab.Panels className="py-6">
-                <Tab.Panel>
-                  <AssetBalancesTable
-                    tableTopPadding={overviewHeight + tabsHeight}
-                    onDeposit={onDeposit}
-                    onWithdraw={onWithdraw}
-                  />
-                </Tab.Panel>
-                <Tab.Panel>
-                  <UserPositionsSection address={wallet.address} />
-                </Tab.Panel>
-                <Tab.Panel>
-                  <section>
-                    <RecentTransfers />
-                  </section>
-                </Tab.Panel>
-              </Tab.Panels>
+      {wallet && wallet.isWalletConnected && wallet.address ? (
+        <>
+          <section className="w-full py-3">
+            <Tab.Group>
+              <Tab.List className="flex gap-6" ref={tabsRef}>
+                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+                  {({ selected }) => (
+                    <h6
+                      className={!selected ? "text-osmoverse-500" : undefined}
+                    >
+                      {t("portfolio.yourAssets")}
+                    </h6>
+                  )}
+                </Tab>
+                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+                  {({ selected }) => (
+                    <h6
+                      className={!selected ? "text-osmoverse-500" : undefined}
+                    >
+                      {t("portfolio.yourPositions")}
+                    </h6>
+                  )}
+                </Tab>
+                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+                  {({ selected }) => (
+                    <h6
+                      className={!selected ? "text-osmoverse-500" : undefined}
+                    >
+                      {t("portfolio.recentTransfers")}
+                    </h6>
+                  )}
+                </Tab>
+              </Tab.List>
+              {!isTotalValueFetched ? (
+                <div className="mx-auto my-6 w-fit">
+                  <Spinner />
+                </div>
+              ) : userHasNoAssets ? (
+                <UserZeroBalanceTableSplash />
+              ) : (
+                <Tab.Panels className="py-6">
+                  <Tab.Panel>
+                    <AssetBalancesTable
+                      tableTopPadding={overviewHeight + tabsHeight}
+                      onDeposit={onDeposit}
+                      onWithdraw={onWithdraw}
+                    />
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <UserPositionsSection address={wallet.address} />
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <section>
+                      <RecentTransfers />
+                    </section>
+                  </Tab.Panel>
+                </Tab.Panels>
+              )}
+            </Tab.Group>
+            )
+          </section>
+          <section className="w-full">
+            {!isLoadingAllocation && !userHasNoAssets && (
+              <Allocation allocation={allocation} />
             )}
-          </Tab.Group>
-        ) : isWalletLoading ? null : (
-          <WalletDisconnectedSplash />
-        )}
-      </section>
-      <section className="w-full">
-        {!isLoadingAllocation && !userHasNoAssets && (
-          <Allocation allocation={allocation} />
-        )}
-      </section>
+          </section>
+        </>
+      ) : isWalletLoading ? null : (
+        <WalletDisconnectedSplash />
+      )}
     </main>
   );
 };
