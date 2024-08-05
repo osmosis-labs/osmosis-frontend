@@ -82,12 +82,9 @@ export function calculatePercentAndFiatValues(
     "asc"
   );
 
-  const top5AccountCoinsResults = sortedAccountCoinsResults.slice(
-    0,
-    allocationLimit
-  );
+  const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
-  const assets: FormattedAllocation[] = top5AccountCoinsResults.map(
+  const assets: FormattedAllocation[] = topCoinsResults.map(
     (asset: AccountCoinsResult) => {
       const assetFromAssetLists = getAsset({
         assetLists,
