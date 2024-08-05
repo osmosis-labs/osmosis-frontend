@@ -45,7 +45,6 @@ import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
-  osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
@@ -818,40 +817,27 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    /**
-     * If the message is an authenticator message, force the direct signing.
-     * This is because the authenticator message should be signed with proto for now.
-     */
-    const isAuthenticatorMsg = messages.some(
-      (message) =>
-        message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
-        message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
-    );
+    if ("signAmino" in offlineSigner || "signAmino" in wallet.client) {
+      return this.signAmino({
+        wallet,
+        signerAddress: wallet.address ?? "",
+        messages,
+        fee,
+        memo,
+        signerData,
+        signOptions,
+      });
+    }
 
-    const forceSignDirect = isAuthenticatorMsg;
-
-    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      !forceSignDirect
-      ? this.signAmino({
-          wallet,
-          signerAddress: wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData,
-          signOptions,
-        })
-      : this.signDirect({
-          wallet,
-          signerAddress: wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData,
-          signOptions,
-        });
+    return this.signDirect({
+      wallet,
+      signerAddress: wallet.address ?? "",
+      messages,
+      fee,
+      memo,
+      signerData,
+      signOptions,
+    });
   }
 
   private async signOneClick({
