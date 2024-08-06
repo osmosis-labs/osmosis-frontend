@@ -61,6 +61,7 @@ module.exports = {
       },
       "osmoverse-alpha": {
         800: "#3E386A",
+        850: "#3C356D4A",
       },
       ammelia: {
         300: "#E196DB",
