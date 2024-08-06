@@ -224,11 +224,8 @@
       "approveInWallet": "在钱包中批准",
       "enterAddress": "{network}地址",
       "errors": {
-        "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
         "seeRequest": "在{walletName}中查看请求",
-        "invalidAddress": "无效地址",
-        "missingAddress": "缺少地址"
+        "invalidAddress": "无效地址"
       },
       "from": "从",
       "loading": "加载中",

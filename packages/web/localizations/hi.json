@@ -224,11 +224,8 @@
       "approveInWallet": "वॉलेट में स्वीकृति दें",
       "enterAddress": "{network} पता",
       "errors": {
-        "reconnectWallet": "पुनः कनेक्ट करें {walletName}",
-        "wrongNetworkInWallet": "{walletName} में गलत नेटवर्क",
         "seeRequest": "{walletName} में अनुरोध देखें",
-        "invalidAddress": "अमान्य पता",
-        "missingAddress": "गुम पता"
+        "invalidAddress": "अमान्य पता"
       },
       "from": "से",
       "loading": "लोड हो रहा है",

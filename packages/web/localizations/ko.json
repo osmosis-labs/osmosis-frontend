@@ -224,11 +224,8 @@
       "approveInWallet": "지갑에서 승인",
       "enterAddress": "{network} 주소",
       "errors": {
-        "reconnectWallet": "{walletName} 다시 연결",
-        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크",
         "seeRequest": "{walletName}에서 요청 사항 확인하기",
-        "invalidAddress": "잘못된 주소",
-        "missingAddress": "누락된 주소"
+        "invalidAddress": "잘못된 주소"
       },
       "from": "발신 체인",
       "loading": "로딩",

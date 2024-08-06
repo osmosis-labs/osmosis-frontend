@@ -224,11 +224,8 @@
       "approveInWallet": "Im Wallet genehmigen",
       "enterAddress": "{network} Adresse",
       "errors": {
-        "reconnectWallet": "Erneut verbinden {walletName}",
-        "wrongNetworkInWallet": "Falsches Netzwerk in {walletName}",
         "seeRequest": "Siehe Anfrage in {walletName}",
-        "invalidAddress": "Ungültige Adresse",
-        "missingAddress": "Fehlende Adresse"
+        "invalidAddress": "Ungültige Adresse"
       },
       "from": "Aus",
       "loading": "Wird geladen",

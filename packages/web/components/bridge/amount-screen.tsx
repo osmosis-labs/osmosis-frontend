@@ -154,7 +154,6 @@ export const AmountScreen = observer(
 
     const {
       selectedQuote,
-      buttonErrorMessage,
       buttonText,
       isLoadingBridgeQuote,
       isInsufficientBal,
@@ -571,8 +570,10 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
+        checkChainAndConnectWallet(firstChain);
       }
     }, [
+      checkChainAndConnectWallet,
       direction,
       fromChain,
       isLoadingSupportedAssets,
@@ -592,24 +593,6 @@ export const AmountScreen = observer(
             )?.areTransfersDisabled
           );
     }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
-
-    /**
-     * Only check the chain and connect the wallet if the quote is enabled,
-     * the asset transfers are not disabled, and the chain is set.
-     */
-    useEffect(() => {
-      const chain = direction === "deposit" ? fromChain : toChain;
-      if (chain && quote.enabled && !areAssetTransfersDisabled) {
-        checkChainAndConnectWallet(chain);
-      }
-    }, [
-      checkChainAndConnectWallet,
-      direction,
-      fromChain,
-      areAssetTransfersDisabled,
-      quote.enabled,
-      toChain,
-    ]);
 
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
@@ -645,37 +628,57 @@ export const AmountScreen = observer(
       [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
     );
 
-    if (
-      isLoadingCanonicalAssetPrice ||
-      isLoadingSupportedAssets ||
-      isLoadingAssetsInOsmosis ||
-      !canonicalAsset ||
-      !canonicalAssetPrice ||
-      (direction === "withdraw"
-        ? !fromChain || !fromAsset
-        : !toChain || !toAsset)
-    ) {
-      return <AmountScreenSkeletonLoader />;
-    }
+    const isLoading = useMemo(
+      () =>
+        isLoadingCanonicalAssetPrice ||
+        isLoadingSupportedAssets ||
+        isLoadingAssetsInOsmosis ||
+        !canonicalAsset ||
+        !canonicalAssetPrice ||
+        (direction === "withdraw"
+          ? !fromChain || !fromAsset
+          : !toChain || !toAsset),
+      [
+        canonicalAsset,
+        canonicalAssetPrice,
+        direction,
+        fromAsset,
+        fromChain,
+        isLoadingAssetsInOsmosis,
+        isLoadingCanonicalAssetPrice,
+        isLoadingSupportedAssets,
+        toAsset,
+        toChain,
+      ]
+    );
+
+    const shouldShowAssetDropdown = useMemo(() => {
+      return direction === "deposit"
+        ? !isNil(fromAsset) &&
+            Object.keys(fromAsset.supportedVariants).length > 1
+        : !isNil(toAsset) &&
+            counterpartySupportedAssetsByChainId[toAsset.chainId]?.length > 1;
+    }, [counterpartySupportedAssetsByChainId, direction, fromAsset, toAsset]);
 
     // This condition will be met iff:
     // * An asset is disabled, effectively its FF is turned off for whatever reason
     // * There's no supportedAssets returned from providers, so we don't know the to/from asset/chain depending on direction
     // * Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
     if (
-      areAssetTransfersDisabled ||
-      !fromChain ||
-      !fromAsset ||
-      !toChain ||
-      !toAsset ||
-      !quote.enabled
+      !isLoading &&
+      (areAssetTransfersDisabled ||
+        !fromChain ||
+        !fromAsset ||
+        !toChain ||
+        !toAsset ||
+        !quote.enabled)
     ) {
       return (
         <OnlyExternalBridgeSuggest
           direction={direction}
           toChain={toChain}
           toAsset={toAsset}
-          canonicalAssetDenom={canonicalAsset.coinDenom}
+          canonicalAssetDenom={canonicalAsset?.coinDenom}
           fromChain={fromChain}
           fromAsset={fromAsset}
           toAddress={toAddress}
@@ -688,8 +691,12 @@ export const AmountScreen = observer(
     /**
      * This will trigger an error boundary
      */
-    if (!supportedSourceAssets) {
+    if (!supportedSourceAssets && !isLoading) {
       throw new Error("Supported source assets are not defined");
+    }
+
+    if (!assetsInOsmosis && !isLoading) {
+      throw new Error("Assets are not defined");
     }
 
     const resetAssets = () => {
@@ -704,24 +711,30 @@ export const AmountScreen = observer(
 
     return (
       <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
-        <div className="mb-6 flex items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
-          <span>
-            {direction === "deposit"
-              ? t("transfer.deposit")
-              : t("transfer.withdraw")}
-          </span>{" "}
-          <button
-            className="flex items-center gap-3"
-            onClick={() => setCurrentScreen(ImmersiveBridgeScreen.Asset)}
-          >
-            <Image
-              width={32}
-              height={32}
-              src={canonicalAsset.coinImageUrl ?? "/"}
-              alt="token image"
-            />{" "}
-            <span>{canonicalAsset.coinDenom}</span>
-          </button>
+        <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
+          {isLoading ? (
+            <SkeletonLoader className="h-8 w-full max-w-sm md:h-4" />
+          ) : (
+            <>
+              <span>
+                {direction === "deposit"
+                  ? t("transfer.deposit")
+                  : t("transfer.withdraw")}
+              </span>{" "}
+              <button
+                className="flex items-center gap-3"
+                onClick={() => setCurrentScreen(ImmersiveBridgeScreen.Asset)}
+              >
+                <Image
+                  width={32}
+                  height={32}
+                  src={canonicalAsset?.coinImageUrl ?? "/"}
+                  alt="token image"
+                />{" "}
+                <span>{canonicalAsset?.coinDenom}</span>
+              </button>
+            </>
+          )}
         </div>
 
         <div className="mb-6 flex w-full flex-col gap-2">
@@ -738,11 +751,11 @@ export const AmountScreen = observer(
           <div className="flex items-center gap-3 md:gap-2">
             <ChainSelectorButton
               direction={direction}
-              chainColor={fromChain.color}
-              chainLogo={fromChain.logoUri}
+              chainColor={fromChain?.color}
+              chainLogo={fromChain?.logoUri}
               chains={supportedChains}
               toChain={toChain}
-              isLoading
+              isLoading={isLoading}
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
@@ -772,7 +785,7 @@ export const AmountScreen = observer(
                 setManualToAddress(address);
               }}
             >
-              {fromChain.prettyName}
+              {fromChain?.prettyName}
             </ChainSelectorButton>
 
             <Icon
@@ -782,11 +795,11 @@ export const AmountScreen = observer(
 
             <ChainSelectorButton
               direction={direction}
-              chainColor={toChain.color}
-              chainLogo={toChain.logoUri}
+              chainColor={toChain?.color}
+              chainLogo={toChain?.logoUri}
               chains={supportedChains}
-              toChain={toChain}
-              isLoading
+              toChain={toChain!}
+              isLoading={isLoading}
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
@@ -814,7 +827,7 @@ export const AmountScreen = observer(
                 setManualToAddress(address);
               }}
             >
-              {toChain.prettyName}
+              {toChain?.prettyName}
             </ChainSelectorButton>
           </div>
         </div>
@@ -840,9 +853,9 @@ export const AmountScreen = observer(
             transferGasChain={fromChain}
           />
 
-          {isWalletNeededConnected && (
+          {(isWalletNeededConnected || isLoading) && (
             <>
-              {isLoadingAssetsBalance && (
+              {(isLoadingAssetsBalance || isLoading) && (
                 <div className="flex w-full items-center justify-center gap-3">
                   <Spinner className="text-wosmongton-500" />
                   <p className="body1 md:body2 text-osmoverse-300">
@@ -851,20 +864,23 @@ export const AmountScreen = observer(
                 </div>
               )}
 
-              {!isLoadingAssetsBalance && assetsBalances?.length === 1 && (
-                <p className="body1 md:body2 w-full text-center text-osmoverse-300">
-                  {inputUnit === "crypto"
-                    ? assetsBalances[0].amount
-                        .trim(true)
-                        .maxDecimals(6)
-                        .hideDenom(true)
-                        .toString()
-                    : assetsBalances[0].usdValue.toString()}{" "}
-                  {t("transfer.available")}
-                </p>
-              )}
+              {!isLoadingAssetsBalance &&
+                !isLoading &&
+                assetsBalances?.length === 1 && (
+                  <p className="body1 md:body2 w-full text-center text-osmoverse-300">
+                    {inputUnit === "crypto"
+                      ? assetsBalances[0].amount
+                          .trim(true)
+                          .maxDecimals(6)
+                          .hideDenom(true)
+                          .toString()
+                      : assetsBalances[0].usdValue.toString()}{" "}
+                    {t("transfer.available")}
+                  </p>
+                )}
 
               {!isLoadingAssetsBalance &&
+                !isLoading &&
                 assetsBalances &&
                 (assetsBalances.length ?? 0) > 1 && (
                   <div className="mx-auto flex w-full flex-wrap items-center rounded-2xl bg-osmoverse-1000">
@@ -904,228 +920,304 @@ export const AmountScreen = observer(
             </>
           )}
 
-          <BridgeWalletSelectModal
-            direction={direction}
-            isOpen={isBridgeWalletSelectOpen}
-            onRequestClose={onCloseBridgeWalletSelect}
-            onSelectChain={(chain) => {
-              const setChain =
-                direction === "deposit" ? setFromChain : setToChain;
-              setChain(chain);
-              resetAssets();
-              setManualToAddress(undefined);
-            }}
-            evmChain={(() => {
-              const chain = direction === "deposit" ? fromChain : toChain;
-              return chain?.chainType === "evm"
-                ? chain
-                : firstSupportedEvmChain;
-            })()}
-            cosmosChain={(() => {
-              const chain = direction === "deposit" ? fromChain : toChain;
-              return chain?.chainType === "cosmos"
-                ? chain
-                : firstSupportedCosmosChain;
-            })()}
-            fromChain={fromChain}
-            toChain={toChain}
-            initialManualAddress={manualToAddress}
-            onConfirmManualAddress={(address) => {
-              setManualToAddress(address);
-            }}
-          />
-          {osmosisWalletConnected && isWalletNeededConnected && (
+          {fromChain && toChain && (
+            <BridgeWalletSelectModal
+              direction={direction}
+              isOpen={isBridgeWalletSelectOpen}
+              onRequestClose={onCloseBridgeWalletSelect}
+              onSelectChain={(chain) => {
+                const setChain =
+                  direction === "deposit" ? setFromChain : setToChain;
+                setChain(chain);
+                resetAssets();
+                setManualToAddress(undefined);
+              }}
+              evmChain={(() => {
+                const chain = direction === "deposit" ? fromChain : toChain;
+                return chain?.chainType === "evm"
+                  ? chain
+                  : firstSupportedEvmChain;
+              })()}
+              cosmosChain={(() => {
+                const chain = direction === "deposit" ? fromChain : toChain;
+                return chain?.chainType === "cosmos"
+                  ? chain
+                  : firstSupportedCosmosChain;
+              })()}
+              fromChain={fromChain}
+              toChain={toChain}
+              initialManualAddress={manualToAddress}
+              onConfirmManualAddress={(address) => {
+                setManualToAddress(address);
+              }}
+            />
+          )}
+
+          {isLoading ? (
+            <div className="flex justify-between">
+              <SkeletonLoader className="h-4 w-16" />
+              <SkeletonLoader className="h-4 w-16" />
+            </div>
+          ) : (
             <>
-              {hasMoreThanOneChainType || direction === "withdraw" ? (
+              {osmosisWalletConnected && isWalletNeededConnected && (
                 <>
-                  <button
-                    onClick={onOpenBridgeWalletSelect}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="body1 md:body2 text-osmoverse-300">
-                      {direction === "deposit" ||
-                      fromChain.chainType === toChain.chainType
-                        ? t("transfer.transferWith")
-                        : t("transfer.transferTo")}
-                    </span>
+                  {hasMoreThanOneChainType || direction === "withdraw" ? (
+                    <>
+                      <button
+                        onClick={onOpenBridgeWalletSelect}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="body1 md:body2 text-osmoverse-300">
+                          {direction === "deposit" ||
+                          fromChain?.chainType === toChain?.chainType
+                            ? t("transfer.transferWith")
+                            : t("transfer.transferTo")}
+                        </span>
 
-                    <WalletDisplay
-                      icon={(() => {
-                        if (
-                          direction === "withdraw" &&
-                          !isNil(manualToAddress)
-                        ) {
-                          return (
-                            <Icon id="wallet" className="text-wosmongton-200" />
-                          );
-                        }
+                        <WalletDisplay
+                          icon={(() => {
+                            if (
+                              direction === "withdraw" &&
+                              !isNil(manualToAddress)
+                            ) {
+                              return (
+                                <Icon
+                                  id="wallet"
+                                  className="text-wosmongton-200"
+                                />
+                              );
+                            }
 
-                        const chain =
-                          direction === "deposit" ? fromChain : toChain;
-                        return chain?.chainType === "evm"
-                          ? evmConnector?.icon
-                          : fromCosmosCounterpartyAccount?.walletInfo.logo;
-                      })()}
-                      name={(() => {
-                        if (
-                          direction === "withdraw" &&
-                          !isNil(manualToAddress)
-                        ) {
-                          return shorten(manualToAddress);
-                        }
+                            const chain =
+                              direction === "deposit" ? fromChain : toChain;
+                            return chain?.chainType === "evm"
+                              ? evmConnector?.icon
+                              : fromCosmosCounterpartyAccount?.walletInfo.logo;
+                          })()}
+                          name={(() => {
+                            if (
+                              direction === "withdraw" &&
+                              !isNil(manualToAddress)
+                            ) {
+                              return shorten(manualToAddress);
+                            }
 
-                        const chain =
-                          direction === "deposit" ? fromChain : toChain;
-                        return chain?.chainType === "evm"
-                          ? evmConnector?.name
-                          : fromCosmosCounterpartyAccount?.walletInfo
-                              .prettyName;
-                      })()}
-                      suffix={
-                        <Icon
-                          id="chevron-down"
-                          width={12}
-                          height={12}
-                          className="text-osmoverse-300"
+                            const chain =
+                              direction === "deposit" ? fromChain : toChain;
+                            return chain?.chainType === "evm"
+                              ? evmConnector?.name
+                              : fromCosmosCounterpartyAccount?.walletInfo
+                                  .prettyName;
+                          })()}
+                          suffix={
+                            <Icon
+                              id="chevron-down"
+                              width={12}
+                              height={12}
+                              className="text-osmoverse-300"
+                            />
+                          }
                         />
-                      }
-                    />
-                  </button>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="body1 md:body2 text-osmoverse-300">
+                        {direction === "deposit"
+                          ? t("transfer.transferWith")
+                          : t("transfer.transferTo")}
+                      </span>
+                      <WalletDisplay
+                        icon={
+                          fromChain?.chainType === "evm"
+                            ? evmConnector?.icon
+                            : osmosisAccount?.walletInfo.logo
+                        }
+                        name={
+                          fromChain?.chainType === "evm"
+                            ? evmConnector?.name
+                            : osmosisAccount?.walletInfo.prettyName
+                        }
+                      />
+                    </div>
+                  )}
                 </>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="body1 md:body2 text-osmoverse-300">
-                    {direction === "deposit"
-                      ? t("transfer.transferWith")
-                      : t("transfer.transferTo")}
-                  </span>
-                  <WalletDisplay
-                    icon={
-                      fromChain?.chainType === "evm"
-                        ? evmConnector?.icon
-                        : osmosisAccount?.walletInfo.logo
-                    }
-                    name={
-                      fromChain?.chainType === "evm"
-                        ? evmConnector?.name
-                        : osmosisAccount?.walletInfo.prettyName
-                    }
-                  />
-                </div>
               )}
             </>
           )}
 
-          {(direction === "deposit"
-            ? !isNil(fromAsset) &&
-              Object.keys(fromAsset.supportedVariants).length > 1
-            : // direction === "withdraw"
-              !isNil(toAsset) &&
-              counterpartySupportedAssetsByChainId[toAsset.chainId]?.length >
-                1) && (
-            <Menu>
-              {({ open }) => (
-                <div className="relative w-full">
-                  <MenuButton className="w-full">
-                    <div className="flex items-center justify-between">
-                      <Tooltip
-                        content={
-                          <div>
-                            <h1 className="caption mb-1">
+          {fromAsset &&
+            toAsset &&
+            assetsInOsmosis &&
+            shouldShowAssetDropdown &&
+            !isLoading && (
+              <Menu>
+                {({ open }) => (
+                  <div className="relative w-full">
+                    <MenuButton className="w-full">
+                      <div className="flex items-center justify-between">
+                        <Tooltip
+                          content={
+                            <div>
+                              <h1 className="caption mb-1">
+                                {t("transfer.receiveAsset")}
+                              </h1>
+                              <p className="caption text-osmoverse-300">
+                                {direction === "deposit"
+                                  ? t("transfer.depositAssetDescription")
+                                  : t("transfer.withdrawAssetDescription")}
+                              </p>
+                            </div>
+                          }
+                          enablePropagation
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="body1 md:body2 text-osmoverse-300">
                               {t("transfer.receiveAsset")}
-                            </h1>
-                            <p className="caption text-osmoverse-300">
-                              {direction === "deposit"
-                                ? t("transfer.depositAssetDescription")
-                                : t("transfer.withdrawAssetDescription")}
-                            </p>
+                            </span>
+                            <Icon
+                              className={classNames(
+                                "opacity-0 transition-opacity",
+                                {
+                                  // Only show stars if recommended asset is selected
+                                  "opacity-100":
+                                    direction === "deposit"
+                                      ? toAsset.address ===
+                                        Object.keys(
+                                          fromAsset.supportedVariants
+                                        )[0]
+                                      : toAsset.address ===
+                                        counterpartySupportedAssetsByChainId[
+                                          toAsset.chainId
+                                        ].map(({ address }) => address)[0],
+                                }
+                              )}
+                              id="generate-stars"
+                              width={24}
+                            />
                           </div>
-                        }
-                        enablePropagation
-                      >
+                        </Tooltip>
+
                         <div className="flex items-center gap-2">
-                          <span className="body1 md:body2 text-osmoverse-300">
-                            {t("transfer.receiveAsset")}
+                          <span className="subtitle1 md:body2 text-white-full">
+                            {toAsset?.denom}
                           </span>
                           <Icon
+                            id="chevron-down"
+                            width={12}
+                            height={12}
                             className={classNames(
-                              "opacity-0 transition-opacity",
+                              "text-osmoverse-300 transition-transform duration-150",
                               {
-                                // Only show stars if recommended asset is selected
-                                "opacity-100":
-                                  direction === "deposit"
-                                    ? toAsset.address ===
-                                      Object.keys(
-                                        fromAsset.supportedVariants
-                                      )[0]
-                                    : toAsset.address ===
-                                      counterpartySupportedAssetsByChainId[
-                                        toAsset.chainId
-                                      ].map(({ address }) => address)[0],
+                                "rotate-180": open,
                               }
                             )}
-                            id="generate-stars"
-                            width={24}
                           />
                         </div>
-                      </Tooltip>
+                      </div>
+                    </MenuButton>
 
-                      <div className="flex items-center gap-2">
-                        <span className="subtitle1 md:body2 text-white-full">
-                          {toAsset?.denom}
-                        </span>
-                        <Icon
-                          id="chevron-down"
-                          width={12}
-                          height={12}
-                          className={classNames(
-                            "text-osmoverse-300 transition-transform duration-150",
-                            {
-                              "rotate-180": open,
+                    <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
+                      {direction === "deposit" ? (
+                        <>
+                          {Object.keys(fromAsset.supportedVariants).map(
+                            (variantCoinMinimalDenom, index) => {
+                              const asset = assetsInOsmosis.find(
+                                (asset) =>
+                                  asset.coinMinimalDenom ===
+                                  variantCoinMinimalDenom
+                              )!;
+
+                              const onClick = () => {
+                                logEvent([
+                                  EventName.DepositWithdraw.variantSelected,
+                                ]);
+                                setToAsset({
+                                  chainType: "cosmos",
+                                  address: asset.coinMinimalDenom,
+                                  decimals: asset.coinDecimals,
+                                  chainId: accountStore.osmosisChainId,
+                                  denom: asset.coinDenom,
+                                  // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
+                                  supportedVariants: {},
+                                });
+                              };
+
+                              // Show all as 'deposit as' for now
+                              const isConvert =
+                                false ??
+                                asset.coinMinimalDenom ===
+                                  asset.variantGroupKey;
+                              const isSelected =
+                                toAsset?.address === asset.coinMinimalDenom;
+
+                              const isCanonicalAsset = index === 0;
+
+                              return (
+                                <MenuItem key={asset.coinDenom}>
+                                  <button
+                                    className={classNames(
+                                      "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
+                                      isSelected && "bg-osmoverse-700"
+                                    )}
+                                    onClick={onClick}
+                                  >
+                                    <Image
+                                      src={asset.coinImageUrl ?? "/"}
+                                      alt={`${asset.coinDenom} logo`}
+                                      width={32}
+                                      height={32}
+                                    />
+                                    <div className="flex flex-col">
+                                      <p className="body1 md:body2">
+                                        {isConvert
+                                          ? t("transfer.convertTo")
+                                          : t("transfer.depositAs")}{" "}
+                                        {asset.coinDenom}
+                                      </p>
+                                      {isCanonicalAsset && (
+                                        <p className="body2 text-osmoverse-300">
+                                          {t("transfer.recommended")}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </button>
+                                </MenuItem>
+                              );
                             }
                           )}
-                        />
-                      </div>
-                    </div>
-                  </MenuButton>
-
-                  <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
-                    {direction === "deposit" ? (
-                      <>
-                        {Object.keys(fromAsset.supportedVariants).map(
-                          (variantCoinMinimalDenom, index) => {
-                            const asset = assetsInOsmosis.find(
-                              (asset) =>
-                                asset.coinMinimalDenom ===
-                                variantCoinMinimalDenom
-                            )!;
-
+                        </>
+                      ) : (
+                        <>
+                          {counterpartySupportedAssetsByChainId[
+                            toAsset.chainId
+                          ].map((asset, index, assets) => {
                             const onClick = () => {
-                              logEvent([
-                                EventName.DepositWithdraw.variantSelected,
-                              ]);
-                              setToAsset({
-                                chainType: "cosmos",
-                                address: asset.coinMinimalDenom,
-                                decimals: asset.coinDecimals,
-                                chainId: accountStore.osmosisChainId,
-                                denom: asset.coinDenom,
-                                // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
-                                supportedVariants: {},
-                              });
+                              setToAsset(asset);
                             };
 
-                            // Show all as 'deposit as' for now
-                            const isConvert =
-                              false ??
-                              asset.coinMinimalDenom === asset.variantGroupKey;
                             const isSelected =
-                              toAsset?.address === asset.coinMinimalDenom;
+                              toAsset?.address === asset.address;
 
                             const isCanonicalAsset = index === 0;
+                            const representativeAsset =
+                              assetsInOsmosis.find(
+                                (a) =>
+                                  a.coinMinimalDenom === asset.address ||
+                                  asset.denom === a.coinDenom
+                              ) ?? assetsInOsmosis[0];
+
+                            /**
+                             * If the denom/symbol is the same as the root variant,
+                             * there's no visible difference in the dropdown.
+                             * So if it's the same, we reveal the address as subtext.
+                             */
+                            const revealAddress =
+                              assets[0].denom === asset.denom;
 
                             return (
-                              <MenuItem key={asset.coinDenom}>
+                              <MenuItem key={asset.denom}>
                                 <button
                                   className={classNames(
                                     "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
@@ -1134,110 +1226,58 @@ export const AmountScreen = observer(
                                   onClick={onClick}
                                 >
                                   <Image
-                                    src={asset.coinImageUrl ?? "/"}
-                                    alt={`${asset.coinDenom} logo`}
+                                    src={
+                                      representativeAsset.coinImageUrl ?? "/"
+                                    }
+                                    alt={`${asset.denom} logo`}
                                     width={32}
                                     height={32}
                                   />
                                   <div className="flex flex-col">
                                     <p className="body1 md:body2">
-                                      {isConvert
-                                        ? t("transfer.convertTo")
-                                        : t("transfer.depositAs")}{" "}
-                                      {asset.coinDenom}
+                                      {t("transfer.withdrawAs")} {asset.denom}
                                     </p>
-                                    {isCanonicalAsset && (
+                                    {isCanonicalAsset ? (
                                       <p className="body2 text-osmoverse-300">
                                         {t("transfer.recommended")}
                                       </p>
-                                    )}
+                                    ) : revealAddress ? (
+                                      <p className="body2 text-osmoverse-300">
+                                        {asset.address}
+                                      </p>
+                                    ) : null}
                                   </div>
                                 </button>
                               </MenuItem>
                             );
-                          }
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {counterpartySupportedAssetsByChainId[
-                          toAsset.chainId
-                        ].map((asset, index, assets) => {
-                          const onClick = () => {
-                            setToAsset(asset);
-                          };
+                          })}
+                        </>
+                      )}
+                    </MenuItems>
+                  </div>
+                )}
+              </Menu>
+            )}
 
-                          const isSelected = toAsset?.address === asset.address;
-
-                          const isCanonicalAsset = index === 0;
-                          const representativeAsset =
-                            assetsInOsmosis.find(
-                              (a) =>
-                                a.coinMinimalDenom === asset.address ||
-                                asset.denom === a.coinDenom
-                            ) ?? assetsInOsmosis[0];
-
-                          /**
-                           * If the denom/symbol is the same as the root variant,
-                           * there's no visible difference in the dropdown.
-                           * So if it's the same, we reveal the address as subtext.
-                           */
-                          const revealAddress = assets[0].denom === asset.denom;
-
-                          return (
-                            <MenuItem key={asset.denom}>
-                              <button
-                                className={classNames(
-                                  "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
-                                  isSelected && "bg-osmoverse-700"
-                                )}
-                                onClick={onClick}
-                              >
-                                <Image
-                                  src={representativeAsset.coinImageUrl ?? "/"}
-                                  alt={`${asset.denom} logo`}
-                                  width={32}
-                                  height={32}
-                                />
-                                <div className="flex flex-col">
-                                  <p className="body1 md:body2">
-                                    {t("transfer.withdrawAs")} {asset.denom}
-                                  </p>
-                                  {isCanonicalAsset ? (
-                                    <p className="body2 text-osmoverse-300">
-                                      {t("transfer.recommended")}
-                                    </p>
-                                  ) : revealAddress ? (
-                                    <p className="body2 text-osmoverse-300">
-                                      {asset.address}
-                                    </p>
-                                  ) : null}
-                                </div>
-                              </button>
-                            </MenuItem>
-                          );
-                        })}
-                      </>
-                    )}
-                  </MenuItems>
-                </div>
-              )}
-            </Menu>
-          )}
-
-          <TransferDetails
-            quote={
-              quote as BridgeQuote & {
-                selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+          {fromChain && (
+            <TransferDetails
+              quote={
+                quote as BridgeQuote & {
+                  selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
+                }
               }
-            }
-            fromChain={fromChain}
-            isLoading={isLoadingBridgeQuote}
-          />
+              fromChain={fromChain}
+              isLoading={isLoadingBridgeQuote}
+            />
+          )}
 
           <div className="flex flex-col items-center gap-4">
             <ScreenManager
               currentScreen={(function () {
+                if (isLoading) {
+                  return "next-step";
+                }
+
                 if (!osmosisWalletConnected && !pendingChainApproval) {
                   return "no-osmo-wallet";
                 }
@@ -1283,8 +1323,8 @@ export const AmountScreen = observer(
                       : t("transfer.connectTo", {
                           network:
                             direction === "deposit"
-                              ? fromChain.prettyName
-                              : toChain.prettyName,
+                              ? fromChain?.prettyName ?? ""
+                              : toChain?.prettyName ?? "",
                         })}
                   </h6>
                 </Button>
@@ -1310,7 +1350,6 @@ export const AmountScreen = observer(
                 )}
                 <Button
                   disabled={
-                    !isNil(buttonErrorMessage) ||
                     cryptoAmount === "" ||
                     cryptoAmount === "0" ||
                     !quote.userCanAdvance
@@ -1366,7 +1405,7 @@ interface ChainSelectorButtonProps {
   chainLogo: string | undefined;
   chainColor: string | undefined;
   chains: SupportedChain[];
-  toChain: BridgeChainWithDisplayInfo;
+  toChain: BridgeChainWithDisplayInfo | undefined;
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
   isNetworkSelectVisible: boolean;
   setIsNetworkSelectVisible: Dispatch<SetStateAction<boolean>>;
@@ -1442,19 +1481,21 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
           />
         )}
       </button>
-      <BridgeNetworkSelectModal
-        isOpen={isNetworkSelectVisible}
-        chains={chains}
-        onSelectChain={async (chain) => {
-          onSelectChain(chain);
-          setIsNetworkSelectVisible(false);
-        }}
-        onRequestClose={() => setIsNetworkSelectVisible(false)}
-        direction={direction}
-        toChain={toChain}
-        initialManualAddress={initialManualAddress}
-        onConfirmManualAddress={onConfirmManualAddress}
-      />
+      {toChain && (
+        <BridgeNetworkSelectModal
+          isOpen={isNetworkSelectVisible}
+          chains={chains}
+          onSelectChain={async (chain) => {
+            onSelectChain(chain);
+            setIsNetworkSelectVisible(false);
+          }}
+          onRequestClose={() => setIsNetworkSelectVisible(false)}
+          direction={direction}
+          toChain={toChain}
+          initialManualAddress={initialManualAddress}
+          onConfirmManualAddress={onConfirmManualAddress}
+        />
+      )}
     </>
   );
 };

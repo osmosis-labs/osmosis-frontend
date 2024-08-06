@@ -224,11 +224,8 @@
       "approveInWallet": "تایید در کیف پول",
       "enterAddress": "آدرس {network}",
       "errors": {
-        "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
-        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}",
         "seeRequest": "درخواست را در {walletName} ببینید",
-        "invalidAddress": "آدرس نامعتبر",
-        "missingAddress": "آدرس گم شده"
+        "invalidAddress": "آدرس نامعتبر"
       },
       "from": "از",
       "loading": "در حال بارگذاری",

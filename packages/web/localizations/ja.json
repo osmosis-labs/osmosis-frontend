@@ -224,11 +224,8 @@
       "approveInWallet": "ウォレットで承認",
       "enterAddress": "{network}アドレス",
       "errors": {
-        "reconnectWallet": "{walletName}を再接続します",
-        "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
         "seeRequest": "{walletName}リクエストを参照してください。",
-        "invalidAddress": "無効なアドレス",
-        "missingAddress": "住所がありません"
+        "invalidAddress": "無効なアドレス"
       },
       "from": "から",
       "loading": "読み込み中",

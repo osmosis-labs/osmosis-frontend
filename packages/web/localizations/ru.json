@@ -224,11 +224,8 @@
       "approveInWallet": "Одобрить в кошельке",
       "enterAddress": "{network} адрес",
       "errors": {
-        "reconnectWallet": "Переподключите {walletName}",
-        "wrongNetworkInWallet": "Неправильная сеть в {walletName}",
         "seeRequest": "См. запрос в {walletName}",
-        "invalidAddress": "Неверный адрес",
-        "missingAddress": "Отсутствует адрес"
+        "invalidAddress": "Неверный адрес"
       },
       "from": "От",
       "loading": "Загрузка",

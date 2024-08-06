@@ -224,11 +224,8 @@
       "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
-        "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}",
         "seeRequest": "Vezi solicitarea în {walletName}",
-        "invalidAddress": "Adresă invalidă",
-        "missingAddress": "Adresa lipsă"
+        "invalidAddress": "Adresă invalidă"
       },
       "from": "De la",
       "loading": "Se incarca",
