@@ -20,8 +20,13 @@ import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
+import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
 import {
   useOrderbookAllActiveOrders,
   useOrderbookClaimableOrders,
@@ -59,6 +64,7 @@ export const OrderHistory = observer(() => {
   const { t } = useTranslation();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const listRef = useRef<HTMLTableElement>(null);
+  const { onOpenWalletSelect } = useWalletSelect();
 
   const {
     orders,
@@ -143,6 +149,45 @@ export const OrderHistory = observer(() => {
       ]);
     }
   }, [claimAllOrders, logEvent, refetch]);
+
+  const showConnectWallet = !wallet?.isWalletConnected;
+
+  if (showConnectWallet) {
+    return (
+      <div className="mx-auto my-6 flex flex-col justify-center gap-6 px-4 text-center">
+        <Image
+          className="mx-auto"
+          src="/images/ion-thumbs-up.svg"
+          alt="ion thumbs up"
+          width="260"
+          height="160"
+        />
+        <div className="flex w-full flex-col items-center gap-2 text-center">
+          <h6>{t("limitOrders.historyTable.emptyState.connectTitle")}</h6>
+          <p className="body1 text-osmoverse-300">
+            {t("limitOrders.historyTable.emptyState.connectSubtitle")}
+          </p>
+        </div>
+        <div className="max-w-56">
+          <Button
+            onClick={() =>
+              onOpenWalletSelect({
+                walletOptions: [
+                  {
+                    walletType: "cosmos",
+                    chainId: accountStore.osmosisChainId,
+                  },
+                ],
+              })
+            }
+            size="md"
+          >
+            {t("transactions.connectWallet")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (orders.length === 0 && !isLoading) {
     return (

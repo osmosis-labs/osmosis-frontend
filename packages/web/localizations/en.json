@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "No recent orders",
-        "subtitle": "Your trade order history will appear here."
+        "subtitle": "Your trade order history will appear here.",
+        "connectTitle": "Connect your wallet to see your order history",
+        "connectSubtitle": "Your past limit orders on Osmosis will appear here."
       }
     },
     "limitOrder": {
