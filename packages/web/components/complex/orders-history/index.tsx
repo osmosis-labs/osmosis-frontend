@@ -64,7 +64,7 @@ export const OrderHistory = observer(() => {
   const { t } = useTranslation();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const listRef = useRef<HTMLTableElement>(null);
-  const { onOpenWalletSelect } = useWalletSelect();
+  const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
 
   const {
     orders,
@@ -150,7 +150,7 @@ export const OrderHistory = observer(() => {
     }
   }, [claimAllOrders, logEvent, refetch]);
 
-  const showConnectWallet = !wallet?.isWalletConnected;
+  const showConnectWallet = !wallet?.isWalletConnected && !isWalletLoading;
 
   if (showConnectWallet) {
     return (
