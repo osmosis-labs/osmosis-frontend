@@ -712,7 +712,7 @@ export const AmountScreen = observer(
     return (
       <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
         <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
-          {isLoading ? (
+          {!canonicalAsset ? (
             <SkeletonLoader className="h-8 w-full max-w-sm md:h-4" />
           ) : (
             <>
@@ -728,10 +728,10 @@ export const AmountScreen = observer(
                 <Image
                   width={32}
                   height={32}
-                  src={canonicalAsset?.coinImageUrl ?? "/"}
+                  src={canonicalAsset.coinImageUrl ?? "/"}
                   alt="token image"
                 />{" "}
-                <span>{canonicalAsset?.coinDenom}</span>
+                <span>{canonicalAsset.coinDenom}</span>
               </button>
             </>
           )}
@@ -755,7 +755,7 @@ export const AmountScreen = observer(
               chainLogo={fromChain?.logoUri}
               chains={supportedChains}
               toChain={toChain}
-              isLoading={isLoading}
+              isLoading={!fromChain}
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
@@ -799,7 +799,7 @@ export const AmountScreen = observer(
               chainLogo={toChain?.logoUri}
               chains={supportedChains}
               toChain={toChain!}
-              isLoading={isLoading}
+              isLoading={!toChain}
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
