@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "No hay pedidos recientes",
-        "subtitle": "Su historial de órdenes comerciales aparecerá aquí."
+        "subtitle": "Su historial de órdenes comerciales aparecerá aquí.",
+        "connectTitle": "Conecte su billetera para ver su historial de pedidos",
+        "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
       }
     },
     "limitOrder": {

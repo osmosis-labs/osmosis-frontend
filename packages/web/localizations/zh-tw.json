@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "最近沒有訂單",
-        "subtitle": "您的交易訂單歷史記錄將顯示在這裡。"
+        "subtitle": "您的交易訂單歷史記錄將顯示在這裡。",
+        "connectTitle": "連接您的錢包以查看您的訂單歷史記錄",
+        "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。"
       }
     },
     "limitOrder": {
