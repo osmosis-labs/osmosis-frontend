@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { parseAsString, useQueryState } from "nuqs";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import { useMeasure } from "react-use";
@@ -33,10 +34,11 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
   swapState,
   orderDirection,
 }) => {
+  const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
   const [input, setInput] = useState<HTMLInputElement | null>(null);
   const { t } = useTranslation();
   const { priceState } = swapState;
-  const [inputMode, setInputMode] = useState(InputMode.Percentage);
+  const [inputMode, setInputMode] = useState(InputMode.Price);
 
   const swapInputMode = useCallback(() => {
     setInputMode(
@@ -45,32 +47,47 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         : InputMode.Percentage
     );
 
+    if (inputMode === InputMode.Price) {
+      priceState.setPriceLock(false);
+    } else {
+      priceState.setPriceLock(true);
+    }
+
+    if (priceState.isBeyondOppositePrice || !priceState.manualPercentAdjusted) {
+      priceState.setPercentAdjusted("0");
+    }
+
     if (input) input.focus();
-  }, [inputMode, input]);
+  }, [inputMode, input, priceState]);
 
-  // Adjust the percentage adjusted when the spot price changes and user is inputting a price
+  // Adjust order price as spot price changes until user inputs a price
   useEffect(() => {
-    if (
-      priceState.spotPrice &&
-      priceState.orderPrice.length > 0 &&
-      inputMode === InputMode.Price
-    ) {
-      const manualPrice = new Dec(priceState.orderPrice);
-      const percentAdjusted = manualPrice
-        .quo(priceState.spotPrice)
-        .sub(new Dec(1))
-        .mul(new Dec(100));
+    if (inputMode === InputMode.Price && !priceState.priceLocked) {
+      const formattedPrice = formatPretty(
+        priceState.spotPrice,
+        getPriceExtendedFormatOptions(priceState.spotPrice)
+      ).replace(/,/g, "");
+      priceState._setPriceUnsafe(formattedPrice);
+      priceState._setPercentAdjustedUnsafe("0");
+    }
 
-      priceState._setPercentAdjustedUnsafe(
-        percentAdjusted.isZero() || manualPrice.isZero()
-          ? ""
-          : formatPretty(percentAdjusted.abs(), {
-              maxDecimals: 3,
-            }).toString()
+    if (inputMode === InputMode.Percentage) {
+      priceState.setPriceAsPercentageOfSpotPrice(
+        new Dec(
+          !!priceState.manualPercentAdjusted
+            ? priceState.manualPercentAdjusted.replace(/,/g, "")
+            : 0
+        ).quo(new Dec(100)),
+        false
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceState.spotPrice, priceState.orderPrice, inputMode]);
+  }, [
+    inputMode,
+    priceState.priceFiat,
+    priceState.priceLocked,
+    priceState.spotPrice,
+  ]);
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
@@ -83,26 +100,48 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+          ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
           maxDecimals: 3,
           maximumSignificantDigits: 5,
         })}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const percentageSuffix = useMemo(() => {
-    return priceState.percentAdjusted.isZero()
-      ? `${
-          orderDirection === "bid"
-            ? t("limitOrders.below")
-            : t("limitOrders.above")
-        } ${t("limitOrders.currentPrice")}`
-      : `${
-          priceState.percentAdjusted.isNegative()
-            ? t("limitOrders.below")
-            : t("limitOrders.above")
-        } ${t("limitOrders.currentPrice")}`;
-  }, [t, priceState.percentAdjusted, orderDirection]);
+    if (priceState.percentAdjusted.isZero())
+      return ` ${
+        orderDirection === "bid"
+          ? t("limitOrders.below")
+          : t("limitOrders.above")
+      } ${t("limitOrders.currentPrice")}`;
+
+    if (orderDirection === "ask") {
+      return ` ${
+        priceState.isBeyondOppositePrice
+          ? t("limitOrders.below")
+          : t("limitOrders.above")
+      } ${t("limitOrders.currentPrice")}`;
+    }
+
+    return ` ${
+      priceState.isBeyondOppositePrice
+        ? t("limitOrders.above")
+        : t("limitOrders.below")
+    } ${t("limitOrders.currentPrice")}`;
+  }, [
+    t,
+    priceState.percentAdjusted,
+    orderDirection,
+    priceState.isBeyondOppositePrice,
+  ]);
 
   const [containerRef, { width }] = useMeasure<HTMLDivElement>();
+
+  const isPercentTooLarge = useMemo(() => {
+    if (tab !== "buy") return false;
+
+    const maxPercentage = new Dec(99.999);
+    return priceState.percentAdjusted.abs().gt(maxPercentage);
+  }, [priceState.percentAdjusted, tab]);
 
   return (
     <div
@@ -198,24 +237,31 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 }}
               />
             ) : (
-              <AutosizeInput
-                type="text"
-                extraWidth={0}
-                inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
-                value={swapState.priceState.manualPercentAdjusted}
-                placeholder={trimPlaceholderZeros(
-                  swapState.priceState.percentAdjusted
-                    .mul(new Dec(100))
-                    .abs()
-                    .toString()
-                )}
-                inputRef={setInput}
-                onChange={(e) =>
-                  swapState.priceState.setPercentAdjusted(
-                    e.target.value.replace("%", "")
-                  )
-                }
-              />
+              <>
+                {isPercentTooLarge && <span>{">"}</span>}
+                <AutosizeInput
+                  type="text"
+                  extraWidth={0}
+                  inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
+                  value={
+                    isPercentTooLarge
+                      ? "99.999"
+                      : swapState.priceState.manualPercentAdjusted
+                  }
+                  placeholder={trimPlaceholderZeros(
+                    swapState.priceState.percentAdjusted
+                      .mul(new Dec(100))
+                      .abs()
+                      .toString()
+                  )}
+                  inputRef={setInput}
+                  onChange={(e) =>
+                    swapState.priceState.setPercentAdjusted(
+                      e.target.value.replace("%", "")
+                    )
+                  }
+                />
+              </>
             )}
             {inputMode === InputMode.Percentage && (
               <span className="inline-flex items-baseline gap-1">
@@ -242,10 +288,16 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-osmoverse-alpha-800/[.54] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
-              priceState.setPrice("");
-              priceState.setPercentAdjusted(
-                formatPretty(value.mul(new Dec(100)))
-              );
+              if (inputMode === InputMode.Percentage) {
+                priceState.setPercentAdjusted(
+                  formatPretty(value.mul(new Dec(100)))
+                );
+              } else {
+                priceState.setPriceAsPercentageOfSpotPrice(value);
+                priceState._setPercentAdjustedUnsafe(
+                  formatPretty(value.mul(new Dec(100)))
+                );
+              }
             }}
             disabled={!priceState.spotPrice || priceState.isLoading}
           >

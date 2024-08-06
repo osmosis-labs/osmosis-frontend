@@ -33,7 +33,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         SwapToolTab.SWAP
       )
     );
-    // const { t } = useTranslation();
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -43,14 +42,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
       pageSize: 10,
       refetchInterval: 4000,
     });
-
-    const openOrders = useMemo(
-      () =>
-        orders.filter(
-          ({ status }) => status === "open" || status === "partiallyFilled"
-        ),
-      [orders]
-    );
 
     useEffect(() => {
       switch (tab) {
@@ -128,7 +119,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             }
           }, [page, swapToolProps, tab, refetch])}
         </div>
-        {wallet?.isWalletConnected && openOrders.length > 0 && (
+        {wallet?.isWalletConnected && orders.length > 0 && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
             className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
