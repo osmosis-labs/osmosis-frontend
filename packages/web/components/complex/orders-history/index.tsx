@@ -365,9 +365,6 @@ const TableOrderRow = memo(
       <tr style={style} className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
         <td className="flex items-center !px-0 !text-left">
           <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-osmoverse-alpha-850 p-2">
-            {/* {order_direction === "bid"
-              ? t("limitOrders.buy")
-              : t("limitOrders.sell")} */}
             <Icon
               id={order_direction === "bid" ? "plus" : "minus"}
               className={classNames("h-4 w-4", {
