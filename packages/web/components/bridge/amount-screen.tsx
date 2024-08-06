@@ -1500,21 +1500,6 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
   );
 };
 
-const AmountScreenSkeletonLoader = () => {
-  return (
-    <div className="flex flex-col items-center gap-6 md:gap-3">
-      <SkeletonLoader className="h-8 w-full max-w-sm md:h-4" />
-      <SkeletonLoader className="h-20 w-full md:h-10" />
-      <SkeletonLoader className="h-24 w-full md:h-12" />
-      <SkeletonLoader className="h-24 w-full md:h-12" />
-      <SkeletonLoader className="h-6 w-full md:h-3" />
-      <SkeletonLoader className="h-6 w-full md:h-3" />
-      <SkeletonLoader className="h-14 w-full md:h-8" />
-      <SkeletonLoader className="h-14 w-full md:h-8" />
-    </div>
-  );
-};
-
 const WalletDisplay: FunctionComponent<{
   icon: string | ReactNode | undefined;
   name: string | undefined;
