@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { Asset, AssetList, Chain } from "@osmosis-labs/types";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -12,20 +12,39 @@ import { getPriceFromSidecar } from "./providers/sidecar";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
-export type PriceProvider = (
-  asset: Asset,
-  currency?: CoingeckoVsCurrencies
-) => Promise<Dec>;
+export type PriceProvider = (coinMinimalDenom: string) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/** Finds the fiat value of a single unit of a given asset denominated in USDC.
+ *  Assets can be identified either by `coinMinimalDenom`.
+ *  @throws if the coinMinimalDenom is not given or fails to fetch the price from data source */
+export async function getNativeAssetPrice(
+  coinMinimalDenom: string
+): Promise<Dec> {
+  if (!coinMinimalDenom) {
+    throw new Error("coinDenom is required");
+  }
+
+  return cachified({
+    key: `asset-price-nat-${coinMinimalDenom}`,
+    cache: pricesCache,
+    ttl: 1000 * 10, // 10 seconds
+    getFreshValue: () => getPriceFromSidecar(coinMinimalDenom),
+  });
+}
+
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
- *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
+ *  Assets can be identified either by one of:
+ * -`coinMinimalDenom`
+ * - chainID & address
+ * - coinGecko ID
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
   assetLists,
   asset,
   currency = "usd",
-  priceProvider = getPriceFromSidecar,
+  priceProvider = getNativeAssetPrice,
 }: {
   chainList: Chain[];
   assetLists: AssetList[];
@@ -79,7 +98,7 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
-    getFreshValue: () => priceProvider(foundAsset, currency),
+    getFreshValue: () => priceProvider(foundAsset.coinMinimalDenom),
   });
 }
 
@@ -104,10 +123,8 @@ export function calcCoinValue({
  *  @throws If there's an issue calculating the price for the given denom (missing in asset list or can't get price). */
 export async function calcAssetValue({
   assetLists,
-  chainList,
   anyDenom,
   amount,
-  currency = "usd",
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
@@ -117,12 +134,7 @@ export async function calcAssetValue({
 }): Promise<Dec> {
   const asset = getAsset({ assetLists, anyDenom });
 
-  const price = await getAssetPrice({
-    assetLists,
-    chainList,
-    asset,
-    currency,
-  });
+  const price = await getNativeAssetPrice(asset.coinMinimalDenom);
 
   const tokenDivision = DecUtils.getTenExponentN(asset.coinDecimals);
 
