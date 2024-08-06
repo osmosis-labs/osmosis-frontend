@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "Keine aktuellen Bestellungen",
-        "subtitle": "Ihr Handelsauftragsverlauf wird hier angezeigt."
+        "subtitle": "Ihr Handelsauftragsverlauf wird hier angezeigt.",
+        "connectTitle": "Verbinden Sie Ihr Portemonnaie, um Ihren Bestellverlauf anzuzeigen",
+        "connectSubtitle": "Ihre früheren Limitaufträge bei Osmosis werden hier angezeigt."
       }
     },
     "limitOrder": {

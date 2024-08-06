@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "Aucune commande récente",
-        "subtitle": "L’historique de vos commandes commerciales apparaîtra ici."
+        "subtitle": "L’historique de vos commandes commerciales apparaîtra ici.",
+        "connectTitle": "Connectez votre portefeuille pour voir l'historique de vos commandes",
+        "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici."
       }
     },
     "limitOrder": {

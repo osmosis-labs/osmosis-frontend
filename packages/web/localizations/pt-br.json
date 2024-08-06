@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "Nenhum pedido recente",
-        "subtitle": "Seu histórico de ordens comerciais aparecerá aqui."
+        "subtitle": "Seu histórico de ordens comerciais aparecerá aqui.",
+        "connectTitle": "Conecte sua carteira para ver seu histórico de pedidos",
+        "connectSubtitle": "Seus pedidos com limite anteriores no Osmosis aparecerão aqui."
       }
     },
     "limitOrder": {

@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "Yeni sipariş yok",
-        "subtitle": "Ticari sipariş geçmişiniz burada görünecektir."
+        "subtitle": "Ticari sipariş geçmişiniz burada görünecektir.",
+        "connectTitle": "Sipariş geçmişinizi görmek için cüzdanınızı bağlayın",
+        "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
       }
     },
     "limitOrder": {

@@ -54,6 +54,7 @@ interface ReviewOrderProps {
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   page?: EventPage;
+  isBeyondOppositePrice?: boolean;
 }
 
 export function ReviewOrder({
@@ -81,6 +82,7 @@ export function ReviewOrder({
   toAsset,
   fromAsset,
   page,
+  isBeyondOppositePrice = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   // const { isMobile } = useWindowSize();
@@ -192,7 +194,7 @@ export function ReviewOrder({
       </span>
     );
   }, [gasAmount, isGasLoading, gasFeeError, t]);
-
+  console.log(tab === "sell" && isBeyondOppositePrice);
   return (
     <ModalBase
       isOpen={isOpen}
@@ -219,7 +221,8 @@ export function ReviewOrder({
             <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 min-w-10 items-center justify-center">
-                  {percentAdjusted?.isNegative() ? (
+                  {(tab === "buy" && !isBeyondOppositePrice) ||
+                  (tab === "sell" && isBeyondOppositePrice) ? (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
                         fillRule="evenodd"
@@ -255,10 +258,11 @@ export function ReviewOrder({
                           height={6}
                           className={classNames({
                             "rotate-180 text-bullish-400":
-                              percentAdjusted.isPositive(),
+                              (tab === "buy" && isBeyondOppositePrice) ||
+                              (tab === "sell" && !isBeyondOppositePrice),
                             "rotate-0 text-rust-500":
-                              percentAdjusted.isNegative(),
-                            "opacity-0": percentAdjusted.isZero(),
+                              (tab === "buy" && !isBeyondOppositePrice) ||
+                              (tab === "sell" && isBeyondOppositePrice),
                           })}
                         />
                       )}
@@ -383,15 +387,45 @@ export function ReviewOrder({
             </div>
           </div>
           <div className="flex flex-col">
-            <div className="flex flex-col py-3">
+            <div
+              className={classNames("flex flex-col py-3", {
+                "text-rust-400": isBeyondOppositePrice,
+              })}
+            >
               <RecapRow
                 left={t("limitOrders.orderType")}
                 right={
-                  <span className="text-osmoverse-100">
-                    {orderType === "limit"
-                      ? t("limitOrders.limit")
-                      : t("limitOrders.market")}
-                  </span>
+                  <GenericDisclaimer
+                    disabled={!isBeyondOppositePrice}
+                    title={
+                      <span className="caption">
+                        {tab === "buy"
+                          ? t(`limitOrders.aboveMarket.title`)
+                          : t(`limitOrders.belowMarket.title`)}
+                      </span>
+                    }
+                    body={
+                      <span className="text-caption text-osmoverse-300">
+                        {tab === "buy"
+                          ? t(`limitOrders.aboveMarket.description`)
+                          : t(`limitOrders.belowMarket.description`)}
+                      </span>
+                    }
+                  >
+                    <div className="flex items-center justify-center">
+                      {isBeyondOppositePrice && (
+                        <Icon
+                          id="alert-circle"
+                          className="mr-2"
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      {orderType === "limit"
+                        ? t("limitOrders.limit")
+                        : t("limitOrders.market")}
+                    </div>
+                  </GenericDisclaimer>
                 }
               />
               {slippageConfig && orderType === "market" && (
@@ -583,6 +617,28 @@ export function ReviewOrder({
                 <a className="text-wosmongton-300">Learn more</a>
               </span>
             </div> */}
+            {isBeyondOppositePrice && (
+              <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
+                <Icon
+                  id="alert-triangle"
+                  width={24}
+                  height={24}
+                  className="text-rust-400"
+                />
+                <div className="flex flex-col gap-1">
+                  <span className="body2">
+                    {tab === "buy"
+                      ? t(`limitOrders.aboveMarket.title`)
+                      : t(`limitOrders.belowMarket.title`)}
+                  </span>
+                  <span className="body2 text-osmoverse-300">
+                    {tab === "buy"
+                      ? t(`limitOrders.aboveMarket.description`)
+                      : t(`limitOrders.belowMarket.description`)}
+                  </span>
+                </div>
+              </div>
+            )}
             {!diffGteSlippage && (
               <div className="flex w-full justify-between gap-3 pt-3">
                 <Button

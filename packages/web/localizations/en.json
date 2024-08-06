@@ -1250,11 +1250,11 @@
     },
     "aboveMarket": {
       "title": "Limit price above market price",
-      "description": "If you proceed, your order will be processed as a market order at market price."
+      "description": "If you proceed your order may be filled at an undesirable price."
     },
     "belowMarket": {
       "title": "Limit price below market price",
-      "description": "If you proceed, your order will be processed as a market order at market price."
+      "description": "If you proceed your order may be filled at an undesirable price."
     },
     "enterAnAmountTo": "Enter an amount to",
     "sell": "Sell",

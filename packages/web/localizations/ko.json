@@ -1231,7 +1231,9 @@
       },
       "emptyState": {
         "title": "최근 주문 없음",
-        "subtitle": "귀하의 거래 주문 내역이 여기에 표시됩니다."
+        "subtitle": "귀하의 거래 주문 내역이 여기에 표시됩니다.",
+        "connectTitle": "지갑을 연결하여 주문 내역을 확인하세요",
+        "connectSubtitle": "Osmosis의 과거 지정가 주문이 여기에 표시됩니다."
       }
     },
     "limitOrder": {

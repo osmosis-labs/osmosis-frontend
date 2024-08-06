@@ -97,8 +97,10 @@ export const usePlaceLimit = ({
   });
 
   const isMarket = useMemo(
-    () => type === "market" || priceState.isBeyondOppositePrice,
-    [type, priceState.isBeyondOppositePrice]
+    () => type === "market",
+    //|| priceState.isBeyondOppositePrice
+    // Disabled auto market placing but can be readded with the above conditional
+    [type]
   );
 
   const account = accountStore.getWallet(osmosisChainId);
