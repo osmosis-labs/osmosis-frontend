@@ -271,6 +271,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             : await this.createCosmosTransaction(
                 transactionRequest.data,
                 fromAddress,
+                toChain.chainId.toString(),
                 { denom: fromAsset.address, amount: fromAmount }
                 // TODO: uncomment when we're able to find a way to get gas limit from Squid
                 // or get it ourselves
@@ -494,6 +495,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   async createCosmosTransaction(
     data: string,
     fromAddress: string,
+    toChainId: string,
     fromCoin: {
       denom: string;
       amount: string;
@@ -532,7 +534,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         };
 
         const timeoutHeight = await this.ctx.getTimeoutHeight({
-          destinationAddress: ibcData.msg.receiver,
+          chainId: toChainId,
         });
 
         const { typeUrl, value: msg } =
@@ -708,14 +710,19 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://app.squidrouter.com/"
         : "https://testnet.app.squidrouter.com/"
     );
-    url.searchParams.set(
-      "chains",
-      [fromChain.chainId, toChain.chainId].join(",")
-    );
-    url.searchParams.set(
-      "tokens",
-      [fromAsset.address, toAsset.address].join(",")
-    );
+    const chains = [fromChain?.chainId, toChain?.chainId]
+      .filter(Boolean)
+      .join(",");
+    const tokens = [fromAsset?.address, toAsset?.address]
+      .filter(Boolean)
+      .join(",");
+
+    if (chains) {
+      url.searchParams.set("chains", chains);
+    }
+    if (tokens) {
+      url.searchParams.set("tokens", tokens);
+    }
 
     return { urlProviderName: "Squid", url };
   }

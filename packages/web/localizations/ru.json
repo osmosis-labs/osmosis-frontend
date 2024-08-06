@@ -97,6 +97,7 @@
     "onePosition": "1 позиция",
     "goToPool": "Перейти к пулу № #{poolId}"
   },
+  "copied": "Скопировано!",
   "app": {
     "banner": {
       "backToOsmosis": "Вернемся к осмосу",
@@ -324,7 +325,16 @@
     "noAssets": "У вас нет остатков по {osmosis}",
     "getStarted": "Внесите активы, чтобы начать",
     "noPositions": "У вас нет должностей",
-    "unlockPotential": "Раскройте весь свой потенциал заработка и заставьте свои активы работать с пулами ликвидности"
+    "unlockPotential": "Раскройте весь свой потенциал заработка и заставьте свои активы работать с пулами ликвидности",
+    "allocation": "Распределение",
+    "available": "Доступный",
+    "staked": "Ставка",
+    "unstaking": "Снять ставку",
+    "unclaimedRewards": "Невостребованные награды",
+    "pooled": "Объединенный",
+    "other": "Другой",
+    "all": "Все",
+    "assets": "Ресурсы"
   },
   "buyTokens": "Купить токены",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
     "startAgain": "Начать заново"
   },
+  "estimated": "Оцененный",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Представляем непроверенные активы",
     "simplifiedExperience": "Ваш опыт был упрощен!",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
       "titleWithdraw": "Больше вариантов вывода",
+      "depositDescriptionUnknown": "Чтобы внести {denom} , используйте альтернативного поставщика.",
+      "withdrawDescriptionUnknown": "Чтобы вывести {denom} , используйте альтернативного поставщика.",
       "singleDescriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} , используйте {service} .",
       "singleDescriptionWithdraw": "Чтобы вывести {denom} из {networkA} в {networkB} , используйте {service} .",
       "descriptionDeposit": "Чтобы внести {denom} из {networkA} в {networkB} воспользуйтесь одним из следующих альтернативных поставщиков.",
@@ -927,8 +940,11 @@
       "title": "Выберите сеть",
       "searchPlaceholder": "Поиск поддерживаемых сетей"
     },
-    "pendingWithdraw": "Ожидание вывода",
-    "pendingDeposit": "Ожидается депозит",
+    "pendingWithdraw": "Вывод средств в процессе",
+    "pendingDeposit": "Депозит в процессе",
+    "amountToChain": "{amount} до {chain}",
+    "amountFromChain": "{amount} из {chain}",
+    "amountFailedToWithdraw": "{amount} Не удалось вывести средства",
     "completedWithdraw": "Вывод завершен",
     "completedDeposit": "Депозит завершен",
     "failedWithdraw": "Вывести не удалось",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "Ориентировочная полученная сумма",
     "slippageWarning": "Ожидаемый результат этой транзакции значительно ниже входной суммы, что может привести к получению другой конечной суммы, чем ожидалось.",
     "priceImpactWarning": "Влияние этой транзакции на цену составляет {priceImpact} , что может повлиять на конечную полученную сумму.",
-    "connect": "Соединять",
     "confirm": "Подтверждать",
     "cancel": "Отмена",
     "confirmDepositTo": "Подтвердите депозит на {chain}",

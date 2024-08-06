@@ -97,6 +97,7 @@
     "onePosition": "1 पद",
     "goToPool": "पूल # पर जाएँ #{poolId}"
   },
+  "copied": "कॉपी किया गया!",
   "app": {
     "banner": {
       "backToOsmosis": "ऑस्मोसिस को लौटें",
@@ -324,7 +325,16 @@
     "noAssets": "आपके पास {osmosis} पर कोई शेष राशि नहीं है",
     "getStarted": "आरंभ करने के लिए संपत्ति जमा करें",
     "noPositions": "आपके पास कोई पद नहीं है",
-    "unlockPotential": "अपनी पूरी कमाई क्षमता को अनलॉक करें और अपनी परिसंपत्तियों को तरलता पूल के साथ काम में लगाएं"
+    "unlockPotential": "अपनी पूरी कमाई क्षमता को अनलॉक करें और अपनी परिसंपत्तियों को तरलता पूल के साथ काम में लगाएं",
+    "allocation": "आवंटन",
+    "available": "उपलब्ध",
+    "staked": "दांव पर लगा दिया",
+    "unstaking": "अनस्टेकिंग",
+    "unclaimedRewards": "दावा न किए गए पुरस्कार",
+    "pooled": "जमा",
+    "other": "अन्य",
+    "all": "सभी",
+    "assets": "संपत्ति"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
     "startAgain": "फिर से शुरू करें"
   },
+  "estimated": "अनुमानित",
   "frontierMigration": {
     "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
     "simplifiedExperience": "आपका अनुभव सरल हो गया है!",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
       "titleWithdraw": "अधिक निकासी विकल्प",
+      "depositDescriptionUnknown": "{denom} जमा करने के लिए कृपया वैकल्पिक प्रदाता का उपयोग करें।",
+      "withdrawDescriptionUnknown": "{denom} वापस लेने के लिए, कृपया वैकल्पिक प्रदाता का उपयोग करें।",
       "singleDescriptionDeposit": "{denom} {networkA} से {networkB} में जमा करने के लिए, कृपया {service} उपयोग करें।",
       "singleDescriptionWithdraw": "{denom} {networkA} से {networkB} में वापस लाने के लिए, कृपया {service} उपयोग करें।",
       "descriptionDeposit": "{denom} {networkA} से {networkB} , कृपया निम्नलिखित वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
@@ -927,8 +940,11 @@
       "title": "नेटवर्क चुनें",
       "searchPlaceholder": "समर्थित नेटवर्क खोजें"
     },
-    "pendingWithdraw": "लंबित निकासी",
-    "pendingDeposit": "लंबित जमा",
+    "pendingWithdraw": "वापसी जारी है",
+    "pendingDeposit": "जमा करने का कार्य प्रगति पर है",
+    "amountToChain": "{amount} से {chain}",
+    "amountFromChain": "{amount} से {chain}",
+    "amountFailedToWithdraw": "{amount} निकासी विफल",
     "completedWithdraw": "निकासी पूर्ण हुई",
     "completedDeposit": "जमा पूर्ण हुआ",
     "failedWithdraw": "निकासी विफल",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "अनुमानित प्राप्त राशि",
     "slippageWarning": "इस लेनदेन के लिए अपेक्षित आउटपुट इनपुट राशि से काफी कम है, जिसके परिणामस्वरूप अपेक्षित राशि से भिन्न अंतिम राशि प्राप्त हो सकती है।",
     "priceImpactWarning": "इस लेनदेन का मूल्य प्रभाव {priceImpact} है, जो प्राप्त अंतिम राशि को प्रभावित कर सकता है।",
-    "connect": "जोड़ना",
     "confirm": "पुष्टि करना",
     "cancel": "रद्द करना",
     "confirmDepositTo": "{chain} में जमा की पुष्टि करें",

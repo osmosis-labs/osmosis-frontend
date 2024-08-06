@@ -97,6 +97,7 @@
     "onePosition": "1 موقعیت",
     "goToPool": "رفتن به استخر #{poolId}"
   },
+  "copied": "کپی شده!",
   "app": {
     "banner": {
       "backToOsmosis": "بازگشت به Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "هیچ موجودی در {osmosis} ندارید",
     "getStarted": "برای شروع، دارایی ها را سپرده گذاری کنید",
     "noPositions": "شما هیچ مقامی ندارید",
-    "unlockPotential": "پتانسیل درآمد کامل خود را باز کنید و دارایی های خود را با استخرهای نقدینگی کار کنید"
+    "unlockPotential": "پتانسیل درآمد کامل خود را باز کنید و دارایی های خود را با استخرهای نقدینگی کار کنید",
+    "allocation": "تخصیص",
+    "available": "در دسترس",
+    "staked": "شرط بندی شده است",
+    "unstaking": "رها کردن",
+    "unclaimedRewards": "پاداش های بی ادعا",
+    "pooled": "جمع شده",
+    "other": "دیگر",
+    "all": "همه",
+    "assets": "دارایی های"
   },
   "buyTokens": "خرید توکن",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
     "startAgain": "دوباره شروع کن"
   },
+  "estimated": "تخمین زده",
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
     "simplifiedExperience": "تجربه شما ساده شده است!",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
       "titleWithdraw": "گزینه های برداشت بیشتر",
+      "depositDescriptionUnknown": "برای واریز {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
+      "withdrawDescriptionUnknown": "برای برداشتن {denom} ، لطفاً از یک ارائه دهنده جایگزین استفاده کنید.",
       "singleDescriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "singleDescriptionWithdraw": "برای برداشتن {denom} از {networkA} به {networkB} ، لطفاً از {service} استفاده کنید.",
       "descriptionDeposit": "برای واریز {denom} از {networkA} به {networkB} ، لطفاً از یکی از ارائه دهندگان جایگزین زیر استفاده کنید.",
@@ -927,8 +940,11 @@
       "title": "شبکه را انتخاب کنید",
       "searchPlaceholder": "جستجوی شبکه های پشتیبانی شده"
     },
-    "pendingWithdraw": "در انتظار برداشت",
-    "pendingDeposit": "سپرده معلق",
+    "pendingWithdraw": "برداشت در حال انجام است",
+    "pendingDeposit": "سپرده در حال انجام است",
+    "amountToChain": "{amount} به {chain}",
+    "amountFromChain": "{amount} از {chain}",
+    "amountFailedToWithdraw": "{amount} برداشت نشد",
     "completedWithdraw": "برداشت کامل شد",
     "completedDeposit": "واریز تکمیل شد",
     "failedWithdraw": "برداشت ناموفق بود",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "مبلغ تخمینی دریافت شده",
     "slippageWarning": "خروجی مورد انتظار برای این تراکنش به طور قابل توجهی کمتر از مقدار ورودی است که ممکن است منجر به دریافت مبلغ نهایی متفاوتی نسبت به انتظار شود.",
     "priceImpactWarning": "تأثیر قیمت این تراکنش {priceImpact} است که ممکن است بر مبلغ نهایی دریافتی تأثیر بگذارد.",
-    "connect": "اتصال",
     "confirm": "تایید",
     "cancel": "لغو کنید",
     "confirmDepositTo": "تایید سپرده به {chain}",

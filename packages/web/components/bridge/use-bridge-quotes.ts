@@ -62,12 +62,14 @@ export const useBridgeQuotes = ({
 
   inputAmount: string;
 
-  fromAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
-  fromChain: BridgeChain | undefined;
+  fromAsset:
+    | (BridgeAsset & { amount: CoinPretty; imageUrl: string | undefined })
+    | undefined;
+  fromChain: (BridgeChain & { prettyName: string }) | undefined;
   fromAddress: string | undefined;
 
-  toAsset: BridgeAsset | undefined;
-  toChain: BridgeChain | undefined;
+  toAsset: (BridgeAsset & { imageUrl: string | undefined }) | undefined;
+  toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
   bridges: QuotableBridge[];
@@ -422,23 +424,42 @@ export const useBridgeQuotes = ({
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: Bridge, params: GetTransferStatusParams) => {
+    ({
+      estimatedArrivalUnix,
+      providerId,
+      params,
+    }: {
+      estimatedArrivalUnix: number;
+      providerId: Bridge;
+      params: GetTransferStatusParams;
+    }) => {
       if (inputAmountRaw !== "" && availableBalance && inputCoin) {
-        transferHistoryStore.pushTxNow(
-          `${providerId}${JSON.stringify(params)}`,
-          inputCoin.trim(true).toString(),
+        transferHistoryStore.pushTxNow({
+          prefixedKey: `${providerId}${JSON.stringify(params)}`,
+          amount: inputCoin.trim(true).toString(),
+          amountLogo: isWithdraw ? toAsset?.imageUrl : fromAsset.imageUrl,
           isWithdraw,
-          (isWithdraw ? fromAddress : toAddress) ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
-        );
+          chainPrettyName:
+            direction === "deposit"
+              ? fromChain?.prettyName ?? ""
+              : toChain?.prettyName ?? "",
+          estimatedArrivalUnix,
+          accountAddress: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account)
+        });
       }
     },
     [
       availableBalance,
-      inputCoin,
-      toAddress,
+      direction,
       fromAddress,
+      fromAsset?.imageUrl,
+      fromChain?.prettyName,
       inputAmountRaw,
+      inputCoin,
       isWithdraw,
+      toAddress,
+      toAsset?.imageUrl,
+      toChain?.prettyName,
       transferHistoryStore,
     ]
   );
@@ -522,10 +543,14 @@ export const useBridgeQuotes = ({
         hash: sendTxHash,
       });
 
-      trackTransferStatus(quote.provider.id, {
-        sendTxHash: sendTxHash as string,
-        fromChainId: quote.fromChain.chainId,
-        toChainId: quote.toChain.chainId,
+      trackTransferStatus({
+        estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+        providerId: quote.provider.id,
+        params: {
+          sendTxHash: sendTxHash as string,
+          fromChainId: quote.fromChain.chainId,
+          toChainId: quote.toChain.chainId,
+        },
       });
 
       // TODO: Investigate if this is still needed
@@ -605,10 +630,14 @@ export const useBridgeQuotes = ({
               queryBalance.fetch();
             }
 
-            trackTransferStatus(quote.provider.id, {
-              sendTxHash: tx.transactionHash,
-              fromChainId: quote.fromChain.chainId,
-              toChainId: quote.toChain.chainId,
+            trackTransferStatus({
+              estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+              providerId: quote.provider.id,
+              params: {
+                sendTxHash: tx.transactionHash,
+                fromChainId: quote.fromChain.chainId,
+                toChainId: quote.toChain.chainId,
+              },
             });
 
             onTransferProp?.();

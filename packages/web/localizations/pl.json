@@ -97,6 +97,7 @@
     "onePosition": "1 pozycja",
     "goToPool": "Idź do basenu #{poolId}"
   },
+  "copied": "Skopiowano!",
   "app": {
     "banner": {
       "backToOsmosis": "Powrót do Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "Nie masz salda na {osmosis}",
     "getStarted": "Aby rozpocząć, zdeponuj środki",
     "noPositions": "Nie masz żadnych stanowisk",
-    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności",
+    "allocation": "Przydział",
+    "available": "Dostępny",
+    "staked": "Postawione",
+    "unstaking": "Odstawienie",
+    "unclaimedRewards": "Nieodebrane nagrody",
+    "pooled": "Połączone",
+    "other": "Inny",
+    "all": "Wszystko",
+    "assets": "Aktywa"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
     "startAgain": "Zacznij jeszcze raz"
   },
+  "estimated": "Szacowany",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
     "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
+      "depositDescriptionUnknown": "Aby dokonać wpłaty {denom} , skorzystaj z alternatywnego dostawcy.",
+      "withdrawDescriptionUnknown": "Aby wypłacić {denom} , skorzystaj z alternatywnego dostawcy.",
       "singleDescriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , użyj {service} .",
       "singleDescriptionWithdraw": "Aby wycofać {denom} z {networkA} {networkB} , użyj {service} .",
       "descriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
@@ -927,8 +940,11 @@
       "title": "Wybierz sieć",
       "searchPlaceholder": "Wyszukaj obsługiwane sieci"
     },
-    "pendingWithdraw": "Oczekuje na wycofanie",
-    "pendingDeposit": "Oczekujący depozyt",
+    "pendingWithdraw": "Wypłata w toku",
+    "pendingDeposit": "Wpłata w toku",
+    "amountToChain": "{amount} do {chain}",
+    "amountFromChain": "{amount} z {chain}",
+    "amountFailedToWithdraw": "{amount} Wypłata nie powiodła się",
     "completedWithdraw": "Wypłata zakończona",
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
     "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
     "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
-    "connect": "Łączyć",
     "confirm": "Potwierdzać",
     "cancel": "Anulować",
     "confirmDepositTo": "Potwierdź wpłatę do {chain}",

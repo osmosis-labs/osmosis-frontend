@@ -7,16 +7,13 @@ import { queryRPCStatus } from "../../queries/cosmos";
 export async function getTimeoutHeight({
   chainList,
   chainId,
-  destinationAddress,
 }: {
   chainList: Chain[];
-  chainId?: string;
-  destinationAddress?: string;
+  chainId: string;
 }) {
   const destinationCosmosChain = getChain({
     chainList,
     chainId,
-    destinationAddress,
   });
 
   if (!destinationCosmosChain) {

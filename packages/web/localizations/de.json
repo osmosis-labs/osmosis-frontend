@@ -97,6 +97,7 @@
     "onePosition": "1 Position",
     "goToPool": "Gehen Sie zu Pool #{poolId}"
   },
+  "copied": "Kopiert!",
   "app": {
     "banner": {
       "backToOsmosis": "Zurück zur Osmose",
@@ -324,7 +325,16 @@
     "noAssets": "Sie haben keine Guthaben auf {osmosis}",
     "getStarted": "Zahlen Sie Guthaben ein, um loszulegen",
     "noPositions": "Sie haben keine Positionen",
-    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools"
+    "unlockPotential": "Schöpfen Sie Ihr volles Ertragspotenzial aus und nutzen Sie Ihr Vermögen mit Liquiditätspools",
+    "allocation": "Zuweisung",
+    "available": "Verfügbar",
+    "staked": "Abgesteckt",
+    "unstaking": "Aufheben der Absteckung",
+    "unclaimedRewards": "Nicht beanspruchte Belohnungen",
+    "pooled": "Gepoolt",
+    "other": "Andere",
+    "all": "Alle",
+    "assets": "Vermögenswerte"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
     "startAgain": "Fang nochmal an"
   },
+  "estimated": "Geschätzt",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
     "simplifiedExperience": "Ihre Erfahrung wurde vereinfacht!",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
       "titleWithdraw": "Weitere Auszahlungsoptionen",
+      "depositDescriptionUnknown": "Um {denom} einzuzahlen, verwenden Sie bitte einen alternativen Anbieter.",
+      "withdrawDescriptionUnknown": "Um {denom} abzuheben, verwenden Sie bitte einen alternativen Anbieter.",
       "singleDescriptionDeposit": "Um {denom} von {networkA} nach {networkB} zu übertragen, verwenden Sie bitte {service} .",
       "singleDescriptionWithdraw": "Um {denom} von {networkA} nach {networkB} , verwenden Sie bitte {service} .",
       "descriptionDeposit": "Um {denom} von {networkA} nach {networkB} einzuzahlen, verwenden Sie bitte einen der folgenden alternativen Anbieter.",
@@ -927,8 +940,11 @@
       "title": "Netzwerk auswählen",
       "searchPlaceholder": "Unterstützte Netzwerke durchsuchen"
     },
-    "pendingWithdraw": "Ausstehender Auszug",
-    "pendingDeposit": "Ausstehende Einzahlung",
+    "pendingWithdraw": "Auszahlung in Bearbeitung",
+    "pendingDeposit": "Einzahlung in Bearbeitung",
+    "amountToChain": "{amount} {chain}",
+    "amountFromChain": "{amount} von {chain}",
+    "amountFailedToWithdraw": "{amount} fehlgeschlagen",
     "completedWithdraw": "Auszahlung abgeschlossen",
     "completedDeposit": "Einzahlung abgeschlossen",
     "failedWithdraw": "Auszahlung fehlgeschlagen",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "Geschätzter erhaltener Betrag",
     "slippageWarning": "Der erwartete Ausgabebetrag für diese Transaktion ist erheblich niedriger als der Eingabebetrag. Daher kann es sein, dass Sie einen anderen Endbetrag als erwartet erhalten.",
     "priceImpactWarning": "Die Preiseinflüsse dieser Transaktion betragen {priceImpact} und können sich auf den endgültigen Betrag auswirken.",
-    "connect": "Verbinden",
     "confirm": "Bestätigen",
     "cancel": "Stornieren",
     "confirmDepositTo": "Einzahlung an {chain} bestätigen",

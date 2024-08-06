@@ -5,6 +5,7 @@ import {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "@osmosis-labs/bridge";
+import dayjs from "dayjs";
 import {
   action,
   autorun,
@@ -14,8 +15,13 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+import Image from "next/image";
+import { FunctionComponent, useEffect, useRef } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
+import { RadialProgress } from "~/components/radial-progress";
+import { useTranslation } from "~/hooks";
+import { humanizeTime } from "~/utils/date";
 
 /** Persistable data enough to identify a tx. */
 type TxSnapshot = {
@@ -23,7 +29,11 @@ type TxSnapshot = {
   createdAtMs: number;
   prefixedKey: string;
   amount: string;
+  startTimeUnix: number;
+  amountLogo: string | undefined;
   status: TransferStatus;
+  estimatedArrivalUnix: number | undefined;
+  chainPrettyName: string;
   reason?: TransferFailureReason;
   isWithdraw: boolean;
   accountAddress: string;
@@ -113,14 +123,28 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * @param amount Human readable amount. (e.g. `12 ETH`)
    * @param isWithdraw Indicates if this is a withdraw from Osmosis.
    * @param accountAddress The address of the user's account.
+   * @param chainPrettyName The pretty name of the chain.
+   * @param estimatedArrivalUnix The estimated arrival time in Unix timestamp.
+   * @param amountLogo The logo URL of the amount's currency.
    */
   @action
-  pushTxNow(
-    prefixedKey: string,
-    amount: string,
-    isWithdraw: boolean,
-    accountAddress: string
-  ) {
+  pushTxNow({
+    prefixedKey,
+    amount,
+    isWithdraw,
+    accountAddress,
+    chainPrettyName,
+    estimatedArrivalUnix,
+    amountLogo,
+  }: {
+    prefixedKey: string;
+    amount: string;
+    amountLogo: string | undefined;
+    estimatedArrivalUnix: number | undefined;
+    chainPrettyName: string;
+    isWithdraw: boolean;
+    accountAddress: string;
+  }) {
     const statusSource = this.transferStatusProviders.find((source) =>
       prefixedKey.startsWith(source.keyPrefix)
     );
@@ -130,18 +154,35 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       prefixedKey.slice(statusSource.keyPrefix.length)
     );
 
+    const startTimeUnix = Date.now() / 1000;
+
     setTimeout(() => {
       displayToast(
         {
           titleTranslationKey: isWithdraw
             ? "transfer.pendingWithdraw"
             : "transfer.pendingDeposit",
-          captionTranslationKey: amount,
+          iconElement:
+            amountLogo && estimatedArrivalUnix ? (
+              <PendingTransferLoadingIcon
+                estimatedArrivalUnix={estimatedArrivalUnix}
+                assetLogo={amountLogo}
+                startTimeUnix={startTimeUnix}
+              />
+            ) : undefined,
+          captionElement: (
+            <PendingTransfer
+              amount={amount}
+              chainPrettyName={chainPrettyName}
+              isWithdraw={isWithdraw}
+              estimatedArrivalUnix={estimatedArrivalUnix}
+            />
+          ),
         },
         ToastType.LOADING,
         { toastId: prefixedKey, autoClose: false }
       );
-    }, 500);
+    }, 1000);
 
     this.snapshots.push({
       createdAtMs: Date.now(),
@@ -150,6 +191,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       status: "pending",
       isWithdraw,
       accountAddress,
+      chainPrettyName,
+      estimatedArrivalUnix,
+      amountLogo,
+      startTimeUnix,
     });
   }
 
@@ -183,6 +228,22 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: snapshot.isWithdraw
               ? "transfer.pendingWithdraw"
               : "transfer.pendingDeposit",
+            iconElement:
+              snapshot.amountLogo && snapshot.estimatedArrivalUnix ? (
+                <PendingTransferLoadingIcon
+                  estimatedArrivalUnix={snapshot.estimatedArrivalUnix}
+                  assetLogo={snapshot.amountLogo}
+                  startTimeUnix={snapshot.startTimeUnix}
+                />
+              ) : undefined,
+            captionElement: (
+              <PendingTransfer
+                amount={snapshot.amount}
+                chainPrettyName={snapshot.chainPrettyName}
+                isWithdraw={snapshot.isWithdraw}
+                estimatedArrivalUnix={snapshot.estimatedArrivalUnix}
+              />
+            ),
           },
           ToastType.LOADING,
           { updateToastId: prefixedKey, autoClose: false }
@@ -195,7 +256,15 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: snapshot.isWithdraw
               ? "transfer.completedWithdraw"
               : "transfer.completedDeposit",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: snapshot.isWithdraw
+              ? [
+                  "transfer.amountToChain",
+                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
+                ]
+              : [
+                  "transfer.amountFromChain",
+                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
+                ],
           },
           ToastType.SUCCESS,
           { updateToastId: prefixedKey }
@@ -210,7 +279,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             titleTranslationKey: snapshot.isWithdraw
               ? "transfer.failedWithdraw"
               : "transfer.failedDeposit",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: [
+              "transfer.amountFailedToWithdraw",
+              { amount: snapshot.amount },
+            ],
           },
           ToastType.ERROR,
           { updateToastId: prefixedKey }
@@ -222,7 +294,10 @@ export class TransferHistoryStore implements TransferStatusReceiver {
         displayToast(
           {
             titleTranslationKey: "transfer.connectionError",
-            captionTranslationKey: snapshot.amount,
+            captionTranslationKey: [
+              "transfer.amountFailedToWithdraw",
+              { amount: snapshot.amount },
+            ],
           },
           ToastType.ERROR,
           { updateToastId: prefixedKey }
@@ -271,3 +346,97 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     return Date.now() - snapshot.createdAtMs > expiryMs;
   }
 }
+
+const PendingTransferLoadingIcon: FunctionComponent<{
+  assetLogo: string;
+  estimatedArrivalUnix: number;
+  startTimeUnix: number;
+}> = ({ assetLogo, estimatedArrivalUnix, startTimeUnix }) => {
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!estimatedArrivalUnix || !progressRef.current) return;
+
+    const updateProgress = () => {
+      const currentTime = Date.now() / 1000;
+      const remainingTime = estimatedArrivalUnix - currentTime;
+      const totalElapsedTime = estimatedArrivalUnix - startTimeUnix;
+      const progressPercentage = Math.max(
+        (remainingTime / totalElapsedTime) * 100,
+        0
+      );
+
+      // Directly update the HTML elements
+      // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
+      if (progressRef.current) {
+        const circles = progressRef.current.querySelectorAll("circle");
+        const radius = 20;
+        const circumference = 2 * Math.PI * radius;
+        const offset = (progressPercentage / 100) * circumference;
+
+        circles.forEach((circle, index) => {
+          if (index === 1) {
+            // Only update the second circle
+            circle.style.strokeDashoffset = `${offset}`;
+          }
+        });
+      }
+    };
+
+    updateProgress();
+
+    const intervalId = setInterval(updateProgress, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [estimatedArrivalUnix, startTimeUnix]);
+
+  return (
+    <div className="relative flex h-12 w-12 items-center justify-center">
+      <Image src={assetLogo} width={32} height={32} alt="Asset image" />
+      <div className="absolute inset-0" ref={progressRef}>
+        <RadialProgress progress={100} strokeWidth={2} />
+      </div>
+    </div>
+  );
+};
+
+const PendingTransfer: FunctionComponent<{
+  isWithdraw: boolean;
+  amount: string;
+  chainPrettyName: string;
+  estimatedArrivalUnix: number | undefined;
+}> = ({ isWithdraw, amount, chainPrettyName, estimatedArrivalUnix }) => {
+  const { t } = useTranslation();
+  const progressRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (!estimatedArrivalUnix || !progressRef.current) return;
+
+    const updateTime = () => {
+      const humanizedTime = humanizeTime(dayjs.unix(estimatedArrivalUnix));
+      if (progressRef.current) {
+        // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
+        progressRef.current.textContent = `${t("estimated")} ${
+          humanizedTime.value
+        } ${t(humanizedTime.unitTranslationKey)} ${t("remaining")}`;
+      }
+    };
+
+    updateTime();
+
+    const intervalId = setInterval(updateTime, 1000); // Update every second
+
+    return () => clearInterval(intervalId);
+  }, [estimatedArrivalUnix, t]);
+
+  return (
+    <div>
+      <p className="body2">
+        {isWithdraw
+          ? t("transfer.amountToChain", { amount, chain: chainPrettyName })
+          : t("transfer.amountFromChain", { amount, chain: chainPrettyName })}
+      </p>
+      <p className="body2 text-osmoverse-300" ref={progressRef}></p>
+    </div>
+  );
+};

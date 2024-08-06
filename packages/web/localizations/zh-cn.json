@@ -97,6 +97,7 @@
     "onePosition": "1 个职位",
     "goToPool": "前往泳池#{poolId}"
   },
+  "copied": "已复制！",
   "app": {
     "banner": {
       "backToOsmosis": "返回Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "您在{osmosis}上没有余额",
     "getStarted": "存入资产即可开始",
     "noPositions": "您没有职位",
-    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产"
+    "unlockPotential": "释放您的全部盈利潜力，利用流动资金池来运作您的资产",
+    "allocation": "分配",
+    "available": "可用的",
+    "staked": "已质押",
+    "unstaking": "取消质押",
+    "unclaimedRewards": "未领取的奖励",
+    "pooled": "池化",
+    "other": "其他",
+    "all": "全部",
+    "assets": "资产"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -410,6 +420,7 @@
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
     "startAgain": "重新开始"
   },
+  "estimated": "估计的",
   "frontierMigration": {
     "introducingUnverifiedAssets": "介绍未经验证的资产",
     "simplifiedExperience": "您的体验已被简化！",
@@ -909,6 +920,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
       "titleWithdraw": "更多提款选项",
+      "depositDescriptionUnknown": "要存入{denom} ，请使用其他提供商。",
+      "withdrawDescriptionUnknown": "要撤回{denom} ，请使用其他提供商。",
       "singleDescriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用{service} 。",
       "singleDescriptionWithdraw": "要将{denom}从{networkA}撤回到{networkB} ，请使用{service} 。",
       "descriptionDeposit": "要将{denom}从{networkA}存入{networkB} ，请使用以下备选提供商之一。",
@@ -927,8 +940,11 @@
       "title": "选择网络",
       "searchPlaceholder": "搜索支持的网络"
     },
-    "pendingWithdraw": "等待提款",
-    "pendingDeposit": "待存款",
+    "pendingWithdraw": "提现正在进行中",
+    "pendingDeposit": "正在存款",
+    "amountToChain": "{amount}至{chain}",
+    "amountFromChain": "{amount}来自{chain}",
+    "amountFailedToWithdraw": "{amount}提现失败",
     "completedWithdraw": "提现完成",
     "completedDeposit": "存款已完成",
     "failedWithdraw": "提现失败",
@@ -943,7 +959,6 @@
     "estimatedAmountReceived": "预计收到金额",
     "slippageWarning": "该交易的预期输出明显低于输入金额，这可能导致收到的最终金额与预期不同。",
     "priceImpactWarning": "此交易的价格影响为{priceImpact} ，可能会影响最终收到的金额。",
-    "connect": "连接",
     "confirm": "确认",
     "cancel": "取消",
     "confirmDepositTo": "确认存款至{chain}",

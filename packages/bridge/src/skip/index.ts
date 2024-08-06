@@ -151,7 +151,8 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
-                )
+                ) ||
+                msg.includes("no routes found")
               ) {
                 throw new BridgeQuoteError({
                   bridgeId: SkipBridgeProvider.ID,
@@ -211,6 +212,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
+          toChain.chainId.toString(),
           fromAddress as Address,
           msgs
         );
@@ -438,26 +440,31 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   async createTransaction(
-    chainID: string,
+    fromChainId: string,
+    toChainId: string,
     address: Address,
     messages: SkipMsg[]
   ) {
     for (const message of messages) {
       if ("evm_tx" in message) {
         return await this.createEvmTransaction(
-          chainID,
+          fromChainId,
           address,
           message.evm_tx
         );
       }
 
       if ("multi_chain_msg" in message) {
-        return await this.createCosmosTransaction(message.multi_chain_msg);
+        return await this.createCosmosTransaction(
+          toChainId,
+          message.multi_chain_msg
+        );
       }
     }
   }
 
   async createCosmosTransaction(
+    toChainId: string,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
@@ -493,7 +500,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       // is an ibc transfer
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: messageData.receiver,
+        chainId: toChainId,
       });
 
       const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
@@ -900,10 +907,18 @@ export class SkipBridgeProvider implements BridgeProvider {
     if (this.ctx.env === "testnet") return undefined;
 
     const url = new URL("https://go.skip.build/");
-    url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
-    url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    if (fromChain?.chainId) {
+      url.searchParams.set("src_chain", String(fromChain.chainId));
+    }
+    if (fromAsset?.address) {
+      url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
+    }
+    if (toChain?.chainId) {
+      url.searchParams.set("dest_chain", String(toChain.chainId));
+    }
+    if (toAsset?.address) {
+      url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    }
 
     return { urlProviderName: "Skip:Go", url };
   }

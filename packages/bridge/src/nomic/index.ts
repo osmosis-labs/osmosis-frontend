@@ -63,9 +63,9 @@ export class NomicBridgeProvider implements BridgeProvider {
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     const url = new URL("https://app.nomic.io/bitcoin");
 
-    if (fromChain.chainType === "bitcoin") {
+    if (fromChain?.chainType === "bitcoin") {
       url.searchParams.set("deposit", "confirmation");
-    } else if (toChain.chainType === "bitcoin") {
+    } else if (toChain?.chainType === "bitcoin") {
       url.searchParams.set("withdraw", "address");
     }
 
