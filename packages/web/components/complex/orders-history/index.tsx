@@ -121,7 +121,7 @@ export const OrderHistory = observer(() => {
     try {
       logEvent([EventName.LimitOrder.claimOrdersStarted]);
       await claimAllOrders();
-      await refetch({ stale: false });
+      await refetch();
       logEvent([EventName.LimitOrder.claimOrdersCompleted]);
     } catch (error) {
       if (error instanceof Error && error.message === "Request rejected") {
@@ -213,7 +213,7 @@ export const OrderHistory = observer(() => {
                   key={virtualRow.index}
                   order={order}
                   style={style}
-                  refetch={async () => refetch({ stale: false })}
+                  refetch={async () => refetch()}
                 />
               );
             })
