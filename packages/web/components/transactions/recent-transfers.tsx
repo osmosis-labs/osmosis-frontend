@@ -3,6 +3,7 @@ import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
+import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation, useWalletSelect } from "~/hooks";
@@ -91,3 +92,25 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
     );
   }
 );
+
+export const RecentActivity: FunctionComponent = observer(() => {
+  const { accountStore } = useStore();
+  const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+  const { t } = useTranslation();
+  return (
+    <div className="flex w-full max-w-[320px] flex-col">
+      <div className="flex cursor-pointer items-center justify-between py-3">
+        <h6>{t("portfolio.recentActivity")}</h6>
+        <LinkButton
+          href="/transactions"
+          className="text-osmoverse-400"
+          label={t("portfolio.seeAll")}
+          ariaLabel={t("portfolio.seeAll")}
+        />
+      </div>
+    </div>
+  );
+});

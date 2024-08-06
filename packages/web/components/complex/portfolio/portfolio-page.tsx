@@ -10,7 +10,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { RecentTransfers } from "~/components/transactions/recent-transfers";
+import { RecentActivity } from "~/components/transactions/recent-transfers";
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
@@ -105,15 +105,6 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                  {({ selected }) => (
-                    <h6
-                      className={!selected ? "text-osmoverse-500" : undefined}
-                    >
-                      {t("portfolio.recentTransfers")}
-                    </h6>
-                  )}
-                </Tab>
               </Tab.List>
               {!isTotalValueFetched ? (
                 <div className="mx-auto my-6 w-fit">
@@ -133,16 +124,12 @@ export const PortfolioPage: FunctionComponent = () => {
                   <Tab.Panel>
                     <UserPositionsSection address={wallet.address} />
                   </Tab.Panel>
-                  <Tab.Panel>
-                    <section>
-                      <RecentTransfers />
-                    </section>
-                  </Tab.Panel>
                 </Tab.Panels>
               )}
             </Tab.Group>
           </section>
           <section className="w-full">
+            <RecentActivity />
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}

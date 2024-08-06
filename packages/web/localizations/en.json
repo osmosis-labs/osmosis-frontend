@@ -334,7 +334,9 @@
     "pooled": "Pooled",
     "other": "Other",
     "all": "All",
-    "assets": "Assets"
+    "assets": "Assets",
+    "recentActivity": "Recent activity",
+    "seeAll": "See all"
   },
   "buyTokens": "Buy tokens",
   "components": {
