@@ -302,6 +302,12 @@ export const useOrderbookAllActiveOrders = ({
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
       keepPreviousData: true,
+      trpc: {
+        abortOnUnmount: true,
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
 
