@@ -97,6 +97,7 @@ export const orderbookRouter = createTRPCRouter({
               return [...orders, ...historicalOrdersForContract];
             }
           );
+
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
           return allOrders.sort(defaultSortOrders);

@@ -130,6 +130,7 @@ const CancelButton = observer(
         await refetch();
       } catch (error) {
         console.error(error);
+      } finally {
         setCancelling(false);
       }
     }, [account, order, refetch]);

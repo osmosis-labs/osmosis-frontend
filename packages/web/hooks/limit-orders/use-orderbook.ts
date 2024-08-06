@@ -308,6 +308,13 @@ export const useOrderbookAllActiveOrders = ({
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
+
+  const refetchOrders = useCallback(() => {
+    if (isRefetching) return;
+
+    refetch();
+  }, [refetch, isRefetching]);
+
   return {
     orders: allOrders,
     isLoading,
@@ -315,7 +322,7 @@ export const useOrderbookAllActiveOrders = ({
     isFetching,
     isFetchingNextPage,
     hasNextPage,
-    refetch,
+    refetch: refetchOrders,
     isRefetching,
   };
 };
