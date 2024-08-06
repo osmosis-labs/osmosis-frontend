@@ -78,8 +78,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -96,6 +95,14 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
+
+      // Basic circuit breaker to validate some invariants
+      // from input + given quote
+      if (input.fromAsset.address !== quote.input.address) {
+        throw new Error(
+          `Invalid quote: Expected fromAsset address ${input.fromAsset.address} but got ${quote.input.address} in quote`
+        );
+      }
 
       /**
        * Since transfer fee is deducted from input amount,
@@ -330,8 +337,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -455,9 +461,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -498,9 +502,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -543,10 +545,10 @@ export const bridgeTransferRouter = createTRPCRouter({
       // add external urls for external interfaces from asset list, as long as not already added
       const assetListFromAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.fromAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
       const assetListToAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.toAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
 
       const externalTransferMethods = (
         assetListFromAsset?.transferMethods.filter(
@@ -573,13 +575,13 @@ export const bridgeTransferRouter = createTRPCRouter({
           }
 
           let urlToAdd: (typeof externalUrls)[number] | undefined =
-            input.fromChain.chainId === "osmosis-1" && withdrawUrl
+            input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],
                   url: withdrawUrl,
                 }
-              : input.toChain.chainId === "osmosis-1" && depositUrl
+              : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],

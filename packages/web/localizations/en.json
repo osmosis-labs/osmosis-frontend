@@ -97,6 +97,7 @@
     "onePosition": "1 position",
     "goToPool": "Go to pool #{poolId}"
   },
+  "copied": "Copied!",
   "app": {
     "banner": {
       "backToOsmosis": "Back to Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "You have no balances on {osmosis}",
     "getStarted": "Deposit assets to get started",
     "noPositions": "You have no positions",
-    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools"
+    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools",
+    "allocation": "Allocation",
+    "available": "Available",
+    "staked": "Staked",
+    "unstaking": "Unstaking",
+    "unclaimedRewards": "Unclaimed rewards",
+    "pooled": "Pooled",
+    "other": "Other",
+    "all": "All",
+    "assets": "Assets"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -411,6 +421,7 @@
     "sorryForTheInconvenience": "Sorry for the inconvenience. Please try again later.",
     "startAgain": "Start again"
   },
+  "estimated": "Estimated",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
     "simplifiedExperience": "Your experience has been simplified!",
@@ -926,6 +937,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
       "titleWithdraw": "More withdraw options",
+      "depositDescriptionUnknown": "To deposit {denom}, please use an alternative provider.",
+      "withdrawDescriptionUnknown": "To withdraw {denom}, please use an alternative provider.",
       "singleDescriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use {service}.",
       "singleDescriptionWithdraw": "To withdraw {denom} from {networkA} to {networkB}, please use {service}.",
       "descriptionDeposit": "To deposit {denom} from {networkA} to {networkB}, please use one of the following alternative providers.",
@@ -944,8 +957,11 @@
       "title": "Select network",
       "searchPlaceholder": "Search supported networks"
     },
-    "pendingWithdraw": "Pending withdraw",
-    "pendingDeposit": "Pending deposit",
+    "pendingWithdraw": "Withdraw in progress",
+    "pendingDeposit": "Deposit in progress",
+    "amountToChain": "{amount} to {chain}",
+    "amountFromChain": "{amount} from {chain}",
+    "amountFailedToWithdraw": "{amount} Failed to withdraw",
     "completedWithdraw": "Withdraw completed",
     "completedDeposit": "Deposit completed",
     "failedWithdraw": "Withdraw failed",
@@ -960,7 +976,6 @@
     "estimatedAmountReceived": "Estimated amount received",
     "slippageWarning": "The expected output for this transaction is significantly lower than the input amount, which may result in receiving a different final amount than expected.",
     "priceImpactWarning": "The price impact of this transaction is {priceImpact}, which may influence the final amount received.",
-    "connect": "Connect",
     "confirm": "Confirm",
     "cancel": "Cancel",
     "confirmDepositTo": "Confirm deposit to {chain}",

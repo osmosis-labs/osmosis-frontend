@@ -189,7 +189,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                   {SwapTool_}
                 </div>
               </div>
-              {asset.isAlloyed && asset.contract ? (
+              {!asset.areTransfersDisabled && asset.contract ? (
                 <AlloyedAssetsSection
                   className="hidden xl:block"
                   title={title ?? asset.coinDenom}
@@ -204,7 +204,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
               <div className="xl:hidden">{SwapTool_}</div>
               <AssetBalance className="xl:hidden" />
               <AssetStats className="xl:hidden" />
-              {asset.isAlloyed && asset.contract ? (
+              {!asset.areTransfersDisabled && asset.contract ? (
                 <AlloyedAssetsSection
                   className="xl:hidden"
                   title={title ?? asset.coinDenom}

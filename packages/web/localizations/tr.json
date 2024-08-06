@@ -97,6 +97,7 @@
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}"
   },
+  "copied": "Kopyalandı!",
   "app": {
     "banner": {
       "backToOsmosis": "Osmosis'e Geri Dön",
@@ -324,7 +325,16 @@
     "noAssets": "{osmosis} üzerinde bakiyeniz yok",
     "getStarted": "Başlamak için varlık yatırın",
     "noPositions": "Hiç pozisyonunuz yok",
-    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın",
+    "allocation": "Paylaştırma",
+    "available": "Mevcut",
+    "staked": "Bahis",
+    "unstaking": "Stake kaldırma",
+    "unclaimedRewards": "Talep edilmeyen ödüller",
+    "pooled": "havuzlanmış",
+    "other": "Diğer",
+    "all": "Tüm",
+    "assets": "Varlıklar"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -411,6 +421,7 @@
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
     "startAgain": "Tekrar başla"
   },
+  "estimated": "Tahmini",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
     "simplifiedExperience": "Deneyiminiz basitleştirildi!",
@@ -926,6 +937,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
+      "depositDescriptionUnknown": "{denom} yatırmak için lütfen alternatif bir sağlayıcı kullanın.",
+      "withdrawDescriptionUnknown": "{denom} öğesini geri çekmek için lütfen alternatif bir sağlayıcı kullanın.",
       "singleDescriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
       "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
       "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
@@ -944,8 +957,11 @@
       "title": "Ağ seçin",
       "searchPlaceholder": "Desteklenen ağları arayın"
     },
-    "pendingWithdraw": "Geri çekilme bekleniyor",
-    "pendingDeposit": "Bekleyen mevduat",
+    "pendingWithdraw": "Geri çekme işlemi devam ediyor",
+    "pendingDeposit": "Para yatırma işlemi devam ediyor",
+    "amountToChain": "{amount} - { {chain}",
+    "amountFromChain": "{amount} from {chain}",
+    "amountFailedToWithdraw": "{amount} çekilemedi",
     "completedWithdraw": "Para çekme işlemi tamamlandı",
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",
@@ -960,7 +976,6 @@
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
     "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
-    "connect": "Bağlamak",
     "confirm": "Onaylamak",
     "cancel": "İptal etmek",
     "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",

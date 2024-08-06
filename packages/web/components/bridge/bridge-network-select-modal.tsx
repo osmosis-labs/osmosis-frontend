@@ -80,7 +80,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
         )}
 
         <div
-          className={classNames({
+          className={classNames("py-4", {
             // Hide it to not unmount the function
             hidden: isSwitchingEvmChain,
           })}
@@ -126,11 +126,6 @@ export const BridgeNetworkSelectModal: FunctionComponent<
                       {chain.prettyName}
                     </span>
                   </div>
-                  {shouldSwitchEvmChain && (
-                    <span className="body1 md:body2 text-wosmongton-300">
-                      {t("transfer.connect")}
-                    </span>
-                  )}
                 </button>
               );
             })}

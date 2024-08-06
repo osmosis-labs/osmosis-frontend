@@ -97,6 +97,7 @@
     "onePosition": "1 ポジション",
     "goToPool": "プール #{poolId}に移動します"
   },
+  "copied": "コピーしました！",
   "app": {
     "banner": {
       "backToOsmosis": "浸透に戻る",
@@ -324,7 +325,16 @@
     "noAssets": "{osmosis}に残高がありません",
     "getStarted": "始めるには資産を預けてください",
     "noPositions": "ポジションがありません",
-    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう",
+    "allocation": "割り当て",
+    "available": "利用可能",
+    "staked": "賭けられた",
+    "unstaking": "ステーキング解除",
+    "unclaimedRewards": "未請求の報酬",
+    "pooled": "プール",
+    "other": "他の",
+    "all": "全て",
+    "assets": "資産"
   },
   "buyTokens": "トークンを購入する",
   "components": {
@@ -411,6 +421,7 @@
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"
   },
+  "estimated": "推定",
   "frontierMigration": {
     "introducingUnverifiedAssets": "未検証のアセットの紹介",
     "simplifiedExperience": "あなたの経験は簡素化されました!",
@@ -926,6 +937,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
+      "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
+      "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
       "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
       "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
       "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
@@ -944,8 +957,11 @@
       "title": "ネットワークを選択",
       "searchPlaceholder": "サポートされているネットワークを検索"
     },
-    "pendingWithdraw": "保留中の撤回",
-    "pendingDeposit": "保留中の入金",
+    "pendingWithdraw": "撤退中",
+    "pendingDeposit": "入金処理中",
+    "amountToChain": "{amount}から{chain}",
+    "amountFromChain": "{amount}から{chain}",
+    "amountFailedToWithdraw": "{amount}引き出しに失敗しました",
     "completedWithdraw": "引き出しが完了しました",
     "completedDeposit": "入金完了",
     "failedWithdraw": "引き出しに失敗しました",
@@ -960,7 +976,6 @@
     "estimatedAmountReceived": "受け取る推定金額",
     "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
     "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
-    "connect": "接続する",
     "confirm": "確認する",
     "cancel": "キャンセル",
     "confirmDepositTo": "{chain}への入金を確認します",

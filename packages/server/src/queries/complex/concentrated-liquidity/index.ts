@@ -6,7 +6,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { BigDec, maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -395,9 +395,12 @@ export async function mapGetUserPositionDetails({
         : undefined;
 
       const currentPrice = getPriceFromSqrtPrice({
-        sqrtPrice: new Dec(
+        // Given that we're only calculating for display purposes,
+        // and not for quoting or provision of liquidity,
+        // the loss of precision is acceptable.
+        sqrtPrice: new BigDec(
           (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
-        ),
+        ).toDec(),
         baseCoin,
         quoteCoin,
       });

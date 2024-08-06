@@ -146,7 +146,7 @@ export class IbcBridgeProvider implements BridgeProvider {
     const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: params.toAddress,
+      chainId: params.toChain.chainId.toString(),
     });
 
     const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
@@ -366,15 +366,23 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain.chainType === "evm" || toChain.chainType === "evm") {
+    if (fromChain?.chainType === "evm" || toChain?.chainType === "evm") {
       return undefined;
     }
 
     const url = new URL("https://geo.tfm.com/");
-    url.searchParams.set("chainFrom", fromChain.chainId);
-    url.searchParams.set("token0", fromAsset.address);
-    url.searchParams.set("chainTo", toChain.chainId);
-    url.searchParams.set("token1", toAsset.address);
+    if (fromChain) {
+      url.searchParams.set("chainFrom", fromChain.chainId);
+    }
+    if (fromAsset) {
+      url.searchParams.set("token0", fromAsset.address);
+    }
+    if (toChain) {
+      url.searchParams.set("chainTo", toChain.chainId);
+    }
+    if (toAsset) {
+      url.searchParams.set("token1", toAsset.address);
+    }
 
     return { urlProviderName: "TFM", url };
   }

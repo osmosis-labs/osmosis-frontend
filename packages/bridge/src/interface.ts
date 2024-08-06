@@ -12,9 +12,8 @@ export interface BridgeProviderContext {
   assetLists: AssetList[];
   chainList: Chain[];
 
-  /** Provides current timeout height for a chain of the ID
-   *  parsed from the bech32 config of the given destinationAddress. */
-  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+  /** Provides current timeout height for a chain of given chainId. */
+  getTimeoutHeight(params: { chainId: string }): Promise<{
     revisionNumber: string | undefined;
     revisionHeight: string;
   }>;
@@ -251,23 +250,23 @@ export const getBridgeExternalUrlSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: bridgeChainSchema,
+  fromChain: bridgeChainSchema.optional(),
   /**
    * The destination chain information.
    */
-  toChain: bridgeChainSchema,
+  toChain: bridgeChainSchema.optional(),
   /**
    * The asset on the originating chain.
    */
-  fromAsset: bridgeAssetSchema,
+  fromAsset: bridgeAssetSchema.optional(),
   /**
    * The asset on the destination chain.
    */
-  toAsset: bridgeAssetSchema,
+  toAsset: bridgeAssetSchema.optional(),
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: z.string(),
+  toAddress: z.string().optional(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<

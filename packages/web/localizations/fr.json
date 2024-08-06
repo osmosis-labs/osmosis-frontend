@@ -97,6 +97,7 @@
     "onePosition": "1 poste",
     "goToPool": "Aller à la piscine #{poolId}"
   },
+  "copied": "Copié!",
   "app": {
     "banner": {
       "backToOsmosis": "Retour à Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "Vous n'avez aucun solde sur {osmosis}",
     "getStarted": "Déposez des actifs pour commencer",
     "noPositions": "Vous n'avez aucun poste",
-    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités"
+    "unlockPotential": "Libérez tout votre potentiel de revenus et faites fructifier vos actifs grâce aux pools de liquidités",
+    "allocation": "Allocation",
+    "available": "Disponible",
+    "staked": "Jalonné",
+    "unstaking": "Détachement",
+    "unclaimedRewards": "Récompenses non réclamées",
+    "pooled": "Regroupé",
+    "other": "Autre",
+    "all": "Tous",
+    "assets": "Actifs"
   },
   "buyTokens": "Acheter jetons",
   "components": {
@@ -411,6 +421,7 @@
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
     "startAgain": "Recommencer"
   },
+  "estimated": "Estimé",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
     "simplifiedExperience": "Votre expérience a été simplifiée!",
@@ -926,6 +937,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Plus d'options de dépôt",
       "titleWithdraw": "Plus d'options de retrait",
+      "depositDescriptionUnknown": "Pour déposer {denom} , veuillez utiliser un autre fournisseur.",
+      "withdrawDescriptionUnknown": "Pour retirer {denom} , veuillez utiliser un autre fournisseur.",
       "singleDescriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
       "singleDescriptionWithdraw": "Pour retirer {denom} de {networkA} à {networkB} , veuillez utiliser {service} .",
       "descriptionDeposit": "Pour déposer {denom} de {networkA} à {networkB} , veuillez utiliser l'un des fournisseurs alternatifs suivants.",
@@ -944,8 +957,11 @@
       "title": "Sélectionnez réseau",
       "searchPlaceholder": "Rechercher des réseaux pris en charge"
     },
-    "pendingWithdraw": "En attente de retrait",
-    "pendingDeposit": "Dépôt en attente",
+    "pendingWithdraw": "Retrait en cours",
+    "pendingDeposit": "Dépôt en cours",
+    "amountToChain": "{amount} à {chain}",
+    "amountFromChain": "{amount} de {chain}",
+    "amountFailedToWithdraw": "{amount}",
     "completedWithdraw": "Retrait terminé",
     "completedDeposit": "Dépôt complété",
     "failedWithdraw": "Échec du retrait",
@@ -960,7 +976,6 @@
     "estimatedAmountReceived": "Montant estimé reçu",
     "slippageWarning": "Le résultat attendu pour cette transaction est nettement inférieur au montant d'entrée, ce qui peut entraîner la réception d'un montant final différent de celui attendu.",
     "priceImpactWarning": "L'impact sur le prix de cette transaction est {priceImpact} , ce qui peut influencer le montant final reçu.",
-    "connect": "Connecter",
     "confirm": "Confirmer",
     "cancel": "Annuler",
     "confirmDepositTo": "Confirmez le dépôt à {chain}",

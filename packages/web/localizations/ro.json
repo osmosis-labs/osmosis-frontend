@@ -97,6 +97,7 @@
     "onePosition": "1 pozitie",
     "goToPool": "Mergi la piscina #{poolId}"
   },
+  "copied": "Copiat!",
   "app": {
     "banner": {
       "backToOsmosis": "Înapoi la Osmosis",
@@ -324,7 +325,16 @@
     "noAssets": "Nu aveți solduri pe {osmosis}",
     "getStarted": "Depuneți active pentru a începe",
     "noPositions": "Nu ai posturi",
-    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate",
+    "allocation": "Alocare",
+    "available": "Disponibil",
+    "staked": "Mizat",
+    "unstaking": "Dezlegarea",
+    "unclaimedRewards": "Recompense nerevendicate",
+    "pooled": "Adunate",
+    "other": "Alte",
+    "all": "Toate",
+    "assets": "Active"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -411,6 +421,7 @@
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
     "startAgain": "Incepe din nou"
   },
+  "estimated": "Estimată",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
     "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
@@ -926,6 +937,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
+      "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
       "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
       "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
       "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
@@ -944,8 +957,11 @@
       "title": "Selecteaza reteaua",
       "searchPlaceholder": "Căutați rețele acceptate"
     },
-    "pendingWithdraw": "În așteptarea retragerii",
-    "pendingDeposit": "Depunerea în așteptare",
+    "pendingWithdraw": "Retragere în curs",
+    "pendingDeposit": "Depozit în curs",
+    "amountToChain": "{amount} la {chain}",
+    "amountFromChain": "{amount} din { {chain}",
+    "amountFailedToWithdraw": "{amount} Retragere eșuată",
     "completedWithdraw": "Retragere finalizată",
     "completedDeposit": "Depozit finalizat",
     "failedWithdraw": "Retragerea a eșuat",
@@ -960,7 +976,6 @@
     "estimatedAmountReceived": "Suma estimată primită",
     "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
     "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
-    "connect": "Conectați",
     "confirm": "A confirma",
     "cancel": "Anulare",
     "confirmDepositTo": "Confirmați depunerea către {chain}",
