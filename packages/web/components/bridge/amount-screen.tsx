@@ -161,6 +161,8 @@ export const AmountScreen = observer(
       isInsufficientFee,
       warnUserOfPriceImpact,
       warnUserOfSlippage,
+      errorBoxMessage,
+      warningBoxMessage,
     } = quote;
 
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
@@ -520,9 +522,9 @@ export const AmountScreen = observer(
       }
     }, [
       counterpartySupportedAssetsByChainId,
-      toAsset,
       direction,
       setToAsset,
+      toAsset,
       toChain,
     ]);
 
@@ -582,6 +584,17 @@ export const AmountScreen = observer(
       toChain,
     ]);
 
+    /** If an asset is disabled */
+    const areAssetTransfersDisabled = useMemo(() => {
+      return direction === "withdraw"
+        ? Boolean(canonicalAsset?.areTransfersDisabled)
+        : Boolean(
+            assetsInOsmosis?.find(
+              (a) => a.coinMinimalDenom === toAsset?.address
+            )?.areTransfersDisabled
+          );
+    }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
+
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
         if (isNil(fromAsset?.decimals)) return;
@@ -629,21 +642,12 @@ export const AmountScreen = observer(
       return <AmountScreenSkeletonLoader />;
     }
 
-    /** If an asset is disabled */
-    const isDisabled =
-      direction === "withdraw"
-        ? Boolean(canonicalAsset.areTransfersDisabled)
-        : Boolean(
-            assetsInOsmosis.find((a) => a.coinMinimalDenom === toAsset?.address)
-              ?.areTransfersDisabled
-          );
-
     // This condition will be met iff:
     // * An asset is disabled, effectively its FF is turned off for whatever reason
     // * There's no supportedAssets returned from providers, so we don't know the to/from asset/chain depending on direction
     // * Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
     if (
-      isDisabled ||
+      areAssetTransfersDisabled ||
       !fromChain ||
       !fromAsset ||
       !toChain ||
@@ -1269,6 +1273,23 @@ export const AmountScreen = observer(
               </Screen>
 
               <Screen screenName="next-step">
+                {(errorBoxMessage || warningBoxMessage) && (
+                  <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                    <Icon
+                      id="alert-triangle"
+                      className="h-6 w-6 text-rust-600"
+                    />
+                    <div className="flex flex-col">
+                      <h1 className="body2">
+                        {errorBoxMessage?.heading ?? warningBoxMessage?.heading}
+                      </h1>
+                      <p className="body2 text-osmoverse-300">
+                        {errorBoxMessage?.description ??
+                          warningBoxMessage?.description}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <Button
                   disabled={
                     !isNil(buttonErrorMessage) ||

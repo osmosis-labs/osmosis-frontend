@@ -224,14 +224,9 @@
       "approveInWallet": "Одобрить в кошельке",
       "enterAddress": "{network} адрес",
       "errors": {
-        "insufficientBal": "Недостаточный баланс",
-        "insufficientFee": "Недостаточная комиссия",
         "reconnectWallet": "Переподключите {walletName}",
         "wrongNetworkInWallet": "Неправильная сеть в {walletName}",
         "seeRequest": "См. запрос в {walletName}",
-        "noQuotesAvailable": "Нет доступных котировок",
-        "unexpectedError": "Неожиданная ошибка. Пожалуйста, попробуйте еще раз.",
-        "transactionError": "Ошибка получения транзакции. Пожалуйста, попробуйте еще раз.",
         "invalidAddress": "Неверный адрес",
         "missingAddress": "Отсутствует адрес"
       },
@@ -338,6 +333,9 @@
   },
   "buyTokens": "Купить токены",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Недостаточно средств"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Выбирайте Фиат Онрамп",
       "kadoSubtitle": "Поддерживает OSMO, USDC",
@@ -979,7 +977,17 @@
     "transferWithNoun": "Передача с помощью {noun}",
     "risks": "Преодоление сопряжено с риском.",
     "learnMore": "Узнать больше",
-    "openNoun": "Открыть {noun}"
+    "openNoun": "Открыть {noun}",
+    "insufficientFundsForFees": "Недостаточно средств для оплаты комиссий",
+    "youNeedFundsToPay": "Вам нужны средства для оплаты сетевых и мостовых сборов на {chain} .",
+    "assetsDepositsUnavailable": "Депозиты {asset} недоступны",
+    "assetsWithdrawsUnavailable": "{asset} вывод средств недоступен",
+    "noAvailableDeposits": "В настоящее время не найдены доступные маршруты или провайдеры. Пожалуйста, повторите попытку позже или воспользуйтесь альтернативным приложением для перевода средств в Osmosis.",
+    "noAvailableWithdraws": "В настоящее время не найдены доступные маршруты или провайдеры. Пожалуйста, повторите попытку позже или установите альтернативное приложение для перевода средств из Osmosis.",
+    "somethingIsntWorking": "Что-то не работает…",
+    "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, обновите страницу и повторите попытку или воспользуйтесь альтернативным приложением для перевода средств в Osmosis.",
+    "assetIsCurrentlyUnstable": "Передачи {asset} в настоящее время нестабильны.",
+    "transferWillLikelyTakeLonger": "Переносы, скорее всего, займут больше времени, чем обычно, или могут полностью завершиться неудачей. Действуйте на свой страх и риск."
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

@@ -224,14 +224,9 @@
       "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
-        "insufficientBal": "Balanta Insuficienta",
-        "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
         "wrongNetworkInWallet": "Retea gresita in {walletName}",
         "seeRequest": "Vezi solicitarea în {walletName}",
-        "noQuotesAvailable": "Nu există oferte disponibile",
-        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
         "invalidAddress": "Adresă invalidă",
         "missingAddress": "Adresa lipsă"
       },
@@ -338,6 +333,9 @@
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fonduri insuficiente"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
       "kadoSubtitle": "Acceptă OSMO, USDC",
@@ -979,7 +977,17 @@
     "transferWithNoun": "Transferați cu {noun}",
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
-    "openNoun": "Deschideți {noun}"
+    "openNoun": "Deschideți {noun}",
+    "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
+    "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
+    "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
+    "assetsWithdrawsUnavailable": "Retragerile {asset} nu sunt disponibile",
+    "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
+    "noAvailableWithdraws": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să setați o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
+    "somethingIsntWorking": "Ceva nu merge…",
+    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să reîmprospătați pagina și să încercați din nou sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
+    "assetIsCurrentlyUnstable": "Transferurile {asset} sunt momentan instabile",
+    "transferWillLikelyTakeLonger": "Transferurile vor dura probabil mai mult decât de obicei sau pot eșua complet. Procedați pe propriul risc."
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

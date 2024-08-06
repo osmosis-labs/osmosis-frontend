@@ -51,6 +51,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
   protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected axelarChainId: string;
 
   protected readonly axelarScanBaseUrl: string;
   protected readonly axelarApiBaseUrl: string;
@@ -64,6 +65,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
       this.ctx.env === "mainnet"
         ? "https://api.axelarscan.io"
         : "https://testnet.api.axelarscan.io";
+    this.axelarChainId =
+      ctx.env === "mainnet" ? "axelar-dojo-1" : "axelar-testnet-lisbon-3";
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
@@ -568,7 +571,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           });
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        chainId: toChain.chainId.toString(),
+        chainId: this.axelarChainId,
       });
 
       const ibcAsset = getAssetFromAssetList({
@@ -578,11 +581,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       });
 
       if (!ibcAsset) {
-        throw new BridgeQuoteError({
-          bridgeId: AxelarBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message: "Could not find IBC asset info",
-        });
+        throw new Error("Could not find IBC asset info:  " + fromAsset.denom);
       }
 
       const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
@@ -590,11 +589,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
       ) as IbcTransferMethod | undefined;
 
       if (!ibcTransferMethod) {
-        throw new BridgeQuoteError({
-          bridgeId: AxelarBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message: "Could not find IBC asset transfer info",
-        });
+        throw new Error(
+          "Could not find IBC asset transfer info: " + ibcAsset.symbol
+        );
       }
 
       const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
