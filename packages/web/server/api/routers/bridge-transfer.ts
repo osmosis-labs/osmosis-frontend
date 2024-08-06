@@ -78,8 +78,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -96,6 +95,14 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
+
+      // Basic circuit breaker to validate some invariants
+      // from input + given quote
+      if (input.fromAsset.address !== quote.input.address) {
+        throw new Error(
+          `Invalid quote: Expected fromAsset address ${input.fromAsset.address} but got ${quote.input.address} in quote`
+        );
+      }
 
       /**
        * Since transfer fee is deducted from input amount,
@@ -325,8 +332,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -450,9 +456,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -493,9 +497,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 

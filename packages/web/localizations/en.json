@@ -325,7 +325,16 @@
     "noAssets": "You have no balances on {osmosis}",
     "getStarted": "Deposit assets to get started",
     "noPositions": "You have no positions",
-    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools"
+    "unlockPotential": "Unlock your full earning potential and put your assets to work with liquidity pools",
+    "allocation": "Allocation",
+    "available": "Available",
+    "staked": "Staked",
+    "unstaking": "Unstaking",
+    "unclaimedRewards": "Unclaimed rewards",
+    "pooled": "Pooled",
+    "other": "Other",
+    "all": "All",
+    "assets": "Assets"
   },
   "buyTokens": "Buy tokens",
   "components": {

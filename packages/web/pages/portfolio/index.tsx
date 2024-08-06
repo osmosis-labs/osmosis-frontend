@@ -4,7 +4,7 @@ import { NextSeo } from "next-seo";
 import { useEffect } from "react";
 
 import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
-import { PortfolioPage } from "~/components/complex/portfolio-page";
+import { PortfolioPage } from "~/components/complex/portfolio/portfolio-page";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 
 // New assets and portfolio page launches are controlled by 2 separate flags:

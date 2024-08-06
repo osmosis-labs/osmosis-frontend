@@ -146,7 +146,7 @@ export class IbcBridgeProvider implements BridgeProvider {
     const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: params.toAddress,
+      chainId: params.toChain.chainId.toString(),
     });
 
     const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
