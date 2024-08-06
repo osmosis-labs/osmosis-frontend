@@ -5,6 +5,7 @@ import { z } from "zod";
 import { IS_TESTNET } from "../../../env";
 import { search, SearchSchema } from "../../../utils/search";
 import { PoolRawResponse } from "../../osmosis";
+import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar } from "./providers";
 
 const allPooltypes = [
@@ -25,6 +26,8 @@ export type Pool = {
   spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
+
+  marketIncentives?: PoolIncentives;
 };
 
 /** Async function that provides simplified pools from any data source.
@@ -34,6 +37,7 @@ export type PoolProvider = (params: {
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
+  withMarketIncetives?: boolean;
 }) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
@@ -46,6 +50,8 @@ export const PoolFilterSchema = z.object({
   types: z.array(z.enum(allPooltypes)).optional(),
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
+  /** Include market incentive data. */
+  withMarketIncetives: z.boolean().optional(),
 });
 
 /** Params for filtering pools. */
@@ -82,6 +88,7 @@ export async function getPools(
     ...params,
     poolIds: params?.poolIds,
     minLiquidityUsd: params?.minLiquidityUsd,
+    withMarketIncetives: params?.withMarketIncetives,
   });
 
   if (params?.types) {
