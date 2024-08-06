@@ -4,7 +4,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { queryOrderbookDenoms } from "../../osmosis";
+import { getOrderbookPools } from "./pools";
 
 const orderbookDenomsCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -12,7 +12,6 @@ const orderbookDenomsCache = new LRUCache<string, CacheEntry>(
 
 export function getOrderbookDenoms({
   orderbookAddress,
-  chainList,
   assetLists,
 }: {
   orderbookAddress: string;
@@ -26,19 +25,23 @@ export function getOrderbookDenoms({
     swr: 1000 * 60 * 60 * 24 * 30, // 30 days
     staleRefreshTimeout: 1000 * 60 * 60 * 24 * 30, // 30 days
     getFreshValue: () =>
-      queryOrderbookDenoms({ orderbookAddress, chainList }).then(
-        ({ data: { quote_denom, base_denom } }) => {
-          const quoteAsset = getAssetFromAssetList({
-            coinMinimalDenom: quote_denom,
-            assetLists,
-          });
-          const baseAsset = getAssetFromAssetList({
-            coinMinimalDenom: base_denom,
-            assetLists,
-          });
+      getOrderbookPools().then((pools) => {
+        const pool = pools.find((p) => p.contractAddress === orderbookAddress);
+        if (!pool)
+          return {
+            quoteAsset: undefined,
+            baseAsset: undefined,
+          };
+        const quoteAsset = getAssetFromAssetList({
+          coinMinimalDenom: pool.quoteDenom,
+          assetLists,
+        });
+        const baseAsset = getAssetFromAssetList({
+          coinMinimalDenom: pool.baseDenom,
+          assetLists,
+        });
 
-          return { quoteAsset, baseAsset };
-        }
-      ),
+        return { quoteAsset, baseAsset };
+      }),
   });
 }

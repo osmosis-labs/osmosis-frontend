@@ -73,16 +73,24 @@ export const OrderHistory = observer(() => {
   });
 
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
-  const groups = Object.keys(groupedOrders).filter(
-    (group) => groupedOrders[group as keyof typeof groupedOrders].length > 0
+  const groups = useMemo(
+    () =>
+      Object.keys(groupedOrders).filter(
+        (group) => groupedOrders[group as keyof typeof groupedOrders].length > 0
+      ),
+    [groupedOrders]
   );
-  const rows = groups.reduce<Array<string | MappedLimitOrder>>(
-    (acc, group) => [
-      ...acc,
-      group,
-      ...groupedOrders[group as keyof typeof groupedOrders],
-    ],
-    []
+  const rows = useMemo(
+    () =>
+      groups.reduce<Array<string | MappedLimitOrder>>(
+        (acc, group) => [
+          ...acc,
+          group,
+          ...groupedOrders[group as keyof typeof groupedOrders],
+        ],
+        []
+      ),
+    [groups, groupedOrders]
   );
 
   const rowVirtualizer = useWindowVirtualizer({
