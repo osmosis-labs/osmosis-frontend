@@ -742,6 +742,7 @@ export const AmountScreen = observer(
               chainLogo={fromChain.logoUri}
               chains={supportedChains}
               toChain={toChain}
+              isLoading
               onSelectChain={(nextChain) => {
                 setFromChain(nextChain);
                 resetAssets();
@@ -785,6 +786,7 @@ export const AmountScreen = observer(
               chainLogo={toChain.logoUri}
               chains={supportedChains}
               toChain={toChain}
+              isLoading
               onSelectChain={(nextChain) => {
                 setToChain(nextChain);
                 resetAssets();
@@ -1370,6 +1372,7 @@ interface ChainSelectorButtonProps {
   setIsNetworkSelectVisible: Dispatch<SetStateAction<boolean>>;
   initialManualAddress?: string;
   onConfirmManualAddress: (address: string) => void;
+  isLoading: boolean;
 }
 
 const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
@@ -1385,6 +1388,7 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
   setIsNetworkSelectVisible,
   onConfirmManualAddress,
   initialManualAddress,
+  isLoading,
 }) => {
   if (readonly) {
     return (
@@ -1401,23 +1405,42 @@ const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
         onClick={() => {
           setIsNetworkSelectVisible(true);
         }}
-        className="subtitle1 md:body2 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 hover:bg-osmoverse-850 md:py-1 md:px-2"
+        className={classNames(
+          "subtitle1 md:body2 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 md:py-1 md:px-2",
+          {
+            "opacity-60": isLoading,
+            "hover:bg-osmoverse-850": !isLoading,
+          }
+        )}
+        disabled={isLoading}
       >
         <div className="flex w-[90%] items-center gap-2">
-          <ChainLogo
-            className="flex-shrink-0"
-            prettyName=""
-            logoUri={chainLogo}
-            color={chainColor}
-          />
-          <span className="truncate">{children}</span>
+          {isLoading ? (
+            <Spinner className="flex-shrink-0 text-wosmongton-500" />
+          ) : (
+            <ChainLogo
+              className="flex-shrink-0"
+              prettyName=""
+              logoUri={chainLogo}
+              color={chainColor}
+            />
+          )}
+          {isLoading ? (
+            <span className="subtitle1 whitespace-nowrap text-wosmongton-200">
+              Loading networks
+            </span>
+          ) : (
+            <span className="truncate">{children}</span>
+          )}
         </div>
-        <Icon
-          id="chevron-down"
-          className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
-          width={12}
-          height={12}
-        />
+        {isLoading ? null : (
+          <Icon
+            id="chevron-down"
+            className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
+            width={12}
+            height={12}
+          />
+        )}
       </button>
       <BridgeNetworkSelectModal
         isOpen={isNetworkSelectVisible}
