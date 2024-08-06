@@ -421,50 +421,53 @@ export const AmountScreen = observer(
         };
       }
     })();
-    const { data: assetsBalances, isLoading: isLoadingAssetsBalance } =
-      api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
-        { source: balanceSource },
-        {
-          enabled:
-            !isNil(fromChain) &&
-            !isNil(supportedSourceAssets) &&
-            supportedSourceAssets.length > 0,
+    const {
+      data: assetsBalances,
+      isLoading: isLoadingAssetsBalance,
+      isError: hasBalanceError,
+    } = api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
+      { source: balanceSource },
+      {
+        enabled:
+          !isNil(fromChain) &&
+          !isNil(supportedSourceAssets) &&
+          supportedSourceAssets.length > 0,
 
-          select: (data) => {
-            let nextData: typeof data = data;
+        select: (data) => {
+          let nextData: typeof data = data;
 
-            // Filter out assets with no balance
-            if (nextData && nextData.length) {
-              const filteredData = nextData.filter((asset) =>
-                asset.amount.toDec().isPositive()
-              );
+          // Filter out assets with no balance
+          if (nextData && nextData.length) {
+            const filteredData = nextData.filter((asset) =>
+              asset.amount.toDec().isPositive()
+            );
 
-              // If there are no assets with balance, leave one to be selected
-              if (filteredData.length === 0) {
-                nextData = [nextData[0]];
-              } else {
-                nextData = filteredData;
-              }
-
-              if (
-                !fromAsset ||
-                (nextData[0].denom === fromAsset.denom &&
-                  nextData[0].amount.toDec().gt(fromAsset.amount.toDec()))
-              ) {
-                const highestBalance = nextData.reduce(
-                  (acc, curr) =>
-                    curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
-                  nextData[0]
-                );
-
-                setFromAsset(highestBalance);
-              }
+            // If there are no assets with balance, leave one to be selected
+            if (filteredData.length === 0) {
+              nextData = [nextData[0]];
+            } else {
+              nextData = filteredData;
             }
 
-            return nextData;
-          },
-        }
-      );
+            if (
+              !fromAsset ||
+              (nextData[0].denom === fromAsset.denom &&
+                nextData[0].amount.toDec().gt(fromAsset.amount.toDec()))
+            ) {
+              const highestBalance = nextData.reduce(
+                (acc, curr) =>
+                  curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
+                nextData[0]
+              );
+
+              setFromAsset(highestBalance);
+            }
+          }
+
+          return nextData;
+        },
+      }
+    );
 
     /**
      * Deposit
@@ -671,6 +674,7 @@ export const AmountScreen = observer(
         !fromAsset ||
         !toChain ||
         !toAsset ||
+        hasBalanceError ||
         !quote.enabled)
     ) {
       return (
