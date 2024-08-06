@@ -215,7 +215,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
-          toChain.chainId.toString(),
+          toChain,
           fromAddress as Address,
           msgs
         );
@@ -444,7 +444,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createTransaction(
     fromChainId: string,
-    toChainId: string,
+    toChain: BridgeChain,
     address: Address,
     messages: SkipMsg[]
   ) {
@@ -459,7 +459,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       if ("multi_chain_msg" in message) {
         return await this.createCosmosTransaction(
-          toChainId,
+          toChain,
           message.multi_chain_msg
         );
       }
@@ -467,7 +467,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   async createCosmosTransaction(
-    toChainId: string,
+    toChain: BridgeChain,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
@@ -502,9 +502,14 @@ export class SkipBridgeProvider implements BridgeProvider {
     } else {
       // is an ibc transfer
 
-      const timeoutHeight = await this.ctx.getTimeoutHeight({
-        chainId: toChainId,
-      });
+      // If toChain is not cosmos, this IBC transfer is an
+      // intermediary IBC transfer where we need to get the
+      // timeout from the bech32 prefix of the receiving address
+      const timeoutHeight = await this.ctx.getTimeoutHeight(
+        toChain.chainType === "cosmos"
+          ? toChain
+          : { destinationAddress: messageData.receiver }
+      );
 
       const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
         sourcePort: messageData.source_port,
