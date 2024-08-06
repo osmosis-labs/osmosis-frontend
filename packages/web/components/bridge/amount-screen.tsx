@@ -571,8 +571,10 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
+        checkChainAndConnectWallet(firstChain);
       }
     }, [
+      checkChainAndConnectWallet,
       direction,
       fromChain,
       isLoadingSupportedAssets,
@@ -592,24 +594,6 @@ export const AmountScreen = observer(
             )?.areTransfersDisabled
           );
     }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
-
-    /**
-     * Only check the chain and connect the wallet if the quote is enabled,
-     * the asset transfers are not disabled, and the chain is set.
-     */
-    useEffect(() => {
-      const chain = direction === "deposit" ? fromChain : toChain;
-      if (chain && quote.enabled && !areAssetTransfersDisabled) {
-        checkChainAndConnectWallet(chain);
-      }
-    }, [
-      checkChainAndConnectWallet,
-      direction,
-      fromChain,
-      areAssetTransfersDisabled,
-      quote.enabled,
-      toChain,
-    ]);
 
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
