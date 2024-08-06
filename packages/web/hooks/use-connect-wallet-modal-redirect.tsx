@@ -32,8 +32,7 @@ export function useConnectWalletModalRedirect(
   const { onOpenWalletSelect, isLoading: isWalletLoading_ } = useWalletSelect();
   const isWalletLoading =
     isWalletLoading_ ||
-    !osmosisAccount?.walletStatus ||
-    osmosisAccount.walletStatus === WalletStatus.Connecting;
+    osmosisAccount?.walletStatus === WalletStatus.Connecting;
 
   const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected
@@ -56,12 +55,21 @@ export function useConnectWalletModalRedirect(
     );
   }, [osmosisAccount?.walletStatus]);
 
+  const defaultChildren = (
+    <h6 className="flex items-center gap-3">
+      <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
+      {connectWalletMessage}
+    </h6>
+  );
+
   return {
     showModalBase: showSelf,
     accountActionButton:
       isWalletLoading ||
       osmosisAccount?.walletStatus === WalletStatus.Connected ? (
-        <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
+        <Button {...actionButtonProps}>
+          {actionButtonProps?.children ?? defaultChildren}
+        </Button>
       ) : (
         <Button
           {...actionButtonProps}
@@ -76,10 +84,7 @@ export function useConnectWalletModalRedirect(
             setShowSelf(false);
           }}
         >
-          <h6 className="flex items-center gap-3">
-            <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
-            {connectWalletMessage}
-          </h6>
+          {defaultChildren}
         </Button>
       ),
     walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,
