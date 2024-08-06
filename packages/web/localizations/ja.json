@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",
     "assetsWithdrawsUnavailable": "{asset}の引き出しは利用できません",
     "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
-    "noAvailableWithdraws": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションをご利用ください。",
+    "noAvailableWithdraws": "現在、利用可能なルートまたはプロバイダーが見つかりません。後でもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションを設定してください。",
     "somethingIsntWorking": "何かがうまくいかない…",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。ページを更新してもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
     "assetIsCurrentlyUnstable": "{asset}の転送は現在不安定です",

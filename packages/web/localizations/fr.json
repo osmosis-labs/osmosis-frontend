@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "Les dépôts {asset} ne sont pas disponibles",
     "assetsWithdrawsUnavailable": "Les retraits {asset} ne sont pas disponibles",
     "noAvailableDeposits": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer plus tard ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
-    "noAvailableWithdraws": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer plus tard ou utiliser une autre application pour transférer vos fonds depuis Osmosis.",
+    "noAvailableWithdraws": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer ultérieurement ou définir une autre application pour transférer vos fonds depuis Osmosis.",
     "somethingIsntWorking": "Quelque chose ne fonctionne pas…",
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez actualiser la page et réessayer ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
     "assetIsCurrentlyUnstable": "Les transferts {asset} sont actuellement instables",

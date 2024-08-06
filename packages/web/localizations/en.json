@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "{asset} deposits are unavailable",
     "assetsWithdrawsUnavailable": "{asset} withdraws are unavailable",
     "noAvailableDeposits": "Currently no available routes or providers can be found. Please try again later or use an alternative application to transfer your funds to Osmosis.",
-    "noAvailableWithdraws": "Currently no available routes or providers can be found. Please try again later or se an alternative application to transfer your funds from Osmosis.",
+    "noAvailableWithdraws": "Currently no available routes or providers can be found. Please try again later or set an alternative application to transfer your funds from Osmosis.",
     "somethingIsntWorking": "Something isn’t working…",
     "sorryForTheInconvenience": "Sorry for the inconvenience. Please refresh the page and try again or use an alternative application to transfer your funds to Osmosis.",
     "assetIsCurrentlyUnstable": "{asset} transfers are currently unstable",

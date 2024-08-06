@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "Los depósitos {asset} no están disponibles",
     "assetsWithdrawsUnavailable": "{asset} los retiros no están disponibles",
     "noAvailableDeposits": "Actualmente no se pueden encontrar rutas ni proveedores disponibles. Inténtelo de nuevo más tarde o utilice una aplicación alternativa para transferir sus fondos a Osmosis.",
-    "noAvailableWithdraws": "Actualmente no se pueden encontrar rutas ni proveedores disponibles. Vuelva a intentarlo más tarde o busque una aplicación alternativa para transferir sus fondos desde Osmosis.",
+    "noAvailableWithdraws": "Actualmente no se pueden encontrar rutas ni proveedores disponibles. Inténtelo de nuevo más tarde o configure una aplicación alternativa para transferir sus fondos desde Osmosis.",
     "somethingIsntWorking": "Algo no funciona…",
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Actualice la página e inténtelo nuevamente o use una aplicación alternativa para transferir sus fondos a Osmosis.",
     "assetIsCurrentlyUnstable": "Las transferencias {asset} actualmente son inestables",
