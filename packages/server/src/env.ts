@@ -25,6 +25,7 @@ export const INDEXER_DATA_URL =
 export const NUMIA_BASE_URL =
   process.env.NEXT_PUBLIC_NUMIA_BASE_URL ??
   "https://public-osmosis-api.numia.xyz";
+export const NUMIA_API_KEY = process.env.NUMIA_API_KEY;
 
 // sqs
 export const SIDECAR_BASE_URL =

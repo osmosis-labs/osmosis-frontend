@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "{asset}存款不可用",
     "assetsWithdrawsUnavailable": "{asset}無法提現",
     "noAvailableDeposits": "目前找不到可用的路線或提供者。請稍後再試或使用其他應用程式將您的資金轉移到 Osmosis。",
-    "noAvailableWithdraws": "目前找不到可用的路線或提供者。請稍後重試或選擇其他應用程式從 Osmosis 轉移您的資金。",
+    "noAvailableWithdraws": "目前找不到可用的路線或提供者。請稍後重試或設定替代應用程式以從 Osmosis 轉移您的資金。",
     "somethingIsntWorking": "有些東西不起作用…",
     "sorryForTheInconvenience": "帶來不便敬請諒解。請刷新頁面並重試或使用其他應用程式將您的資金轉移到 Osmosis。",
     "assetIsCurrentlyUnstable": "{asset}傳輸目前不穩定",

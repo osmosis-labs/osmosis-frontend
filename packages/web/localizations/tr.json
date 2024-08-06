@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
     "assetsWithdrawsUnavailable": "{asset} para çekme işlemleri kullanılamıyor",
     "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
-    "noAvailableWithdraws": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama kullanın.",
+    "noAvailableWithdraws": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama ayarlayın.",
     "somethingIsntWorking": "Bir şeyler çalışmıyor…",
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen sayfayı yenileyip tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
     "assetIsCurrentlyUnstable": "{asset} aktarımları şu anda kararsız",

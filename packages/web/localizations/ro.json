@@ -983,7 +983,7 @@
     "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
     "assetsWithdrawsUnavailable": "Retragerile {asset} nu sunt disponibile",
     "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
-    "noAvailableWithdraws": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să vedeți o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
+    "noAvailableWithdraws": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să setați o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
     "somethingIsntWorking": "Ceva nu merge…",
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să reîmprospătați pagina și să încercați din nou sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
     "assetIsCurrentlyUnstable": "Transferurile {asset} sunt momentan instabile",

@@ -4,6 +4,7 @@ export * from "./filtered-pools";
 export * from "./market-cap";
 export * from "./pool-aprs";
 export * from "./pools-fees";
+export * from "./portfolio-over-time";
 export * from "./position-performance";
 export * from "./price-range-apr";
 export * from "./staking-apr";
