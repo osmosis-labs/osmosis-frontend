@@ -12,7 +12,6 @@ import {
   getDecimalCount,
   getNumberMagnitude,
   toScientificNotation,
-  trimPlaceholderZeros,
 } from "~/utils/number";
 
 type CustomFormatOpts = {
@@ -369,10 +368,10 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     parseFloat(price.toDec().toString()).toFixed(maxDecimals).toString()
   );
   const truncatedPrice = new PricePretty(price.fiatCurrency, truncatedAmount);
+  const formattedPrice = formatPretty(truncatedPrice, {
+    ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
+  });
 
-  return trimPlaceholderZeros(
-    formatPretty(truncatedPrice, {
-      ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
-    })
-  );
+  const split = formattedPrice.split(".");
+  return split[0] + "." + split[1].slice(0, maxDecimals);
 }
