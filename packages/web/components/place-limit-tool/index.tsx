@@ -86,8 +86,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     } = useDisclosure();
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // const fromAssetsPage = useMemo(() => page === "Token Info Page", [page]);
-
     const [{ from, quote, tab, type }, set] = useQueryStates({
       from: parseAsString.withDefault("ATOM"),
       quote: parseAsString.withDefault("USDC"),
