@@ -234,4 +234,10 @@ export const EventName = {
     started: "DepositWithdraw: Started",
     walletSelected: "DepositWithdraw: Wallet selected",
   },
+  Portfolio: {
+    pageViewed: "Portfolio: Page viewed",
+    chartInteraction: "Portfolio: Chart interaction",
+    tabClicked: "Portfolio: Open allocation clicked",
+    allocationClicked: "Portfolio: Allocation clicked",
+  },
 };
