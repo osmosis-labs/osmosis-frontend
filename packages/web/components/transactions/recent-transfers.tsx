@@ -20,21 +20,35 @@ export const RecentTransfers: FunctionComponent = observer(() => {
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
   if (isWalletLoading) return <Spinner />;
-  if (account?.address)
-    return <UserRecentTransfers address={account.address} />;
+  if (account?.address) return <RecentActivity />;
   return <NoTransactionsSplash variant="transfers" />;
 });
 
-const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
-  ({ address }) => {
-    const { t } = useTranslation();
+export const RecentActivity: FunctionComponent = observer(() => {
+  const { accountStore } = useStore();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
-    const recentTransfers = useRecentTransfers(address);
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-    if (recentTransfers.length === 0)
-      return <NoTransactionsSplash variant="transfers" />;
+  const { t } = useTranslation();
 
-    return (
+  const recentTransfers = useRecentTransfers(account?.address);
+
+  if (recentTransfers.length === 0)
+    return <NoTransactionsSplash variant="transfers" />;
+
+  return (
+    <div className="flex w-full max-w-[320px] flex-col">
+      <div className="flex cursor-pointer items-center justify-between py-3">
+        <h6>{t("portfolio.recentActivity")}</h6>
+        <LinkButton
+          href="/transactions"
+          className="text-osmoverse-400"
+          label={t("portfolio.seeAll")}
+          ariaLabel={t("portfolio.seeAll")}
+          size="sm"
+        />
+      </div>
       <div className="flex w-full flex-col gap-2">
         {recentTransfers.map(({ txHash, status, amount, isWithdraw }) => {
           const simplifiedStatus =
@@ -88,28 +102,6 @@ const UserRecentTransfers: FunctionComponent<{ address: string }> = observer(
             />
           );
         })}
-      </div>
-    );
-  }
-);
-
-export const RecentActivity: FunctionComponent = observer(() => {
-  const { accountStore } = useStore();
-  const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
-
-  const { t } = useTranslation();
-  return (
-    <div className="flex w-full max-w-[320px] flex-col">
-      <div className="flex cursor-pointer items-center justify-between py-3">
-        <h6>{t("portfolio.recentActivity")}</h6>
-        <LinkButton
-          href="/transactions"
-          className="text-osmoverse-400"
-          label={t("portfolio.seeAll")}
-          ariaLabel={t("portfolio.seeAll")}
-        />
       </div>
     </div>
   );

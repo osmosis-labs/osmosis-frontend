@@ -73,6 +73,9 @@ export const PortfolioPage: FunctionComponent = () => {
 
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <section className="w-full">
+        <RecentActivity />
+      </section>
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
@@ -128,8 +131,8 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </Tab.Group>
           </section>
+
           <section className="w-full">
-            <RecentActivity />
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}
