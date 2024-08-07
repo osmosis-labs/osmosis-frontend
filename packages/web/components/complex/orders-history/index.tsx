@@ -328,6 +328,7 @@ const TableGroupHeader = ({
       </tr>
     );
   }
+
   return (
     <tr style={style}>
       <h6 className="pb-4 pt-8">{t(`limitOrders.${group}`)}</h6>{" "}
@@ -409,17 +410,11 @@ const TableOrderRow = memo(
     return (
       <tr style={style} className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
         <td className="flex items-center !px-0 !text-left">
-          <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-osmoverse-alpha-850 p-2">
-            <Icon
-              id={order_direction === "bid" ? "plus" : "minus"}
-              className={classNames("h-4 w-4", {
-                "text-rust-400": order_direction === "ask",
-                "text-bullish-400": order_direction === "bid",
-              })}
-              width={22}
-              height={22}
-            />
-          </div>
+          <small className="subtitle1">
+            {order_direction === "bid"
+              ? t("limitOrders.buy")
+              : t("limitOrders.sell")}
+          </small>
         </td>
         <td className="!px-0 !text-left">
           <div className="flex items-center gap-4">
