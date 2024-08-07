@@ -62,6 +62,11 @@ export const OrderTypeSelector = () => {
         logEvent([EventName.LimitOrder.limitOrderSelected]);
         break;
     }
+    /**
+     * Dependencies are disabled for this hook as we only want to emit
+     * events when the user changes order types.
+     */
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 

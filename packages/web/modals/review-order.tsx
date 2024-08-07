@@ -121,6 +121,14 @@ export function ReviewOrder({
         },
       };
     },
+
+    /**
+     * Dependencies are disabled for this hook as we only want to update the
+     * current slippage amount when the outAmountLessSlippage changes.
+     *
+     * This is to monitor if the output amount changes too much from the original
+     * quote so as to warn the user.
+     */
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [outAmountLessSlippage, slippageConfig]
   );

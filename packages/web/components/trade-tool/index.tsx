@@ -55,6 +55,11 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           logEvent([EventName.LimitOrder.swapSelected]);
           break;
       }
+
+      /**
+       * Dependencies are disabled for this hook as we only want to emit
+       * events when the user changes tabs.
+       */
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tab]);
     return (

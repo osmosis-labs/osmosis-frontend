@@ -82,13 +82,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         false
       );
     }
+    /**
+     * Dependencies are ignored for this hook as we only want the price state to update
+     * when the spot price moves.
+     */
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    inputMode,
-    priceState.priceFiat,
-    priceState.priceLocked,
-    priceState.spotPrice,
-  ]);
+  }, [inputMode, priceState.priceLocked, priceState.spotPrice]);
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
