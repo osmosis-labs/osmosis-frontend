@@ -10,7 +10,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { RecentActivity } from "~/components/transactions/recent-transfers";
+import { RecentActivity } from "~/components/transactions/recent-activity";
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
@@ -73,9 +73,6 @@ export const PortfolioPage: FunctionComponent = () => {
 
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <section className="w-full">
-        <RecentActivity />
-      </section>
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
@@ -109,7 +106,8 @@ export const PortfolioPage: FunctionComponent = () => {
                   )}
                 </Tab>
               </Tab.List>
-              {!isTotalValueFetched ? (
+              {/* {!isTotalValueFetched ? ( */}
+              {true ? (
                 <div className="mx-auto my-6 w-fit">
                   <Spinner />
                 </div>
@@ -125,17 +123,22 @@ export const PortfolioPage: FunctionComponent = () => {
                     />
                   </Tab.Panel>
                   <Tab.Panel>
-                    <UserPositionsSection address={wallet.address} />
+                    <UserPositionsSection address={wallet?.address} />
                   </Tab.Panel>
                 </Tab.Panels>
               )}
             </Tab.Group>
           </section>
 
-          <section className="w-full">
-            {!isLoadingAllocation && !userHasNoAssets && (
-              <Allocation allocation={allocation} />
-            )}
+          <section className="flex w-full gap-4">
+            <div className="flex-1">
+              {!isLoadingAllocation && !userHasNoAssets && (
+                <Allocation allocation={allocation} />
+              )}
+            </div>
+            <div className="flex-1">
+              <RecentActivity />
+            </div>
           </section>
         </>
       ) : isWalletLoading ? null : (
