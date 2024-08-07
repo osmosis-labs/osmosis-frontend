@@ -102,10 +102,7 @@ export const TokenSelectLimit: FunctionComponent<
       [baseCoinPrice, baseBalance, isLoadingBasePrice]
     );
 
-    const showBaseBalance = useMemo(
-      () => orderDirection === "ask" && isWalletConnected,
-      [isWalletConnected, orderDirection]
-    );
+    const showBaseBalance = orderDirection === "ask" && isWalletConnected;
 
     return (
       <div className="flex flex-col">

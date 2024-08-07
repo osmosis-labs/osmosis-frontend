@@ -89,24 +89,17 @@ export function ReviewOrder({
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
-  const isManualSlippageTooHigh = useMemo(
-    () => +manualSlippage > 1,
-    [manualSlippage]
-  );
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
-
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
-
-  const isManualSlippageTooLow = useMemo(
-    () => manualSlippage !== "" && +manualSlippage < 0.1,
-    [manualSlippage]
-  );
-
   const [orderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
   );
 
+  const isManualSlippageTooHigh = +manualSlippage > 1;
+  const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+
+  //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
     () => outAmountLessSlippage ?? new IntPretty(0),
     // eslint-disable-next-line react-hooks/exhaustive-deps

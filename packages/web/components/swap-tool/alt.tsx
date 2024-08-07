@@ -9,12 +9,11 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useMeasure } from "react-use";
+import { useMeasure, useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import {
@@ -90,10 +89,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const [_, setType] = useQueryState("type");
 
-    useEffect(() => {
+    useMount(() => {
       setType(null);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    });
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig();

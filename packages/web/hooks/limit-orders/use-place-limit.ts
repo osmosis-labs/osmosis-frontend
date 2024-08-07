@@ -757,14 +757,11 @@ const useLimitPrice = ({
   );
 
   // Whether the user's manual order price is a valid price
-  const isValidInputPrice = useMemo(
-    () =>
-      Boolean(orderPrice) &&
-      orderPrice.length > 0 &&
-      !new Dec(orderPrice).isZero() &&
-      new Dec(orderPrice).isPositive(),
-    [orderPrice]
-  );
+  const isValidInputPrice =
+    Boolean(orderPrice) &&
+    orderPrice.length > 0 &&
+    !new Dec(orderPrice).isZero() &&
+    new Dec(orderPrice).isPositive();
 
   // The current price. If the user has input a manual order price then that is used, otherwise we look at the percentage adjusted.
   // If the user has a percentage adjusted input we calculate the price relative to the spot price
@@ -805,9 +802,8 @@ const useLimitPrice = ({
   );
 
   // If the user is inputting a price that crosses over the spot price
-  const isBeyondOppositePrice = useMemo(() => {
-    return orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
-  }, [orderDirection, price, spotPrice]);
+  const isBeyondOppositePrice =
+    orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
 
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
@@ -823,9 +819,7 @@ const useLimitPrice = ({
     reset();
   }, [orderDirection, reset, baseDenom]);
 
-  const isValidPrice = useMemo(() => {
-    return isValidInputPrice || Boolean(spotPrice);
-  }, [isValidInputPrice, spotPrice]);
+  const isValidPrice = isValidInputPrice || Boolean(spotPrice);
 
   return {
     spotPrice,

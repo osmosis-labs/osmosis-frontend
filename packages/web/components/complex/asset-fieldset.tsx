@@ -8,7 +8,6 @@ import {
   forwardRef,
   PropsWithChildren,
   ReactNode,
-  useMemo,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -140,10 +139,7 @@ const AssetFieldsetInput = forwardRef<
 >(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
   const { isMobile } = useWindowSize();
 
-  const fontSize = useMemo(
-    () => calcFontSize((inputValue ?? "").length, isMobile),
-    [inputValue, isMobile]
-  );
+  const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
 
   return (
     <div

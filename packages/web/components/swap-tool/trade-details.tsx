@@ -51,23 +51,15 @@ export const TradeDetails = observer(
 
     const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
-    const isInAmountEmpty = useMemo(
-      () => swapState?.inAmountInput.error instanceof EmptyAmountError,
-      [swapState?.inAmountInput.error]
-    );
+    const isInAmountEmpty =
+      swapState?.inAmountInput.error instanceof EmptyAmountError;
 
-    const isLoading = useMemo(
-      () =>
-        type === "market" &&
-        swapState?.isQuoteLoading &&
-        !Boolean(swapState?.error),
-      [swapState?.isQuoteLoading, swapState?.error, type]
-    );
+    const isLoading =
+      type === "market" &&
+      swapState?.isQuoteLoading &&
+      !Boolean(swapState?.error);
 
-    const priceImpact = useMemo(
-      () => swapState?.quote?.priceImpactTokenOut,
-      [swapState?.quote?.priceImpactTokenOut]
-    );
+    const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
     const isPriceImpactHigh = useMemo(
       () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
@@ -365,10 +357,8 @@ export function ExpectedRate(
     return;
   }
 
-  var baseAsset;
-  var quoteAsset;
-  var inQuoteAssetPrice;
-  var inFiatPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+  let baseAsset, quoteAsset, inQuoteAssetPrice;
+  let inFiatPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
 
   if (treatAsStable && treatAsStable == "in") {
     baseAsset = swapState.toAsset?.coinDenom;
