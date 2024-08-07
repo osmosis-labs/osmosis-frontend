@@ -44,7 +44,7 @@ import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
-  refetchOrders: () => Promise<void>;
+  refetchOrders: () => Promise<any>;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {

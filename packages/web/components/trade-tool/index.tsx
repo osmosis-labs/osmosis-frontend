@@ -91,7 +91,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   <PlaceLimitTool
                     key="tool-buy"
                     page={page}
-                    refetchOrders={async () => refetch()}
+                    refetchOrders={refetch}
                   />
                 );
               case SwapToolTab.SELL:
@@ -99,7 +99,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   <PlaceLimitTool
                     key="tool-sell"
                     page={page}
-                    refetchOrders={async () => refetch()}
+                    refetchOrders={refetch}
                   />
                 );
               case SwapToolTab.SWAP:
