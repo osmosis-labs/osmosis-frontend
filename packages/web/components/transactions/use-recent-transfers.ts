@@ -18,8 +18,8 @@ export type RecentTransfer = {
   reason?: TransferFailureReason;
   status: TransferStatus;
   isWithdraw: boolean;
-  toChainId?: string;
-  fromChainId?: string;
+  toChainId?: string | number;
+  fromChainId?: string | number;
 };
 
 const osmosisChainId = ChainList[0].chain_id;
@@ -31,11 +31,6 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
   if (!address) {
     return [];
   }
-
-  console.log(
-    "transferHistoryStore  .getHistoriesByAccount(address): ",
-    transferHistoryStore.getHistoriesByAccount(address)
-  );
 
   // reconcile histories from IBC and non-IBC history stores
   return transferHistoryStore
