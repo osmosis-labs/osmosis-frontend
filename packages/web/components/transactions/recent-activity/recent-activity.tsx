@@ -14,10 +14,7 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { RecentTransfer, useRecentTransfers } from "../use-recent-transfers";
-import {
-  RecentActivityTransactionRow,
-  RecentActivityTransferRow,
-} from "./recent-activity-transaction-row";
+import { SwapRow, TransferRow } from "./recent-activity-transaction-row";
 
 type ActivityType = "transaction" | "recentTransfer";
 
@@ -129,7 +126,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
                 activity as FormattedTransaction & MergedActivityMetadata;
 
               return (
-                <RecentActivityTransactionRow
+                <SwapRow
                   key={recentTransactionActivity.id}
                   title={{
                     pending: t("transactions.swapping"),
@@ -199,7 +196,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
                 : t("assets.historyTable.failDeposit");
 
               return (
-                <RecentActivityTransferRow
+                <TransferRow
                   toChainId={recentTransferActivity?.toChainId}
                   fromChainId={recentTransferActivity?.fromChainId}
                   key={recentTransferActivity.txHash}

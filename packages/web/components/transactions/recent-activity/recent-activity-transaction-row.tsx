@@ -36,47 +36,23 @@ interface Transaction {
     value?: PricePretty;
   };
   onClick?: () => void;
-}
-
-interface Transaction {
-  isSelected?: boolean;
-  status: TransactionStatus;
-  /** At a high level- what this transaction does. */
-  effect: Effect;
-  title: {
-    [key in TransactionStatus]: string;
-  };
-  caption?: string;
-  tokenConversion?: {
-    tokenIn: {
-      amount: CoinPretty;
-      value?: PricePretty;
-    };
-    tokenOut: {
-      amount: CoinPretty;
-      value?: PricePretty;
-    };
-  };
-  transfer?: {
-    direction: "deposit" | "withdraw";
-    amount: CoinPretty;
-    value?: PricePretty;
-  };
-  onClick?: () => void;
   toChainId?: string;
   fromChainId?: string;
 }
 
-export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
+export const TransferRow: FunctionComponent<Transaction> = ({
   status,
   title,
   transfer,
   toChainId,
   fromChainId,
 }) => {
+  const findChainNameOrId =
+    transfer?.direction === "withdraw" ? toChainId : fromChainId;
+
   const { data: chainData } = api.edge.chains.getChain.useQuery(
     {
-      findChainNameOrId: fromChainId || "",
+      findChainNameOrId: findChainNameOrId || "",
     },
     {
       useErrorBoundary: true,
@@ -84,8 +60,11 @@ export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
   );
 
   console.log("direction: ", transfer?.direction);
-  console.log("chainData: ", chainData?.pretty_name);
+  console.log("toChainId: ", toChainId);
+  console.log("fromChainId: ", fromChainId);
   console.log("-------------");
+
+  const text = transfer?.direction === "withdraw" ? "to" : "from";
 
   return (
     <div
@@ -96,7 +75,7 @@ export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
         {transfer && (
           <div className="caption flex gap-1 text-osmoverse-300">
             {transfer && formatPretty(transfer?.amount, { maxDecimals: 6 })}{" "}
-            from {chainData?.pretty_name}
+            {text} {chainData?.pretty_name}
           </div>
         )}
       </div>
@@ -152,7 +131,7 @@ export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
   );
 };
 
-export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
+export const SwapRow: FunctionComponent<Transaction> = ({
   status,
   title,
   caption,
@@ -195,71 +174,56 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
       </div>
       {caption && <p className="body1 text-osmoverse-300">{caption}</p>}
       {tokenConversion && (
-        <TokenConversion status={status} {...tokenConversion} />
+        <div className="flex items-center justify-end">
+          <FallbackImg
+            alt={tokenConversion.tokenIn.amount.denom}
+            src={tokenConversion.tokenIn.amount.currency.coinImageUrl}
+            fallbacksrc="/icons/question-mark.svg"
+            height={32}
+            width={32}
+          />
+          <Icon
+            id="arrows-swap"
+            width={16}
+            height={16}
+            className="my-[8px] mx-[4px] text-osmoverse-500"
+          />
+          <FallbackImg
+            alt={tokenConversion.tokenOut.amount.denom}
+            src={tokenConversion.tokenOut.amount.currency.coinImageUrl}
+            fallbacksrc="/icons/question-mark.svg"
+            height={32}
+            width={32}
+          />
+        </div>
       )}
-      {transfer && <TokenTransfer status={status} {...transfer} />}
+      {transfer && (
+        <div className="flex items-center gap-4">
+          <FallbackImg
+            alt={transfer.amount.denom}
+            src={transfer.amount.currency.coinImageUrl}
+            fallbacksrc="/icons/question-mark.svg"
+            height={32}
+            width={32}
+          />
+          <div className="body2 text-osmoverse-400">
+            {formatPretty(transfer.amount, { maxDecimals: 6 })}
+          </div>
+          {transfer.value && (
+            <div
+              className={classNames("subtitle1", {
+                "text-osmoverse-400": status === "pending",
+                "text-osmoverse-100": status === "success",
+                "text-rust-400": status === "failed",
+              })}
+            >
+              {transfer.direction === "withdraw" ? "-" : "+"}{" "}
+              {transfer.value.symbol}
+              {Number(transfer.value.toDec().abs().toString()).toFixed(2)}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
-
-/** UI for displaying one token being converted into another by this transaction. */
-const TokenConversion: FunctionComponent<
-  { status: TransactionStatus } & NonNullable<Transaction["tokenConversion"]>
-> = ({ tokenIn, tokenOut }) => {
-  return (
-    <div className="flex items-center justify-end">
-      <FallbackImg
-        alt={tokenIn.amount.denom}
-        src={tokenIn.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-      />
-      <Icon
-        id="arrows-swap"
-        width={16}
-        height={16}
-        className="my-[8px] mx-[4px] text-osmoverse-500"
-      />
-      <FallbackImg
-        alt={tokenOut.amount.denom}
-        src={tokenOut.amount.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
-        height={32}
-        width={32}
-      />
-    </div>
-  );
-};
-
-/** UI for displaying a token being deposited or withdrawn from Osmosis. */
-export const TokenTransfer: FunctionComponent<
-  {
-    status: TransactionStatus;
-  } & NonNullable<Transaction["transfer"]>
-> = ({ status, direction, amount, value }) => (
-  <div className="flex items-center gap-4">
-    <FallbackImg
-      alt={amount.denom}
-      src={amount.currency.coinImageUrl}
-      fallbacksrc="/icons/question-mark.svg"
-      height={32}
-      width={32}
-    />
-    <div className="body2 text-osmoverse-400">
-      {formatPretty(amount, { maxDecimals: 6 })}
-    </div>
-    {value && (
-      <div
-        className={classNames("subtitle1", {
-          "text-osmoverse-400": status === "pending",
-          "text-osmoverse-100": status === "success",
-          "text-rust-400": status === "failed",
-        })}
-      >
-        {direction === "withdraw" ? "-" : "+"} {value.symbol}
-        {Number(value.toDec().abs().toString()).toFixed(2)}
-      </div>
-    )}
-  </div>
-);
