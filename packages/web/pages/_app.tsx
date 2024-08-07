@@ -138,6 +138,12 @@ const MainLayoutWrapper: FunctionComponent<{
     onClose: onCloseLeavingOsmosisToLevana,
   } = useDisclosure();
 
+  useEffect(() => {
+    if (flags.limitOrders) {
+      document.body.classList.add("!bg-osmoverse-1000");
+    }
+  }, [flags]);
+
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 

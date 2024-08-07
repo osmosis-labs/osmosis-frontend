@@ -1,5 +1,6 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
@@ -121,6 +122,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore, queriesStore, chainStore, priceStore } = useStore();
   const { width } = useWindowSize();
   const { t } = useTranslation();
+  const flags = useFeatureFlags();
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -158,7 +160,14 @@ const AssetsOverview: FunctionComponent = observer(() => {
   };
 
   return (
-    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+    <div
+      className={classNames(
+        "flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-900 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5",
+        {
+          "!bg-osmoverse-1000": flags.limitOrders,
+        }
+      )}
+    >
       <Metric
         label={t("assets.totalAssets")}
         value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}

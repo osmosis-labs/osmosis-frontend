@@ -18,7 +18,7 @@ import { NoTransactionsSplash } from "~/components/transactions/no-transactions-
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 
@@ -48,6 +48,7 @@ export const TransactionContent = ({
   wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
 }) => {
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
   const showPagination = isWalletConnected && !isLoading;
 
@@ -86,19 +87,21 @@ export const TransactionContent = ({
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          <Tab.List className="flex items-center gap-8">
-            {TX_PAGE_TABS.map((defaultTab) => (
-              <Tab key={defaultTab}>
-                <h5
-                  className={classNames({
-                    "text-osmoverse-500": defaultTab !== tab,
-                  })}
-                >
-                  {t(`orderHistory.${defaultTab}`)}
-                </h5>
-              </Tab>
-            ))}
-          </Tab.List>
+          {featureFlags.limitOrders && (
+            <Tab.List className="flex items-center gap-8">
+              {TX_PAGE_TABS.map((defaultTab) => (
+                <Tab key={defaultTab}>
+                  <h5
+                    className={classNames({
+                      "text-osmoverse-500": defaultTab !== tab,
+                    })}
+                  >
+                    {t(`orderHistory.${defaultTab}`)}
+                  </h5>
+                </Tab>
+              ))}
+            </Tab.List>
+          )}
           <Tab.Panels>
             <Tab.Panel>
               <>
@@ -141,9 +144,11 @@ export const TransactionContent = ({
                 <BackToTopButton />
               </>
             </Tab.Panel>
-            <Tab.Panel>
-              <OrderHistory />
-            </Tab.Panel>
+            {featureFlags.limitOrders && (
+              <Tab.Panel>
+                <OrderHistory />
+              </Tab.Panel>
+            )}
           </Tab.Panels>
         </Tab.Group>
       </div>

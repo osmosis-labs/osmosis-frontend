@@ -61,6 +61,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { isLoading: isWalletLoading } = useWalletSelect();
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
+    const featureFlags = useFeatureFlags();
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const [activeModal, setActiveModal] = useState<
@@ -156,7 +157,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           />
         )}
         <section className="flex flex-col gap-8">
-          <div className="flex flex-col rounded-3xl p-8">
+          <div
+            className={classNames("flex flex-col rounded-3xl p-8", {
+              "bg-osmoverse-1000": !featureFlags.limitOrders,
+            })}
+          >
             <div className="flex flex-row lg:flex-col lg:gap-3">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -362,6 +367,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   onSecondaryClick={() => {
                     setActiveModal("learn-more");
                   }}
+                  className={classNames({
+                    "bg-osmoverse-800": !featureFlags.limitOrders,
+                    "bg-osmoverse-900": featureFlags.limitOrders,
+                  })}
                 />
                 <ConcentratedLiquidityLearnMoreModal
                   isOpen={activeModal === "learn-more"}
@@ -476,7 +485,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
 
     return (
       <div className="flex flex-wrap gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-3xl bg-osmoverse-900 px-8 py-7">
+        <div
+          className={classNames(
+            "flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7",
+            {
+              "bg-osmoverse-1000": !featureFlags.limitOrders,
+            }
+          )}
+        >
           <div className="flex h-full flex-col place-content-between">
             <span className="body2 text-osmoverse-300">
               {t("clPositions.totalBalance")}
@@ -517,7 +533,9 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
         {featureFlags.aprBreakdown && (
           <SkeletonLoader isLoaded={!isLoadingIncentives}>
             <AprBreakdown
-              className="shrink-0 rounded-3xl bg-osmoverse-900"
+              className={classNames("shrink-0 rounded-3xl", {
+                "bg-osmoverse-1000": !featureFlags.limitOrders,
+              })}
               showDisclaimerTooltip
               {...incentives?.aprBreakdown}
             />
@@ -525,7 +543,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
         )}
 
         {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl bg-osmoverse-900 px-8 py-7">
+          <div
+            className={classNames(
+              "flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7",
+              {
+                "bg-osmoverse-1000": !featureFlags.limitOrders,
+              }
+            )}
+          >
             <span className="body2 mr-auto text-osmoverse-300">
               {t("pool.incentives")}
             </span>
