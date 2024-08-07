@@ -224,11 +224,8 @@
       "approveInWallet": "Aprovar na carteira",
       "enterAddress": "{network} endereço",
       "errors": {
-        "reconnectWallet": "Reconectar {walletName}",
-        "wrongNetworkInWallet": "Rede errada em {walletName}",
         "seeRequest": "Ver solicitação em {walletName}",
-        "invalidAddress": "Endereço inválido",
-        "missingAddress": "Endereço ausente"
+        "invalidAddress": "Endereço inválido"
       },
       "from": "De",
       "loading": "Carregando",

@@ -224,11 +224,8 @@
       "approveInWallet": "વૉલેટમાં મંજૂર કરો",
       "enterAddress": "{network} સરનામું",
       "errors": {
-        "reconnectWallet": "ફરીથી કનેક્ટ કરો {walletName}",
-        "wrongNetworkInWallet": "{walletName} માં ખોટું નેટવર્ક",
         "seeRequest": "{walletName} માં વિનંતી જુઓ",
-        "invalidAddress": "અમાન્ય સરનામું",
-        "missingAddress": "સરનામું ખૂટે છે"
+        "invalidAddress": "અમાન્ય સરનામું"
       },
       "from": "થી",
       "loading": "લોડ કરી રહ્યું છે",

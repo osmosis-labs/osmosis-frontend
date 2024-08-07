@@ -224,11 +224,8 @@
       "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
-        "reconnectWallet": "{walletName} tekrar bağlan",
-        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
         "seeRequest": "{walletName}'deki talebi gör",
-        "invalidAddress": "Geçersiz adres",
-        "missingAddress": "Eksik Adres"
+        "invalidAddress": "Geçersiz adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
