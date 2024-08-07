@@ -18,6 +18,8 @@ export type RecentTransfer = {
   reason?: TransferFailureReason;
   status: TransferStatus;
   isWithdraw: boolean;
+  toChainId?: string;
+  fromChainId?: string;
 };
 
 const osmosisChainId = ChainList[0].chain_id;
@@ -39,25 +41,22 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
   return transferHistoryStore
     .getHistoriesByAccount(address)
     .map(
-      ({
-        key,
-        explorerUrl,
-        createdAt,
-        amount,
-        status,
-        reason,
-        isWithdraw,
-      }) => ({
-        txHash: key.startsWith("{")
-          ? (JSON.parse(key) as GetTransferStatusParams).sendTxHash
-          : key,
-        createdAtMs: createdAt.getTime(),
-        explorerUrl,
-        amount,
-        reason,
-        status,
-        isWithdraw,
-      })
+      ({ key, explorerUrl, createdAt, amount, status, reason, isWithdraw }) => {
+        const parsedKey = key.startsWith("{")
+          ? (JSON.parse(key) as GetTransferStatusParams)
+          : null;
+        return {
+          txHash: parsedKey ? parsedKey.sendTxHash : key,
+          createdAtMs: createdAt.getTime(),
+          explorerUrl,
+          amount,
+          reason,
+          status,
+          isWithdraw,
+          toChainId: parsedKey ? parsedKey.toChainId : undefined,
+          fromChainId: parsedKey ? parsedKey.fromChainId : undefined,
+        };
+      }
     )
     .concat(
       ibcTransferHistoryStore
@@ -105,6 +104,8 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
             isWithdraw:
               ChainIdHelper.parse(osmosisChainId).identifier !==
               ChainIdHelper.parse(destChainId).identifier,
+            toChainId: destChainId,
+            fromChainId: sourceChainId,
           };
         })
     )

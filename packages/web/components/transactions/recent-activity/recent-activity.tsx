@@ -7,12 +7,12 @@ import { FunctionComponent } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
+import { Skeleton } from "~/components/ui/skeleton";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-import { Spinner } from "../../loaders";
 import { RecentTransfer, useRecentTransfers } from "../use-recent-transfers";
 import {
   RecentActivityTransactionRow,
@@ -32,6 +32,19 @@ type MergedActivity =
   | (FormattedTransaction & MergedActivityMetadata);
 
 const ACTIVITY_LIMIT = 5;
+
+const RecentActivitySkeleton = () => {
+  return (
+    <div className="flex w-full flex-col gap-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="flex w-full justify-between">
+          <Skeleton className="h-[52px] w-1/3 " />
+          <Skeleton className="h-[52px] w-1/5" />
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export const RecentActivity: FunctionComponent = observer(() => {
   const { accountStore } = useStore();
@@ -106,7 +119,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
       </div>
       <div className="flex w-full flex-col">
         {isLoading ? (
-          <Spinner />
+          <RecentActivitySkeleton />
         ) : topActivity?.length === 0 ? (
           <NoTransactionsSplash variant="transfers" />
         ) : (
@@ -187,6 +200,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
               return (
                 <RecentActivityTransferRow
+                  toChainId={recentTransferActivity?.toChainId}
+                  fromChainId={recentTransferActivity?.fromChainId}
                   key={recentTransferActivity.txHash}
                   status={simplifiedStatus}
                   effect={

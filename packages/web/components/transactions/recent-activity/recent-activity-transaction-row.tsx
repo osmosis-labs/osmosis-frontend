@@ -3,15 +3,12 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
+import { ChainLogo } from "~/components/assets/chain-logo";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
-import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
-
-import { Spinner } from "../../loaders";
-
 export type TransactionStatus = "pending" | "success" | "failed";
-
+import { api } from "~/utils/trpc";
 type Effect = "swap" | "deposit" | "withdraw";
 
 interface Transaction {
@@ -66,70 +63,107 @@ interface Transaction {
     value?: PricePretty;
   };
   onClick?: () => void;
+  toChainId?: string;
+  fromChainId?: string;
 }
 
 export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
   status,
-  effect,
   title,
   transfer,
+  toChainId,
+  fromChainId,
 }) => {
-  const effectIconId = effect === "swap" ? "swap" : "down-arrow";
+  const { data: chainData } = api.edge.chains.getChain.useQuery(
+    {
+      findChainNameOrId: fromChainId || "",
+    },
+    {
+      useErrorBoundary: true,
+    }
+  );
+
+  console.log("direction: ", transfer?.direction);
+  console.log("chainData: ", chainData?.pretty_name);
+  console.log("-------------");
 
   return (
     <div
-      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
+      className={classNames("-mx-2 flex justify-between gap-4 rounded-2xl p-2")}
     >
-      <div className="flex items-center gap-4">
-        {status === "pending" ? (
-          <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
-        ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825 p-3">
-            {status === "success" ? (
-              effect === "withdraw" ? (
-                <Icon
-                  className="rotate-180 transform"
-                  id={effectIconId}
-                  width="100%"
-                  height="100%"
-                />
-              ) : (
-                <Icon id={effectIconId} width="100%" height="100%" />
-              )
-            ) : (
-              <Icon
-                width="100%"
-                height="100%"
-                id="alert-circle"
-                color={theme.colors.rust[400]}
-              />
-            )}
+      <div className="flex flex-col">
+        <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
+        {transfer && (
+          <div className="caption flex gap-1 text-osmoverse-300">
+            {transfer && formatPretty(transfer?.amount, { maxDecimals: 6 })}{" "}
+            from {chainData?.pretty_name}
           </div>
         )}
-        <div>
-          <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
-        </div>
       </div>
-      {transfer && <TokenTransfer status={status} {...transfer} />}
+
+      <div className="flex items-center justify-end">
+        {transfer?.direction === "withdraw" ? (
+          <>
+            <FallbackImg
+              alt={transfer?.amount.denom}
+              src={transfer?.amount.currency.coinImageUrl}
+              fallbacksrc="/icons/question-mark.svg"
+              height={32}
+              width={32}
+            />
+            <Icon
+              id="arrow-right"
+              width={16}
+              height={16}
+              className="my-[8px] mx-[4px] text-osmoverse-500"
+            />
+            <ChainLogo
+              prettyName={chainData?.pretty_name}
+              color={undefined}
+              logoUri={chainData?.logoURIs?.svg}
+              size="md"
+            />
+          </>
+        ) : (
+          <>
+            <ChainLogo
+              prettyName={chainData?.pretty_name}
+              color={undefined}
+              logoUri={chainData?.logoURIs?.svg}
+              size="md"
+            />
+            <Icon
+              id="arrow-right"
+              width={16}
+              height={16}
+              className="my-[8px] mx-[4px] text-osmoverse-500"
+            />
+            <FallbackImg
+              alt={transfer?.amount.denom}
+              src={transfer?.amount.currency.coinImageUrl}
+              fallbacksrc="/icons/question-mark.svg"
+              height={32}
+              width={32}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
   status,
-  effect,
   title,
   caption,
   tokenConversion,
   transfer,
 }) => {
-  const effectIconId = effect === "swap" ? "swap" : "down-arrow";
-
   const { t } = useTranslation();
 
   return (
     <div
-      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
+      className={classNames("-mx-2 flex justify-between gap-4 rounded-2xl p-2")}
     >
       <div className="flex items-center gap-4">
         <div>
@@ -161,7 +195,7 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
       </div>
       {caption && <p className="body1 text-osmoverse-300">{caption}</p>}
       {tokenConversion && (
-        <TokenConversion status={status} effect={effect} {...tokenConversion} />
+        <TokenConversion status={status} {...tokenConversion} />
       )}
       {transfer && <TokenTransfer status={status} {...transfer} />}
     </div>
@@ -170,9 +204,7 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
 
 /** UI for displaying one token being converted into another by this transaction. */
 const TokenConversion: FunctionComponent<
-  { status: TransactionStatus; effect: Effect } & NonNullable<
-    Transaction["tokenConversion"]
-  >
+  { status: TransactionStatus } & NonNullable<Transaction["tokenConversion"]>
 > = ({ tokenIn, tokenOut }) => {
   return (
     <div className="flex items-center justify-end">
