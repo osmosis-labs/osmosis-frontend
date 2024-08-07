@@ -46,7 +46,12 @@ const ClaimAndCloseButton = observer(
     const [claiming, setClaiming] = useState(false);
 
     const claimAndClose = useCallback(async () => {
-      if (!account) return;
+      if (!account) {
+        console.error(
+          "Attempted to claim and close orders without wallet connected"
+        );
+        return;
+      }
       const { tick_id, order_id, orderbookAddress } = order;
       const claimMsg = {
         msg: {
@@ -109,7 +114,10 @@ const CancelButton = observer(
     const [cancelling, setCancelling] = useState(false);
 
     const cancel = useCallback(async () => {
-      if (!account) return;
+      if (!account) {
+        console.error("Attempted to cancel orders without wallet connected");
+        return;
+      }
       const { tick_id, order_id, orderbookAddress } = order;
       const claimMsg = {
         msg: {
