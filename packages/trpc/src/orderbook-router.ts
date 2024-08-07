@@ -18,9 +18,7 @@ import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
-  z.object({
-    userOsmoAddress: z.string().startsWith("osmo"),
-  })
+  UserOsmoAddressSchema.required()
 );
 
 const orderStatusOrder: Record<OrderStatus, number> = {

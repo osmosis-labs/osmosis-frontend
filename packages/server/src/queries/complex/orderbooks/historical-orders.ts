@@ -7,7 +7,10 @@ import dayjs from "dayjs";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { HistoricalLimitOrder, queryHistoricalOrders } from "../../osmosis";
+import {
+  HistoricalLimitOrder,
+  queryHistoricalOrders,
+} from "../../data-services";
 import { getOrderbookDenoms } from "./denoms";
 import type { MappedLimitOrder, OrderStatus } from "./types";
 
