@@ -1,5 +1,6 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { TransferStatus } from "@osmosis-labs/bridge";
+import { FormattedTransaction } from "@osmosis-labs/server";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -9,25 +10,48 @@ import { NoTransactionsSplash } from "~/components/transactions/no-transactions-
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 import { Spinner } from "../../loaders";
 import { useRecentTransfers } from "../use-recent-transfers";
-import { RecentTransferRow } from "./recent-activity-transaction";
+import {
+  RecentActivityTransactionRow,
+  RecentActivityTransferRow,
+} from "./recent-activity-transaction-row";
 
 export const RecentActivity: FunctionComponent = observer(() => {
   const { accountStore } = useStore();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
   const { t } = useTranslation();
 
-  const recentTransfers = useRecentTransfers(account?.address);
+  const recentTransfers = useRecentTransfers(wallet?.address);
 
   console.log("Recent Transfers: ", recentTransfers);
 
+  const { data: transactionsData, isFetching: isGetTransactionsFetching } =
+    api.edge.transactions.getTransactions.useQuery(
+      {
+        address: wallet?.address || "",
+        page: "0",
+        pageSize: "100",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      }
+    );
+
+  const isLoading = isWalletLoading || isGetTransactionsFetching;
+
+  const { transactions } = transactionsData ?? {
+    transactions: [],
+    hasNextPage: false,
+  };
+
   return (
-    <div className="flex w-full max-w-[320px] flex-col">
+    <div className="flex w-full flex-col">
       <div className="flex cursor-pointer items-center justify-between py-3">
         <h6>{t("portfolio.recentActivity")}</h6>
         <LinkButton
@@ -39,7 +63,38 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex w-full flex-col">
-        {isWalletLoading ? (
+        {transactions?.slice(0, 5).map((transaction: FormattedTransaction) => {
+          return (
+            <RecentActivityTransactionRow
+              key={transaction.id}
+              title={{
+                pending: t("transactions.swapping"),
+                success: t("transactions.swapped"),
+                failed: t("transactions.swapFailed"),
+              }}
+              effect="swap"
+              status={transaction.code === 0 ? "success" : "failed"}
+              tokenConversion={{
+                tokenIn: {
+                  amount:
+                    transaction?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn
+                      ?.token,
+                  value:
+                    transaction?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn
+                      ?.usd,
+                },
+                tokenOut: {
+                  amount:
+                    transaction?.metadata?.[0]?.value?.[0]?.txInfo?.tokenOut
+                      ?.token,
+
+                  value: transaction.metadata[0].value[0].txInfo.tokenOut.usd,
+                },
+              }}
+            />
+          );
+        })}
+        {isLoading ? (
           <Spinner />
         ) : recentTransfers?.length === 0 ? (
           <NoTransactionsSplash variant="transfers" />
@@ -75,7 +130,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
               : t("assets.historyTable.failDeposit");
 
             return (
-              <RecentTransferRow
+              <RecentActivityTransferRow
                 key={txHash}
                 status={simplifiedStatus}
                 effect={isWithdraw ? "withdraw" : "deposit"}

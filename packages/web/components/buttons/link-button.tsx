@@ -17,10 +17,10 @@ export function LinkButton({
   ariaLabel: string;
   href: string;
   className?: string;
-  size: "sm" | "md" | "default";
+  size?: "sm" | "md" | "default";
 }) {
   return (
-    <Button asChild variant="ghost" size="md">
+    <Button asChild variant="ghost" size={size}>
       <Link
         href={href}
         passHref
