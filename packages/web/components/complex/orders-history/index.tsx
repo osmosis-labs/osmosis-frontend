@@ -6,18 +6,12 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
@@ -108,25 +102,6 @@ export const OrderHistory = observer(() => {
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
-
-  useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
-    if (!lastItem) return;
-
-    if (
-      lastItem.index >= orders.length - 1 &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
-    }
-  }, [
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    rowVirtualizer,
-    orders.length,
-  ]);
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
@@ -283,6 +258,13 @@ export const OrderHistory = observer(() => {
           )}
         </tbody>
       </table>
+      <Intersection
+        onVisible={() => {
+          if (hasNextPage && !isFetchingNextPage && !isLoading) {
+            fetchNextPage();
+          }
+        }}
+      />
     </div>
   );
 });
