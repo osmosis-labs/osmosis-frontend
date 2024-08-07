@@ -194,7 +194,7 @@ export function ReviewOrder({
       </span>
     );
   }, [gasAmount, isGasLoading, gasFeeError, t]);
-  console.log(tab === "sell" && isBeyondOppositePrice);
+
   return (
     <ModalBase
       isOpen={isOpen}

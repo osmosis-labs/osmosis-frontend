@@ -78,6 +78,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
             ? priceState.manualPercentAdjusted.replace(/,/g, "")
             : 0
         ).quo(new Dec(100)),
+        false,
         false
       );
     }
@@ -91,18 +92,19 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
   const priceLabel = useMemo(() => {
     if (inputMode === InputMode.Percentage) {
-      return formatPretty(
-        priceState.priceFiat,
-        getPriceExtendedFormatOptions(priceState.priceFiat.toDec())
-      );
+      return `$${trimPlaceholderZeros(
+        priceState.priceFiat.toDec().toString()
+      )}`;
     }
 
     return priceState.percentAdjusted.isZero()
       ? t("limitOrders.marketPrice")
-      : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
-          ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
-          maxDecimals: 3,
-        })}%`;
+      : `${trimPlaceholderZeros(
+          formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+            ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
+            maxDecimals: 3,
+          })
+        )}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
   const percentageSuffix = useMemo(() => {
