@@ -1,5 +1,6 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -650,7 +651,9 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           </div>
         ) : (
           <Table<TableCell>
-            className="my-5 w-full"
+            className={classNames("my-5 w-full", {
+              "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
+            })}
             columnDefs={[
               {
                 display: t("assets.table.columns.assetChain"),

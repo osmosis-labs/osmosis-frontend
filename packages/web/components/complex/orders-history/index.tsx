@@ -24,6 +24,7 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
+  useFeatureFlags,
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
@@ -60,6 +61,7 @@ export const OrderHistory = observer(() => {
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.LimitOrder.pageViewed],
   });
+  const featureFlags = useFeatureFlags();
   const { accountStore } = useStore();
   const { t } = useTranslation();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -214,7 +216,14 @@ export const OrderHistory = observer(() => {
       <table className="relative table-auto" ref={listRef}>
         {!isLoading && (
           <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
-            <tr className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
+            <tr
+              className={classNames(
+                "grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]",
+                {
+                  "!bg-osmoverse-1000": featureFlags.limitOrders,
+                }
+              )}
+            >
               {headers.map((header) => (
                 <th key={header} className="!px-0">
                   <small className="body2">
