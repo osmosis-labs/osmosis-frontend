@@ -1,16 +1,17 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
+import { debounce } from "debounce";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
+  ChangeEvent,
   FunctionComponent,
   useCallback,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
@@ -23,29 +24,12 @@ import {
 } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
 import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
-import { useKeyActions } from "~/hooks/use-key-actions";
-import { useStateRef } from "~/hooks/use-state-ref";
+import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
-
-const dataAttributeName = "data-token-id";
-
-function getTokenItemId(uniqueId: string, index: number) {
-  return `token-selector-item-${uniqueId}-${index}`;
-}
-
-function getTokenElement(uniqueId: string, index: number) {
-  return document.querySelector(
-    `[${dataAttributeName}=${getTokenItemId(uniqueId, index)}]`
-  );
-}
-
-function getAllTokenElements() {
-  return document.querySelectorAll(`[${dataAttributeName}]`);
-}
 
 interface TokenSelectModalLimitProps {
   isOpen: boolean;
@@ -95,12 +79,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         accountStore.osmosisChainId
       )?.isWalletConnected;
 
-      const [
-        keyboardSelectedIndex,
-        setKeyboardSelectedIndex,
-        keyboardSelectedIndexRef,
-      ] = useStateRef(0);
-
       const [_isRequestingClose, setIsRequestingClose] = useState(false);
       const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
         useState<string | null>(null);
@@ -111,8 +89,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         );
       const shouldShowUnverifiedAssets =
         showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
-
-      const assetsRef = useLatest(selectableAssets);
 
       const searchBoxRef = useRef<HTMLInputElement>(null);
       const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -151,54 +127,26 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         onSelect(coinDenom);
       };
 
-      const { handleKeyDown: containerKeyDown } = useKeyActions({
-        ArrowDown: () => {
-          setKeyboardSelectedIndex((selectedIndex) =>
-            selectedIndex === getAllTokenElements().length - 1
-              ? 0
-              : selectedIndex + 1
-          );
-
-          getTokenElement(
-            uniqueId,
-            keyboardSelectedIndexRef.current
-          )?.scrollIntoView({
-            block: "nearest",
-          });
-
-          // Focus on search bar if user starts keyboard navigation
-          searchBoxRef.current?.focus();
-        },
-        ArrowUp: () => {
-          setKeyboardSelectedIndex((selectedIndex) =>
-            selectedIndex === 0
-              ? getAllTokenElements().length - 1
-              : selectedIndex - 1
-          );
-
-          getTokenElement(
-            uniqueId,
-            keyboardSelectedIndexRef.current
-          )?.scrollIntoView({
-            block: "nearest",
-          });
-
-          // Focus on search bar if user starts keyboard navigation
-          searchBoxRef.current?.focus();
-        },
-        Enter: () => {
-          const asset = assetsRef.current[keyboardSelectedIndexRef.current];
-          if (!asset) return;
-          const { coinDenom } = asset;
-
-          onClickAsset(coinDenom);
-        },
-      });
-
       const [filterValue, setQuery, results] = useFilteredData(
         selectableAssets,
         ["coinDenom", "coinName"]
       );
+
+      const {
+        selectedIndex: keyboardSelectedIndex,
+        setSelectedIndex: setKeyboardSelectedIndex,
+        itemContainerKeyDown,
+        searchBarKeyDown,
+        setItemAttribute,
+      } = useKeyboardNavigation({
+        items: results,
+        onSelectItem: (item) => {
+          if (item) {
+            onSelect(item.coinDenom);
+          }
+        },
+        searchBoxRef,
+      });
 
       const onClose = () => {
         setIsRequestingClose(true);
@@ -240,7 +188,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       if (!isOpen) return;
 
       return (
-        <div className="absolute" onKeyDown={containerKeyDown}>
+        <div className="absolute" onKeyDown={itemContainerKeyDown}>
           <ActivateUnverifiedTokenConfirmation
             coinDenom={assetToActivate?.coinDenom}
             coinImageUrl={assetToActivate?.coinImageUrl}
@@ -305,9 +253,15 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                         />
                       </div>
                       <input
+                        ref={searchBoxRef}
                         autoFocus
                         value={searchValue}
-                        onChange={(e) => onSearch(e.target.value)}
+                        onKeyDown={searchBarKeyDown}
+                        onChange={debounce(
+                          (e: ChangeEvent<HTMLInputElement>) =>
+                            onSearch(e.target.value),
+                          300
+                        )}
                         placeholder={t("limitOrders.searchAssets")}
                         className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
                       />
@@ -385,12 +339,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                             }}
                             onMouseOver={() => setKeyboardSelectedIndex(index)}
                             onFocus={() => setKeyboardSelectedIndex(index)}
-                            {...{
-                              [dataAttributeName]: getTokenItemId(
-                                uniqueId,
-                                index
-                              ),
-                            }}
+                            {...setItemAttribute(index)}
                           >
                             <div
                               className={classNames(
