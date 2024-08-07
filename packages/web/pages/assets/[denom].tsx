@@ -30,6 +30,7 @@ import {
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
+import { SwapTool } from "~/components/swap-tool";
 import { SwapToolProps } from "~/components/swap-tool/alt";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
@@ -73,6 +74,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
   ({ tweets }) => {
     const { t } = useTranslation();
     const router = useRouter();
+    const featureFlags = useFeatureFlags();
 
     const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
 
@@ -142,8 +144,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       [assetInfoConfig]
     );
 
-    const SwapTool_ = (
+    const SwapTool_ = featureFlags.limitOrders ? (
       <TradeTool page="Token Info Page" swapToolProps={swapToolProps} />
+    ) : (
+      <SwapTool {...swapToolProps} page="Token Info Page" />
     );
 
     return (
