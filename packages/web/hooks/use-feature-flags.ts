@@ -1,7 +1,10 @@
+import { apiClient } from "@osmosis-labs/utils";
+import { useQuery } from "@tanstack/react-query";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
+import { LevanaGeoBlockedResponse } from "~/pages/_app";
 
 // NOTE: Please add a default value to any new flag you add to this list
 export type AvailableFlags =
@@ -62,12 +65,28 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   _isClientIDPresent: false,
 };
 
+const LIMIT_ORDER_COUNTRY_CODES =
+  process.env.NEXT_PUBLIC_LIMIT_ORDER_COUNTRY_CODES?.split(",").map((s) =>
+    s.trim()
+  ) ?? [];
+
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
 
   const client = useLDClient();
+
+  const { data: levanaGeoblock } = useQuery(
+    ["levana-geoblocked"],
+    () =>
+      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      retry: false,
+    }
+  );
 
   useEffect(() => {
     if (!isInitialized && client && process.env.NODE_ENV !== "test")
@@ -94,5 +113,9 @@ export const useFeatureFlags = () => {
       launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
+    limitOrders:
+      launchdarklyFlags.limitOrders &&
+      (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
+        LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
   } as Record<ModifiedFlags, boolean>;
 };
