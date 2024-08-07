@@ -1,8 +1,10 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cases from "jest-in-case";
 
 import { approxSqrt } from "../../../utils";
 import { maxSpotPrice, maxTick, minSpotPrice } from "../const";
-import { priceToTick, tickToSqrtPrice } from "../tick";
+import { priceToTick, tickToPrice, tickToSqrtPrice } from "../tick";
 
 // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/tick_test.go#L30
 describe("tickToSqrtPrice", () => {
@@ -216,6 +218,41 @@ describe("priceToTick", () => {
     });
   });
 });
+
+cases(
+  "tickToPrice",
+  ({ tick, priceExpected }) => {
+    const price = tickToPrice(tick);
+    expect(price.toString()).toEqual(priceExpected.toString());
+  },
+  [
+    {
+      name: "Tick Zero",
+      tick: new Int("0"),
+      priceExpected: new Dec("1"),
+    },
+    {
+      name: "Large Positive Tick",
+      tick: new Int("1000000"),
+      priceExpected: new Dec("2"),
+    },
+    {
+      name: "Large Negative Tick",
+      tick: new Int("-5000000"),
+      priceExpected: new Dec("0.5"),
+    },
+    {
+      name: "Max Tick",
+      tick: new Int("182402823"),
+      priceExpected: new Dec("340282300000000000000"),
+    },
+    {
+      name: "Min Tick",
+      tick: new Int("-108000000"),
+      priceExpected: new Dec("0.000000000001"),
+    },
+  ]
+);
 
 // TEMORARY: commenting out until we confirm adding a buffer around current tick avoids invalid queries
 // describe("estimateInitialTickBound", () => {

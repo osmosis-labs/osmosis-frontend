@@ -12,11 +12,15 @@ import { StakeTool } from "~/components/cards/stake-tool";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Spinner } from "~/components/loaders/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
-import { StakeOrUnstake } from "~/components/types";
-import { StakeOrEdit } from "~/components/types";
+import { StakeOrEdit, StakeOrUnstake } from "~/components/types";
 import { AmountDefault, EventName } from "~/config";
-import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
-import { useAmplitudeAnalytics, useGetApr, useTranslation } from "~/hooks";
+import {
+  useAmountConfig,
+  useAmplitudeAnalytics,
+  useFakeFeeConfig,
+  useGetApr,
+  useTranslation,
+} from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
 import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
@@ -348,7 +352,7 @@ export const Staking: React.FC = observer(() => {
   );
 
   return (
-    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
+    <main className="m-auto flex max-w-container flex-col gap-5 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
           <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-3xl">

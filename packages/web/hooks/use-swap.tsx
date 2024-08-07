@@ -16,14 +16,11 @@ import {
   getAssetFromAssetList,
   isNil,
   makeMinimalAsset,
+  sum,
 } from "@osmosis-labs/utils";
-import { sum } from "@osmosis-labs/utils";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { useMemo } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -48,9 +45,9 @@ import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
-import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -749,7 +746,7 @@ export function useSwapAssets({
   };
 }
 
-function useSwapAmountInput({
+export function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
@@ -868,7 +865,7 @@ function useSwapAmountInput({
  * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
  */
-function useToFromDenoms({
+export function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
@@ -877,21 +874,19 @@ function useToFromDenoms({
   initialFromDenom?: string;
   initialToDenom?: string;
 }) {
-  const router = useRouter();
-
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
    */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
+  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    useQueryParams ? initialFromDenom : undefined
+    parseAsString.withDefault(initialFromDenom ?? "ATOM")
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryParamState(
+  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    useQueryParams ? initialToDenom : undefined
+    parseAsString.withDefault(initialToDenom ?? "OSMO")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
@@ -913,14 +908,9 @@ function useToFromDenoms({
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {
     if (useQueryParams) {
-      const existingParams = router.query;
-      router.replace({
-        query: {
-          ...existingParams,
-          from: toDenomQueryParamStr,
-          to: fromDenomQueryParamStr,
-        },
-      });
+      const temp = fromDenomQueryParam;
+      setFromDenomQueryParam(toAssetQueryParam);
+      setToAssetQueryParam(temp);
       return;
     }
 
@@ -942,7 +932,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends MinimalAsset>({
+export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -1315,7 +1305,7 @@ function makeRouterErrorFromTrpcError(
 }
 
 /** Gets recommended assets directly from asset list. */
-function useRecommendedAssets(
+export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {

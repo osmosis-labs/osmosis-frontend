@@ -4,6 +4,7 @@ export * from "./chains";
 export * from "./concentrated-liquidity";
 export * from "./earn";
 export * from "./get-timeout-height";
+export * from "./orderbooks";
 export * from "./osmosis";
 export * from "./pools";
 export * from "./portfolio";

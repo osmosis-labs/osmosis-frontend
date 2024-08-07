@@ -411,6 +411,7 @@
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
     "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません",
     "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"
@@ -447,7 +448,6 @@
     "pools": "プール",
     "stake": "ステーク",
     "store": "アプリ",
-    "swap": "スワップ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
     "trade": "プロトレーディング",
@@ -798,9 +798,11 @@
     "MAX": "マックス",
     "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",
     "pool": "プール番号{id}",
-    "priceImpact": "価格への影響",
+    "priceImpact": "市場への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
+    "showDetails": "詳細を表示",
+    "hideDetails": "隠れる",
     "continueAnyway": "とにかく続けます",
     "warning": {
       "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
@@ -812,7 +814,17 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "dynamicSpreadFactor": "動的"
+    "dynamicSpreadFactor": "動的",
+    "gas": {
+      "oneClickTradingError": "現時点ではネットワーク手数料を見積もることはできません。手数料が 1 クリック取引ネットワーク手数料の上限を超える場合は、ウォレットで手動で承認を進めることができます。",
+      "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
+      "gasEstimationError": "ネットワーク料金は見積もれません",
+      "unknown": "未知",
+      "additionalNetworkFee": "追加のネットワーク料金"
+    },
+    "noRoutes": "ルートが見つかりません",
+    "route": "ルート",
+    "routes": "ルート"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
@@ -1198,5 +1210,101 @@
   "pagination": {
     "older": "古い",
     "newer": "新しい"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "注文",
+        "amount": "額",
+        "price": "価格",
+        "orderPlaced": "注文済み",
+        "status": "状態"
+      },
+      "emptyState": {
+        "title": "最近の注文はありません",
+        "subtitle": "取引注文履歴がここに表示されます。",
+        "connectTitle": "ウォレットを接続すると注文履歴が表示されます",
+        "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
+      }
+    },
+    "aboveMarket": {
+      "title": "市場価格を上回る制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "belowMarket": {
+      "title": "市場価格以下の制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "enterAnAmountTo": "金額を入力してください",
+    "sell": "売る",
+    "buy": "買う",
+    "pay": "支払う",
+    "open": "開ける",
+    "filled": "満たされた",
+    "claimable": "請求可能",
+    "claimAndClose": "請求して終了",
+    "accept": "受け入れる",
+    "cancelled": "キャンセル",
+    "cancel": "キャンセル",
+    "daysAgo": "{days}日前",
+    "hoursAgo": "{hours}前",
+    "buyWith": "{coinA}または{coinB}で購入",
+    "orderHistory": "注文履歴",
+    "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
+    "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
+    "sellAnAsset": "資産を売る",
+    "swapAnAsset": "資産を交換する",
+    "of": "の",
+    "insufficientFunds": "残高不足",
+    "startTrading": "取引を始める",
+    "filledOrdersToClaim": "請求する注文を完了",
+    "tradeFees": "取引手数料（注文成立時）",
+    "youNeed": "必要なのは",
+    "stablecoin": "ステーブルコイン",
+    "quoteUpdated": "引用を更新しました",
+    "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
+    "chooseAnOption": "続行するにはオプションを選択してください。",
+    "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
+    "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
+    "reviewTrade": "取引のレビュー",
+    "errors": {
+      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
+      "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",
+      "tradeMayNotExecuted": "取引が実行されない可能性があります"
+    },
+    "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
+    "whatIsOrderClaim": {
+      "title": "注文請求とは何ですか?",
+      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに、約定した注文から資金を手動で請求する必要がある場合もあります。<inlang-LineFeed><inlang-LineFeed>この請求プロセスでは、未請求のすべての約定済み注文に対してウォレット内の単一のトランザクションを承認する必要があり、少額のネットワーク料金が発生します。"
+    },
+    "whatIsAStablecoin": {
+      "title": "ステーブルコインとは何ですか?",
+      "description": "ステーブルコインは、法定通貨や金などの別の資産に価値が固定され、安定した価格を維持する暗号通貨の一種です。Osmosis では、資産の売買に使用される主なステーブルコインは USDC と USDT です。"
+    },
+    "claimAll": "すべてを主張する",
+    "addFunds": "資金を追加",
+    "selectAnAssetTo": {
+      "buy": "購入する資産を選択",
+      "sell": "売却する資産を選択する"
+    },
+    "payWith": "お支払い方法",
+    "receive": "受け取る",
+    "swapFromAnotherAsset": "別の資産からのスワップ",
+    "connectYourWallet": "ウォレットを接続する",
+    "toSeeYourBalances": "残高を確認する",
+    "searchAssets": "アセットを検索",
+    "marketPrice": "市場価格",
+    "below": "下に",
+    "above": "その上",
+    "currentPrice": "現在の価格",
+    "whenDenomPriceIs": "{denom}価格が",
+    "orderType": "注文タイプ",
+    "confirm": "確認する",
+    "market": "市場",
+    "limit": "制限",
+    "trade": "貿易",
+    "swapToAnotherAsset": "別の資産に交換する",
+    "invalidPrice": "無効な価格",
+    "unavailable": "{denom}では利用できません"
   }
 }
