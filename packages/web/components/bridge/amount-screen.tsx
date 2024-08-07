@@ -631,29 +631,15 @@ export const AmountScreen = observer(
       [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
     );
 
-    const isLoading = useMemo(
-      () =>
-        isLoadingCanonicalAssetPrice ||
-        isLoadingSupportedAssets ||
-        isLoadingAssetsInOsmosis ||
-        !canonicalAsset ||
-        !canonicalAssetPrice ||
-        (direction === "withdraw"
-          ? !fromChain || !fromAsset
-          : !toChain || !toAsset),
-      [
-        canonicalAsset,
-        canonicalAssetPrice,
-        direction,
-        fromAsset,
-        fromChain,
-        isLoadingAssetsInOsmosis,
-        isLoadingCanonicalAssetPrice,
-        isLoadingSupportedAssets,
-        toAsset,
-        toChain,
-      ]
-    );
+    const isLoading =
+      isLoadingCanonicalAssetPrice ||
+      isLoadingSupportedAssets ||
+      isLoadingAssetsInOsmosis ||
+      !canonicalAsset ||
+      !canonicalAssetPrice ||
+      (direction === "withdraw"
+        ? !fromChain || !fromAsset
+        : !toChain || !toAsset);
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
