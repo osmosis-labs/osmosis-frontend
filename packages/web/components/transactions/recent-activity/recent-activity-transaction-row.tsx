@@ -1,5 +1,4 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
@@ -7,19 +6,18 @@ import { ChainLogo } from "~/components/assets/chain-logo";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
-export type TransactionStatus = "pending" | "success" | "failed";
 import { api } from "~/utils/trpc";
+
+export type TransactionStatus = "pending" | "success" | "failed";
 type Effect = "swap" | "deposit" | "withdraw";
 
-interface Transaction {
+interface Activity {
   isSelected?: boolean;
   status: TransactionStatus;
-  /** At a high level- what this transaction does. */
   effect: Effect;
   title: {
     [key in TransactionStatus]: string;
   };
-  caption?: string;
   tokenConversion?: {
     tokenIn: {
       amount: CoinPretty;
@@ -35,12 +33,28 @@ interface Transaction {
     amount: CoinPretty;
     value?: PricePretty;
   };
-  onClick?: () => void;
   toChainId?: string;
   fromChainId?: string;
 }
 
-export const TransferRow: FunctionComponent<Transaction> = ({
+export const RecentActivityRow: FunctionComponent<{
+  status: TransactionStatus;
+  title: { [key in TransactionStatus]: string };
+  leftComponent: JSX.Element | null;
+  rightComponent: JSX.Element | null;
+}> = ({ status, title, leftComponent, rightComponent }) => {
+  return (
+    <div className="-mx-2 flex justify-between gap-4 rounded-2xl p-2">
+      <div className="flex flex-col">
+        <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
+        {leftComponent}
+      </div>
+      <div className="flex items-center justify-end">{rightComponent}</div>
+    </div>
+  );
+};
+
+export const TransferRow: FunctionComponent<Activity> = ({
   status,
   title,
   transfer,
@@ -59,171 +73,119 @@ export const TransferRow: FunctionComponent<Transaction> = ({
     }
   );
 
-  console.log("direction: ", transfer?.direction);
-  console.log("toChainId: ", toChainId);
-  console.log("fromChainId: ", fromChainId);
-  console.log("-------------");
-
   const text = transfer?.direction === "withdraw" ? "to" : "from";
 
-  return (
-    <div
-      className={classNames("-mx-2 flex justify-between gap-4 rounded-2xl p-2")}
-    >
-      <div className="flex flex-col">
-        <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
-        {transfer && (
-          <div className="caption flex gap-1 text-osmoverse-300">
-            {transfer && formatPretty(transfer?.amount, { maxDecimals: 6 })}{" "}
-            {text} {chainData?.pretty_name}
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-end">
-        {transfer?.direction === "withdraw" ? (
-          <>
-            <FallbackImg
-              alt={transfer?.amount.denom}
-              src={transfer?.amount.currency.coinImageUrl}
-              fallbacksrc="/icons/question-mark.svg"
-              height={32}
-              width={32}
-            />
-            <Icon
-              id="arrow-right"
-              width={16}
-              height={16}
-              className="my-[8px] mx-[4px] text-osmoverse-500"
-            />
-            <ChainLogo
-              prettyName={chainData?.pretty_name}
-              color={undefined}
-              logoUri={chainData?.logoURIs?.svg}
-              size="md"
-            />
-          </>
-        ) : (
-          <>
-            <ChainLogo
-              prettyName={chainData?.pretty_name}
-              color={undefined}
-              logoUri={chainData?.logoURIs?.svg}
-              size="md"
-            />
-            <Icon
-              id="arrow-right"
-              width={16}
-              height={16}
-              className="my-[8px] mx-[4px] text-osmoverse-500"
-            />
-            <FallbackImg
-              alt={transfer?.amount.denom}
-              src={transfer?.amount.currency.coinImageUrl}
-              fallbacksrc="/icons/question-mark.svg"
-              height={32}
-              width={32}
-            />
-          </>
-        )}
-      </div>
+  const leftComponent = transfer ? (
+    <div className="caption flex gap-1 text-osmoverse-300">
+      {formatPretty(transfer.amount, { maxDecimals: 6 })} {text}{" "}
+      {chainData?.pretty_name}
     </div>
+  ) : null;
+
+  const rightComponent =
+    transfer?.direction === "withdraw" ? (
+      <>
+        <FallbackImg
+          alt={transfer?.amount.denom}
+          src={transfer?.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+        />
+        <Icon
+          id="arrow-right"
+          width={16}
+          height={16}
+          className="my-[8px] mx-[4px] text-osmoverse-500"
+        />
+        <ChainLogo
+          prettyName={chainData?.pretty_name}
+          color={undefined}
+          logoUri={chainData?.logoURIs?.svg}
+          size="md"
+        />
+      </>
+    ) : (
+      <>
+        <ChainLogo
+          prettyName={chainData?.pretty_name}
+          color={undefined}
+          logoUri={chainData?.logoURIs?.svg}
+          size="md"
+        />
+        <Icon
+          id="arrow-right"
+          width={16}
+          height={16}
+          className="my-[8px] mx-[4px] text-osmoverse-500"
+        />
+        <FallbackImg
+          alt={transfer?.amount.denom}
+          src={transfer?.amount.currency.coinImageUrl}
+          fallbacksrc="/icons/question-mark.svg"
+          height={32}
+          width={32}
+        />
+      </>
+    );
+
+  return (
+    <RecentActivityRow
+      status={status}
+      title={title}
+      leftComponent={leftComponent}
+      rightComponent={rightComponent}
+    />
   );
 };
 
-export const SwapRow: FunctionComponent<Transaction> = ({
+export const SwapRow: FunctionComponent<Activity> = ({
   status,
   title,
-  caption,
   tokenConversion,
-  transfer,
 }) => {
   const { t } = useTranslation();
 
-  return (
-    <div
-      className={classNames("-mx-2 flex justify-between gap-4 rounded-2xl p-2")}
-    >
-      <div className="flex items-center gap-4">
-        <div>
-          <div className="flex flex-col">
-            <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
-            {tokenConversion && (
-              <div className="caption flex gap-1 text-osmoverse-300">
-                {displayFiatPrice(tokenConversion.tokenIn?.value, "", t)}{" "}
-                {tokenConversion.tokenOut.amount.denom}{" "}
-                <Icon id="arrow-right" width={14} height={14} />{" "}
-                {tokenConversion.tokenIn.amount.denom}
-              </div>
-            )}
-          </div>
-          {tokenConversion && (
-            <div className="caption mt-1 hidden text-osmoverse-300">
-              {formatPretty(tokenConversion.tokenOut.amount, {
-                maxDecimals: 6,
-              })}
-              <Icon
-                id="arrow-right"
-                width={12}
-                height={12}
-                className="ml-1 inline-block"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-      {caption && <p className="body1 text-osmoverse-300">{caption}</p>}
-      {tokenConversion && (
-        <div className="flex items-center justify-end">
-          <FallbackImg
-            alt={tokenConversion.tokenIn.amount.denom}
-            src={tokenConversion.tokenIn.amount.currency.coinImageUrl}
-            fallbacksrc="/icons/question-mark.svg"
-            height={32}
-            width={32}
-          />
-          <Icon
-            id="arrows-swap"
-            width={16}
-            height={16}
-            className="my-[8px] mx-[4px] text-osmoverse-500"
-          />
-          <FallbackImg
-            alt={tokenConversion.tokenOut.amount.denom}
-            src={tokenConversion.tokenOut.amount.currency.coinImageUrl}
-            fallbacksrc="/icons/question-mark.svg"
-            height={32}
-            width={32}
-          />
-        </div>
-      )}
-      {transfer && (
-        <div className="flex items-center gap-4">
-          <FallbackImg
-            alt={transfer.amount.denom}
-            src={transfer.amount.currency.coinImageUrl}
-            fallbacksrc="/icons/question-mark.svg"
-            height={32}
-            width={32}
-          />
-          <div className="body2 text-osmoverse-400">
-            {formatPretty(transfer.amount, { maxDecimals: 6 })}
-          </div>
-          {transfer.value && (
-            <div
-              className={classNames("subtitle1", {
-                "text-osmoverse-400": status === "pending",
-                "text-osmoverse-100": status === "success",
-                "text-rust-400": status === "failed",
-              })}
-            >
-              {transfer.direction === "withdraw" ? "-" : "+"}{" "}
-              {transfer.value.symbol}
-              {Number(transfer.value.toDec().abs().toString()).toFixed(2)}
-            </div>
-          )}
-        </div>
-      )}
+  const leftComponent = tokenConversion ? (
+    <div className="caption flex gap-1 text-osmoverse-300">
+      {displayFiatPrice(tokenConversion.tokenIn?.value, "", t)}{" "}
+      {tokenConversion.tokenOut.amount.denom}{" "}
+      <Icon id="arrow-right" width={14} height={14} />{" "}
+      {tokenConversion.tokenIn.amount.denom}
     </div>
+  ) : null;
+
+  const rightComponent = tokenConversion ? (
+    <div className="flex items-center justify-end">
+      <FallbackImg
+        alt={tokenConversion.tokenIn.amount.denom}
+        src={tokenConversion.tokenIn.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+      />
+      <Icon
+        id="arrows-swap"
+        width={16}
+        height={16}
+        className="my-[8px] mx-[4px] text-osmoverse-500"
+      />
+      <FallbackImg
+        alt={tokenConversion.tokenOut.amount.denom}
+        src={tokenConversion.tokenOut.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+      />
+    </div>
+  ) : null;
+
+  return (
+    <RecentActivityRow
+      status={status}
+      title={title}
+      leftComponent={leftComponent}
+      rightComponent={rightComponent}
+    />
   );
 };
