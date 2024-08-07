@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
@@ -19,6 +20,7 @@ export function useRemoveConcentratedLiquidityConfig(
 } {
   const { accountStore, queriesStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
+  const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
@@ -75,14 +77,12 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.rawLog);
                 } else {
-                  // get latest liquidity depths for charts
-                  osmosisQueries.queryLiquiditiesPerTickRange
-                    .getForPoolId(poolId)
-                    .waitFreshResponse();
+                  // refresh tick data
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                    .invalidate({ poolId })
+                    .then(() => resolve());
                   // get latest price, if position removed
-                  osmosisQueries.queryPools
-                    .getPool(poolId)
-                    ?.waitFreshResponse();
+                  osmosisQueries.queryPools.getPool(poolId)?.fetch();
 
                   logEvent([
                     EventName.ConcentratedLiquidity.removeLiquidityCompleted,
@@ -110,7 +110,7 @@ export function useRemoveConcentratedLiquidityConfig(
       logEvent,
       poolId,
       position.id,
-      osmosisQueries.queryLiquiditiesPerTickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       osmosisQueries.queryPools,
     ]
   );

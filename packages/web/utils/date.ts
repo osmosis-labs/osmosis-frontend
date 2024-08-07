@@ -8,7 +8,7 @@ export function humanizeTime(date: dayjs.Dayjs): {
   const secondsDiff = date.diff(dayjs(), "seconds");
   if (secondsDiff < 60) {
     return {
-      value: secondsDiff,
+      value: Math.max(secondsDiff, 0),
       unitTranslationKey:
         secondsDiff === 1 ? "timeUnits.second" : "timeUnits.seconds",
     };

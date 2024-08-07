@@ -49,6 +49,9 @@ const baseMockStatusResult: QueryStatusResponse["result"] = {
   },
 };
 
+// silence expected console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 jest.mock("@osmosis-labs/server", () => ({
   queryRPCStatus: jest.fn().mockResolvedValue({
     jsonrpc: "2.0",

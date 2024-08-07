@@ -133,7 +133,7 @@ export class WeightedPool implements SharePool, RoutablePool {
 
   /** LBP pool */
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
-    if (this.raw.pool_params.smooth_weight_change_params !== null) {
+    if (this.raw.pool_params.smooth_weight_change_params != null) {
       const {
         start_time,
         duration,

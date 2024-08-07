@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  BaseAccountTypeStr,
   queryBalances,
   queryBaseAccount,
   queryFeesBaseDenom,
@@ -39,7 +40,45 @@ describe("simulateCosmosTxBody", () => {
 
   it("should return gasUsed on successful simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
+    } as Awaited<ReturnType<typeof queryBaseAccount>>);
+    (sendTxSimulate as jest.Mock).mockResolvedValue({
+      gas_info: { gas_used: "200000" },
+    } as Awaited<ReturnType<typeof sendTxSimulate>>);
+
+    const result = await simulateCosmosTxBody({
+      chainId,
+      chainList,
+      body: { messages: encodedMessages },
+      bech32Address,
+    });
+
+    expect(queryBaseAccount).toBeCalledWith({
+      chainId,
+      chainList,
+      bech32Address,
+    });
+    expect(sendTxSimulate).toBeCalledWith({
+      chainId,
+      chainList,
+      txBytes: expect.any(String),
+    });
+    expect(result).toEqual({ gasUsed: 200000, coinsSpent: [] });
+  });
+
+  it("should return gasUsed on successful vesting simulation", async () => {
+    (queryBaseAccount as jest.Mock).mockResolvedValue({
+      account: {
+        "@type": "non-base-type-assummed-vesting",
+        base_vesting_account: {
+          base_account: {
+            sequence: "1",
+          },
+        },
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "200000" },
@@ -78,7 +117,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw an error if sequence number is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "invalid" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "invalid",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
 
     await expect(
@@ -93,7 +135,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw SimulateNotAvailableError if chain does not support tx simulation", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
@@ -114,7 +159,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should throw an error if gas used is invalid", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockResolvedValue({
       gas_info: { gas_used: "invalid" },
@@ -132,7 +180,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should forward ApiClientError message if code is present", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     } as Awaited<ReturnType<typeof queryBaseAccount>>);
     (sendTxSimulate as jest.Mock).mockRejectedValue(
       new ApiClientError({
@@ -153,7 +204,10 @@ describe("simulateCosmosTxBody", () => {
 
   it("should re-throw any other sendTxSimulate error object", async () => {
     (queryBaseAccount as jest.Mock).mockResolvedValue({
-      account: { sequence: "1" },
+      account: {
+        "@type": BaseAccountTypeStr,
+        sequence: "1",
+      },
     });
     (sendTxSimulate as jest.Mock).mockRejectedValue(new Error("Other error"));
 
@@ -186,7 +240,7 @@ describe("getGasFeeAmount", () => {
     const expectedGasAmount =
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       MockChains.find(({ chain_id }) => chain_id === chainId)!.fees
-        .fee_tokens[0].average_gas_price! * gasLimit;
+        .fee_tokens[0].high_gas_price! * gasLimit;
 
     const gasAmount = (
       await getGasFeeAmount({
@@ -1043,7 +1097,7 @@ describe("getGasPriceByFeeDenom", () => {
       features: [],
     }));
 
-    const defaultGasPrice = new Dec(0.025);
+    const defaultGasPrice = new Dec(0.04);
 
     const result = await getGasPriceByFeeDenom({
       chainId,
@@ -1074,7 +1128,7 @@ describe("getGasPriceByFeeDenom", () => {
       gasMultiplier,
     });
 
-    expect(result.gasPrice.toString()).toBe(new Dec(0.0035).toString());
+    expect(result.gasPrice.toString()).toBe(new Dec(0.004).toString());
 
     expect(queryFeesBaseGasPrice).not.toHaveBeenCalled();
     expect(queryFeeTokenSpotPrice).not.toHaveBeenCalled();
@@ -1172,7 +1226,7 @@ describe("getDefaultGasPrice", () => {
         fee_tokens: [
           {
             denom: "uosmo",
-            average_gas_price: 0.025,
+            high_gas_price: 0.025,
           },
         ],
       },
@@ -1220,7 +1274,7 @@ describe("getDefaultGasPrice", () => {
           fee_tokens: [
             {
               denom: "uosmo",
-              average_gas_price: 0.025,
+              high_gas_price: 0.025,
             },
           ],
         },
@@ -1276,7 +1330,7 @@ describe("getDefaultGasPrice", () => {
     });
   });
 
-  it("should use default gas price if average_gas_price is not defined", async () => {
+  it("should use default gas price if high_gas_price is not defined", async () => {
     const chainListWithoutAverageGasPrice = [
       {
         chain_id: chainId,
@@ -1286,7 +1340,7 @@ describe("getDefaultGasPrice", () => {
           fee_tokens: [
             {
               denom: "uosmo",
-              // no average_gas_price
+              // no high_gas_price
             },
           ],
         },

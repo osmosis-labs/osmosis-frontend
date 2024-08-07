@@ -97,6 +97,7 @@
     "onePosition": "1 pozisyon",
     "goToPool": "havuza git #{poolId}"
   },
+  "copied": "Kopyalandı!",
   "app": {
     "banner": {
       "backToOsmosis": "Osmosis'e Geri Dön",
@@ -220,16 +221,12 @@
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
+      "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
-        "insufficientBal": "Yetersiz Bakiye",
-        "insufficientFee": "Yetersiz Ücret",
         "reconnectWallet": "{walletName} tekrar bağlan",
         "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
         "seeRequest": "{walletName}'deki talebi gör",
-        "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
-        "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
         "invalidAddress": "Geçersiz adres",
         "missingAddress": "Eksik Adres"
       },
@@ -310,9 +307,7 @@
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    },
-    "balancesMovedTitle": "Bakiyelerinizi mi arıyorsunuz?",
-    "balancesMovedDescription": "Bakiyelerinizin ve daha fazlasının yeni adresi olan Portföy sayfasına gidin."
+    }
   },
   "portfolio": {
     "buy": "Satın almak",
@@ -325,10 +320,22 @@
     "noAssets": "{osmosis} üzerinde bakiyeniz yok",
     "getStarted": "Başlamak için varlık yatırın",
     "noPositions": "Hiç pozisyonunuz yok",
-    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın"
+    "unlockPotential": "Tüm kazanç potansiyelinizi ortaya çıkarın ve varlıklarınızı likidite havuzlarıyla çalıştırın",
+    "allocation": "Paylaştırma",
+    "available": "Mevcut",
+    "staked": "Bahis",
+    "unstaking": "Stake kaldırma",
+    "unclaimedRewards": "Talep edilmeyen ödüller",
+    "pooled": "havuzlanmış",
+    "other": "Diğer",
+    "all": "Tüm",
+    "assets": "Varlıklar"
   },
   "buyTokens": "jeton satın al",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Yetersiz bakiye"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "OSMO, USDC'yi destekler",
@@ -406,8 +413,12 @@
     "invalidAmounts": "Geçersiz tutarlar",
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
-    "noData": "Veri yok"
+    "noData": "Veri yok",
+    "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
+    "startAgain": "Tekrar başla"
   },
+  "estimated": "Tahmini",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
     "simplifiedExperience": "Deneyiminiz basitleştirildi!",
@@ -449,46 +460,7 @@
     "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
     "new": "YENİ",
-    "settings": "Ayarlar",
-    "notifications": "Bildirimler"
-  },
-  "notifi": {
-    "saveChanges": "Değişiklikleri Kaydet",
-    "unsupportedHistoryTitle": "Desteklenmeyen Bildirim",
-    "unsupportedHistoryMessage": "Hoop! Birşeyler yanlış gitti. Lütfen bize bildirin",
-    "getStartedHistoryTitle1": "Başlamak için jeton satın alın",
-    "getStartedHistoryMessage1": "Ticarete başlamak için OSMO'yu edinin",
-    "getStartedHistoryTitle2": "Ticarete nasıl başlanır?",
-    "getStartedHistoryMessage2": "Bu hızlı eğitim dakikalar içinde işlem yapmanızı sağlayacak",
-    "getStartedHistoryTitle3": "Nasıl para yatırılır",
-    "getStartedHistoryMessage3": "Osmosis'e nasıl para yatıracağınızı öğrenin",
-    "signupDummyHistoryTitle1": "Başlamak için jeton satın alın",
-    "signupDummyHistoryMessage1": "Ticarete başlamak için OSMO'yu edinin",
-    "signupDummyHistoryTitle2": "Varlıklar nasıl yatırılır",
-    "signupDummyHistoryMessage2": "Osmosis'e nasıl para aktarılacağını öğrenin",
-    "signupDummyHistoryTitle3": "Ticarete nasıl başlanır",
-    "signupDummyHistoryMessage3": "Bu hızlı eğitim dakikalar içinde işlem yapmanızı sağlayacak",
-    "outboundTransferHistoryTitle": "Ozmoz Giden Transfer",
-    "outboundTransferHistoryMessage": "Miktar",
-    "poolExitedHistoryTitle": "Osmoz Havuzundan Çıkıldı",
-    "poolExitedHistoryMessage": "havuz kimliği",
-    "poolJoinedHistoryTitle": "Osmoz Havuzuna Katıldı",
-    "poolJoinedHistoryMessage": "Jeton",
-    "swapHistoryTitle": "Ozmoz Takas Onaylandı",
-    "swapHistoryMessage": "takas edildi",
-    "emptyHistoryTitle": "Başlık yok",
-    "emptyHistoryMessage": "Mesaj yok",
-    "assetReceivedHistoryTitle": "Alınan Varlık",
-    "assetReceivedHistoryMessage": "Miktar",
-    "positionOutOfRangeHistoryTitle": "Pozisyon Menzil Dışında",
-    "positionOutOfRangeHistoryMessage": "LP konumunuz menzil dışında",
-    "signupPageTitle": "Bildirimler artık kullanılabilir.",
-    "signupPageMessage": "Yeni belirteç listelerinden kritik konum durumlarına kadar önemli bir güncellemeyi bir daha asla kaçırmayın.",
-    "signupPageButton": "Bildirimleri Etkinleştir",
-    "loadMore": "Daha fazla yükle",
-    "unsavedChangeModalInfo": "Kaydedilmemiş değişiklikleriniz mevcut. Arzu eder misiniz",
-    "discardButton": "Değişiklikleri gözardı et",
-    "clearAllHistory": "Hepsini temizle"
+    "settings": "Ayarlar"
   },
   "oneClickTrading": {
     "toast": {
@@ -678,9 +650,7 @@
       "total": "Toplam Nisan",
       "explainer": {
         "title": "APR'ler nasıl hesaplanır?",
-        "p1": "Tüm APR'ler tahmindir. Havuzdaki likiditenin ortalama APR'si alınarak hesaplanır.",
-        "p2": "Süper şarjlı havuzlarda çoğu kullanıcı daha düşük ödüller alacaktır. Bunun nedeni daha yoğun olan ve daha fazla teşviki yakalayan pozisyonlardır.",
-        "p3": "Tahminleri ihtiyatlı tutmak için tüm APR'ler 3 faktörüne bölünür."
+        "subtitle": "Tüm APR'ler son 7 güne dayalı tahminlerdir. Ticaret hacmi ve fiyat dalgalandıkça APR de buna göre değişecektir. Görüntülenen aralık aşağıdakilere dayanmaktadır.<inlang-LineFeed>\nSüper şarjlı havuzlar için alt sınır, ihtiyatlı, tam aralıklı konumlara atıfta bulunur. Bu, likiditenin tüm işlemlere yayılması nedeniyle son derece düşük bir APR ile sonuçlanabilir. Üst sınır, spot fiyatın etrafında %30 yoğunlaşan bir pozisyon için hesaplanır. Bir pozisyonun menzil dışına çıkması durumunda artık kazanç sağlamayacağını unutmayın."
       }
     }
   },
@@ -910,15 +880,19 @@
     "from": "kaynağından",
     "to": "için",
     "max": "Maksimum",
+    "pendingApproval": "Onay bekleyen",
     "available": "mevcut",
+    "connectTo": "{network} ağına bağlanın",
     "transferWith": "Şununla aktar:",
     "transferTo": "Transfer",
     "receiveAsset": "Varlık al",
     "transfer": "{denom}",
+    "changeNetworkInWallet": "M-cüzdandaki ağı değiştir",
     "receive": "{denom}",
-    "selectDepositWallet": "Para yatırma cüzdanını seçin",
-    "selectWithdrawWallet": "Cüzdan çekmeyi seçin",
-    "receiveAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
+    "selectDepositWallet": "{network} cüzdanını seçin",
+    "selectWithdrawWallet": "{network} cüzdanını seçin",
+    "depositAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
+    "withdrawAssetDescription": "Belirli varlıkları çekerken, hedef ağda varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
     "calculatingFees": "Ücretlerin hesaplanması",
     "reviewDeposit": "Ödemeyi inceleyin",
@@ -944,8 +918,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
       "titleWithdraw": "Daha fazla para çekme seçeneği",
-      "descriptionDeposit": "{asset} {chain} .",
-      "descriptionWithdraw": "{asset} {chain} .",
+      "depositDescriptionUnknown": "{denom} yatırmak için lütfen alternatif bir sağlayıcı kullanın.",
+      "withdrawDescriptionUnknown": "{denom} öğesini geri çekmek için lütfen alternatif bir sağlayıcı kullanın.",
+      "singleDescriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "singleDescriptionWithdraw": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
+      "descriptionDeposit": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "descriptionWithdraw": "{denom} öğesini {networkA} öğesinden {networkB} çekmek için {networkB} , lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
+      "chooseAnAlternativeProviderDeposit": "{asset} yi {fromChain} den {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "{asset} yi {fromChain} den {toChain}",
       "depositWith": "Şununla para yatır:",
       "withdrawWith": "Şununla çekil:"
     },
@@ -958,8 +938,11 @@
       "title": "Ağ seçin",
       "searchPlaceholder": "Desteklenen ağları arayın"
     },
-    "pendingWithdraw": "Geri çekilme bekleniyor",
-    "pendingDeposit": "Bekleyen mevduat",
+    "pendingWithdraw": "Geri çekme işlemi devam ediyor",
+    "pendingDeposit": "Para yatırma işlemi devam ediyor",
+    "amountToChain": "{amount} - { {chain}",
+    "amountFromChain": "{amount} from {chain}",
+    "amountFailedToWithdraw": "{amount} çekilemedi",
     "completedWithdraw": "Para çekme işlemi tamamlandı",
     "completedDeposit": "Para yatırma tamamlandı",
     "failedWithdraw": "Para çekme işlemi başarısız oldu",
@@ -974,7 +957,6 @@
     "estimatedAmountReceived": "Alınan tahmini miktar",
     "slippageWarning": "Bu işlem için beklenen çıktı, girdi tutarından önemli ölçüde düşüktür ve bu, beklenenden farklı bir nihai tutarın alınmasıyla sonuçlanabilir.",
     "priceImpactWarning": "Bu işlemin fiyat etkisi {priceImpact} olup, alınan son tutarı etkileyebilir.",
-    "connect": "Bağlamak",
     "confirm": "Onaylamak",
     "cancel": "İptal etmek",
     "confirmDepositTo": "{chain} hesabına para yatırmayı onaylayın",
@@ -989,13 +971,23 @@
     "enterAddress": "Bir adres girin",
     "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",
-    "acknowledgement": "Dünyanın sona ermesinden vs. tamamen sorumlu olduğumu kabul ediyorum.",
+    "acknowledgement": "Yanlış bir alıcı adresi verirsem veya bir borsaya çekilmeye çalışırsam fon kaybı riskini kabul ediyorum ve kabul ediyorum.",
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
+    "transferWithNoun": "{noun} ile aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
-    "externalTransferSplash": "{denom} u {networkA} dan {networkB} için {networkB} , lütfen {service} kullanın.",
-    "openNoun": "{noun} açın"
+    "openNoun": "{noun} açın",
+    "insufficientFundsForFees": "Ücretler için yeterli fon yok",
+    "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
+    "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
+    "assetsWithdrawsUnavailable": "{asset} para çekme işlemleri kullanılamıyor",
+    "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
+    "noAvailableWithdraws": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama ayarlayın.",
+    "somethingIsntWorking": "Bir şeyler çalışmıyor…",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen sayfayı yenileyip tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
+    "assetIsCurrentlyUnstable": "{asset} aktarımları şu anda kararsız",
+    "transferWillLikelyTakeLonger": "Aktarımlar muhtemelen normalden daha uzun sürecek veya tamamen başarısız olabilecektir. Riski size ait olmak üzere devam edin."
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

@@ -94,7 +94,7 @@ export async function queryTransactions({
   url.searchParams.append("pageSize", pageSize);
 
   const headers = {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+    Authorization: `Bearer ${process.env.NUMIA_API_KEY}`,
   };
 
   return apiClient<Transaction[]>(url.toString(), { headers });

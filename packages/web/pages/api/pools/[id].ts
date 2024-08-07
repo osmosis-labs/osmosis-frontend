@@ -1,7 +1,14 @@
-import { PoolRaw } from "@osmosis-labs/pools/build/types";
-import { queryPaginatedPools } from "@osmosis-labs/server";
+import {
+  CONCENTRATED_LIQ_POOL_TYPE,
+  COSMWASM_POOL_TYPE,
+  PoolRaw,
+  STABLE_POOL_TYPE,
+  WEIGHTED_POOL_TYPE,
+} from "@osmosis-labs/pools/build/types";
+import { getPool } from "@osmosis-labs/server";
 import { isNumeric } from "@osmosis-labs/utils";
 
+import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 
 type Response = {
@@ -15,27 +22,33 @@ export default async function pools(req: Request) {
   if (!isNumeric(poolId))
     return new Response("Invalid pool id", { status: 400 });
 
-  try {
-    const { status, pools } = await queryPaginatedPools({
-      chainList: ChainList,
-      poolId,
-    });
-    if (pools && pools.length === 1) {
-      const response: Response = { pool: pools[0] };
-      return new Response(JSON.stringify(response), { status });
+  const pool = await getPool({
+    chainList: ChainList,
+    assetLists: AssetLists,
+    poolId,
+  }).then((pool) => {
+    if (pool.type === "weighted") {
+      return {
+        ...pool.raw,
+        ["@type"]: WEIGHTED_POOL_TYPE,
+      };
+    } else if (pool.type === "stable") {
+      return {
+        ...pool.raw,
+        ["@type"]: STABLE_POOL_TYPE,
+      };
+    } else if (pool.type === "concentrated") {
+      return {
+        ...pool.raw,
+        ["@type"]: CONCENTRATED_LIQ_POOL_TYPE,
+      };
     }
-  } catch (e) {
-    const error = e as { status?: number };
-    return new Response(
-      error?.status === 404 ? "Not Found" : "Unexpected Error",
-      {
-        status: error?.status || 500,
-      }
-    );
-  }
+    return { ...pool.raw, ["@type"]: COSMWASM_POOL_TYPE };
+  });
+  const response: Response = { pool: pool as PoolRaw };
+  return new Response(JSON.stringify(response), { status: 200 });
 }
 
 export const config = {
   runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
 };

@@ -1,9 +1,7 @@
 import { runIfFn } from "@osmosis-labs/utils";
-import classNames from "classnames";
 import { useCallback, useMemo } from "react";
 
-import { Icon } from "~/components/assets";
-import { IconButton } from "~/components/ui/button";
+import { GoBackButton } from "~/components/ui/button";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStack } from "~/hooks/use-stack";
 import { createContext } from "~/utils/react-context";
@@ -137,25 +135,20 @@ interface ScreenGoBackButtonProps {
 }
 
 export const ScreenGoBackButton = ({
-  className,
   onClick: onClickProp,
+  ...rest
 }: ScreenGoBackButtonProps) => {
   const { goBack, canGoBack } = useScreenManager();
 
   if (!canGoBack) return null;
 
   return (
-    <IconButton
+    <GoBackButton
+      {...rest}
       onClick={() => {
         onClickProp?.();
         goBack();
       }}
-      className={classNames(
-        "w-fit text-osmoverse-400 hover:text-osmoverse-100",
-        className
-      )}
-      icon={<Icon id="chevron-left" width={16} height={16} />}
-      aria-label="Go Back"
     />
   );
 };

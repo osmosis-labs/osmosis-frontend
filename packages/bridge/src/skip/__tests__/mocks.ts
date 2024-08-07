@@ -408,6 +408,7 @@ export const ETH_OsmosisToEthereum_Route = {
   usd_amount_out: "34844.86",
   estimated_fees: [],
   required_chain_addresses: ["osmosis-1", "1"],
+  estimated_route_duration_seconds: 30,
 };
 
 export const ETH_EthereumToOsmosis_Route = {
@@ -466,6 +467,7 @@ export const ETH_EthereumToOsmosis_Route = {
   usd_amount_out: "34843.80",
   estimated_fees: [],
   required_chain_addresses: ["1", "osmosis-1"],
+  estimated_route_duration_seconds: 30,
 };
 
 export const ETH_OsmosisToEthereum_Msgs = {

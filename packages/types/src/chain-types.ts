@@ -36,7 +36,7 @@ export interface Chain {
   fees: {
     fee_tokens: FeeToken[];
   };
-  staking: {
+  staking?: {
     staking_tokens: StakingToken[];
     lock_duration?: LockDuration;
   };

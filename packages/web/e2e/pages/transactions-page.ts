@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { expect, Locator, Page } from "@playwright/test";
+import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
 
@@ -53,5 +53,34 @@ export class TransactionsPage extends BasePage {
     const trxUrl = await this.viewExplorerLink.getAttribute("href");
     console.log("Trx url: " + trxUrl);
     return trxUrl;
+  }
+
+  async cancelLimitOrder(
+    amount: string,
+    price: string,
+    context: BrowserContext
+  ) {
+    const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[.='$${price}']/../../..//button`;
+    console.log("Use locator for a cancel btn: " + cancelBtn);
+    await this.page.locator(cancelBtn).click();
+    const pageApprove = context.waitForEvent("page");
+    const approvePage = await pageApprove;
+    await approvePage.waitForLoadState();
+    const approvePageTitle = approvePage.url();
+    console.log("Approve page is opened at: " + approvePageTitle);
+    const approveBtn = approvePage.getByRole("button", {
+      name: "Approve",
+    });
+    await expect(approveBtn).toBeEnabled();
+    const msgContentAmount = await approvePage
+      .getByText("Execute contract")
+      .textContent();
+    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    // Approve trx
+    await approveBtn.click();
+    // Expect that this is a cancel limit call
+    expect(msgContentAmount).toContain("cancel_limit");
+    // wait for trx confirmation
+    await this.page.waitForTimeout(2000);
   }
 }

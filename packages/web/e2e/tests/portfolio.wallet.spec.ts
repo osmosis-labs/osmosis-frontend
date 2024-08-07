@@ -3,6 +3,7 @@ import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
 
+import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
@@ -14,23 +15,16 @@ test.describe("Test Portfolio feature", () => {
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
-  let digitBalanceRegEx = /\d+\.\d+/;
   let page: Page;
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
     console.log("\nSetup Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: [
-        "--headless=new",
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-      viewport: { width: 1440, height: 1280 },
-      slowMo: 300,
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserExtensionConfig(true, pathToExtension)
+    );
     // Get all new pages (including Extension) in the context and wait
     const emptyPage = context.pages()[0];
     await emptyPage.waitForTimeout(2000);
@@ -89,8 +83,9 @@ test.describe("Test Portfolio feature", () => {
     expect(solBalance).toMatch(dollarBalanceRegEx);
     const milkTIABalance = await portfolioPage.getBalanceFor("milkTIA");
     expect(milkTIABalance).toMatch(dollarBalanceRegEx);
-    const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
-    // allBTC has not $ price atm
-    expect(abtcBalance).toMatch(digitBalanceRegEx);
+    const abtcBalance = await portfolioPage.getBalanceFor("BTC");
+    expect(abtcBalance).toMatch(dollarBalanceRegEx);
+    const wbtcBalance = await portfolioPage.getBalanceFor("WBTC");
+    expect(wbtcBalance).toMatch(dollarBalanceRegEx);
   });
 });

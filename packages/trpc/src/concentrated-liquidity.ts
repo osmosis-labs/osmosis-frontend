@@ -1,4 +1,5 @@
 import {
+  getLiquidityPerTickRange,
   getPositionHistoricalPerformance,
   mapGetUserPositionDetails,
   mapGetUserPositions,
@@ -98,4 +99,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
     .query(({ input: { position }, ctx }) =>
       getPositionHistoricalPerformance({ ...ctx, position })
     ),
+  getLiquidityPerTickRange: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ ctx, input }) => getLiquidityPerTickRange({ ...ctx, ...input })),
 });

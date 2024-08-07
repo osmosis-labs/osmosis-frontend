@@ -7,6 +7,7 @@ import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
+import { getCoingeckoPrice } from "./providers/coingecko";
 import { getPriceFromSidecar } from "./providers/sidecar";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
@@ -35,6 +36,7 @@ export async function getAssetPrice({
     | { coinMinimalDenom: string }
     | { sourceDenom: string }
     | { chainId: number | string; address: string }
+    | { coinGeckoId: string }
   );
   currency?: CoingeckoVsCurrencies;
   priceProvider?: PriceProvider;
@@ -46,6 +48,7 @@ export async function getAssetPrice({
     "chainId" in asset && "address" in asset
       ? asset
       : { chainId: undefined, address: undefined };
+  const coinGeckoId = "coinGeckoId" in asset ? asset.coinGeckoId : undefined;
 
   const foundAsset = assetLists
     .map((assets) => assets.assets)
@@ -64,6 +67,12 @@ export async function getAssetPrice({
               counterparty.address.toLowerCase() === address.toLowerCase()
           ))
     );
+
+  // Fall back to CoinGecko if asset list does not provide
+  // the Osmosis asset that can be used for prices from Osmosis.
+  if (!foundAsset && coinGeckoId) {
+    return getCoingeckoPrice({ coinGeckoId, currency });
+  }
 
   if (!foundAsset)
     throw new Error(

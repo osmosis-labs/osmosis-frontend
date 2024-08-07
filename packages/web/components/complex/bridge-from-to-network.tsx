@@ -1,5 +1,5 @@
 import { Menu } from "@headlessui/react";
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 
@@ -70,7 +70,7 @@ export const BridgeFromToNetwork = <
               "md:subtitle2"
             )}
           >
-            {t("assets.transfer.from")} {truncateString(from.networkName, 22)}
+            {t("assets.transfer.from")} {truncate(from.networkName, 22)}
           </span>
 
           {from.iconUrl && (
@@ -170,7 +170,7 @@ export const BridgeFromToNetwork = <
               "md:subtitle2"
             )}
           >
-            {t("assets.transfer.to")} {truncateString(to.networkName, 22)}
+            {t("assets.transfer.to")} {truncate(to.networkName, 22)}
           </span>
           {to.iconUrl && (
             <div

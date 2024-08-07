@@ -1,5 +1,5 @@
 import { FormattedTransaction } from "@osmosis-labs/server";
-import { getShortAddress } from "@osmosis-labs/utils";
+import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
@@ -66,6 +66,16 @@ export const TransactionDetailsContent = ({
       { maxDecimals: 2 }
     );
   }, [conversion.numerator, conversion.denominator]);
+
+  // if USDC, toggle conversion - temporary until stablecoin logic is implemented
+  useEffect(() => {
+    if (
+      conversion.numerator.denom.includes("USDC") ||
+      conversion.denominator.denom.includes("USDC")
+    ) {
+      toggleConversion();
+    }
+  });
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -201,7 +211,7 @@ export const TransactionDetailsContent = ({
             <div>{t("transactions.transactionHash")}</div>
             <CopyIconButton
               valueToCopy={transaction.hash}
-              label={getShortAddress(transaction.hash)}
+              label={shorten(transaction.hash)}
             />
           </div>
         </div>

@@ -3,6 +3,7 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import { AxelarSourceChain, getKeyByValue } from "@osmosis-labs/utils";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -262,20 +263,26 @@ export const AxelarTransfer: FunctionComponent<
     const trackTransferStatus = useCallback(
       (txHash: string) => {
         if (inputAmountRaw !== "") {
-          transferHistoryStore.pushTxNow(
-            `axelar${txHash}`,
-            new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
+          transferHistoryStore.pushTxNow({
+            prefixedKey: `axelar${txHash}`,
+            amount: new CoinPretty(originCurrency, inputAmount)
+              .trim(true)
+              .toString(),
+            amountLogo: originCurrency.coinImageUrl,
             isWithdraw,
-            osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
-          );
+            chainPrettyName: chainStore.osmosis.prettyChainName,
+            estimatedArrivalUnix: dayjs().unix() + 3 * 60, // 3 mins
+            accountAddress: osmosisAccount?.address ?? "", // use osmosis account for account keys (vs any EVM account)
+          });
         }
       },
       [
+        inputAmountRaw,
         transferHistoryStore,
         originCurrency,
-        inputAmountRaw,
         inputAmount,
         isWithdraw,
+        chainStore.osmosis.prettyChainName,
         osmosisAccount?.address,
       ]
     );

@@ -12,7 +12,7 @@ export const chainsRouter = createTRPCRouter({
         findChainNameOrId: z.string(),
       })
     )
-    .query(async ({ input: { findChainNameOrId }, ctx }) =>
+    .query(({ input: { findChainNameOrId }, ctx }) =>
       getChain({
         ...ctx,
         chainNameOrId: findChainNameOrId,
@@ -24,7 +24,7 @@ export const chainsRouter = createTRPCRouter({
         chainId: z.number(),
       })
     )
-    .query(async ({ input: { chainId } }) =>
+    .query(({ input: { chainId } }) =>
       Object.values(EthereumChainInfo).find((chain) => chain.id === chainId)
     ),
 });

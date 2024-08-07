@@ -231,7 +231,7 @@ export const IconButton = forwardRef<
   const {
     icon,
     children,
-    variant = "ghost",
+    variant = "secondary",
     size = "icon",
     "aria-label": ariaLabel,
     ...rest
@@ -258,4 +258,20 @@ export const IconButton = forwardRef<
   );
 });
 
-export { ArrowButton, Button, buttonVariants, ShowMoreButton };
+const GoBackButton = forwardRef<
+  HTMLButtonElement,
+  ButtonHTMLAttributes<HTMLButtonElement>
+>((props, ref) => (
+  <IconButton
+    ref={ref}
+    {...props}
+    className={classNames(
+      "z-50 !h-12 !w-12 cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:!h-8 md:!w-8",
+      props.className
+    )}
+    icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
+    aria-label="Go back"
+  />
+));
+
+export { ArrowButton, Button, buttonVariants, GoBackButton, ShowMoreButton };

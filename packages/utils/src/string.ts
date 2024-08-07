@@ -2,26 +2,33 @@ import * as cosmjsEncoding from "@cosmjs/encoding";
 import * as viem from "viem";
 
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
-export function truncateString(str: string, num = 8) {
+export function truncate(str: string, num = 8) {
   if (str.length <= num) {
     return str;
   }
   return str.slice(0, num) + "...";
 }
 
-export function getShortAddress(
-  address: string,
-  opts?: { prefixLength?: number; suffixLength?: number }
+/**
+ * Shorten a string with truncation in the middle.
+ * Example: `ibc/EA...25DC5`
+ */
+export function shorten(
+  string: string,
+  opts?: { prefixLength?: number; suffixLength?: number; delim?: string }
 ) {
-  if (!address) return "";
-  return (
-    address.substring(0, opts?.prefixLength ?? 6) +
-    "..." +
-    address.substring(
-      address.length - (opts?.suffixLength ?? 5),
-      address.length
-    )
+  if (!string) return "";
+  if (string.length <= (opts?.prefixLength ?? 6) + (opts?.suffixLength ?? 5)) {
+    return string;
+  }
+
+  const prefix = string.substring(0, opts?.prefixLength ?? 6);
+  const suffix = string.substring(
+    string.length - (opts?.suffixLength ?? 5),
+    string.length
   );
+
+  return prefix + (opts?.delim ?? "...") + suffix;
 }
 
 export const formatICNSName = (name?: string, maxLength = 28) => {

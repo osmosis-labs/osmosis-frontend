@@ -11,6 +11,10 @@ export async function getTimeoutHeight({
 }: {
   chainList: Chain[];
   chainId?: string;
+  /**
+   * WARNING: bech32 prefix may be the same across different chains,
+   * retulting in the use of an unintended chain.
+   */
   destinationAddress?: string;
 }) {
   const destinationCosmosChain = getChain({

@@ -1,49 +1,27 @@
 import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
-  ActiveLiquidityPerTickRange,
   BigDec,
   maxSpotPrice,
   minSpotPrice,
   priceToTick,
 } from "@osmosis-labs/math";
 import type {
+  ActiveLiquidityPerTickRange,
   ConcentratedPoolRawResponse,
   Pool,
   TimeDuration,
   TokenPairHistoricalPrice,
 } from "@osmosis-labs/server";
-import {
-  ObservableQueryCfmmConcentratedPoolLinks,
-  ObservableQueryLiquidityPerTickRange,
-  OsmosisQueries,
-} from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useEffect, useState } from "react";
-import { DeepReadonly } from "utility-types";
 
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export function useHistoricalAndLiquidityData(
   poolId: string
 ): ObservableHistoricalAndLiquidityData {
-  const { queriesStore, chainStore } = useStore();
-
-  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
-
-  const [config] = useState(
-    () =>
-      new ObservableHistoricalAndLiquidityData(
-        chainStore,
-        chainStore.osmosis.chainId,
-        poolId,
-        queriesStore,
-        osmosisQueries.queryLiquiditiesPerTickRange.getForPoolId(poolId),
-        osmosisQueries.queryCfmmConcentratedPoolLinks
-      )
-  );
+  const [config] = useState(() => new ObservableHistoricalAndLiquidityData());
   // react dev tools will unmount the component so only dispose if
   // in production environment, where the component will only unmount once
   useEffect(
@@ -68,6 +46,12 @@ export function useHistoricalAndLiquidityData(
     }
   );
   if (pool) config.setPool(pool);
+
+  const { data: activeLiquidity } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery({
+      poolId,
+    });
+  if (activeLiquidity) config.setActiveLiquidity(activeLiquidity);
 
   const {
     data: historicalPriceData,
@@ -129,16 +113,12 @@ export class ObservableHistoricalAndLiquidityData {
   @observable.ref
   protected _pool: Pool | null = null;
 
+  @observable.ref
+  protected _activeLiquidity: ActiveLiquidityPerTickRange[] | null = null;
+
   protected _disposers: (() => void)[] = [];
 
-  constructor(
-    protected readonly chainGetter: ChainGetter,
-    readonly chainId: string,
-    readonly poolId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryRange: DeepReadonly<ObservableQueryLiquidityPerTickRange>,
-    protected readonly queryCfmmClLink: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>
-  ) {
+  constructor() {
     makeObservable(this);
 
     // Init last hover price to current price in pool once loaded
@@ -159,13 +139,6 @@ export class ObservableHistoricalAndLiquidityData {
       .mul(currentSqrtPrice)
       .toDec()
       .mul(this.multiplicationQuoteOverBase);
-  }
-
-  @computed
-  protected get queries() {
-    const osmosisQueries = this.queriesStore.get(this.chainId).osmosis;
-    if (!osmosisQueries) throw Error("Did not supply Osmosis chain ID");
-    return osmosisQueries;
   }
 
   @computed
@@ -241,7 +214,7 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get activeLiquidity(): ActiveLiquidityPerTickRange[] {
-    return this.queryRange.activeLiquidity;
+    return this._activeLiquidity ?? [];
   }
 
   @action
@@ -409,6 +382,13 @@ export class ObservableHistoricalAndLiquidityData {
   @action
   readonly setPool = (pool: Pool) => {
     this._pool = pool;
+  };
+
+  @action
+  readonly setActiveLiquidity = (
+    activeLiquidity: ActiveLiquidityPerTickRange[]
+  ) => {
+    this._activeLiquidity = activeLiquidity;
   };
 }
 

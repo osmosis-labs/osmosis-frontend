@@ -2,14 +2,21 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 export type PoolType = ObservableQueryPool["type"];
+
+export interface PoolTypeConfig {
+  imageSrc: string;
+  caption: string;
+  iconId?: SpriteIconId;
+}
 
 export const SelectType: FunctionComponent<{
   types: PoolType[];
@@ -22,52 +29,78 @@ export const SelectType: FunctionComponent<{
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
+  const getTypeConfig = useCallback(
+    (type: PoolType): PoolTypeConfig | undefined => {
+      switch (type) {
+        case "weighted":
+          return {
+            iconId: "weighted-pool",
+            imageSrc: "/icons/weighted-pool.svg",
+            caption: t("pools.createPool.weightedPool"),
+          };
+        case "stable":
+          return {
+            iconId: "stable-pool",
+            imageSrc: "/icons/stable-pool.svg",
+            caption: t("pools.createPool.stablePool"),
+          };
+        case "concentrated":
+          return {
+            iconId: "concentrated-pool",
+            imageSrc: "/icons/stable-pool.svg",
+            // TODO: i18n
+            caption: "Supercharged pool",
+          };
+      }
+    },
+    [t]
+  );
+
   const disableNext =
     account?.walletStatus !== WalletStatus.Connected || !selectedType;
 
   return (
     <div className="flex flex-col gap-8 pt-8">
-      <div className="flex w-full gap-4">
-        {types.map((type) => (
-          <button
-            className="w-full"
-            key={type}
-            onClick={() => setSelectedType(type)}
-          >
-            <div
-              className={classNames(
-                "flex flex-col gap-4 rounded-2xl bg-osmoverse-900 py-10",
-                {
-                  "bg-wosmongton-500": selectedType === type,
-                }
-              )}
+      <div className="flex w-full flex-wrap justify-center gap-4">
+        {types.map((type) => {
+          const { caption, imageSrc, iconId } = getTypeConfig(type)!;
+          return (
+            <button
+              className="w-full max-w-[296px]"
+              key={type}
+              onClick={() => setSelectedType(type)}
             >
               <div
-                className={classNames("mx-auto transition", {
-                  "-rotate-6 scale-110": selectedType === type,
-                })}
-              >
-                <Image
-                  src={
-                    type === "weighted"
-                      ? "/icons/weighted-pool.svg"
-                      : "/icons/stable-pool.svg"
+                className={classNames(
+                  "flex flex-col gap-4 rounded-2xl bg-osmoverse-900 py-10",
+                  {
+                    "bg-wosmongton-500": selectedType === type,
                   }
-                  alt={type === "weighted" ? "weighted pool" : "stable pool"}
-                  height={64}
-                  width={64}
-                />
+                )}
+              >
+                <div
+                  className={classNames("mx-auto transition", {
+                    "-rotate-6 scale-110": selectedType === type,
+                  })}
+                >
+                  {iconId ? (
+                    <Icon id={iconId} width={64} height={64} />
+                  ) : (
+                    <Image
+                      src={imageSrc}
+                      alt={caption}
+                      height={64}
+                      width={64}
+                    />
+                  )}
+                </div>
+                <div className="mx-auto">
+                  <h6 className="md:caption">{caption}</h6>
+                </div>
               </div>
-              <div className="mx-auto">
-                <h6 className="md:caption">
-                  {type === "weighted"
-                    ? t("pools.createPool.weightedPool")
-                    : t("pools.createPool.stablePool")}
-                </h6>
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
       {IS_TESTNET && (
         <div>

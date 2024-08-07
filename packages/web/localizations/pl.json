@@ -97,6 +97,7 @@
     "onePosition": "1 pozycja",
     "goToPool": "Idź do basenu #{poolId}"
   },
+  "copied": "Skopiowano!",
   "app": {
     "banner": {
       "backToOsmosis": "Powrót do Osmosis",
@@ -220,16 +221,12 @@
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
+      "approveInWallet": "Zatwierdź w portfelu",
       "enterAddress": "Adres {network}",
       "errors": {
-        "insufficientBal": "Niewystarczająca Ilość Środków",
-        "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
         "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
         "seeRequest": "Zobacz żądanie w {walletName}",
-        "noQuotesAvailable": "Brak dostępnych cytatów",
-        "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
-        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
         "invalidAddress": "Błędny adres",
         "missingAddress": "Brak adresu"
       },
@@ -310,9 +307,7 @@
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    },
-    "balancesMovedTitle": "Szukasz salda?",
-    "balancesMovedDescription": "Przejdź na stronę Portfel, nowe miejsce, w którym znajdziesz swoje salda i nie tylko."
+    }
   },
   "portfolio": {
     "buy": "Kupić",
@@ -325,10 +320,22 @@
     "noAssets": "Nie masz salda na {osmosis}",
     "getStarted": "Aby rozpocząć, zdeponuj środki",
     "noPositions": "Nie masz żadnych stanowisk",
-    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności"
+    "unlockPotential": "Odblokuj swój pełny potencjał zarobkowy i wykorzystaj swoje aktywa dzięki pulom płynności",
+    "allocation": "Przydział",
+    "available": "Dostępny",
+    "staked": "Postawione",
+    "unstaking": "Odstawienie",
+    "unclaimedRewards": "Nieodebrane nagrody",
+    "pooled": "Połączone",
+    "other": "Inny",
+    "all": "Wszystko",
+    "assets": "Aktywa"
   },
   "buyTokens": "Kup tokeny",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Niewystarczające środki"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Wybierz rampę Fiat",
       "kadoSubtitle": "Obsługuje OSMO, USDC",
@@ -406,8 +413,12 @@
     "invalidAmounts": "Nieprawidłowe kwoty",
     "txTimedOutError": "Upłynął limit czasu transakcji. Proszę spróbuj ponownie.",
     "insufficientFee": "Niewystarczające saldo opłat transakcyjnych. Dodaj środki, aby kontynuować.",
-    "noData": "Brak danych"
+    "noData": "Brak danych",
+    "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
+    "startAgain": "Zacznij jeszcze raz"
   },
+  "estimated": "Szacowany",
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
     "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
@@ -449,46 +460,7 @@
     "levanaSubtext": "Obsługiwane przez Levanę",
     "more": "Więcej",
     "new": "NOWY",
-    "settings": "Ustawienia",
-    "notifications": "Powiadomienia"
-  },
-  "notifi": {
-    "saveChanges": "Zapisz zmiany",
-    "unsupportedHistoryTitle": "Nieobsługiwane powiadomienie",
-    "unsupportedHistoryMessage": "Ups! Coś poszło nie tak. Daj nam znać",
-    "getStartedHistoryTitle1": "Kup tokeny, aby rozpocząć",
-    "getStartedHistoryMessage1": "Zdobądź OSMO, aby rozpocząć handel",
-    "getStartedHistoryTitle2": "Jak rozpocząć handel",
-    "getStartedHistoryMessage2": "Ten szybki samouczek pozwoli Ci handlować w ciągu kilku minut",
-    "getStartedHistoryTitle3": "Jak zdeponować środki",
-    "getStartedHistoryMessage3": "Dowiedz się, jak wpłacać środki na Osmosis",
-    "signupDummyHistoryTitle1": "Kup tokeny, aby rozpocząć",
-    "signupDummyHistoryMessage1": "Zdobądź OSMO, aby rozpocząć handel",
-    "signupDummyHistoryTitle2": "Jak zdeponować aktywa",
-    "signupDummyHistoryMessage2": "Dowiedz się, jak przelać środki na Osmosis",
-    "signupDummyHistoryTitle3": "Jak rozpocząć handel",
-    "signupDummyHistoryMessage3": "Ten szybki samouczek pozwoli Ci handlować w ciągu kilku minut",
-    "outboundTransferHistoryTitle": "Transfer wychodzący Osmosis",
-    "outboundTransferHistoryMessage": "Kwota",
-    "poolExitedHistoryTitle": "Basen osmozy zamknięty",
-    "poolExitedHistoryMessage": "Identyfikator puli",
-    "poolJoinedHistoryTitle": "Basen osmozy dołączony",
-    "poolJoinedHistoryMessage": "Znak",
-    "swapHistoryTitle": "Potwierdzono zamianę osmozy",
-    "swapHistoryMessage": "zamienione na",
-    "emptyHistoryTitle": "Bez tytułu",
-    "emptyHistoryMessage": "Brak wiadomości",
-    "assetReceivedHistoryTitle": "Otrzymano zasób",
-    "assetReceivedHistoryMessage": "Kwota",
-    "positionOutOfRangeHistoryTitle": "Pozycja poza zakresem",
-    "positionOutOfRangeHistoryMessage": "Twoja pozycja LP jest poza zakresem",
-    "signupPageTitle": "Powiadomienia są już dostępne.",
-    "signupPageMessage": "Nigdy więcej nie przegap ważnych aktualizacji, od nowych list tokenów po krytyczne statusy pozycji.",
-    "signupPageButton": "Włącz powiadomienia",
-    "loadMore": "Załaduj więcej",
-    "unsavedChangeModalInfo": "Masz niezapisane zmiany. Czy chciałbyś",
-    "discardButton": "Odrzucać zmiany",
-    "clearAllHistory": "Wyczyść wszystko"
+    "settings": "Ustawienia"
   },
   "oneClickTrading": {
     "toast": {
@@ -678,9 +650,7 @@
       "total": "Całkowita RRSO",
       "explainer": {
         "title": "Jak obliczane są RRSO?",
-        "p1": "Wszystkie RRSO mają charakter szacunkowy. Oblicza się je, biorąc średnią stopę procentową APR dla płynności w puli.",
-        "p2": "W pulach z doładowaniem większość użytkowników otrzyma niższe nagrody. Dzieje się tak ze względu na bardziej skoncentrowane stanowiska, które przyciągają więcej zachęt.",
-        "p3": "Aby zachować ostrożne szacunki, wszystkie RRSO dzieli się przez współczynnik 3."
+        "subtitle": "Wszystkie RRSO są szacunkami opartymi na ostatnich 7 dniach. W miarę wahań wolumenu handlu i ceny RRSO odpowiednio się zmieni. Wyświetlany zakres opiera się na poniższych informacjach.<inlang-LineFeed>\nW przypadku basenów z doładowaniem dolna granica odnosi się do konserwatywnych pozycji o pełnym zakresie. Może to skutkować wyjątkowo niskim RRSO, ponieważ płynność jest rozłożona na wszystkie transakcje. Górna granica jest obliczana dla pozycji z 30% koncentracją wokół ceny spot. Pamiętaj, że pozycja nie będzie już przynosić zysków, jeśli wyjdzie poza zakres."
       }
     }
   },
@@ -910,15 +880,19 @@
     "from": "Z",
     "to": "Do",
     "max": "Maks",
+    "pendingApproval": "Oczekuje na zatwierdzenie",
     "available": "dostępny",
+    "connectTo": "Połącz się z {network}",
     "transferWith": "Przenieś z",
     "transferTo": "Przenieść do",
     "receiveAsset": "Odbierz zasób",
     "transfer": "Przelew {denom}",
+    "changeNetworkInWallet": "Zmień sieć w portfelu",
     "receive": "Odbierz {denom}",
-    "selectDepositWallet": "Wybierz portfel depozytowy",
-    "selectWithdrawWallet": "Wybierz opcję wypłaty portfela",
-    "receiveAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
+    "selectDepositWallet": "Wybierz portfel {network}",
+    "selectWithdrawWallet": "Wybierz portfel {network}",
+    "depositAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
+    "withdrawAssetDescription": "Wycofując określone zasoby, możesz wybrać wersję, którą chcesz otrzymać w sieci docelowej.",
     "estimatingTime": "Szacowanie czasu",
     "calculatingFees": "Obliczanie opłat",
     "reviewDeposit": "Sprawdź depozyt",
@@ -944,8 +918,14 @@
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
       "titleWithdraw": "Więcej opcji wypłat",
-      "descriptionDeposit": "Wybierz spośród następujących alternatywnych dostawców, aby zdeponować (inaczej „bridge”) swój {asset} na {chain} .",
-      "descriptionWithdraw": "Wybierz spośród następujących alternatywnych dostawców, aby wycofać (inaczej „bridge”) swój {asset} do {chain} .",
+      "depositDescriptionUnknown": "Aby dokonać wpłaty {denom} , skorzystaj z alternatywnego dostawcy.",
+      "withdrawDescriptionUnknown": "Aby wypłacić {denom} , skorzystaj z alternatywnego dostawcy.",
+      "singleDescriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , użyj {service} .",
+      "singleDescriptionWithdraw": "Aby wycofać {denom} z {networkA} {networkB} , użyj {service} .",
+      "descriptionDeposit": "Aby wpłacić {denom} z {networkA} na {networkB} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
+      "descriptionWithdraw": "Aby wycofać {denom} z {networkA} {networkB} , skorzystaj z jednego z poniższych alternatywnych dostawców.",
+      "chooseAnAlternativeProviderDeposit": "Wybierz alternatywnego dostawcę, aby wpłacić {asset} z {fromChain} do {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Wybierz alternatywnego dostawcę, aby wycofać {asset} z {fromChain} do {toChain}",
       "depositWith": "Wpłać za pomocą",
       "withdrawWith": "Wycofaj się z"
     },
@@ -958,8 +938,11 @@
       "title": "Wybierz sieć",
       "searchPlaceholder": "Wyszukaj obsługiwane sieci"
     },
-    "pendingWithdraw": "Oczekuje na wycofanie",
-    "pendingDeposit": "Oczekujący depozyt",
+    "pendingWithdraw": "Wypłata w toku",
+    "pendingDeposit": "Wpłata w toku",
+    "amountToChain": "{amount} do {chain}",
+    "amountFromChain": "{amount} z {chain}",
+    "amountFailedToWithdraw": "{amount} Wypłata nie powiodła się",
     "completedWithdraw": "Wypłata zakończona",
     "completedDeposit": "Depozyt zrealizowany",
     "failedWithdraw": "Wypłata nie powiodła się",
@@ -974,7 +957,6 @@
     "estimatedAmountReceived": "Szacunkowa otrzymana kwota",
     "slippageWarning": "Oczekiwany wynik dla tej transakcji jest znacznie niższy niż kwota wejściowa, co może skutkować otrzymaniem kwoty końcowej innej niż oczekiwano.",
     "priceImpactWarning": "Wpływ cenowy tej transakcji to {priceImpact} , co może mieć wpływ na ostateczną otrzymaną kwotę.",
-    "connect": "Łączyć",
     "confirm": "Potwierdzać",
     "cancel": "Anulować",
     "confirmDepositTo": "Potwierdź wpłatę do {chain}",
@@ -989,13 +971,23 @@
     "enterAddress": "Podaj adres",
     "sendToAnotherAddress": "Wyślij na inny adres",
     "invalidAddress": "Nieprawidłowy adres {chain}",
-    "acknowledgement": "Przyjmuję do wiadomości, że ponoszę pełną odpowiedzialność za koniec świata itp.",
+    "acknowledgement": "Przyjmuję do wiadomości i akceptuję ryzyko utraty środków w przypadku podania nieprawidłowego adresu odbiorcy lub próby wypłaty na giełdę.",
     "done": "Zrobione",
     "transferFrom": "Przelew z {noun}",
+    "transferWithNoun": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
-    "externalTransferSplash": "Aby przenieść {denom} z {networkA} {networkB} , użyj {service} .",
-    "openNoun": "Otwórz {noun}"
+    "openNoun": "Otwórz {noun}",
+    "insufficientFundsForFees": "Niewystarczające środki na opłaty",
+    "youNeedFundsToPay": "Potrzebujesz środków, aby uiścić opłaty sieciowe i pomostowe w sieci {chain} .",
+    "assetsDepositsUnavailable": "Depozyty {asset} są niedostępne",
+    "assetsWithdrawsUnavailable": "Wypłaty {asset} są niedostępne",
+    "noAvailableDeposits": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
+    "noAvailableWithdraws": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub ustaw alternatywną aplikację do przesyłania środków z Osmozy.",
+    "somethingIsntWorking": "Coś nie działa…",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Odśwież stronę i spróbuj ponownie lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
+    "assetIsCurrentlyUnstable": "Transfery {asset} są obecnie niestabilne",
+    "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko."
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

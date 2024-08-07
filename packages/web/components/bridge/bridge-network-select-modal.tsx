@@ -1,4 +1,3 @@
-import { BridgeTransactionDirection } from "@osmosis-labs/types";
 import classNames from "classnames";
 import React, { FunctionComponent, useMemo } from "react";
 
@@ -15,7 +14,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { SupportedChain } from "./use-bridges-supported-assets";
 
 interface BridgeNetworkSelectModalProps extends ModalBaseProps {
-  direction: BridgeTransactionDirection;
+  direction: "deposit" | "withdraw";
   toChain: BridgeChainWithDisplayInfo;
   chains: SupportedChain[];
   onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -51,8 +50,11 @@ export const BridgeNetworkSelectModal: FunctionComponent<
   );
 
   const [_query, setQuery, filteredChains] = useFilteredData(selectableChains, [
+    "chainId",
     "prettyName",
   ]);
+
+  const showSwitchingNetworkState = isEvmWalletConnected && isSwitchingEvmChain;
 
   return (
     <ModalBase
@@ -61,14 +63,14 @@ export const BridgeNetworkSelectModal: FunctionComponent<
           {t("transfer.bridgeNetworkSelect.title")}
         </div>
       }
-      className="relative !max-w-[30rem]"
+      className={classNames("!max-w-lg", {
+        "min-h-[80vh]": !showSwitchingNetworkState,
+      })}
       {...modalProps}
-      onAfterClose={() => {
-        setQuery("");
-      }}
+      onAfterClose={() => setQuery("")}
     >
       <div className="animate-[fadeIn_0.25s]">
-        {isEvmWalletConnected && isSwitchingEvmChain && (
+        {showSwitchingNetworkState && (
           <div className="flex items-center justify-center pt-12">
             <SwitchingNetworkState
               walletLogo={connector?.icon}
@@ -78,7 +80,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
         )}
 
         <div
-          className={classNames({
+          className={classNames("py-4", {
             // Hide it to not unmount the function
             hidden: isSwitchingEvmChain,
           })}
@@ -88,7 +90,7 @@ export const BridgeNetworkSelectModal: FunctionComponent<
             className="my-4 flex-shrink-0 md:w-full"
             placeholder={t("transfer.bridgeNetworkSelect.searchPlaceholder")}
             size={isMobile ? "small" : "full"}
-            autoFocus
+            autoFocus={!isMobile}
           />
           <div className="flex flex-col gap-1">
             {filteredChains.map((chain) => {
@@ -124,11 +126,6 @@ export const BridgeNetworkSelectModal: FunctionComponent<
                       {chain.prettyName}
                     </span>
                   </div>
-                  {shouldSwitchEvmChain && (
-                    <span className="body1 md:body2 text-wosmongton-300">
-                      {t("transfer.connect")}
-                    </span>
-                  )}
                 </button>
               );
             })}

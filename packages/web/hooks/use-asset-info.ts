@@ -9,11 +9,11 @@ import { api } from "~/utils/trpc";
 export const useAssetInfo = () => {
   const language = useCurrentLanguage();
   const router = useRouter();
-  const tokenDenom = router.query.denom as string;
+  const denom = router.query.denom as string;
 
-  const { data: token } = api.edge.assets.getUserAsset.useQuery(
+  const { data: asset } = api.edge.assets.getUserAsset.useQuery(
     {
-      findMinDenomOrSymbol: tokenDenom,
+      findMinDenomOrSymbol: denom,
     },
     {
       refetchOnMount: false,
@@ -21,9 +21,9 @@ export const useAssetInfo = () => {
     }
   );
 
-  const { data: tokenDetailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
+  const { data: detailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
     {
-      coinDenom: tokenDenom,
+      coinDenom: denom,
       langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
     },
     {
@@ -33,14 +33,12 @@ export const useAssetInfo = () => {
   );
 
   const details = useMemo(() => {
-    return tokenDetailsByLanguage
-      ? tokenDetailsByLanguage[language]
-      : undefined;
-  }, [language, tokenDetailsByLanguage]);
+    return detailsByLanguage ? detailsByLanguage[language] : undefined;
+  }, [language, detailsByLanguage]);
 
   const coinGeckoId = useMemo(
-    () => (details?.coingeckoID ? details?.coingeckoID : token?.coinGeckoId),
-    [details?.coingeckoID, token]
+    () => (details?.coingeckoID ? details?.coingeckoID : asset?.coinGeckoId),
+    [details?.coingeckoID, asset]
   );
 
   const { data: coingeckoCoin, isLoading: isLoadingCoingeckoCoin } =
@@ -85,8 +83,8 @@ export const useAssetInfo = () => {
       return details.name;
     }
 
-    return token?.coinName;
-  }, [details, token]);
+    return asset?.coinName;
+  }, [details, asset]);
 
   return {
     title,
@@ -95,9 +93,9 @@ export const useAssetInfo = () => {
     websiteURL,
     coingeckoURL,
     coinGeckoId,
-    token: token!,
-    tokenDenom,
-    tokenDetailsByLanguage,
+    asset: asset!,
+    denom,
+    detailsByLanguage,
     coingeckoCoin,
     isLoadingCoingeckoCoin,
   };

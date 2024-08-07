@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
@@ -16,14 +16,26 @@ export const PriceChange: FunctionComponent<
   {
     priceChange: RatePretty;
     overrideTextClasses?: string;
+    value?: PricePretty;
   } & CustomClasses
-> = ({ priceChange, overrideTextClasses = "body1", className }) => {
+> = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
   const isBullish = priceChange.toDec().isPositive();
   const isBearish = priceChange.toDec().isNegative();
   const isFlat = !isBullish && !isBearish;
 
   // remove negative symbol since we're using arrows
-  if (isBearish) priceChange = priceChange.mul(new RatePretty(-1));
+  if (isBearish) {
+    priceChange = priceChange.mul(new RatePretty(-1));
+    value = value?.mul(new RatePretty(-1));
+  }
+
+  const priceChangeDisplay = priceChange
+    .maxDecimals(1)
+    .inequalitySymbol(false)
+    .toString();
+
+  const formattedPriceChangeDisplay =
+    value !== undefined ? `(${priceChangeDisplay})` : priceChangeDisplay;
 
   return (
     <div className={classNames("flex h-fit items-center gap-1", className)}>
@@ -53,9 +65,9 @@ export const PriceChange: FunctionComponent<
           overrideTextClasses
         )}
       >
-        {isFlat
-          ? "-"
-          : priceChange.maxDecimals(1).inequalitySymbol(false).toString()}
+        {value !== undefined ? value.toString() + " " : null}
+
+        {isFlat ? "-" : formattedPriceChangeDisplay}
       </div>
     </div>
   );

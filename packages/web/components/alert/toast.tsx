@@ -29,10 +29,11 @@ export function displayToast(
     draggable: false,
     progress: undefined,
     pauseOnFocusLoss: false,
+    className: "group",
     closeButton: ({ closeToast }) => (
       <button
         onClick={closeToast}
-        className="absolute -left-2 -top-2 h-6 w-6 hover:opacity-75 md:top-2 md:h-5 md:w-5"
+        className="invisible absolute -left-2 -top-2 h-6 w-6 opacity-0 transition duration-200 hover:opacity-75 group-hover:visible group-hover:opacity-100 md:top-2 md:h-5 md:w-5"
       >
         <Image
           alt="close"
@@ -74,16 +75,19 @@ const LoadingToast: FunctionComponent<Alert> = ({
   captionElement,
   learnMoreUrl,
   learnMoreUrlCaption,
+  iconElement,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
-    <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
-      <Image
-        alt="loading"
-        src="/icons/loading-blue.svg"
-        height={32}
-        width={32}
-      />
-    </div>
+    {iconElement ?? (
+      <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
+        <Image
+          alt="loading"
+          src="/icons/loading-blue.svg"
+          height={32}
+          width={32}
+        />
+      </div>
+    )}
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
       {captionElement}

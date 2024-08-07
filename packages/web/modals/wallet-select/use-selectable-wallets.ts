@@ -30,7 +30,7 @@ export const useSelectableWallets = ({
           }
 
           if (wallet.type === WagmiMetamaskSdkType) {
-            walletToAdd.name = walletToAdd.name + " (Mobile)";
+            walletToAdd.name = walletToAdd.name + " Mobile";
           }
 
           if (wallet.name === "WalletConnect") {
@@ -43,6 +43,10 @@ export const useSelectableWallets = ({
             if (wallet.type === "injected") {
               walletToAdd.name = "Coinbase Extension";
             }
+          }
+
+          if (wallet.name === "Keplr") {
+            walletToAdd.name = "Keplr EVM";
           }
 
           return [...acc, walletToAdd];

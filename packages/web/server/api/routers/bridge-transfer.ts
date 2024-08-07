@@ -15,6 +15,7 @@ import {
   getTimeoutHeight,
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
   EthereumChainInfo,
@@ -54,13 +55,14 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   Wormhole: "/bridges/wormhole.svg",
 };
 
-const ExternalBridgeLogoUrls: Record<Bridge, string> = {
+const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Skip: "/bridges/skip.png",
   Squid: "/bridges/squid.svg",
   Axelar: "/external-bridges/satellite.svg",
   IBC: "/external-bridges/tfm.svg",
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/external-bridges/portalbridge.svg",
+  Generic: "/external-bridges/generic.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -76,8 +78,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -94,6 +95,14 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
+
+      // Basic circuit breaker to validate some invariants
+      // from input + given quote
+      if (input.fromAsset.address !== quote.input.address) {
+        throw new Error(
+          `Invalid quote: Expected fromAsset address ${input.fromAsset.address} but got ${quote.input.address} in quote`
+        );
+      }
 
       /**
        * Since transfer fee is deducted from input amount,
@@ -135,17 +144,20 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: input.toAsset.address,
             chainId: input.toChain.chainId,
             address: input.toAsset.address,
+            coinGeckoId: input.toAsset.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for toAsset, trying fromAsset",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: input.toAsset.address,
                 sourceDenom: input.toAsset.address,
                 chainId: input.toChain.chainId,
                 address: input.toAsset.address,
+                coinGeckoId: input.toAsset.coinGeckoId,
               }
             );
           }
@@ -156,6 +168,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               sourceDenom: input.fromAsset.address,
               chainId: input.fromChain.chainId,
               address: input.fromAsset.address,
+              coinGeckoId: input.fromAsset.coinGeckoId,
             },
           });
         }),
@@ -166,18 +179,21 @@ export const bridgeTransferRouter = createTRPCRouter({
             sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
+            coinGeckoId: quote.transferFee.coinGeckoId,
           },
-        }).catch(() => {
+        }).catch((e) => {
           // it's common for bridge providers to not provide correct denoms
           if (process.env.NODE_ENV === "development") {
             console.warn(
               "getQuoteByBridge: Failed to get asset price for transfer fee",
+              e,
               {
                 bridge: input.bridge,
                 coinMinimalDenom: feeCoin.address,
                 sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
+                coinGeckoId: quote.transferFee.coinGeckoId,
               }
             );
           }
@@ -191,8 +207,9 @@ export const bridgeTransferRouter = createTRPCRouter({
                 sourceDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
+                coinGeckoId: quote.estimatedGasFee.coinGeckoId,
               },
-            }).catch(() => {
+            }).catch((e) => {
               // it's common for bridge providers to not provide correct denoms
               if (
                 quote.estimatedGasFee &&
@@ -200,12 +217,14 @@ export const bridgeTransferRouter = createTRPCRouter({
               ) {
                 console.warn(
                   "getQuoteByBridge: Failed to get asset price for gas fee",
+                  e,
                   {
                     bridge: input.bridge,
                     coinMinimalDenom: quote.estimatedGasFee.address,
                     sourceDenom: quote.estimatedGasFee.address,
                     chainId: quote.fromChain.chainId,
                     address: quote.estimatedGasFee.address,
+                    coinGeckoId: quote.estimatedGasFee.coinGeckoId,
                   }
                 );
               }
@@ -318,8 +337,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -332,10 +350,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new Error("Invalid bridge provider id: " + input.bridge);
       }
 
-      const supportedAssetFn = () => bridgeProvider.getSupportedAssets(input);
-
-      /** If the bridge takes longer than 10 seconds to respond, we should timeout that query. */
-      const supportedAssets = await timeout(supportedAssetFn, 10 * 1000)();
+      const supportedAssets = await bridgeProvider.getSupportedAssets(input);
 
       const assetsByChainId = supportedAssets.reduce<
         Record<
@@ -446,9 +461,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -489,9 +502,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -504,34 +515,96 @@ export const bridgeTransferRouter = createTRPCRouter({
           )
         : Object.values(bridgeProviders.bridges);
 
-      return {
-        externalUrls: (
-          await Promise.all(
-            bridgesToQuery.map((bridgeProvider) =>
-              timeout(
-                () =>
-                  bridgeProvider
-                    .getExternalUrl(input)
-                    .then((externalUrl) =>
-                      !isNil(externalUrl)
-                        ? {
-                            ...externalUrl,
-                            logo: ExternalBridgeLogoUrls[
-                              bridgeProvider.providerName
-                            ],
-                          }
-                        : undefined
-                    )
-                    .catch(() => undefined),
-                5_000, // 5 seconds
-                `Failed to get external url for ${bridgeProvider.providerName}`
-              )().catch(() => undefined)
-            )
+      const externalUrls = (
+        await Promise.all(
+          bridgesToQuery.map((bridgeProvider) =>
+            timeout(
+              () =>
+                bridgeProvider
+                  .getExternalUrl(input)
+                  .then((externalUrl) =>
+                    !isNil(externalUrl)
+                      ? {
+                          ...externalUrl,
+                          logo: ExternalBridgeLogoUrls[
+                            bridgeProvider.providerName
+                          ],
+                        }
+                      : undefined
+                  )
+                  .catch(() => undefined),
+              5_000, // 5 seconds
+              `Failed to get external url for ${bridgeProvider.providerName}`
+            )().catch(() => undefined)
           )
-        ).filter(
-          (externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
-            Boolean(externalUrl)
-        ),
+        )
+      ).filter((externalUrl): externalUrl is NonNullable<typeof externalUrl> =>
+        Boolean(externalUrl)
+      );
+
+      // add external urls for external interfaces from asset list, as long as not already added
+      const assetListFromAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
+      const assetListToAsset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
+
+      const externalTransferMethods = (
+        assetListFromAsset?.transferMethods.filter(
+          ({ type }) => type === "external_interface"
+        ) ?? []
+      ).concat(
+        assetListToAsset?.transferMethods.filter(
+          ({ type }) => type === "external_interface"
+        ) ?? []
+      ) as ExternalInterfaceBridgeTransferMethod[];
+
+      externalTransferMethods.forEach(
+        ({ name, depositUrl: depositUrl_, withdrawUrl: withdrawUrl_ }) => {
+          let depositUrl, withdrawUrl;
+          try {
+            depositUrl = depositUrl_ ? new URL(depositUrl_) : undefined;
+          } catch {
+            depositUrl = undefined;
+          }
+          try {
+            withdrawUrl = withdrawUrl_ ? new URL(withdrawUrl_) : undefined;
+          } catch {
+            withdrawUrl = undefined;
+          }
+
+          let urlToAdd: (typeof externalUrls)[number] | undefined =
+            input.fromChain?.chainId === "osmosis-1" && withdrawUrl
+              ? {
+                  urlProviderName: name,
+                  logo: ExternalBridgeLogoUrls["Generic"],
+                  url: withdrawUrl,
+                }
+              : input.toChain?.chainId === "osmosis-1" && depositUrl
+              ? {
+                  urlProviderName: name,
+                  logo: ExternalBridgeLogoUrls["Generic"],
+                  url: depositUrl,
+                }
+              : undefined;
+
+          // ensure is not already in provider URLs before adding
+          if (
+            urlToAdd &&
+            !externalUrls.some(
+              ({ urlProviderName, url }) =>
+                urlProviderName === urlToAdd.urlProviderName ||
+                url.host === urlToAdd.url.host
+            )
+          ) {
+            externalUrls.push(urlToAdd);
+          }
+        }
+      );
+
+      return {
+        externalUrls,
       };
     }),
 });

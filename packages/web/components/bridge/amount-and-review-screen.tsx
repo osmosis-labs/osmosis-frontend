@@ -5,7 +5,9 @@ import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
-import { Screen } from "~/components/screen-manager";
+import { Screen, useScreenManager } from "~/components/screen-manager";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
@@ -36,6 +38,8 @@ export const AmountAndReviewScreen = observer(
   }: AmountAndConfirmationScreenProps) => {
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
+    const { logEvent } = useAmplitudeAnalytics();
+    const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -82,7 +86,16 @@ export const AmountAndReviewScreen = observer(
         ? evmConnector?.icon
         : toChainCosmosAccount?.walletInfo.logo;
 
-    const { data: assetsInOsmosis } =
+    const fromWalletName =
+      fromChain?.chainType === "evm"
+        ? evmConnector?.name
+        : fromChainCosmosAccount?.walletInfo.name;
+    const toWalletName =
+      toChain?.chainType === "evm"
+        ? evmConnector?.name
+        : toChainCosmosAccount?.walletInfo.name;
+
+    const { data: assetsInOsmosis, isLoading: isLoadingAssetsInOsmosis } =
       api.edge.assets.getCanonicalAssetWithVariants.useQuery(
         {
           findMinDenomOrSymbol: selectedAssetDenom ?? "",
@@ -91,11 +104,25 @@ export const AmountAndReviewScreen = observer(
           enabled: !isNil(selectedAssetDenom),
           cacheTime: 10 * 60 * 1000, // 10 minutes
           staleTime: 10 * 60 * 1000, // 10 minutes
+          useErrorBoundary: true,
         }
       );
 
+    /**
+     * Only find supported assets for the selected variant
+     * when withdrawing.
+     */
+    const withdrawAsset =
+      direction === "withdraw"
+        ? assetsInOsmosis?.find(
+            (asset) =>
+              asset.coinDenom === selectedAssetDenom ||
+              asset.coinMinimalDenom === selectedAssetDenom
+          )
+        : undefined;
+
     const supportedAssets = useBridgesSupportedAssets({
-      assets: assetsInOsmosis,
+      assets: withdrawAsset ? [withdrawAsset] : assetsInOsmosis,
       chain: {
         chainId: accountStore.osmosisChainId,
         chainType: "cosmos",
@@ -104,73 +131,118 @@ export const AmountAndReviewScreen = observer(
     const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
       supportedAssets;
 
-    /** Filter for bridges that currently support quoting. */
-    const quoteBridges = useMemo(() => {
+    /** Filter for bridges for the current to/from chain/asset selection. */
+    const bridges = useMemo(() => {
+      if (!fromAsset || !toAsset || !fromChain || !toChain) return [];
+
       const assetSupportedBridges = new Set<Bridge>();
 
-      if (direction === "deposit" && fromAsset) {
-        Object.values(fromAsset.supportedVariants)
-          .flat()
-          .forEach((provider) => assetSupportedBridges.add(provider));
-      } else if (direction === "withdraw" && fromAsset && toAsset) {
-        // withdraw
-        counterpartySupportedAssetsByChainId[toAsset.chainId].forEach(
-          (asset) => {
-            asset.supportedVariants[fromAsset.address]?.forEach((provider) => {
-              assetSupportedBridges.add(provider);
-            });
-          }
-        );
+      if (direction === "deposit") {
+        const providers = fromAsset.supportedVariants[toAsset.address] ?? [];
+        providers.forEach((provider) => assetSupportedBridges.add(provider));
+      } else if (direction === "withdraw") {
+        const counterpartyAssets =
+          counterpartySupportedAssetsByChainId[toAsset.chainId];
+        counterpartyAssets
+          ?.filter(({ address }) => address === toAsset.address)
+          .forEach((asset) => {
+            const providers = asset.supportedVariants[fromAsset.address] ?? [];
+            providers.forEach((provider) =>
+              assetSupportedBridges.add(provider)
+            );
+          });
       }
 
-      return Array.from(assetSupportedBridges).filter(
-        (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
-      ) as QuotableBridge[];
-    }, [direction, fromAsset, toAsset, counterpartySupportedAssetsByChainId]);
+      return Array.from(assetSupportedBridges);
+    }, [
+      direction,
+      fromAsset,
+      fromChain,
+      toAsset,
+      toChain,
+      counterpartySupportedAssetsByChainId,
+    ]);
+    /**
+     * Only some bridges support quoting.
+     * It's also important to only return bridges
+     * that support the current to/from assets by extracting the bridges
+     * from the supported bridges mapping.
+     */
+    const quoteBridges = useMemo(
+      () =>
+        bridges.filter(
+          (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+        ) as QuotableBridge[],
+      [bridges]
+    );
 
     const quote = useBridgeQuotes({
       toAddress,
       toChain: toChain,
-      toAsset: toAsset
-        ? {
-            address:
-              toChain?.chainType === "evm"
-                ? getAddress(toAsset.address)
-                : toAsset.address,
-            decimals: toAsset.decimals,
-            denom: toAsset.denom,
-          }
-        : undefined,
+      toAsset: (() => {
+        if (!toAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === toAsset.address ||
+            toAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            toChain?.chainType === "evm"
+              ? getAddress(toAsset.address)
+              : toAsset.address,
+          decimals: toAsset.decimals,
+          denom: toAsset.denom,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       fromAddress,
       fromChain: fromChain,
-      fromAsset: fromAsset
-        ? {
-            address:
-              fromChain?.chainType === "evm"
-                ? getAddress(fromAsset.address)
-                : fromAsset.address,
-            decimals: fromAsset.decimals,
-            denom: fromAsset.denom,
-            amount: fromAsset.amount,
-          }
-        : undefined,
+      fromAsset: (() => {
+        if (!fromAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === fromAsset.address ||
+            fromAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            fromChain?.chainType === "evm"
+              ? getAddress(fromAsset.address)
+              : fromAsset.address,
+          decimals: fromAsset.decimals,
+          denom: fromAsset.denom,
+          amount: fromAsset.amount,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
       bridges: quoteBridges,
       onTransfer: () => {
+        // Ensures user queries are reset for other chains txs, since
+        // only cosmos txs reset queries from root store
+        if (
+          fromChain?.chainType !== "cosmos" ||
+          toChain?.chainType !== "cosmos"
+        ) {
+          refetchUserQueries(apiUtils);
+        }
+
         setToAsset(undefined);
         setFromAsset(undefined);
         setCryptoAmount("0");
         setFiatAmount("0");
-
-        // redundantly ensures user queries are reset for EVM txs, since
-        // only cosmos txs reset queries from root store
-        refetchUserQueries(apiUtils);
       },
     });
 
-    if (!selectedAssetDenom) return;
+    if (!selectedAssetDenom) {
+      setCurrentScreen(ImmersiveBridgeScreen.Asset);
+      return null;
+    }
 
     return (
       <>
@@ -180,7 +252,9 @@ export const AmountAndReviewScreen = observer(
               direction={direction}
               selectedDenom={selectedAssetDenom!}
               assetsInOsmosis={assetsInOsmosis}
+              isLoadingAssetsInOsmosis={isLoadingAssetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
+              supportedBridges={bridges}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}
@@ -226,6 +300,56 @@ export const AmountAndReviewScreen = observer(
                     quote={quote}
                     onCancel={goBack}
                     onConfirm={() => {
+                      const q = quote.selectedQuote?.quote;
+
+                      if (q) {
+                        const variants =
+                          direction === "deposit"
+                            ? Object.keys(fromAsset.supportedVariants)
+                            : counterpartySupportedAssetsByChainId[
+                                toAsset.chainId
+                              ].map(({ address }) => address);
+
+                        /** If there's multiple variants, it's only recommended if
+                         * the selected variant is the first one in the sorted list.
+                         * If there's not multiple variants, it automatically is recommended.
+                         * This allows us to more easily isolate transfers where
+                         * the user optend out of the default flow by selecting
+                         * an unconventional/alt variant.
+                         */
+                        const isRecommendedVariant =
+                          variants.length > 1
+                            ? toAsset.address === variants[0]
+                            : true;
+
+                        const walletName =
+                          direction === "deposit"
+                            ? fromWalletName
+                            : toWalletName;
+
+                        const networkName =
+                          direction === "deposit"
+                            ? fromChain.chainName
+                            : toChain.chainName;
+
+                        logEvent([
+                          EventName.DepositWithdraw.started,
+                          {
+                            amount: Number(q.input.amount.toDec().toString()),
+                            tokenName: q.input.amount.denom,
+                            bridgeProviderName: q.provider.id,
+                            hasMultipleVariants: variants.length > 1,
+                            isRecommendedVariant,
+                            network: networkName,
+                            transferDirection: direction,
+                            valueUsd: Number(
+                              q.input.fiatValue.toDec().toString()
+                            ),
+                            walletName,
+                          },
+                        ]);
+                      }
+
                       quote.onTransfer().catch(noop);
                     }}
                     isManualAddress={!isNil(manualToAddress)}

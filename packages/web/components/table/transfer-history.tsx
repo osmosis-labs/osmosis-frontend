@@ -2,7 +2,7 @@ import type {
   TransferFailureReason,
   TransferStatus,
 } from "@osmosis-labs/bridge";
-import { truncateString } from "@osmosis-labs/utils";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -90,7 +90,7 @@ const TxHashDisplayCell: FunctionComponent<
       target="_blank"
       rel="noopener noreferrer"
     >
-      {truncateString(value, isMobile ? 4 : 8)}{" "}
+      {truncate(value, isMobile ? 4 : 8)}{" "}
       <Icon
         aria-label="external link"
         id="external-link"

@@ -2,6 +2,8 @@
 import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
+import { TestConfig } from "~/e2e/test-config";
+
 import { PoolsPage } from "../pages/pools-page";
 
 test.describe("Test Select Pool feature", () => {
@@ -10,10 +12,10 @@ test.describe("Test Select Pool feature", () => {
   let page: Page;
 
   test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext("", {
-      headless: true,
-      viewport: { width: 1280, height: 1024 },
-    });
+    context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserConfig(true)
+    );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
       resetOnNavigation: false,

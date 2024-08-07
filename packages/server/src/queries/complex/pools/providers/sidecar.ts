@@ -8,7 +8,7 @@ import { IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import { calcSumCoinsValue, getAsset } from "../../assets";
+import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolType } from "../index";
@@ -20,20 +20,24 @@ const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
   assetLists,
-  chainList,
   poolIds,
+  minLiquidityUsd,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
+  minLiquidityUsd?: number;
 }): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
+    key:
+      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+      minLiquidityUsd,
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
-        () => queryPools({ poolIds }),
+        () =>
+          queryPools({ poolIds, minLiquidityCap: minLiquidityUsd?.toString() }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
@@ -44,37 +48,14 @@ export function getPoolsFromSidecar({
           // Do nothing since low liq pools often contain unlisted tokens
         }
       });
-      const totalFiatLockedValues: (PricePretty | undefined)[] =
-        await Promise.all(
-          reserveCoins.map((reserve) =>
-            reserve
-              ? timeout(
-                  () =>
-                    calcSumCoinsValue({
-                      assetLists,
-                      chainList,
-                      coins: reserve,
-                    }).then(
-                      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-                    ),
-                  15_000, // 15 seconds
-                  "getPoolsFromSidecar:calcSumCoinsValue"
-                )()
-              : Promise.resolve(undefined)
-          )
-        );
 
       return sidecarPools
-        .map((sidecarPool, index) => {
-          if (reserveCoins[index] === undefined) return;
-          if (totalFiatLockedValues[index] === undefined) return;
-
-          return makePoolFromSidecarPool({
+        .map((sidecarPool, index) =>
+          makePoolFromSidecarPool({
             sidecarPool,
-            totalFiatValueLocked: totalFiatLockedValues[index] as PricePretty,
-            reserveCoins: reserveCoins[index] as CoinPretty[],
-          });
-        })
+            reserveCoins: reserveCoins[index] ?? null,
+          })
+        )
         .filter(Boolean) as Pool[];
     },
   });
@@ -84,16 +65,14 @@ export function getPoolsFromSidecar({
 function makePoolFromSidecarPool({
   sidecarPool,
   reserveCoins,
-  totalFiatValueLocked,
 }: {
   sidecarPool: SidecarPool;
   reserveCoins: CoinPretty[] | null;
-  totalFiatValueLocked: PricePretty | null;
 }): Pool | undefined {
   // contains unlisted or invalid assets
   // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
   // to ease integrations.
-  if ((!reserveCoins || !totalFiatValueLocked) && !IS_TESTNET) return;
+  if (!reserveCoins && !IS_TESTNET) return;
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
@@ -103,9 +82,10 @@ function makePoolFromSidecarPool({
 
     // We expect the else case to occur only in testnet
     reserveCoins: reserveCoins ? reserveCoins : [],
-    totalFiatValueLocked: totalFiatValueLocked
-      ? totalFiatValueLocked
-      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    totalFiatValueLocked: new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      sidecarPool.liquidity_cap
+    ),
   };
 }
 
@@ -172,6 +152,7 @@ function getPoolDenomsFromSidecarPool({ chain_model, balances }: SidecarPool) {
 function makePoolRawResponseFromChainPool(
   chainPool: SidecarPool["chain_model"]
 ): PoolRawResponse {
+  // CL pools
   if ("current_tick_liquidity" in chainPool) {
     return {
       ...chainPool,
@@ -182,6 +163,7 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
+  // Stable pools
   if ("scaling_factors" in chainPool) {
     return {
       ...chainPool,
@@ -192,13 +174,17 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
-  if ("id" in chainPool) {
+  // Weighted pools
+  if ("total_weight" in chainPool) {
     return {
       ...chainPool,
       id: chainPool.id?.toString(),
+      // SQS diverges from the node model by returning total_weight as a string decimal instead of string integer
+      total_weight: chainPool.total_weight.split(".")[0],
     } as PoolRawResponse;
   }
 
+  // Cosmwasm pools
   return {
     ...chainPool,
     pool_id: chainPool.pool_id?.toString(),

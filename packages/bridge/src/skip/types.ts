@@ -76,6 +76,8 @@ export type SkipRouteResponse = {
   usd_amount_in?: string;
   usd_amount_out?: string;
   swap_price_impact_percent?: string;
+
+  estimated_route_duration_seconds: number;
 };
 
 export type SkipOperation =

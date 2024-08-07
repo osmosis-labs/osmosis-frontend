@@ -57,14 +57,15 @@ export class NomicBridgeProvider implements BridgeProvider {
     throw new Error("Nomic transactions are currently not supported.");
   }
 
-  async getExternalUrl(
-    params: GetBridgeExternalUrlParams
-  ): Promise<BridgeExternalUrl | undefined> {
+  async getExternalUrl({
+    fromChain,
+    toChain,
+  }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     const url = new URL("https://app.nomic.io/bitcoin");
 
-    if (params.fromChain.chainType === "bitcoin") {
+    if (fromChain?.chainType === "bitcoin") {
       url.searchParams.set("deposit", "confirmation");
-    } else if (params.toChain.chainType === "bitcoin") {
+    } else if (toChain?.chainType === "bitcoin") {
       url.searchParams.set("withdraw", "address");
     }
 

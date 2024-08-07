@@ -1,6 +1,7 @@
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 
 import {
   SelectType,
@@ -8,6 +9,7 @@ import {
   Step2AddLiquidity,
   Step3Confirm,
 } from "~/components/complex";
+import { CreateCLPool } from "~/components/complex/pool/create/cl-pool";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 export const CreatePoolModal: FunctionComponent<
@@ -33,38 +35,78 @@ export const CreatePoolModal: FunctionComponent<
     }
   };
 
+  const isConcentrated = useMemo(
+    () => config.poolType === "concentrated",
+    [config.poolType]
+  );
+
   return (
     <ModalBase
       {...props}
       onRequestClose={() => {
+        if (isConcentrated) {
+          setCurStep(1);
+        }
         props.onRequestClose();
       }}
-      onRequestBack={curStep !== 0 ? backStep : undefined}
+      onRequestBack={
+        isConcentrated ? undefined : curStep !== 0 ? backStep : undefined
+      }
+      title={!isConcentrated ? props.title : undefined}
+      hideCloseButton={isConcentrated}
+      className={classNames({
+        "!w-fit !max-w-none !overflow-visible !bg-osmoverse-850 !p-0":
+          isConcentrated,
+      })}
     >
       {config.poolType === null && (
         <SelectType
-          types={["weighted", "stable"]}
+          types={["weighted", "stable", "concentrated"]}
           selectType={(type) => {
             config.setPoolType(type);
             setCurStep(1);
           }}
         />
       )}
-      {curStep === 1 && (
-        <Step1SetRatios createPoolConfig={config} advanceStep={advanceStep} />
-      )}
-      {curStep === 2 && (
-        <Step2AddLiquidity
-          createPoolConfig={config}
+      {config.poolType && isConcentrated ? (
+        <CreateCLPool
+          onBack={() => {
+            if (curStep !== 0) {
+              backStep();
+            }
+          }}
           advanceStep={advanceStep}
+          backStep={backStep}
+          currentStep={curStep}
+          onClose={props.onRequestClose}
+          config={config}
+          fullClose={() => {
+            setCurStep(1);
+            props.onRequestClose();
+          }}
         />
-      )}
-      {curStep === 3 && (
-        <Step3Confirm
-          createPoolConfig={config}
-          isSendingMsg={isSendingMsg}
-          advanceStep={onCreatePool}
-        />
+      ) : (
+        <>
+          {curStep === 1 && (
+            <Step1SetRatios
+              createPoolConfig={config}
+              advanceStep={advanceStep}
+            />
+          )}
+          {curStep === 2 && (
+            <Step2AddLiquidity
+              createPoolConfig={config}
+              advanceStep={advanceStep}
+            />
+          )}
+          {curStep === 3 && (
+            <Step3Confirm
+              createPoolConfig={config}
+              isSendingMsg={isSendingMsg}
+              advanceStep={onCreatePool}
+            />
+          )}
+        </>
       )}
     </ModalBase>
   );

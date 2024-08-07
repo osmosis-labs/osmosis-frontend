@@ -29,21 +29,21 @@ export const AssetCell: FunctionComponent<
   return (
     <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
       {isInUserWatchlist !== undefined && onClickWatchlist && (
-        <Icon
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
+        <div className="min-w-6 min-h-6">
+          <Icon
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
 
-            onClickWatchlist();
-          }}
-          className={classNames(
-            "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
-            isInUserWatchlist ? "text-wosmongton-400" : "text-osmoverse-600"
-          )}
-          id="star"
-          width={24}
-          height={24}
-        />
+              onClickWatchlist();
+            }}
+            className={classNames(
+              "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
+              isInUserWatchlist ? "text-wosmongton-400" : "text-osmoverse-600"
+            )}
+            id="star"
+          />
+        </div>
       )}
       <div className="h-10 w-10 flex-shrink-0">
         {coinImageUrl && (

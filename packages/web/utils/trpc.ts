@@ -60,6 +60,25 @@ export const api = createTRPCNext<AppRouter>({
     persistQueryClient({
       queryClient,
       persister: localStoragePersister,
+      dehydrateOptions: {
+        shouldDehydrateQuery: (query) => {
+          const [key] = query.queryKey as [string[]];
+          if (Array.isArray(key)) {
+            const trpcKey = key.join(".") as RouterKeys;
+            const excludedKeys: RouterKeys[] = [
+              "local.bridgeTransfer.getSupportedAssetsBalances",
+            ];
+
+            /**
+             * If the key is in the excludedKeys, we don't want to persist it in the cache.
+             */
+            if (excludedKeys.includes(trpcKey)) {
+              return false;
+            }
+          }
+          return true;
+        },
+      },
     });
 
     return {

@@ -50,7 +50,7 @@ export const ClipboardButton = forwardRef<
       {...rest}
     >
       <div className="flex items-center transition-all duration-300 group-hover:px-4">
-        <p className="w-0 overflow-hidden text-body2 font-medium text-osmoverse-400 opacity-0 transition-all duration-300 group-hover:mr-2 group-hover:w-25 group-hover:opacity-100">
+        <p className="w-0 overflow-hidden text-body2 font-medium text-osmoverse-400 opacity-0 transition-all duration-300 group-hover:mr-2 group-hover:w-fit group-hover:opacity-100">
           {children}
         </p>
         <div className="relative h-4 w-4">
