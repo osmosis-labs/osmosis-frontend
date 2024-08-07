@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { TransferStatus } from "@osmosis-labs/bridge";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -44,16 +45,14 @@ export const RecentActivity: FunctionComponent = observer(() => {
           <NoTransactionsSplash variant="transfers" />
         ) : (
           recentTransfers.map(({ txHash, status, amount, isWithdraw }) => {
-            const simplifiedStatus =
-              status === "success"
-                ? "success"
-                : status === "refunded" ||
-                  status === "connection-error" ||
-                  status === "failed"
-                ? "failed"
-                : "pending";
+            const getSimplifiedStatus = (status: TransferStatus) => {
+              if (status === "success") return "success";
+              if (["refunded", "connection-error", "failed"].includes(status))
+                return "failed";
+              return "pending";
+            };
 
-            console.log("simplifiedStatus: ", simplifiedStatus);
+            const simplifiedStatus = getSimplifiedStatus(status);
 
             const coinAmount = amount.split(" ")[0];
             const coinDenom = amount.split(" ")[1];
