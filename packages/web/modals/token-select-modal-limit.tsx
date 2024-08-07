@@ -22,7 +22,6 @@ import {
   useWalletSelect,
   useWindowKeyActions,
 } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
 import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
@@ -70,9 +69,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
 
       const { userSettings, accountStore } = useStore();
       const { onOpenWalletSelect } = useWalletSelect();
-      const uniqueId = useConst(() =>
-        Math.random().toString(36).substring(2, 9)
-      );
       const recommendedAssets = useRecommendedAssets();
 
       const isWalletConnected = accountStore.getWallet(
