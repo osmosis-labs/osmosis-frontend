@@ -102,7 +102,6 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       : `${formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
           ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
           maxDecimals: 3,
-          maximumSignificantDigits: 5,
         })}%`;
   }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
 
