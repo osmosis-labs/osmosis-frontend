@@ -448,7 +448,6 @@
     "pools": "풀",
     "stake": "스테이킹",
     "store": "앱",
-    "swap": "교환",
     "vote": "투표",
     "featureRequests": "기능 요청",
     "trade": "프로 트레이딩",
@@ -821,11 +820,7 @@
       "error": "현재로서는 네트워크 수수료를 추정할 수 없습니다. 거래를 승인하기 전에 지갑의 네트워크 수수료를 검토하세요.",
       "gasEstimationError": "네트워크 요금을 추정할 수 없습니다.",
       "unknown": "알려지지 않은",
-      "additionalNetworkFee": "추가 네트워크 요금",
-      "whatAreTradeFees": "거래 수수료란 무엇입니까?",
-      "tradeFeesInfo": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 거래 실행 시 Osmosis 프로토콜에서 부과하는 수수료입니다.",
-      "tradeFeesLimitInfo": "지정가 주문에 대한 거래 수수료는 현재 무료입니다.",
-      "networkFeesAdditional": "모든 거래에는 네트워크 수수료가 추가됩니다."
+      "additionalNetworkFee": "추가 네트워크 요금"
     },
     "noRoutes": "경로를 찾을 수 없습니다.",
     "route": "노선",
@@ -1217,15 +1212,6 @@
     "newer": "최신"
   },
   "limitOrders": {
-    "reviewOrder": "주문 검토",
-    "tradeDetails": "거래내역",
-    "marketOrder": {
-      "title": "시장가 주문",
-      "description": {
-        "buy": "가장 좋은 가격으로 즉시 구매하세요",
-        "sell": "가장 좋은 가격으로 즉시 판매"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "주문하다",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Osmosis의 과거 지정가 주문이 여기에 표시됩니다."
       }
     },
-    "limitOrder": {
-      "title": "제한 주문",
-      "description": {
-        "buy": "{denom} 가격이 하락하면 구매하세요.",
-        "sell": "{denom} 가격이 상승하면 매도하세요",
-        "disabled": "현재는 {denom} / {quoteDenom} 에 사용할 수 없습니다."
-      }
-    },
-    "recurringOrder": {
-      "title": "반복 주문",
-      "description": "시간 경과에 따른 평균 가격의 {action}"
-    },
     "aboveMarket": {
       "title": "시장가보다 높은 가격 제한",
       "description": "계속 진행하시면 귀하의 주문은 시장가로 시장가 주문으로 처리됩니다."
@@ -1267,10 +1241,8 @@
     "pay": "지불하다",
     "open": "열려 있는",
     "filled": "채우는",
-    "pending": "보류 중",
     "claimable": "청구 가능",
     "claimAndClose": "청구 및 종료",
-    "past": "과거",
     "accept": "수용하다",
     "cancelled": "취소 된",
     "cancel": "취소",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "모두 청구",
     "addFunds": "자금 추가",
-    "watchOut": "조심해! 고래가 들어오다",
     "selectAnAssetTo": {
       "buy": "구매할 자산을 선택하세요",
       "sell": "판매할 자산을 선택하세요"
@@ -1327,35 +1298,13 @@
     "above": "~ 위에",
     "currentPrice": "현재 가격",
     "whenDenomPriceIs": "{denom} 가격이 다음과 같은 경우",
-    "estimating": "견적",
-    "totalFeesWhenFilled": "충전 시 총 수수료",
-    "at": "~에",
-    "value": "값",
-    "estimatedFees": "예상 수수료",
-    "totalEstimatedFees": "총 예상 수수료",
-    "receiveMin": "최소 수신",
-    "receiveAsset": "자산 수령",
     "orderType": "주문 유형",
-    "limitPrice": "가격 제한",
-    "moreDetails": "자세한 내용은",
     "confirm": "확인하다",
-    "expectedRate": "예상비율",
     "market": "시장",
     "limit": "한계",
-    "increases": "증가하다",
-    "decreases": "감소하다",
-    "estimatingFees": "수수료 추정",
-    "fees": "수수료",
-    "receiveEstimated": "최소한 받아라",
-    "swapRoute": "주문 경로",
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
-    "openOrders": "오픈 주문",
     "invalidPrice": "잘못된 가격",
     "unavailable": "{denom} 에는 사용할 수 없습니다."
-  },
-  "orderHistory": {
-    "orders": "명령",
-    "history": "역사"
   }
 }

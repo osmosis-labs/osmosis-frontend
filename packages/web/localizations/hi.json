@@ -448,7 +448,6 @@
     "pools": "ताल",
     "stake": "दांव",
     "store": "ऐप्स",
-    "swap": "बदलना",
     "vote": "वोट",
     "featureRequests": "सुविधा का अनुरोध",
     "trade": "प्रो ट्रेडिंग",
@@ -821,11 +820,7 @@
       "error": "इस समय नेटवर्क शुल्क का अनुमान नहीं लगाया जा सकता। लेन-देन को मंजूरी देने से पहले अपने वॉलेट में नेटवर्क शुल्क की समीक्षा करें।",
       "gasEstimationError": "नेटवर्क शुल्क का अनुमान नहीं लगाया जा सकता",
       "unknown": "अज्ञात",
-      "additionalNetworkFee": "अतिरिक्त नेटवर्क शुल्क",
-      "whatAreTradeFees": "व्यापार शुल्क क्या हैं?",
-      "tradeFeesInfo": "यह वह शुल्क है जो ओस्मोसिस प्रोटोकॉल द्वारा व्यापार निष्पादन के समय तरलता प्रदाताओं को पुरस्कृत करने और नेटवर्क को बनाए रखने के लिए लिया जाता है।",
-      "tradeFeesLimitInfo": "सीमा आदेशों के लिए व्यापार शुल्क वर्तमान में निःशुल्क है।",
-      "networkFeesAdditional": "प्रत्येक लेनदेन पर नेटवर्क शुल्क अतिरिक्त लगता है।"
+      "additionalNetworkFee": "अतिरिक्त नेटवर्क शुल्क"
     },
     "noRoutes": "कोई मार्ग नहीं मिला",
     "route": "मार्ग",
@@ -1217,15 +1212,6 @@
     "newer": "नई"
   },
   "limitOrders": {
-    "reviewOrder": "अादेश का पुनः निरिक्षण",
-    "tradeDetails": "व्यापार विवरण",
-    "marketOrder": {
-      "title": "बाजार आदेश",
-      "description": {
-        "buy": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत खरीदें",
-        "sell": "सर्वोत्तम उपलब्ध मूल्य पर तुरंत बेचें"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "आदेश",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "ओस्मोसिस पर आपके पिछले लिमिट ऑर्डर यहां दिखाई देंगे।"
       }
     },
-    "limitOrder": {
-      "title": "सीमा आदेश",
-      "description": {
-        "buy": "जब {denom} कीमत घट जाए तो खरीदें",
-        "sell": "जब {denom} कीमत बढ़ जाए तो बेच दें",
-        "disabled": "वर्तमान में {denom} / {quoteDenom} के लिए उपलब्ध नहीं है"
-      }
-    },
-    "recurringOrder": {
-      "title": "आवर्ती आदेश",
-      "description": "{action} समय के साथ औसत कीमत पर"
-    },
     "aboveMarket": {
       "title": "सीमा मूल्य बाजार मूल्य से ऊपर",
       "description": "यदि आप आगे बढ़ते हैं, तो आपके ऑर्डर को बाजार मूल्य पर बाजार ऑर्डर के रूप में संसाधित किया जाएगा।"
@@ -1267,10 +1241,8 @@
     "pay": "वेतन",
     "open": "खुला",
     "filled": "भरा हुआ",
-    "pending": "लंबित",
     "claimable": "दावा योग्य",
     "claimAndClose": "दावा करें और बंद करें",
-    "past": "अतीत",
     "accept": "स्वीकार करना",
     "cancelled": "रद्द",
     "cancel": "रद्द करना",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "सभी का दावा करें",
     "addFunds": "धन जोड़ें",
-    "watchOut": "सावधान! व्हेल आ रही है",
     "selectAnAssetTo": {
       "buy": "खरीदने के लिए एक परिसंपत्ति का चयन करें",
       "sell": "बेचने के लिए एक परिसंपत्ति का चयन करें"
@@ -1327,35 +1298,13 @@
     "above": "ऊपर",
     "currentPrice": "मौजूदा कीमत",
     "whenDenomPriceIs": "जब {denom} कीमत है",
-    "estimating": "आकलन",
-    "totalFeesWhenFilled": "कुल शुल्क जब भरा गया",
-    "at": "पर",
-    "value": "कीमत",
-    "estimatedFees": "अनुमानित शुल्क",
-    "totalEstimatedFees": "कुल अनुमानित शुल्क",
-    "receiveMin": "न्यूनतम प्राप्त करें",
-    "receiveAsset": "संपत्ति प्राप्त करें",
     "orderType": "आदेश प्रकार",
-    "limitPrice": "सीमा मूल्य",
-    "moreDetails": "अधिक जानकारी",
     "confirm": "पुष्टि करना",
-    "expectedRate": "अपेक्षित दर",
     "market": "बाज़ार",
     "limit": "आप LIMIT",
-    "increases": "बढ़ती है",
-    "decreases": "कम हो जाती है",
-    "estimatingFees": "शुल्क का अनुमान लगाना",
-    "fees": "फीस",
-    "receiveEstimated": "कम से कम प्राप्त करें",
-    "swapRoute": "आदेश मार्ग",
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
-    "openOrders": "खुले आदेश",
     "invalidPrice": "अमान्य मूल्य",
     "unavailable": "{denom} के लिए अनुपलब्ध"
-  },
-  "orderHistory": {
-    "orders": "आदेश",
-    "history": "इतिहास"
   }
 }

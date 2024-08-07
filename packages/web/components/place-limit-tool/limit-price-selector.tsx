@@ -158,15 +158,15 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         title={
           <span className="caption">
             {orderDirection === "bid"
-              ? t(`limitOrders.aboveMarket.title`)
-              : t(`limitOrders.belowMarket.title`)}
+              ? t("limitOrders.aboveMarket.title")
+              : t("limitOrders.belowMarket.title")}
           </span>
         }
         body={
           <span className="text-caption text-osmoverse-300">
             {orderDirection === "bid"
-              ? t(`limitOrders.aboveMarket.description`)
-              : t(`limitOrders.belowMarket.description`)}
+              ? t("limitOrders.aboveMarket.description")
+              : t("limitOrders.belowMarket.description")}
           </span>
         }
       >

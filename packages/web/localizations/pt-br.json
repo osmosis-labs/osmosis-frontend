@@ -448,7 +448,6 @@
     "pools": "Piscinas",
     "stake": "Stake",
     "store": "Aplicativos",
-    "swap": "Trocar",
     "vote": "Votar",
     "featureRequests": "Solicitações de recursos",
     "trade": "Negociação profissional",
@@ -821,11 +820,7 @@
       "error": "A taxa de rede não pode ser estimada neste momento. Revise as taxas de rede em sua carteira antes de aprovar a transação.",
       "gasEstimationError": "A taxa de rede não pode ser estimada",
       "unknown": "Desconhecido",
-      "additionalNetworkFee": "Taxa de rede adicional",
-      "whatAreTradeFees": "O que são taxas comerciais?",
-      "tradeFeesInfo": "É a taxa cobrada pelo protocolo Osmosis no momento da execução da negociação para recompensar os provedores de liquidez e manter a rede.",
-      "tradeFeesLimitInfo": "Atualmente, as taxas de negociação para pedidos com limite são gratuitas.",
-      "networkFeesAdditional": "As taxas de rede são adicionais a cada transação."
+      "additionalNetworkFee": "Taxa de rede adicional"
     },
     "noRoutes": "Nenhuma rota encontrada",
     "route": "rota",
@@ -1217,15 +1212,6 @@
     "newer": "Mais recente"
   },
   "limitOrders": {
-    "reviewOrder": "Revisar pedido",
-    "tradeDetails": "Detalhes comerciais",
-    "marketOrder": {
-      "title": "Ordem de Mercado",
-      "description": {
-        "buy": "Compre imediatamente ao melhor preço disponível",
-        "sell": "Venda imediatamente ao melhor preço disponível"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Ordem",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Seus pedidos com limite anteriores no Osmosis aparecerão aqui."
       }
     },
-    "limitOrder": {
-      "title": "Ordem Limitada",
-      "description": {
-        "buy": "Compre quando o preço {denom} diminuir",
-        "sell": "Venda quando o preço {denom} aumentar",
-        "disabled": "Atualmente indisponível para {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Pedido recorrente",
-      "description": "{action} pelo preço médio ao longo do tempo"
-    },
     "aboveMarket": {
       "title": "Preço limite acima do preço de mercado",
       "description": "Se você prosseguir, sua ordem será processada como uma ordem de mercado a preço de mercado."
@@ -1267,10 +1241,8 @@
     "pay": "Pagar",
     "open": "Abrir",
     "filled": "Preenchido",
-    "pending": "Pendente",
     "claimable": "Exigível",
     "claimAndClose": "Reivindique e feche",
-    "past": "Passado",
     "accept": "Aceitar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Reivindique tudo",
     "addFunds": "Adicionar fundos",
-    "watchOut": "Atenção! Baleia chegando",
     "selectAnAssetTo": {
       "buy": "Selecione um ativo para comprar",
       "sell": "Selecione um ativo para vender"
@@ -1327,35 +1298,13 @@
     "above": "acima",
     "currentPrice": "preço atual",
     "whenDenomPriceIs": "Quando {denom} o preço é",
-    "estimating": "Estimando",
-    "totalFeesWhenFilled": "Taxas totais quando preenchidas",
-    "at": "no",
-    "value": "Valor",
-    "estimatedFees": "Taxas estimadas",
-    "totalEstimatedFees": "Taxas totais estimadas",
-    "receiveMin": "Receba o mínimo",
-    "receiveAsset": "Receber ativo",
     "orderType": "Tipo de pedido",
-    "limitPrice": "Preço Limite",
-    "moreDetails": "Mais detalhes",
     "confirm": "confirme",
-    "expectedRate": "Taxa esperada",
     "market": "Mercado",
     "limit": "Limite",
-    "increases": "aumenta",
-    "decreases": "diminui",
-    "estimatingFees": "Estimando taxas",
-    "fees": "tarifas",
-    "receiveEstimated": "Receba pelo menos",
-    "swapRoute": "Rota do pedido",
     "trade": "Troca",
     "swapToAnotherAsset": "Trocar por outro ativo",
-    "openOrders": "Pedidos em aberto",
     "invalidPrice": "Preço inválido",
     "unavailable": "Indisponível para {denom}"
-  },
-  "orderHistory": {
-    "orders": "Pedidos",
-    "history": "História"
   }
 }

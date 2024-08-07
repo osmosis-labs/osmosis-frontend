@@ -448,7 +448,6 @@
     "pools": "Pule",
     "stake": "Stakuj",
     "store": "Aplikacje",
-    "swap": "Wymień",
     "vote": "Głosuj",
     "featureRequests": "Żądania funkcji",
     "trade": "Profesjonalny handel",
@@ -821,11 +820,7 @@
       "error": "W tej chwili nie można oszacować opłaty sieciowej. Przed zatwierdzeniem transakcji sprawdź opłaty sieciowe w swoim portfelu.",
       "gasEstimationError": "Nie można oszacować opłaty sieciowej",
       "unknown": "Nieznany",
-      "additionalNetworkFee": "Dodatkowa opłata sieciowa",
-      "whatAreTradeFees": "Co to są opłaty handlowe?",
-      "tradeFeesInfo": "Jest to opłata pobierana przez protokół Osmosis w momencie realizacji transakcji w celu nagrodzenia dostawców płynności i utrzymania sieci.",
-      "tradeFeesLimitInfo": "Opłaty handlowe za zlecenia z limitem są obecnie bezpłatne.",
-      "networkFeesAdditional": "Opłaty sieciowe są doliczane do każdej transakcji."
+      "additionalNetworkFee": "Dodatkowa opłata sieciowa"
     },
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
@@ -1217,15 +1212,6 @@
     "newer": "Nowsza"
   },
   "limitOrders": {
-    "reviewOrder": "Przegląd zamówienia",
-    "tradeDetails": "Szczegóły handlu",
-    "marketOrder": {
-      "title": "Porządek rynkowy",
-      "description": {
-        "buy": "Kup natychmiast po najlepszej dostępnej cenie",
-        "sell": "Sprzedaj natychmiast po najlepszej dostępnej cenie"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Zamówienie",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie."
       }
     },
-    "limitOrder": {
-      "title": "Zamówienie z limitem",
-      "description": {
-        "buy": "Kupuj, gdy cena {denom} spadnie",
-        "sell": "Sprzedawaj, gdy cena {denom} wzrośnie",
-        "disabled": "Obecnie niedostępne dla {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Zamówienie powtarzające się",
-      "description": "{action} po średniej cenie w czasie"
-    },
     "aboveMarket": {
       "title": "Cena graniczna powyżej ceny rynkowej",
       "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
@@ -1267,10 +1241,8 @@
     "pay": "Płacić",
     "open": "otwarty",
     "filled": "Wypełniony",
-    "pending": "Aż do",
     "claimable": "Możliwość roszczenia",
     "claimAndClose": "Złóż wniosek i zamknij",
-    "past": "Przeszłość",
     "accept": "Zaakceptować",
     "cancelled": "Odwołany",
     "cancel": "Anulować",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Zażądaj wszystkiego",
     "addFunds": "Dodać fundusze",
-    "watchOut": "Uważaj! Nadchodzi wieloryb",
     "selectAnAssetTo": {
       "buy": "Wybierz zasób do kupienia",
       "sell": "Wybierz zasób do sprzedania"
@@ -1327,35 +1298,13 @@
     "above": "powyżej",
     "currentPrice": "aktualna cena",
     "whenDenomPriceIs": "Gdy cena {denom} wynosi",
-    "estimating": "Doceniający",
-    "totalFeesWhenFilled": "Suma opłat po wypełnieniu",
-    "at": "Na",
-    "value": "Wartość",
-    "estimatedFees": "Szacunkowe opłaty",
-    "totalEstimatedFees": "Całkowite szacunkowe opłaty",
-    "receiveMin": "Otrzymaj minimum",
-    "receiveAsset": "Odbierz zasób",
     "orderType": "Typ zamówienia",
-    "limitPrice": "Cena graniczna",
-    "moreDetails": "Więcej szczegółów",
     "confirm": "Potwierdzać",
-    "expectedRate": "Oczekiwana stawka",
     "market": "Rynek",
     "limit": "Limit",
-    "increases": "wzrasta",
-    "decreases": "maleje",
-    "estimatingFees": "Szacowanie opłat",
-    "fees": "opłaty",
-    "receiveEstimated": "Odbierz przynajmniej",
-    "swapRoute": "Zamów trasę",
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
-    "openOrders": "Otwarte zlecenia",
     "invalidPrice": "Nieprawidłowa cena",
     "unavailable": "Niedostępne dla {denom}"
-  },
-  "orderHistory": {
-    "orders": "Zamówienia",
-    "history": "Historia"
   }
 }

@@ -280,48 +280,24 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       );
     }
 
-    const isLoadingMaxButton = useMemo(
-      () =>
-        featureFlags.swapToolSimulateFee &&
-        !isNil(account?.address) &&
-        !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
-        !swapState.inAmountInput?.balance?.toDec().isZero() &&
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      [
-        account?.address,
-        featureFlags.swapToolSimulateFee,
-        swapState.inAmountInput?.balance,
-        swapState.inAmountInput.hasErrorWithCurrentBalanceQuote,
-        swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee,
-      ]
-    );
+    const isLoadingMaxButton =
+      featureFlags.swapToolSimulateFee &&
+      !isNil(account?.address) &&
+      !swapState.inAmountInput.hasErrorWithCurrentBalanceQuote &&
+      !swapState.inAmountInput?.balance?.toDec().isZero() &&
+      swapState.inAmountInput.isLoadingCurrentBalanceNetworkFee;
 
-    const isConfirmationDisabled = useMemo(() => {
-      return (
-        isSendingTx ||
-        isWalletLoading ||
-        (account?.walletStatus === WalletStatus.Connected &&
-          (swapState.inAmountInput.isEmpty ||
-            !Boolean(swapState.quote) ||
-            isSwapToolLoading ||
-            Boolean(swapState.error) ||
-            Boolean(swapState.networkFeeError)))
-      );
-    }, [
-      account?.walletStatus,
-      isSendingTx,
-      isSwapToolLoading,
-      isWalletLoading,
-      swapState.error,
-      swapState.inAmountInput.isEmpty,
-      swapState.networkFeeError,
-      swapState.quote,
-    ]);
+    const isConfirmationDisabled =
+      isSendingTx ||
+      isWalletLoading ||
+      (account?.walletStatus === WalletStatus.Connected &&
+        (swapState.inAmountInput.isEmpty ||
+          !Boolean(swapState.quote) ||
+          isSwapToolLoading ||
+          Boolean(swapState.error) ||
+          Boolean(swapState.networkFeeError)));
 
-    const showTokenSelectRecommendedTokens = useMemo(
-      () => isNil(forceSwapInPoolId),
-      [forceSwapInPoolId]
-    );
+    const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
     const {
       isOpen: isAddFundsModalOpen,

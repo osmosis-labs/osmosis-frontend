@@ -448,7 +448,6 @@
     "pools": "Havuzlar",
     "stake": "Stake",
     "store": "Uygulamalar",
-    "swap": "Takas",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
     "trade": "Profesyonel Ticaret",
@@ -821,11 +820,7 @@
       "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin.",
       "gasEstimationError": "Ağ ücreti tahmin edilemiyor",
       "unknown": "Bilinmeyen",
-      "additionalNetworkFee": "Ek ağ ücreti",
-      "whatAreTradeFees": "Ticaret ücretleri nedir?",
-      "tradeFeesInfo": "Bu, likidite sağlayıcılarını ödüllendirmek ve ağı korumak için Osmosis protokolü tarafından ticaretin gerçekleştirildiği sırada alınan ücrettir.",
-      "tradeFeesLimitInfo": "Limit emirleri için işlem ücretleri şu anda ücretsizdir.",
-      "networkFeesAdditional": "Ağ ücretleri her işleme ek olarak uygulanır."
+      "additionalNetworkFee": "Ek ağ ücreti"
     },
     "noRoutes": "Rota bulunamadı",
     "route": "rota",
@@ -1217,15 +1212,6 @@
     "newer": "Daha yeni"
   },
   "limitOrders": {
-    "reviewOrder": "Siparişi İncele",
-    "tradeDetails": "Ticaret Detayları",
-    "marketOrder": {
-      "title": "Market siparişi",
-      "description": {
-        "buy": "Mevcut en iyi fiyatla hemen satın alın",
-        "sell": "Mümkün olan en iyi fiyatla hemen satış yapın"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Emir",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
       }
     },
-    "limitOrder": {
-      "title": "Limit Emri",
-      "description": {
-        "buy": "{denom} fiyatı düştüğünde satın alın",
-        "sell": "{denom} fiyatı arttığında sat",
-        "disabled": "Şu anda {denom} / {quoteDenom} için kullanılamıyor"
-      }
-    },
-    "recurringOrder": {
-      "title": "Yinelenen Sipariş",
-      "description": "Zaman içindeki ortalama fiyata {action}"
-    },
     "aboveMarket": {
       "title": "Piyasa fiyatının üzerinde limit fiyat",
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
@@ -1267,10 +1241,8 @@
     "pay": "Ödemek",
     "open": "Açık",
     "filled": "Dolu",
-    "pending": "Askıda olması",
     "claimable": "Hak talebinde bulunulabilir",
     "claimAndClose": "Talep et ve kapat",
-    "past": "Geçmiş",
     "accept": "Kabul etmek",
     "cancelled": "İptal edildi",
     "cancel": "İptal etmek",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Tümünü talep edin",
     "addFunds": "Fon Ekle",
-    "watchOut": "Dikkat! Balina geliyor",
     "selectAnAssetTo": {
       "buy": "Satın almak için bir varlık seçin",
       "sell": "Satılacak bir varlık seçin"
@@ -1327,35 +1298,13 @@
     "above": "üstünde",
     "currentPrice": "Mevcut fiyat",
     "whenDenomPriceIs": "{denom} fiyatı şu olduğunda",
-    "estimating": "Tahmin etme",
-    "totalFeesWhenFilled": "Doldurulduğunda toplam ücretler",
-    "at": "en",
-    "value": "Değer",
-    "estimatedFees": "Tahmini ücretler",
-    "totalEstimatedFees": "Toplam Tahmini Ücretler",
-    "receiveMin": "Minimum alma",
-    "receiveAsset": "Varlık al",
     "orderType": "Sipariş türü",
-    "limitPrice": "Limit Fiyatı",
-    "moreDetails": "Daha fazla detay",
     "confirm": "Onaylamak",
-    "expectedRate": "Beklenen oran",
     "market": "Pazar",
     "limit": "Sınır",
-    "increases": "artışlar",
-    "decreases": "azalır",
-    "estimatingFees": "Ücretlerin tahmin edilmesi",
-    "fees": "ücretler",
-    "receiveEstimated": "En azından al",
-    "swapRoute": "Sipariş rotası",
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
-    "openOrders": "Açık siparişler",
     "invalidPrice": "Geçersiz fiyat",
     "unavailable": "{denom} için kullanılamıyor"
-  },
-  "orderHistory": {
-    "orders": "Emirler",
-    "history": "Tarih"
   }
 }

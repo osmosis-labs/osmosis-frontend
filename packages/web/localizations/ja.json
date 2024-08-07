@@ -448,7 +448,6 @@
     "pools": "プール",
     "stake": "ステーク",
     "store": "アプリ",
-    "swap": "スワップ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
     "trade": "プロトレーディング",
@@ -821,11 +820,7 @@
       "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
       "gasEstimationError": "ネットワーク料金は見積もれません",
       "unknown": "未知",
-      "additionalNetworkFee": "追加のネットワーク料金",
-      "whatAreTradeFees": "取引手数料とは何ですか?",
-      "tradeFeesInfo": "これは、流動性プロバイダーに報酬を与え、ネットワークを維持するために、取引実行時に Osmosis プロトコルによって請求される手数料です。",
-      "tradeFeesLimitInfo": "指値注文の取引手数料は現在無料です。",
-      "networkFeesAdditional": "ネットワーク手数料はすべての取引に追加されます。"
+      "additionalNetworkFee": "追加のネットワーク料金"
     },
     "noRoutes": "ルートが見つかりません",
     "route": "ルート",
@@ -1217,15 +1212,6 @@
     "newer": "新しい"
   },
   "limitOrders": {
-    "reviewOrder": "注文の確認",
-    "tradeDetails": "取引の詳細",
-    "marketOrder": {
-      "title": "成行注文",
-      "description": {
-        "buy": "最安価格で今すぐご購入ください",
-        "sell": "最高価格ですぐに販売"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "注文",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
       }
     },
-    "limitOrder": {
-      "title": "指値注文",
-      "description": {
-        "buy": "{denom}価格が下がったら購入する",
-        "sell": "{denom}価格が上昇したら売る",
-        "disabled": "現在{denom} / {quoteDenom}ではご利用いただけません"
-      }
-    },
-    "recurringOrder": {
-      "title": "定期注文",
-      "description": "{action}時間の経過に伴う平均価格"
-    },
     "aboveMarket": {
       "title": "市場価格を上回る制限価格",
       "description": "続行すると、注文は市場価格での成行注文として処理されます。"
@@ -1267,10 +1241,8 @@
     "pay": "支払う",
     "open": "開ける",
     "filled": "満たされた",
-    "pending": "保留中",
     "claimable": "請求可能",
     "claimAndClose": "請求して終了",
-    "past": "過去",
     "accept": "受け入れる",
     "cancelled": "キャンセル",
     "cancel": "キャンセル",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "すべてを主張する",
     "addFunds": "資金を追加",
-    "watchOut": "気をつけろ！クジラが来る",
     "selectAnAssetTo": {
       "buy": "購入する資産を選択",
       "sell": "売却する資産を選択する"
@@ -1327,35 +1298,13 @@
     "above": "その上",
     "currentPrice": "現在の価格",
     "whenDenomPriceIs": "{denom}価格が",
-    "estimating": "見積り",
-    "totalFeesWhenFilled": "記入時の合計手数料",
-    "at": "で",
-    "value": "価値",
-    "estimatedFees": "推定料金",
-    "totalEstimatedFees": "合計見積料金",
-    "receiveMin": "最低限受け取る",
-    "receiveAsset": "資産を受け取る",
     "orderType": "注文タイプ",
-    "limitPrice": "制限価格",
-    "moreDetails": "詳細情報",
     "confirm": "確認する",
-    "expectedRate": "予想レート",
     "market": "市場",
     "limit": "制限",
-    "increases": "増加する",
-    "decreases": "減少する",
-    "estimatingFees": "料金の見積り",
-    "fees": "手数料",
-    "receiveEstimated": "少なくとも受け取る",
-    "swapRoute": "注文ルート",
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
-    "openOrders": "オープン注文",
     "invalidPrice": "無効な価格",
     "unavailable": "{denom}では利用できません"
-  },
-  "orderHistory": {
-    "orders": "注文",
-    "history": "歴史"
   }
 }

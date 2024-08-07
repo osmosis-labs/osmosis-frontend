@@ -448,7 +448,6 @@
     "pools": "Bassins",
     "stake": "Stake",
     "store": "Applications",
-    "swap": "Échanger",
     "vote": "Voter",
     "featureRequests": "Requêtes de nouvelles fonctionnalités",
     "trade": "Commerce professionnel",
@@ -821,11 +820,7 @@
       "error": "Les frais de réseau ne peuvent pas être estimés pour le moment. Vérifiez les frais de réseau dans votre portefeuille avant d'approuver la transaction.",
       "gasEstimationError": "Les frais de réseau ne peuvent pas être estimés",
       "unknown": "Inconnu",
-      "additionalNetworkFee": "Frais de réseau supplémentaires",
-      "whatAreTradeFees": "Que sont les frais de transaction ?",
-      "tradeFeesInfo": "Il s'agit des frais facturés par le protocole Osmosis au moment de l'exécution de la transaction afin de récompenser les fournisseurs de liquidité et d'entretenir le réseau.",
-      "tradeFeesLimitInfo": "Les frais de transaction pour les ordres limités sont actuellement gratuits.",
-      "networkFeesAdditional": "Les frais de réseau sont en supplément à chaque transaction."
+      "additionalNetworkFee": "Frais de réseau supplémentaires"
     },
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
@@ -1217,15 +1212,6 @@
     "newer": "Plus récent"
   },
   "limitOrders": {
-    "reviewOrder": "Réviser la commande",
-    "tradeDetails": "Détails du commerce",
-    "marketOrder": {
-      "title": "Ordre du marché",
-      "description": {
-        "buy": "Achetez immédiatement au meilleur prix disponible",
-        "sell": "Vendre immédiatement au meilleur prix disponible"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Commande",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici."
       }
     },
-    "limitOrder": {
-      "title": "Ordre Limité",
-      "description": {
-        "buy": "Achetez lorsque le prix {denom} diminue",
-        "sell": "Vendre lorsque le prix {denom} augmente",
-        "disabled": "Actuellement indisponible pour {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Commande récurrente",
-      "description": "{action} au prix moyen au fil du temps"
-    },
     "aboveMarket": {
       "title": "Prix limite au-dessus du prix du marché",
       "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
@@ -1267,10 +1241,8 @@
     "pay": "Payer",
     "open": "Ouvrir",
     "filled": "Rempli",
-    "pending": "En attente",
     "claimable": "Réclamable",
     "claimAndClose": "Réclamez et clôturez",
-    "past": "Passé",
     "accept": "Accepter",
     "cancelled": "Annulé",
     "cancel": "Annuler",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Réclamez tout",
     "addFunds": "Ajouter des fonds",
-    "watchOut": "Attention! Baleine entrante",
     "selectAnAssetTo": {
       "buy": "Sélectionnez un actif à acheter",
       "sell": "Sélectionnez un actif à vendre"
@@ -1327,35 +1298,13 @@
     "above": "au-dessus de",
     "currentPrice": "prix actuel",
     "whenDenomPriceIs": "Lorsque le prix {denom} est",
-    "estimating": "Estimation",
-    "totalFeesWhenFilled": "Frais totaux une fois remplis",
-    "at": "à",
-    "value": "Valeur",
-    "estimatedFees": "Frais Estimés",
-    "totalEstimatedFees": "Frais totaux estimés",
-    "receiveMin": "Recevoir un minimum",
-    "receiveAsset": "Recevoir l'actif",
     "orderType": "Type de commande",
-    "limitPrice": "Prix limite",
-    "moreDetails": "Plus de détails",
     "confirm": "Confirmer",
-    "expectedRate": "Taux attendu",
     "market": "Marché",
     "limit": "Limite",
-    "increases": "augmente",
-    "decreases": "diminue",
-    "estimatingFees": "Estimation des frais",
-    "fees": "frais",
-    "receiveEstimated": "Recevez au moins",
-    "swapRoute": "Itinéraire de commande",
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
-    "openOrders": "Commandes ouvertes",
     "invalidPrice": "Prix invalide",
     "unavailable": "Indisponible pour {denom}"
-  },
-  "orderHistory": {
-    "orders": "Ordres",
-    "history": "Histoire"
   }
 }

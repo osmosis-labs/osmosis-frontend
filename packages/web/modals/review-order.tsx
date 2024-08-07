@@ -404,15 +404,15 @@ export function ReviewOrder({
                     title={
                       <span className="caption">
                         {tab === "buy"
-                          ? t(`limitOrders.aboveMarket.title`)
-                          : t(`limitOrders.belowMarket.title`)}
+                          ? t("limitOrders.aboveMarket.title")
+                          : t("limitOrders.belowMarket.title")}
                       </span>
                     }
                     body={
                       <span className="text-caption text-osmoverse-300">
                         {tab === "buy"
-                          ? t(`limitOrders.aboveMarket.description`)
-                          : t(`limitOrders.belowMarket.description`)}
+                          ? t("limitOrders.aboveMarket.description")
+                          : t("limitOrders.belowMarket.description")}
                       </span>
                     }
                   >
@@ -617,13 +617,13 @@ export function ReviewOrder({
                 <div className="flex flex-col gap-1">
                   <span className="body2">
                     {tab === "buy"
-                      ? t(`limitOrders.aboveMarket.title`)
-                      : t(`limitOrders.belowMarket.title`)}
+                      ? t("limitOrders.aboveMarket.title")
+                      : t("limitOrders.belowMarket.title")}
                   </span>
                   <span className="body2 text-osmoverse-300">
                     {tab === "buy"
-                      ? t(`limitOrders.aboveMarket.description`)
-                      : t(`limitOrders.belowMarket.description`)}
+                      ? t("limitOrders.aboveMarket.description")
+                      : t("limitOrders.belowMarket.description")}
                   </span>
                 </div>
               </div>

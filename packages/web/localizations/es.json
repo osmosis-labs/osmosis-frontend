@@ -448,7 +448,6 @@
     "pools": "Piscinas",
     "stake": "Abonar",
     "store": "Aplicaciones",
-    "swap": "Intercambio",
     "vote": "Votar",
     "featureRequests": "Solicitudes de Funciones",
     "trade": "Comercio profesional",
@@ -821,11 +820,7 @@
       "error": "La tarifa de red no se puede estimar en este momento. Revise las tarifas de la red en su billetera antes de aprobar la transacción.",
       "gasEstimationError": "No se puede estimar la tarifa de red",
       "unknown": "Desconocido",
-      "additionalNetworkFee": "Tarifa de red adicional",
-      "whatAreTradeFees": "¿Qué son las tarifas comerciales?",
-      "tradeFeesInfo": "Esta es la tarifa que cobra el protocolo Osmosis en el momento de la ejecución de la operación para recompensar a los proveedores de liquidez y mantener la red.",
-      "tradeFeesLimitInfo": "Las tarifas comerciales para órdenes limitadas son actualmente gratuitas.",
-      "networkFeesAdditional": "Las tarifas de red son adicionales a cada transacción."
+      "additionalNetworkFee": "Tarifa de red adicional"
     },
     "noRoutes": "No se encontraron rutas",
     "route": "ruta",
@@ -1217,15 +1212,6 @@
     "newer": "Más nuevo"
   },
   "limitOrders": {
-    "reviewOrder": "Revisar orden",
-    "tradeDetails": "Detalles comerciales",
-    "marketOrder": {
-      "title": "Orden de mercado",
-      "description": {
-        "buy": "Compre inmediatamente al mejor precio disponible",
-        "sell": "Vender inmediatamente al mejor precio disponible."
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Orden",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
       }
     },
-    "limitOrder": {
-      "title": "Orden límite",
-      "description": {
-        "buy": "Compre cuando el precio {denom} baje",
-        "sell": "Vender cuando el precio {denom} aumente",
-        "disabled": "Actualmente no disponible para {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Orden recurrente",
-      "description": "{action} al precio promedio a lo largo del tiempo"
-    },
     "aboveMarket": {
       "title": "Precio límite por encima del precio de mercado",
       "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
@@ -1267,10 +1241,8 @@
     "pay": "Pagar",
     "open": "Abierto",
     "filled": "Completado",
-    "pending": "Pendiente",
     "claimable": "Reclamable",
     "claimAndClose": "Reclamar y cerrar",
-    "past": "Pasado",
     "accept": "Aceptar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Reclamar todo",
     "addFunds": "Añadir fondos",
-    "watchOut": "¡Cuidado! ballena entrante",
     "selectAnAssetTo": {
       "buy": "Seleccione un activo para comprar",
       "sell": "Seleccione un activo para vender"
@@ -1327,35 +1298,13 @@
     "above": "arriba",
     "currentPrice": "precio actual",
     "whenDenomPriceIs": "Cuando el precio {denom} es",
-    "estimating": "Estimando",
-    "totalFeesWhenFilled": "Tarifas totales cuando se llenan",
-    "at": "en",
-    "value": "Valor",
-    "estimatedFees": "Tarifas estimadas",
-    "totalEstimatedFees": "Tarifas totales estimadas",
-    "receiveMin": "Recibir mínimo",
-    "receiveAsset": "Recibir activo",
     "orderType": "Tipo de orden",
-    "limitPrice": "Precio límite",
-    "moreDetails": "Más detalles",
     "confirm": "Confirmar",
-    "expectedRate": "Expectativa salarial",
     "market": "Mercado",
     "limit": "Límite",
-    "increases": "aumenta",
-    "decreases": "disminuye",
-    "estimatingFees": "Estimación de tarifas",
-    "fees": "honorarios",
-    "receiveEstimated": "Recibe al menos",
-    "swapRoute": "Ruta de pedido",
     "trade": "Comercio",
     "swapToAnotherAsset": "Cambiar a otro activo",
-    "openOrders": "Ordenes abiertas",
     "invalidPrice": "Precio no válido",
     "unavailable": "No disponible para {denom}"
-  },
-  "orderHistory": {
-    "orders": "Pedidos",
-    "history": "Historia"
   }
 }

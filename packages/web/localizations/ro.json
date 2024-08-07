@@ -448,7 +448,6 @@
     "pools": "Pool-uri",
     "stake": "Actiuni",
     "store": "Aplicații",
-    "swap": "Schimba",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
     "trade": "Pro Trading",
@@ -821,11 +820,7 @@
       "error": "Taxa de rețea nu poate fi estimată în acest moment. Verificați taxele de rețea în portofel înainte de a aproba tranzacția.",
       "gasEstimationError": "Taxa de rețea nu poate fi estimată",
       "unknown": "Necunoscut",
-      "additionalNetworkFee": "Taxă suplimentară de rețea",
-      "whatAreTradeFees": "Ce sunt taxele comerciale?",
-      "tradeFeesInfo": "Acesta este comisionul perceput de protocolul Osmosis la momentul executării tranzacției pentru a recompensa furnizorii de lichidități și a menține rețeaua.",
-      "tradeFeesLimitInfo": "Taxele de tranzacționare pentru ordinele limită sunt în prezent gratuite.",
-      "networkFeesAdditional": "Taxele de rețea sunt suplimentare pentru fiecare tranzacție."
+      "additionalNetworkFee": "Taxă suplimentară de rețea"
     },
     "noRoutes": "Nu au fost găsite rute",
     "route": "traseu",
@@ -1217,15 +1212,6 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
-    "reviewOrder": "Verificați comanda",
-    "tradeDetails": "Detalii comerciale",
-    "marketOrder": {
-      "title": "Ordinul pieței",
-      "description": {
-        "buy": "Cumpărați imediat la cel mai bun preț disponibil",
-        "sell": "Vinde imediat la cel mai bun pret disponibil"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Ordin",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici."
       }
     },
-    "limitOrder": {
-      "title": "Ordin limită",
-      "description": {
-        "buy": "Cumpărați când prețul {denom} scade",
-        "sell": "Vindeți când prețul {denom} crește",
-        "disabled": "Momentan indisponibil pentru {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Comandă recurentă",
-      "description": "{action} la preț mediu în timp"
-    },
     "aboveMarket": {
       "title": "Preț limită peste prețul pieței",
       "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
@@ -1267,10 +1241,8 @@
     "pay": "A plati",
     "open": "Deschis",
     "filled": "Umplut",
-    "pending": "In asteptarea",
     "claimable": "Revendicabil",
     "claimAndClose": "Revendicați și închideți",
-    "past": "Trecut",
     "accept": "Accept",
     "cancelled": "Anulat",
     "cancel": "Anulare",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Revendica totul",
     "addFunds": "Adăuga fonduri",
-    "watchOut": "Ai grijă! Sosește balena",
     "selectAnAssetTo": {
       "buy": "Selectați un activ de cumpărat",
       "sell": "Selectați un activ pentru a vinde"
@@ -1327,35 +1298,13 @@
     "above": "de mai sus",
     "currentPrice": "pretul curent",
     "whenDenomPriceIs": "Când prețul {denom} este",
-    "estimating": "Estimarea",
-    "totalFeesWhenFilled": "Taxele totale când sunt completate",
-    "at": "la",
-    "value": "Valoare",
-    "estimatedFees": "Taxe estimative",
-    "totalEstimatedFees": "Taxele totale estimate",
-    "receiveMin": "Primiți minim",
-    "receiveAsset": "Primiți activ",
     "orderType": "Tip de comandă",
-    "limitPrice": "Preț limită",
-    "moreDetails": "Mai multe detalii",
     "confirm": "A confirma",
-    "expectedRate": "Rata așteptată",
     "market": "Piaţă",
     "limit": "Limită",
-    "increases": "crește",
-    "decreases": "scade",
-    "estimatingFees": "Estimarea taxelor",
-    "fees": "taxe",
-    "receiveEstimated": "Primește cel puțin",
-    "swapRoute": "Traseul comenzii",
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
-    "openOrders": "Comenzi deschise",
     "invalidPrice": "Preț nevalid",
     "unavailable": "Indisponibil pentru {denom}"
-  },
-  "orderHistory": {
-    "orders": "Comenzi",
-    "history": "Istorie"
   }
 }

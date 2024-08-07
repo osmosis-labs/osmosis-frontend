@@ -448,7 +448,6 @@
     "pools": "પૂલ",
     "stake": "દાવ",
     "store": "એપ્સ",
-    "swap": "સ્વેપ",
     "vote": "મત આપો",
     "featureRequests": "સુવિધા વિનંતીઓ",
     "trade": "પ્રો ટ્રેડિંગ",
@@ -821,11 +820,7 @@
       "error": "આ સમયે નેટવર્ક ફીનો અંદાજ લગાવી શકાતો નથી. વ્યવહારને મંજૂરી આપતા પહેલા તમારા વૉલેટમાં નેટવર્ક ફીની સમીક્ષા કરો.",
       "gasEstimationError": "નેટવર્ક ફીનો અંદાજ લગાવી શકાતો નથી",
       "unknown": "અજ્ઞાત",
-      "additionalNetworkFee": "વધારાની નેટવર્ક ફી",
-      "whatAreTradeFees": "વેપાર ફી શું છે?",
-      "tradeFeesInfo": "આ તરલતા પ્રદાતાઓને પુરસ્કાર આપવા અને નેટવર્કને જાળવવા માટે ટ્રેડ એક્ઝિક્યુશન સમયે ઓસ્મોસિસ પ્રોટોકોલ દ્વારા લેવામાં આવતી ફી છે.",
-      "tradeFeesLimitInfo": "મર્યાદા ઓર્ડર માટે ટ્રેડ ફી હાલમાં મફત છે.",
-      "networkFeesAdditional": "નેટવર્ક ફી દરેક વ્યવહાર માટે વધારાની છે."
+      "additionalNetworkFee": "વધારાની નેટવર્ક ફી"
     },
     "noRoutes": "કોઈ રૂટ મળ્યા નથી",
     "route": "માર્ગ",
@@ -1217,15 +1212,6 @@
     "newer": "નવું"
   },
   "limitOrders": {
-    "reviewOrder": "રિવ્યૂ ઓર્ડર",
-    "tradeDetails": "વેપારની વિગતો",
-    "marketOrder": {
-      "title": "માર્કેટ ઓર્ડર",
-      "description": {
-        "buy": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ ખરીદો",
-        "sell": "શ્રેષ્ઠ ઉપલબ્ધ ભાવે તરત જ વેચો"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "ઓર્ડર",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "ઓસ્મોસિસ પરના તમારા ભૂતકાળના મર્યાદા ઓર્ડર અહીં દેખાશે."
       }
     },
-    "limitOrder": {
-      "title": "મર્યાદા ઓર્ડર",
-      "description": {
-        "buy": "જ્યારે {denom} કિંમત ઘટે ત્યારે ખરીદો",
-        "sell": "જ્યારે {denom} કિંમત વધે ત્યારે વેચો",
-        "disabled": "હાલમાં {denom} / {quoteDenom} માટે ઉપલબ્ધ નથી"
-      }
-    },
-    "recurringOrder": {
-      "title": "રિકરિંગ ઓર્ડર",
-      "description": "{action} સમયાંતરે સરેરાશ કિંમતે"
-    },
     "aboveMarket": {
       "title": "બજાર કિંમત ઉપર મર્યાદા કિંમત",
       "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
@@ -1267,10 +1241,8 @@
     "pay": "પે",
     "open": "ખુલ્લા",
     "filled": "ભરેલ",
-    "pending": "બાકી છે",
     "claimable": "દાવો કરવા યોગ્ય",
     "claimAndClose": "દાવો કરો અને બંધ કરો",
-    "past": "ભૂતકાળ",
     "accept": "સ્વીકારો",
     "cancelled": "રદ કરેલ",
     "cancel": "રદ કરો",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "બધાનો દાવો કરો",
     "addFunds": "ભંડોળ ઉમેરો",
-    "watchOut": "ધ્યાન રાખો! વ્હેલ ઇનકમિંગ",
     "selectAnAssetTo": {
       "buy": "ખરીદવા માટે સંપત્તિ પસંદ કરો",
       "sell": "વેચવા માટે સંપત્તિ પસંદ કરો"
@@ -1327,35 +1298,13 @@
     "above": "ઉપર",
     "currentPrice": "વર્તમાન ભાવ",
     "whenDenomPriceIs": "જ્યારે {denom} કિંમત હોય છે",
-    "estimating": "અંદાજ",
-    "totalFeesWhenFilled": "ભરવામાં આવે ત્યારે કુલ ફી",
-    "at": "ખાતે",
-    "value": "મૂલ્ય",
-    "estimatedFees": "અંદાજિત ફી",
-    "totalEstimatedFees": "કુલ અંદાજિત ફી",
-    "receiveMin": "ન્યૂનતમ પ્રાપ્ત કરો",
-    "receiveAsset": "સંપત્તિ પ્રાપ્ત કરો",
     "orderType": "ઓર્ડરનો પ્રકાર",
-    "limitPrice": "મર્યાદા કિંમત",
-    "moreDetails": "વધુ વિગતો",
     "confirm": "પુષ્ટિ કરો",
-    "expectedRate": "અપેક્ષિત દર",
     "market": "બજાર",
     "limit": "મર્યાદા",
-    "increases": "વધે છે",
-    "decreases": "ઘટે છે",
-    "estimatingFees": "અંદાજિત ફી",
-    "fees": "ફી",
-    "receiveEstimated": "ઓછામાં ઓછું પ્રાપ્ત કરો",
-    "swapRoute": "ઓર્ડર માર્ગ",
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
-    "openOrders": "ઓર્ડર ખોલો",
     "invalidPrice": "અમાન્ય કિંમત",
     "unavailable": "{denom} માટે અનુપલબ્ધ"
-  },
-  "orderHistory": {
-    "orders": "ઓર્ડર",
-    "history": "ઇતિહાસ"
   }
 }

@@ -448,7 +448,6 @@
     "pools": "资金池",
     "stake": "质押",
     "store": "应用",
-    "swap": "兑换",
     "vote": "投票",
     "featureRequests": "功能请求",
     "trade": "专业交易",
@@ -821,11 +820,7 @@
       "error": "目前无法估算网络费用。在批准交易之前，请先检查钱包中的网络费用。",
       "gasEstimationError": "网络费用无法估算",
       "unknown": "未知",
-      "additionalNetworkFee": "额外网络费用",
-      "whatAreTradeFees": "什么是交易费用？",
-      "tradeFeesInfo": "这是 Osmosis 协议在交易执行时收取的费用，用于奖励流动性提供者并维护网络。",
-      "tradeFeesLimitInfo": "限价订单的交易费目前是免费的。",
-      "networkFeesAdditional": "每笔交易都需要另外支付网络费。"
+      "additionalNetworkFee": "额外网络费用"
     },
     "noRoutes": "未找到任何路线",
     "route": "路线",
@@ -1217,15 +1212,6 @@
     "newer": "较新"
   },
   "limitOrders": {
-    "reviewOrder": "查看订单",
-    "tradeDetails": "交易详情",
-    "marketOrder": {
-      "title": "市价订单",
-      "description": {
-        "buy": "立即以最佳价格购买",
-        "sell": "立即以最佳价格出售"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "命令",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。"
       }
     },
-    "limitOrder": {
-      "title": "限价订单",
-      "description": {
-        "buy": "当{denom}价格下降时买入",
-        "sell": "当{denom}价格上涨时卖出",
-        "disabled": "目前不适用于{denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "重复订单",
-      "description": "{action}随时间的平均价格"
-    },
     "aboveMarket": {
       "title": "限制价格高于市场价格",
       "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
@@ -1267,10 +1241,8 @@
     "pay": "支付",
     "open": "打开",
     "filled": "填充",
-    "pending": "待办的",
     "claimable": "可索偿",
     "claimAndClose": "认领并关闭",
-    "past": "过去的",
     "accept": "接受",
     "cancelled": "取消",
     "cancel": "取消",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "索取全部",
     "addFunds": "增加资金",
-    "watchOut": "小心！鲸鱼来了",
     "selectAnAssetTo": {
       "buy": "选择要购买的资产",
       "sell": "选择要出售的资产"
@@ -1327,35 +1298,13 @@
     "above": "多于",
     "currentPrice": "时价",
     "whenDenomPriceIs": "当{denom}价格为",
-    "estimating": "估算",
-    "totalFeesWhenFilled": "填满时的总费用",
-    "at": "在",
-    "value": "价值",
-    "estimatedFees": "预估费用",
-    "totalEstimatedFees": "预计费用总额",
-    "receiveMin": "接收最低",
-    "receiveAsset": "接收资产",
     "orderType": "订单类型",
-    "limitPrice": "限价",
-    "moreDetails": "更多细节",
     "confirm": "确认",
-    "expectedRate": "预期利率",
     "market": "市场",
     "limit": "限制",
-    "increases": "增加",
-    "decreases": "减少",
-    "estimatingFees": "估算费用",
-    "fees": "费用",
-    "receiveEstimated": "至少收到",
-    "swapRoute": "订单路线",
     "trade": "贸易",
     "swapToAnotherAsset": "转换为其他资产",
-    "openOrders": "未结订单",
     "invalidPrice": "价格无效",
     "unavailable": "不适用于{denom}"
-  },
-  "orderHistory": {
-    "orders": "命令",
-    "history": "历史"
   }
 }

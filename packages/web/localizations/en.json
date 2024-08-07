@@ -448,7 +448,6 @@
     "pools": "Pools",
     "stake": "Stake",
     "store": "Apps",
-    "swap": "Swap",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
     "trade": "Pro Trading",
@@ -821,11 +820,7 @@
       "error": "Network fee cannot be estimated at this time. Review network fees in your wallet before approving the transaction.",
       "gasEstimationError": "Network fee cannot be estimated",
       "unknown": "Unknown",
-      "additionalNetworkFee": "Additional network fee",
-      "whatAreTradeFees": "What are trade fees?",
-      "tradeFeesInfo": "This is the fee charged by the Osmosis protocol at the time of trade execution in order to reward liquidity providers and maintain the network.",
-      "tradeFeesLimitInfo": "Trade fees for limit orders are currently free.",
-      "networkFeesAdditional": "Network fees are additional to every transaction."
+      "additionalNetworkFee": "Additional network fee"
     },
     "noRoutes": "No routes found",
     "route": "route",
@@ -1217,15 +1212,6 @@
     "newer": "Newer"
   },
   "limitOrders": {
-    "reviewOrder": "Review Order",
-    "tradeDetails": "Trade Details",
-    "marketOrder": {
-      "title": "Market Order",
-      "description": {
-        "buy": "Buy immediately at best available price",
-        "sell": "Sell immediately at best available price"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Order",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Your past limit orders on Osmosis will appear here."
       }
     },
-    "limitOrder": {
-      "title": "Limit Order",
-      "description": {
-        "buy": "Buy when {denom} price decreases",
-        "sell": "Sell when {denom} price increases",
-        "disabled": "Currently unavailable for {denom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Recurring Order",
-      "description": "{action} at average price over time"
-    },
     "aboveMarket": {
       "title": "Limit price above market price",
       "description": "If you proceed your order may be filled at an undesirable price."
@@ -1267,10 +1241,8 @@
     "pay": "Pay",
     "open": "Open",
     "filled": "Filled",
-    "pending": "Pending",
     "claimable": "Claimable",
     "claimAndClose": "Claim and close",
-    "past": "Past",
     "accept": "Accept",
     "cancelled": "Cancelled",
     "cancel": "Cancel",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Claim all",
     "addFunds": "Add funds",
-    "watchOut": "Watch out! Whale incoming",
     "selectAnAssetTo": {
       "buy": "Select an asset to buy",
       "sell": "Select an asset to sell"
@@ -1327,35 +1298,13 @@
     "above": "above",
     "currentPrice": "current price",
     "whenDenomPriceIs": "When {denom} price is",
-    "estimating": "Estimating",
-    "totalFeesWhenFilled": "Total fees when filled",
-    "at": "at",
-    "value": "Value",
-    "estimatedFees": "Estimated fees",
-    "totalEstimatedFees": "Total Estimated Fees",
-    "receiveMin": "Receive minimum",
-    "receiveAsset": "Receive asset",
     "orderType": "Order type",
-    "limitPrice": "Limit Price",
-    "moreDetails": "More details",
     "confirm": "Confirm",
-    "expectedRate": "Expected rate",
     "market": "Market",
     "limit": "Limit",
-    "increases": "increases",
-    "decreases": "decreases",
-    "estimatingFees": "Estimating fees",
-    "fees": "fees",
-    "receiveEstimated": "Receive at least",
-    "swapRoute": "Order route",
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
-    "openOrders": "Open orders",
     "invalidPrice": "Invalid price",
     "unavailable": "Unavailable for {denom}"
-  },
-  "orderHistory": {
-    "orders": "Orders",
-    "history": "History"
   }
 }

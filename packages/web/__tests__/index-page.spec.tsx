@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";
 
 import { server, trpcMsw } from "~/__tests__/msw";
-import { renderWithProviders } from "~/__tests__/test-utils";
+import { mockFeatureFlags, renderWithProviders } from "~/__tests__/test-utils";
 import { AssetLists } from "~/config/generated/asset-lists";
 import HomePage, { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 
@@ -60,6 +60,9 @@ beforeEach(() => {
       );
     })
   );
+  mockFeatureFlags({
+    limitOrders: false,
+  });
 });
 
 it("should display initial tokens when there are no previous trades", async () => {

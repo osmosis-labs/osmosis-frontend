@@ -448,7 +448,6 @@
     "pools": "Pools",
     "stake": "Einsatz",
     "store": "Apps",
-    "swap": "Tauschen",
     "vote": "Abstimmung",
     "featureRequests": "Funktionsanfragen",
     "trade": "Profi-Handel",
@@ -821,11 +820,7 @@
       "error": "Die Netzwerkgebühr kann derzeit nicht geschätzt werden. Überprüfen Sie die Netzwerkgebühren in Ihrem Wallet, bevor Sie die Transaktion genehmigen.",
       "gasEstimationError": "Netzwerkgebühr kann nicht geschätzt werden",
       "unknown": "Unbekannt",
-      "additionalNetworkFee": "Zusätzliche Netzwerkgebühr",
-      "whatAreTradeFees": "Was sind Handelsgebühren?",
-      "tradeFeesInfo": "Dies ist die Gebühr, die vom Osmosis-Protokoll zum Zeitpunkt der Handelsausführung erhoben wird, um Liquiditätsanbieter zu belohnen und das Netzwerk aufrechtzuerhalten.",
-      "tradeFeesLimitInfo": "Handelsgebühren für Limit-Orders sind derzeit kostenlos.",
-      "networkFeesAdditional": "Zu jeder Transaktion fallen zusätzlich Netzwerkgebühren an."
+      "additionalNetworkFee": "Zusätzliche Netzwerkgebühr"
     },
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
@@ -1217,15 +1212,6 @@
     "newer": "Neuere"
   },
   "limitOrders": {
-    "reviewOrder": "Bestellung überprüfen",
-    "tradeDetails": "Handelsdetails",
-    "marketOrder": {
-      "title": "Marktauftrag",
-      "description": {
-        "buy": "Sofort zum besten verfügbaren Preis kaufen",
-        "sell": "Sofort zum besten verfügbaren Preis verkaufen"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "Befehl",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "Ihre früheren Limitaufträge bei Osmosis werden hier angezeigt."
       }
     },
-    "limitOrder": {
-      "title": "Limit-Auftrag",
-      "description": {
-        "buy": "Kaufen, wenn der Preis {denom} sinkt",
-        "sell": "Verkaufen, wenn der Preis {denom} steigt",
-        "disabled": "Derzeit nicht verfügbar für {denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "Wiederkehrende Bestellung",
-      "description": "{action} zum Durchschnittspreis im Zeitverlauf"
-    },
     "aboveMarket": {
       "title": "Limitpreis über Marktpreis",
       "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
@@ -1267,10 +1241,8 @@
     "pay": "Zahlen",
     "open": "Offen",
     "filled": "Gefüllt",
-    "pending": "Ausstehend",
     "claimable": "Einforderbar",
     "claimAndClose": "Beanspruchen und schließen",
-    "past": "Vergangenheit",
     "accept": "Akzeptieren",
     "cancelled": "Abgesagt",
     "cancel": "Stornieren",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "Alles beanspruchen",
     "addFunds": "Guthaben hinzufügen",
-    "watchOut": "Achtung, Wal im Anmarsch",
     "selectAnAssetTo": {
       "buy": "Wählen Sie einen Vermögenswert zum Kauf aus",
       "sell": "Wählen Sie einen Vermögenswert zum Verkauf aus"
@@ -1327,35 +1298,13 @@
     "above": "über",
     "currentPrice": "derzeitiger Preis",
     "whenDenomPriceIs": "Wenn der Preis {denom}",
-    "estimating": "Schätzen",
-    "totalFeesWhenFilled": "Gesamtgebühren bei Ausfüllung",
-    "at": "bei",
-    "value": "Wert",
-    "estimatedFees": "Geschätzte Gebühren",
-    "totalEstimatedFees": "Geschätzte Gesamtgebühren",
-    "receiveMin": "Erhalten Sie mindestens",
-    "receiveAsset": "Anlagegut erhalten",
     "orderType": "Auftragsart",
-    "limitPrice": "Limitpreis",
-    "moreDetails": "Mehr Details",
     "confirm": "Bestätigen",
-    "expectedRate": "Erwarteter Kurs",
     "market": "Markt",
     "limit": "Grenze",
-    "increases": "erhöht sich",
-    "decreases": "nimmt ab",
-    "estimatingFees": "Gebührenschätzung",
-    "fees": "Gebühren",
-    "receiveEstimated": "Erhalten Sie mindestens",
-    "swapRoute": "Route bestellen",
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
-    "openOrders": "Offene Aufträge",
     "invalidPrice": "Ungültiger Preis",
     "unavailable": "Nicht verfügbar für {denom}"
-  },
-  "orderHistory": {
-    "orders": "Aufträge",
-    "history": "Geschichte"
   }
 }

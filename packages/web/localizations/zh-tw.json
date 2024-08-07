@@ -448,7 +448,6 @@
     "pools": "流動性池",
     "stake": "質押",
     "store": "應用",
-    "swap": "兌換",
     "vote": "投票",
     "featureRequests": "功能請求",
     "trade": "專業交易",
@@ -821,11 +820,7 @@
       "error": "目前無法估計網路費用。在批准交易之前，請檢查錢包中的網路費用。",
       "gasEstimationError": "網路費用無法估算",
       "unknown": "未知",
-      "additionalNetworkFee": "額外網路費",
-      "whatAreTradeFees": "什麼是交易費用？",
-      "tradeFeesInfo": "這是 Osmosis 協議在交易執行時收取的費用，以獎勵流動性提供者並維護網路。",
-      "tradeFeesLimitInfo": "限價訂單的交易費用目前是免費的。",
-      "networkFeesAdditional": "每筆交易均需額外支付網路費用。"
+      "additionalNetworkFee": "額外網路費"
     },
     "noRoutes": "沒有找到路線",
     "route": "路線",
@@ -1217,15 +1212,6 @@
     "newer": "較新"
   },
   "limitOrders": {
-    "reviewOrder": "查看訂單",
-    "tradeDetails": "交易詳情",
-    "marketOrder": {
-      "title": "市價訂單",
-      "description": {
-        "buy": "立即以最優惠的價格購買",
-        "sell": "立即以最優惠的價格出售"
-      }
-    },
     "historyTable": {
       "columns": {
         "order": "命令",
@@ -1241,18 +1227,6 @@
         "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。"
       }
     },
-    "limitOrder": {
-      "title": "限價訂單",
-      "description": {
-        "buy": "當{denom}價格下跌時購買",
-        "sell": "當{denom}價格上漲時出售",
-        "disabled": "目前不適用於{denom} / {quoteDenom}"
-      }
-    },
-    "recurringOrder": {
-      "title": "重複訂單",
-      "description": "{action}以一段時間內的平均價格"
-    },
     "aboveMarket": {
       "title": "限價高於市場價格",
       "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
@@ -1267,10 +1241,8 @@
     "pay": "支付",
     "open": "打開",
     "filled": "填充",
-    "pending": "待辦的",
     "claimable": "可索賠",
     "claimAndClose": "索賠並關閉",
-    "past": "過去的",
     "accept": "接受",
     "cancelled": "取消",
     "cancel": "取消",
@@ -1311,7 +1283,6 @@
     },
     "claimAll": "索取全部",
     "addFunds": "增加資金",
-    "watchOut": "小心！鯨魚來襲",
     "selectAnAssetTo": {
       "buy": "選擇要購買的資產",
       "sell": "選擇要出售的資產"
@@ -1327,35 +1298,13 @@
     "above": "多於",
     "currentPrice": "時價",
     "whenDenomPriceIs": "當{denom}價格為",
-    "estimating": "估計",
-    "totalFeesWhenFilled": "填寫後的總費用",
-    "at": "在",
-    "value": "價值",
-    "estimatedFees": "預計費用",
-    "totalEstimatedFees": "預計費用總計",
-    "receiveMin": "接收最低",
-    "receiveAsset": "接收資產",
     "orderType": "訂單類型",
-    "limitPrice": "限價",
-    "moreDetails": "更多細節",
     "confirm": "確認",
-    "expectedRate": "預期利率",
     "market": "市場",
     "limit": "限制",
-    "increases": "增加",
-    "decreases": "減少",
-    "estimatingFees": "估算費用",
-    "fees": "費用",
-    "receiveEstimated": "至少收到",
-    "swapRoute": "訂購路線",
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
-    "openOrders": "未結訂單",
     "invalidPrice": "價格無效",
     "unavailable": "不適用於{denom}"
-  },
-  "orderHistory": {
-    "orders": "命令",
-    "history": "歷史"
   }
 }
