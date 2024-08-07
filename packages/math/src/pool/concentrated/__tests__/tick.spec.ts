@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+import cases from "jest-in-case";
 
 import { approxSqrt } from "../../../utils";
 import { maxSpotPrice, maxTick, minSpotPrice } from "../const";
@@ -217,37 +218,40 @@ describe("priceToTick", () => {
   });
 });
 
-describe("tickToPrice", () => {
-  const testCases: Record<string, { tick: Int; priceExpected: Dec }> = {
-    "Tick Zero": {
+cases(
+  "tickToPrice",
+  ({ tick, priceExpected }) => {
+    const price = tickToPrice(tick);
+    expect(price.toString()).toEqual(priceExpected.toString());
+  },
+  [
+    {
+      name: "Tick Zero",
       tick: new Int("0"),
       priceExpected: new Dec("1"),
     },
-    "Large Positive Tick": {
+    {
+      name: "Large Positive Tick",
       tick: new Int("1000000"),
       priceExpected: new Dec("2"),
     },
-    "Large Negative Tick": {
+    {
+      name: "Large Negative Tick",
       tick: new Int("-5000000"),
       priceExpected: new Dec("0.5"),
     },
-    "Max Tick": {
+    {
+      name: "Max Tick",
       tick: new Int("182402823"),
       priceExpected: new Dec("340282300000000000000"),
     },
-    "Min Tick": {
+    {
+      name: "Min Tick",
       tick: new Int("-108000000"),
       priceExpected: new Dec("0.000000000001"),
     },
-  };
-
-  Object.values(testCases).forEach(({ tick, priceExpected }, i) => {
-    it(Object.keys(testCases)[i], () => {
-      const price = tickToPrice(tick);
-      expect(price.toString()).toEqual(priceExpected.toString());
-    });
-  });
-});
+  ]
+);
 
 // TEMORARY: commenting out until we confirm adding a buffer around current tick avoids invalid queries
 // describe("estimateInitialTickBound", () => {
