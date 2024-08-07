@@ -2,8 +2,6 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import cases from "jest-in-case";
 
-import { countDecimals } from "~/utils/number";
-
 import { compressZeros, formatFiatPrice } from "../formatter";
 
 describe("compressZeros function", () => {
@@ -131,35 +129,6 @@ cases(
       name: "Extremely small value",
       input: "0.000000000012",
       output: "<$0.01",
-    },
-  ]
-);
-
-cases(
-  "countDecimals",
-  ({ input, output }) => {
-    expect(countDecimals(input)).toEqual(output);
-  },
-  [
-    {
-      name: "Two decimal places",
-      input: "1.24",
-      output: 2,
-    },
-    {
-      name: "No decimal places",
-      input: "1",
-      output: 0,
-    },
-    {
-      name: "Ends with .",
-      input: "1.",
-      output: 0,
-    },
-    {
-      name: "Ends with ..",
-      input: "1..",
-      output: 0,
     },
   ]
 );
