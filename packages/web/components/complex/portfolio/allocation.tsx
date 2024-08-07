@@ -70,9 +70,7 @@ export const Allocation: FunctionComponent<{
     <div className="flex w-full max-w-[320px] flex-col">
       <div
         className="flex cursor-pointer items-center justify-between py-3"
-        onClick={() => {
-          setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
       >
         <h6>{t("portfolio.allocation")}</h6>
         <Icon
