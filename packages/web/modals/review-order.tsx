@@ -268,7 +268,10 @@ export function ReviewOrder({
                       )}
                     </div>
                     <span>
-                      {formatPretty(percentAdjusted.mul(new Dec(100)).abs())}%
+                      {formatPretty(percentAdjusted.mul(new Dec(100)).abs(), {
+                        maxDecimals: 3,
+                      })}
+                      %
                     </span>
                   </div>
                 )}

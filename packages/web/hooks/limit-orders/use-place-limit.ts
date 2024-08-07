@@ -642,7 +642,7 @@ const useLimitPrice = ({
           : // Adjust positively for ask orders
             new Dec(1).add(percent);
       const newPrice = spotPrice.mul(percentAdjusted);
-      console.log(percentAdjusted.toString(), newPrice.toString());
+
       setOrderPrice(
         format
           ? formatPretty(
@@ -772,7 +772,6 @@ const useLimitPrice = ({
   // If the form is empty we default to a percentage relative to the spot price.
   const price = useMemo(() => {
     if (isValidInputPrice) {
-      console.log(orderPrice);
       return new Dec(orderPrice);
     }
 
