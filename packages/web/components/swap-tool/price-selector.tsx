@@ -109,7 +109,7 @@ export const PriceSelector = memo(() => {
           .map((walletAsset) => {
             if (
               !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
-                walletAsset.coinDenom
+                walletAsset.coinDenom as MainnetAssetSymbols
               )
             ) {
               return undefined;
@@ -157,7 +157,8 @@ export const PriceSelector = memo(() => {
   const defaultQuotesWithBalances = useMemo(
     () =>
       userQuotes?.filter(({ amount, symbol }) => {
-        if (UI_DEFAULT_QUOTES.includes(symbol)) return true;
+        if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
+          return true;
         return amount?.toDec().gt(new Dec(0)) ?? false;
       }) ?? [],
     [userQuotes]
