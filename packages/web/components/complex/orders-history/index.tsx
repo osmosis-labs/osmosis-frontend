@@ -131,6 +131,7 @@ export const OrderHistory = observer(() => {
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
+      disabled: isLoading || orders.length === 0,
     });
 
   const claimOrders = useCallback(async () => {
@@ -260,7 +261,7 @@ export const OrderHistory = observer(() => {
               if (typeof row === "string") {
                 return (
                   <TableGroupHeader
-                    key={virtualRow.index}
+                    key={`header-${row}`}
                     group={row}
                     style={style}
                     filledOrdersCount={filledOrdersCount}
@@ -272,7 +273,7 @@ export const OrderHistory = observer(() => {
               const order = row as MappedLimitOrder;
               return (
                 <TableOrderRow
-                  key={virtualRow.index}
+                  key={`order-${order.order_id}`}
                   order={order}
                   style={style}
                   refetch={async () => refetch()}
@@ -544,7 +545,7 @@ const TableOrderRow = memo(
             </span>
           </div>
         </td>
-        <td className="flex items-center justify-end !px-0 !text-left">
+        <td className="flex w-[150px] items-center justify-end !px-0 !text-left">
           <ActionsCell order={order} refetch={refetch} />
         </td>
       </tr>

@@ -315,10 +315,10 @@ export const useOrderbookAllActiveOrders = ({
     return orders?.pages.flatMap((page) => page.items) ?? [];
   }, [orders]);
 
-  const refetchOrders = useCallback(() => {
+  const refetchOrders = useCallback(async () => {
     if (isRefetching) return;
 
-    refetch();
+    return refetch();
   }, [refetch, isRefetching]);
 
   return {
@@ -335,8 +335,10 @@ export const useOrderbookAllActiveOrders = ({
 
 export const useOrderbookClaimableOrders = ({
   userAddress,
+  disabled = false,
 }: {
   userAddress: string;
+  disabled?: boolean;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { accountStore } = useStore();
@@ -353,8 +355,8 @@ export const useOrderbookClaimableOrders = ({
       userOsmoAddress: userAddress,
     },
     {
-      enabled: !!userAddress && addresses.length > 0,
-      refetchInterval: 5000,
+      enabled: !!userAddress && addresses.length > 0 && !disabled,
+      refetchInterval: 2000,
       refetchOnMount: true,
     }
   );

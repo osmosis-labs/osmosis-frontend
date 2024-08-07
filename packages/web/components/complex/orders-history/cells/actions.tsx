@@ -77,7 +77,6 @@ const ClaimAndCloseButton = observer(
         await refetch();
       } catch (error) {
         console.error(error);
-      } finally {
         setClaiming(false);
       }
     }, [account, order, refetch]);
@@ -130,7 +129,6 @@ const CancelButton = observer(
         await refetch();
       } catch (error) {
         console.error(error);
-      } finally {
         setCancelling(false);
       }
     }, [account, order, refetch]);
@@ -141,7 +139,7 @@ const CancelButton = observer(
         onClick={cancel}
         disabled={cancelling}
       >
-        <span className="body2 flex items-center text-wosmongton-200">
+        <span className="body2 flex items-center whitespace-nowrap text-wosmongton-200">
           {cancelling && <Spinner className="mr-2 h-2 w-2" />}
           {t("limitOrders.cancel")}
         </span>
