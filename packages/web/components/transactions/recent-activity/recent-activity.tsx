@@ -9,9 +9,9 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 
-import { Spinner } from "../loaders";
-import { TransactionRow } from "./transaction-row";
-import { useRecentTransfers } from "./use-recent-transfers";
+import { Spinner } from "../../loaders";
+import { useRecentTransfers } from "../use-recent-transfers";
+import { RecentTransferRow } from "./recent-activity-transaction";
 
 export const RecentActivity: FunctionComponent = observer(() => {
   const { accountStore } = useStore();
@@ -22,6 +22,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
   const { t } = useTranslation();
 
   const recentTransfers = useRecentTransfers(account?.address);
+
+  console.log("Recent Transfers: ", recentTransfers);
 
   return (
     <div className="flex w-full max-w-[320px] flex-col">
@@ -35,7 +37,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
           size="sm"
         />
       </div>
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full flex-col">
         {isWalletLoading ? (
           <Spinner />
         ) : recentTransfers?.length === 0 ? (
@@ -50,6 +52,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
                   status === "failed"
                 ? "failed"
                 : "pending";
+
+            console.log("simplifiedStatus: ", simplifiedStatus);
 
             const coinAmount = amount.split(" ")[0];
             const coinDenom = amount.split(" ")[1];
@@ -72,7 +76,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
               : t("assets.historyTable.failDeposit");
 
             return (
-              <TransactionRow
+              <RecentTransferRow
                 key={txHash}
                 status={simplifiedStatus}
                 effect={isWithdraw ? "withdraw" : "deposit"}

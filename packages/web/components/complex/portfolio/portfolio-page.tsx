@@ -10,7 +10,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { RecentActivity } from "~/components/transactions/recent-activity";
+import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
