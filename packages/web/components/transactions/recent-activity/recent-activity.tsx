@@ -38,8 +38,8 @@ const RecentActivitySkeleton = () => {
     <div className="flex w-full flex-col gap-4">
       {Array.from({ length: 5 }).map((_, index) => (
         <div key={index} className="flex w-full justify-between">
-          <Skeleton className="h-[52px] w-1/3 " />
-          <Skeleton className="h-[52px] w-1/5" />
+          <Skeleton className="h-10 w-1/3 " />
+          <Skeleton className="h-10 w-1/5" />
         </div>
       ))}
     </div>
