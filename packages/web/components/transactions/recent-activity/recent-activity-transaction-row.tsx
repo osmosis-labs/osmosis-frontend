@@ -78,9 +78,7 @@ export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
 
   return (
     <div
-      className={classNames(
-        "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2"
-      )}
+      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
     >
       <div className="flex items-center gap-4 md:w-1/2 md:gap-2">
         {status === "pending" ? (
@@ -133,9 +131,7 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
 
   return (
     <div
-      className={classNames(
-        "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2"
-      )}
+      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
     >
       <div className="flex items-center gap-4 md:w-1/2 md:gap-2">
         {status === "pending" ? (

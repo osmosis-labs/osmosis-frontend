@@ -1,5 +1,6 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { TransferStatus } from "@osmosis-labs/bridge";
+import { FormattedTransaction } from "@osmosis-labs/server";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -12,11 +13,23 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { Spinner } from "../../loaders";
-import { useRecentTransfers } from "../use-recent-transfers";
+import { RecentTransfer, useRecentTransfers } from "../use-recent-transfers";
 import {
   RecentActivityTransactionRow,
   RecentActivityTransferRow,
 } from "./recent-activity-transaction-row";
+
+type ActivityType = "transaction" | "recentTransfer";
+
+interface MergedActivityMetadata {
+  type: ActivityType;
+  compareDate: Date;
+  compareTxHash: string;
+}
+
+type MergedActivity =
+  | (RecentTransfer & MergedActivityMetadata)
+  | (FormattedTransaction & MergedActivityMetadata);
 
 const ACTIVITY_LIMIT = 5;
 
@@ -51,16 +64,16 @@ export const RecentActivity: FunctionComponent = observer(() => {
     hasNextPage: false,
   };
 
-  const mergedActivity = [
+  const mergedActivity: MergedActivity[] = [
     ...transactions.map((tx) => ({
       ...tx,
-      type: "transaction",
+      type: "transaction" as ActivityType,
       compareDate: new Date(tx.blockTimestamp),
       compareTxHash: tx.hash,
     })),
     ...recentTransfers.map((transfer) => ({
       ...transfer,
-      type: "recentTransfer",
+      type: "recentTransfer" as ActivityType,
       compareDate: new Date(transfer.createdAtMs),
       compareTxHash: transfer.txHash,
     })),
@@ -99,31 +112,38 @@ export const RecentActivity: FunctionComponent = observer(() => {
         ) : (
           topActivity.map((activity) => {
             if (activity.type === "transaction") {
+              const recentTransactionActivity =
+                activity as FormattedTransaction & MergedActivityMetadata;
+
               return (
                 <RecentActivityTransactionRow
-                  key={activity.id}
+                  key={recentTransactionActivity.id}
                   title={{
                     pending: t("transactions.swapping"),
                     success: t("transactions.swapped"),
                     failed: t("transactions.swapFailed"),
                   }}
                   effect="swap"
-                  status={activity.code === 0 ? "success" : "failed"}
+                  status={
+                    recentTransactionActivity.code === 0 ? "success" : "failed"
+                  }
                   tokenConversion={{
                     tokenIn: {
                       amount:
-                        activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn
-                          ?.token,
+                        recentTransactionActivity?.metadata?.[0]?.value?.[0]
+                          ?.txInfo?.tokenIn?.token,
                       value:
-                        activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn
-                          ?.usd,
+                        recentTransactionActivity?.metadata?.[0]?.value?.[0]
+                          ?.txInfo?.tokenIn?.usd,
                     },
                     tokenOut: {
                       amount:
-                        activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenOut
-                          ?.token,
+                        recentTransactionActivity?.metadata?.[0]?.value?.[0]
+                          ?.txInfo?.tokenOut?.token,
 
-                      value: activity.metadata[0].value[0].txInfo.tokenOut.usd,
+                      value:
+                        recentTransactionActivity.metadata[0].value[0].txInfo
+                          .tokenOut.usd,
                     },
                   }}
                 />
@@ -131,6 +151,9 @@ export const RecentActivity: FunctionComponent = observer(() => {
             }
 
             if (activity.type === "recentTransfer") {
+              const recentTransferActivity = activity as RecentTransfer &
+                MergedActivityMetadata;
+
               const getSimplifiedStatus = (status: TransferStatus) => {
                 if (status === "success") return "success";
                 if (["refunded", "connection-error", "failed"].includes(status))
@@ -138,10 +161,12 @@ export const RecentActivity: FunctionComponent = observer(() => {
                 return "pending";
               };
 
-              const simplifiedStatus = getSimplifiedStatus(activity.status);
+              const simplifiedStatus = getSimplifiedStatus(
+                recentTransferActivity.status
+              );
 
-              const coinAmount = activity.amount.split(" ")[0];
-              const coinDenom = activity.amount.split(" ")[1];
+              const coinAmount = recentTransferActivity.amount.split(" ")[0];
+              const coinDenom = recentTransferActivity.amount.split(" ")[1];
               const asset = AssetLists.flatMap(({ assets }) => assets).find(
                 ({ symbol }) => symbol === coinDenom
               );
@@ -150,28 +175,32 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
               const currency = makeMinimalAsset(asset);
 
-              const pendingText = activity.isWithdraw
+              const pendingText = recentTransferActivity.isWithdraw
                 ? t("assets.historyTable.pendingWithdraw")
                 : t("assets.historyTable.pendingDeposit");
-              const successText = activity.isWithdraw
+              const successText = recentTransferActivity.isWithdraw
                 ? t("assets.historyTable.successWithdraw")
                 : t("assets.historyTable.successDeposit");
-              const failedText = activity.isWithdraw
+              const failedText = recentTransferActivity.isWithdraw
                 ? t("assets.historyTable.failWithdraw")
                 : t("assets.historyTable.failDeposit");
 
               return (
                 <RecentActivityTransferRow
-                  key={activity.txHash}
+                  key={recentTransferActivity.txHash}
                   status={simplifiedStatus}
-                  effect={activity.isWithdraw ? "withdraw" : "deposit"}
+                  effect={
+                    recentTransferActivity.isWithdraw ? "withdraw" : "deposit"
+                  }
                   title={{
                     pending: pendingText,
                     success: successText,
                     failed: failedText,
                   }}
                   transfer={{
-                    direction: activity.isWithdraw ? "withdraw" : "deposit",
+                    direction: recentTransferActivity.isWithdraw
+                      ? "withdraw"
+                      : "deposit",
                     amount: new CoinPretty(
                       currency,
                       new Dec(coinAmount).mul(
