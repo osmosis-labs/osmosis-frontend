@@ -10,7 +10,10 @@ import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import React, { Fragment, memo, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { AssetLists } from "~/config/generated/asset-lists";
+import {
+  AssetLists,
+  MainnetAssetSymbols,
+} from "~/config/generated/asset-lists";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -20,22 +23,18 @@ import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
-const UI_DEFAULT_QUOTES = ["USDC", "USDT"];
+const UI_DEFAULT_QUOTES: MainnetAssetSymbols[] = ["USDC", "USDT"];
 
-const VALID_QUOTES = [
+const VALID_QUOTES: MainnetAssetSymbols[] = [
   ...UI_DEFAULT_QUOTES,
-  "USDC.sol.axl",
   "USDC.sol.wh",
   "USDC.eth.grv",
   "USDC.eth.wh",
   "USDC.matic.axl",
   "USDC.avax.axl",
   "USDC.eth.axl",
-  "USDT.sol.axl",
   "USDT.eth.grv",
   "USDT.eth.wh",
-  "USDT.matic.axl",
-  "USDT.avax.axl",
   "USDT.kava",
   "USDT.eth.pica",
   "USDT.sol.pica",
