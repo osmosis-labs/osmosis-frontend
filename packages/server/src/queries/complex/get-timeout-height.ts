@@ -7,13 +7,20 @@ import { queryRPCStatus } from "../../queries/cosmos";
 export async function getTimeoutHeight({
   chainList,
   chainId,
+  destinationAddress,
 }: {
   chainList: Chain[];
-  chainId: string;
+  chainId?: string;
+  /**
+   * WARNING: bech32 prefix may be the same across different chains,
+   * retulting in the use of an unintended chain.
+   */
+  destinationAddress?: string;
 }) {
   const destinationCosmosChain = getChain({
     chainList,
     chainId,
+    destinationAddress,
   });
 
   if (!destinationCosmosChain) {

@@ -224,16 +224,8 @@
       "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
-        "insufficientBal": "Yetersiz Bakiye",
-        "insufficientFee": "Yetersiz Ücret",
-        "reconnectWallet": "{walletName} tekrar bağlan",
-        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
         "seeRequest": "{walletName}'deki talebi gör",
-        "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
-        "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
-        "invalidAddress": "Geçersiz adres",
-        "missingAddress": "Eksik Adres"
+        "invalidAddress": "Geçersiz adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "jeton satın al",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Yetersiz bakiye"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "OSMO, USDC'yi destekler",
@@ -979,7 +974,17 @@
     "transferWithNoun": "{noun} ile aktarım",
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
-    "openNoun": "{noun} açın"
+    "openNoun": "{noun} açın",
+    "insufficientFundsForFees": "Ücretler için yeterli fon yok",
+    "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
+    "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
+    "assetsWithdrawsUnavailable": "{asset} para çekme işlemleri kullanılamıyor",
+    "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
+    "noAvailableWithdraws": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama ayarlayın.",
+    "somethingIsntWorking": "Bir şeyler çalışmıyor…",
+    "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen sayfayı yenileyip tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
+    "assetIsCurrentlyUnstable": "{asset} aktarımları şu anda kararsız",
+    "transferWillLikelyTakeLonger": "Aktarımlar muhtemelen normalden daha uzun sürecek veya tamamen başarısız olabilecektir. Riski size ait olmak üzere devam edin."
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

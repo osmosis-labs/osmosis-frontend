@@ -224,16 +224,8 @@
       "approveInWallet": "वॉलेट में स्वीकृति दें",
       "enterAddress": "{network} पता",
       "errors": {
-        "insufficientBal": "अपर्याप्त शेषराशि",
-        "insufficientFee": "अपर्याप्त शुल्क",
-        "reconnectWallet": "पुनः कनेक्ट करें {walletName}",
-        "wrongNetworkInWallet": "{walletName} में गलत नेटवर्क",
         "seeRequest": "{walletName} में अनुरोध देखें",
-        "noQuotesAvailable": "कोई उद्धरण उपलब्ध नहीं",
-        "unexpectedError": "अप्रत्याशित त्रुटि। कृपया पुन: प्रयास करें।",
-        "transactionError": "लेन-देन प्राप्त करने में त्रुटि. कृपया पुन: प्रयास करें।",
-        "invalidAddress": "अमान्य पता",
-        "missingAddress": "गुम पता"
+        "invalidAddress": "अमान्य पता"
       },
       "from": "से",
       "loading": "लोड हो रहा है",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "टोकन खरीदें",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "अपर्याप्त कोष"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "फिएट ऑनरैंप चुनें",
       "kadoSubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
@@ -979,7 +974,17 @@
     "transferWithNoun": "{noun} के साथ स्थानांतरण करें",
     "risks": "पुल बनाने में जोखिम भी शामिल है।",
     "learnMore": "और अधिक जानें",
-    "openNoun": "{noun} खोलें"
+    "openNoun": "{noun} खोलें",
+    "insufficientFundsForFees": "फीस के लिए अपर्याप्त धनराशि",
+    "youNeedFundsToPay": "आपको {chain} पर नेटवर्क और ब्रिजिंग शुल्क का भुगतान करने के लिए धन की आवश्यकता है।",
+    "assetsDepositsUnavailable": "{asset} जमा उपलब्ध नहीं हैं",
+    "assetsWithdrawsUnavailable": "{asset} निकासी उपलब्ध नहीं है",
+    "noAvailableDeposits": "वर्तमान में कोई उपलब्ध मार्ग या प्रदाता नहीं मिल पा रहा है। कृपया बाद में पुनः प्रयास करें या अपने फंड को ऑस्मोसिस में स्थानांतरित करने के लिए किसी वैकल्पिक एप्लिकेशन का उपयोग करें।",
+    "noAvailableWithdraws": "वर्तमान में कोई उपलब्ध मार्ग या प्रदाता नहीं मिल पा रहा है। कृपया बाद में पुनः प्रयास करें या Osmosis से अपने फंड को स्थानांतरित करने के लिए कोई वैकल्पिक एप्लिकेशन सेट करें।",
+    "somethingIsntWorking": "कुछ काम नहीं कर रहा है...",
+    "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया पृष्ठ को ताज़ा करें और पुनः प्रयास करें या अपने धन को ऑस्मोसिस में स्थानांतरित करने के लिए किसी वैकल्पिक एप्लिकेशन का उपयोग करें।",
+    "assetIsCurrentlyUnstable": "{asset} स्थानान्तरण वर्तमान में अस्थिर हैं",
+    "transferWillLikelyTakeLonger": "स्थानांतरण में सामान्य से अधिक समय लग सकता है या यह पूरी तरह विफल हो सकता है। अपने जोखिम पर आगे बढ़ें।"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

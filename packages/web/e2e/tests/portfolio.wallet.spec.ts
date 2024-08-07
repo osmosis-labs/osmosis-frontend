@@ -15,7 +15,6 @@ test.describe("Test Portfolio feature", () => {
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
-  let digitBalanceRegEx = /\d+\.\d+/;
   let page: Page;
 
   test.beforeAll(async () => {
@@ -84,8 +83,9 @@ test.describe("Test Portfolio feature", () => {
     expect(solBalance).toMatch(dollarBalanceRegEx);
     const milkTIABalance = await portfolioPage.getBalanceFor("milkTIA");
     expect(milkTIABalance).toMatch(dollarBalanceRegEx);
-    const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
-    // allBTC has not $ price atm
-    expect(abtcBalance).toMatch(digitBalanceRegEx);
+    const abtcBalance = await portfolioPage.getBalanceFor("BTC");
+    expect(abtcBalance).toMatch(dollarBalanceRegEx);
+    const wbtcBalance = await portfolioPage.getBalanceFor("WBTC");
+    expect(wbtcBalance).toMatch(dollarBalanceRegEx);
   });
 });

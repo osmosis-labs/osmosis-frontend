@@ -224,16 +224,8 @@
       "approveInWallet": "在錢包中批准",
       "enterAddress": "{network}位址",
       "errors": {
-        "insufficientBal": "結餘唔夠喎",
-        "insufficientFee": "交易費唔夠喎",
-        "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
         "seeRequest": "在{walletName}中查看請求",
-        "noQuotesAvailable": "無可用報價",
-        "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。",
-        "invalidAddress": "無效地址",
-        "missingAddress": "缺少地址"
+        "invalidAddress": "無效地址"
       },
       "from": "從",
       "loading": "載入中",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "購買代幣",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "不充足的資金"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
       "kadoSubtitle": "支援OSMO, USDC",
@@ -979,7 +974,17 @@
     "transferWithNoun": "使用{noun}進行傳輸",
     "risks": "橋接伴隨著風險。",
     "learnMore": "了解更多",
-    "openNoun": "打開{noun}"
+    "openNoun": "打開{noun}",
+    "insufficientFundsForFees": "費用資金不足",
+    "youNeedFundsToPay": "您需要資金來支付{chain}上的網路和橋接費。",
+    "assetsDepositsUnavailable": "{asset}存款不可用",
+    "assetsWithdrawsUnavailable": "{asset}無法提現",
+    "noAvailableDeposits": "目前找不到可用的路線或提供者。請稍後再試或使用其他應用程式將您的資金轉移到 Osmosis。",
+    "noAvailableWithdraws": "目前找不到可用的路線或提供者。請稍後重試或設定替代應用程式以從 Osmosis 轉移您的資金。",
+    "somethingIsntWorking": "有些東西不起作用…",
+    "sorryForTheInconvenience": "帶來不便敬請諒解。請刷新頁面並重試或使用替代應用程式將您的資金轉移到 Osmosis。",
+    "assetIsCurrentlyUnstable": "{asset}傳輸目前不穩定",
+    "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

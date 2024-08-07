@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { FunctionComponent, useCallback } from "react";
@@ -11,7 +11,13 @@ import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
-import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useDimension,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -22,6 +28,10 @@ export const PortfolioPage: FunctionComponent = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Portfolio.pageViewed],
+  });
 
   const { data: totalValueData, isFetched: isTotalValueFetched } =
     api.edge.assets.getUserAssetsTotal.useQuery(
@@ -71,6 +81,8 @@ export const PortfolioPage: FunctionComponent = () => {
     [bridgeAsset]
   );
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
@@ -85,9 +97,18 @@ export const PortfolioPage: FunctionComponent = () => {
       {wallet && wallet.isWalletConnected && wallet.address ? (
         <>
           <section className="w-full py-3">
-            <Tab.Group>
-              <Tab.List className="flex gap-6" ref={tabsRef}>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+            <TabGroup>
+              <TabList className="flex gap-6" ref={tabsRef}>
+                <Tab
+                  disabled={userHasNoAssets}
+                  className="disabled:opacity-80"
+                  onClick={() => {
+                    logEvent([
+                      EventName.Portfolio.tabClicked,
+                      { section: "Your assets" },
+                    ]);
+                  }}
+                >
                   {({ selected }) => (
                     <h6
                       className={!selected ? "text-osmoverse-500" : undefined}
@@ -96,7 +117,16 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+                <Tab
+                  disabled={userHasNoAssets}
+                  className="disabled:opacity-80"
+                  onClick={() => {
+                    logEvent([
+                      EventName.Portfolio.tabClicked,
+                      { section: "Your positions" },
+                    ]);
+                  }}
+                >
                   {({ selected }) => (
                     <h6
                       className={!selected ? "text-osmoverse-500" : undefined}
@@ -105,29 +135,28 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-              </Tab.List>
-              {/* {!isTotalValueFetched ? ( */}
-              {true ? (
+              </TabList>
+              {!isTotalValueFetched ? (
                 <div className="mx-auto my-6 w-fit">
                   <Spinner />
                 </div>
               ) : userHasNoAssets ? (
                 <UserZeroBalanceTableSplash />
               ) : (
-                <Tab.Panels className="py-6">
-                  <Tab.Panel>
+                <TabPanels className="py-6">
+                  <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}
                       onDeposit={onDeposit}
                       onWithdraw={onWithdraw}
                     />
-                  </Tab.Panel>
-                  <Tab.Panel>
-                    <UserPositionsSection address={wallet?.address} />
-                  </Tab.Panel>
-                </Tab.Panels>
+                  </TabPanel>
+                  <TabPanel>
+                    <UserPositionsSection address={wallet.address} />
+                  </TabPanel>
+                </TabPanels>
               )}
-            </Tab.Group>
+            </TabGroup>
           </section>
 
           <section className="flex w-full gap-4">

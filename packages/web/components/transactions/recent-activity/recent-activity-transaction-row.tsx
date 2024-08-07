@@ -80,60 +80,7 @@ export const RecentActivityTransferRow: FunctionComponent<Transaction> = ({
     <div
       className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
     >
-      <div className="flex items-center gap-4 md:w-1/2 md:gap-2">
-        {status === "pending" ? (
-          <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
-        ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825 p-3 md:h-8 md:w-8 md:p-2">
-            {status === "success" ? (
-              effect === "withdraw" ? (
-                <Icon
-                  className="rotate-180 transform"
-                  id={effectIconId}
-                  width="100%"
-                  height="100%"
-                />
-              ) : (
-                <Icon id={effectIconId} width="100%" height="100%" />
-              )
-            ) : (
-              <Icon
-                width="100%"
-                height="100%"
-                id="alert-circle"
-                color={theme.colors.rust[400]}
-              />
-            )}
-          </div>
-        )}
-        <div>
-          <p className="subtitle1 md:body2 text-osmoverse-100">
-            {title[status]}
-          </p>
-        </div>
-      </div>
-      {transfer && <TokenTransfer status={status} {...transfer} />}
-    </div>
-  );
-};
-
-export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
-  status,
-  effect,
-  title,
-  caption,
-  tokenConversion,
-  transfer,
-}) => {
-  const effectIconId = effect === "swap" ? "swap" : "down-arrow";
-
-  const { t } = useTranslation();
-
-  return (
-    <div
-      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
-    >
-      <div className="flex items-center gap-4 md:w-1/2 md:gap-2">
+      <div className="flex items-center gap-4">
         {status === "pending" ? (
           <Spinner className="h-8 w-8 pb-4 text-wosmongton-500" />
         ) : (
@@ -159,7 +106,32 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
             )}
           </div>
         )}
+        <div>
+          <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
+        </div>
+      </div>
+      {transfer && <TokenTransfer status={status} {...transfer} />}
+    </div>
+  );
+};
 
+export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
+  status,
+  effect,
+  title,
+  caption,
+  tokenConversion,
+  transfer,
+}) => {
+  const effectIconId = effect === "swap" ? "swap" : "down-arrow";
+
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className={classNames("-mx-4 flex justify-between gap-4 rounded-2xl p-2")}
+    >
+      <div className="flex items-center gap-4">
         <div>
           <div className="flex flex-col">
             <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
@@ -173,7 +145,7 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
             )}
           </div>
           {tokenConversion && (
-            <div className="caption mt-1 hidden text-osmoverse-300 md:flex md:items-center">
+            <div className="caption mt-1 hidden text-osmoverse-300">
               {formatPretty(tokenConversion.tokenOut.amount, {
                 maxDecimals: 6,
               })}
@@ -203,26 +175,27 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ tokenIn, tokenOut }) => {
   return (
-    <div className="flex items-center justify-end gap-4">
-      <div className="flex items-center justify-end gap-4">
-        <FallbackImg
-          alt={tokenIn.amount.denom}
-          src={tokenIn.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
-          height={32}
-          width={32}
-        />
-      </div>
-      <Icon id="arrow-right" width={24} height={24} />
-      <div className="flex items-center justify-end gap-4">
-        <FallbackImg
-          alt={tokenOut.amount.denom}
-          src={tokenOut.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
-          height={32}
-          width={32}
-        />
-      </div>
+    <div className="flex items-center justify-end">
+      <FallbackImg
+        alt={tokenIn.amount.denom}
+        src={tokenIn.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+      />
+      <Icon
+        id="arrows-swap"
+        width={16}
+        height={16}
+        className="my-[8px] mx-[4px] text-osmoverse-500"
+      />
+      <FallbackImg
+        alt={tokenOut.amount.denom}
+        src={tokenOut.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={32}
+        width={32}
+      />
     </div>
   );
 };

@@ -107,7 +107,7 @@ export async function estimateGasFee({
   }).catch((e) => {
     if (fallbackGasLimit) {
       console.warn(
-        "Using fallback gas limit",
+        "WARNING Using fallback gas limit:",
         e instanceof Error ? e.message : e
       );
       return { gasUsed: fallbackGasLimit, coinsSpent: [] };
