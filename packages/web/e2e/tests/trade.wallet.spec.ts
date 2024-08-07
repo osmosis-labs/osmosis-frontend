@@ -2,6 +2,7 @@
 import { BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
+import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
@@ -96,22 +97,28 @@ test.describe("Test Trade feature", () => {
     expect(tradePage.getTransactionUrl()).toBeTruthy();
   });
 
-  test("User should be able to limit buy OSMO", async () => {
+  test.only("User should be able to limit buy OSMO", async () => {
+    const limitPrice = "0.3881";
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.1");
-    await tradePage.setLimit2PercentChange();
+    await tradePage.enterAmount("0.11");
+    await tradePage.setLimitPriceChange("Market");
+    await tradePage.setLimitPrice(limitPrice);
     const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.1 USDC (Noble/channel-750)");
+    expect(msgContentAmount).toContain("0.11 USDC (Noble/channel-750)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     expect(tradePage.isTransactionSuccesful());
     expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.gotoOrdersHistory(30);
+    const p = context.pages()[0];
+    const trxPage = new TransactionsPage(p);
+    trxPage.viewFilledByLimitPrice(limitPrice);
   });
 
   test("User should be able to limit sell ATOM", async () => {
@@ -120,7 +127,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
     await tradePage.enterAmount("0.01");
-    await tradePage.setLimit10PercentChange();
+    await tradePage.setLimitPriceChange("5%");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
@@ -138,7 +145,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("0.2");
-    await tradePage.setLimit10PercentChange();
+    await tradePage.setLimitPriceChange("10%");
     const limitPrice = await tradePage.getLimitPrice();
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
@@ -149,7 +156,8 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     expect(tradePage.isTransactionSuccesful());
     expect(tradePage.getTransactionUrl()).toBeTruthy();
-    const trxPage = await tradePage.gotoOrdersHistory();
+    await tradePage.gotoOrdersHistory();
+    const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder("0.2 OSMO", limitPrice, context);
     expect(tradePage.isTransactionSuccesful());
   });

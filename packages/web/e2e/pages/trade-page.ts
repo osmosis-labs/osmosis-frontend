@@ -2,7 +2,6 @@
 import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
-import { TransactionsPage } from "~/e2e/pages/transactions-page";
 
 export class TradePage extends BasePage {
   readonly page: Page;
@@ -19,8 +18,6 @@ export class TradePage extends BasePage {
   readonly buyBtn: Locator;
   readonly sellTabBtn: Locator;
   readonly sellBtn: Locator;
-  readonly limit10Percent: Locator;
-  readonly limit2Percent: Locator;
   readonly limitTabBtn: Locator;
   readonly orderHistoryLink: Locator;
   readonly limitPrice: Locator;
@@ -51,8 +48,6 @@ export class TradePage extends BasePage {
     this.inputAmount = page.locator(
       "//div[contains(@class, 'transiiton-all')]/input[@placeholder]"
     );
-    this.limit10Percent = page.locator('//span[@class="body2" and .="10%"]');
-    this.limit2Percent = page.locator('//span[@class="body2" and .="2%"]');
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
@@ -69,10 +64,13 @@ export class TradePage extends BasePage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async gotoOrdersHistory() {
+  async gotoOrdersHistory(timeout: number = 1) {
+    await this.page.waitForTimeout(1000);
     await this.orderHistoryLink.click();
     await this.page.waitForTimeout(1000);
-    return new TransactionsPage(this.page);
+    await new Promise((f) => setTimeout(f, timeout * 1000));
+    const currentUrl = this.page.url();
+    console.log("FE opened at: " + currentUrl);
   }
 
   async openBuyTab() {
@@ -94,14 +92,14 @@ export class TradePage extends BasePage {
     return lp;
   }
 
-  async setLimit10PercentChange() {
-    await this.limit10Percent.click();
+  async setLimitPriceChange(change: string) {
+    const locator = `//span[@class="body2" and .="${change}"]`;
+    await this.page.locator(locator).click();
     await this.page.waitForTimeout(1000);
   }
 
-  async setLimit2PercentChange() {
-    await this.limit2Percent.click();
-    await this.page.waitForTimeout(1000);
+  async setLimitPrice(price: string) {
+    await this.limitPrice.fill(price, { timeout: 2000 });
   }
 
   async flipTokenPair() {
