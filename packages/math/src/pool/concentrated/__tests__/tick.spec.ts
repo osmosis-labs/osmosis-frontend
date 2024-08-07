@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import cases from "jest-in-case";
 
 import { approxSqrt } from "../../../utils";
