@@ -21,9 +21,7 @@ export function getOrderbookDenoms({
   return cachified({
     cache: orderbookDenomsCache,
     key: `orderbookDenoms-${orderbookAddress}`,
-    ttl: 1000 * 60 * 60 * 24 * 30, // 30 days
-    swr: 1000 * 60 * 60 * 24 * 30, // 30 days
-    staleRefreshTimeout: 1000 * 60 * 60 * 24 * 30, // 30 days
+    ttl: 1000 * 60 * 60 * 24 * 30, // 30 days (unlikely to change)
     getFreshValue: () =>
       getOrderbookPools().then((pools) => {
         const pool = pools.find((p) => p.contractAddress === orderbookAddress);
