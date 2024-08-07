@@ -63,7 +63,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex w-full flex-col">
-        {transactions?.slice(0, 5).map((transaction: FormattedTransaction) => {
+        {transactions?.slice(0, 3).map((transaction: FormattedTransaction) => {
           return (
             <RecentActivityTransactionRow
               key={transaction.id}

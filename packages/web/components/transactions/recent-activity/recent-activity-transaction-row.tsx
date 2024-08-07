@@ -171,12 +171,7 @@ export const RecentActivityTransactionRow: FunctionComponent<Transaction> = ({
               <div className="caption flex gap-1 text-osmoverse-300">
                 {displayFiatPrice(tokenConversion.tokenIn?.value, "", t)}{" "}
                 {tokenConversion.tokenOut.amount.denom}{" "}
-                <Icon
-                  id="arrow-right"
-                  width={14}
-                  height={14}
-                  className="block text-osmoverse-600 md:hidden"
-                />{" "}
+                <Icon id="arrow-right" width={14} height={14} />{" "}
                 {tokenConversion.tokenIn.amount.denom}
               </div>
             )}
@@ -212,31 +207,24 @@ const TokenConversion: FunctionComponent<
   >
 > = ({ tokenIn, tokenOut }) => {
   return (
-    <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
-      <div className="flex w-60 items-center justify-end gap-4 md:hidden">
+    <div className="flex items-center justify-end gap-4">
+      <div className="flex items-center justify-end gap-4">
         <FallbackImg
           alt={tokenIn.amount.denom}
           src={tokenIn.amount.currency.coinImageUrl}
           fallbacksrc="/icons/question-mark.svg"
           height={32}
           width={32}
-          className="block md:hidden"
         />
       </div>
-      <Icon
-        id="arrow-right"
-        width={24}
-        height={24}
-        className="block text-osmoverse-600 md:hidden"
-      />
-      <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
+      <Icon id="arrow-right" width={24} height={24} />
+      <div className="flex items-center justify-end gap-4">
         <FallbackImg
           alt={tokenOut.amount.denom}
           src={tokenOut.amount.currency.coinImageUrl}
           fallbacksrc="/icons/question-mark.svg"
           height={32}
           width={32}
-          className="block md:hidden"
         />
       </div>
     </div>
