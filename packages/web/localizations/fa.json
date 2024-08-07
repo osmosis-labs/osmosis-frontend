@@ -224,16 +224,8 @@
       "approveInWallet": "تایید در کیف پول",
       "enterAddress": "آدرس {network}",
       "errors": {
-        "insufficientBal": "موجودی نا کافی",
-        "insufficientFee": "کارمزد ناکافی",
-        "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
-        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}",
         "seeRequest": "درخواست را در {walletName} ببینید",
-        "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
-        "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
-        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
-        "invalidAddress": "آدرس نامعتبر",
-        "missingAddress": "آدرس گم شده"
+        "invalidAddress": "آدرس نامعتبر"
       },
       "from": "از",
       "loading": "در حال بارگذاری",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "خرید توکن",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "بودجه ناکافی"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
@@ -996,7 +991,17 @@
     "transferWithNoun": "انتقال با {noun}",
     "risks": "پل زدن با خطراتی همراه است.",
     "learnMore": "بیشتر بدانید",
-    "openNoun": "باز کردن {noun}"
+    "openNoun": "باز کردن {noun}",
+    "insufficientFundsForFees": "بودجه ناکافی برای هزینه ها",
+    "youNeedFundsToPay": "برای پرداخت هزینه های شبکه و پل زدن در {chain} به بودجه نیاز دارید.",
+    "assetsDepositsUnavailable": "سپرده‌های {asset} در دسترس نیستند",
+    "assetsWithdrawsUnavailable": "برداشت‌های {asset} در دسترس نیست",
+    "noAvailableDeposits": "در حال حاضر هیچ مسیر یا ارائه دهنده ای در دسترس نیست. لطفاً بعداً دوباره امتحان کنید یا از یک برنامه جایگزین برای انتقال وجوه خود به Osmosis استفاده کنید.",
+    "noAvailableWithdraws": "در حال حاضر هیچ مسیر یا ارائه دهنده ای در دسترس نیست. لطفاً بعداً دوباره امتحان کنید یا یک برنامه جایگزین برای انتقال وجوه خود از Osmosis تنظیم کنید.",
+    "somethingIsntWorking": "یه چیزی کار نمیکنه…",
+    "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً صفحه را بازخوانی کنید و دوباره امتحان کنید یا از یک برنامه جایگزین برای انتقال وجوه خود به Osmosis استفاده کنید.",
+    "assetIsCurrentlyUnstable": "انتقالات {asset} در حال حاضر ناپایدار هستند",
+    "transferWillLikelyTakeLonger": "نقل و انتقالات احتمالاً بیشتر از حد معمول طول می کشد یا ممکن است به طور کامل شکست بخورد. با مسئولیت خود ادامه دهید."
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

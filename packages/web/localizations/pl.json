@@ -224,16 +224,8 @@
       "approveInWallet": "Zatwierdź w portfelu",
       "enterAddress": "Adres {network}",
       "errors": {
-        "insufficientBal": "Niewystarczająca Ilość Środków",
-        "insufficientFee": "Niewystarczająca Prowizja",
-        "reconnectWallet": "Połącz ponownie {walletName}",
-        "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
         "seeRequest": "Zobacz żądanie w {walletName}",
-        "noQuotesAvailable": "Brak dostępnych cytatów",
-        "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
-        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
-        "invalidAddress": "Błędny adres",
-        "missingAddress": "Brak adresu"
+        "invalidAddress": "Błędny adres"
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "Kup tokeny",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Niewystarczające środki"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Wybierz rampę Fiat",
       "kadoSubtitle": "Obsługuje OSMO, USDC",
@@ -996,7 +991,17 @@
     "transferWithNoun": "Przelew z {noun}",
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
-    "openNoun": "Otwórz {noun}"
+    "openNoun": "Otwórz {noun}",
+    "insufficientFundsForFees": "Niewystarczające środki na opłaty",
+    "youNeedFundsToPay": "Potrzebujesz środków, aby uiścić opłaty sieciowe i pomostowe w sieci {chain} .",
+    "assetsDepositsUnavailable": "Depozyty {asset} są niedostępne",
+    "assetsWithdrawsUnavailable": "Wypłaty {asset} są niedostępne",
+    "noAvailableDeposits": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
+    "noAvailableWithdraws": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub ustaw alternatywną aplikację do przesyłania środków z Osmozy.",
+    "somethingIsntWorking": "Coś nie działa…",
+    "sorryForTheInconvenience": "Przepraszam za niedogodności. Odśwież stronę i spróbuj ponownie lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
+    "assetIsCurrentlyUnstable": "Transfery {asset} są obecnie niestabilne",
+    "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko."
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

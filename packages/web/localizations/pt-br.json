@@ -224,16 +224,8 @@
       "approveInWallet": "Aprovar na carteira",
       "enterAddress": "{network} endereço",
       "errors": {
-        "insufficientBal": "Saldo Insuficiente",
-        "insufficientFee": "Taxa Insuficiente",
-        "reconnectWallet": "Reconectar {walletName}",
-        "wrongNetworkInWallet": "Rede errada em {walletName}",
         "seeRequest": "Ver solicitação em {walletName}",
-        "noQuotesAvailable": "Nenhuma cotação disponível",
-        "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
-        "transactionError": "Erro ao obter transação. Por favor, tente novamente.",
-        "invalidAddress": "Endereço inválido",
-        "missingAddress": "Endereço ausente"
+        "invalidAddress": "Endereço inválido"
       },
       "from": "De",
       "loading": "Carregando",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "Comprar tokens",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fundos insuficientes"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
       "kadoSubtitle": "Suporta OSMO, USDC",
@@ -996,7 +991,17 @@
     "transferWithNoun": "Transferir com {noun}",
     "risks": "Fazer uma ponte traz riscos.",
     "learnMore": "Saber mais",
-    "openNoun": "Abra {noun}"
+    "openNoun": "Abra {noun}",
+    "insufficientFundsForFees": "Fundos insuficientes para taxas",
+    "youNeedFundsToPay": "Você precisa de fundos para pagar taxas de rede e de ponte em {chain} .",
+    "assetsDepositsUnavailable": "{asset} depósitos não estão disponíveis",
+    "assetsWithdrawsUnavailable": "{asset} retiradas não estão disponíveis",
+    "noAvailableDeposits": "Atualmente nenhuma rota ou provedor disponível pode ser encontrado. Tente novamente mais tarde ou use um aplicativo alternativo para transferir seus fundos para o Osmosis.",
+    "noAvailableWithdraws": "Atualmente nenhuma rota ou provedor disponível pode ser encontrado. Tente novamente mais tarde ou configure um aplicativo alternativo para transferir seus fundos do Osmosis.",
+    "somethingIsntWorking": "Algo não está funcionando…",
+    "sorryForTheInconvenience": "Desculpe pela inconveniência. Atualize a página e tente novamente ou use um aplicativo alternativo para transferir seus fundos para o Osmosis.",
+    "assetIsCurrentlyUnstable": "As transferências {asset} estão instáveis no momento",
+    "transferWillLikelyTakeLonger": "As transferências provavelmente levarão mais tempo do que o normal ou poderão falhar totalmente. Prossiga por sua conta e risco."
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",

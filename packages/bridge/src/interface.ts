@@ -12,8 +12,12 @@ export interface BridgeProviderContext {
   assetLists: AssetList[];
   chainList: Chain[];
 
-  /** Provides current timeout height for a chain of given chainId. */
-  getTimeoutHeight(params: { chainId: string }): Promise<{
+  /** Provides current timeout height for a chain of given chainId.
+   *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
+  getTimeoutHeight(params: {
+    chainId?: string;
+    destinationAddress?: string;
+  }): Promise<{
     revisionNumber: string | undefined;
     revisionHeight: string;
   }>;

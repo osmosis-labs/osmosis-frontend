@@ -224,16 +224,8 @@
       "approveInWallet": "વૉલેટમાં મંજૂર કરો",
       "enterAddress": "{network} સરનામું",
       "errors": {
-        "insufficientBal": "અપર્યાપ્ત બેલેન્સ",
-        "insufficientFee": "અપૂરતી ફી",
-        "reconnectWallet": "ફરીથી કનેક્ટ કરો {walletName}",
-        "wrongNetworkInWallet": "{walletName} માં ખોટું નેટવર્ક",
         "seeRequest": "{walletName} માં વિનંતી જુઓ",
-        "noQuotesAvailable": "કોઈ અવતરણ ઉપલબ્ધ નથી",
-        "unexpectedError": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
-        "transactionError": "વ્યવહાર મેળવવામાં ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
-        "invalidAddress": "અમાન્ય સરનામું",
-        "missingAddress": "સરનામું ખૂટે છે"
+        "invalidAddress": "અમાન્ય સરનામું"
       },
       "from": "થી",
       "loading": "લોડ કરી રહ્યું છે",
@@ -338,6 +330,9 @@
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "અપૂરતું ભંડોળ"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "ફિયાટ ઓનરેમ્પ પસંદ કરો",
       "kadoSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
@@ -996,7 +991,17 @@
     "transferWithNoun": "{noun} વડે ટ્રાન્સફર કરો",
     "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
     "learnMore": "વધુ શીખો",
-    "openNoun": "{noun} ખોલો"
+    "openNoun": "{noun} ખોલો",
+    "insufficientFundsForFees": "ફી માટે અપૂરતું ભંડોળ",
+    "youNeedFundsToPay": "તમારે {chain} પર નેટવર્ક અને બ્રિજિંગ ફી ચૂકવવા માટે ભંડોળની જરૂર છે.",
+    "assetsDepositsUnavailable": "{asset} થાપણો અનુપલબ્ધ છે",
+    "assetsWithdrawsUnavailable": "{asset} ઉપાડ અનુપલબ્ધ છે",
+    "noAvailableDeposits": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
+    "noAvailableWithdraws": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા ઓસ્મોસિસમાંથી તમારા ભંડોળને ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશન સેટ કરો.",
+    "somethingIsntWorking": "કંઈક કામ કરતું નથી...",
+    "sorryForTheInconvenience": "અસુવીધી બદલ માફી. કૃપા કરીને પૃષ્ઠને તાજું કરો અને ફરીથી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં સ્થાનાંતરિત કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
+    "assetIsCurrentlyUnstable": "{asset} ટ્રાન્સફર હાલમાં અસ્થિર છે",
+    "transferWillLikelyTakeLonger": "સ્થાનાંતરણ સામાન્ય કરતાં વધુ સમય લેશે અથવા સંપૂર્ણપણે નિષ્ફળ થઈ શકે છે. તમારા પોતાના જોખમે આગળ વધો."
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
