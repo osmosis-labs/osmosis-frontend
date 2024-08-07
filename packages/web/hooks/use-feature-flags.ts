@@ -114,6 +114,7 @@ export const useFeatureFlags = () => {
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
     limitOrders:
+      isInitialized &&
       launchdarklyFlags.limitOrders &&
       (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
         LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),

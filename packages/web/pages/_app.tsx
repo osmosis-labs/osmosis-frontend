@@ -139,10 +139,12 @@ const MainLayoutWrapper: FunctionComponent<{
   } = useDisclosure();
 
   useEffect(() => {
-    if (flags.limitOrders) {
+    if (flags.limitOrders && flags._isInitialized) {
       document.body.classList.add("!bg-osmoverse-1000");
+    } else {
+      document.body.classList.remove("!bg-osmoverse-1000");
     }
-  }, [flags]);
+  }, [flags.limitOrders, flags._isInitialized]);
 
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
