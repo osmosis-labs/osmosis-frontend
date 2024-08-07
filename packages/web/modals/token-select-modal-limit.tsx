@@ -195,15 +195,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         },
       });
 
-      // const { handleKeyDown: searchBarKeyDown } = useKeyActions({
-      //   ArrowDown: (event) => {
-      //     event.preventDefault();
-      //   },
-      //   ArrowUp: (event) => {
-      //     event.preventDefault();
-      //   },
-      // });
-
       const [filterValue, setQuery, results] = useFilteredData(
         selectableAssets,
         ["coinDenom", "coinName"]
@@ -428,18 +419,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                     {coinDenom}
                                   </span>
                                 </div>
-                                {/* {!isVerified && shouldShowUnverifiedAssets && (
-                              <Tooltip
-                                content={t(
-                                  "components.selectToken.unverifiedAsset"
-                                )}
-                              >
-                                <Icon
-                                  id="alert-triangle"
-                                  className="h-5 w-5 text-osmoverse-400"
-                                />
-                              </Tooltip>
-                            )} */}
                               </div>
 
                               {isWalletConnected && !hideBalances && (
@@ -462,41 +441,9 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                       {formatPretty(amount).split(" ")[0]}
                                     </span>
                                   )}
-                                  {/* <Link
-                                href={"#"}
-                                className="subtitle2 inline-flex items-center text-wosmongton-300"
-                              >
-                                2 balances
-                                <div className="flex h-4 w-4 items-center justify-center">
-                                  <Icon
-                                    id="chevron-right"
-                                    className="h-3 w-[7px]"
-                                  />
-                                </div>
-                              </Link> */}
                                 </div>
                               )}
-                              {/* {amount &&
-                            isVerified &&
-                            usdValue &&
-                            amount.toDec().isPositive() && (
-                              <div className="flex flex-col text-right">
-                                <p className="button">
-                                  {formatPretty(amount.hideDenom(true), {
-                                    maxDecimals: 6,
-                                  })}
-                                </p>
-                                <span className="caption font-medium text-osmoverse-400">
-                                  {usdValue.toString()}
-                                </span>
-                              </div>
-                            )} */}
                             </div>
-                            {/* {!shouldShowUnverifiedAssets && !isVerified && (
-                          <p className="caption whitespace-nowrap text-wosmongton-200">
-                            {t("components.selectToken.clickToActivate")}
-                          </p>
-                        )} */}
                           </button>
                         );
                       }

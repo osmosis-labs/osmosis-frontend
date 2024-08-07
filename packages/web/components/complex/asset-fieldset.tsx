@@ -123,7 +123,7 @@ const calcFontSize = (numChars: number, isMobile: boolean): string => {
     }
   }
 
-  return "1";
+  return "48px";
 };
 
 interface AssetFieldsetInputProps {

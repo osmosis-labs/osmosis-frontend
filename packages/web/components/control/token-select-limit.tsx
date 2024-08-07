@@ -107,11 +107,6 @@ export const TokenSelectLimit: FunctionComponent<
       [isWalletConnected, orderDirection]
     );
 
-    // const showQuoteBalance = useMemo(
-    //   () => orderDirection === "bid",
-    //   [orderDirection]
-    // );
-
     return (
       <div className="flex flex-col">
         <button

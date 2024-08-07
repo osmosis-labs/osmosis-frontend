@@ -908,14 +908,6 @@ export function useToFromDenoms({
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {
     if (useQueryParams) {
-      // const existingParams = router.query;
-      // router.replace({
-      //   query: {
-      //     ...existingParams,
-      //     from: toDenomQueryParamStr,
-      //     to: fromDenomQueryParamStr,
-      //   },
-      // });
       const temp = fromDenomQueryParam;
       setFromDenomQueryParam(toAssetQueryParam);
       setToAssetQueryParam(temp);

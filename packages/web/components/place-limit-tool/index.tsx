@@ -631,22 +631,3 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     );
   }
 );
-
-// function SwapArrows() {
-//   return (
-//     <div className="ml-1 flex h-12 w-14 items-center">
-//       <Icon
-//         id="arrow-right"
-//         className="h-full w-auto rotate-90 text-wosmongton-200"
-//         width={16}
-//         height={24}
-//       />
-//       <Icon
-//         id="arrow-right"
-//         className="-ml-1 h-full w-auto -rotate-90 text-wosmongton-200"
-//         width={16}
-//         height={24}
-//       />
-//     </div>
-//   );
-// }

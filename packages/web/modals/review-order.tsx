@@ -85,7 +85,7 @@ export function ReviewOrder({
   isBeyondOppositePrice = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-  // const { isMobile } = useWindowSize();
+
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
@@ -475,7 +475,6 @@ export function ReviewOrder({
                               }
                               setIsEditingSlippage(false);
                             }}
-                            // autoFocus={slippageConfig?.isManualSlippage}
                             onChange={(e) => {
                               handleManualSlippageChange(e.target.value);
 
@@ -605,21 +604,7 @@ export function ReviewOrder({
                   </>
                 }
               />
-              {/* <div className="body2 flex h-8 w-full items-center justify-between">
-                <span className="text-osmoverse-300">
-                  {t("limitOrders.moreDetails")}
-                </span>
-                <span className="cursor-pointer text-wosmongton-300">
-                  {t("swap.autoRouterToggle.show")}
-                </span>
-              </div> */}
             </div>
-            {/* <div className="body2 flex h-[38px] w-full items-center justify-center">
-              <span className="text-caption text-osmoverse-300">
-                Disclaimer lorem ipsum.{" "}
-                <a className="text-wosmongton-300">Learn more</a>
-              </span>
-            </div> */}
             {isBeyondOppositePrice && (
               <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                 <Icon

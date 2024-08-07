@@ -8,13 +8,11 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 
 interface UITradeType {
-  // id: "market" | "limit" | "recurring";
   id: "market" | "limit";
   title: string;
   disabled: boolean;
 }
 
-// const TRADE_TYPES = ["market", "limit", "recurring"] as const;
 export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = () => {
@@ -79,12 +77,6 @@ export const OrderTypeSelector = () => {
         title: t("limitOrders.limit"),
         disabled: !hasOrderbook,
       },
-      // {
-      //   id: "recurring",
-      //   title: t("limitOrders.recurringOrder.title"),
-      //   description: t("limitOrders.recurringOrder.description"),
-      //   icon: "history-uncolored",
-      // },
     ],
     [hasOrderbook, t]
   );

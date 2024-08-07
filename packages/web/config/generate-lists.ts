@@ -98,7 +98,6 @@ async function generateChainListFile({
     environment === "mainnet" ? "MainnetChainIds" : "TestnetChainIds";
 
   if (!onlyTypes) {
-    // TODO: remove logoURIs type after merging with stage !IMPORTANT
     content += `
       import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
       export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(

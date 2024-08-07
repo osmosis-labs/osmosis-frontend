@@ -64,24 +64,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">
               {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
-              {/* {wallet?.isWalletConnected && (
-                <Link
-                  href={"/transactions?tab=orders&fromPage=swap"}
-                  className="relative flex h-12 w-12 items-center justify-center overflow-visible rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700"
-                >
-                  <Icon
-                    id="history-uncolored"
-                    width={24}
-                    height={24}
-                    className="h-6 w-6 text-wosmongton-200"
-                  />
-                  {count > 0 && (
-                    <div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                      <span className="text-xs leading-[14px]">{count}</span>
-                    </div>
-                  )}
-                </Link>
-              )} */}
             </div>
           </div>
           {useMemo(() => {
@@ -134,7 +116,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {/* <span className="text-wosmongton-200">{openOrders.length}</span> */}
               <div className="flex h-6 w-6 items-center justify-center">
                 <Icon
                   id="chevron-right"

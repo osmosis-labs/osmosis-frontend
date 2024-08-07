@@ -26,8 +26,6 @@ const Home = () => {
 
 const HomeNew = () => {
   const featureFlags = useFeatureFlags();
-  // const [previousTrade, setPreviousTrade] =
-  //   useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -54,34 +52,6 @@ const HomeNew = () => {
           </div>
         </div>
       </div>
-      {/* <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
-        <svg
-          className="absolute h-full w-full lg:hidden"
-          pointerEvents="none"
-          viewBox="0 0 1300 900"
-          height="900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g>
-            <ProgressiveSvgImage
-              lowResXlinkHref="/images/osmosis-home-bg-low.png"
-              xlinkHref="/images/osmosis-home-bg.png"
-              x="56"
-              y="220"
-              width="578.7462"
-              height="725.6817"
-            />
-            <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
-              xlinkHref={"/images/osmosis-home-fg.png"}
-              x={"61"}
-              y={"682"}
-              width={"448.8865"}
-              height={"285.1699"}
-            />
-          </g>
-        </svg>
-      </div> */}
     </main>
   );
 };
