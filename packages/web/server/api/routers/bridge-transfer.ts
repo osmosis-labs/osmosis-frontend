@@ -23,6 +23,7 @@ import {
   isSameVariant,
   SolanaChainInfo,
   timeout,
+  TronChainInfo,
 } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -35,6 +36,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "bitcoin" }>
   | Extract<BridgeChain, { chainType: "solana" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
+  | Extract<BridgeChain, { chainType: "tron" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -53,6 +55,7 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   IBC: "/bridges/ibc.svg",
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/bridges/wormhole.svg",
+  Nitro: "/bridges/nitro.svg",
 };
 
 const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
@@ -63,6 +66,7 @@ const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/external-bridges/portalbridge.svg",
   Generic: "/external-bridges/generic.svg",
+  Nitro: "/bridges/nitro.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -433,6 +437,12 @@ export const bridgeTransferRouter = createTRPCRouter({
               chainType,
               logoUri: "/networks/solana.svg",
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "solana" }>;
+          } else if (chainType === "tron") {
+            return {
+              ...TronChainInfo,
+              chainType,
+              logoUri: "/networks/tron.svg",
+            };
           }
 
           return undefined;

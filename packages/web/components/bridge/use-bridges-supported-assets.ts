@@ -10,11 +10,12 @@ const supportedAssetsBridges: Bridge[] = [
   "Squid",
   "Axelar",
   "IBC",
-  // include nomic and wormhole for suggesting BTC + SOL assets and chains
+  // include nomic, nitro and wormhole for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
   "Nomic",
   "Wormhole",
+  "Nitro",
 ];
 
 export type SupportedAsset = ReturnType<
