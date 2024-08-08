@@ -14,7 +14,7 @@ test.describe("Test Select Swap Pair feature", () => {
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserConfig(false)
+      new TestConfig().getBrowserConfig(true)
     );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
