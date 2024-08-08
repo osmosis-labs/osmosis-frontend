@@ -53,8 +53,6 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   const recentTransfers = useRecentTransfers(wallet?.address);
 
-  console.log("Recent Transfers: ", recentTransfers);
-
   const { data: transactionsData, isFetching: isGetTransactionsFetching } =
     api.edge.transactions.getTransactions.useQuery(
       {

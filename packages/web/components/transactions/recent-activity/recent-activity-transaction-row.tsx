@@ -61,6 +61,8 @@ export const TransferRow: FunctionComponent<Activity> = ({
   toChainId,
   fromChainId,
 }) => {
+  const { t } = useTranslation();
+
   const chainId =
     (transfer?.direction === "withdraw" ? toChainId : fromChainId) || "";
 
@@ -73,7 +75,10 @@ export const TransferRow: FunctionComponent<Activity> = ({
     }
   );
 
-  const text = transfer?.direction === "withdraw" ? "to" : "from";
+  const text =
+    transfer?.direction === "withdraw"
+      ? t("portfolio.to")
+      : t("portfolio.from");
 
   const leftComponent = transfer ? (
     <div className="caption flex gap-1 text-osmoverse-300">
