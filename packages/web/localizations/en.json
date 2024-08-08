@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
     "noPriceData": "Price data unavailable",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "history": "History",
+    "orders": "Orders"
   },
   "date": {
     "earlierToday": "Earlier today",
