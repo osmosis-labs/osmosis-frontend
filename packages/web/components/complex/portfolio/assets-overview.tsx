@@ -15,14 +15,17 @@ import { Fragment, FunctionComponent, useState } from "react";
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GetStartedWithOsmosis } from "~/components/complex/portfolio/get-started-with-osmosis";
-import { PortfolioHistoricalChart } from "~/components/complex/portfolio/historical-chart";
+import {
+  PortfolioHistoricalChart,
+  PortfolioHistoricalChartMinimized,
+} from "~/components/complex/portfolio/historical-chart";
 import { PortfolioPerformance } from "~/components/complex/portfolio/performance";
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useFormatDate } from "~/components/transactions/transaction-utils";
 import { CustomClasses } from "~/components/types";
-import { Button } from "~/components/ui/button";
 import { IconButton } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
@@ -208,7 +211,7 @@ export const AssetsOverview: FunctionComponent<
                   </Button>
                 </div>
               </div>
-              <Transition
+              {/* <Transition
                 show={isChartMinimized}
                 enter="transition-all ease-out duration-300"
                 enterFrom="h-0 opacity-0"
@@ -216,23 +219,40 @@ export const AssetsOverview: FunctionComponent<
                 leave="transition-all ease-out duration-300"
                 leaveFrom="h-full opacity-100"
                 leaveTo="h-0 opacity-0"
-              >
-                <div className="relative h-full w-[322px] bg-ammelia-600">
-                  <IconButton
-                    className="absolute bottom-2 right-2 border border-osmoverse-700 py-0"
-                    aria-label="Open main menu dropdown"
-                    icon={
-                      <Icon
-                        id="resize"
-                        className="text-osmoverse-200"
-                        height={16}
-                        width={16}
-                      />
-                    }
-                    onClick={() => setIsChartMinimized((prev) => !prev)}
-                  />
-                </div>
-              </Transition>
+              > */}
+              <div className="relative h-full w-[320px] max-w-[320px]">
+                <PortfolioHistoricalChartMinimized
+                  showScales={false}
+                  data={portfolioOverTimeData as AreaData<Time>[]}
+                  isFetched={isPortfolioOverTimeDataIsFetched}
+                  setDataPoint={setDataPoint}
+                  totalPriceChange={totalPriceChange}
+                  error={error}
+                  setShowDate={setShowDate}
+                  resetDataPoint={() => {
+                    setDataPoint({
+                      time: dayjs().unix() as Time,
+                      value: +totalValue.toDec().toString(),
+                    });
+                    setShowDate(false);
+                  }}
+                />
+                <IconButton
+                  className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0"
+                  aria-label="Open main menu dropdown"
+                  icon={
+                    <Icon
+                      id="resize-expand"
+                      className="text-osmoverse-200"
+                      height={16}
+                      width={16}
+                    />
+                  }
+                  onClick={() => setIsChartMinimized((prev) => !prev)}
+                />
+              </div>
+
+              {/* </Transition> */}
             </div>
 
             <Transition
@@ -247,6 +267,8 @@ export const AssetsOverview: FunctionComponent<
             >
               {(ref) => (
                 <PortfolioHistoricalChart
+                  isChartMinimized={isChartMinimized}
+                  heightClassname="h-[400px]"
                   ref={ref}
                   setIsChartMinimized={setIsChartMinimized}
                   data={portfolioOverTimeData as AreaData<Time>[]}
