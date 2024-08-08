@@ -164,6 +164,7 @@ export const HistoricalChartSkeleton = () => {
           viewBox="0 0 700 346"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
         >
           <g clipPath="url(#clip0_2029_22138)">
             <path
