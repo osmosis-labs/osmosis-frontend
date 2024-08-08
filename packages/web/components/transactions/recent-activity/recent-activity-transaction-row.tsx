@@ -61,19 +61,17 @@ export const TransferRow: FunctionComponent<Activity> = ({
   toChainId,
   fromChainId,
 }) => {
-  const findChainNameOrId =
-    transfer?.direction === "withdraw" ? toChainId : fromChainId;
+  const chainId =
+    (transfer?.direction === "withdraw" ? toChainId : fromChainId) || "";
 
   const { data: chainData } = api.edge.chains.getChainDisplayInfo.useQuery(
     {
-      chainId: "bitcoin",
+      chainId,
     },
     {
       useErrorBoundary: false,
     }
   );
-
-  // console.log("chainDataEVM: ", chainDataEVM);
 
   const text = transfer?.direction === "withdraw" ? "to" : "from";
 
@@ -102,7 +100,7 @@ export const TransferRow: FunctionComponent<Activity> = ({
         />
         <ChainLogo
           prettyName={chainData?.prettyName}
-          color={undefined}
+          color={chainData?.color}
           logoUri={chainData?.relativeLogoUrl}
           size="md"
         />
@@ -111,7 +109,7 @@ export const TransferRow: FunctionComponent<Activity> = ({
       <>
         <ChainLogo
           prettyName={chainData?.prettyName}
-          color={undefined}
+          color={chainData?.color}
           logoUri={chainData?.relativeLogoUrl}
           size="md"
         />
