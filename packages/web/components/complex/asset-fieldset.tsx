@@ -136,7 +136,7 @@ interface AssetFieldsetInputProps {
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
+>(({ inputPrefix, inputValue, onInputChange, outputValue, ...rest }, ref) => {
   const { isMobile } = useWindowSize();
 
   const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
@@ -157,6 +157,7 @@ const AssetFieldsetInput = forwardRef<
             placeholder="0"
             onChange={onInputChange}
             value={inputValue}
+            {...rest}
           />
         </div>
       )}
@@ -196,6 +197,7 @@ const AssetFieldsetTokenSelector = ({
   hasNextPageAssets,
   isFetchingNextPageAssets,
   page = "Swap Page",
+  ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -237,6 +239,7 @@ const AssetFieldsetTokenSelector = ({
             openSelect();
           }
         }}
+        {...rest}
       >
         <div className="flex items-center gap-3">
           {selectedCoinImageUrl && (
