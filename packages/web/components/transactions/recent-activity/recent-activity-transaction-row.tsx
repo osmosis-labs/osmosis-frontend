@@ -87,7 +87,7 @@ export const TransferRow: FunctionComponent<Activity> = ({
     </div>
   ) : null;
 
-  const rightComponent = [
+  const rightComponentList = [
     <FallbackImg
       key="fallback-img"
       alt={transfer?.amount.denom}
@@ -112,17 +112,20 @@ export const TransferRow: FunctionComponent<Activity> = ({
     />,
   ];
 
-  const orderedRightComponent =
-    transfer?.direction === "withdraw"
-      ? rightComponent
-      : rightComponent.reverse();
+  const rightComponent = (
+    <>
+      {transfer?.direction === "withdraw"
+        ? rightComponentList
+        : rightComponentList.reverse()}
+    </>
+  );
 
   return (
     <RecentActivityRow
       status={status}
       title={title}
       leftComponent={leftComponent}
-      rightComponent={<>{orderedRightComponent}</>}
+      rightComponent={rightComponent}
     />
   );
 };
