@@ -69,7 +69,7 @@ export const OrderHistory = observer(() => {
     isFetchingNextPage,
     hasNextPage,
     refetch,
-    isRefetching
+    isRefetching,
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 10,
