@@ -366,7 +366,7 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain?.chainType === "evm" || toChain?.chainType === "evm") {
+    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "cosmos") {
       return undefined;
     }
 

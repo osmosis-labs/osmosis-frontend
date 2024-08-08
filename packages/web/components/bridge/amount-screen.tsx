@@ -388,50 +388,63 @@ export const AmountScreen = observer(
     ]);
 
     const balanceSource = (() => {
-      if (fromChain?.chainType === "evm" && supportedSourceAssets) {
-        return {
-          type: "evm" as const,
-          assets: supportedSourceAssets.filter(
-            (asset) => asset.chainType === "evm"
-          ) as Extract<SupportedAsset, { chainType: "evm" }>[],
-          userEvmAddress: evmAddress,
-        };
-      } else if (fromChain?.chainType === "cosmos" && supportedSourceAssets) {
-        return {
-          type: "cosmos" as const,
-          assets: supportedSourceAssets.filter(
-            (asset) => asset.chainType === "cosmos"
-          ) as Extract<SupportedAsset, { chainType: "cosmos" }>[],
-          userCosmosAddress: fromCosmosCounterpartyAccount?.address,
-        };
-      } else if (fromChain?.chainType === "bitcoin" && supportedSourceAssets) {
-        return {
-          type: "bitcoin" as const,
-          assets: supportedSourceAssets.filter(
-            (asset) => asset.chainType === "bitcoin"
-          ) as Extract<SupportedAsset, { chainType: "bitcoin" }>[],
-        };
-      } else {
-        // solana
-        return {
-          type: "solana" as const,
-          assets: (supportedSourceAssets ?? []).filter(
-            (asset) => asset.chainType === "solana"
-          ) as Extract<SupportedAsset, { chainType: "solana" }>[],
-        };
+      if (!fromChain || !supportedSourceAssets) return undefined;
+      const assets = supportedSourceAssets.filter(
+        (asset) => asset.chainType === fromChain.chainType
+      );
+
+      switch (fromChain.chainType) {
+        case "evm":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "evm" }>[],
+            userEvmAddress: evmAddress,
+          };
+        case "cosmos":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "cosmos" }
+            >[],
+            userCosmosAddress: fromCosmosCounterpartyAccount?.address,
+          };
+        case "bitcoin":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "bitcoin" }
+            >[],
+          };
+        case "tron":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "tron" }>[],
+          };
+        default:
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "solana" }
+            >[],
+          };
       }
     })();
+
     const {
       data: assetsBalances,
       isLoading: isLoadingAssetsBalance,
       isError: hasBalanceError,
     } = api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
-      { source: balanceSource },
+      { source: balanceSource! },
       {
         enabled:
           !isNil(fromChain) &&
           !isNil(supportedSourceAssets) &&
-          supportedSourceAssets.length > 0,
+          supportedSourceAssets.length > 0 &&
+          !isNil(balanceSource),
 
         select: (data) => {
           let nextData: typeof data = data;
